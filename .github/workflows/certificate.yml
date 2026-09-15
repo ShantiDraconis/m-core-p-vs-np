@@ -6,47 +6,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
-      - name: G0 no sorry fail-closed
+      - name: G0 fail-closed hygiene
         shell: bash
         run: |
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])sorry([^[:alnum:]_]|$)' --include='*.lean' lean/MCore; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; echo NO_SORRY; fi
-      - name: G0 no scientific axioms fail-closed
-        shell: bash
-        run: |
-          set -euo pipefail
           if grep -R -n -E '^[[:space:]]*axiom[[:space:]]' --include='*.lean' lean/MCore; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; echo NO_SCIENTIFIC_AXIOM; fi
-      - name: G1 preserved K0
-        run: lake env lean lean/MCore/K0.lean
-      - name: G2 preserved K1
-        run: lake build MCore.K1
-      - name: G3 K2 closure
-        run: lake build MCore.K2
+      - {name: G1 preserved K0, run: 'lake env lean lean/MCore/K0.lean'}
+      - {name: G2 preserved K1, run: 'lake build MCore.K1'}
+      - {name: G3 K2 closure, run: 'lake build MCore.K2'}
       - name: G4a positive resolution
         run: |
-          printf 'import MCore.K2\n#check MCore.CertNode\n#check MCore.ProofCertificate\n#check MCore.k1_node\n#check MCore.bridge_not_certified\n' > PositiveK2.lean
-          lake env lean PositiveK2.lean
-      - name: G4b negative constructor
+          printf 'import MCore.K2\n#check MCore.CertNode\n#check MCore.ProofCertificate\n#check MCore.k1_node\n#check MCore.bridge_not_certified\n' > PositiveK2.lean; lake env lean PositiveK2.lean
+      - name: G4b explicit OPEN_BRIDGE constructor rejection
         shell: bash
         run: |
           set -euo pipefail
-          printf 'import MCore.K2\nopen MCore\ndef forbidden : ProofCertificate k1_node := { status_proved := rfl, proof := k1_status_openBridge }\n' > NegativeK2.lean
-          set +e; lake env lean NegativeK2.lean > NegativeK2.log 2>&1; rc=$?; set -e; cat NegativeK2.log
-          [ "$rc" -ne 0 ] || exit 1
-          ! grep -qi 'unknown identifier' NegativeK2.log || exit 1
-          grep -q openBridge NegativeK2.log; grep -q provedProperty NegativeK2.log
-          echo NEGATIVE_K2_REJECTED_FOR_STATUS_MISMATCH
+          printf 'import MCore.K2\nopen MCore\ndef forbidden : ProofCertificate k1_node := { status_proved := by change SignatureStatus.openBridge = SignatureStatus.provedProperty; rfl, proof := k1_status_openBridge }\n' > NegativeK2.lean
+          set +e; lake env lean NegativeK2.lean > NegativeK2.log 2>&1; rc=$?; set -e; cat NegativeK2.log; [ "$rc" -ne 0 ] || exit 1; ! grep -qi 'unknown identifier' NegativeK2.log || exit 1; grep -q openBridge NegativeK2.log; grep -q provedProperty NegativeK2.log; echo NEGATIVE_K2_REJECTED_FOR_EXPLICIT_STATUS_MISMATCH
       - name: G5-G6 semantic axiom gate
         shell: bash
         run: |
           set -euo pipefail
-          printf 'import MCore.K2\n#print axioms MCore.k2_node_status_openBridge\n#print axioms MCore.k2_node_not_proved\n#print axioms MCore.bridge_not_certified\n' > K2AxiomAudit.lean
-          lake env lean K2AxiomAudit.lean 2>&1 | tee K2AxiomAudit.log
+          printf 'import MCore.K2\n#print axioms MCore.k2_node_status_openBridge\n#print axioms MCore.k2_node_not_proved\n#print axioms MCore.bridge_not_certified\n' > K2AxiomAudit.lean; lake env lean K2AxiomAudit.lean 2>&1 | tee K2AxiomAudit.log
           for r in MCore.k2_node_status_openBridge MCore.k2_node_not_proved MCore.bridge_not_certified; do grep -F "'$r' does not depend on any axioms" K2AxiomAudit.log >/dev/null || exit 1; done
           echo '{"observed_axioms":[],"allowed_axioms":["propext","Quot.sound","Classical.choice"],"result":"PASS_STRONGER_NO_AXIOMS"}' > axioms_closure.json
       - name: G7 manifest
-        shell: bash
         run: |
-          set -euo pipefail
-          sha=$(git rev-parse HEAD); t=$(cat lean-toolchain); l=$(sha256sum lakefile.toml|cut -d' ' -f1); m=$(sha256sum lake-manifest.json|cut -d' ' -f1)
-          printf '{"sha":"%s","toolchain":"%s","lakefile_sha256":"%s","lake_manifest_sha256":"%s","cache":"LEAN_ACTION_MANAGED_SEE_JOB_LOG","status":"CANDIDATE_GREEN"}\n' "$sha" "$t" "$l" "$m" | tee K2_CERTIFICATE_MANIFEST.json
+          sha=$(git rev-parse HEAD); t=$(cat lean-toolchain); l=$(sha256sum lakefile.toml|cut -d' ' -f1); m=$(sha256sum lake-manifest.json|cut -d' ' -f1); printf '{"sha":"%s","toolchain":"%s","lakefile_sha256":"%s","lake_manifest_sha256":"%s","cache":"LEAN_ACTION_MANAGED_SEE_JOB_LOG","status":"CANDIDATE_GREEN"}\n' "$sha" "$t" "$l" "$m" | tee K2_CERTIFICATE_MANIFEST.json
