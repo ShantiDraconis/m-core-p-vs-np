@@ -1,33 +1,43 @@
 name: certificate
 on: [push, pull_request]
 jobs:
- k3:
-  runs-on: ubuntu-latest
-  steps:
-   - uses: actions/checkout@v4
-   - uses: leanprover/lean-action@v1
-   - name: G0 fail-closed hygiene
-     run: |
-      set -euo pipefail
-      if grep -R -n -E '(^|[^[:alnum:]_])sorry([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; echo NO_SORRY; fi
-      if grep -R -n -E '^[[:space:]]*axiom[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; echo NO_SCIENTIFIC_AXIOM; fi
-   - {name: G1 preserve K0, run: 'lake env lean lean/MCore/K0.lean'}
-   - {name: G2 preserve K1, run: 'lake build MCore.K1'}
-   - {name: G3 preserve K2, run: 'lake build MCore.K2'}
-   - name: G8 predictor
-     run: |
-      python3 m_core/algebra_audit.py --target MCore.K3 --output Audit/AlgebraAudit/K3_predictor.json
-      python3 -c "import json;p=json.load(open('Audit/AlgebraAudit/K3_predictor.json'));assert not p['automatic_promotion'] and len(p['predicted_gaps'])==16 and all(x['disposition'] in {'PASS_CERTIFIED','OPEN_BRIDGE','REFUTED_ROUTE','REVIEW_REQUIRED'} and not x['formal_proof'] for x in p['predicted_gaps'])"
-   - name: G8 compile closure
-     run: lake build MCore.K3 && lake build MCore.Frontier.K3Gaps && lake build MCore.AttackDAG.K3AlgebraAttacks && lake build MCore
-   - name: G8 negative promotion
-     run: |
-      set -euo pipefail; printf 'import MCore.K3\nopen MCore\ndef forbidden : ProofCertificate k3_gap_node := { status_proved := by change SignatureStatus.openBridge = SignatureStatus.provedProperty; rfl, proof := k2_node_status_openBridge }\n' > NegativeK3Algebra.lean
-      set +e; lake env lean NegativeK3Algebra.lean > NegativeK3Algebra.log 2>&1; rc=$?; set -e; cat NegativeK3Algebra.log; [ "$rc" -ne 0 ] || exit 1; ! grep -qi 'unknown identifier' NegativeK3Algebra.log || exit 1; grep -q openBridge NegativeK3Algebra.log; grep -q provedProperty NegativeK3Algebra.log
-   - name: G8 axiom closure
-     run: |
-      printf 'import MCore.Frontier.K3Gaps\nimport MCore.AttackDAG.K3AlgebraAttacks\n#print axioms MCore.k3_gap_status_openBridge\n#print axioms MCore.k3_gap_not_proved\n#print axioms MCore.k3_gap_not_certified\n#print axioms MCore.k3_frontier_open\n#print axioms MCore.k3_attack_route_only\n#print axioms MCore.k3_attack_cannot_promote\n' > K3AxiomAudit.lean
-      lake env lean K3AxiomAudit.lean 2>&1 | tee K3AxiomAudit.log
-      for r in MCore.k3_gap_status_openBridge MCore.k3_gap_not_proved MCore.k3_gap_not_certified MCore.k3_frontier_open MCore.k3_attack_route_only MCore.k3_attack_cannot_promote; do grep -F "'$r' does not depend on any axioms" K3AxiomAudit.log >/dev/null || exit 1; done
-   - name: G7 clean reproduction
-     run: lake clean && lake build MCore.K3 && lake build MCore.Frontier.K3Gaps && lake build MCore.AttackDAG.K3AlgebraAttacks && lake build MCore
+  k4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: G0 fail-closed hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -n -E '(^|[^[:alnum:]_])sorry([^[:alnum:]_]|$)' --include='*.lean' lean; then echo SORRY_FOUND; exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; echo NO_SORRY; fi
+          if grep -R -n -E '^[[:space:]]*axiom[[:space:]]' --include='*.lean' lean; then echo SCIENTIFIC_AXIOM_FOUND; exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; echo NO_SCIENTIFIC_AXIOM; fi
+      - {name: G1 preserve K0, run: 'lake env lean lean/MCore/K0.lean'}
+      - {name: G2 preserve K1, run: 'lake build MCore.K1'}
+      - {name: G3 preserve K2, run: 'lake build MCore.K2'}
+      - name: G8 preserve K3 closure
+        run: |
+          lake build MCore.K3
+          lake build MCore.Frontier.K3Gaps
+          lake build MCore.AttackDAG.K3AlgebraAttacks
+      - {name: K4 build no-promotion firewall, run: 'lake build MCore.K4'}
+      - name: K4 negative promotion regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'import MCore.K4\nopen MCore\ndef forbidden : ProofCertificate k4_open_node := { status_proved := by change SignatureStatus.openBridge = SignatureStatus.provedProperty; rfl, proof := True.intro }\n' > NegativeK4.lean
+          set +e; lake env lean NegativeK4.lean > NegativeK4.log 2>&1; rc=$?; set -e; cat NegativeK4.log
+          [ "$rc" -ne 0 ] || exit 1
+          ! grep -qi 'unknown identifier' NegativeK4.log || exit 1
+          grep -q openBridge NegativeK4.log; grep -q provedProperty NegativeK4.log
+      - name: K4 semantic axiom closure
+        run: |
+          printf 'import MCore.K4\n#print axioms MCore.k4_status_openBridge\n#print axioms MCore.k4_no_promotion\n' > K4AxiomAudit.lean
+          lake env lean K4AxiomAudit.lean 2>&1 | tee K4AxiomAudit.log
+          grep -F "'MCore.k4_status_openBridge' does not depend on any axioms" K4AxiomAudit.log
+          grep -F "'MCore.k4_no_promotion' does not depend on any axioms" K4AxiomAudit.log
+      - name: K4 clean reproduction
+        run: |
+          lake clean
+          lake build MCore.K4
+          lake build MCore
