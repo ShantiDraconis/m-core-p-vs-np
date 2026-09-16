@@ -30,17 +30,32 @@ def projectIndeterminate (x : ComplexityDecomposition α) : α := x.indeterminat
 
 end ComplexityDecomposition
 
-/-- K7 records the experimental decomposition as a separate open bridge.
-    No theorem here identifies it with classical NP. -/
+/-- K7 records only that the experimental decomposition remains an open bridge.
+    Its statement is intentionally structural and does not identify the model
+    with classical NP or assert a P-vs-NP separation. -/
 def k7_decomposition_node : CertNode :=
-  { name := "K7 experimental real/imag/indeterminate decomposition"
-    status := .openBridge }
+  { status := .openBridge
+    statement := ∀ {α : Type} (x : ComplexityDecomposition α),
+      ComplexityDecomposition.projectReal x = x.realPart }
+
+theorem k7_statement_valid : k7_decomposition_node.statement := by
+  intro α x
+  rfl
 
 theorem k7_status_openBridge : k7_decomposition_node.status = .openBridge := rfl
+
+theorem k7_status_not_proved : k7_decomposition_node.status ≠ .provedProperty := by
+  intro h
+  cases h
 
 theorem k7_not_certified : ¬ Nonempty (ProofCertificate k7_decomposition_node) := by
   intro h
   rcases h with ⟨hcert⟩
-  cases hcert
+  exact k7_status_not_proved hcert.status_proved
+
+/-- Model-level K7 facts cannot promote the pre-existing classical endpoint. -/
+theorem k7_classical_endpoint_not_promoted :
+    ¬ Nonempty (ProofCertificate k6_dependency.target) :=
+  k6_target_not_certified
 
 end MCore
