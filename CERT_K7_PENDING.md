@@ -1,2 +1,1 @@
-K7 candidate chain prepared after frozen K6.
-Status: PENDING CI. Do not treat as certified or frozen until the certificate workflow is GREEN.
+K7 candidate prepared after frozen K6. CI is authoritative: freeze only after every K7 certificate gate is GREEN.
