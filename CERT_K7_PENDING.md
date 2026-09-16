@@ -1,2 +1,1 @@
-K7 candidate prepared after frozen K6.
-CI is authoritative. Freeze only after every K7 certificate gate is GREEN.
+K7 candidate after frozen K6. CI is authoritative; freeze only after every K7 gate is GREEN.
