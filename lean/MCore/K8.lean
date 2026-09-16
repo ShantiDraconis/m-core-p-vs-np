@@ -29,11 +29,11 @@ theorem ext_components {x y : ComplexityDecomposition α}
       cases hu
       rfl
 
-/-- The projection triple is injective; no component information is lost internally. -/
-theorem projection_injective :
-    Function.Injective (fun x : ComplexityDecomposition α =>
-      (projectReal x, projectImag x, projectIndeterminate x)) := by
-  intro x y h
+/-- Equality of projection triples forces equality of decompositions. This is
+    the injectivity property stated without importing an external Function API. -/
+theorem projection_injective {x y : ComplexityDecomposition α}
+    (h : (projectReal x, projectImag x, projectIndeterminate x) =
+         (projectReal y, projectImag y, projectIndeterminate y)) : x = y := by
   exact ext_components
     (congrArg (fun p => p.1) h)
     (congrArg (fun p => p.2.1) h)
