@@ -1,7 +1,7 @@
 name: certificate
 on: [push, pull_request]
 jobs:
-  k10:
+  prize-k0:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,19 +15,18 @@ jobs:
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-      - {name: Preserve K3-K9, run: 'lake build MCore.K3 && lake build MCore.K4 && lake build MCore.K5 && lake build MCore.K6 && lake build MCore.K7 && lake build MCore.K8 && lake build MCore.K9'}
-      - {name: Build K10 open obligation, run: 'lake build MCore.K10'}
-      - name: K10 semantic axiom closure
+      - {name: Preserve K3-K10, run: 'lake build MCore.K3 && lake build MCore.K4 && lake build MCore.K5 && lake build MCore.K6 && lake build MCore.K7 && lake build MCore.K8 && lake build MCore.K9 && lake build MCore.K10'}
+      - {name: Build PRIZE-K0 campaign boundary, run: 'lake build MCore.PrizeK0'}
+      - name: PRIZE-K0 semantic axiom closure
         run: |
-          printf 'import MCore.K10\n#print axioms MCore.separation_witness_not_in_P\n#print axioms MCore.separation_witness_separates\n#print axioms MCore.k10_status_openBridge\n#print axioms MCore.k10_not_certified\n#print axioms MCore.k10_classical_endpoint_not_promoted\n' > K10AxiomAudit.lean
-          lake env lean K10AxiomAudit.lean 2>&1 | tee K10AxiomAudit.log
-          grep -F "'MCore.separation_witness_not_in_P' does not depend on any axioms" K10AxiomAudit.log
-          grep -F "'MCore.separation_witness_separates' does not depend on any axioms" K10AxiomAudit.log
-          grep -F "'MCore.k10_status_openBridge' does not depend on any axioms" K10AxiomAudit.log
-          grep -F "'MCore.k10_not_certified' does not depend on any axioms" K10AxiomAudit.log
-          grep -F "'MCore.k10_classical_endpoint_not_promoted' does not depend on any axioms" K10AxiomAudit.log
-      - name: Negative K10 promotion regression
+          printf 'import MCore.PrizeK0\n#print axioms MCore.PrizeCampaignBoundary.canonical_algorithmic_open\n#print axioms MCore.PrizeCampaignBoundary.canonical_transfer_open\n#print axioms MCore.prize_k0_classical_endpoint_not_promoted\n#print axioms MCore.prize_k0_k10_not_promoted\n' > PrizeK0AxiomAudit.lean
+          lake env lean PrizeK0AxiomAudit.lean 2>&1 | tee PrizeK0AxiomAudit.log
+          grep -F "'MCore.PrizeCampaignBoundary.canonical_algorithmic_open' does not depend on any axioms" PrizeK0AxiomAudit.log
+          grep -F "'MCore.PrizeCampaignBoundary.canonical_transfer_open' does not depend on any axioms" PrizeK0AxiomAudit.log
+          grep -F "'MCore.prize_k0_classical_endpoint_not_promoted' does not depend on any axioms" PrizeK0AxiomAudit.log
+          grep -F "'MCore.prize_k0_k10_not_promoted' does not depend on any axioms" PrizeK0AxiomAudit.log
+      - name: Negative PRIZE-K0 promotion regression
         run: |
-          printf 'import MCore.K10\nopen MCore\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := k10_not_certified\nexample : ¬ Nonempty (ProofCertificate k6_dependency.target) := k10_classical_endpoint_not_promoted\n' > NegativeK10.lean
-          lake env lean NegativeK10.lean
-      - {name: Clean K10 reproduction, run: 'lake clean && lake build MCore.K10 && lake build MCore'}
+          printf 'import MCore.PrizeK0\nopen MCore\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := prize_k0_k10_not_promoted\nexample : ¬ Nonempty (ProofCertificate k6_dependency.target) := prize_k0_classical_endpoint_not_promoted\n' > NegativePrizeK0.lean
+          lake env lean NegativePrizeK0.lean
+      - {name: Clean PRIZE-K0 reproduction, run: 'lake clean && lake build MCore.PrizeK0 && lake build MCore'}
