@@ -1,7 +1,7 @@
 name: certificate
 on: [push, pull_request]
 jobs:
-  prize-k0:
+  prize-k1:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,18 +15,20 @@ jobs:
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-      - {name: Preserve K3-K10, run: 'lake build MCore.K3 && lake build MCore.K4 && lake build MCore.K5 && lake build MCore.K6 && lake build MCore.K7 && lake build MCore.K8 && lake build MCore.K9 && lake build MCore.K10'}
-      - {name: Build PRIZE-K0 campaign boundary, run: 'lake build MCore.PrizeK0'}
-      - name: PRIZE-K0 semantic axiom closure
+      - {name: Preserve K3-K10 and PRIZE-K0, run: 'lake build MCore.K3 && lake build MCore.K4 && lake build MCore.K5 && lake build MCore.K6 && lake build MCore.K7 && lake build MCore.K8 && lake build MCore.K9 && lake build MCore.K10 && lake build MCore.PrizeK0'}
+      - {name: Build PRIZE-K1 concrete circuit layer, run: 'lake build MCore.PrizeK1'}
+      - name: PRIZE-K1 semantic axiom closure
         run: |
-          printf 'import MCore.PrizeK0\n#print axioms MCore.PrizeCampaignBoundary.canonical_algorithmic_open\n#print axioms MCore.PrizeCampaignBoundary.canonical_transfer_open\n#print axioms MCore.prize_k0_classical_endpoint_not_promoted\n#print axioms MCore.prize_k0_k10_not_promoted\n' > PrizeK0AxiomAudit.lean
-          lake env lean PrizeK0AxiomAudit.lean 2>&1 | tee PrizeK0AxiomAudit.log
-          grep -F "'MCore.PrizeCampaignBoundary.canonical_algorithmic_open' does not depend on any axioms" PrizeK0AxiomAudit.log
-          grep -F "'MCore.PrizeCampaignBoundary.canonical_transfer_open' does not depend on any axioms" PrizeK0AxiomAudit.log
-          grep -F "'MCore.prize_k0_classical_endpoint_not_promoted' does not depend on any axioms" PrizeK0AxiomAudit.log
-          grep -F "'MCore.prize_k0_k10_not_promoted' does not depend on any axioms" PrizeK0AxiomAudit.log
-      - name: Negative PRIZE-K0 promotion regression
+          printf 'import MCore.PrizeK1\n#print axioms MCore.PrizeK1.size_restrict\n#print axioms MCore.PrizeK1.depth_restrict\n#print axioms MCore.PrizeK1.μ_restrict_invariant\n#print axioms MCore.PrizeK1.raw_potential_does_not_drop\n#print axioms MCore.PrizeK1.k1_classical_endpoint_not_promoted\n#print axioms MCore.PrizeK1.k1_k10_not_promoted\n' > PrizeK1AxiomAudit.lean
+          lake env lean PrizeK1AxiomAudit.lean 2>&1 | tee PrizeK1AxiomAudit.log
+          grep -F "'MCore.PrizeK1.size_restrict' does not depend on any axioms" PrizeK1AxiomAudit.log
+          grep -F "'MCore.PrizeK1.depth_restrict' does not depend on any axioms" PrizeK1AxiomAudit.log
+          grep -F "'MCore.PrizeK1.μ_restrict_invariant' does not depend on any axioms" PrizeK1AxiomAudit.log
+          grep -F "'MCore.PrizeK1.raw_potential_does_not_drop' does not depend on any axioms" PrizeK1AxiomAudit.log
+          grep -F "'MCore.PrizeK1.k1_classical_endpoint_not_promoted' does not depend on any axioms" PrizeK1AxiomAudit.log
+          grep -F "'MCore.PrizeK1.k1_k10_not_promoted' does not depend on any axioms" PrizeK1AxiomAudit.log
+      - name: K1 falsification regression
         run: |
-          printf 'import MCore.PrizeK0\nopen MCore\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := prize_k0_k10_not_promoted\nexample : ¬ Nonempty (ProofCertificate k6_dependency.target) := prize_k0_classical_endpoint_not_promoted\n' > NegativePrizeK0.lean
-          lake env lean NegativePrizeK0.lean
-      - {name: Clean PRIZE-K0 reproduction, run: 'lake clean && lake build MCore.PrizeK0 && lake build MCore'}
+          printf 'import MCore.PrizeK1\nopen MCore MCore.PrizeK1\nexample : μ (restrict fixesZeroTrue oneInput) = μ oneInput := raw_potential_does_not_drop\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := k1_k10_not_promoted\n' > PrizeK1Regression.lean
+          lake env lean PrizeK1Regression.lean
+      - {name: Clean PRIZE-K1 reproduction, run: 'lake clean && lake build MCore.PrizeK1 && lake build MCore'}
