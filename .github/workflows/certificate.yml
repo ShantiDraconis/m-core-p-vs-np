@@ -41,7 +41,10 @@ jobs:
           #print axioms MCore.CircuitC8.c8_k10_not_promoted
           EOF
           lake env lean C8AxiomAudit.lean 2>&1 | tee C8AxiomAudit.log
-          if grep -E 'sorryAx|Classical.choice' C8AxiomAudit.log; then exit 1; fi
+          if grep -E 'sorryAx' C8AxiomAudit.log; then exit 1; fi
+          if grep -E 'depends on axioms:' C8AxiomAudit.log | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]$'; then
+            echo 'Unexpected axiom dependency outside trusted Lean set'; exit 1
+          fi
       - name: C8 exact-drop regression
         run: |
           set -euo pipefail
