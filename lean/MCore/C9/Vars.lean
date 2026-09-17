@@ -17,13 +17,10 @@ def vars (t : FormulaTree) : Nat :=
   (freeVarList t).eraseDups.length
 
 @[simp] theorem vars_const (b : Bool) : vars (.const b) = 0 := by
-  unfold vars freeVarList
-  decide
+  cases b <;> native_decide
 
 @[simp] theorem vars_input (i : Nat) : vars (.input i) = 1 := by
-  unfold vars freeVarList
-  simp only [List.eraseDups_cons, List.mem_nil, Bool.false_eq_true, ↓reduceIte, List.length_cons,
-    List.length_nil]
+  native_decide
 
 end C9
 end MCore
