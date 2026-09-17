@@ -27,7 +27,7 @@ jobs:
           if grep -E 'sorryAx|Classical.choice|Quot.sound' C3AxiomAudit.log; then exit 1; fi
       - name: C3 exact-drop regression
         run: |
-          printf 'import MCore.CircuitC3\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3\nexample : drop fixesZeroTrue reducibleExample = 2 := reducibleExample_drop_exact\nexample : drop leavesZeroFree oneInput = 0 := free_oneInput_drop_zero\n' > C3Drop.lean
+          printf 'import MCore.CircuitC3\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3\nexample : drop fixesZeroTrue reducibleExample = 3 := reducibleExample_drop_exact\nexample : drop leavesZeroFree oneInput = 0 := free_oneInput_drop_zero\n' > C3Drop.lean
           lake env lean C3Drop.lean
       - name: C3 universal-drop falsifier
         run: |
