@@ -16,7 +16,7 @@ theorem size_simplify_le_c8 (c : Circuit) : size (simplify c) ≤ size c := by
       cases h : simplify c with
       | input i =>
           have hs : size (Circuit.input i) ≤ size c := by simpa [h] using ih
-          simp [size]
+          simpa [size] using hs
       | const b => simp [size]
       | not d =>
           have hs : size (Circuit.not d) ≤ size c := by simpa [h] using ih
@@ -30,11 +30,11 @@ theorem size_simplify_le_c8 (c : Circuit) : size (simplify c) ≤ size c := by
   | and a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> omega
+        (try split) <;> simp_all [size] <;> omega
   | or a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> omega
+        (try split) <;> simp_all [size] <;> omega
 
 /-- C8-local depth monotonicity for the certified C2 simplifier. -/
 theorem depth_simplify_le_c8 (c : Circuit) : depth (simplify c) ≤ depth c := by
@@ -58,11 +58,11 @@ theorem depth_simplify_le_c8 (c : Circuit) : depth (simplify c) ≤ depth c := b
   | and a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> omega
+        (try split) <;> simp_all [depth] <;> omega
   | or a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> omega
+        (try split) <;> simp_all [depth] <;> omega
 
 /-- Structural potential cannot increase under the certified simplifier. -/
 theorem potential_simplify_le_c8 (c : Circuit) : potential (simplify c) ≤ potential c := by
