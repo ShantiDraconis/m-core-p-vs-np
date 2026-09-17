@@ -1,0 +1,14 @@
+{
+  "gate": "C6",
+  "sha": "d630ddf5eaf19d6bcadcc6244a6fca2e4e6ae6a5",
+  "run_id": 35195154530,
+  "job_id": 105116524970,
+  "status": "RED_RECORDED",
+  "failed_step": "leanprover/lean-action lake build MCore.CircuitC6",
+  "error_class": "ARITHMETIC_ORIENTATION_AND_CONTRADICTION_CHAIN",
+  "error_signature": "expected (minWeight*minDrop)*totalWeight <= totalWeight*weightedDrop but mul_le_mul_left produced totalWeight*(minWeight*minDrop); zero-sample contradiction used lt_of_lt_of_le with incompatible middle term",
+  "error_hash_sha256": "c6-d630ddf5-arithmetic-orientation-v1",
+  "files_touched_by_fix": ["lean/MCore/CircuitC6.lean"],
+  "epistemic_effect": "NONE_MECHANICAL_LEAN_PROOF_FAILURE",
+  "certified_predecessors_modified": false
+}
