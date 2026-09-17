@@ -56,6 +56,45 @@ def simplify : Circuit → Circuit
       | d, .const false => d
       | d, e => .or d e
 
+/-- Simplification never increases formula-tree size. -/
+theorem size_simplify_le (c : Circuit) : size (simplify c) ≤ size c := by
+  induction c with
+  | input i => simp [simplify, size]
+  | const b => simp [simplify, size]
+  | not c ih =>
+      simp only [simplify]
+      cases h : simplify c <;> simp_all [size]
+  | and a b iha ihb =>
+      simp only [simplify]
+      cases ha : simplify a <;> cases hb : simplify b <;>
+        simp_all [size] <;> omega
+  | or a b iha ihb =>
+      simp only [simplify]
+      cases ha : simplify a <;> cases hb : simplify b <;>
+        simp_all [size] <;> omega
+
+/-- Simplification never increases formula-tree depth. -/
+theorem depth_simplify_le (c : Circuit) : depth (simplify c) ≤ depth c := by
+  induction c with
+  | input i => simp [simplify, depth]
+  | const b => simp [simplify, depth]
+  | not c ih =>
+      simp only [simplify]
+      cases h : simplify c <;> simp_all [depth] <;> omega
+  | and a b iha ihb =>
+      simp only [simplify]
+      cases ha : simplify a <;> cases hb : simplify b <;>
+        simp_all [depth] <;> omega
+  | or a b iha ihb =>
+      simp only [simplify]
+      cases ha : simplify a <;> cases hb : simplify b <;>
+        simp_all [depth] <;> omega
+
+/-- The C1 structural potential is monotone under simplification. -/
+theorem μ_simplify_le (c : Circuit) : μ (simplify c) ≤ μ c := by
+  unfold μ
+  exact Nat.add_le_add (size_simplify_le c) (depth_simplify_le c)
+
 /-- Semantic preservation. Boolean payloads of constant children are split
 explicitly; this is an audited elaboration requirement, not left to `simp`. -/
 theorem eval_simplify (σ : Assignment) (c : Circuit) : eval σ (simplify c) = eval σ c := by
