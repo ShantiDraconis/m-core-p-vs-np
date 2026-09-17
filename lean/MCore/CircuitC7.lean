@@ -24,15 +24,13 @@ theorem minDrop_mul_goodWeight_le_weightedDrop
   induction sample with
   | nil => simp [goodWeight, weightedDrop]
   | cons x xs ih =>
-      simp only [goodWeight, weightedDrop, List.foldr_cons]
       by_cases hgood : minDrop ≤ drop x.restriction c
-      · simp [hgood]
-        calc
-          minDrop * (x.weight + goodWeight xs c minDrop)
-              = minDrop * x.weight + minDrop * goodWeight xs c minDrop := by omega
-          _ ≤ x.weight * drop x.restriction c + weightedDrop xs c := by
-              exact Nat.add_le_add (by nlinarith) ih
-      · simp [hgood]
+      · rw [goodWeight, List.foldr_cons, if_pos hgood, weightedDrop, List.foldr_cons]
+        rw [Nat.mul_add]
+        apply Nat.add_le_add
+        · simpa [Nat.mul_comm] using Nat.mul_le_mul_left x.weight hgood
+        · exact ih
+      · rw [goodWeight, List.foldr_cons, if_neg hgood, weightedDrop, List.foldr_cons]
         exact Nat.le_trans ih (Nat.le_add_left _ _)
 
 /-- Aggregate good mass yields a product lower bound without selecting a single
