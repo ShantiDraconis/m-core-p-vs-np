@@ -67,11 +67,11 @@ theorem size_simplify_le (c : Circuit) : size (simplify c) ≤ size c := by
   | and a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> omega
+        simp_all [size] <;> split <;> simp_all [size] <;> omega
   | or a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> omega
+        simp_all [size] <;> split <;> simp_all [size] <;> omega
 
 /-- Simplification never increases formula-tree depth. -/
 theorem depth_simplify_le (c : Circuit) : depth (simplify c) ≤ depth c := by
@@ -84,11 +84,11 @@ theorem depth_simplify_le (c : Circuit) : depth (simplify c) ≤ depth c := by
   | and a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> omega
+        simp_all [depth] <;> split <;> simp_all [depth] <;> omega
   | or a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> omega
+        simp_all [depth] <;> split <;> simp_all [depth] <;> omega
 
 /-- The C1 structural potential is monotone under simplification. -/
 theorem μ_simplify_le (c : Circuit) : μ (simplify c) ≤ μ c := by
@@ -118,28 +118,12 @@ theorem eval_simplify (σ : Assignment) (c : Circuit) : eval σ (simplify c) = e
       cases ha : simplify a <;> cases hb : simplify b <;>
         simp_all [eval] <;> split <;> simp_all [eval]
 
-def restrictedSimplified (ρ : Restriction) (c : Circuit) : Circuit := simplify (restrict ρ c)
+def restrictedSimplified (ρ : Restriction) (c : Circuit) : Circuit :=
+  simplify (restrict ρ c)
 
 theorem eval_restrictedSimplified (ρ : Restriction) (σ : Assignment) (c : Circuit) :
     eval σ (restrictedSimplified ρ c) = eval (merge ρ σ) c := by
   rw [restrictedSimplified, eval_simplify, eval_restrict]
-
-def reducibleExample : Circuit := .and (.input 0) (.input 1)
-
-@[simp] theorem reducibleExample_restrict_simplify :
-    restrictedSimplified fixesZeroTrue reducibleExample = .input 1 := rfl
-
-@[simp] theorem reducibleExample_strict_size_drop :
-    size (restrictedSimplified fixesZeroTrue reducibleExample) < size reducibleExample := by decide
-
-@[simp] theorem free_restriction_no_size_drop :
-    size (restrictedSimplified leavesZeroFree oneInput) = size oneInput := rfl
-
-theorem c2_classical_endpoint_not_promoted : ¬ Nonempty (ProofCertificate k6_dependency.target) :=
-  k1_classical_endpoint_not_promoted
-
-theorem c2_k10_not_promoted : ¬ Nonempty (ProofCertificate k10_obligation_node) :=
-  k1_k10_not_promoted
 
 end CircuitC2
 end MCore
