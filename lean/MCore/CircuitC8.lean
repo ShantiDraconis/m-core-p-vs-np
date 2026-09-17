@@ -14,87 +14,27 @@ theorem size_simplify_le_c8 (c : Circuit) : size (simplify c) ≤ size c := by
   | not c ih =>
       simp only [simplify]
       cases h : simplify c with
-      | input i => simp [size]
+      | input i =>
+          have hs : size (Circuit.input i) ≤ size c := by simpa [h] using ih
+          simp [size]
       | const b => simp [size]
-      | not d => simp_all [size]
-      | and a b => simp_all [size]
-      | or a b => simp_all [size]
+      | not d =>
+          have hs : size (Circuit.not d) ≤ size c := by simpa [h] using ih
+          simpa [size] using hs
+      | and a b =>
+          have hs : size (Circuit.and a b) ≤ size c := by simpa [h] using ih
+          simpa [size] using hs
+      | or a b =>
+          have hs : size (Circuit.or a b) ≤ size c := by simpa [h] using ih
+          simpa [size] using hs
   | and a b iha ihb =>
       simp only [simplify]
-      cases ha : simplify a with
-      | input i =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not d => simp [size]
-          | and d e => simp [size]
-          | or d e => simp [size]
-      | const ba =>
-          cases ba <;> cases hb : simplify b with
-          | input j => simp_all [size] <;> omega
-          | const bb => cases bb <;> simp_all [size]
-          | not d => simp_all [size] <;> omega
-          | and d e => simp_all [size] <;> omega
-          | or d e => simp_all [size] <;> omega
-      | not d =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not e => simp [size]
-          | and e f => simp [size]
-          | or e f => simp [size]
-      | and d e =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not f => simp [size]
-          | and f g => simp [size]
-          | or f g => simp [size]
-      | or d e =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not f => simp [size]
-          | and f g => simp [size]
-          | or f g => simp [size]
+      cases ha : simplify a <;> cases hb : simplify b <;>
+        simp_all [size] <;> omega
   | or a b iha ihb =>
       simp only [simplify]
-      cases ha : simplify a with
-      | input i =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not d => simp [size]
-          | and d e => simp [size]
-          | or d e => simp [size]
-      | const ba =>
-          cases ba <;> cases hb : simplify b with
-          | input j => simp_all [size] <;> omega
-          | const bb => cases bb <;> simp_all [size]
-          | not d => simp_all [size] <;> omega
-          | and d e => simp_all [size] <;> omega
-          | or d e => simp_all [size] <;> omega
-      | not d =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not e => simp [size]
-          | and e f => simp [size]
-          | or e f => simp [size]
-      | and d e =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not f => simp [size]
-          | and f g => simp [size]
-          | or f g => simp [size]
-      | or d e =>
-          cases hb : simplify b with
-          | input j => simp [size]
-          | const bb => cases bb <;> simp_all [size] <;> omega
-          | not f => simp [size]
-          | and f g => simp [size]
-          | or f g => simp [size]
+      cases ha : simplify a <;> cases hb : simplify b <;>
+        simp_all [size] <;> omega
 
 /-- C8-local depth monotonicity for the certified C2 simplifier. -/
 theorem depth_simplify_le_c8 (c : Circuit) : depth (simplify c) ≤ depth c := by
@@ -106,17 +46,23 @@ theorem depth_simplify_le_c8 (c : Circuit) : depth (simplify c) ≤ depth c := b
       cases h : simplify c with
       | input i => simp [depth]
       | const b => simp [depth]
-      | not d => simp_all [depth]
-      | and a b => simp_all [depth]
-      | or a b => simp_all [depth]
+      | not d =>
+          have hd : depth (Circuit.not d) ≤ depth c := by simpa [h] using ih
+          simpa [depth] using hd
+      | and a b =>
+          have hd : depth (Circuit.and a b) ≤ depth c := by simpa [h] using ih
+          simpa [depth] using hd
+      | or a b =>
+          have hd : depth (Circuit.or a b) ≤ depth c := by simpa [h] using ih
+          simpa [depth] using hd
   | and a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> split <;> simp_all [depth] <;> omega
+        simp_all [depth] <;> omega
   | or a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> split <;> simp_all [depth] <;> omega
+        simp_all [depth] <;> omega
 
 /-- Structural potential cannot increase under the certified simplifier. -/
 theorem potential_simplify_le_c8 (c : Circuit) : potential (simplify c) ≤ potential c := by
@@ -128,9 +74,12 @@ simplification is globally nonincreasing. This removes the Nat-subtraction
 ambiguity inherited by C4-C7. -/
 theorem potential_restrictedSimplified_le (ρ : Restriction) (c : Circuit) :
     potential (restrictedSimplified ρ c) ≤ potential c := by
-  unfold potential restrictedSimplified
-  exact Nat.le_trans (potential_simplify_le_c8 (restrict ρ c)) (by
-    simpa [μ] using μ_restrict_invariant ρ c)
+  unfold restrictedSimplified
+  have hs : potential (simplify (restrict ρ c)) ≤ potential (restrict ρ c) :=
+    potential_simplify_le_c8 (restrict ρ c)
+  have hr : potential (restrict ρ c) = potential c := by
+    exact μ_restrict_invariant ρ c
+  exact hr ▸ hs
 
 /-- Exact accounting identity for C3's natural-number drop. -/
 theorem restricted_potential_add_drop (ρ : Restriction) (c : Circuit) :
@@ -164,12 +113,9 @@ structure RecurrenceBranch where
 def BranchProgress (b : RecurrenceBranch) : Prop :=
   0 < b.fixedVars ∨ 0 < b.potentialDrop
 
-/-- Scalar rank for finite restriction descent. -/
 def recurrenceRank (vars potential : Nat) : Nat :=
   vars * (potential + 1) + potential
 
-/-- Fixing at least one available variable strictly lowers the rank when the
-potential does not increase. -/
 theorem rank_decreases_when_variable_fixed
     (vars potential fixedVars newPotential : Nat)
     (hfix : 0 < fixedVars) (hfixle : fixedVars ≤ vars)
