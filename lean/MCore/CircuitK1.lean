@@ -40,9 +40,9 @@ def μ (c : Circuit) : Nat := size c + depth c
 @[simp] theorem restrict_const (ρ : Restriction) (b : Bool) : restrict ρ (.const b) = .const b := rfl
 @[simp] theorem restrict_not (ρ : Restriction) (c : Circuit) : restrict ρ (.not c) = .not (restrict ρ c) := rfl
 @[simp] theorem restrict_and (ρ : Restriction) (a b : Circuit) : restrict ρ (.and a b) = .and (restrict ρ a) (restrict ρ b) := rfl
-@[simp] theorem restrict_or (ρ : Restriction) (a b : Circuit) : restrict ρ (.or a b) = .or (restrict ρ b) := by simp [restrict]
+@[simp] theorem restrict_or (ρ : Restriction) (a b : Circuit) : restrict ρ (.or a b) = .or (restrict ρ a) (restrict ρ b) := rfl
 
--- The previous one-line `simp` proof did not split the Option-valued input case.
+/-- Raw substitution preserves syntax size; the input case must split `ρ i`. -/
 theorem size_restrict (ρ : Restriction) (c : Circuit) : size (restrict ρ c) = size c := by
   induction c with
   | input i => cases h : ρ i <;> simp [restrict, h, size]
@@ -51,6 +51,7 @@ theorem size_restrict (ρ : Restriction) (c : Circuit) : size (restrict ρ c) = 
   | and a b iha ihb => simp [restrict, size, iha, ihb]
   | or a b iha ihb => simp [restrict, size, iha, ihb]
 
+/-- Raw substitution preserves syntax depth for the same reason. -/
 theorem depth_restrict (ρ : Restriction) (c : Circuit) : depth (restrict ρ c) = depth c := by
   induction c with
   | input i => cases h : ρ i <;> simp [restrict, h, depth]
