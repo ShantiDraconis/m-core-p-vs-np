@@ -1,7 +1,7 @@
 name: certificate
 on: [push, pull_request]
 jobs:
-  c6:
+  c7:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,27 +15,27 @@ jobs:
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-      - name: Preserve C1-C5 and historical chain
-        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC5
-      - name: Build C6 quantitative family layer
-        run: lake build MCore.CircuitC6
-      - name: C6 axiom audit
+      - name: Preserve C1-C6 and historical chain
+        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC5 MCore.CircuitC6
+      - name: Build C7 aggregate good-mass layer
+        run: lake build MCore.CircuitC7
+      - name: C7 axiom audit
         run: |
           set -euo pipefail
-          printf 'import MCore.CircuitC6\n#print axioms MCore.CircuitC6.quantitative_witness_implies_weightedDrop_lower_bound\n#print axioms MCore.CircuitC6.quantitative_positive_implies_positive_witness\n#print axioms MCore.CircuitC6.quantitative_witness_implies_expectedDropAtLeast\n#print axioms MCore.CircuitC6.demoQuantitativeWitness\n#print axioms MCore.CircuitC6.zero_sample_no_positive_minDrop\n#print axioms MCore.CircuitC6.not_every_family_has_positive_quantitative_witness\n#print axioms MCore.CircuitC6.c6_k10_not_promoted\n' > C6AxiomAudit.lean
-          lake env lean C6AxiomAudit.lean 2>&1 | tee C6AxiomAudit.log
-          if grep -E 'sorryAx|Classical.choice' C6AxiomAudit.log; then exit 1; fi
-      - name: C6 quantitative lower-bound regression
+          printf 'import MCore.CircuitC7\n#print axioms MCore.CircuitC7.minDrop_mul_goodWeight_le_weightedDrop\n#print axioms MCore.CircuitC7.good_mass_implies_weightedDrop_lower_bound\n#print axioms MCore.CircuitC7.demo_goodWeight_three\n#print axioms MCore.CircuitC7.demoGoodMassWitness\n#print axioms MCore.CircuitC7.zero_sample_goodWeight_positive_threshold\n#print axioms MCore.CircuitC7.not_every_family_has_positive_good_mass\n#print axioms MCore.CircuitC7.c7_k10_not_promoted\n' > C7AxiomAudit.lean
+          lake env lean C7AxiomAudit.lean 2>&1 | tee C7AxiomAudit.log
+          if grep -E 'sorryAx|Classical.choice' C7AxiomAudit.log; then exit 1; fi
+      - name: C7 aggregate lower-bound regression
         run: |
-          printf 'import MCore.CircuitC6\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC5 MCore.CircuitC6\nexample : QuantitativeDropWitness demoSample reducibleExample 1 3 := demoQuantitativeWitness\nexample : 3 ≤ weightedDrop demoSample reducibleExample := demo_quantitative_lower_bound\n' > C6Positive.lean
-          lake env lean C6Positive.lean
-      - name: C6 zero-family quantitative adversary
+          printf 'import MCore.CircuitC7\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC7\nexample : goodWeight demoSample reducibleExample 3 = 1 := demo_goodWeight_three\nexample : GoodMassWitness demoSample reducibleExample 1 3 := demoGoodMassWitness\nexample : 3 ≤ weightedDrop demoSample reducibleExample := demo_good_mass_lower_bound\n' > C7Positive.lean
+          lake env lean C7Positive.lean
+      - name: C7 zero-family good-mass adversary
         run: |
-          printf 'import MCore.CircuitC6\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC4 MCore.CircuitC6\nexample : ¬ QuantitativeDropWitness zeroDropSample oneInput 1 1 := zero_sample_no_positive_minDrop 1 1 (by decide)\nexample : ¬ (∀ (sample : List WeightedRestriction) (c : Circuit), 0 < totalWeight sample → ∃ minWeight minDrop : Nat, 0 < minWeight ∧ 0 < minDrop ∧ QuantitativeDropWitness sample c minWeight minDrop) := not_every_family_has_positive_quantitative_witness\n' > C6Adversary.lean
-          lake env lean C6Adversary.lean
-      - name: C6 epistemic non-promotion
+          printf 'import MCore.CircuitC7\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC4 MCore.CircuitC7\nexample : goodWeight zeroDropSample oneInput 1 = 0 := zero_sample_goodWeight_positive_threshold 1 (by decide)\nexample : ¬ (∀ (sample : List WeightedRestriction) (c : Circuit), 0 < totalWeight sample → ∃ minGoodWeight minDrop : Nat, 0 < minGoodWeight ∧ 0 < minDrop ∧ GoodMassWitness sample c minGoodWeight minDrop) := not_every_family_has_positive_good_mass\n' > C7Adversary.lean
+          lake env lean C7Adversary.lean
+      - name: C7 epistemic non-promotion
         run: |
-          printf 'import MCore.CircuitC6\nopen MCore MCore.CircuitC6\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := c6_k10_not_promoted\n' > C6Epistemic.lean
-          lake env lean C6Epistemic.lean
-      - name: Clean C6 reproduction
-        run: lake clean && lake build MCore.CircuitC6 && lake build MCore
+          printf 'import MCore.CircuitC7\nopen MCore MCore.CircuitC7\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := c7_k10_not_promoted\n' > C7Epistemic.lean
+          lake env lean C7Epistemic.lean
+      - name: Clean C7 reproduction
+        run: lake clean && lake build MCore.CircuitC7 && lake build MCore
