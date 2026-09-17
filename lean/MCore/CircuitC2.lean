@@ -67,11 +67,11 @@ theorem size_simplify_le (c : Circuit) : size (simplify c) ≤ size c := by
   | and a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> split <;> simp_all [size] <;> omega
+        simp_all [size] <;> omega
   | or a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> split <;> simp_all [size] <;> omega
+        simp_all [size] <;> omega
 
 /-- Simplification never increases formula-tree depth. -/
 theorem depth_simplify_le (c : Circuit) : depth (simplify c) ≤ depth c := by
@@ -84,11 +84,13 @@ theorem depth_simplify_le (c : Circuit) : depth (simplify c) ≤ depth c := by
   | and a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> split <;> simp_all [depth] <;> omega
+        simp_all [depth] <;>
+        first | exact le_trans iha (Nat.le_max_left _ _) | exact le_trans ihb (Nat.le_max_right _ _) | exact Nat.max_le (le_trans iha (Nat.le_max_left _ _)) (le_trans ihb (Nat.le_max_right _ _))
   | or a b iha ihb =>
       simp only [simplify]
       cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;> split <;> simp_all [depth] <;> omega
+        simp_all [depth] <;>
+        first | exact le_trans iha (Nat.le_max_left _ _) | exact le_trans ihb (Nat.le_max_right _ _) | exact Nat.max_le (le_trans iha (Nat.le_max_left _ _)) (le_trans ihb (Nat.le_max_right _ _))
 
 /-- The C1 structural potential is monotone under simplification. -/
 theorem μ_simplify_le (c : Circuit) : μ (simplify c) ≤ μ c := by
