@@ -20,7 +20,8 @@ def vars (t : FormulaTree) : Nat :=
   cases b <;> native_decide
 
 @[simp] theorem vars_input (i : Nat) : vars (.input i) = 1 := by
-  native_decide
+  unfold vars freeVarList
+  rfl
 
 end C9
 end MCore
