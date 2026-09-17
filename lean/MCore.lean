@@ -17,6 +17,7 @@ import MCore.CircuitC2
 import MCore.CircuitC3
 import MCore.CircuitC4
 import MCore.CircuitC5
+import MCore.CircuitC6
 import MCore.Frontier.K3Gaps
 import MCore.AttackDAG.K3AlgebraAttacks
 import MCore.Audit
