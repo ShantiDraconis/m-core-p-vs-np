@@ -49,12 +49,11 @@ theorem demo_positive_from_structural_condition :
 theorem zero_sample_has_no_positive_witness :
     ¬ PositiveDropWitness zeroDropSample oneInput := by
   rintro ⟨x, hx, _hw, hd⟩
-  simp [zeroDropSample] at hx
-  rcases hx with rfl | rfl
-  · simpa [drop, potential, restrictedSimplified, leavesZeroFree, oneInput,
-      restrict, simplify, μ, size, depth] using hd
-  · simpa [drop, potential, restrictedSimplified, leavesZeroFree, oneInput,
-      restrict, simplify, μ, size, depth] using hd
+  have hx' : x = { restriction := leavesZeroFree, weight := 1 } := by
+    simpa [zeroDropSample] using hx
+  subst x
+  simpa [drop, potential, restrictedSimplified, leavesZeroFree, oneInput,
+    restrict, simplify, μ, size, depth] using hd
 
 /-- The structural sufficient condition is not universal over arbitrary samples
 and circuits. -/
