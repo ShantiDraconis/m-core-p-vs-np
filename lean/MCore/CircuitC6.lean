@@ -44,8 +44,9 @@ theorem quantitative_witness_implies_expectedDropAtLeast
     ExpectedDropAtLeast sample c
       (minWeight * minDrop) (totalWeight sample) := by
   unfold ExpectedDropAtLeast
-  exact Nat.mul_le_mul_left (totalWeight sample)
+  have hb := Nat.mul_le_mul_left (totalWeight sample)
     (quantitative_witness_implies_weightedDrop_lower_bound sample c minWeight minDrop h)
+  simpa [Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using hb
 
 /-- Exact quantitative witness for the C4/C5 demonstration family. -/
 theorem demoQuantitativeWitness :
@@ -73,7 +74,9 @@ theorem zero_sample_no_positive_minDrop (minWeight minDrop : Nat)
     simp [drop, potential, restrictedSimplified, leavesZeroFree, oneInput,
       restrict, simplify, μ, size, depth]
   rw [hz] at hd
-  exact (Nat.not_lt_zero minDrop) (Nat.lt_of_lt_of_le hd0 hd)
+  have hzero : minDrop = 0 := Nat.eq_zero_of_le_zero hd
+  subst minDrop
+  exact Nat.lt_irrefl 0 hd0
 
 /-- No universal theorem can assign a positive minimum drop to every nonempty
 positive-weight finite sample in this model. -/
