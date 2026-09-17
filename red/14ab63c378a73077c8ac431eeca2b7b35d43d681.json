@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "sha": "14ab63c378a73077c8ac431eeca2b7b35d43d681",
+  "run_id": 35173990581,
+  "job_id": 105051535009,
+  "gate": "lean-action aggregate build",
+  "conclusion": "failure",
+  "error_class": "LEAN_UNSOLVED_GOALS",
+  "error_signature": "C2_EVAL_SIMPLIFY_BOOL_CONST_CASES",
+  "failed_file": "lean/MCore/CircuitC2.lean",
+  "failed_theorem": "MCore.CircuitC2.eval_simplify",
+  "root_cause": "After destructuring simplified AND/OR children, Boolean values inside const nodes were not split; simp_all could not reduce matches whose const payload remained symbolic.",
+  "epistemic_effect": "none; C2 is not certified and no endpoint was promoted"
+}
