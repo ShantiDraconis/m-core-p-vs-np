@@ -1,0 +1,13 @@
+{
+  "gate": "C5",
+  "sha": "fe733e90c04e1c25639afacc38644f391cd95158",
+  "run_id": 35194360024,
+  "job_id": 105113965405,
+  "status": "RED_RECORDED",
+  "error_class": "LEAN_TYPE_AND_NAME_RESOLUTION",
+  "error_signature": "unknown identifier lt_of_lt_of_le; PositiveDropWitness inferred as Type rather than Prop",
+  "error_hash_sha256": "d17cb122a75515b725117020cd2a927e28fd4a8197c3e99e94f0f5fd584f6d22",
+  "files_touched": ["lean/MCore/CircuitC5.lean"],
+  "mathematical_gap": false,
+  "resolution": "Forward-only: redefine PositiveDropWitness as an explicit Prop existential and use Nat.lt_of_lt_of_le. Certified C1-C4 and frozen refs unchanged."
+}
