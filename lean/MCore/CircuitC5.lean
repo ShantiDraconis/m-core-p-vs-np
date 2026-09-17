@@ -5,13 +5,10 @@ namespace CircuitC5
 
 open CircuitK1 CircuitC2 CircuitC3 CircuitC4
 
-/-- A finite restriction family together with an explicit positive-drop witness.
-This is deliberately structural: it does not assert that every circuit has such a witness. -/
-structure PositiveDropWitness (sample : List WeightedRestriction) (c : Circuit) where
-  member : WeightedRestriction
-  member_mem : member ∈ sample
-  positive_weight : 0 < member.weight
-  positive_drop : 0 < drop member.restriction c
+/-- Propositional structural condition: the finite family contains a member
+with positive weight and positive circuit-potential drop. -/
+def PositiveDropWitness (sample : List WeightedRestriction) (c : Circuit) : Prop :=
+  ∃ x ∈ sample, 0 < x.weight ∧ 0 < drop x.restriction c
 
 /-- Weighted drop dominates the contribution of any member of the sample. -/
 theorem member_contribution_le_weightedDrop
@@ -33,18 +30,15 @@ theorem positive_witness_implies_weightedDrop_positive
     (sample : List WeightedRestriction) (c : Circuit)
     (h : PositiveDropWitness sample c) :
     0 < weightedDrop sample c := by
-  have hp : 0 < h.member.weight * drop h.member.restriction c :=
-    Nat.mul_pos h.positive_weight h.positive_drop
-  exact lt_of_lt_of_le hp
-    (member_contribution_le_weightedDrop sample c h.member h.member_mem)
+  rcases h with ⟨x, hx, hw, hd⟩
+  have hp : 0 < x.weight * drop x.restriction c := Nat.mul_pos hw hd
+  exact Nat.lt_of_lt_of_le hp (member_contribution_le_weightedDrop sample c x hx)
 
 /-- The C4 demo family has an explicit positive-drop witness. -/
-def demoPositiveWitness : PositiveDropWitness demoSample reducibleExample where
-  member := { restriction := fixesZeroTrue, weight := 1 }
-  member_mem := by simp [demoSample]
-  positive_weight := by decide
-  positive_drop := by
-    simp [drop, potential, restrictedSimplified, reducibleExample,
+theorem demoPositiveWitness : PositiveDropWitness demoSample reducibleExample := by
+  refine ⟨{ restriction := fixesZeroTrue, weight := 1 }, ?_, by decide, ?_⟩
+  · simp [demoSample]
+  · simp [drop, potential, restrictedSimplified, reducibleExample,
       fixesZeroTrue, restrict, simplify, μ, size, depth]
 
 theorem demo_positive_from_structural_condition :
@@ -54,12 +48,13 @@ theorem demo_positive_from_structural_condition :
 /-- The zero-drop adversarial family has no positive-drop witness on oneInput. -/
 theorem zero_sample_has_no_positive_witness :
     ¬ PositiveDropWitness zeroDropSample oneInput := by
-  intro h
-  have hm := h.member_mem
-  simp [zeroDropSample] at hm
-  rcases hm with rfl | rfl
-  · simpa using h.positive_drop
-  · simpa using h.positive_drop
+  rintro ⟨x, hx, _hw, hd⟩
+  simp [zeroDropSample] at hx
+  rcases hx with rfl | rfl
+  · simpa [drop, potential, restrictedSimplified, leavesZeroFree, oneInput,
+      restrict, simplify, μ, size, depth] using hd
+  · simpa [drop, potential, restrictedSimplified, leavesZeroFree, oneInput,
+      restrict, simplify, μ, size, depth] using hd
 
 /-- The structural sufficient condition is not universal over arbitrary samples
 and circuits. -/
