@@ -19,12 +19,18 @@ jobs:
         run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3
       - name: Build C4 finite distribution layer
         run: lake build MCore.CircuitC4
-      - name: C4 axiom audit
+      - name: C4 exact axiom-set audit
         run: |
           set -euo pipefail
           printf 'import MCore.CircuitC4\n#print axioms MCore.CircuitC4.demo_totalWeight\n#print axioms MCore.CircuitC4.demo_weightedDrop\n#print axioms MCore.CircuitC4.demo_expected_drop_three_halves\n#print axioms MCore.CircuitC4.zero_sample_weightedDrop\n#print axioms MCore.CircuitC4.not_all_samples_positive\n#print axioms MCore.CircuitC4.c4_k10_not_promoted\n' > C4AxiomAudit.lean
           lake env lean C4AxiomAudit.lean 2>&1 | tee C4AxiomAudit.log
-          if grep -E 'sorryAx|Classical.choice|Quot.sound' C4AxiomAudit.log; then exit 1; fi
+          grep -F "'MCore.CircuitC4.demo_totalWeight' does not depend on any axioms" C4AxiomAudit.log
+          grep -F "'MCore.CircuitC4.demo_weightedDrop' depends on axioms: [propext, Quot.sound]" C4AxiomAudit.log
+          grep -F "'MCore.CircuitC4.demo_expected_drop_three_halves' depends on axioms: [propext, Quot.sound]" C4AxiomAudit.log
+          grep -F "'MCore.CircuitC4.zero_sample_weightedDrop' depends on axioms: [propext]" C4AxiomAudit.log
+          grep -F "'MCore.CircuitC4.not_all_samples_positive' depends on axioms: [propext]" C4AxiomAudit.log
+          grep -F "'MCore.CircuitC4.c4_k10_not_promoted' does not depend on any axioms" C4AxiomAudit.log
+          if grep -E 'sorryAx|Classical.choice' C4AxiomAudit.log; then exit 1; fi
       - name: C4 exact finite expectation regression
         run: |
           printf 'import MCore.CircuitC4\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4\nexample : totalWeight demoSample = 2 := demo_totalWeight\nexample : weightedDrop demoSample reducibleExample = 3 := demo_weightedDrop\nexample : ExpectedDropAtLeast demoSample reducibleExample 3 2 := demo_expected_drop_three_halves\n' > C4Expectation.lean
