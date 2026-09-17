@@ -20,6 +20,10 @@ import MCore.CircuitC5
 import MCore.CircuitC6
 import MCore.CircuitC7
 import MCore.CircuitC8
+import MCore.C9.Reuse
+import MCore.C9.Vars
+import MCore.C9.Mu
+import MCore.C9.Good
 import MCore.Frontier.K3Gaps
 import MCore.AttackDAG.K3AlgebraAttacks
 import MCore.Audit
