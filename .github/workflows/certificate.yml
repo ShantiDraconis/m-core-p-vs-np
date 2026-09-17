@@ -1,7 +1,7 @@
 name: certificate
 on: [push, pull_request]
 jobs:
-  c1:
+  c2:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,36 +15,31 @@ jobs:
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-      - name: Preserve certified historical chain
-        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0
-      - name: Build C1 concrete circuit layer
-        run: lake build MCore.CircuitK1
-      - name: C1 exact semantic axiom audit
+      - name: Preserve C1 and historical chain
+        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1
+      - name: Build C2 semantic layer
+        run: lake build MCore.CircuitC2
+      - name: C2 semantic theorem audit
         run: |
           set -euo pipefail
-          printf 'import MCore.CircuitK1\n#print axioms MCore.CircuitK1.size_restrict\n#print axioms MCore.CircuitK1.depth_restrict\n#print axioms MCore.CircuitK1.μ_restrict_invariant\n#print axioms MCore.CircuitK1.raw_potential_does_not_drop\n#print axioms MCore.CircuitK1.k1_classical_endpoint_not_promoted\n#print axioms MCore.CircuitK1.k1_k10_not_promoted\n' > C1AxiomAudit.lean
-          lake env lean C1AxiomAudit.lean 2>&1 | tee C1AxiomAudit.log
-          for thm in size_restrict depth_restrict μ_restrict_invariant raw_potential_does_not_drop; do
-            grep -F "'MCore.CircuitK1.${thm}' depends on axioms: [propext]" C1AxiomAudit.log
-          done
-          grep -F "'MCore.CircuitK1.k1_classical_endpoint_not_promoted' does not depend on any axioms" C1AxiomAudit.log
-          grep -F "'MCore.CircuitK1.k1_k10_not_promoted' does not depend on any axioms" C1AxiomAudit.log
-          if grep -E 'depends on axioms: \[(.*Classical.choice|.*Quot.sound|.*sorryAx|.*,.*)' C1AxiomAudit.log; then exit 1; fi
-      - name: C1 adversarial Option-some regression
+          printf 'import MCore.CircuitC2\n#print axioms MCore.CircuitC2.eval_restrict\n#print axioms MCore.CircuitC2.eval_simplify\n#print axioms MCore.CircuitC2.eval_restrictedSimplified\n#print axioms MCore.CircuitC2.reducibleExample_strict_size_drop\n#print axioms MCore.CircuitC2.free_restriction_no_size_drop\n#print axioms MCore.CircuitC2.c2_k10_not_promoted\n' > C2AxiomAudit.lean
+          lake env lean C2AxiomAudit.lean 2>&1 | tee C2AxiomAudit.log
+          if grep -E 'sorryAx|Classical.choice|Quot.sound' C2AxiomAudit.log; then exit 1; fi
+      - name: C2 restriction semantics regression
         run: |
-          printf 'import MCore.CircuitK1\nopen MCore.CircuitK1\nexample : restrict fixesZeroTrue oneInput = .const true := adversarial_input_some\nexample : size (restrict fixesZeroTrue oneInput) = size oneInput := adversarial_size_restrict\nexample : depth (restrict fixesZeroTrue oneInput) = depth oneInput := adversarial_depth_restrict\n' > C1Some.lean
-          lake env lean C1Some.lean
-      - name: C1 adversarial Option-none regression
+          printf 'import MCore.CircuitC2\nopen MCore.CircuitK1 MCore.CircuitC2\nexample (ρ : Restriction) (σ : Assignment) (c : Circuit) : eval σ (restrict ρ c) = eval (merge ρ σ) c := eval_restrict ρ σ c\n' > C2Restriction.lean
+          lake env lean C2Restriction.lean
+      - name: C2 simplification semantics regression
         run: |
-          printf 'import MCore.CircuitK1\nopen MCore.CircuitK1\nexample : restrict leavesZeroFree oneInput = oneInput := adversarial_input_none\n' > C1None.lean
-          lake env lean C1None.lean
-      - name: C1 adversarial binary-OR regression
+          printf 'import MCore.CircuitC2\nopen MCore.CircuitK1 MCore.CircuitC2\nexample (σ : Assignment) (c : Circuit) : eval σ (simplify c) = eval σ c := eval_simplify σ c\n' > C2Simplify.lean
+          lake env lean C2Simplify.lean
+      - name: C2 strict-drop and no-drop adversaries
         run: |
-          printf 'import MCore.CircuitK1\nopen MCore.CircuitK1\nexample : restrict fixesZeroTrue twoInputOr = .or (.const true) (.input 1) := adversarial_restrict_or\n' > C1Or.lean
-          lake env lean C1Or.lean
-      - name: C1 epistemic non-promotion regression
+          printf 'import MCore.CircuitC2\nopen MCore.CircuitK1 MCore.CircuitC2\nexample : size (restrictedSimplified fixesZeroTrue reducibleExample) < size reducibleExample := reducibleExample_strict_size_drop\nexample : size (restrictedSimplified leavesZeroFree oneInput) = size oneInput := free_restriction_no_size_drop\n' > C2Drop.lean
+          lake env lean C2Drop.lean
+      - name: C2 epistemic non-promotion
         run: |
-          printf 'import MCore.CircuitK1\nopen MCore MCore.CircuitK1\nexample : μ (restrict fixesZeroTrue oneInput) = μ oneInput := raw_potential_does_not_drop\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := k1_k10_not_promoted\n' > C1Epistemic.lean
-          lake env lean C1Epistemic.lean
-      - name: Clean C1 reproduction
-        run: lake clean && lake build MCore.CircuitK1 && lake build MCore
+          printf 'import MCore.CircuitC2\nopen MCore MCore.CircuitC2\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := c2_k10_not_promoted\n' > C2Epistemic.lean
+          lake env lean C2Epistemic.lean
+      - name: Clean C2 reproduction
+        run: lake clean && lake build MCore.CircuitC2 && lake build MCore
