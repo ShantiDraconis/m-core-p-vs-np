@@ -17,26 +17,29 @@ def recurrenceRank (vars potential : Nat) : Nat :=
   vars * (potential + 1) + potential
 
 /-- Fixing at least one available variable strictly lowers the rank when the
-potential does not increase. -/
+potential does not increase. The proof keeps multiplication monotonicity
+explicit and leaves only linear inequalities to `omega`. -/
 theorem rank_decreases_when_variable_fixed
     (vars potential fixedVars newPotential : Nat)
     (hfix : 0 < fixedVars) (hfixle : fixedVars ≤ vars)
     (hpot : newPotential ≤ potential) :
     recurrenceRank (vars - fixedVars) newPotential < recurrenceRank vars potential := by
   unfold recurrenceRank
-  have hv : vars - fixedVars < vars := Nat.sub_lt (Nat.zero_lt_of_lt hfix) hfixle
-  have hcoef : 0 < potential + 1 := Nat.succ_pos potential
+  have hv : vars - fixedVars < vars := by omega
   have hmul : (vars - fixedVars) * (potential + 1) < vars * (potential + 1) :=
-    Nat.mul_lt_mul_of_pos_right hv hcoef
+    Nat.mul_lt_mul_of_pos_right hv (Nat.succ_pos potential)
   have hleft : (vars - fixedVars) * (newPotential + 1) ≤
       (vars - fixedVars) * (potential + 1) :=
     Nat.mul_le_mul_left _ (Nat.succ_le_succ hpot)
-  exact lt_of_le_of_lt (Nat.add_le_add hleft hpot)
-    (Nat.add_lt_add_right hmul potential)
+  have hsum : (vars - fixedVars) * (newPotential + 1) + newPotential ≤
+      (vars - fixedVars) * (potential + 1) + potential :=
+    Nat.add_le_add hleft hpot
+  have hstrict : (vars - fixedVars) * (potential + 1) + potential <
+      vars * (potential + 1) + potential :=
+    Nat.add_lt_add_right hmul potential
+  exact Nat.lt_of_le_of_lt hsum hstrict
 
-/-- At fixed variable count, a strict potential decrease strictly lowers the
-rank. The proof exposes the exact difference instead of asking Presburger
-arithmetic to solve nonlinear products. -/
+/-- At fixed variable count, strict potential decrease strictly lowers rank. -/
 theorem rank_decreases_when_potential_drops
     (vars potential newPotential : Nat)
     (hpot : newPotential < potential) :
@@ -45,8 +48,10 @@ theorem rank_decreases_when_potential_drops
   have hs : newPotential + 1 ≤ potential + 1 := Nat.succ_le_succ (Nat.le_of_lt hpot)
   have hm : vars * (newPotential + 1) ≤ vars * (potential + 1) :=
     Nat.mul_le_mul_left vars hs
-  exact lt_of_le_of_lt (Nat.add_le_add_right hm newPotential)
-    (Nat.add_lt_add_left hpot (vars * (potential + 1)))
+  have hsum : vars * (newPotential + 1) + newPotential <
+      vars * (potential + 1) + potential :=
+    Nat.add_lt_add_of_le_of_lt hm hpot
+  exact hsum
 
 theorem good_mass_supplies_aggregate_progress
     (sample : List WeightedRestriction) (c : Circuit)
