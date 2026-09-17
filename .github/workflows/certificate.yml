@@ -1,7 +1,7 @@
 name: certificate
 on: [push, pull_request]
 jobs:
-  c2:
+  c3:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,31 +15,27 @@ jobs:
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-      - name: Preserve C1 and historical chain
-        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1
-      - name: Build C2 semantic layer
-        run: lake build MCore.CircuitC2
-      - name: C2 semantic theorem audit
+      - name: Preserve C1 C2 and historical chain
+        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1 MCore.CircuitC2
+      - name: Build C3 quantitative layer
+        run: lake build MCore.CircuitC3
+      - name: C3 axiom audit
         run: |
           set -euo pipefail
-          printf 'import MCore.CircuitC2\n#print axioms MCore.CircuitC2.eval_restrict\n#print axioms MCore.CircuitC2.eval_simplify\n#print axioms MCore.CircuitC2.eval_restrictedSimplified\n#print axioms MCore.CircuitC2.reducibleExample_strict_size_drop\n#print axioms MCore.CircuitC2.free_restriction_no_size_drop\n#print axioms MCore.CircuitC2.c2_k10_not_promoted\n' > C2AxiomAudit.lean
-          lake env lean C2AxiomAudit.lean 2>&1 | tee C2AxiomAudit.log
-          if grep -E 'sorryAx|Classical.choice|Quot.sound' C2AxiomAudit.log; then exit 1; fi
-      - name: C2 restriction semantics regression
+          printf 'import MCore.CircuitC3\n#print axioms MCore.CircuitC3.reducibleExample_strict_potential_drop\n#print axioms MCore.CircuitC3.reducibleExample_drop_exact\n#print axioms MCore.CircuitC3.free_oneInput_drop_zero\n#print axioms MCore.CircuitC3.not_every_restriction_strictly_drops\n#print axioms MCore.CircuitC3.c3_k10_not_promoted\n' > C3AxiomAudit.lean
+          lake env lean C3AxiomAudit.lean 2>&1 | tee C3AxiomAudit.log
+          if grep -E 'sorryAx|Classical.choice|Quot.sound' C3AxiomAudit.log; then exit 1; fi
+      - name: C3 exact-drop regression
         run: |
-          printf 'import MCore.CircuitC2\nopen MCore.CircuitK1 MCore.CircuitC2\nexample (ρ : Restriction) (σ : Assignment) (c : Circuit) : eval σ (restrict ρ c) = eval (merge ρ σ) c := eval_restrict ρ σ c\n' > C2Restriction.lean
-          lake env lean C2Restriction.lean
-      - name: C2 simplification semantics regression
+          printf 'import MCore.CircuitC3\nopen MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3\nexample : drop fixesZeroTrue reducibleExample = 2 := reducibleExample_drop_exact\nexample : drop leavesZeroFree oneInput = 0 := free_oneInput_drop_zero\n' > C3Drop.lean
+          lake env lean C3Drop.lean
+      - name: C3 universal-drop falsifier
         run: |
-          printf 'import MCore.CircuitC2\nopen MCore.CircuitK1 MCore.CircuitC2\nexample (σ : Assignment) (c : Circuit) : eval σ (simplify c) = eval σ c := eval_simplify σ c\n' > C2Simplify.lean
-          lake env lean C2Simplify.lean
-      - name: C2 strict-drop and no-drop adversaries
+          printf 'import MCore.CircuitC3\nopen MCore.CircuitK1 MCore.CircuitC3\nexample : ¬ (∀ (ρ : Restriction) (c : Circuit), StrictDrop ρ c) := not_every_restriction_strictly_drops\n' > C3Falsifier.lean
+          lake env lean C3Falsifier.lean
+      - name: C3 epistemic non-promotion
         run: |
-          printf 'import MCore.CircuitC2\nopen MCore.CircuitK1 MCore.CircuitC2\nexample : size (restrictedSimplified fixesZeroTrue reducibleExample) < size reducibleExample := reducibleExample_strict_size_drop\nexample : size (restrictedSimplified leavesZeroFree oneInput) = size oneInput := free_restriction_no_size_drop\n' > C2Drop.lean
-          lake env lean C2Drop.lean
-      - name: C2 epistemic non-promotion
-        run: |
-          printf 'import MCore.CircuitC2\nopen MCore MCore.CircuitC2\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := c2_k10_not_promoted\n' > C2Epistemic.lean
-          lake env lean C2Epistemic.lean
-      - name: Clean C2 reproduction
-        run: lake clean && lake build MCore.CircuitC2 && lake build MCore
+          printf 'import MCore.CircuitC3\nopen MCore MCore.CircuitC3\nexample : ¬ Nonempty (ProofCertificate k10_obligation_node) := c3_k10_not_promoted\n' > C3Epistemic.lean
+          lake env lean C3Epistemic.lean
+      - name: Clean C3 reproduction
+        run: lake clean && lake build MCore.CircuitC3 && lake build MCore
