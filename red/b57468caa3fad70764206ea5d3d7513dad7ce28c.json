@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "sha": "b57468caa3fad70764206ea5d3d7513dad7ce28c",
+  "run_id": 35168094355,
+  "job_id": 105033608151,
+  "gate": "C1 semantic axiom closure",
+  "conclusion": "failure",
+  "error_class": "AXIOM_AUDIT_EXPECTATION_MISMATCH",
+  "error_signature": "PRINT_AXIOMS_PROPEXT_EXPECTED_EMPTY",
+  "failed_step": "CIRCUIT-K1 semantic axiom closure",
+  "observed": [
+    "size_restrict depends on [propext]",
+    "depth_restrict depends on [propext]",
+    "mu_restrict_invariant depends on [propext]",
+    "raw_potential_does_not_drop depends on [propext]"
+  ],
+  "root_cause": "Proofs using simp inherit Lean's propext axiom, while the CI incorrectly required an empty axiom set.",
+  "files_touched_by_fix": [
+    ".github/workflows/certificate.yml",
+    "lean/MCore/CircuitK1.lean",
+    "docs/lean-assumptions.md",
+    "STATE.md"
+  ],
+  "epistemic_effect": "none; build succeeded and no mathematical endpoint was promoted"
+}
