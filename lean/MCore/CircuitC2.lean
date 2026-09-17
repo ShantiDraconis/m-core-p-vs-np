@@ -34,6 +34,23 @@ theorem eval_restrict (ρ : Restriction) (σ : Assignment) (c : Circuit) :
   | and a b iha ihb => simp [restrict, eval, iha, ihb]
   | or a b iha ihb => simp [restrict, eval, iha, ihb]
 
+/-- Local constant-folding operator for conjunction. Factoring this operator
+keeps structural proofs independent from recursive simplifier elaboration. -/
+def simplifyAnd : Circuit → Circuit → Circuit
+  | .const false, _ => .const false
+  | _, .const false => .const false
+  | .const true, d => d
+  | d, .const true => d
+  | d, e => .and d e
+
+/-- Local constant-folding operator for disjunction. -/
+def simplifyOr : Circuit → Circuit → Circuit
+  | .const true, _ => .const true
+  | _, .const true => .const true
+  | .const false, d => d
+  | d, .const false => d
+  | d, e => .or d e
+
 def simplify : Circuit → Circuit
   | .input i => .input i
   | .const b => .const b
@@ -41,20 +58,28 @@ def simplify : Circuit → Circuit
       match simplify c with
       | .const b => .const (!b)
       | d => .not d
-  | .and a b =>
-      match simplify a, simplify b with
-      | .const false, _ => .const false
-      | _, .const false => .const false
-      | .const true, d => d
-      | d, .const true => d
-      | d, e => .and d e
-  | .or a b =>
-      match simplify a, simplify b with
-      | .const true, _ => .const true
-      | _, .const true => .const true
-      | .const false, d => d
-      | d, .const false => d
-      | d, e => .or d e
+  | .and a b => simplifyAnd (simplify a) (simplify b)
+  | .or a b => simplifyOr (simplify a) (simplify b)
+
+/-- Local conjunction folding never exceeds the unfurled parent size. -/
+theorem size_simplifyAnd_le (a b : Circuit) :
+    size (simplifyAnd a b) ≤ size a + size b + 1 := by
+  cases a <;> cases b <;> simp [simplifyAnd, size] <;> omega
+
+/-- Local disjunction folding never exceeds the unfurled parent size. -/
+theorem size_simplifyOr_le (a b : Circuit) :
+    size (simplifyOr a b) ≤ size a + size b + 1 := by
+  cases a <;> cases b <;> simp [simplifyOr, size] <;> omega
+
+/-- Local conjunction folding never exceeds the unfurled parent depth. -/
+theorem depth_simplifyAnd_le (a b : Circuit) :
+    depth (simplifyAnd a b) ≤ max (depth a) (depth b) + 1 := by
+  cases a <;> cases b <;> simp [simplifyAnd, depth] <;> omega
+
+/-- Local disjunction folding never exceeds the unfurled parent depth. -/
+theorem depth_simplifyOr_le (a b : Circuit) :
+    depth (simplifyOr a b) ≤ max (depth a) (depth b) + 1 := by
+  cases a <;> cases b <;> simp [simplifyOr, depth] <;> omega
 
 /-- Simplification never increases formula-tree size. -/
 theorem size_simplify_le (c : Circuit) : size (simplify c) ≤ size c := by
@@ -65,13 +90,13 @@ theorem size_simplify_le (c : Circuit) : size (simplify c) ≤ size c := by
       simp only [simplify]
       cases h : simplify c <;> simp_all [size]
   | and a b iha ihb =>
-      simp only [simplify]
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> omega
+      simp only [simplify, size]
+      exact le_trans (size_simplifyAnd_le (simplify a) (simplify b))
+        (Nat.add_le_add_right (Nat.add_le_add iha ihb) 1)
   | or a b iha ihb =>
-      simp only [simplify]
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [size] <;> omega
+      simp only [simplify, size]
+      exact le_trans (size_simplifyOr_le (simplify a) (simplify b))
+        (Nat.add_le_add_right (Nat.add_le_add iha ihb) 1)
 
 /-- Simplification never increases formula-tree depth. -/
 theorem depth_simplify_le (c : Circuit) : depth (simplify c) ≤ depth c := by
@@ -82,23 +107,30 @@ theorem depth_simplify_le (c : Circuit) : depth (simplify c) ≤ depth c := by
       simp only [simplify]
       cases h : simplify c <;> simp_all [depth] <;> omega
   | and a b iha ihb =>
-      simp only [simplify]
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;>
-        first | exact le_trans iha (Nat.le_max_left _ _) | exact le_trans ihb (Nat.le_max_right _ _) | exact Nat.max_le (le_trans iha (Nat.le_max_left _ _)) (le_trans ihb (Nat.le_max_right _ _))
+      simp only [simplify, depth]
+      apply le_trans (depth_simplifyAnd_le (simplify a) (simplify b))
+      exact Nat.add_le_add_right (max_le_max iha ihb) 1
   | or a b iha ihb =>
-      simp only [simplify]
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [depth] <;>
-        first | exact le_trans iha (Nat.le_max_left _ _) | exact le_trans ihb (Nat.le_max_right _ _) | exact Nat.max_le (le_trans iha (Nat.le_max_left _ _)) (le_trans ihb (Nat.le_max_right _ _))
+      simp only [simplify, depth]
+      apply le_trans (depth_simplifyOr_le (simplify a) (simplify b))
+      exact Nat.add_le_add_right (max_le_max iha ihb) 1
 
 /-- The C1 structural potential is monotone under simplification. -/
 theorem μ_simplify_le (c : Circuit) : μ (simplify c) ≤ μ c := by
   unfold μ
   exact Nat.add_le_add (size_simplify_le c) (depth_simplify_le c)
 
-/-- Semantic preservation. Boolean payloads of constant children are split
-explicitly; this is an audited elaboration requirement, not left to `simp`. -/
+/-- Local conjunction folding preserves Boolean semantics. -/
+theorem eval_simplifyAnd (σ : Assignment) (a b : Circuit) :
+    eval σ (simplifyAnd a b) = (eval σ a && eval σ b) := by
+  cases a <;> cases b <;> simp [simplifyAnd, eval] <;> split <;> simp_all [eval]
+
+/-- Local disjunction folding preserves Boolean semantics. -/
+theorem eval_simplifyOr (σ : Assignment) (a b : Circuit) :
+    eval σ (simplifyOr a b) = (eval σ a || eval σ b) := by
+  cases a <;> cases b <;> simp [simplifyOr, eval] <;> split <;> simp_all [eval]
+
+/-- Semantic preservation. -/
 theorem eval_simplify (σ : Assignment) (c : Circuit) : eval σ (simplify c) = eval σ c := by
   induction c with
   | input i => rfl
@@ -112,13 +144,11 @@ theorem eval_simplify (σ : Assignment) (c : Circuit) : eval σ (simplify c) = e
       | and a b => simp_all [eval]
       | or a b => simp_all [eval]
   | and a b iha ihb =>
-      simp only [simplify]
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [eval] <;> split <;> simp_all [eval]
+      simp only [simplify, eval]
+      rw [eval_simplifyAnd, iha, ihb]
   | or a b iha ihb =>
-      simp only [simplify]
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        simp_all [eval] <;> split <;> simp_all [eval]
+      simp only [simplify, eval]
+      rw [eval_simplifyOr, iha, ihb]
 
 def restrictedSimplified (ρ : Restriction) (c : Circuit) : Circuit :=
   simplify (restrict ρ c)
