@@ -1,0 +1,13 @@
+{
+  "gate": "C7",
+  "sha": "1ff3f8f756805279c072d5c32747fa973aadde07",
+  "run_id": 35196077751,
+  "job_id": 105119509729,
+  "status": "RED_RECORDED",
+  "failed_step": "leanprover/lean-action lake build",
+  "error_class": "LEAN_PROOF_MECHANICS_NONLINEAR_ARITHMETIC_AND_SIMP_NORMALIZATION",
+  "error_signature": "unknown tactic nlinarith in project environment; omega cannot discharge nonlinear multiplication; negative by_cases branch not normalized",
+  "files_touched_by_fix": ["lean/MCore/CircuitC7.lean"],
+  "epistemic_effect": "NONE_MECHANICAL_PROOF_FAILURE",
+  "certified_predecessors_modified": false
+}
