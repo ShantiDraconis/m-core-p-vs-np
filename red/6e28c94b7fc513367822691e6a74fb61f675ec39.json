@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "sha": "6e28c94b7fc513367822691e6a74fb61f675ec39",
+  "run_id": 35175227819,
+  "job_id": 105055362374,
+  "gate": "lean-action aggregate build",
+  "conclusion": "failure",
+  "error_class": "LEAN_DECIDABILITY_AND_FALSE_EXPECTED_VALUE",
+  "error_signature": "C3_STRICTDROP_DECIDE_AND_DROP_EXPECTED_2_FALSE",
+  "failed_file": "lean/MCore/CircuitC3.lean",
+  "root_cause": "StrictDrop over a functional restriction was sent directly to decide without an available Decidable instance; independently, the hand-entered expected potential drop 2 was arithmetically wrong. With size(and(input,input))=3 and depth=1, initial mu=4; after restriction+simplification the residual input has mu=1, so exact drop is 3.",
+  "epistemic_effect": "none; C3 was not frozen or certified"
+}
