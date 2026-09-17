@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "sha": "1a1875fcb3642f67954ea4b785510db58c2f012b",
+  "run_id": 35177456480,
+  "run_number": 405,
+  "job_id": 105062187448,
+  "gate": "lean-action aggregate build",
+  "conclusion": "failure",
+  "error_class": "LEAN_UNSOLVED_GOAL",
+  "error_signature": "C4_NOT_ALL_SAMPLES_POSITIVE_ZERO_WEIGHTED_DROP_NOT_REWRITTEN",
+  "error_hash_sha256": "91eac5f0cac070bcbedd3956653ab713b7d6e1f973d4e8888004fe659862b747",
+  "failed_file": "lean/MCore/CircuitC4.lean",
+  "failed_theorem": "MCore.CircuitC4.not_all_samples_positive",
+  "root_cause": "The proof obtained positivity of weightedDrop zeroDropSample oneInput but simp did not unfold/rewrite weightedDrop to the separately proved zero_sample_weightedDrop theorem, leaving the contradiction unreduced.",
+  "epistemic_effect": "none; mechanical proof wiring failure only",
+  "files_touched_by_forward_fix": ["lean/MCore/CircuitC4.lean"]
+}
