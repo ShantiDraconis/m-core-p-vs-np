@@ -1,0 +1,95 @@
+name: c9-certificate
+on: [push, pull_request]
+jobs:
+  c9:
+    name: C9 certification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: G0 fail-closed source hygiene
+        run: |
+          set -euo pipefail
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+      - name: Preserve C1-C8 and historical chain
+        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC5 MCore.CircuitC6 MCore.CircuitC7 MCore.CircuitC8
+      - name: Build C9 source chain
+        run: lake build MCore.C9.Reuse MCore.C9.Vars MCore.C9.Mu MCore.C9.Good
+      - name: Build umbrella target
+        run: lake build MCore
+      - name: C9 axiom audit
+        run: |
+          set -euo pipefail
+          cat > C9AxiomAudit.lean <<'EOF'
+          import MCore.C9.Good
+          #print axioms MCore.C9.D_eq
+          #print axioms MCore.C9.mu_eq
+          #print axioms MCore.C9.delta_eq
+          #print axioms MCore.C9.L1_mu_monotone
+          #print axioms MCore.C9.L2_additive
+          #print axioms MCore.C9.delta_eq_zero_iff
+          #print axioms MCore.C9.delta_pos_iff_strict
+          #print axioms MCore.C9.goodTrue_refuted
+          EOF
+          lake env lean C9AxiomAudit.lean 2>&1 | tee C9AxiomAudit.log
+          if grep -E 'sorryAx' C9AxiomAudit.log; then exit 1; fi
+          if grep -E 'depends on axioms:' C9AxiomAudit.log | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]$'; then
+            echo 'Unexpected axiom dependency outside trusted Lean set'; exit 1
+          fi
+      - name: C9 exact-delta regression
+        run: |
+          set -euo pipefail
+          cat > C9Delta.lean <<'EOF'
+          import MCore.C9.Good
+          open MCore MCore.C9
+          example (ρ : CircuitK1.Restriction) (t : FormulaTree) : mu (D ρ t) ≤ mu t := L1_mu_monotone ρ t
+          example (ρ : CircuitK1.Restriction) (t : FormulaTree) : mu (D ρ t) + delta ρ t = mu t := L2_additive ρ t
+          example (ρ : CircuitK1.Restriction) (t : FormulaTree) : delta ρ t = 0 ↔ mu (D ρ t) = mu t := delta_eq_zero_iff ρ t
+          example (ρ : CircuitK1.Restriction) (t : FormulaTree) : 0 < delta ρ t ↔ CircuitC3.StrictDrop ρ t := delta_pos_iff_strict ρ t
+          EOF
+          lake env lean C9Delta.lean
+      - name: C9 GoodTrue adversarial firewall
+        run: |
+          set -euo pipefail
+          cat > C9Good.lean <<'EOF'
+          import MCore.C9.Good
+          open MCore MCore.C9
+          example : ¬ PositiveOn GoodTrue := goodTrue_refuted
+          EOF
+          lake env lean C9Good.lean
+      - name: Preserve C8 recurrence-rank descent
+        run: |
+          set -euo pipefail
+          cat > C9Rank.lean <<'EOF'
+          import MCore.C9.Good
+          open MCore.CircuitC8
+          example : recurrenceRank (5 - 1) 7 < recurrenceRank 5 7 := rank_decreases_when_variable_fixed 5 7 1 7 (by decide) (by decide) (by decide)
+          example : recurrenceRank 5 6 < recurrenceRank 5 7 := rank_decreases_when_potential_drops 5 7 6 (by decide)
+          EOF
+          lake env lean C9Rank.lean
+      - name: Preserve runtime-saving firewall
+        run: |
+          set -euo pipefail
+          cat > C9Runtime.lean <<'EOF'
+          import MCore.C9.Good
+          open MCore.CircuitC8
+          example : ¬ RuntimeSavingWitness 0 := zero_is_not_runtime_saving
+          EOF
+          lake env lean C9Runtime.lean
+      - name: Preserve epistemic non-promotion
+        run: |
+          set -euo pipefail
+          cat > C9Epistemic.lean <<'EOF'
+          import MCore.C9.Good
+          open MCore MCore.CircuitC8
+          example : ¬ Nonempty (ProofCertificate k10_obligation_node) := c8_k10_not_promoted
+          example : ¬ Nonempty (ProofCertificate k6_dependency.target) := c8_classical_endpoint_not_promoted
+          EOF
+          lake env lean C9Epistemic.lean
+      - name: Clean C9 reproduction
+        run: lake clean && lake build MCore.C9.Good && lake build MCore
