@@ -1,3 +1,5 @@
+import Init.Data.List.Lemmas
+import Init.Data.List.Perm
 import MCore.C10.RestrictionProgress
 
 namespace MCore
@@ -8,7 +10,8 @@ open C9 C10 CircuitK1 CircuitC2
 /-- For natural-number variable identifiers, `eraseDups` is duplicate-free.
 This local proof keeps C11 independent of any external finite-set library. -/
 theorem eraseDups_nodup_nat : ∀ l : List Nat, l.eraseDups.Nodup
-  | [] => by simp
+  | [] => by
+      exact List.nodup_nil
   | a :: as => by
       rw [List.eraseDups_cons]
       constructor
@@ -56,6 +59,43 @@ theorem mem_freeVarList_restrict
       · exact Or.inl (iha hx)
       · exact Or.inr (ihb hx)
 
+/-- Simplifying a negation can only retain variables from the simplified child. -/
+theorem mem_freeVarList_simplify_not
+    {x : Nat} (c : FormulaTree)
+    (hx : x ∈ freeVarList (simplify (.not c))) :
+    x ∈ freeVarList (simplify c) := by
+  cases h : simplify c with
+  | input i =>
+      simpa [simplify, h, freeVarList] using hx
+  | const b =>
+      simp [simplify, h, freeVarList] at hx
+  | not d =>
+      simpa [simplify, h, freeVarList] using hx
+  | and a b =>
+      simpa [simplify, h, freeVarList] using hx
+  | or a b =>
+      simpa [simplify, h, freeVarList] using hx
+
+/-- Simplifying a conjunction can only retain variables from one of its two
+simplified children. -/
+theorem mem_freeVarList_simplify_and
+    {x : Nat} (a b : FormulaTree)
+    (hx : x ∈ freeVarList (simplify (.and a b))) :
+    x ∈ freeVarList (simplify a) ∨ x ∈ freeVarList (simplify b) := by
+  cases ha : simplify a <;> cases hb : simplify b <;>
+    simp_all [simplify, freeVarList] <;>
+    split <;> simp_all [freeVarList]
+
+/-- Simplifying a disjunction can only retain variables from one of its two
+simplified children. -/
+theorem mem_freeVarList_simplify_or
+    {x : Nat} (a b : FormulaTree)
+    (hx : x ∈ freeVarList (simplify (.or a b))) :
+    x ∈ freeVarList (simplify a) ∨ x ∈ freeVarList (simplify b) := by
+  cases ha : simplify a <;> cases hb : simplify b <;>
+    simp_all [simplify, freeVarList] <;>
+    split <;> simp_all [freeVarList]
+
 /-- The certified simplifier can delete branches and constants, but cannot
 invent a new syntactic input identifier. -/
 theorem mem_freeVarList_simplify
@@ -68,34 +108,19 @@ theorem mem_freeVarList_simplify
   | const b =>
       simp [simplify, freeVarList] at hx
   | not c ih =>
-      simp only [simplify] at hx
-      cases h : simplify c with
-      | const b =>
-          simp [h, freeVarList] at hx
-      | input i =>
-          apply ih
-          rw [h]
-          simpa [freeVarList] using hx
-      | not d =>
-          apply ih
-          rw [h]
-          simpa [freeVarList] using hx
-      | and a b =>
-          apply ih
-          rw [h]
-          simpa [freeVarList] using hx
-      | or a b =>
-          apply ih
-          rw [h]
-          simpa [freeVarList] using hx
+      exact ih (mem_freeVarList_simplify_not c hx)
   | and a b iha ihb =>
-      simp only [simplify] at hx
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        (try split) <;> simp_all [freeVarList]
+      rcases mem_freeVarList_simplify_and a b hx with ha | hb
+      · simp [freeVarList]
+        exact Or.inl (iha ha)
+      · simp [freeVarList]
+        exact Or.inr (ihb hb)
   | or a b iha ihb =>
-      simp only [simplify] at hx
-      cases ha : simplify a <;> cases hb : simplify b <;>
-        (try split) <;> simp_all [freeVarList]
+      rcases mem_freeVarList_simplify_or a b hx with ha | hb
+      · simp [freeVarList]
+        exact Or.inl (iha ha)
+      · simp [freeVarList]
+        exact Or.inr (ihb hb)
 
 /-- The full C9 map `D = simplify ∘ restrict` never introduces a free variable. -/
 theorem mem_freeVarList_D
