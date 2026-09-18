@@ -47,7 +47,7 @@ jobs:
           set -euo pipefail
           lake build c12_gen
           lake exe c12_gen > /tmp/c12.csv
-          lake env lean --run lean/C13BidirectionalProbe.lean > /tmp/c13.csv
+          lake env lean --run audit/C12/C13Probe.lean > /tmp/c13.csv
           test "$(wc -l < /tmp/c12.csv)" -gt 100
           test "$(wc -l < /tmp/c13.csv)" -gt 100
 
