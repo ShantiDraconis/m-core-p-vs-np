@@ -27,6 +27,7 @@ import MCore.C9.Good
 import MCore.C9.Step
 import MCore.C10.RestrictionProgress
 import MCore.C11.VarsMonotone
+import MCore.C12.ProgressCoverage
 import MCore.Frontier.K3Gaps
 import MCore.AttackDAG.K3AlgebraAttacks
 import MCore.Audit
