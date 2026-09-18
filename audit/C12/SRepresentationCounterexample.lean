@@ -50,9 +50,13 @@ def DirectPotentialAsSemanticComplexity : Prop :=
 theorem direct_potential_semantic_identification_refuted :
     ¬ DirectPotentialAsSemanticComplexity := by
   intro h
-  exact (potential_not_semantic_invariant.choose_spec.choose_spec.2)
-    (h _ _
-      potential_not_semantic_invariant.choose_spec.choose_spec.1)
+  have heq :
+      Potential 1 1 (paddedFalse 1) = Potential 1 1 (.const false) :=
+    h (paddedFalse 1) (.const false) (paddedFalse_equiv_const_false 1)
+  have hne :
+      Potential 1 1 (paddedFalse 1) ≠ Potential 1 1 (.const false) := by
+    decide
+  exact hne heq
 
 /-- This refutes only direct identification of raw syntactic Potential with a
 semantic complexity measure.  A minimized or otherwise representation-invariant
