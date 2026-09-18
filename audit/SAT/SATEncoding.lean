@@ -112,8 +112,6 @@ def decodeCNF (bits : BitStr) : Option CNF := do
 theorem decodeCNF_encodeCNF (φ : CNF) :
     decodeCNF (encodeCNF φ) = some φ := by
   rcases φ with ⟨n, clauses⟩
-  unfold encodeCNF decodeCNF
-  rw [decodeNat_encodeNat_append]
   have hClause :
       ∀ c : Clause n, ∀ tail : BitStr,
         decodeClause n (encodeClause c ++ tail) = some (c, tail) := by
@@ -122,15 +120,12 @@ theorem decodeCNF_encodeCNF (φ : CNF) :
   have hList :
       decodeList (decodeClause n) (encodeList encodeClause clauses) =
         some (clauses, []) := by
-    unfold decodeList encodeList
-    rw [decodeNat_encodeNat_append]
-    exact
-      decodeN_encodeNList_append
+    simpa [decodeList, encodeList, decodeNat_encodeNat_append] using
+      (decodeN_encodeNList_append
         (enc := encodeClause)
         (dec := decodeClause n)
-        hClause clauses ([] : BitStr)
-  rw [hList]
-  simp
+        hClause clauses ([] : BitStr))
+  simp [encodeCNF, decodeCNF, decodeNat_encodeNat_append, hList]
 
 def concreteBitEncoding : BitEncoding :=
   { encode := encodeCNF
