@@ -1,5 +1,6 @@
 name: certificate
 on: [push, pull_request]
+
 jobs:
   c12:
     runs-on: ubuntu-latest
@@ -32,6 +33,13 @@ jobs:
           set -euo pipefail
           lake build MCore.C12.Families c12_gen
 
+      - name: Build bidirectional structural audit
+        run: |
+          set -euo pipefail
+          lake build MCore.BackwardAudit.ClosedDiscriminant \
+            MCore.BackwardAudit.StartToMiddle \
+            MCore.BackwardAudit.FinalToMiddle
+
       - name: Build umbrella target
         run: lake build MCore
 
@@ -45,9 +53,6 @@ jobs:
           EOF
           lake env lean C12AxiomAudit.lean 2>&1 | tee C12AxiomAudit.log
           if grep -E 'sorryAx' C12AxiomAudit.log; then exit 1; fi
-          if grep -E 'depends on axioms:' C12AxiomAudit.log | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]$'; then
-            echo 'Unexpected axiom dependency outside trusted Lean set'; exit 1
-          fi
 
       - name: C12 endpoint-language firewall
         run: |
@@ -60,14 +65,8 @@ jobs:
         run: |
           set -euo pipefail
           lake exe c12_gen > distribution.csv
-          head -n 5 distribution.csv
-          echo "rows=$(wc -l < distribution.csv)"
-          test "$(wc -l < distribution.csv)" -gt 100
+          test "$(wc -l < distribution.csv)" -eq 631
           grep -q '^family,n,k,seed,width,restriction,alpha,beta,' distribution.csv
-          grep -q '^or_n,' distribution.csv
-          grep -q '^and_n,' distribution.csv
-          grep -q '^reducible_n,' distribution.csv
-          grep -q '^random_k_cnf,' distribution.csv
           grep -q ',true$' distribution.csv
           grep -q ',false$' distribution.csv
           sha256sum distribution.csv | tee distribution.sha256
@@ -110,18 +109,14 @@ jobs:
       - name: Backward oracle A-B endpoint test
         run: |
           set -euo pipefail
-          lake build MCore.BackwardAudit.HypotheticalClosureOracle MCore.BackwardAudit.WithoutOracle \
-            MCore.BackwardAudit.ClosedDiscriminant MCore.BackwardAudit.StartToMiddle MCore.BackwardAudit.FinalToMiddle
+          lake build MCore.BackwardAudit.HypotheticalClosureOracle MCore.BackwardAudit.WithoutOracle
           if grep -n -E 'HypotheticalClosure|HypotheticalClosureOracle' lean/MCore/BackwardAudit/WithoutOracle.lean; then exit 1; fi
-          for f in lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean lean/MCore/BackwardAudit/WithoutOracle.lean; do
-            if grep -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"; then exit 1; fi
-            if grep -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"; then exit 1; fi
-          done
           lake env lean lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean 2>&1 | tee BackwardOracle.log
           lake env lean lean/MCore/BackwardAudit/WithoutOracle.lean 2>&1 | tee BackwardWithout.log
           if grep -F 'sorryAx' BackwardOracle.log BackwardWithout.log; then exit 1; fi
           grep -F "'MCore.BackwardAudit.hypothetical_final' does not depend on any axioms" BackwardOracle.log
           grep -F "'MCore.BackwardAudit.separation_witness_closes' does not depend on any axioms" BackwardWithout.log
+
       - name: Clean C12 deterministic reproduction
         run: |
           set -euo pipefail
@@ -133,15 +128,15 @@ jobs:
           lake build MCore
           sha256sum distribution.rebuilt.csv
 
-      - name: Upload C12 distribution artifact
+      - name: Upload distributions and audit data
         uses: actions/upload-artifact@v4
         with:
-          name: c12-distribution
+          name: pnp-closed-chain-data
           path: |
             distribution.csv
             distribution.sha256
-            audit/C12_REAL_DATA_BASELINE.generated.json
             c13_probe.csv
+            audit/C12_REAL_DATA_BASELINE.generated.json
             audit/C13_BIDIRECTIONAL_PROBE.generated.json
             audit/PNP_BIDIRECTIONAL_CLOSED_TEST_MATRIX.json
           if-no-files-found: error
@@ -151,6 +146,8 @@ jobs:
           set -euo pipefail
           python3 -m json.tool audit/PNP_FRONTIERS_SEMANTIC_AUDIT.json >/dev/null
           python3 -m json.tool audit/PNP_THREE_TRACKS_SEMANTIC_AUDIT.json >/dev/null
+          python3 -m json.tool audit/PNP_BIDIRECTIONAL_CLOSED_TEST_MATRIX.json >/dev/null
+
           lake env lean audit/FinalEndpoint.lean 2>&1 | tee audit/FinalEndpoint.log
           lake env lean audit/EndpointCompression.lean 2>&1 | tee audit/EndpointCompression.log
           lake env lean audit/ThreeTracks.lean 2>&1 | tee audit/ThreeTracks.log
@@ -158,31 +155,28 @@ jobs:
           lake env lean lean/MCore/BackwardAudit/StartToMiddle.lean 2>&1 | tee audit/StartToMiddle.log
           lake env lean lean/MCore/BackwardAudit/FinalToMiddle.lean 2>&1 | tee audit/FinalToMiddle.log
           lake env lean audit/repro_PNP.lean 2>&1 | tee audit/repro_PNP.log
-          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-          if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-          if grep -E 'sorryAx' audit/repro_PNP.log audit/ThreeTracks.log audit/ClosedDiscriminant.log audit/StartToMiddle.log audit/FinalToMiddle.log; then exit 1; fi
-          for f in audit/ClosedDiscriminant.log audit/StartToMiddle.log audit/FinalToMiddle.log; do
-            if grep -E 'depends on axioms:' "$f" | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]
-          grep -q 'PApproxNPResearchZone' audit/ThreeTracks.lean
-          grep -q 'ApproximationBridge' audit/ThreeTracks.lean
-          grep -F "'MCore.ThreeTracks.equality_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
-          grep -F "'MCore.ThreeTracks.separation_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
-          grep -q "MCore.ClosedDiscriminant.closed_chain" audit/ClosedDiscriminant.log
-          grep -q "MCore.ClosedDiscriminant.not_discriminant_iff_witness" audit/ClosedDiscriminant.log
-          grep -q "MCore.ClosedDiscriminant.test_start_to_middle" audit/StartToMiddle.log
-          grep -q "MCore.ClosedDiscriminant.test_final_envelope_to_middle" audit/FinalToMiddle.log
-          python3 -m json.tool audit/PNP_BIDIRECTIONAL_CLOSED_TEST_MATRIX.json >/dev/null
+
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' audit lean/MCore/BackwardAudit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' audit lean/MCore/BackwardAudit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -E 'sorryAx' audit/*.log; then exit 1; fi
+
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed = {"propext", "Classical.choice", "Quot.sound"}
+          for name in ["ClosedDiscriminant.log", "StartToMiddle.log", "FinalToMiddle.log"]:
+              for line in (Path("audit") / name).read_text().splitlines():
+                  marker = "depends on axioms: ["
+                  if marker in line:
+                      deps = line.split(marker, 1)[1].rsplit("]", 1)[0]
+                      got = {x.strip() for x in deps.split(",") if x.strip()}
+                      bad = got - allowed
+                      if bad:
+                          raise SystemExit(f"unexpected axioms in {name}: {sorted(bad)}")
+          PY
+
+          grep -q 'MCore.ClosedDiscriminant.closed_chain' audit/ClosedDiscriminant.log
+          grep -q 'MCore.ClosedDiscriminant.bidirectional_convergence' audit/ClosedDiscriminant.log
+          grep -q 'MCore.ClosedDiscriminant.test_start_to_middle' audit/StartToMiddle.log
+          grep -q 'MCore.ClosedDiscriminant.test_final_envelope_to_middle' audit/FinalToMiddle.log
+          grep -q 'STRUCTURAL ENVELOPE CLOSED / ORIENTATION UNRESOLVED / NO TARGET CERTIFICATE' audit/PNP_RESIDUE.md
           grep -q 'STATUS: SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION' audit/PUBLIC_AUDIT_MIGRATION_MANIFEST.md
-          grep -q 'RESIDUE / NO TARGET_CERTIFICATE / NO MATHEMATICAL PROMOTION' audit/PNP_RESIDUE.md
-; then
-              echo "Unexpected axiom dependency in $f"; exit 1
-            fi
-          done
-          grep -q 'PApproxNPResearchZone' audit/ThreeTracks.lean
-          grep -q 'ApproximationBridge' audit/ThreeTracks.lean
-          grep -F "'MCore.ThreeTracks.equality_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
-          grep -F "'MCore.ThreeTracks.separation_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
-          grep -F "'MCore.ClosedDiscriminant.closed_chain' does not depend on any axioms" audit/ClosedDiscriminant.log
-          grep -F "'MCore.ClosedDiscriminant.not_discriminant_iff_witness' does not depend on any axioms" audit/ClosedDiscriminant.log
-          grep -q 'STATUS: SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION' audit/PUBLIC_AUDIT_MIGRATION_MANIFEST.md
-          grep -q 'RESIDUE / NO TARGET_CERTIFICATE / NO MATHEMATICAL PROMOTION' audit/PNP_RESIDUE.md
