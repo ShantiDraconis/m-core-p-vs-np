@@ -9,3 +9,8 @@ srcDir = "lean"
 name = "c11_regression"
 root = "C11Regression"
 srcDir = "lean"
+
+[[lean_exe]]
+name = "c12_gen"
+root = "C12Gen"
+srcDir = "lean"
