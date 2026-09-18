@@ -36,6 +36,18 @@ jobs:
           if grep -R -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' audit/OfficialModel --include='*.lean'; then exit 1; fi
           if grep -E 'sorryAx' /tmp/f1-operational.log /tmp/f1-match.log; then exit 1; fi
 
+      - name: SAT semantic core and explicit boundaries
+        run: |
+          set -euo pipefail
+          lake env lean audit/SAT/SATCore.lean 2>&1 | tee /tmp/sat-core.log
+          cat audit/OfficialModel/OperationalTM.lean > /tmp/SATCombined.lean
+          grep -v '^import ' audit/SAT/SATCore.lean >> /tmp/SATCombined.lean
+          cat audit/SAT/SATBoundary.lean >> /tmp/SATCombined.lean
+          lake env lean /tmp/SATCombined.lean 2>&1 | tee /tmp/sat-boundary.log
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' audit/SAT --include='*.lean'; then exit 1; fi
+          if grep -R -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' audit/SAT --include='*.lean'; then exit 1; fi
+          if grep -E 'sorryAx|Classical\.choice' /tmp/sat-core.log /tmp/sat-boundary.log; then exit 1; fi
+
       - name: C12 rational-weight audit layer
         run: |
           set -euo pipefail
