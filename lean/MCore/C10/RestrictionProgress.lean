@@ -21,44 +21,51 @@ theorem stateRank_D_decreases_of_restriction_progress
     (h : RestrictionProgress ρ t) :
     stateRank (D ρ t) < stateRank t := by
   rcases h with ⟨hvars, hprogress⟩
-  unfold stateRank
+  let v0 := vars t
+  let v1 := vars (D ρ t)
+  let m0 := mu t
+  let m1 := mu (D ρ t)
+  change recurrenceRank v1 m1 < recurrenceRank v0 m0
+  have hvars' : v1 ≤ v0 := by
+    exact hvars
+  have hmu_le : m1 ≤ m0 := by
+    exact L1_mu_monotone ρ t
   rcases hprogress with hv | hd
-  · let fixedVars := vars t - vars (D ρ t)
+  · have hv' : v1 < v0 := by
+      exact hv
+    let fixedVars := v0 - v1
     have hfix : 0 < fixedVars := by
       dsimp [fixedVars]
       omega
-    have hfixle : fixedVars ≤ vars t := by
+    have hfixle : fixedVars ≤ v0 := by
       dsimp [fixedVars]
       omega
-    have hvarseq : vars (D ρ t) = vars t - fixedVars := by
+    have hvarseq : v1 = v0 - fixedVars := by
       dsimp [fixedVars]
       omega
     rw [hvarseq]
     exact rank_decreases_when_variable_fixed
-      (vars t) (mu t) fixedVars (mu (D ρ t))
-      hfix hfixle (L1_mu_monotone ρ t)
-  · by_cases hv : vars (D ρ t) < vars t
-    · let fixedVars := vars t - vars (D ρ t)
+      v0 m0 fixedVars m1 hfix hfixle hmu_le
+  · by_cases hv' : v1 < v0
+    · let fixedVars := v0 - v1
       have hfix : 0 < fixedVars := by
         dsimp [fixedVars]
         omega
-      have hfixle : fixedVars ≤ vars t := by
+      have hfixle : fixedVars ≤ v0 := by
         dsimp [fixedVars]
         omega
-      have hvarseq : vars (D ρ t) = vars t - fixedVars := by
+      have hvarseq : v1 = v0 - fixedVars := by
         dsimp [fixedVars]
         omega
       rw [hvarseq]
       exact rank_decreases_when_variable_fixed
-        (vars t) (mu t) fixedVars (mu (D ρ t))
-        hfix hfixle (L1_mu_monotone ρ t)
-    · have hvarseq : vars (D ρ t) = vars t := by omega
-      have hmu : mu (D ρ t) < mu t := by
-        have hadd := L2_additive ρ t
-        omega
+        v0 m0 fixedVars m1 hfix hfixle hmu_le
+    · have hvarseq : v1 = v0 := by omega
+      have hadd : m1 + delta ρ t = m0 := by
+        exact L2_additive ρ t
+      have hmu : m1 < m0 := by omega
       rw [hvarseq]
-      exact rank_decreases_when_potential_drops
-        (vars t) (mu t) (mu (D ρ t)) hmu
+      exact rank_decreases_when_potential_drops v0 m0 m1 hmu
 
 /-- The certified C2 reducible example is a concrete C10 progress instance:
 fixing input 0 reduces the distinct syntactic variable count. -/
