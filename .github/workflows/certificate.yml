@@ -4,6 +4,7 @@ on: [push, pull_request]
 jobs:
   c12:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
@@ -123,10 +124,12 @@ jobs:
           set -euo pipefail
           cp distribution.csv distribution.before.csv
           lake clean
-          lake build MCore.C12.Families c12_gen
+          # c12_gen must be rebuilt first because deterministic data reproduction depends on it.
+          timeout 20m lake build MCore.C12.Families c12_gen
           lake exe c12_gen > distribution.rebuilt.csv
           cmp distribution.before.csv distribution.rebuilt.csv
-          lake build MCore
+          # Single clean umbrella closure; no redundant target-by-target rebuild after this point.
+          timeout 20m lake build MCore
           sha256sum distribution.rebuilt.csv
 
       - name: Upload distributions and audit data
