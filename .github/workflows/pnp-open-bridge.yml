@@ -1,0 +1,74 @@
+name: pnp-open-bridge
+
+on:
+  push:
+    branches: [audit/multistate-proof-refutation-v1]
+    paths:
+      - 'audit/OfficialModel/**'
+      - 'audit/C12/**'
+      - '.github/workflows/pnp-open-bridge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  f1-sk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve dependencies
+        run: lake update
+
+      - name: F1 operational TM model
+        run: |
+          set -euo pipefail
+          lake env lean audit/OfficialModel/OperationalTM.lean 2>&1 | tee /tmp/f1-operational.log
+          lake env lean -R audit/OfficialModel Audit.OfficialModel audit/OfficialModel/F1_OfficialModelMatch.lean 2>&1 | tee /tmp/f1-match.log
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' audit/OfficialModel --include='*.lean'; then exit 1; fi
+          if grep -R -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' audit/OfficialModel --include='*.lean'; then exit 1; fi
+          if grep -E 'sorryAx' /tmp/f1-operational.log /tmp/f1-match.log; then exit 1; fi
+
+      - name: C12 rational-weight audit layer
+        run: |
+          set -euo pipefail
+          lake env lean audit/C12/C12_Calibration.lean 2>&1 | tee /tmp/c12-calibration.log
+          if grep -E 'sorryAx' /tmp/c12-calibration.log; then exit 1; fi
+
+      - name: Generate C12 and C13 data
+        run: |
+          set -euo pipefail
+          lake build c12_gen
+          lake exe c12_gen > /tmp/c12.csv
+          lake env lean --run lean/C13BidirectionalProbe.lean > /tmp/c13.csv
+          test "$(wc -l < /tmp/c12.csv)" -gt 100
+          test "$(wc -l < /tmp/c13.csv)" -gt 100
+
+      - name: Calibrate S K
+        run: |
+          set -euo pipefail
+          python3 audit/C12/calibrate_sk.py audit/C12/C12_SK.generated.json /tmp/c12.csv /tmp/c13.csv
+          python3 -m json.tool audit/C12/C12_SK.generated.json >/dev/null
+          grep -q '"scientific_promotion": "NONE"' audit/C12/C12_SK.generated.json
+
+      - name: Preserve 8x5 no-promotion contract
+        run: |
+          set -euo pipefail
+          grep -q '"emit_closed_closed_closed": false' audit/8x5/PNP_8x5_STATE.json
+          grep -q '"A": "PENDING"' audit/8x5/PNP_8x5_STATE.json
+          echo 'OPEN_BRIDGE_RESEARCH_ONLY=PASS'
+
+      - name: Upload calibration
+        uses: actions/upload-artifact@v4
+        with:
+          name: pnp-f1-c12-calibration
+          path: |
+            audit/C12/C12_SK.generated.json
+            /tmp/c12.csv
+            /tmp/c13.csv
