@@ -24,7 +24,7 @@ def RationalPaysOff
       beta.num * alpha.den * deltaRank
 
 def S_OfficialComplexityCalibration : Prop :=
-  ∀ (ρ : MCore.CircuitK1.Restriction) (t : MCore.FormulaTree),
+  ∀ (ρ : MCore.CircuitK1.Restriction) (t : MCore.CircuitK1.Circuit),
     MCore.C11.PaysOff 1 1 ρ t →
       True
 
