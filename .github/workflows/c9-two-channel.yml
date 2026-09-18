@@ -16,7 +16,7 @@ jobs:
           ! grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean/MCore/C9
           ! grep -R -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' --include='*.lean' lean/MCore/C9
       - name: Build two-channel core
-        run: lake build MCore.C9.FreeVars MCore.C9.Good0 MCore.C9.Progress
+        run: lake build MCore.C9.FreeVars MCore.C9.Good0 MCore.C9.Progress MCore.C9.RestrictionMass MCore.C9.TwoChannelCertificate
       - name: Regression theorem
         run: |
           cat > C9BridgeAudit.lean <<'EOF'
@@ -27,7 +27,7 @@ jobs:
           #print axioms MCore.C9.good0_vars_strict
           #print axioms MCore.C9.good0_deltaN_pos
           #print axioms MCore.C9.good0_two_channel_progress
-          #print axioms MCore.C9.single_channel_counterexample
+          #print axioms MCore.C9.single_channel_counterexample\n          #print axioms MCore.C9.finiteRestriction_card\n          #print axioms MCore.C9.finiteGood_card\n          #print axioms MCore.C9.C9_TWO_CHANNEL_BRIDGE\n          #print axioms MCore.C9.GOOD0_STRICT_VAR_DESCENT\n          #print axioms MCore.C9.REFUTED_SINGLE_CHANNEL
           EOF
           lake env lean C9BridgeAudit.lean 2>&1 | tee C9BridgeAudit.log
           ! grep -E 'sorryAx' C9BridgeAudit.log
