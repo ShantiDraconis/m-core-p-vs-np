@@ -6,6 +6,7 @@ on:
     paths:
       - 'audit/OfficialModel/**'
       - 'audit/C12/**'
+      - 'audit/SAT/**'
       - '.github/workflows/pnp-open-bridge.yml'
   workflow_dispatch:
 
