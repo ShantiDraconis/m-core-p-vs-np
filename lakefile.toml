@@ -4,3 +4,8 @@ defaultTargets = ["MCore"]
 [[lean_lib]]
 name = "MCore"
 srcDir = "lean"
+
+[[lean_exe]]
+name = "c11_regression"
+root = "C11Regression"
+srcDir = "lean"
