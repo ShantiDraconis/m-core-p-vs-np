@@ -1,0 +1,89 @@
+name: audit-8x5-pnp
+
+on:
+  push:
+    branches: [audit/multistate-proof-refutation-v1]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify-8x5:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: L1 HEAD_EXATO
+        run: |
+          set -euo pipefail
+          test ${#GITHUB_SHA} -eq 40
+          git cat-file -e 8527ea7d5a3a5939a9bf0d60bf954762ef6e29c0^{commit}
+
+      - name: L2 FROZEN_S1
+        run: |
+          set -euo pipefail
+          git show 8527ea7d5a3a5939a9bf0d60bf954762ef6e29c0:lean/MCore/C12/Families.lean > /tmp/PNPS1.lean
+          grep -q 'theorem c12_classical_endpoint_not_promoted' /tmp/PNPS1.lean
+
+      - name: L3 ENDPOINT_DEFINITION
+        run: |
+          set -euo pipefail
+          lake update
+          lake env lean audit/FinalEndpoint.lean 2>&1 | tee FinalEndpoint.log
+          grep -q 'def FINAL_STATEMENT' audit/FinalEndpoint.lean
+
+      - name: L4 COMPRESSION
+        run: |
+          set -euo pipefail
+          lake env lean audit/EndpointCompression.lean 2>&1 | tee EndpointCompression.log
+          grep -q 'theorem endpoint_compression' audit/EndpointCompression.lean
+          grep -q 'def OPEN_BRIDGE' audit/EndpointCompression.lean
+
+      - name: L5 8x5 semantic audit
+        run: |
+          set -euo pipefail
+          lake build MCore.Audit8x5
+          python3 -m json.tool audit/PNP_FRONTIERS_SEMANTIC_AUDIT.json >/dev/null
+          grep -q '"HC": "BLOCKING"' audit/8x5/PNP_8x5_STATE.json
+          grep -q '"Q": "BLOCKING"' audit/8x5/PNP_8x5_STATE.json
+          grep -q '"S": "BLOCKING"' audit/8x5/PNP_8x5_STATE.json
+          grep -q '"K": "BLOCKING"' audit/8x5/PNP_8x5_STATE.json
+
+      - name: L6 RESIDUE_CLASSIFIER
+        run: |
+          set -euo pipefail
+          grep -q '"id": "F1_OFFICIAL_MODEL_MATCH"' audit/PNP_FRONTIERS_SEMANTIC_AUDIT.json
+          grep -q '"id": "F2_FIXED_K10_WITNESS_EXISTENCE"' audit/PNP_FRONTIERS_SEMANTIC_AUDIT.json
+          grep -q '"id": "OPEN_BRIDGE_C12_TO_FIXED_K10"' audit/PNP_FRONTIERS_SEMANTIC_AUDIT.json
+
+      - name: L7 BUILD
+        run: |
+          set -euo pipefail
+          lake clean
+          lake build MCore
+          lake env lean audit/FinalEndpoint.lean
+          lake env lean audit/EndpointCompression.lean
+          lake env lean audit/repro_PNP.lean
+
+      - name: L8 NO-PLACEBO
+        run: |
+          set -euo pipefail
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          printf 'import MCore.Audit8x5\n#print axioms MCore.Audit8x5.no_placebo_classical_endpoint\n#print axioms MCore.Audit8x5.no_placebo_k10\n' > Axiom8x5.lean
+          lake env lean Axiom8x5.lean 2>&1 | tee Axiom8x5.log
+          if grep -E 'sorryAx' Axiom8x5.log; then exit 1; fi
+
+      - name: Emission firewall
+        run: |
+          grep -q '"emit_closed_closed_closed": false' audit/8x5/PNP_8x5_STATE.json
+          echo 'Sigma=(BLOCKING,BLOCKING,BLOCKING,BLOCKING,MATCH-after-seal)'
+          echo 'FECHADO_FECHADO_FECHADO=NO'
