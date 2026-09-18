@@ -1,107 +1,98 @@
-# P-vs-NP backward-dense residue
+# P-vs-NP structural closure and oriented residue
 
-STATUS: **RESIDUE / NO TARGET_CERTIFICATE / NO MATHEMATICAL PROMOTION**
+STATUS: **STRUCTURAL ENVELOPE CLOSED / ORIENTATION UNRESOLVED / NO TARGET CERTIFICATE**
 
 SOURCE LOCK: `6f310228a57984b33503a458f952207561c34c60`
 
-## THREE-TRACK NORMAL FORM
+## CLOSED STRUCTURAL CORE
 
-The audit now uses six syntactically closed boundaries:
+The binary discriminant is
 
-- `E0`: `NP ⊆ P`.
-- `EF`: extensional equality `P = NP`.
-- `A0`: the C12 asymptotic quantitative frontier.
-- `AF`: exit from the quantitative zone by delivering either `E0` or `S0`.
-- `S0`: `∃ L, L ∈ NP ∧ L ∉ P`.
-- `SF`: extensional separation `P ≠ NP`.
+`D := NP ⊆ P`.
 
-"Closed" here means **completely defined and type-checked**, not mathematically established.
+The fixed classical start supplied to the certificate is
 
-With `P ⊆ NP` supplied as classical wiring:
+`StartClosed := P ⊆ NP`.
 
-`E0 ↔ EF`
+The structural middle is completely closed:
+
+`MiddleClosed := D ∨ SeparationWitness`,
+
+where
+
+`SeparationWitness := ∃ L, NP L ∧ ¬ P L`.
+
+By classical excluded middle, the repository proves the middle envelope without
+choosing an orientation. It also proves exclusivity:
+
+`¬ (D ∧ SeparationWitness)`.
+
+Under `StartClosed`:
+
+`D ↔ EqualityFinal`
 
 and
 
-`S0 ↔ SF`
+`SeparationWitness ↔ SeparationFinal`.
 
-are proved in `audit/ThreeTracks.lean`.
+Therefore the start, middle envelope and final envelope are structurally closed.
 
-The middle notation `P≈NP` is represented only by
-`PApproxNPResearchZone := A0`. It is **not a third classical complexity
-relation**. The end of that zone is
+## BIDIRECTIONAL TESTING
 
-`AF := E0 ∨ S0`.
+Forward scan:
 
-Therefore any successful middle route must resolve to one of the two classical
-sides.
+`StartClosed -> MiddleClosed -> FinalClosed`.
 
-## OPEN BRIDGE
+Backward scan:
 
-The central middle obligation is exactly
+`EqualityFinal -> D`
 
-`ApproximationBridge P NP := A0 → AF P NP`.
+and
 
-No theorem in the repository currently inhabits this proposition.
+`SeparationFinal + StartClosed -> SeparationWitness`.
 
-In expanded form the missing bridge is:
+The theorem `bidirectional_convergence` proves both scans use exactly the same
+binary middle.
 
-`C12 asymptotic quantitative structure → (NP ⊆ P) ∨ (∃ L ∈ NP \ P)`.
+The detector
 
-This is stronger and more honest than treating finite C12 measurements as an
-endpoint theorem.
+`D ∧ SeparationWitness -> False`
 
-## HYPOTHESIS_RESIDUE
+is the automatic inconsistency certificate if both orientations are ever
+claimed simultaneously.
 
-1. The repository still has only an abstract `ClassicalComplexityInterface`;
-   the fixed official Turing-machine model adapter remains open.
-2. Equality route: no proof of `E0 = NP ⊆ P`.
-3. Separation route: no proof of `S0 = ∃ L ∈ NP \ P`.
-4. Approximate route: neither the universal/asymptotic `A0` nor the transfer
-   `A0 → AF` is proved by the finite C12 dataset.
+## WHAT REMAINS UNRESOLVED
 
-## QUANTIFIER_RESIDUE
+Only the orientation of `D`:
 
-- C12 samples finitely many sizes/seeds/restrictions.
-- `A0` is universal at the family-obligation level.
-- `E0` quantifies over every language in the fixed official universe.
-- `S0` requires one actual language in that fixed universe.
-- Existing unconstrained K10 existential quantification over `Language` is
-  insufficient for the official endpoint.
+- a genuine proof of `D` would yield `P = NP`;
+- a genuine proof of `¬D` / `SeparationWitness` would yield `P ≠ NP`.
 
-## SCALING_RESIDUE
+This is the Clay-level mathematical content. Structural closure does not choose
+the orientation.
 
-`costBits`, `BranchingCost`, `stateRank`, and `Potential` are internally
-certified quantities. No theorem currently turns them into a standard
-polynomial-time upper bound or a superpolynomial lower bound in the official
-complexity model.
+The older C12 quantitative route is retained as an experimental research layer,
+not as a logical gap in the closed envelope. No theorem currently maps finite
+`PaysOff` observations to either orientation of `D`.
 
-## CONSTANT_RESIDUE
+## EMPIRICAL DATA
 
-C12 uses explicit `alpha = beta = 1`. Robustness under weights, encoding
-overheads, simulation constants, and asymptotic normalization is open.
+Baseline C12 contains 630 measured rows (n=1..12). The first analysis found:
 
-## AXIOM_AUDIT
+- 546 `PaysOff=true`;
+- 84 `PaysOff=false`;
+- every false row has k=0, costBits=0, deltaRank=0 and margin=0;
+- all 48 canonical family×size groups have at least one sampled positive witness;
+- the smallest sampled positive k is 1 for all 48 groups.
 
-- Source-lock C12 hygiene remains GREEN.
-- `audit/ThreeTracks.lean` is compiled directly by CI.
-- CI prints axioms for the three routing theorems.
-- New `sorry`, `admit`, source-level `axiom`, or `constant` in audit
-  Lean files is a hard failure.
+This is finite evidence only.
 
-## EXACT FINAL SHAPE
+C13 therefore targets the discovered boundary directly with 1,144 new cases:
+n=13..64, k=0/1, three deterministic families plus random_k_cnf with 8 seeds.
 
-Equality route:
+## CERTIFICATE POLICY
 
-`P ⊆ NP + E0 -> EF`.
-
-Intermediate route:
-
-`A0 + OPEN_BRIDGE(A0 -> AF) -> AF -> EF ∨ SF`.
-
-Separation route:
-
-`S0 -> SF`.
-
-The only classical final outcomes represented are `EF` and `SF`.
-No `TARGET_CERTIFICATE` is emitted because no real frontier has been closed.
+- No `sorry`, `admit`, source-level `axiom`, or `constant`.
+- Classical closure may depend only on Lean's trusted classical foundations.
+- No finite dataset may be promoted to `D`, `¬D`, `P=NP`, or `P≠NP`.
+- No oriented target certificate is emitted until an actual orientation witness exists.

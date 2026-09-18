@@ -80,6 +80,18 @@ jobs:
           grep -q '"data_rows": 630' audit/C12_REAL_DATA_BASELINE.generated.json
           grep -q 'FINITE_DETERMINISTIC_EVIDENCE_ONLY / NO_P_VS_NP_PROMOTION' audit/C12_REAL_DATA_BASELINE.generated.json
 
+      - name: Generate targeted C13 bidirectional probe
+        run: |
+          set -euo pipefail
+          lake build c13_probe
+          lake exe c13_probe > c13_probe.csv
+          test "$(wc -l < c13_probe.csv)" -eq 1145
+          grep -q '^family,n,k,seed,width,restriction,alpha,beta,' c13_probe.csv
+          python3 audit/analyze_probe.py c13_probe.csv audit/C13_BIDIRECTIONAL_PROBE.generated.json | tee audit/C13_BIDIRECTIONAL_PROBE.log
+          python3 -m json.tool audit/C13_BIDIRECTIONAL_PROBE.generated.json >/dev/null
+          grep -q '"data_rows": 1144' audit/C13_BIDIRECTIONAL_PROBE.generated.json
+          grep -q 'FINITE_COMPUTATIONAL_EVIDENCE_ONLY / NO_ORIENTATION_OF_D' audit/C13_BIDIRECTIONAL_PROBE.generated.json
+
       - name: C12 open-obligation and non-promotion firewall
         run: |
           set -euo pipefail
@@ -98,7 +110,8 @@ jobs:
       - name: Backward oracle A-B endpoint test
         run: |
           set -euo pipefail
-          lake build MCore.BackwardAudit.HypotheticalClosureOracle MCore.BackwardAudit.WithoutOracle
+          lake build MCore.BackwardAudit.HypotheticalClosureOracle MCore.BackwardAudit.WithoutOracle \
+            MCore.BackwardAudit.ClosedDiscriminant MCore.BackwardAudit.StartToMiddle MCore.BackwardAudit.FinalToMiddle
           if grep -n -E 'HypotheticalClosure|HypotheticalClosureOracle' lean/MCore/BackwardAudit/WithoutOracle.lean; then exit 1; fi
           for f in lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean lean/MCore/BackwardAudit/WithoutOracle.lean; do
             if grep -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"; then exit 1; fi
@@ -128,6 +141,9 @@ jobs:
             distribution.csv
             distribution.sha256
             audit/C12_REAL_DATA_BASELINE.generated.json
+            c13_probe.csv
+            audit/C13_BIDIRECTIONAL_PROBE.generated.json
+            audit/PNP_BIDIRECTIONAL_CLOSED_TEST_MATRIX.json
           if-no-files-found: error
 
       - name: Backward dense endpoint audit
@@ -139,10 +155,29 @@ jobs:
           lake env lean audit/EndpointCompression.lean 2>&1 | tee audit/EndpointCompression.log
           lake env lean audit/ThreeTracks.lean 2>&1 | tee audit/ThreeTracks.log
           lake env lean audit/ClosedDiscriminant.lean 2>&1 | tee audit/ClosedDiscriminant.log
+          lake env lean lean/MCore/BackwardAudit/StartToMiddle.lean 2>&1 | tee audit/StartToMiddle.log
+          lake env lean lean/MCore/BackwardAudit/FinalToMiddle.lean 2>&1 | tee audit/FinalToMiddle.log
           lake env lean audit/repro_PNP.lean 2>&1 | tee audit/repro_PNP.log
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-          if grep -E 'sorryAx' audit/repro_PNP.log audit/ThreeTracks.log audit/ClosedDiscriminant.log; then exit 1; fi
+          if grep -E 'sorryAx' audit/repro_PNP.log audit/ThreeTracks.log audit/ClosedDiscriminant.log audit/StartToMiddle.log audit/FinalToMiddle.log; then exit 1; fi
+          for f in audit/ClosedDiscriminant.log audit/StartToMiddle.log audit/FinalToMiddle.log; do
+            if grep -E 'depends on axioms:' "$f" | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]
+          grep -q 'PApproxNPResearchZone' audit/ThreeTracks.lean
+          grep -q 'ApproximationBridge' audit/ThreeTracks.lean
+          grep -F "'MCore.ThreeTracks.equality_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
+          grep -F "'MCore.ThreeTracks.separation_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
+          grep -q "MCore.ClosedDiscriminant.closed_chain" audit/ClosedDiscriminant.log
+          grep -q "MCore.ClosedDiscriminant.not_discriminant_iff_witness" audit/ClosedDiscriminant.log
+          grep -q "MCore.ClosedDiscriminant.test_start_to_middle" audit/StartToMiddle.log
+          grep -q "MCore.ClosedDiscriminant.test_final_envelope_to_middle" audit/FinalToMiddle.log
+          python3 -m json.tool audit/PNP_BIDIRECTIONAL_CLOSED_TEST_MATRIX.json >/dev/null
+          grep -q 'STATUS: SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION' audit/PUBLIC_AUDIT_MIGRATION_MANIFEST.md
+          grep -q 'RESIDUE / NO TARGET_CERTIFICATE / NO MATHEMATICAL PROMOTION' audit/PNP_RESIDUE.md
+; then
+              echo "Unexpected axiom dependency in $f"; exit 1
+            fi
+          done
           grep -q 'PApproxNPResearchZone' audit/ThreeTracks.lean
           grep -q 'ApproximationBridge' audit/ThreeTracks.lean
           grep -F "'MCore.ThreeTracks.equality_start_to_final' does not depend on any axioms" audit/ThreeTracks.log

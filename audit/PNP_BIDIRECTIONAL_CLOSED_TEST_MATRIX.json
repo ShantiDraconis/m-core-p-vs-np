@@ -1,0 +1,54 @@
+{
+  "schema": "PNP_BIDIRECTIONAL_CLOSED_TEST_MATRIX_v1",
+  "status": "STRUCTURAL_CLOSED / ORIENTATION_UNRESOLVED",
+  "discriminant": "D := NP subseteq P",
+  "directions": {
+    "start_to_middle": {
+      "input": "StartClosed := P subseteq NP",
+      "checks": [
+        "StartClosed -> MiddleClosed",
+        "StartClosed -> FinalClosed envelope",
+        "collect StartAuditResult"
+      ],
+      "module": "MCore.BackwardAudit.StartToMiddle"
+    },
+    "final_to_middle": {
+      "inputs": [
+        "EqualityFinal := P=NP",
+        "SeparationFinal := P!=NP"
+      ],
+      "checks": [
+        "EqualityFinal -> D",
+        "SeparationFinal + StartClosed -> SeparationWitness",
+        "FinalClosed + StartClosed -> MiddleClosed",
+        "bidirectional orientation equivalence",
+        "D + SeparationWitness -> False"
+      ],
+      "module": "MCore.BackwardAudit.FinalToMiddle"
+    }
+  },
+  "empirical_batches": {
+    "baseline_C12": {
+      "rows": 630,
+      "n_range": [
+        1,
+        12
+      ],
+      "purpose": "establish deterministic baseline"
+    },
+    "targeted_C13_probe": {
+      "rows": 1144,
+      "n_range": [
+        13,
+        64
+      ],
+      "k_values": [
+        0,
+        1
+      ],
+      "purpose": "falsify or extend observed k=0/k=1 payoff regularity"
+    },
+    "total_rows_after_probe": 1774
+  },
+  "interpretation": "The structural tests close the logical envelope. The computational rows characterize internal potential behavior only and never orient D."
+}

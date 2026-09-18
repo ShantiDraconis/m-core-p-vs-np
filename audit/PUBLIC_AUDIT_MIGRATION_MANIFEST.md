@@ -74,3 +74,42 @@ Additional files:
 - `audit/ThreeTracks.lean`
 - `audit/PNP_THREE_TRACKS_SEMANTIC_AUDIT.json`
 
+
+
+## Closed binary discriminant and bidirectional tests
+
+The canonical structural discriminant is:
+
+`D P NP := ∀ L, NP L → P L`.
+
+The structural middle is closed by classical logic:
+
+`MiddleClosed := D ∨ SeparationWitness`.
+
+This closure is a classification theorem, not a resolution of P vs NP. Under the
+explicit input `StartClosed := P ⊆ NP`, the two orientations are equivalent to
+the two terminal endpoints:
+
+- `D ↔ EqualityFinal`;
+- `SeparationWitness ↔ SeparationFinal`.
+
+Two audit scans converge on the same middle:
+
+- `MCore.BackwardAudit.StartToMiddle`: start → middle/final envelope;
+- `MCore.BackwardAudit.FinalToMiddle`: equality/separation endpoints → middle.
+
+The inconsistency detector proves:
+
+`D ∧ SeparationWitness → False`.
+
+No source-level `axiom`, `constant`, `sorry`, or `admit` is introduced.
+Classical excluded-middle consequences may report only Lean's trusted classical
+dependencies (`propext`, `Classical.choice`, `Quot.sound`).
+
+Empirical batches are logically separated from the structural certificate:
+
+- C12 baseline: 630 deterministic rows, n=1..12.
+- C13 targeted probe: 1,144 new rows, n=13..64, k∈{0,1}, 8 random seeds.
+- total measured rows after C13: 1,774.
+
+These rows test internal potential behavior only and cannot orient `D`.

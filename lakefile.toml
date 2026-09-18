@@ -14,3 +14,8 @@ srcDir = "lean"
 name = "c12_gen"
 root = "C12Gen"
 srcDir = "lean"
+
+[[lean_exe]]
+name = "c13_probe"
+root = "C13BidirectionalProbe"
+srcDir = "lean"
