@@ -30,7 +30,8 @@ jobs:
         run: |
           set -euo pipefail
           lake env lean audit/OfficialModel/OperationalTM.lean 2>&1 | tee /tmp/f1-operational.log
-          lake env lean -R audit/OfficialModel Audit.OfficialModel audit/OfficialModel/F1_OfficialModelMatch.lean 2>&1 | tee /tmp/f1-match.log
+          cat audit/OfficialModel/OperationalTM.lean audit/OfficialModel/F1_OfficialModelMatch.lean > /tmp/F1Combined.lean
+          lake env lean /tmp/F1Combined.lean 2>&1 | tee /tmp/f1-match.log
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' audit/OfficialModel --include='*.lean'; then exit 1; fi
           if grep -R -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' audit/OfficialModel --include='*.lean'; then exit 1; fi
           if grep -E 'sorryAx' /tmp/f1-operational.log /tmp/f1-match.log; then exit 1; fi

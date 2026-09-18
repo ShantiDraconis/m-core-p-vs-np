@@ -1,5 +1,4 @@
 import MCore.K10
-import «OperationalTM»
 
 namespace Audit.OfficialModel
 

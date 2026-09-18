@@ -66,14 +66,14 @@ structure DTM where
 
 namespace DTM
 
-def halted (M : DTM) (c : Config) : Prop :=
-  c.state = M.accept ∨ c.state = M.reject
+def halted (M : DTM) (c : Config) : Bool :=
+  (c.state == M.accept) || (c.state == M.reject)
 
 def initial (M : DTM) (x : BitStr) : Config :=
   { state := M.start, tape := inputTape x }
 
 def next (M : DTM) (c : Config) : Config :=
-  if h : M.halted c then
+  if M.halted c then
     c
   else
     applyAction c (M.delta c.state c.tape.head)
@@ -92,14 +92,14 @@ structure NTM where
 
 namespace NTM
 
-def halted (M : NTM) (c : Config) : Prop :=
-  c.state = M.accept ∨ c.state = M.reject
+def halted (M : NTM) (c : Config) : Bool :=
+  (c.state == M.accept) || (c.state == M.reject)
 
 def initial (M : NTM) (x : BitStr) : Config :=
   { state := M.start, tape := inputTape x }
 
 def nextConfigs (M : NTM) (c : Config) : List Config :=
-  if h : M.halted c then
+  if M.halted c then
     [c]
   else
     (M.delta c.state c.tape.head).map (fun a => applyAction c a)
@@ -112,7 +112,7 @@ def acceptsWithin (M : NTM) (x : BitStr) (t : Nat) : Prop :=
   ∃ c, c ∈ M.runSet t [M.initial x] ∧ c.state = M.accept
 
 def allHaltedWithin (M : NTM) (x : BitStr) (t : Nat) : Prop :=
-  ∀ c, c ∈ M.runSet t [M.initial x] → M.halted c
+  ∀ c, c ∈ M.runSet t [M.initial x] → M.halted c = true
 
 end NTM
 
@@ -127,7 +127,7 @@ def polyEval (b : PolyBound) (n : Nat) : Nat :=
 def DTM.DecidesWithin (M : DTM) (L : OfficialLanguage) (b : PolyBound) : Prop :=
   ∀ x,
     let c := M.run (polyEval b x.length) (M.initial x)
-    M.halted c ∧ (c.state = M.accept ↔ L x)
+    M.halted c = true ∧ (c.state = M.accept ↔ L x)
 
 def NTM.DecidesWithin (M : NTM) (L : OfficialLanguage) (b : PolyBound) : Prop :=
   ∀ x,
@@ -148,9 +148,8 @@ def DTM.toNTM (M : DTM) : NTM :=
 
 theorem nextConfigs_toNTM (M : DTM) (c : Config) :
     M.toNTM.nextConfigs c = [M.next c] := by
-  by_cases h : M.halted c
-  · simp [NTM.nextConfigs, DTM.toNTM, NTM.halted, DTM.halted, DTM.next, h]
-  · simp [NTM.nextConfigs, DTM.toNTM, NTM.halted, DTM.halted, DTM.next, h]
+  cases h : M.halted c <;>
+    simp [NTM.nextConfigs, DTM.toNTM, NTM.halted, DTM.halted, DTM.next, h]
 
 theorem runSet_toNTM_singleton (M : DTM) (n : Nat) (c : Config) :
     M.toNTM.runSet n [c] = [M.run n c] := by
