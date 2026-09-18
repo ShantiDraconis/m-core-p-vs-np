@@ -8,7 +8,7 @@ def fixesOneFalse : Restriction
 
 def showCase (name : String) (ρ : Restriction) (t : FormulaTree) : IO Unit := do
   let m := metrics 1 1 ρ t
-  let pays : Bool := decide (PaysOff 1 1 ρ t)
+  let pays : Bool := decide (m.payoffLhs < m.potentialBefore)
   IO.println s!"CASE={name}"
   IO.println s!"vars={m.varsBefore}->{m.varsAfter} delta={m.deltaVars}"
   IO.println s!"mu={m.muBefore}->{m.muAfter} delta={m.deltaMu}"
