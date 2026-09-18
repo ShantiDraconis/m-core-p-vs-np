@@ -37,6 +37,16 @@ jobs:
           if grep -R -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' audit/OfficialModel --include='*.lean'; then exit 1; fi
           if grep -E 'sorryAx' /tmp/f1-operational.log /tmp/f1-match.log; then exit 1; fi
 
+      - name: F2 fixed-universe witness boundary
+        run: |
+          set -euo pipefail
+          cat audit/OfficialModel/OperationalTM.lean > /tmp/F2Combined.lean
+          cat audit/OfficialModel/F2_FixedWitness.lean >> /tmp/F2Combined.lean
+          lake env lean /tmp/F2Combined.lean 2>&1 | tee /tmp/f2-fixed.log
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' audit/OfficialModel/F2_FixedWitness.lean; then exit 1; fi
+          if grep -R -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' audit/OfficialModel/F2_FixedWitness.lean; then exit 1; fi
+          if grep -E 'sorryAx|Classical\.choice' /tmp/f2-fixed.log; then exit 1; fi
+
       - name: SAT semantic core and explicit boundaries
         run: |
           set -euo pipefail
