@@ -146,10 +146,15 @@ def DTM.toNTM (M : DTM) : NTM :=
     reject := M.reject
     delta := fun q s => [M.delta q s] }
 
+theorem halted_toNTM (M : DTM) (c : Config) :
+    M.toNTM.halted c = M.halted c := rfl
+
 theorem nextConfigs_toNTM (M : DTM) (c : Config) :
     M.toNTM.nextConfigs c = [M.next c] := by
+  unfold NTM.nextConfigs DTM.next
+  rw [halted_toNTM]
   cases h : M.halted c <;>
-    simp [NTM.nextConfigs, DTM.toNTM, NTM.halted, DTM.halted, DTM.next, h]
+    simp [h, DTM.toNTM]
 
 theorem runSet_toNTM_singleton (M : DTM) (n : Nat) (c : Config) :
     M.toNTM.runSet n [c] = [M.run n c] := by
@@ -197,6 +202,7 @@ def canonicalInterface : MCore.ClassicalComplexityInterface OfficialLanguage :=
     inNP := OfficialNP
     p_subset_np := officialP_subset_officialNP }
 
+#print axioms Audit.OfficialModel.halted_toNTM
 #print axioms Audit.OfficialModel.nextConfigs_toNTM
 #print axioms Audit.OfficialModel.runSet_toNTM_singleton
 #print axioms Audit.OfficialModel.officialP_subset_officialNP
