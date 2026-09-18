@@ -72,6 +72,14 @@ jobs:
           grep -q ',false$' distribution.csv
           sha256sum distribution.csv | tee distribution.sha256
 
+      - name: Analyze C12 real-data baseline
+        run: |
+          set -euo pipefail
+          python3 audit/analyze_c12.py distribution.csv audit/C12_REAL_DATA_BASELINE.generated.json | tee audit/C12_REAL_DATA_BASELINE.log
+          python3 -m json.tool audit/C12_REAL_DATA_BASELINE.generated.json >/dev/null
+          grep -q '"data_rows": 630' audit/C12_REAL_DATA_BASELINE.generated.json
+          grep -q 'FINITE_DETERMINISTIC_EVIDENCE_ONLY / NO_P_VS_NP_PROMOTION' audit/C12_REAL_DATA_BASELINE.generated.json
+
       - name: C12 open-obligation and non-promotion firewall
         run: |
           set -euo pipefail
@@ -119,6 +127,7 @@ jobs:
           path: |
             distribution.csv
             distribution.sha256
+            audit/C12_REAL_DATA_BASELINE.generated.json
           if-no-files-found: error
 
       - name: Backward dense endpoint audit
@@ -129,13 +138,16 @@ jobs:
           lake env lean audit/FinalEndpoint.lean 2>&1 | tee audit/FinalEndpoint.log
           lake env lean audit/EndpointCompression.lean 2>&1 | tee audit/EndpointCompression.log
           lake env lean audit/ThreeTracks.lean 2>&1 | tee audit/ThreeTracks.log
+          lake env lean audit/ClosedDiscriminant.lean 2>&1 | tee audit/ClosedDiscriminant.log
           lake env lean audit/repro_PNP.lean 2>&1 | tee audit/repro_PNP.log
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-          if grep -E 'sorryAx' audit/repro_PNP.log audit/ThreeTracks.log; then exit 1; fi
+          if grep -E 'sorryAx' audit/repro_PNP.log audit/ThreeTracks.log audit/ClosedDiscriminant.log; then exit 1; fi
           grep -q 'PApproxNPResearchZone' audit/ThreeTracks.lean
           grep -q 'ApproximationBridge' audit/ThreeTracks.lean
           grep -F "'MCore.ThreeTracks.equality_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
           grep -F "'MCore.ThreeTracks.separation_start_to_final' does not depend on any axioms" audit/ThreeTracks.log
+          grep -F "'MCore.ClosedDiscriminant.closed_chain' does not depend on any axioms" audit/ClosedDiscriminant.log
+          grep -F "'MCore.ClosedDiscriminant.not_discriminant_iff_witness' does not depend on any axioms" audit/ClosedDiscriminant.log
           grep -q 'STATUS: SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION' audit/PUBLIC_AUDIT_MIGRATION_MANIFEST.md
           grep -q 'RESIDUE / NO TARGET_CERTIFICATE / NO MATHEMATICAL PROMOTION' audit/PNP_RESIDUE.md
