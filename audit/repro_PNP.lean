@@ -37,7 +37,7 @@ theorem endpoint_from_fixed_witness
 
 /-- Dense reproduction of the already-proved K10 conditional logic into the
 fixed-witness semantic core. This does not prove witness existence. -/
-theorem k10_reproduces_fixed_witness
+def k10_reproduces_fixed_witness
     {Language α Value : Type}
     (W : SeparationWitnessData Language α Value) :
     FixedWitness W.interface.classical :=

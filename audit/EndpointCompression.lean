@@ -55,7 +55,7 @@ def OPEN_BRIDGE {Language : Type}
     (C : ClassicalComplexityInterface Language) : Prop :=
   C12QuantitativeFrontier → F2_FixedK10WitnessExistence C
 
-theorem k10_data_to_fixed_witness
+def k10_data_to_fixed_witness
     {Language α Value : Type}
     (W : SeparationWitnessData Language α Value) :
     FixedWitness W.interface.classical :=
@@ -63,7 +63,7 @@ theorem k10_data_to_fixed_witness
     witness_in_np := W.witness_in_np
     witness_not_in_p := separation_witness_not_in_P W }
 
-theorem fixed_k10_to_witness
+def fixed_k10_to_witness
     {Language : Type}
     {C : ClassicalComplexityInterface Language}
     (W : FixedK10WitnessData C) :
