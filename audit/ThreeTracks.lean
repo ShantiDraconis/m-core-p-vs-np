@@ -126,16 +126,14 @@ theorem separation_final_to_start
     (hSub : PSubsetNP P NP)
     (hSF : SF P NP) :
     S0 P NP := by
-  classical
-  by_contra hNoWitness
-  apply hSF
-  intro L
-  constructor
-  · exact hSub L
-  · intro hNP
-    by_contra hNotP
-    apply hNoWitness
-    exact ⟨L, hNP, hNotP⟩
+  exact Classical.byContradiction (fun hNoWitness => by
+    apply hSF
+    intro L
+    constructor
+    · exact hSub L
+    · intro hNP
+      exact Classical.byContradiction (fun hNotP =>
+        hNoWitness ⟨L, hNP, hNotP⟩))
 
 theorem separation_start_final_equiv
     {Language : Type}
