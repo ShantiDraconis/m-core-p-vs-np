@@ -10,7 +10,7 @@ STATUS: SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION
 - SOURCE_CERTIFICATE: C12
 - SOURCE_RUN: `35300196456` / job `105461036544` = GREEN
 - MAIN_REPRO_RUN_AT_LOCK: `35300295285` / job `105461320557` = GREEN
-- LOCK_POLICY: audit commits may add files under `audit/` and one dense CI reproduction gate, but MUST NOT modify the locked mathematical source under `lean/MCore/`.
+- LOCK_POLICY: audit commits may add/update files under `audit/` and the dense CI reproduction gate, but MUST NOT modify the locked mathematical source under `lean/MCore/`.
 
 ## Official endpoint source
 
@@ -36,8 +36,41 @@ C11/C12 quantitative data are source evidence only. Finite family regressions an
 
 - `audit/FinalEndpoint.lean`
 - `audit/EndpointCompression.lean`
+- `audit/ThreeTracks.lean`
 - `audit/PNP_FRONTIERS_SEMANTIC_AUDIT.json`
+- `audit/PNP_THREE_TRACKS_SEMANTIC_AUDIT.json`
 - `audit/repro_PNP.lean`
 - `audit/PNP_RESIDUE.md`
 
 No `TARGET_CERTIFICATE` is emitted unless the real frontiers are discharged without new `sorry` or axioms.
+
+
+## Three-track canonical normalization
+
+Canonical file: `audit/ThreeTracks.lean`
+
+The backward audit now exposes six complete boundary definitions:
+
+- `E0` — reverse inclusion `NP ⊆ P`.
+- `EF` — equality endpoint.
+- `A0` — C12 asymptotic quantitative frontier.
+- `AF` — quantitative-zone exit, defined as `E0 ∨ S0`.
+- `S0` — explicit NP-outside-P witness.
+- `SF` — separation endpoint.
+
+The human notation `P≈NP` is represented only by
+`PApproxNPResearchZone := A0`; it is an intermediate research label and not a
+third classical possibility.
+
+Under the explicit classical input `P ⊆ NP`, the audit proves:
+- `E0 ↔ EF`;
+- `S0 ↔ SF`;
+- `AF → EF ∨ SF`.
+
+The substantive middle frontier is exactly
+`ApproximationBridge := A0 → AF`.
+
+Additional files:
+- `audit/ThreeTracks.lean`
+- `audit/PNP_THREE_TRACKS_SEMANTIC_AUDIT.json`
+

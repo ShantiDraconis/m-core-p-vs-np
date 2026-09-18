@@ -1,0 +1,93 @@
+{
+  "schema": "PNP_THREE_TRACKS_v1",
+  "status": "SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION",
+  "source_lock": "6f310228a57984b33503a458f952207561c34c60",
+  "canonical_file": "audit/ThreeTracks.lean",
+  "classical_wiring": {
+    "P_subset_NP": {
+      "status": "EXTERNAL_CLASSICAL / INPUT_TO_AUDIT",
+      "role": "known direction used symmetrically by equality and separation tracks"
+    }
+  },
+  "boundaries": [
+    {
+      "id": "E0",
+      "name": "EqualityStart",
+      "statement": "forall L, NP(L) -> P(L)",
+      "meaning": "NP subseteq P",
+      "closed_as_definition": true,
+      "proved_in_repo": false,
+      "route": "E0 + (P subseteq NP) -> EF"
+    },
+    {
+      "id": "EF",
+      "name": "EqualityFinal",
+      "statement": "forall L, P(L) <-> NP(L)",
+      "meaning": "P = NP extensionally",
+      "closed_as_definition": true,
+      "proved_in_repo": false,
+      "wiring_from_E0": "PROVED_CONDITIONALLY in audit/ThreeTracks.lean"
+    },
+    {
+      "id": "A0",
+      "name": "ApproximationStart",
+      "statement": "C12 QuantitativeCore",
+      "meaning": "asymptotic family-level payoff frontier; audit label for P≈NP research zone",
+      "closed_as_definition": true,
+      "proved_in_repo": false,
+      "warning": "finite C12 CSV does not prove A0"
+    },
+    {
+      "id": "AF",
+      "name": "ApproximationEnd",
+      "statement": "E0 or S0",
+      "meaning": "the quantitative zone exits only by producing a classical-side start condition",
+      "closed_as_definition": true,
+      "proved_in_repo": false
+    },
+    {
+      "id": "S0",
+      "name": "SeparationStart",
+      "statement": "exists L, NP(L) and not P(L)",
+      "meaning": "explicit NP \\ P witness",
+      "closed_as_definition": true,
+      "proved_in_repo": false,
+      "route": "S0 -> SF"
+    },
+    {
+      "id": "SF",
+      "name": "SeparationFinal",
+      "statement": "not EF",
+      "meaning": "P != NP extensionally",
+      "closed_as_definition": true,
+      "proved_in_repo": false,
+      "wiring_from_S0": "PROVED in audit/ThreeTracks.lean"
+    }
+  ],
+  "bridges": [
+    {
+      "id": "B_EQ",
+      "statement": "E0 -> EF under P subseteq NP",
+      "classification": "WIRING",
+      "status": "PROVED_CONDITIONALLY"
+    },
+    {
+      "id": "B_APPROX",
+      "statement": "A0 -> AF",
+      "classification": "FRONTEIRA_REAL",
+      "status": "OPEN_BRIDGE"
+    },
+    {
+      "id": "B_SEP",
+      "statement": "S0 -> SF",
+      "classification": "WIRING",
+      "status": "PROVED"
+    }
+  ],
+  "no_third_classical_outcome": {
+    "statement": "AF -> EF or SF under P subseteq NP",
+    "status": "PROVED_CONDITIONALLY",
+    "interpretation": "P≈NP is an intermediate research zone only, not a third endpoint"
+  },
+  "epistemic_note": "Closed as definition does not mean mathematically proved. E0, EF, A0, AF, S0, SF are all syntactically complete boundaries; the substantive obligations remain open."
+}
