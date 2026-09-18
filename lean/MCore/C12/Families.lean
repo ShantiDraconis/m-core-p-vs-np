@@ -6,13 +6,13 @@ namespace C12
 open C9 C10 C11 CircuitK1 CircuitC2
 
 def orFrom (start n : Nat) : FormulaTree :=
-  let xs := (List.range n).map (fun i => FormulaTree.input (start + i))
+  let xs := (List.range n).map (fun i => Circuit.input (start + i))
   match xs with
   | [] => .const false
   | x :: rest => rest.foldl (fun acc c => .or acc c) x
 
 def andFrom (start n : Nat) : FormulaTree :=
-  let xs := (List.range n).map (fun i => FormulaTree.input (start + i))
+  let xs := (List.range n).map (fun i => Circuit.input (start + i))
   match xs with
   | [] => .const true
   | x :: rest => rest.foldl (fun acc c => .and acc c) x
