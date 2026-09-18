@@ -23,5 +23,16 @@ theorem goodTrue_refuted : ¬ PositiveOn GoodTrue := by
       CircuitC2.simplify, CircuitK1.μ, CircuitK1.size, CircuitK1.depth]
   omega
 
+/-- C9 inherits the fail-closed firewall: internal structural progress does not
+promote the classical P-vs-NP endpoint. -/
+theorem c9_classical_endpoint_not_promoted :
+    ¬ Nonempty (ProofCertificate k6_dependency.target) :=
+  CircuitC8.c8_classical_endpoint_not_promoted
+
+/-- C9 also leaves the explicit K10 separation-witness obligation open. -/
+theorem c9_k10_not_promoted :
+    ¬ Nonempty (ProofCertificate k10_obligation_node) :=
+  CircuitC8.c8_k10_not_promoted
+
 end C9
 end MCore

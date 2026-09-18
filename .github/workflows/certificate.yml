@@ -1,7 +1,7 @@
 name: certificate
 on: [push, pull_request]
 jobs:
-  c8:
+  c9:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,76 +15,85 @@ jobs:
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-      - name: Preserve C1-C7 and historical chain
-        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC5 MCore.CircuitC6 MCore.CircuitC7
-      - name: Build C8 recurrence foundation
-        run: lake build MCore.CircuitC8
+      - name: Preserve K-chain and C1-C8
+        run: lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC5 MCore.CircuitC6 MCore.CircuitC7 MCore.CircuitC8
+      - name: Build C9 research layer
+        run: lake build MCore.C9.Reuse MCore.C9.Vars MCore.C9.Mu MCore.C9.Good MCore.C9.Step
       - name: Build umbrella target
         run: lake build MCore
-      - name: C8 axiom audit
+      - name: C9 semantic axiom audit
         run: |
           set -euo pipefail
-          cat > C8AxiomAudit.lean <<'EOF'
-          import MCore.CircuitC8
-          #print axioms MCore.CircuitC8.size_simplify_le_c8
-          #print axioms MCore.CircuitC8.depth_simplify_le_c8
-          #print axioms MCore.CircuitC8.potential_simplify_le_c8
-          #print axioms MCore.CircuitC8.potential_restrictedSimplified_le
-          #print axioms MCore.CircuitC8.restricted_potential_add_drop
-          #print axioms MCore.CircuitC8.drop_eq_zero_iff
-          #print axioms MCore.CircuitC8.drop_pos_iff_strict
-          #print axioms MCore.CircuitC8.rank_decreases_when_variable_fixed
-          #print axioms MCore.CircuitC8.rank_decreases_when_potential_drops
-          #print axioms MCore.CircuitC8.good_mass_supplies_aggregate_progress
-          #print axioms MCore.CircuitC8.zero_is_not_runtime_saving
-          #print axioms MCore.CircuitC8.c8_classical_endpoint_not_promoted
-          #print axioms MCore.CircuitC8.c8_k10_not_promoted
+          cat > C9AxiomAudit.lean <<'EOF'
+          import MCore.C9.Step
+          #print axioms MCore.C9.vars_const
+          #print axioms MCore.C9.vars_input
+          #print axioms MCore.C9.L1_mu_monotone
+          #print axioms MCore.C9.L2_additive
+          #print axioms MCore.C9.delta_eq_zero_iff
+          #print axioms MCore.C9.delta_pos_iff_strict
+          #print axioms MCore.C9.goodTrue_refuted
+          #print axioms MCore.C9.stateRank_decreases
+          #print axioms MCore.C9.progressStep_no_stutter
+          #print axioms MCore.C9.c9_classical_endpoint_not_promoted
+          #print axioms MCore.C9.c9_k10_not_promoted
           EOF
-          lake env lean C8AxiomAudit.lean 2>&1 | tee C8AxiomAudit.log
-          if grep -E 'sorryAx' C8AxiomAudit.log; then exit 1; fi
-          if grep -E 'depends on axioms:' C8AxiomAudit.log | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]$'; then
+          lake env lean C9AxiomAudit.lean 2>&1 | tee C9AxiomAudit.log
+          if grep -E 'sorryAx' C9AxiomAudit.log; then exit 1; fi
+          if grep -E 'depends on axioms:' C9AxiomAudit.log | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]$'; then
             echo 'Unexpected axiom dependency outside trusted Lean set'; exit 1
           fi
-      - name: C8 exact-drop regression
+      - name: C9 variable-count regressions
         run: |
           set -euo pipefail
-          cat > C8Drop.lean <<'EOF'
-          import MCore.CircuitC8
-          open MCore MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC8
-          example (ρ : Restriction) (c : Circuit) : potential (restrictedSimplified ρ c) ≤ potential c := potential_restrictedSimplified_le ρ c
-          example (ρ : Restriction) (c : Circuit) : potential (restrictedSimplified ρ c) + drop ρ c = potential c := restricted_potential_add_drop ρ c
-          example (ρ : Restriction) (c : Circuit) : drop ρ c = 0 ↔ potential (restrictedSimplified ρ c) = potential c := drop_eq_zero_iff ρ c
-          example (ρ : Restriction) (c : Circuit) : 0 < drop ρ c ↔ StrictDrop ρ c := drop_pos_iff_strict ρ c
+          cat > C9Vars.lean <<'EOF'
+          import MCore.C9.Step
+          open MCore MCore.C9 MCore.CircuitK1
+          example : vars (Circuit.and (Circuit.input 0) (Circuit.input 0)) = 1 := by native_decide
+          example : vars (Circuit.or (Circuit.input 0) (Circuit.input 1)) = 2 := by native_decide
+          example : vars (Circuit.not (Circuit.input 7)) = 1 := by native_decide
           EOF
-          lake env lean C8Drop.lean
-      - name: C8 recurrence-rank descent
+          lake env lean C9Vars.lean
+      - name: C9 zero-drop adversary regression
         run: |
           set -euo pipefail
-          cat > C8Rank.lean <<'EOF'
-          import MCore.CircuitC8
-          open MCore.CircuitC8
-          example : recurrenceRank (5 - 1) 7 < recurrenceRank 5 7 := rank_decreases_when_variable_fixed 5 7 1 7 (by decide) (by decide) (by decide)
-          example : recurrenceRank 5 6 < recurrenceRank 5 7 := rank_decreases_when_potential_drops 5 7 6 (by decide)
+          cat > C9Adversary.lean <<'EOF'
+          import MCore.C9.Step
+          open MCore MCore.C9
+          example : ¬ PositiveOn GoodTrue := goodTrue_refuted
+          example : delta CircuitK1.leavesZeroFree CircuitK1.oneInput = 0 := by
+            simp [delta, mu, D, CircuitC3.potential, CircuitC2.restrictedSimplified,
+              CircuitK1.leavesZeroFree, CircuitK1.oneInput, CircuitK1.restrict,
+              CircuitC2.simplify, CircuitK1.μ, CircuitK1.size, CircuitK1.depth]
           EOF
-          lake env lean C8Rank.lean
-      - name: C8 runtime-saving firewall
+          lake env lean C9Adversary.lean
+      - name: C9 rank-descent regression
         run: |
           set -euo pipefail
-          cat > C8Runtime.lean <<'EOF'
-          import MCore.CircuitC8
-          open MCore.CircuitC8
-          example : ¬ RuntimeSavingWitness 0 := zero_is_not_runtime_saving
+          cat > C9Rank.lean <<'EOF'
+          import MCore.C9.Step
+          open MCore MCore.C9 MCore.CircuitK1
+          def demoProgressStep : ProgressStep :=
+            { before := Circuit.input 0
+              after := Circuit.const true
+              fixedVars := 1
+              fixedVars_le := by native_decide
+              vars_after := by native_decide
+              mu_nonincrease := by native_decide
+              progress := Or.inl (by decide) }
+          example : stateRank demoProgressStep.after < stateRank demoProgressStep.before :=
+            stateRank_decreases demoProgressStep
           EOF
-          lake env lean C8Runtime.lean
-      - name: C8 epistemic non-promotion
+          lake env lean C9Rank.lean
+      - name: C9 epistemic non-promotion
         run: |
           set -euo pipefail
-          cat > C8Epistemic.lean <<'EOF'
-          import MCore.CircuitC8
-          open MCore MCore.CircuitC8
-          example : ¬ Nonempty (ProofCertificate k10_obligation_node) := c8_k10_not_promoted
-          example : ¬ Nonempty (ProofCertificate k6_dependency.target) := c8_classical_endpoint_not_promoted
+          cat > C9Epistemic.lean <<'EOF'
+          import MCore.C9.Step
+          open MCore MCore.C9
+          example : ¬ Nonempty (ProofCertificate k10_obligation_node) := c9_k10_not_promoted
+          example : ¬ Nonempty (ProofCertificate k6_dependency.target) := c9_classical_endpoint_not_promoted
           EOF
-          lake env lean C8Epistemic.lean
-      - name: Clean C8 reproduction
-        run: lake clean && lake build MCore.CircuitC8 && lake build MCore
+          lake env lean C9Epistemic.lean
+      - name: Clean C9 reproduction
+        run: lake clean && lake build MCore.C9.Step && lake build MCore
