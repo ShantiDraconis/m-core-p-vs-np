@@ -1,0 +1,69 @@
+{
+  "schema": "PNP_OPEN_BRIDGE_F1_SK_V1",
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "branch": "audit/multistate-proof-refutation-v1",
+  "head": "0cc830beae500b5bfd20faa736eb6d749522b77f",
+  "run": 35393301371,
+  "job": 105756338481,
+  "eight_by_five_regression_run": 35393301349,
+  "F1": {
+    "internal_status": "PROVED_INTERNAL_CANONICAL_MODEL",
+    "external_status": "EXTERNAL_CLASSICAL_PENDING_MATCH",
+    "files": [
+      "audit/OfficialModel/OperationalTM.lean",
+      "audit/OfficialModel/F1_OfficialModelMatch.lean"
+    ],
+    "theorems": {
+      "Audit.OfficialModel.nextConfigs_toNTM": [
+        "propext"
+      ],
+      "Audit.OfficialModel.runSet_toNTM_singleton": [
+        "propext"
+      ],
+      "Audit.OfficialModel.officialP_subset_officialNP": [
+        "propext",
+        "Quot.sound"
+      ],
+      "Audit.OfficialModel.F1_internal_to_official_P": [
+        "propext",
+        "Quot.sound"
+      ],
+      "Audit.OfficialModel.F1_internal_to_official_NP": [
+        "propext",
+        "Quot.sound"
+      ],
+      "Audit.OfficialModel.F1_canonical_model_match": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    "sorryAx": false,
+    "project_axiom": false,
+    "classical_choice": false
+  },
+  "C12_SK": {
+    "rows": 1774,
+    "c12_rows": 630,
+    "c13_rows": 1144,
+    "weights": [
+      "1/2,1/2",
+      "1,2",
+      "2,1",
+      "1/10,10",
+      "10,1/10",
+      "1,1"
+    ],
+    "total_flips_vs_1_1": 0,
+    "K_status": "FINITE_ROBUSTNESS_EVIDENCE_ONLY",
+    "S_status": "OPEN_BRIDGE_STANDARD_COMPLEXITY_CALIBRATION",
+    "scientific_promotion": "NONE"
+  },
+  "sigma_research": {
+    "HC": "PARTIAL_MATCH_INTERNAL_MODEL / EXTERNAL_PENDING",
+    "Q": "PARTIAL_MATCH_FIXED_INTERNAL_UNIVERSE / EXTERNAL_PENDING",
+    "S": "BLOCKING",
+    "K": "REVIEWED_FINITE_EVIDENCE",
+    "A": "MATCH"
+  },
+  "emission": "NO_CLOSED_CLOSED_CLOSED"
+}
