@@ -87,6 +87,20 @@ jobs:
           EOF
           lake env lean C12Epistemic.lean
 
+      - name: Backward oracle A-B endpoint test
+        run: |
+          set -euo pipefail
+          lake build MCore.BackwardAudit.HypotheticalClosureOracle MCore.BackwardAudit.WithoutOracle
+          if grep -n -E 'HypotheticalClosure|HypotheticalClosureOracle' lean/MCore/BackwardAudit/WithoutOracle.lean; then exit 1; fi
+          for f in lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean lean/MCore/BackwardAudit/WithoutOracle.lean; do
+            if grep -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"; then exit 1; fi
+            if grep -n -E '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"; then exit 1; fi
+          done
+          lake env lean lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean 2>&1 | tee BackwardOracle.log
+          lake env lean lean/MCore/BackwardAudit/WithoutOracle.lean 2>&1 | tee BackwardWithout.log
+          if grep -F 'sorryAx' BackwardOracle.log BackwardWithout.log; then exit 1; fi
+          grep -F "'MCore.BackwardAudit.hypothetical_final' does not depend on any axioms" BackwardOracle.log
+          grep -F "'MCore.BackwardAudit.separation_witness_closes' does not depend on any axioms" BackwardWithout.log
       - name: Clean C12 deterministic reproduction
         run: |
           set -euo pipefail
