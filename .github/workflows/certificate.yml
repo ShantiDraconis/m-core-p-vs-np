@@ -148,6 +148,10 @@ jobs:
           python3 -m json.tool audit/PNP_THREE_TRACKS_SEMANTIC_AUDIT.json >/dev/null
           python3 -m json.tool audit/PNP_BIDIRECTIONAL_CLOSED_TEST_MATRIX.json >/dev/null
 
+          lake build MCore.BackwardAudit.ClosedDiscriminant \
+            MCore.BackwardAudit.StartToMiddle \
+            MCore.BackwardAudit.FinalToMiddle
+
           lake env lean audit/FinalEndpoint.lean 2>&1 | tee audit/FinalEndpoint.log
           lake env lean audit/EndpointCompression.lean 2>&1 | tee audit/EndpointCompression.log
           lake env lean audit/ThreeTracks.lean 2>&1 | tee audit/ThreeTracks.log
