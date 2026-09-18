@@ -1,73 +1,108 @@
 name: certificate
 on: [push, pull_request]
 jobs:
-  c11:
+  c12:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
           lake update
+
       - name: G0 fail-closed source hygiene
         run: |
           set -euo pipefail
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
           if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
-      - name: Preserve K-chain and C1-C10
+
+      - name: Preserve K-chain and C1-C11
         run: |
+          set -euo pipefail
           lake build MCore.K3 MCore.K4 MCore.K5 MCore.K6 MCore.K7 MCore.K8 MCore.K9 MCore.K10 MCore.PrizeK0 \
             MCore.CircuitK1 MCore.CircuitC2 MCore.CircuitC3 MCore.CircuitC4 MCore.CircuitC5 \
             MCore.CircuitC6 MCore.CircuitC7 MCore.CircuitC8 \
             MCore.C9.Reuse MCore.C9.Vars MCore.C9.Mu MCore.C9.Good MCore.C9.Step \
-            MCore.C10.RestrictionProgress
-      - name: Build C11 quantitative layer
-        run: lake build MCore.C11.BranchingCost c11_regression
+            MCore.C10.RestrictionProgress MCore.C11.BranchingCost c11_regression
+
+      - name: Build C12 family layer
+        run: |
+          set -euo pipefail
+          lake build MCore.C12.Families c12_gen
+
       - name: Build umbrella target
         run: lake build MCore
-      - name: C11 semantic axiom audit
+
+      - name: C12 semantic axiom audit
         run: |
           set -euo pipefail
-          cat > C11AxiomAudit.lean <<'EOF'
-          import MCore.C11.BranchingCost
-          #print axioms MCore.C11.branchingCost_exact
-          #print axioms MCore.C11.c11_classical_endpoint_not_promoted
-          #print axioms MCore.C11.c11_k10_not_promoted
+          cat > C12AxiomAudit.lean <<'EOF'
+          import MCore.C12.Families
+          #print axioms MCore.C12.c12_classical_endpoint_not_promoted
+          #print axioms MCore.C12.c12_k10_not_promoted
           EOF
-          lake env lean C11AxiomAudit.lean 2>&1 | tee C11AxiomAudit.log
-          if grep -E 'sorryAx' C11AxiomAudit.log; then exit 1; fi
-          if grep -E 'depends on axioms:' C11AxiomAudit.log | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]$'; then
+          lake env lean C12AxiomAudit.lean 2>&1 | tee C12AxiomAudit.log
+          if grep -E 'sorryAx' C12AxiomAudit.log; then exit 1; fi
+          if grep -E 'depends on axioms:' C12AxiomAudit.log | grep -Ev '^.*\[(propext|Quot\.sound|Classical\.choice)(, (propext|Quot\.sound|Classical\.choice))*\]$'; then
             echo 'Unexpected axiom dependency outside trusted Lean set'; exit 1
           fi
-      - name: C11 endpoint-language firewall
+
+      - name: C12 endpoint-language firewall
         run: |
           set -euo pipefail
-          if grep -R -n -E 'P_ne_NP|P≠NP|P != NP|P = NP' lean/MCore/C11; then
-            echo 'Classical endpoint language is forbidden inside C11'; exit 1
+          if grep -R -n -E 'P_ne_NP|P≠NP|P != NP|P = NP' lean/MCore/C12 lean/C12Gen.lean; then
+            echo 'Classical endpoint language is forbidden inside C12'; exit 1
           fi
-      - name: C11 deterministic branching-cost regression
+
+      - name: Generate C12 distribution
         run: |
           set -euo pipefail
-          lake exe c11_regression 2>&1 | tee C11Regression.log
-          grep -q 'CASE=reducible_fix0_true' C11Regression.log
-          grep -q 'CASE=one_input_free' C11Regression.log
-          grep -q 'CASE=or_fix0_true' C11Regression.log
-          grep -q 'CASE=or_fix1_false' C11Regression.log
-          grep -q 'paysOff=true' C11Regression.log
-          grep -q 'paysOff=false' C11Regression.log
-      - name: C11 open-obligation and non-promotion firewall
+          lake exe c12_gen > distribution.csv
+          head -n 5 distribution.csv
+          echo "rows=$(wc -l < distribution.csv)"
+          test "$(wc -l < distribution.csv)" -gt 100
+          grep -q '^family,n,k,seed,width,restriction,alpha,beta,' distribution.csv
+          grep -q '^or_n,' distribution.csv
+          grep -q '^and_n,' distribution.csv
+          grep -q '^reducible_n,' distribution.csv
+          grep -q '^random_k_cnf,' distribution.csv
+          grep -q ',true$' distribution.csv
+          grep -q ',false$' distribution.csv
+          sha256sum distribution.csv | tee distribution.sha256
+
+      - name: C12 open-obligation and non-promotion firewall
         run: |
           set -euo pipefail
-          cat > C11Epistemic.lean <<'EOF'
-          import MCore.C11.BranchingCost
-          open MCore MCore.C10 MCore.C11
+          cat > C12Epistemic.lean <<'EOF'
+          import MCore.C12.Families
+          open MCore MCore.C10 MCore.C11 MCore.C12
           #check VarsNonincreaseObligation
           #check ProgressCoverageObligation
           #check UniversalPayoffObligation
-          example : ¬ Nonempty (ProofCertificate k10_obligation_node) := c11_k10_not_promoted
-          example : ¬ Nonempty (ProofCertificate k6_dependency.target) := c11_classical_endpoint_not_promoted
+          #check FamilyPayoffObligation
+          example : ¬ Nonempty (ProofCertificate k10_obligation_node) := c12_k10_not_promoted
+          example : ¬ Nonempty (ProofCertificate k6_dependency.target) := c12_classical_endpoint_not_promoted
           EOF
-          lake env lean C11Epistemic.lean
-      - name: Clean C11 reproduction
-        run: lake clean && lake build MCore.C11.BranchingCost c11_regression && lake exe c11_regression && lake build MCore
+          lake env lean C12Epistemic.lean
+
+      - name: Clean C12 deterministic reproduction
+        run: |
+          set -euo pipefail
+          cp distribution.csv distribution.before.csv
+          lake clean
+          lake build MCore.C12.Families c12_gen
+          lake exe c12_gen > distribution.rebuilt.csv
+          cmp distribution.before.csv distribution.rebuilt.csv
+          lake build MCore
+          sha256sum distribution.rebuilt.csv
+
+      - name: Upload C12 distribution artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: c12-distribution
+          path: |
+            distribution.csv
+            distribution.sha256
+          if-no-files-found: error
