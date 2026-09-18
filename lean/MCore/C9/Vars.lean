@@ -17,7 +17,7 @@ def vars (t : FormulaTree) : Nat :=
   (freeVarList t).eraseDups.length
 
 @[simp] theorem vars_const (b : Bool) : vars (.const b) = 0 := by
-  cases b <;> native_decide
+  rfl
 
 @[simp] theorem vars_input (i : Nat) : vars (.input i) = 1 := by
   unfold vars freeVarList
