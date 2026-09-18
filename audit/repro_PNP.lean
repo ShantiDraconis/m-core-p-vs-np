@@ -14,7 +14,7 @@ structure OfficialModelMatch {Language : Type}
   np_match : ∀ L, C.inNP L ↔ officialNP L
 
 structure FixedWitness {Language : Type}
-    (C : ClassicalComplexityInterface Language) : Prop where
+    (C : ClassicalComplexityInterface Language) where
   witness : Language
   witness_in_np : C.inNP witness
   witness_not_in_p : ¬ C.inP witness

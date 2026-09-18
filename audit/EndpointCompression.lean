@@ -17,7 +17,7 @@ structure OfficialModelMatch {Language : Type}
 
 /-- Semantic core of a separation witness for one fixed class interface. -/
 structure FixedWitness {Language : Type}
-    (C : ClassicalComplexityInterface Language) : Prop where
+    (C : ClassicalComplexityInterface Language) where
   witness : Language
   witness_in_np : C.inNP witness
   witness_not_in_p : ¬ C.inP witness
@@ -25,7 +25,7 @@ structure FixedWitness {Language : Type}
 /-- K10 data, but tied to one fixed classical interface rather than allowing an
 existential choice of an arbitrary language universe/model. -/
 structure FixedK10WitnessData {Language : Type}
-    (C : ClassicalComplexityInterface Language) : Prop where
+    (C : ClassicalComplexityInterface Language) where
   α : Type
   Value : Type
   data : SeparationWitnessData Language α Value
