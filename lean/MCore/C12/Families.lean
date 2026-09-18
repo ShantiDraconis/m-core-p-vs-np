@@ -5,13 +5,17 @@ namespace C12
 
 open C9 C10 C11 CircuitK1 CircuitC2
 
-def orFrom (start : Nat) : Nat → FormulaTree
-  | 0 => .const false
-  | n + 1 => .or (.input (start + n)) (orFrom start n)
+def orFrom (start n : Nat) : FormulaTree :=
+  let xs := (List.range n).map (fun i => FormulaTree.input (start + i))
+  match xs with
+  | [] => .const false
+  | x :: rest => rest.foldl (fun acc c => .or acc c) x
 
-def andFrom (start : Nat) : Nat → FormulaTree
-  | 0 => .const true
-  | n + 1 => .and (.input (start + n)) (andFrom start n)
+def andFrom (start n : Nat) : FormulaTree :=
+  let xs := (List.range n).map (fun i => FormulaTree.input (start + i))
+  match xs with
+  | [] => .const true
+  | x :: rest => rest.foldl (fun acc c => .and acc c) x
 
 def orN (n : Nat) : FormulaTree := orFrom 0 n
 
@@ -40,18 +44,17 @@ def literalAt (nVars seed clauseIdx pos : Nat) : FormulaTree :=
   else
     .not (.input v)
 
-def randomClause (nVars seed clauseIdx : Nat) : Nat → FormulaTree
-  | 0 => .const false
-  | width + 1 =>
-      .or (literalAt nVars seed clauseIdx width)
-        (randomClause nVars seed clauseIdx width)
+def randomClause (nVars seed clauseIdx width : Nat) : FormulaTree :=
+  let xs := (List.range width).map (literalAt nVars seed clauseIdx)
+  match xs with
+  | [] => .const false
+  | x :: rest => rest.foldl (fun acc c => .or acc c) x
 
 def randomKCNF (nVars clauses width seed : Nat) : FormulaTree :=
-  match clauses with
-  | 0 => .const true
-  | c + 1 =>
-      .and (randomClause nVars seed c width)
-        (randomKCNF nVars c width seed)
+  let xs := (List.range clauses).map (fun c => randomClause nVars seed c width)
+  match xs with
+  | [] => .const true
+  | x :: rest => rest.foldl (fun acc c => .and acc c) x
 
 inductive Family where
   | orN
