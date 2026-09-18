@@ -122,11 +122,13 @@ theorem decodeCNF_encodeCNF (φ : CNF) :
   have hList :
       decodeList (decodeClause n) (encodeList encodeClause clauses) =
         some (clauses, []) := by
-    simpa using
-      (decodeList_encodeList_append
+    unfold decodeList encodeList
+    rw [decodeNat_encodeNat_append]
+    exact
+      decodeN_encodeNList_append
         (enc := encodeClause)
         (dec := decodeClause n)
-        hClause clauses ([] : BitStr))
+        hClause clauses ([] : BitStr)
   rw [hList]
   simp
 
