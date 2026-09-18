@@ -1,5 +1,6 @@
+import Init.Data.List.Erase
 import Init.Data.List.Lemmas
-import Init.Data.List.Perm
+import Init.Data.List.Pairwise
 import MCore.C10.RestrictionProgress
 
 namespace MCore
@@ -7,32 +8,103 @@ namespace C11
 
 open C9 C10 CircuitK1 CircuitC2
 
-/-- For natural-number variable identifiers, `eraseDups` is duplicate-free.
-This local proof keeps C11 independent of any external finite-set library. -/
-theorem eraseDups_nodup_nat : ∀ l : List Nat, l.eraseDups.Nodup
-  | [] => by
-      exact List.nodup_nil
-  | a :: as => by
-      rw [List.eraseDups_cons]
-      constructor
-      · simp
-      · exact eraseDups_nodup_nat (as.filter fun b => !b == a)
-termination_by l => l.length
-decreasing_by
-  simp only [List.length_cons]
-  have hle := List.length_filter_le (fun b => !b == a) as
-  omega
+/-- Membership invariant for the Lean 4.19 implementation of `List.eraseDups`.
+The accumulator and unprocessed input contain exactly the elements that can
+appear in the final output. -/
+theorem eraseDups_loop_mem_nat (x : Nat) :
+    ∀ (as bs : List Nat),
+      x ∈ List.eraseDups.loop as bs ↔ x ∈ as ∨ x ∈ bs := by
+  intro as
+  induction as with
+  | nil =>
+      intro bs
+      simp [List.eraseDups.loop]
+  | cons a as ih =>
+      intro bs
+      cases h : bs.elem a with
+      | false =>
+          have ha : a ∉ bs := by
+            intro ham
+            have ht : bs.elem a = true := (List.elem_iff).2 ham
+            simp [h] at ht
+          simp [List.eraseDups.loop, h, ih, ha, or_assoc, or_left_comm, or_comm]
+      | true =>
+          have ha : a ∈ bs := (List.elem_iff).1 h
+          simp [List.eraseDups.loop, h, ih, ha, or_assoc, or_left_comm, or_comm]
 
-/-- Inclusion of underlying elements cannot increase the number of distinct
-natural-number identifiers. -/
+/-- The Lean 4.19 `eraseDups` loop preserves duplicate-freedom of its
+accumulator. -/
+theorem eraseDups_loop_nodup_nat :
+    ∀ (as bs : List Nat), bs.Nodup → (List.eraseDups.loop as bs).Nodup := by
+  intro as
+  induction as with
+  | nil =>
+      intro bs hbs
+      simp only [List.eraseDups.loop]
+      unfold List.Nodup at hbs ⊢
+      rw [List.pairwise_reverse]
+      simpa [ne_comm] using hbs
+  | cons a as ih =>
+      intro bs hbs
+      cases h : bs.elem a with
+      | false =>
+          have ha : a ∉ bs := by
+            intro ham
+            have ht : bs.elem a = true := (List.elem_iff).2 ham
+            simp [h] at ht
+          simp only [List.eraseDups.loop, h]
+          apply ih
+          exact (List.nodup_cons).2 ⟨ha, hbs⟩
+      | true =>
+          simp only [List.eraseDups.loop, h]
+          exact ih bs hbs
+
+theorem mem_eraseDups_nat {x : Nat} {l : List Nat} :
+    x ∈ l.eraseDups ↔ x ∈ l := by
+  simpa [List.eraseDups] using eraseDups_loop_mem_nat x l []
+
+theorem eraseDups_nodup_nat (l : List Nat) : l.eraseDups.Nodup := by
+  simpa [List.eraseDups] using
+    (eraseDups_loop_nodup_nat l [] List.nodup_nil)
+
+/-- Lean 4.19 lacks the later-library theorem
+`Nodup.length_le_of_subset`; this is the local compatible version. -/
+theorem nodup_length_le_of_subset_nat
+    {l₁ l₂ : List Nat}
+    (h₁ : l₁.Nodup) (h₂ : l₂.Nodup) (hsub : l₁ ⊆ l₂) :
+    l₁.length ≤ l₂.length := by
+  induction l₁ generalizing l₂ with
+  | nil =>
+      simp
+  | cons a t ih =>
+      have hnod : a ∉ t ∧ t.Nodup := (List.nodup_cons).1 h₁
+      have ha : a ∈ l₂ := hsub (by simp)
+      have hsubt : t ⊆ l₂.erase a := by
+        intro x hx
+        have hxa : x ≠ a := by
+          intro hxa
+          subst x
+          exact hnod.1 hx
+        exact (List.mem_erase_of_ne hxa).2 (hsub (by simp [hx]))
+      have h₂erase : (l₂.erase a).Nodup := by
+        exact List.Pairwise.erase a h₂
+      have hih := ih hnod.2 h₂erase hsubt
+      have hlen : (l₂.erase a).length = l₂.length - 1 :=
+        List.length_erase_of_mem ha
+      simp only [List.length_cons]
+      rw [hlen] at hih
+      have hpos : 1 ≤ l₂.length := List.length_pos_of_mem ha
+      omega
+
 theorem eraseDups_length_le_of_subset
     {l₁ l₂ : List Nat} (h : l₁ ⊆ l₂) :
     l₁.eraseDups.length ≤ l₂.eraseDups.length := by
-  apply List.Nodup.length_le_of_subset (eraseDups_nodup_nat l₁)
+  apply nodup_length_le_of_subset_nat
+      (eraseDups_nodup_nat l₁) (eraseDups_nodup_nat l₂)
   intro x hx
-  have hx₁ : x ∈ l₁ := by simpa using hx
-  have hx₂ : x ∈ l₂ := h hx₁
-  simpa using hx₂
+  apply (mem_eraseDups_nat).2
+  apply h
+  exact (mem_eraseDups_nat).1 hx
 
 /-- Restriction can replace an input by a constant, but cannot introduce a new
 syntactic input identifier. -/
@@ -59,42 +131,59 @@ theorem mem_freeVarList_restrict
       · exact Or.inl (iha hx)
       · exact Or.inr (ihb hx)
 
-/-- Simplifying a negation can only retain variables from the simplified child. -/
-theorem mem_freeVarList_simplify_not
-    {x : Nat} (c : FormulaTree)
-    (hx : x ∈ freeVarList (simplify (.not c))) :
-    x ∈ freeVarList (simplify c) := by
-  cases h : simplify c with
-  | input i =>
-      simpa [simplify, h, freeVarList] using hx
-  | const b =>
-      simp [simplify, h, freeVarList] at hx
-  | not d =>
-      simpa [simplify, h, freeVarList] using hx
-  | and a b =>
-      simpa [simplify, h, freeVarList] using hx
-  | or a b =>
-      simpa [simplify, h, freeVarList] using hx
+/-- Proof-friendly local mirrors of the three simplifier constructors. -/
+def reduceNot : FormulaTree → FormulaTree
+  | .const b => .const (!b)
+  | d => .not d
 
-/-- Simplifying a conjunction can only retain variables from one of its two
-simplified children. -/
-theorem mem_freeVarList_simplify_and
-    {x : Nat} (a b : FormulaTree)
-    (hx : x ∈ freeVarList (simplify (.and a b))) :
-    x ∈ freeVarList (simplify a) ∨ x ∈ freeVarList (simplify b) := by
-  cases ha : simplify a <;> cases hb : simplify b <;>
-    simp_all [simplify, freeVarList] <;>
-    split <;> simp_all [freeVarList]
+def reduceAnd : FormulaTree → FormulaTree → FormulaTree
+  | .const false, _ => .const false
+  | _, .const false => .const false
+  | .const true, d => d
+  | d, .const true => d
+  | d, e => .and d e
 
-/-- Simplifying a disjunction can only retain variables from one of its two
-simplified children. -/
-theorem mem_freeVarList_simplify_or
-    {x : Nat} (a b : FormulaTree)
-    (hx : x ∈ freeVarList (simplify (.or a b))) :
-    x ∈ freeVarList (simplify a) ∨ x ∈ freeVarList (simplify b) := by
-  cases ha : simplify a <;> cases hb : simplify b <;>
-    simp_all [simplify, freeVarList] <;>
-    split <;> simp_all [freeVarList]
+def reduceOr : FormulaTree → FormulaTree → FormulaTree
+  | .const true, _ => .const true
+  | _, .const true => .const true
+  | .const false, d => d
+  | d, .const false => d
+  | d, e => .or d e
+
+@[simp] theorem simplify_not_eq (c : FormulaTree) :
+    simplify (.not c) = reduceNot (simplify c) := rfl
+
+@[simp] theorem simplify_and_eq (a b : FormulaTree) :
+    simplify (.and a b) = reduceAnd (simplify a) (simplify b) := rfl
+
+@[simp] theorem simplify_or_eq (a b : FormulaTree) :
+    simplify (.or a b) = reduceOr (simplify a) (simplify b) := rfl
+
+theorem mem_freeVarList_reduceNot
+    {x : Nat} {d : FormulaTree}
+    (hx : x ∈ freeVarList (reduceNot d)) :
+    x ∈ freeVarList d := by
+  cases d
+  all_goals try cases ‹Bool›
+  all_goals simp_all [reduceNot, freeVarList]
+
+theorem mem_freeVarList_reduceAnd
+    {x : Nat} {d e : FormulaTree}
+    (hx : x ∈ freeVarList (reduceAnd d e)) :
+    x ∈ freeVarList d ∨ x ∈ freeVarList e := by
+  cases d <;> cases e
+  all_goals try cases ‹Bool›
+  all_goals try cases ‹Bool›
+  all_goals simp_all [reduceAnd, freeVarList]
+
+theorem mem_freeVarList_reduceOr
+    {x : Nat} {d e : FormulaTree}
+    (hx : x ∈ freeVarList (reduceOr d e)) :
+    x ∈ freeVarList d ∨ x ∈ freeVarList e := by
+  cases d <;> cases e
+  all_goals try cases ‹Bool›
+  all_goals try cases ‹Bool›
+  all_goals simp_all [reduceOr, freeVarList]
 
 /-- The certified simplifier can delete branches and constants, but cannot
 invent a new syntactic input identifier. -/
@@ -108,15 +197,27 @@ theorem mem_freeVarList_simplify
   | const b =>
       simp [simplify, freeVarList] at hx
   | not c ih =>
-      exact ih (mem_freeVarList_simplify_not c hx)
+      apply ih
+      apply mem_freeVarList_reduceNot
+      simpa [simplify_not_eq] using hx
   | and a b iha ihb =>
-      rcases mem_freeVarList_simplify_and a b hx with ha | hb
+      have hchildren :
+          x ∈ freeVarList (simplify a) ∨
+          x ∈ freeVarList (simplify b) := by
+        apply mem_freeVarList_reduceAnd
+        simpa [simplify_and_eq] using hx
+      rcases hchildren with ha | hb
       · simp [freeVarList]
         exact Or.inl (iha ha)
       · simp [freeVarList]
         exact Or.inr (ihb hb)
   | or a b iha ihb =>
-      rcases mem_freeVarList_simplify_or a b hx with ha | hb
+      have hchildren :
+          x ∈ freeVarList (simplify a) ∨
+          x ∈ freeVarList (simplify b) := by
+        apply mem_freeVarList_reduceOr
+        simpa [simplify_or_eq] using hx
+      rcases hchildren with ha | hb
       · simp [freeVarList]
         exact Or.inl (iha ha)
       · simp [freeVarList]
