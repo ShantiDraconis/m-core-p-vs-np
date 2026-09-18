@@ -1,0 +1,125 @@
+{
+  "schema": "PNP_BACKWARD_DENSE_SEMANTIC_AUDIT_v1",
+  "status": "SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION",
+  "source_lock": {
+    "repository": "ShantiDraconis/m-core-p-vs-np",
+    "base": "6f310228a57984b33503a458f952207561c34c60",
+    "head": "6f310228a57984b33503a458f952207561c34c60",
+    "source_run": "35300196456",
+    "main_repro_run": "35300295285"
+  },
+  "official_reference": {
+    "source": "Stephen Cook, The P versus NP Problem, Clay Mathematics Institute official problem description",
+    "exact_refs": [
+      "Section 1, pp. 1-2: P and NP definitions; Problem Statement: Does P = NP?",
+      "Section 1, p. 2: P subseteq NP",
+      "Section 2, p. 4: Satisfiability and 3-SAT identified as NP-complete"
+    ],
+    "url": "https://www.claymath.org/wp-content/uploads/2022/06/pvsnp.pdf"
+  },
+  "gates": [
+    {
+      "id": "G1_OFFICIAL_ENDPOINT_DEFINITIONS",
+      "classification": "WIRING",
+      "source_kind": "EXTERNAL_CLASSICAL",
+      "reference": "Cook CMI, Section 1, pp. 1-2",
+      "hypothesis_match": "PASS_AS_REFERENCE_ONLY",
+      "conclusion_match": "PASS: endpoint shape is non-equality of the fixed P/NP language predicates",
+      "quantifier_match": "PASS: fixed language universe/model; universal equality over languages is negated",
+      "scaling_match": "PASS_AT_REFERENCE_LEVEL: polynomial time is part of the official P/NP definitions",
+      "constant_match": "N/A",
+      "axiom_audit": "EXTERNAL_REFERENCE; no imported Lean axiom"
+    },
+    {
+      "id": "G2_P_SUBSET_NP",
+      "classification": "WIRING",
+      "source_kind": "EXTERNAL_CLASSICAL",
+      "reference": "Cook CMI, Section 1, p. 2",
+      "hypothesis_match": "PASS_CLASSICAL_FACT",
+      "conclusion_match": "PASS",
+      "quantifier_match": "PASS",
+      "scaling_match": "PASS_AT_REFERENCE_LEVEL",
+      "constant_match": "N/A",
+      "axiom_audit": "Repository stores p_subset_np as explicit interface data; no endpoint promotion"
+    },
+    {
+      "id": "G3_K7_K8_DECOMPOSITION",
+      "classification": "WIRING",
+      "source_kind": "INTERNAL_STRUCTURAL",
+      "files": [
+        "lean/MCore/K7.lean",
+        "lean/MCore/K8.lean"
+      ],
+      "hypothesis_match": "PASS_FOR_INTERNAL_DECOMPOSITION_ONLY",
+      "conclusion_match": "NO_CLASSICAL_ENDPOINT_CONTENT",
+      "quantifier_match": "PASS internally: universal over arbitrary alpha/decompositions",
+      "scaling_match": "N/A",
+      "constant_match": "N/A",
+      "axiom_audit": "PASS_SOURCE_HYGIENE; C12 source run 35300196456"
+    },
+    {
+      "id": "G4_K9_CONDITIONAL_LOGIC",
+      "classification": "WIRING",
+      "source_kind": "INTERNAL_LOGIC",
+      "files": [
+        "lean/MCore/K9.lean"
+      ],
+      "hypothesis_match": "PASS conditionally: nonzero obstruction plus p_vanishes yields not-in-P",
+      "conclusion_match": "PASS conditionally: explicit NP witness outside P separates abstract predicates",
+      "quantifier_match": "PASS for a fixed supplied ClassicalComplexityInterface",
+      "scaling_match": "MISSING_FROM_INTERFACE: K9 does not itself formalize polynomial-time machine bounds",
+      "constant_match": "N/A",
+      "axiom_audit": "PASS_SOURCE_SCAN; repro_PNP.lean prints theorem axioms"
+    },
+    {
+      "id": "F1_OFFICIAL_MODEL_MATCH",
+      "classification": "FRONTEIRA_REAL",
+      "files": [
+        "lean/MCore/K9.lean",
+        "audit/FinalEndpoint.lean",
+        "audit/EndpointCompression.lean"
+      ],
+      "hypothesis_match": "MISSING: no Lean formalization in this repo equates ClassicalComplexityInterface.inP/inNP with Cook's fixed Turing-machine P/NP definitions",
+      "conclusion_match": "REQUIRED before any repository theorem can be called the official P-vs-NP endpoint",
+      "quantifier_match": "CURRENT GAP: abstract arbitrary Language versus one fixed official language universe/model",
+      "scaling_match": "MISSING: deterministic/nondeterministic polynomial-time bounds are not encoded by K9 fields",
+      "constant_match": "MISSING/NOT_APPLICABLE until polynomial bounds are formalized",
+      "axiom_audit": "NO_AXIOM_INSERTION_ALLOWED; frontier must be proved or supplied as an explicit external formalization adapter"
+    },
+    {
+      "id": "F2_FIXED_K10_WITNESS_EXISTENCE",
+      "classification": "FRONTEIRA_REAL",
+      "files": [
+        "lean/MCore/K10.lean",
+        "audit/EndpointCompression.lean"
+      ],
+      "hypothesis_match": "PARTIAL: SeparationWitnessData has the right conditional witness fields",
+      "conclusion_match": "PASS once witness data is tied to the fixed classical interface",
+      "quantifier_match": "FAIL_IN_CURRENT_K10_OPEN_OBLIGATION: current statement existentially chooses Language/alpha/Value; the endpoint requires witness data for the already-fixed official model",
+      "scaling_match": "MISSING: existence of obstruction data is not connected to a complexity-theoretic lower bound or algorithmic asymptotic",
+      "constant_match": "N/A at pure witness layer",
+      "axiom_audit": "PASS_SOURCE_SCAN; existence remains unproved and unaxiomatized"
+    },
+    {
+      "id": "OPEN_BRIDGE_C12_TO_FIXED_K10",
+      "classification": "FRONTEIRA_REAL",
+      "files": [
+        "lean/MCore/C11/BranchingCost.lean",
+        "lean/MCore/C12/Families.lean",
+        "audit/EndpointCompression.lean"
+      ],
+      "hypothesis_match": "FAIL/OPEN: finite C12 distribution is evidence, not C12QuantitativeFrontier and not witness existence",
+      "conclusion_match": "MISSING: no theorem maps PaysOff/family data to FixedK10WitnessExistence",
+      "quantifier_match": "FAIL/OPEN: CSV covers n=1..12 and finite seeds/restrictions; required bridge is asymptotic/universal over the stated family or fixed classical problem",
+      "scaling_match": "FAIL/OPEN: costBits and Potential are internal proxies; no theorem identifies them with polynomial-time runtime or a lower-bound measure",
+      "constant_match": "OPEN: generated data use alpha=beta=1; no robustness theorem over weights/constants",
+      "axiom_audit": "PASS_SOURCE_HYGIENE; OPEN_BRIDGE is defined as an obligation, never assumed globally"
+    }
+  ],
+  "compression": {
+    "core": "F1_OFFICIAL_MODEL_MATCH + F2_FIXED_K10_WITNESS_EXISTENCE -> FINAL_STATEMENT",
+    "c12_route": "F1_OFFICIAL_MODEL_MATCH + C12QuantitativeFrontier + OPEN_BRIDGE_C12_TO_FIXED_K10 -> FINAL_STATEMENT",
+    "target_certificate": "NOT_EMITTED",
+    "residue_required": true
+  }
+}

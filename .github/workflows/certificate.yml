@@ -106,3 +106,16 @@ jobs:
             distribution.csv
             distribution.sha256
           if-no-files-found: error
+
+      - name: Backward dense endpoint audit
+        run: |
+          set -euo pipefail
+          python3 -m json.tool audit/PNP_FRONTIERS_SEMANTIC_AUDIT.json >/dev/null
+          lake env lean audit/FinalEndpoint.lean 2>&1 | tee audit/FinalEndpoint.log
+          lake env lean audit/EndpointCompression.lean 2>&1 | tee audit/EndpointCompression.log
+          lake env lean audit/repro_PNP.lean 2>&1 | tee audit/repro_PNP.log
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' audit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -E 'sorryAx' audit/repro_PNP.log; then exit 1; fi
+          grep -q 'STATUS: SOURCE_CATALOG_ONLY / NO_MATHEMATICAL_PROMOTION' audit/PUBLIC_AUDIT_MIGRATION_MANIFEST.md
+          grep -q 'RESIDUE / NO TARGET_CERTIFICATE / NO MATHEMATICAL PROMOTION' audit/PNP_RESIDUE.md
