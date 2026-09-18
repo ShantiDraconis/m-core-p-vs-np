@@ -23,14 +23,41 @@ theorem eraseDups_loop_mem_nat (x : Nat) :
       intro bs
       cases h : bs.elem a with
       | false =>
-          have ha : a ∉ bs := by
-            intro ham
-            have ht : bs.elem a = true := (List.elem_iff).2 ham
-            simp [h] at ht
-          simp [List.eraseDups.loop, h, ih, ha, or_assoc, or_left_comm, or_comm]
+          simp only [List.eraseDups.loop, h]
+          rw [ih]
+          simp only [List.mem_cons]
+          constructor
+          · intro hout
+            rcases hout with hxas | hxab
+            · exact Or.inl (Or.inr hxas)
+            · rcases hxab with hxa | hxbs
+              · exact Or.inl (Or.inl hxa)
+              · exact Or.inr hxbs
+          · intro hin
+            rcases hin with hxaas | hxbs
+            · rcases hxaas with hxa | hxas
+              · exact Or.inr (Or.inl hxa)
+              · exact Or.inl hxas
+            · exact Or.inr (Or.inr hxbs)
       | true =>
           have ha : a ∈ bs := (List.elem_iff).1 h
-          simp [List.eraseDups.loop, h, ih, ha, or_assoc, or_left_comm, or_comm]
+          simp only [List.eraseDups.loop, h]
+          rw [ih]
+          simp only [List.mem_cons]
+          constructor
+          · intro hout
+            rcases hout with hxas | hxbs
+            · exact Or.inl (Or.inr hxas)
+            · exact Or.inr hxbs
+          · intro hin
+            rcases hin with hxaas | hxbs
+            · rcases hxaas with hxa | hxas
+              · have hxab : x ∈ bs := by
+                  rw [hxa]
+                  exact ha
+                exact Or.inr hxab
+              · exact Or.inl hxas
+            · exact Or.inr hxbs
 
 /-- The Lean 4.19 `eraseDups` loop preserves duplicate-freedom of its
 accumulator. -/
@@ -51,7 +78,8 @@ theorem eraseDups_loop_nodup_nat :
           have ha : a ∉ bs := by
             intro ham
             have ht : bs.elem a = true := (List.elem_iff).2 ham
-            simp [h] at ht
+            rw [h] at ht
+            exact Bool.noConfusion ht
           simp only [List.eraseDups.loop, h]
           apply ih
           exact (List.nodup_cons).2 ⟨ha, hbs⟩
@@ -174,7 +202,7 @@ theorem mem_freeVarList_reduceAnd
   cases d <;> cases e
   all_goals try cases ‹Bool›
   all_goals try cases ‹Bool›
-  all_goals simp_all [reduceAnd, freeVarList]
+  all_goals simp_all [reduceAnd, freeVarList, or_assoc]
 
 theorem mem_freeVarList_reduceOr
     {x : Nat} {d e : FormulaTree}
@@ -183,7 +211,7 @@ theorem mem_freeVarList_reduceOr
   cases d <;> cases e
   all_goals try cases ‹Bool›
   all_goals try cases ‹Bool›
-  all_goals simp_all [reduceOr, freeVarList]
+  all_goals simp_all [reduceOr, freeVarList, or_assoc]
 
 /-- The certified simplifier can delete branches and constants, but cannot
 invent a new syntactic input identifier. -/
