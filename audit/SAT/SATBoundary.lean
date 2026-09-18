@@ -21,14 +21,24 @@ def SATOfficialNPRealization (E : BitEncoding) : Prop :=
 def SATNPBridge : Prop :=
   ∃ E : BitEncoding, SATOfficialNPRealization E
 
-def CookLevinBridge : Prop :=
+structure ManyOneReduction
+    (A B : BitStr → Prop) where
+  map : BitStr → BitStr
+  correct : ∀ x, A x ↔ B (map x)
+
+/-- Semantic part of Cook-Levin after an encoding is fixed.  Polynomial-time
+computability of the map is deliberately not hidden in this structure. -/
+def CookLevinSemanticBoundary (E : BitEncoding) : Prop :=
   ∀ L : Audit.OfficialModel.OfficialLanguage,
     Audit.OfficialModel.OfficialNP L →
-    True
+    Nonempty (ManyOneReduction L (SATBits E))
 
-/-- CookLevinBridge above is intentionally not a completeness theorem; the
-actual many-one reduction type has not yet been supplied. This marker keeps
-the missing reduction semantics fail-closed. -/
-def CookLevinBridgeStatus : String := "TYPE_NOT_YET_PROMOTABLE"
+/-- The missing complexity requirement is explicit: the reduction map above
+still needs a genuine polynomial-time transducer realization. -/
+def CookLevinPolytimeMapStatus : String :=
+  "OPEN_FORMALIZATION_POLYTIME_TRANSDUCER"
+
+def CookLevinBridgeStatus : String :=
+  "SEMANTIC_REDUCTION_TYPED / POLYTIME_MAP_OPEN"
 
 end Audit.SAT
