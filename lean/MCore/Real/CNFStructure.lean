@@ -508,5 +508,45 @@ def parseCNF (s : String) : Option Circuit :=
   | some (c, []) => some c
   | _ => none
 
+
+/-- Computable recognizer for the already-frozen structural CNF predicate. -/
+def isClauseBool : Circuit → Bool
+  | .const false => true
+  | .input _ => true
+  | .not (.input _) => true
+  | .or a b => isClauseBool a && isClauseBool b
+  | _ => false
+
+def isCNFBool : Circuit → Bool
+  | .const _ => true
+  | .input _ => true
+  | .not (.input _) => true
+  | .or a b => isClauseBool a && isClauseBool b
+  | .and a b => isCNFBool a && isCNFBool b
+  | _ => false
+
+theorem isClauseBool_eq_true_iff (c : Circuit) :
+    isClauseBool c = true ↔ IsClause c := by
+  induction c with
+  | input i => simp [isClauseBool, IsClause]
+  | const b => cases b <;> simp [isClauseBool, IsClause]
+  | not c =>
+      cases c <;> simp [isClauseBool, IsClause]
+  | and a b iha ihb => simp [isClauseBool, IsClause]
+  | or a b iha ihb =>
+      simp [isClauseBool, IsClause, iha, ihb]
+
+theorem isCNFBool_eq_true_iff (c : Circuit) :
+    isCNFBool c = true ↔ IsCNF c := by
+  induction c with
+  | input i => simp [isCNFBool, IsCNF]
+  | const b => cases b <;> simp [isCNFBool, IsCNF]
+  | not c =>
+      cases c <;> simp [isCNFBool, IsCNF]
+  | and a b iha ihb =>
+      simp [isCNFBool, IsCNF, iha, ihb]
+  | or a b iha ihb =>
+      simp [isCNFBool, IsCNF, isClauseBool_eq_true_iff]
+
 end Real
 end MCore
