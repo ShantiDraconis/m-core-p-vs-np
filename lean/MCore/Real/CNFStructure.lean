@@ -514,15 +514,15 @@ def isClauseBool : Circuit → Bool
   | .const false => true
   | .input _ => true
   | .not (.input _) => true
-  | .or a b => isClauseBool a && isClauseBool b
+  | .or a b => Bool.and (isClauseBool a) (isClauseBool b)
   | _ => false
 
 def isCNFBool : Circuit → Bool
   | .const _ => true
   | .input _ => true
   | .not (.input _) => true
-  | .or a b => isClauseBool a && isClauseBool b
-  | .and a b => isCNFBool a && isCNFBool b
+  | .or a b => Bool.and (isClauseBool a) (isClauseBool b)
+  | .and a b => Bool.and (isCNFBool a) (isCNFBool b)
   | _ => false
 
 theorem bool_and_eq_true_iff (x y : Bool) :
@@ -603,10 +603,10 @@ theorem isClauseBool_eq_true_iff (c : Circuit) :
   | or a b iha ihb =>
       constructor
       · intro h
-        have hab := (bool_and_decide_eq_true_iff (isClauseBool a) (isClauseBool b)).mp h
+        have hab := (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mp h
         exact ⟨iha.mp hab.1, ihb.mp hab.2⟩
       · intro h
-        exact (bool_and_decide_eq_true_iff (isClauseBool a) (isClauseBool b)).mpr
+        exact (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mpr
           ⟨iha.mpr h.1, ihb.mpr h.2⟩
 
 theorem isCNFBool_eq_true_iff (c : Circuit) :
@@ -647,21 +647,21 @@ theorem isCNFBool_eq_true_iff (c : Circuit) :
   | and a b iha ihb =>
       constructor
       · intro h
-        have hab := (bool_and_decide_eq_true_iff (isCNFBool a) (isCNFBool b)).mp h
+        have hab := (bool_and_eq_true_iff (isCNFBool a) (isCNFBool b)).mp h
         exact ⟨iha.mp hab.1, ihb.mp hab.2⟩
       · intro h
-        exact (bool_and_decide_eq_true_iff (isCNFBool a) (isCNFBool b)).mpr
+        exact (bool_and_eq_true_iff (isCNFBool a) (isCNFBool b)).mpr
           ⟨iha.mpr h.1, ihb.mpr h.2⟩
   | or a b iha ihb =>
       constructor
       · intro h
-        have hab := (bool_and_decide_eq_true_iff (isClauseBool a) (isClauseBool b)).mp h
+        have hab := (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mp h
         exact ⟨
           (isClauseBool_eq_true_iff a).mp hab.1,
           (isClauseBool_eq_true_iff b).mp hab.2
         ⟩
       · intro h
-        exact (bool_and_decide_eq_true_iff (isClauseBool a) (isClauseBool b)).mpr
+        exact (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mpr
           ⟨
             (isClauseBool_eq_true_iff a).mpr h.1,
             (isClauseBool_eq_true_iff b).mpr h.2
