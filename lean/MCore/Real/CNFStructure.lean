@@ -55,6 +55,21 @@ theorem IsCNF_and {a b : Circuit} (ha : IsCNF a) (hb : IsCNF b) :
     IsCNF (.and a b) :=
   ⟨ha, hb⟩
 
+/-- Every structural literal is also a clause. -/
+theorem isLiteral_isClause {c : Circuit} (h : IsLiteral c) : IsClause c := by
+  cases c with
+  | input i => exact True.intro
+  | const b => cases h
+  | not c =>
+      cases c with
+      | input i => exact True.intro
+      | const b => cases h
+      | not c => cases h
+      | and a b => cases h
+      | or a b => cases h
+  | and a b => cases h
+  | or a b => cases h
+
 /-- Every literal produced by C12.literalAt has literal shape. -/
 theorem literalAt_isLiteral
     (nVars seed clauseIdx pos : Nat) :
@@ -68,6 +83,12 @@ theorem literalAt_isLiteral
   · intro h
     rw [if_neg h]
     exact True.intro
+
+/-- Every literal produced by C12.literalAt is structurally a clause. -/
+theorem literalAt_isClause
+    (nVars seed clauseIdx pos : Nat) :
+    IsClause (C12.literalAt nVars seed clauseIdx pos) :=
+  isLiteral_isClause (literalAt_isLiteral nVars seed clauseIdx pos)
 
 end Real
 end MCore
