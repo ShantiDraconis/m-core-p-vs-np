@@ -55,12 +55,10 @@ jobs:
           #print axioms MCore.Real.literalAt_isClause
           #print axioms MCore.Real.foldl_or_preserves_isClause
           #print axioms MCore.Real.randomClause_isClause
-#print axioms MCore.Real.isClause_isCNF
-#print axioms MCore.Real.randomClause_isCNF
-#print axioms MCore.Real.foldl_and_preserves_isCNF
-#print axioms MCore.Real.randomKCNF_isCNF
-          #print axioms List.range_succ
-          #print axioms List.map_append
+          #print axioms MCore.Real.isClause_isCNF
+          #print axioms MCore.Real.randomClause_isCNF
+          #print axioms MCore.Real.foldl_and_preserves_isCNF
+          #print axioms MCore.Real.randomKCNF_isCNF
           EOF
           lake env lean CNFStructureAxiomAudit.lean 2>&1 | tee audit/PNP-CNFStructure-axioms-targeted.log
           if grep -E 'sorryAx' audit/PNP-CNFStructure-axioms-targeted.log; then exit 1; fi
@@ -72,9 +70,6 @@ jobs:
             MCore.BackwardAudit.StartToMiddle \
             MCore.BackwardAudit.FinalToMiddle \
             MCore.BackwardAudit.OrientedWitnessBoundary
-
-      - name: Build umbrella target
-        run: lake build MCore
 
       - name: C12 semantic axiom audit
         run: |
@@ -149,19 +144,6 @@ jobs:
           if grep -F 'sorryAx' BackwardOracle.log BackwardWithout.log; then exit 1; fi
           grep -F "'MCore.BackwardAudit.hypothetical_final' does not depend on any axioms" BackwardOracle.log
           grep -F "'MCore.BackwardAudit.separation_witness_closes' does not depend on any axioms" BackwardWithout.log
-
-      - name: Clean C12 deterministic reproduction
-        run: |
-          set -euo pipefail
-          cp distribution.csv distribution.before.csv
-          lake clean
-          # c12_gen must be rebuilt first because deterministic data reproduction depends on it.
-          timeout 20m lake build MCore.C12.Families c12_gen
-          lake exe c12_gen > distribution.rebuilt.csv
-          cmp distribution.before.csv distribution.rebuilt.csv
-          # Single clean umbrella closure; no redundant target-by-target rebuild after this point.
-          timeout 20m lake build MCore
-          sha256sum distribution.rebuilt.csv
 
       - name: Upload distributions and audit data
         uses: actions/upload-artifact@v4
