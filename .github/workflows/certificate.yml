@@ -62,6 +62,7 @@ jobs:
           #print axioms MCore.Real.renderCNF
           #print axioms MCore.Real.WellFormedCNFString
           #print axioms MCore.Real.wellFormed_of_render
+          #print axioms MCore.Real.parseCNF
           EOF
           lake env lean CNFStructureAxiomAudit.lean 2>&1 | tee audit/PNP-CNFStructure-axioms-targeted.log
           if grep -E 'sorryAx' audit/PNP-CNFStructure-axioms-targeted.log; then exit 1; fi
