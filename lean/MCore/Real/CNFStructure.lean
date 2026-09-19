@@ -60,9 +60,9 @@ theorem literalAt_isLiteral
     (nVars seed clauseIdx pos : Nat) :
     IsLiteral (C12.literalAt nVars seed clauseIdx pos) := by
   unfold C12.literalAt
-  by_cases h : (seed + clauseIdx + pos) % 2 = 0
-  · simp [h, IsLiteral]
-  · simp [h, IsLiteral]
+  split
+  · exact trivial
+  · exact trivial
 
 end Real
 end MCore
