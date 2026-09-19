@@ -169,13 +169,27 @@ theorem randomClause_isClause
                   (List.map Nat.succ (List.range width)) := rfl
         rw [h_cons, h_tail]
       rw [h_map]
+      have h_mem_tail :
+          ∀ c ∈
+            List.map
+              (fun i => C12.literalAt nVars seed clauseIdx (Nat.succ i))
+              (List.range width),
+            IsClause c := by
+        induction List.range width with
+        | nil =>
+            intro c hc
+            cases hc
+        | cons i is ih =>
+            intro c hc
+            cases hc with
+            | head =>
+                exact literalAt_isClause nVars seed clauseIdx (Nat.succ i)
+            | tail _ hmem =>
+                exact ih _ hmem
       exact foldl_or_preserves_isClause
         _ _
         (literalAt_isClause nVars seed clauseIdx 0)
-        (by
-          intro c hc
-          rcases List.mem_map.mp hc with ⟨i, hi, rfl⟩
-          exact literalAt_isClause nVars seed clauseIdx (Nat.succ i))
+        h_mem_tail
 
 end Real
 end MCore
