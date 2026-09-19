@@ -525,6 +525,22 @@ def isCNFBool : Circuit → Bool
   | .and a b => isCNFBool a && isCNFBool b
   | _ => false
 
+theorem bool_and_eq_true_iff (x y : Bool) :
+    x && y = true ↔ x = true ∧ y = true := by
+  cases x <;> cases y
+  · constructor
+    · intro h; cases h
+    · intro h; cases h.1
+  · constructor
+    · intro h; cases h
+    · intro h; cases h.1
+  · constructor
+    · intro h; cases h
+    · intro h; cases h.2
+  · constructor
+    · intro h; exact ⟨rfl, rfl⟩
+    · intro h; rfl
+
 theorem isClauseBool_eq_true_iff (c : Circuit) :
     isClauseBool c = true ↔ IsClause c := by
   induction c with
@@ -571,25 +587,11 @@ theorem isClauseBool_eq_true_iff (c : Circuit) :
   | or a b iha ihb =>
       constructor
       · intro h
-        have ha : isClauseBool a = true := by
-          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
-          · cases h
-          · cases h
-          · exact hba
-          · exact hba
-        have hb : isClauseBool b = true := by
-          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
-          · cases h
-          · cases h
-          · cases h
-          · exact hbb
-        exact ⟨iha.mp ha, ihb.mp hb⟩
+        have hab := (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mp h
+        exact ⟨iha.mp hab.1, ihb.mp hab.2⟩
       · intro h
-        have ha : isClauseBool a = true := iha.mpr h.1
-        have hb : isClauseBool b = true := ihb.mpr h.2
-        rw [isClauseBool]
-        rw [ha, hb]
-        rfl
+        exact (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mpr
+          ⟨iha.mpr h.1, ihb.mpr h.2⟩
 
 theorem isCNFBool_eq_true_iff (c : Circuit) :
     isCNFBool c = true ↔ IsCNF c := by
@@ -629,52 +631,25 @@ theorem isCNFBool_eq_true_iff (c : Circuit) :
   | and a b iha ihb =>
       constructor
       · intro h
-        have ha : isCNFBool a = true := by
-          cases hba : isCNFBool a <;> cases hbb : isCNFBool b
-          · cases h
-          · cases h
-          · exact hba
-          · exact hba
-        have hb : isCNFBool b = true := by
-          cases hba : isCNFBool a <;> cases hbb : isCNFBool b
-          · cases h
-          · cases h
-          · cases h
-          · exact hbb
-        exact ⟨iha.mp ha, ihb.mp hb⟩
+        have hab := (bool_and_eq_true_iff (isCNFBool a) (isCNFBool b)).mp h
+        exact ⟨iha.mp hab.1, ihb.mp hab.2⟩
       · intro h
-        have ha : isCNFBool a = true := iha.mpr h.1
-        have hb : isCNFBool b = true := ihb.mpr h.2
-        rw [isCNFBool]
-        rw [ha, hb]
-        rfl
+        exact (bool_and_eq_true_iff (isCNFBool a) (isCNFBool b)).mpr
+          ⟨iha.mpr h.1, ihb.mpr h.2⟩
   | or a b iha ihb =>
       constructor
       · intro h
-        have ha : isClauseBool a = true := by
-          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
-          · cases h
-          · cases h
-          · exact hba
-          · exact hba
-        have hb : isClauseBool b = true := by
-          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
-          · cases h
-          · cases h
-          · cases h
-          · exact hbb
+        have hab := (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mp h
         exact ⟨
-          (isClauseBool_eq_true_iff a).mp ha,
-          (isClauseBool_eq_true_iff b).mp hb
+          (isClauseBool_eq_true_iff a).mp hab.1,
+          (isClauseBool_eq_true_iff b).mp hab.2
         ⟩
       · intro h
-        have ha : isClauseBool a = true :=
-          (isClauseBool_eq_true_iff a).mpr h.1
-        have hb : isClauseBool b = true :=
-          (isClauseBool_eq_true_iff b).mpr h.2
-        rw [isCNFBool]
-        rw [ha, hb]
-        rfl
+        exact (bool_and_eq_true_iff (isClauseBool a) (isClauseBool b)).mpr
+          ⟨
+            (isClauseBool_eq_true_iff a).mpr h.1,
+            (isClauseBool_eq_true_iff b).mpr h.2
+          ⟩
 
 end Real
 end MCore
