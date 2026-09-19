@@ -55,5 +55,14 @@ theorem IsCNF_and {a b : Circuit} (ha : IsCNF a) (hb : IsCNF b) :
     IsCNF (.and a b) :=
   ⟨ha, hb⟩
 
+/-- Every literal produced by C12.literalAt has literal shape. -/
+theorem literalAt_isLiteral
+    (nVars seed clauseIdx pos : Nat) :
+    IsLiteral (C12.literalAt nVars seed clauseIdx pos) := by
+  unfold C12.literalAt
+  by_cases h : (seed + clauseIdx + pos) % 2 = 0
+  · simp [h, IsLiteral]
+  · simp [h, IsLiteral]
+
 end Real
 end MCore
