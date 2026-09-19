@@ -122,8 +122,21 @@ theorem randomClause_isClause
         induction width with
         | zero => rfl
         | succ n ih =>
-            rw [List.range_succ, ih, List.range_succ, List.map_append]
-            rfl
+            have h1 : List.range (Nat.succ (Nat.succ n)) =
+                List.range (Nat.succ n) ++ [Nat.succ n] := List.range_succ
+            have h2 : List.range (Nat.succ n) =
+                0 :: List.map Nat.succ (List.range n) := ih
+            have h3 : List.map Nat.succ (List.range (Nat.succ n)) =
+                List.map Nat.succ (List.range n) ++ [Nat.succ n] := by
+              rw [List.range_succ, List.map_append]
+            calc
+              List.range (Nat.succ (Nat.succ n))
+                  = List.range (Nat.succ n) ++ [Nat.succ n] := h1
+              _ = (0 :: List.map Nat.succ (List.range n)) ++ [Nat.succ n] := by
+                    rw [h2]
+              _ = 0 :: (List.map Nat.succ (List.range n) ++ [Nat.succ n]) := rfl
+              _ = 0 :: List.map Nat.succ (List.range (Nat.succ n)) := by
+                    rw [h3]
       have h_map :
           List.map (C12.literalAt nVars seed clauseIdx)
               (List.range (Nat.succ width)) =
