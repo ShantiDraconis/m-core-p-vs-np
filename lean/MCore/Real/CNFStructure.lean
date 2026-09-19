@@ -448,7 +448,7 @@ theorem wellFormed_of_render (φ : Circuit) :
 
 /-- Parse a decimal numeral, returning the value and unconsumed characters.
     The boolean records whether at least one decimal digit was consumed. -/
-private def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
+def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
   | [], acc, seen => if seen then some (acc, []) else none
   | c :: cs, acc, seen =>
       if c.isDigit then
@@ -459,7 +459,7 @@ private def parseNatChars : List Char → Nat → Bool → Option (Nat × List C
         none
 
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
-private def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
+def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
   | fuel + 1, cs =>
       match cs with
