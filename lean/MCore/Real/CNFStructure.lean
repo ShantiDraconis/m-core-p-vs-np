@@ -178,6 +178,7 @@ theorem randomClause_isClause
               _ = 0 :: (List.map Nat.succ (List.range m) ++ [Nat.succ m]) := rfl
               _ = 0 :: List.map Nat.succ (List.range m ++ [m]) := by
                     rw [map_succ_append]
+                    rfl
               _ = 0 :: List.map Nat.succ (List.range (Nat.succ m)) := by
                     rw [range_append m]
       have h_range_width :
