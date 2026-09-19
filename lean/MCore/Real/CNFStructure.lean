@@ -405,5 +405,16 @@ theorem randomKCNF_isCNF
         (randomClause_isCNF nVars seed 0 width hwidth)
         h_mem_tail
 
+
+/-- Canonical prefix serialization of the existing Circuit AST.
+    This introduces no parallel CNF syntax: CNF remains the predicate IsCNF on Circuit. -/
+def renderCNF : Circuit → String
+  | .input i => "v(" ++ toString i ++ ")"
+  | .const true => "T"
+  | .const false => "F"
+  | .not c => "n(" ++ renderCNF c ++ ")"
+  | .and a b => "a(" ++ renderCNF a ++ "," ++ renderCNF b ++ ")"
+  | .or a b => "o(" ++ renderCNF a ++ "," ++ renderCNF b ++ ")"
+
 end Real
 end MCore
