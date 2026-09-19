@@ -1,0 +1,19 @@
+{
+  "schema": "mcore.frontier.certificate.v1",
+  "problem": "P versus NP",
+  "certified_source_sha": "969408f2d84121667319da04680893dd2978e9a6",
+  "workflow_run": 35432954976,
+  "workflow_job": 105870651044,
+  "conclusion": "SUCCESS",
+  "certified_scope": "material orientation kernel requiring a certified polynomial SAT route or a certified NP-not-P lower-bound witness",
+  "certified_theorems": [
+    "MCore.BackwardAudit.material_orientation_closes_terminal",
+    "MCore.BackwardAudit.material_orientation_still_open",
+    "MCore.BackwardAudit.typeA_closes_equality",
+    "MCore.BackwardAudit.typeB_closes_separation"
+  ],
+  "formal_status": "STRUCTURAL_ORIENTATION_CERTIFIED",
+  "mathematical_endpoint_status": "OPEN",
+  "remaining_frontier": "construct MaterialOrientation: either a polynomial-time SAT certificate with transfer, or a lower-bound witness L in NP and not in P",
+  "no_mathematical_promotion": true
+}
