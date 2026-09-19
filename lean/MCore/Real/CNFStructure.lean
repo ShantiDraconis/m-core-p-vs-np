@@ -118,47 +118,72 @@ theorem randomClause_isClause
   | zero =>
       cases Nat.not_lt_zero 0 hwidth
   | succ width =>
-      have loop_map_succ :
-          ∀ (n : Nat) (acc : List Nat),
-            List.range.loop n (List.map Nat.succ acc) =
-              List.map Nat.succ (List.range.loop n acc) := by
+      have loop_append_single :
+          ∀ (n : Nat) (acc : List Nat) (b : Nat),
+            List.range.loop n (acc ++ [b]) =
+              List.range.loop n acc ++ [b] := by
         intro n
         induction n with
         | zero =>
-            intro acc
+            intro acc b
             rfl
-        | succ k ih =>
-            intro acc
+        | succ m ih =>
+            intro acc b
+            calc
+              List.range.loop (Nat.succ m) (acc ++ [b])
+                  = List.range.loop m (m :: (acc ++ [b])) := rfl
+              _ = List.range.loop m ((m :: acc) ++ [b]) := rfl
+              _ = List.range.loop m (m :: acc) ++ [b] := ih (m :: acc) b
+              _ = List.range.loop (Nat.succ m) acc ++ [b] := rfl
+      have range_append :
+          ∀ n : Nat,
+            List.range (Nat.succ n) = List.range n ++ [n] := by
+        intro n
+        calc
+          List.range (Nat.succ n)
+              = List.range.loop (Nat.succ n) [] := rfl
+          _ = List.range.loop n [n] := rfl
+          _ = List.range.loop n ([] ++ [n]) := rfl
+          _ = List.range.loop n [] ++ [n] := loop_append_single n [] n
+          _ = List.range n ++ [n] := rfl
+      have map_succ_append :
+          ∀ (l₁ l₂ : List Nat),
+            List.map Nat.succ (l₁ ++ l₂) =
+              List.map Nat.succ l₁ ++ List.map Nat.succ l₂ := by
+        intro l₁
+        induction l₁ with
+        | nil =>
+            intro l₂
+            rfl
+        | cons x xs ih =>
+            intro l₂
             change
-              List.range.loop k
-                  (k :: List.map Nat.succ acc) =
-                List.map Nat.succ
-                  (List.range.loop k (k :: acc))
-            exact ih (k :: acc)
+              Nat.succ x :: List.map Nat.succ (xs ++ l₂) =
+                Nat.succ x :: (List.map Nat.succ xs ++ List.map Nat.succ l₂)
+            exact congrArg (List.cons (Nat.succ x)) (ih l₂)
       have h_range :
-          List.range (Nat.succ width) =
-            0 :: List.map Nat.succ (List.range width) := by
-        unfold List.range
-        unfold List.range.loop
-        change
-          List.range.loop width [width] =
-            0 :: List.map Nat.succ (List.range.loop width [])
-        induction width with
+          ∀ n : Nat,
+            List.range (Nat.succ n) =
+              0 :: List.map Nat.succ (List.range n) := by
+        intro n
+        induction n with
         | zero => rfl
-        | succ k ih =>
-            change
-              List.range.loop k [k, Nat.succ k] =
-                0 :: List.map Nat.succ (List.range.loop k [k])
-            have hmap :
-                List.range.loop k [k, Nat.succ k] =
-                  List.map Nat.succ (List.range.loop k [k, k]) := by
-              change
-                List.range.loop k (k :: List.map Nat.succ [k]) =
-                  List.map Nat.succ (List.range.loop k (k :: [k]))
-              exact loop_map_succ k (k :: [k])
-            rw [hmap]
-            congr
-            exact ih
+        | succ m ih =>
+            calc
+              List.range (Nat.succ (Nat.succ m))
+                  = List.range (Nat.succ m) ++ [Nat.succ m] :=
+                    range_append (Nat.succ m)
+              _ = (0 :: List.map Nat.succ (List.range m)) ++ [Nat.succ m] := by
+                    rw [ih]
+              _ = 0 :: (List.map Nat.succ (List.range m) ++ [Nat.succ m]) := rfl
+              _ = 0 :: List.map Nat.succ (List.range m ++ [m]) := by
+                    rw [map_succ_append]
+              _ = 0 :: List.map Nat.succ (List.range (Nat.succ m)) := by
+                    rw [range_append m]
+      have h_range_width :
+          List.range (Nat.succ width) =
+            0 :: List.map Nat.succ (List.range width) :=
+        h_range width
       have h_tail :
           List.map (C12.literalAt nVars seed clauseIdx)
               (List.map Nat.succ (List.range width)) =
@@ -177,7 +202,7 @@ theorem randomClause_isClause
               List.map
                 (fun i => C12.literalAt nVars seed clauseIdx (Nat.succ i))
                 (List.range width) := by
-        rw [h_range]
+        rw [h_range_width]
         have h_cons :
             List.map (C12.literalAt nVars seed clauseIdx)
                 (0 :: List.map Nat.succ (List.range width)) =
