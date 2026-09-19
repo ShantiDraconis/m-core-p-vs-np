@@ -446,17 +446,29 @@ theorem wellFormed_of_render (φ : Circuit) :
   | or a b iha ihb => exact WellFormedCNFString.or iha ihb
 
 
+/-- Local decimal decoder. Kept structural so the parser core has no
+    dependency on the library Char digit-classification/conversion path. -/
+def charToDigit? : Char → Option Nat
+  | '0' => some 0
+  | '1' => some 1
+  | '2' => some 2
+  | '3' => some 3
+  | '4' => some 4
+  | '5' => some 5
+  | '6' => some 6
+  | '7' => some 7
+  | '8' => some 8
+  | '9' => some 9
+  | _ => none
+
 /-- Parse a decimal numeral, returning the value and unconsumed characters.
     The boolean records whether at least one decimal digit was consumed. -/
 def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
   | [], acc, seen => if seen then some (acc, []) else none
   | c :: cs, acc, seen =>
-      if c.isDigit then
-        parseNatChars cs (10 * acc + (c.toNat - '0'.toNat)) true
-      else if seen then
-        some (acc, c :: cs)
-      else
-        none
+      match charToDigit? c with
+      | some d => parseNatChars cs (10 * acc + d) true
+      | none => if seen then some (acc, c :: cs) else none
 
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
