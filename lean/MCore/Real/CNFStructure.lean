@@ -125,10 +125,13 @@ theorem randomClause_isClause
             have h1 : List.range (Nat.succ (Nat.succ n)) =
                 List.range (Nat.succ n) ++ [Nat.succ n] := List.range_succ
             have h2 : List.range (Nat.succ n) =
-                0 :: List.map Nat.succ (List.range n) := ih
+                0 :: List.map Nat.succ (List.range n) :=
+              ih (Nat.zero_lt_succ n)
             have h3 : List.map Nat.succ (List.range (Nat.succ n)) =
                 List.map Nat.succ (List.range n) ++ [Nat.succ n] := by
               rw [List.range_succ, List.map_append]
+              have h_single : List.map Nat.succ [n] = [Nat.succ n] := rfl
+              rw [h_single]
             calc
               List.range (Nat.succ (Nat.succ n))
                   = List.range (Nat.succ n) ++ [Nat.succ n] := h1
