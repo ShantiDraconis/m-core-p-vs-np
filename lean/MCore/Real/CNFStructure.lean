@@ -101,10 +101,12 @@ theorem foldl_or_preserves_isClause
   | nil =>
       exact hacc
   | cons x xs ih =>
-      apply ih (.or acc x)
-      · exact IsClause_or hacc (hxs x (by simp))
-      · intro c hc
-        exact hxs c (by simp [hc])
+      have hx : IsClause x :=
+        hxs x (List.Mem.head xs)
+      have htail : ∀ c ∈ xs, IsClause c := by
+        intro c hc
+        exact hxs c (List.Mem.tail x hc)
+      exact ih (.or acc x) (IsClause_or hacc hx) htail
 
 /-- Every nonempty randomClause has clause shape. -/
 theorem randomClause_isClause
@@ -147,8 +149,14 @@ theorem randomClause_isClause
               List.map
                 (fun i => C12.literalAt nVars seed clauseIdx (Nat.succ i))
                 (List.range width) := by
-        rw [h_range, List.map_cons, List.map_map]
-        rfl
+        rw [h_range]
+        congr 1
+        induction List.range width with
+        | nil => rfl
+        | cons i is ih =>
+            exact congrArg
+              (fun tail => C12.literalAt nVars seed clauseIdx (Nat.succ i) :: tail)
+              ih
       rw [h_map]
       exact foldl_or_preserves_isClause
         _ _
