@@ -34,6 +34,24 @@ jobs:
           set -euo pipefail
           lake build MCore.C12.Families c12_gen
 
+      - name: Targeted build MCore.Real.CNFStructure
+        run: |
+          set -euo pipefail
+          mkdir -p audit
+          lake build MCore.Real.CNFStructure 2>&1 | tee audit/PNP-CNFStructure-targeted.log
+
+      - name: Axiom audit CNFStructure
+        run: |
+          set -euo pipefail
+          cat > CNFStructureAxiomAudit.lean <<'EOF'
+          import MCore.Real.CNFStructure
+          #print axioms MCore.Real.IsLiteral
+          #print axioms MCore.Real.IsClause
+          #print axioms MCore.Real.IsCNF
+          EOF
+          lake env lean CNFStructureAxiomAudit.lean 2>&1 | tee audit/PNP-CNFStructure-axioms-targeted.log
+          if grep -E 'sorryAx' audit/PNP-CNFStructure-axioms-targeted.log; then exit 1; fi
+
       - name: Build bidirectional structural audit
         run: |
           set -euo pipefail
