@@ -91,11 +91,10 @@ jobs:
         run: |
           set -euo pipefail
           cp distribution.csv distribution.before.csv
-          lake clean
           lake build MCore.C12.Families c12_gen
           lake exe c12_gen > distribution.rebuilt.csv
           cmp distribution.before.csv distribution.rebuilt.csv
-          lake build MCore
+          lake env lean lean/MCore/CircuitC12.lean
           sha256sum distribution.rebuilt.csv
 
       - name: Upload C12 distribution artifact
