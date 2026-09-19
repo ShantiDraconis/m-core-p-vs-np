@@ -90,5 +90,41 @@ theorem literalAt_isClause
     IsClause (C12.literalAt nVars seed clauseIdx pos) :=
   isLiteral_isClause (literalAt_isLiteral nVars seed clauseIdx pos)
 
+
+/-- Folding disjunction over clauses preserves clause shape from a clause accumulator. -/
+theorem foldl_or_preserves_isClause
+    (xs : List Circuit) (acc : Circuit)
+    (hacc : IsClause acc)
+    (hxs : ∀ c ∈ xs, IsClause c) :
+    IsClause (xs.foldl (fun a c => .or a c) acc) := by
+  induction xs generalizing acc with
+  | nil =>
+      exact hacc
+  | cons x xs ih =>
+      apply ih (.or acc x)
+      · exact IsClause_or hacc (hxs x (by simp))
+      · intro c hc
+        exact hxs c (by simp [hc])
+
+/-- Every nonempty randomClause has clause shape. -/
+theorem randomClause_isClause
+    (nVars seed clauseIdx width : Nat)
+    (hwidth : 0 < width) :
+    IsClause (C12.randomClause nVars seed clauseIdx width) := by
+  unfold C12.randomClause
+  cases width with
+  | zero =>
+      cases Nat.not_lt_zero 0 hwidth
+  | succ width =>
+      simp only [List.range_succ, List.map_append, List.map_singleton]
+      exact foldl_or_preserves_isClause
+        _ _
+        (literalAt_isClause nVars seed clauseIdx 0)
+        (by
+          intro c hc
+          simp only [List.mem_map, List.mem_range] at hc
+          rcases hc with ⟨i, hi, rfl⟩
+          exact literalAt_isClause nVars seed clauseIdx (i + 1))
+
 end Real
 end MCore
