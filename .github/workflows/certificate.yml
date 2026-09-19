@@ -62,6 +62,7 @@ jobs:
           #print axioms MCore.Real.renderCNF
           #print axioms MCore.Real.WellFormedCNFString
           #print axioms MCore.Real.wellFormed_of_render
+          #print axioms MCore.Real.charToDigit?
           #print axioms MCore.Real.parseNatChars
           #print axioms MCore.Real.parseCircuitChars
           #print axioms MCore.Real.parseCNF
