@@ -526,7 +526,7 @@ def isCNFBool : Circuit → Bool
   | _ => false
 
 theorem bool_and_eq_true_iff (x y : Bool) :
-    x && y = true ↔ x = true ∧ y = true := by
+    Bool.and x y = true ↔ x = true ∧ y = true := by
   cases x <;> cases y
   · constructor
     · intro h; cases h
