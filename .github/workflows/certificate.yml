@@ -60,6 +60,8 @@ jobs:
           #print axioms MCore.Real.foldl_and_preserves_isCNF
           #print axioms MCore.Real.randomKCNF_isCNF
           #print axioms MCore.Real.renderCNF
+          #print axioms MCore.Real.WellFormedCNFString
+          #print axioms MCore.Real.wellFormed_of_render
           EOF
           lake env lean CNFStructureAxiomAudit.lean 2>&1 | tee audit/PNP-CNFStructure-axioms-targeted.log
           if grep -E 'sorryAx' audit/PNP-CNFStructure-axioms-targeted.log; then exit 1; fi
