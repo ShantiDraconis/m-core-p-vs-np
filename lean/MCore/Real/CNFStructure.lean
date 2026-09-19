@@ -116,16 +116,32 @@ theorem randomClause_isClause
   | zero =>
       cases Nat.not_lt_zero 0 hwidth
   | succ width =>
-      change IsClause
-        ((List.map (C12.literalAt nVars seed clauseIdx) (List.range (Nat.succ width))).foldl
-          (fun acc c => .or acc c) (.const false))
+      have h_range :
+          List.range (Nat.succ width) =
+            0 :: List.map Nat.succ (List.range width) := by
+        induction width with
+        | zero => rfl
+        | succ width ih =>
+            rw [List.range_succ, ih]
+            simp only [List.map_append, List.map_cons, List.map_nil]
+            rfl
+      have h_map :
+          List.map (C12.literalAt nVars seed clauseIdx)
+              (List.range (Nat.succ width)) =
+            C12.literalAt nVars seed clauseIdx 0 ::
+              List.map
+                (fun i => C12.literalAt nVars seed clauseIdx (Nat.succ i))
+                (List.range width) := by
+        rw [h_range]
+        rfl
+      rw [h_map]
       exact foldl_or_preserves_isClause
         _ _
-        emptyClause_isClause
+        (literalAt_isClause nVars seed clauseIdx 0)
         (by
           intro c hc
           rcases List.mem_map.mp hc with ⟨i, hi, rfl⟩
-          exact literalAt_isClause nVars seed clauseIdx i)
+          exact literalAt_isClause nVars seed clauseIdx (Nat.succ i))
 
 end Real
 end MCore
