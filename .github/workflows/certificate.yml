@@ -55,6 +55,8 @@ jobs:
           #print axioms MCore.Real.literalAt_isClause
           #print axioms MCore.Real.foldl_or_preserves_isClause
           #print axioms MCore.Real.randomClause_isClause
+          #print axioms List.range_succ
+          #print axioms List.map_append
           EOF
           lake env lean CNFStructureAxiomAudit.lean 2>&1 | tee audit/PNP-CNFStructure-axioms-targeted.log
           if grep -E 'sorryAx' audit/PNP-CNFStructure-axioms-targeted.log; then exit 1; fi
