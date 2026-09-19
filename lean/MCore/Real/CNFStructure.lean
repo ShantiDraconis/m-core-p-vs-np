@@ -445,5 +445,56 @@ theorem wellFormed_of_render (φ : Circuit) :
   | and a b iha ihb => exact WellFormedCNFString.and iha ihb
   | or a b iha ihb => exact WellFormedCNFString.or iha ihb
 
+
+/-- Parse a decimal numeral, returning the value and unconsumed characters.
+    The boolean records whether at least one decimal digit was consumed. -/
+private def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
+  | [], acc, seen => if seen then some (acc, []) else none
+  | c :: cs, acc, seen =>
+      if c.isDigit then
+        parseNatChars cs (10 * acc + (c.toNat - '0'.toNat)) true
+      else if seen then
+        some (acc, c :: cs)
+      else
+        none
+
+/-- Fuelled parser for the frozen renderCNF prefix language. -/
+private def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
+  | 0, _ => none
+  | fuel + 1, cs =>
+      match cs with
+      | 'T' :: rest => some (.const true, rest)
+      | 'F' :: rest => some (.const false, rest)
+      | 'v' :: '(' :: rest =>
+          match parseNatChars rest 0 false with
+          | some (i, ')' :: tail) => some (.input i, tail)
+          | _ => none
+      | 'n' :: '(' :: rest =>
+          match parseCircuitChars fuel rest with
+          | some (c, ')' :: tail) => some (.not c, tail)
+          | _ => none
+      | 'a' :: '(' :: rest =>
+          match parseCircuitChars fuel rest with
+          | some (a, ',' :: rest') =>
+              match parseCircuitChars fuel rest' with
+              | some (b, ')' :: tail) => some (.and a b, tail)
+              | _ => none
+          | _ => none
+      | 'o' :: '(' :: rest =>
+          match parseCircuitChars fuel rest with
+          | some (a, ',' :: rest') =>
+              match parseCircuitChars fuel rest' with
+              | some (b, ')' :: tail) => some (.or a b, tail)
+              | _ => none
+          | _ => none
+      | _ => none
+
+/-- Syntactic parser for the frozen renderCNF language.
+    It parses Circuit syntax only; CNF validity is a separate predicate/check. -/
+def parseCNF (s : String) : Option Circuit :=
+  match parseCircuitChars (s.length + 1) s.toList with
+  | some (c, []) => some c
+  | _ => none
+
 end Real
 end MCore
