@@ -142,6 +142,17 @@ theorem randomClause_isClause
               _ = 0 :: (List.map Nat.succ (List.range n) ++ [Nat.succ n]) := rfl
               _ = 0 :: List.map Nat.succ (List.range (Nat.succ n)) := by
                     rw [h3]
+      have h_tail :
+          List.map (C12.literalAt nVars seed clauseIdx)
+              (List.map Nat.succ (List.range width)) =
+            List.map
+              (fun i => C12.literalAt nVars seed clauseIdx (Nat.succ i))
+              (List.range width) := by
+        induction List.range width with
+        | nil => rfl
+        | cons i is ih_tail =>
+            rw [List.map_cons, List.map_cons, List.map_cons]
+            rw [ih_tail]
       have h_map :
           List.map (C12.literalAt nVars seed clauseIdx)
               (List.range (Nat.succ width)) =
@@ -150,13 +161,13 @@ theorem randomClause_isClause
                 (fun i => C12.literalAt nVars seed clauseIdx (Nat.succ i))
                 (List.range width) := by
         rw [h_range]
-        congr 1
-        induction List.range width with
-        | nil => rfl
-        | cons i is ih =>
-            exact congrArg
-              (fun tail => C12.literalAt nVars seed clauseIdx (Nat.succ i) :: tail)
-              ih
+        have h_cons :
+            List.map (C12.literalAt nVars seed clauseIdx)
+                (0 :: List.map Nat.succ (List.range width)) =
+              C12.literalAt nVars seed clauseIdx 0 ::
+                List.map (C12.literalAt nVars seed clauseIdx)
+                  (List.map Nat.succ (List.range width)) := rfl
+        rw [h_cons, h_tail]
       rw [h_map]
       exact foldl_or_preserves_isClause
         _ _
