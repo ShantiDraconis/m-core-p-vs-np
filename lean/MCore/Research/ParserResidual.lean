@@ -1,4 +1,4 @@
-import MCore.Real.CNFStructure
+import MCore.Research.ParallelClosure
 
 namespace MCore.Real
 
