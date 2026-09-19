@@ -234,5 +234,147 @@ theorem randomClause_isClause
         (literalAt_isClause nVars seed clauseIdx 0)
         h_mem_tail
 
+
+/-- Folding conjunction over CNF formulas preserves CNF shape from a CNF accumulator. -/
+theorem foldl_and_preserves_isCNF
+    (xs : List Circuit) (acc : Circuit)
+    (hacc : IsCNF acc)
+    (hxs : ∀ c ∈ xs, IsCNF c) :
+    IsCNF (xs.foldl (fun a c => .and a c) acc) := by
+  induction xs generalizing acc with
+  | nil =>
+      exact hacc
+  | cons x xs ih =>
+      have hx : IsCNF x :=
+        hxs x (List.Mem.head xs)
+      have htail : ∀ c ∈ xs, IsCNF c := by
+        intro c hc
+        exact hxs c (List.Mem.tail x hc)
+      exact ih (.and acc x) (IsCNF_and hacc hx) htail
+
+/-- Every randomKCNF with positive clause count and width has CNF shape. -/
+theorem randomKCNF_isCNF
+    (nVars clauses width seed : Nat)
+    (hclauses : 0 < clauses)
+    (hwidth : 0 < width) :
+    IsCNF (C12.randomKCNF nVars clauses width seed) := by
+  unfold C12.randomKCNF
+  cases clauses with
+  | zero =>
+      cases Nat.not_lt_zero 0 hclauses
+  | succ clauses =>
+      have h_range :
+          ∀ n : Nat,
+            List.range (Nat.succ n) =
+              0 :: List.map Nat.succ (List.range n) := by
+        intro n
+        induction n with
+        | zero => rfl
+        | succ m ih =>
+            have loop_append_single :
+                ∀ (k : Nat) (acc : List Nat) (b : Nat),
+                  List.range.loop k (acc ++ [b]) =
+                    List.range.loop k acc ++ [b] := by
+              intro k
+              induction k with
+              | zero =>
+                  intro acc b
+                  rfl
+              | succ k ihk =>
+                  intro acc b
+                  calc
+                    List.range.loop (Nat.succ k) (acc ++ [b])
+                        = List.range.loop k (k :: (acc ++ [b])) := rfl
+                    _ = List.range.loop k ((k :: acc) ++ [b]) := rfl
+                    _ = List.range.loop k (k :: acc) ++ [b] := ihk (k :: acc) b
+                    _ = List.range.loop (Nat.succ k) acc ++ [b] := rfl
+            have range_append :
+                ∀ k : Nat,
+                  List.range (Nat.succ k) = List.range k ++ [k] := by
+              intro k
+              calc
+                List.range (Nat.succ k)
+                    = List.range.loop (Nat.succ k) [] := rfl
+                _ = List.range.loop k [k] := rfl
+                _ = List.range.loop k ([] ++ [k]) := rfl
+                _ = List.range.loop k [] ++ [k] := loop_append_single k [] k
+                _ = List.range k ++ [k] := rfl
+            have map_succ_append :
+                ∀ (l₁ l₂ : List Nat),
+                  List.map Nat.succ (l₁ ++ l₂) =
+                    List.map Nat.succ l₁ ++ List.map Nat.succ l₂ := by
+              intro l₁
+              induction l₁ with
+              | nil =>
+                  intro l₂
+                  rfl
+              | cons x xs ihxs =>
+                  intro l₂
+                  change
+                    Nat.succ x :: List.map Nat.succ (xs ++ l₂) =
+                      Nat.succ x ::
+                        (List.map Nat.succ xs ++ List.map Nat.succ l₂)
+                  exact congrArg (List.cons (Nat.succ x)) (ihxs l₂)
+            calc
+              List.range (Nat.succ (Nat.succ m))
+                  = List.range (Nat.succ m) ++ [Nat.succ m] :=
+                    range_append (Nat.succ m)
+              _ = (0 :: List.map Nat.succ (List.range m)) ++ [Nat.succ m] := by
+                    rw [ih]
+              _ = 0 :: (List.map Nat.succ (List.range m) ++ [Nat.succ m]) := rfl
+              _ = 0 :: List.map Nat.succ (List.range m ++ [m]) := by
+                    rw [map_succ_append]
+                    rfl
+              _ = 0 :: List.map Nat.succ (List.range (Nat.succ m)) := by
+                    rw [range_append m]
+      have h_range_clauses :
+          List.range (Nat.succ clauses) =
+            0 :: List.map Nat.succ (List.range clauses) :=
+        h_range clauses
+      rw [h_range_clauses]
+      have h_tail :
+          List.map
+              (fun c => C12.randomClause nVars seed c width)
+              (List.map Nat.succ (List.range clauses)) =
+            List.map
+              (fun c => C12.randomClause nVars seed (Nat.succ c) width)
+              (List.range clauses) := by
+        induction List.range clauses with
+        | nil => rfl
+        | cons i is ih_tail =>
+            rw [List.map_cons, List.map_cons, List.map_cons]
+            rw [ih_tail]
+      have h_cons :
+          List.map
+              (fun c => C12.randomClause nVars seed c width)
+              (0 :: List.map Nat.succ (List.range clauses)) =
+            C12.randomClause nVars seed 0 width ::
+              List.map
+                (fun c => C12.randomClause nVars seed (Nat.succ c) width)
+                (List.range clauses) := by
+        rw [List.map_cons, h_tail]
+      rw [h_cons]
+      have h_mem_tail :
+          ∀ c ∈
+            List.map
+              (fun i => C12.randomClause nVars seed (Nat.succ i) width)
+              (List.range clauses),
+            IsCNF c := by
+        induction List.range clauses with
+        | nil =>
+            intro c hc
+            cases hc
+        | cons i is ih =>
+            intro c hc
+            cases hc with
+            | head =>
+                exact randomClause_isClause nVars seed (Nat.succ i) width hwidth
+            | tail _ hmem =>
+                exact ih _ hmem
+      exact foldl_and_preserves_isCNF
+        _ _
+        (randomClause_isClause nVars seed 0 width hwidth)
+        h_mem_tail
+
 end Real
 end MCore
