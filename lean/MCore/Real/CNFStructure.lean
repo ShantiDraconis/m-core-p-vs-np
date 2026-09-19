@@ -122,8 +122,7 @@ theorem randomClause_isClause
         (literalAt_isClause nVars seed clauseIdx 0)
         (by
           intro c hc
-          simp only [List.mem_map, List.mem_range] at hc
-          rcases hc with ⟨i, hi, rfl⟩
+          rcases List.mem_map.mp hc with ⟨i, hi, rfl⟩
           exact literalAt_isClause nVars seed clauseIdx (i + 1))
 
 end Real
