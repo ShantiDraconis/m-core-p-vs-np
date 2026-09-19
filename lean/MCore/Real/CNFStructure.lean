@@ -45,5 +45,15 @@ def IsCNF : Circuit → Prop
 @[simp] theorem emptyClause_isCNF :
     IsCNF (.const false) := trivial
 
+/-- Structural closure of clauses under disjunction. -/
+theorem IsClause_or {a b : Circuit} (ha : IsClause a) (hb : IsClause b) :
+    IsClause (.or a b) :=
+  ⟨ha, hb⟩
+
+/-- Structural closure of CNFs under conjunction. -/
+theorem IsCNF_and {a b : Circuit} (ha : IsCNF a) (hb : IsCNF b) :
+    IsCNF (.and a b) :=
+  ⟨ha, hb⟩
+
 end Real
 end MCore
