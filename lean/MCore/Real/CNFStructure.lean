@@ -121,9 +121,8 @@ theorem randomClause_isClause
             0 :: List.map Nat.succ (List.range width) := by
         induction width with
         | zero => rfl
-        | succ width ih =>
-            rw [List.range_succ, ih]
-            simp only [List.map_append, List.map_cons, List.map_nil]
+        | succ n ih =>
+            rw [List.range_succ, ih, List.range_succ, List.map_append]
             rfl
       have h_map :
           List.map (C12.literalAt nVars seed clauseIdx)
@@ -132,7 +131,7 @@ theorem randomClause_isClause
               List.map
                 (fun i => C12.literalAt nVars seed clauseIdx (Nat.succ i))
                 (List.range width) := by
-        rw [h_range]
+        rw [h_range, List.map_cons, List.map_map]
         rfl
       rw [h_map]
       exact foldl_or_preserves_isClause
