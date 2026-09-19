@@ -235,6 +235,35 @@ theorem randomClause_isClause
         h_mem_tail
 
 
+/-- Every structural clause is also a CNF formula. -/
+theorem isClause_isCNF {c : Circuit} (h : IsClause c) : IsCNF c := by
+  cases c with
+  | input i =>
+      exact True.intro
+  | const b =>
+      cases b with
+      | false => exact True.intro
+      | true => cases h
+  | not c =>
+      cases c with
+      | input i => exact True.intro
+      | const b => cases h
+      | not c => cases h
+      | and a b => cases h
+      | or a b => cases h
+  | and a b =>
+      cases h
+  | or a b =>
+      exact h
+
+/-- Every nonempty random clause is also a CNF formula. -/
+theorem randomClause_isCNF
+    (nVars seed clauseIdx width : Nat)
+    (hwidth : 0 < width) :
+    IsCNF (C12.randomClause nVars seed clauseIdx width) :=
+  isClause_isCNF
+    (randomClause_isClause nVars seed clauseIdx width hwidth)
+
 /-- Folding conjunction over CNF formulas preserves CNF shape from a CNF accumulator. -/
 theorem foldl_and_preserves_isCNF
     (xs : List Circuit) (acc : Circuit)
@@ -368,12 +397,12 @@ theorem randomKCNF_isCNF
             intro c hc
             cases hc with
             | head =>
-                exact randomClause_isClause nVars seed (Nat.succ i) width hwidth
+                exact randomClause_isCNF nVars seed (Nat.succ i) width hwidth
             | tail _ hmem =>
                 exact ih _ hmem
       exact foldl_and_preserves_isCNF
         _ _
-        (randomClause_isClause nVars seed 0 width hwidth)
+        (randomClause_isCNF nVars seed 0 width hwidth)
         h_mem_tail
 
 end Real
