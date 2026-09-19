@@ -546,7 +546,21 @@ theorem isCNFBool_eq_true_iff (c : Circuit) :
   | and a b iha ihb =>
       simp [isCNFBool, IsCNF, iha, ihb]
   | or a b iha ihb =>
-      simp [isCNFBool, IsCNF, isClauseBool_eq_true_iff]
+      change
+        (isClauseBool a && isClauseBool b = true) ↔
+          (IsClause a ∧ IsClause b)
+      rw [Bool.and_eq_true]
+      constructor
+      · intro h
+        exact ⟨
+          (isClauseBool_eq_true_iff a).mp h.1,
+          (isClauseBool_eq_true_iff b).mp h.2
+        ⟩
+      · intro h
+        exact ⟨
+          (isClauseBool_eq_true_iff a).mpr h.1,
+          (isClauseBool_eq_true_iff b).mpr h.2
+        ⟩
 
 end Real
 end MCore
