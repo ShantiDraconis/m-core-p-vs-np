@@ -528,39 +528,153 @@ def isCNFBool : Circuit → Bool
 theorem isClauseBool_eq_true_iff (c : Circuit) :
     isClauseBool c = true ↔ IsClause c := by
   induction c with
-  | input i => simp [isClauseBool, IsClause]
-  | const b => cases b <;> simp [isClauseBool, IsClause]
+  | input i =>
+      constructor <;> intro h
+      · exact True.intro
+      · rfl
+  | const b =>
+      cases b with
+      | false =>
+          constructor <;> intro h
+          · exact True.intro
+          · rfl
+      | true =>
+          constructor <;> intro h
+          · cases h
+          · cases h
   | not c =>
-      cases c <;> simp [isClauseBool, IsClause]
-  | and a b iha ihb => simp [isClauseBool, IsClause]
+      cases c with
+      | input i =>
+          constructor <;> intro h
+          · exact True.intro
+          · rfl
+      | const b =>
+          constructor <;> intro h
+          · cases h
+          · cases h
+      | not c =>
+          constructor <;> intro h
+          · cases h
+          · cases h
+      | and a b =>
+          constructor <;> intro h
+          · cases h
+          · cases h
+      | or a b =>
+          constructor <;> intro h
+          · cases h
+          · cases h
+  | and a b iha ihb =>
+      constructor <;> intro h
+      · cases h
+      · cases h
   | or a b iha ihb =>
-      simp [isClauseBool, IsClause, iha, ihb]
+      constructor
+      · intro h
+        have ha : isClauseBool a = true := by
+          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
+          · cases h
+          · cases h
+          · exact hba
+          · exact hba
+        have hb : isClauseBool b = true := by
+          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
+          · cases h
+          · cases h
+          · cases h
+          · exact hbb
+        exact ⟨iha.mp ha, ihb.mp hb⟩
+      · intro h
+        have ha : isClauseBool a = true := iha.mpr h.1
+        have hb : isClauseBool b = true := ihb.mpr h.2
+        rw [isClauseBool]
+        rw [ha, hb]
+        rfl
 
 theorem isCNFBool_eq_true_iff (c : Circuit) :
     isCNFBool c = true ↔ IsCNF c := by
   induction c with
-  | input i => simp [isCNFBool, IsCNF]
-  | const b => cases b <;> simp [isCNFBool, IsCNF]
+  | input i =>
+      constructor <;> intro h
+      · exact True.intro
+      · rfl
+  | const b =>
+      cases b <;> constructor <;> intro h
+      · exact True.intro
+      · rfl
+      · exact True.intro
+      · rfl
   | not c =>
-      cases c <;> simp [isCNFBool, IsCNF]
+      cases c with
+      | input i =>
+          constructor <;> intro h
+          · exact True.intro
+          · rfl
+      | const b =>
+          constructor <;> intro h
+          · cases h
+          · cases h
+      | not c =>
+          constructor <;> intro h
+          · cases h
+          · cases h
+      | and a b =>
+          constructor <;> intro h
+          · cases h
+          · cases h
+      | or a b =>
+          constructor <;> intro h
+          · cases h
+          · cases h
   | and a b iha ihb =>
-      simp [isCNFBool, IsCNF, iha, ihb]
+      constructor
+      · intro h
+        have ha : isCNFBool a = true := by
+          cases hba : isCNFBool a <;> cases hbb : isCNFBool b
+          · cases h
+          · cases h
+          · exact hba
+          · exact hba
+        have hb : isCNFBool b = true := by
+          cases hba : isCNFBool a <;> cases hbb : isCNFBool b
+          · cases h
+          · cases h
+          · cases h
+          · exact hbb
+        exact ⟨iha.mp ha, ihb.mp hb⟩
+      · intro h
+        have ha : isCNFBool a = true := iha.mpr h.1
+        have hb : isCNFBool b = true := ihb.mpr h.2
+        rw [isCNFBool]
+        rw [ha, hb]
+        rfl
   | or a b iha ihb =>
       constructor
       · intro h
-        have hab : isClauseBool a = true ∧ isClauseBool b = true := by
-          simpa [isCNFBool] using h
+        have ha : isClauseBool a = true := by
+          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
+          · cases h
+          · cases h
+          · exact hba
+          · exact hba
+        have hb : isClauseBool b = true := by
+          cases hba : isClauseBool a <;> cases hbb : isClauseBool b
+          · cases h
+          · cases h
+          · cases h
+          · exact hbb
         exact ⟨
-          (isClauseBool_eq_true_iff a).mp hab.1,
-          (isClauseBool_eq_true_iff b).mp hab.2
+          (isClauseBool_eq_true_iff a).mp ha,
+          (isClauseBool_eq_true_iff b).mp hb
         ⟩
       · intro h
-        have hab : IsClause a ∧ IsClause b := h
         have ha : isClauseBool a = true :=
-          (isClauseBool_eq_true_iff a).mpr hab.1
+          (isClauseBool_eq_true_iff a).mpr h.1
         have hb : isClauseBool b = true :=
-          (isClauseBool_eq_true_iff b).mpr hab.2
-        simpa [isCNFBool, ha, hb]
+          (isClauseBool_eq_true_iff b).mpr h.2
+        rw [isCNFBool]
+        rw [ha, hb]
+        rfl
 
 end Real
 end MCore
