@@ -66,6 +66,7 @@ jobs:
           #print axioms MCore.Real.parseNatChars
           #print axioms MCore.Real.parseCircuitChars
           #print axioms MCore.Real.parseCNF
+          #print axioms MCore.Real.bool_and_eq_true_iff
           #print axioms MCore.Real.isClauseBool
           #print axioms MCore.Real.isCNFBool
           #print axioms MCore.Real.isClauseBool_eq_true_iff
