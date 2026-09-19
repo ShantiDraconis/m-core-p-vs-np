@@ -50,6 +50,7 @@ jobs:
           #print axioms MCore.Real.IsCNF
           #print axioms MCore.Real.IsClause_or
           #print axioms MCore.Real.IsCNF_and
+          #print axioms MCore.Real.literalAt_isLiteral
           EOF
           lake env lean CNFStructureAxiomAudit.lean 2>&1 | tee audit/PNP-CNFStructure-axioms-targeted.log
           if grep -E 'sorryAx' audit/PNP-CNFStructure-axioms-targeted.log; then exit 1; fi
