@@ -60,10 +60,14 @@ theorem literalAt_isLiteral
     (nVars seed clauseIdx pos : Nat) :
     IsLiteral (C12.literalAt nVars seed clauseIdx pos) := by
   unfold C12.literalAt
-  exact dite
-    ((seed + clauseIdx + pos) % 2 = 0)
-    (fun _ => True.intro)
-    (fun _ => True.intro)
+  refine Decidable.byCases
+    (p := (seed + clauseIdx + pos) % 2 = 0) ?_ ?_
+  · intro h
+    rw [if_pos h]
+    exact True.intro
+  · intro h
+    rw [if_neg h]
+    exact True.intro
 
 end Real
 end MCore
