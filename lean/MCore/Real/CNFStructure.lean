@@ -633,6 +633,27 @@ def ToDigitsFoldRoundtrip : Prop :=
         | some d => 10 * acc + d
         | none => acc) 0 = n
 
+/-- The exact theorem target at the representation boundary.  Unlike the
+    proposition-valued frontier marker, this declaration must construct the
+    roundtrip proof from Lean's actual Nat.toDigits implementation. -/
+theorem toDigitsFoldRoundtrip_target :
+    ToDigitsFoldRoundtrip := by
+  intro n
+  induction n using Nat.strong_induction_on with
+  | h n ih =>
+      unfold Nat.toDigits
+      rw [toDigits_unfold]
+      by_cases hzero : n / 10 = 0
+      · simp [Nat.toDigitsCore, hzero, charToDigit_digitChar_decimal,
+          Nat.mod_lt n (by decide)]
+      · simp [Nat.toDigitsCore, hzero]
+        have hlt : n / 10 < n := Nat.div_lt_self (Nat.zero_lt_of_ne_zero (by
+          intro hn
+          subst n
+          simp at hzero)) (by decide)
+        have hrec := ih (n / 10) hlt
+        exact hrec
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
