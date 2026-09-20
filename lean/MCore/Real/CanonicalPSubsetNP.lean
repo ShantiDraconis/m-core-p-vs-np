@@ -74,17 +74,14 @@ theorem runBranches_to_tm_run
               (toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state) = [config] := by
           simp [hstop]
-        have hnotstop :
-            !((toNTM candidate).accepting config.state ||
-              (toNTM candidate).rejecting config.state) = false := by
-          rw [hstop]
-          rfl
         have hActive :
             [config].filter (fun c =>
               !((toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state)) = [] := by
-          simp only [List.filter_cons, List.filter_nil, hnotstop]
-          rfl
+          cases hs :
+              ((toNTM candidate).accepting config.state ||
+                (toNTM candidate).rejecting config.state) <;>
+            simp [hs] at hstop ⊢
         calc
           (toNTM candidate).runBranches (n + 1) [config]
               = (toNTM candidate).runBranches n [config] := by
@@ -108,17 +105,14 @@ theorem runBranches_to_tm_run
               (toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state) = [] := by
           simp [hstop]
-        have hnotstop :
-            !((toNTM candidate).accepting config.state ||
-              (toNTM candidate).rejecting config.state) = true := by
-          rw [hstop]
-          rfl
         have hActive :
             [config].filter (fun c =>
               !((toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state)) = [config] := by
-          simp only [List.filter_cons, List.filter_nil, hnotstop]
-          rfl
+          cases hs :
+              ((toNTM candidate).accepting config.state ||
+                (toNTM candidate).rejecting config.state) <;>
+            simp [hs] at hstop ⊢
         calc
           (toNTM candidate).runBranches (n + 1) [config]
               = (toNTM candidate).runBranches n
