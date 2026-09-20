@@ -69,11 +69,22 @@ theorem runBranches_to_tm_run
             (toNTM candidate).rejecting config.state) = true := by
           rw [accept_or_reject_eq_halting]
           exact h
+        have hHalted :
+            [config].filter (fun c =>
+              (toNTM candidate).accepting c.state ||
+                (toNTM candidate).rejecting c.state) = [config] := by
+          simp [hstop]
+        have hActive :
+            [config].filter (fun c =>
+              !((toNTM candidate).accepting c.state ||
+                (toNTM candidate).rejecting c.state)) = [] := by
+          simp [hstop]
         calc
           (toNTM candidate).runBranches (n + 1) [config]
               = (toNTM candidate).runBranches n [config] := by
                   rw [NTM.runBranches]
-                  simp [hstop]
+                  rw [hActive, hHalted]
+                  rfl
           _ = [candidate.machine.run n config] := ih config
           _ = [config] := by
                 rw [tm_run_of_halted candidate config h n]
@@ -86,12 +97,23 @@ theorem runBranches_to_tm_run
             (toNTM candidate).rejecting config.state) = false := by
           rw [accept_or_reject_eq_halting]
           exact hFalse
+        have hHalted :
+            [config].filter (fun c =>
+              (toNTM candidate).accepting c.state ||
+                (toNTM candidate).rejecting c.state) = [] := by
+          simp [hstop]
+        have hActive :
+            [config].filter (fun c =>
+              !((toNTM candidate).accepting c.state ||
+                (toNTM candidate).rejecting c.state)) = [config] := by
+          simp [hstop]
         calc
           (toNTM candidate).runBranches (n + 1) [config]
               = (toNTM candidate).runBranches n
                   ((toNTM candidate).successors config) := by
                   rw [NTM.runBranches]
-                  simp [hstop]
+                  rw [hActive, hHalted]
+                  rfl
           _ = (toNTM candidate).runBranches n
                   [candidate.machine.step config] := by
                 rw [successors_toNTM]
