@@ -470,6 +470,66 @@ def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
       | some d => parseNatChars cs (10 * acc + d) true
       | none => if seen then some (acc, c :: cs) else none
 
+/-- The local decimal decoder inverts Lean's canonical decimal digit character. -/
+theorem charToDigit_digitChar {d : Nat} (hd : d < 10) :
+    charToDigit? (Nat.digitChar d) = some d := by
+  interval_cases d <;> rfl
+
+/-- Appending one decimal digit to a successfully parsed nonempty numeral
+    updates the numeric accumulator exactly as the parser does. -/
+theorem parseNatChars_append_digit
+    {xs tail : List Char} {v d : Nat}
+    (hxs : parseNatChars xs 0 false = some (v, []))
+    (hd : d < 10) :
+    parseNatChars (xs ++ Nat.digitChar d :: tail) 0 false =
+      parseNatChars tail (10 * v + d) true := by
+  induction xs generalizing v with
+  | nil =>
+      simp [parseNatChars] at hxs
+  | cons c cs ih =>
+      simp only [List.cons_append]
+      unfold parseNatChars at hxs ⊢
+      cases hcd : charToDigit? c with
+      | none =>
+          simp [hcd] at hxs
+      | some e =>
+          simp only [hcd]
+          have htail : parseNatChars cs (10 * 0 + e) true = some (v, []) := by
+            simpa [hcd] using hxs
+          clear hxs
+          -- The remaining suffix is already in the parser's numeric state.
+          induction cs generalizing e v with
+          | nil =>
+              simp [parseNatChars] at htail ⊢
+              cases htail
+              simpa [charToDigit_digitChar hd]
+          | cons c' cs' ihcs =>
+              unfold parseNatChars at htail ⊢
+              cases hc' : charToDigit? c' with
+              | none =>
+                  simp [hc'] at htail
+              | some e' =>
+                  simp only [hc']
+                  exact ihcs e' v (by simpa [hc'] using htail)
+
+/-- Lean's canonical decimal rendering is decoded by the local parser. -/
+theorem decimal_roundtrip : ∀ n : Nat,
+    parseNatChars (Nat.toDigits 10 n) 0 false = some (n, []) := by
+  intro n
+  induction n using Nat.strongRecOn with
+  | h n ih =>
+      rw [Nat.toDigits_eq_ite (by decide : 1 < 10)]
+      split <;> rename_i hn
+      · simp only [parseNatChars]
+        rw [charToDigit_digitChar hn]
+        rfl
+      · have hn10 : 10 ≤ n := Nat.le_of_not_gt hn
+        have hnpos : 0 < n := Nat.lt_of_lt_of_le (by decide : 0 < 10) hn10
+        have hdiv : n / 10 < n := Nat.div_lt_self hnpos (by decide)
+        have hdigit : n % 10 < 10 := Nat.mod_lt n (by decide)
+        rw [parseNatChars_append_digit (ih (n / 10) hdiv) hdigit]
+        simp [parseNatChars, Nat.div_add_mod n 10]
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
