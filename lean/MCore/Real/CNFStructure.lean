@@ -1,5 +1,4 @@
 import MCore.C12.Families
-import Init.Data.Nat.ToString
 
 namespace MCore
 namespace Real
@@ -470,68 +469,6 @@ def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
       match charToDigit? c with
       | some d => parseNatChars cs (10 * acc + d) true
       | none => if seen then some (acc, c :: cs) else none
-
-/-- The local decimal decoder inverts Lean's canonical decimal digit character. -/
-theorem charToDigit_digitChar {d : Nat} (hd : d < 10) :
-    charToDigit? (Nat.digitChar d) = some d := by
-  rcases Nat.lt_succ_iff.mp hd with hd
-  rcases Nat.le_iff_lt_or_eq.mp hd with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
-  omega
-
-/-- Appending one canonical decimal digit after a completely consumed prefix
-    continues from exactly the numeric parser state produced by that prefix. -/
-theorem parseNatChars_append_digit
-    {xs tail : List Char} {acc v d : Nat} {seen : Bool}
-    (hxs : parseNatChars xs acc seen = some (v, []))
-    (hd : d < 10) :
-    parseNatChars (xs ++ Nat.digitChar d :: tail) acc seen =
-      parseNatChars tail (10 * v + d) true := by
-  induction xs generalizing acc seen v with
-  | nil =>
-      simp only [parseNatChars] at hxs
-      split at hxs
-      · cases hxs
-        simp [parseNatChars, charToDigit_digitChar hd]
-      · contradiction
-  | cons c cs ih =>
-      simp only [List.cons_append]
-      unfold parseNatChars at hxs ⊢
-      cases hcd : charToDigit? c with
-      | none =>
-          simp [hcd] at hxs
-          split at hxs
-          · cases hxs
-          · contradiction
-      | some e =>
-          simp only [hcd]
-          have hs : parseNatChars cs (10 * acc + e) true = some (v, []) := by
-            simpa [hcd] using hxs
-          exact ih hs
-
-/-- Lean's canonical decimal rendering is decoded by the local parser. -/
-theorem decimal_roundtrip (n : Nat) :
-    parseNatChars (Nat.toDigits 10 n) 0 false = some (n, []) := by
-  induction n using Nat.strongRecOn with
-  | ind n ih =>
-      rw [Nat.toDigits_eq_ite (by decide : 1 < 10)]
-      split <;> rename_i hn
-      · simp only [parseNatChars]
-        rw [charToDigit_digitChar hn]
-        rfl
-      · have hn10 : 10 ≤ n := Nat.le_of_not_gt hn
-        have hnpos : 0 < n := Nat.lt_of_lt_of_le (by decide : 0 < 10) hn10
-        have hdiv : n / 10 < n := Nat.div_lt_self hnpos (by decide)
-        have hdigit : n % 10 < 10 := Nat.mod_lt n (by decide)
-        rw [parseNatChars_append_digit (ih (n / 10) hdiv) hdigit]
-        simpa [parseNatChars] using Nat.div_add_mod n 10
 
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
