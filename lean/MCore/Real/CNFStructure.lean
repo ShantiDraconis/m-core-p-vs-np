@@ -479,7 +479,8 @@ theorem toDigits_unfold (n : Nat) :
 theorem charToDigit_digitChar_decimal :
     (∀ d : Nat, d < 10 → charToDigit? (Nat.digitChar d) = some d) := by
   intro d hd
-  omega
+  rcases Nat.lt_succ_iff.mp hd with hd
+  interval_cases d <;> rfl
 
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
