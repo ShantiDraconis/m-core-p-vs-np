@@ -21,7 +21,7 @@ theorem failure_generator_implies_universal_failure
   intro candidate
   exact ⟨G.counterexample candidate, G.fails candidate⟩
 
-theorem universal_failure_implies_failure_generator
+noncomputable def failureGeneratorOfUniversalFailure
     {language : BitLanguage}
     (h : UniversalFailure language) :
     FailureGenerator language := by
@@ -41,7 +41,7 @@ theorem failure_generator_iff_universal_failure
   · rintro ⟨G⟩
     exact failure_generator_implies_universal_failure G
   · intro h
-    exact ⟨universal_failure_implies_failure_generator h⟩
+    exact ⟨failureGeneratorOfUniversalFailure h⟩
 
 /-- External/official predicates on the same bit-language universe.
     This structure states only semantic equivalence of class membership. -/
@@ -101,7 +101,7 @@ def InternalModelMatch :
     np_match := fun _ => Iff.rfl }
 
 #print axioms MCore.Real.FailProofAllGaps.failure_generator_implies_universal_failure
-#print axioms MCore.Real.FailProofAllGaps.universal_failure_implies_failure_generator
+#print axioms MCore.Real.FailProofAllGaps.failureGeneratorOfUniversalFailure
 #print axioms MCore.Real.FailProofAllGaps.failure_generator_iff_universal_failure
 #print axioms MCore.Real.FailProofAllGaps.internal_separation_transfers
 #print axioms MCore.Real.FailProofAllGaps.final_gap_certificate_closes
