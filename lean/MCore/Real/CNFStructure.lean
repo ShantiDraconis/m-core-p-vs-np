@@ -639,7 +639,7 @@ def ToDigitsFoldRoundtrip : Prop :=
 theorem toDigitsFoldRoundtrip_target :
     ToDigitsFoldRoundtrip := by
   intro n
-  induction n using Nat.strong_induction_on with
+  induction n using Nat.strongRecOn with
   | h n ih =>
       unfold Nat.toDigits
       rw [toDigits_unfold]
