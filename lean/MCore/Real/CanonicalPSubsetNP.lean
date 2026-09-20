@@ -1,0 +1,182 @@
+import MCore.Real.CanonicalFinalProof
+
+namespace MCore
+namespace Real
+namespace CanonicalPSubsetNP
+
+open CanonicalFinalProof
+
+def toNTM
+    (candidate : PolyDTMCandidate) :
+    NTM (Fin (candidate.stateCount + 1)) (Option Bool) :=
+  { initial := candidate.machine.initial
+    blank := candidate.machine.blank
+    transition := fun q symbol => [candidate.machine.transition q symbol]
+    accepting := fun q =>
+      Bool.and (candidate.machine.halting q) (candidate.accepting q)
+    rejecting := fun q =>
+      Bool.and (candidate.machine.halting q) (!(candidate.accepting q)) }
+
+theorem accept_or_reject_eq_halting
+    (candidate : PolyDTMCandidate)
+    (q : Fin (candidate.stateCount + 1)) :
+    (toNTM candidate).accepting q || (toNTM candidate).rejecting q =
+      candidate.machine.halting q := by
+  cases h : candidate.machine.halting q <;>
+    cases a : candidate.accepting q <;>
+    rfl
+
+theorem successors_toNTM
+    (candidate : PolyDTMCandidate)
+    (config :
+      Configuration
+        (Fin (candidate.stateCount + 1))
+        (Option Bool)) :
+    (toNTM candidate).successors config =
+      [candidate.machine.step config] := by
+  rfl
+
+theorem tm_run_of_halted
+    (candidate : PolyDTMCandidate)
+    (config :
+      Configuration
+        (Fin (candidate.stateCount + 1))
+        (Option Bool))
+    (h : candidate.machine.halting config.state = true) :
+    ∀ fuel : Nat, candidate.machine.run fuel config = config := by
+  intro fuel
+  cases fuel with
+  | zero => rfl
+  | succ n =>
+      simp [TM.run, h]
+
+theorem runBranches_to_tm_run
+    (candidate : PolyDTMCandidate)
+    (fuel : Nat)
+    (config :
+      Configuration
+        (Fin (candidate.stateCount + 1))
+        (Option Bool)) :
+    (toNTM candidate).runBranches fuel [config] =
+      [candidate.machine.run fuel config] := by
+  induction fuel generalizing config with
+  | zero =>
+      rfl
+  | succ n ih =>
+      by_cases h : candidate.machine.halting config.state = true
+      · have hstop :
+          (toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state = true := by
+          rw [accept_or_reject_eq_halting]
+          exact h
+        simp [NTM.runBranches, hstop, ih,
+          tm_run_of_halted candidate config h, TM.run, h]
+      · have hstop :
+          (toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state = false := by
+          rw [accept_or_reject_eq_halting]
+          exact Bool.eq_false_of_not_eq_true h
+        simp [NTM.runBranches, hstop, successors_toNTM,
+          ih, TM.run, h]
+
+def toNTMCandidate
+    (candidate : PolyDTMCandidate) :
+    PolyNTMCandidate :=
+  { stateCount := candidate.stateCount
+    machine := toNTM candidate
+    blank_none := candidate.blank_none
+    timeBound := candidate.timeBound
+    time_poly := candidate.time_poly }
+
+theorem correctAt_to_ntm
+    (candidate : PolyDTMCandidate)
+    (language : BitLanguage)
+    (x : BitString)
+    (hCorrect : candidate.CorrectAt language x) :
+    (toNTMCandidate candidate).CorrectAt language x := by
+  rcases hCorrect with ⟨hHalt, hAccept⟩
+  constructor
+  · intro reached hMem
+    have hRuns :=
+      runBranches_to_tm_run candidate
+        (candidate.timeBound x.length)
+        (initialTMConfig candidate.machine x)
+    change
+      reached ∈
+        (toNTM candidate).runBranches
+          (candidate.timeBound x.length)
+          [initialTMConfig candidate.machine x] at hMem
+    rw [hRuns] at hMem
+    have hEq :
+        reached =
+          candidate.machine.run
+            (candidate.timeBound x.length)
+            (initialTMConfig candidate.machine x) := by
+      simpa using hMem
+    subst reached
+    rw [accept_or_reject_eq_halting]
+    exact hHalt
+  · constructor
+    · intro hNAcc
+      rcases hNAcc with ⟨reached, hMem, hAcc⟩
+      have hRuns :=
+        runBranches_to_tm_run candidate
+          (candidate.timeBound x.length)
+          (initialTMConfig candidate.machine x)
+      change
+        reached ∈
+          (toNTM candidate).runBranches
+            (candidate.timeBound x.length)
+            [initialTMConfig candidate.machine x] at hMem
+      rw [hRuns] at hMem
+      have hEq :
+          reached =
+            candidate.machine.run
+              (candidate.timeBound x.length)
+              (initialTMConfig candidate.machine x) := by
+        simpa using hMem
+      subst reached
+      have hCandidateAccept :
+          candidate.accepting
+              (candidate.machine.run
+                (candidate.timeBound x.length)
+                (initialTMConfig candidate.machine x)).state = true := by
+        simpa [toNTM, hHalt] using hAcc
+      exact hAccept.mp hCandidateAccept
+    · intro hLanguage
+      have hCandidateAccept :
+          candidate.accepting
+              (candidate.machine.run
+                (candidate.timeBound x.length)
+                (initialTMConfig candidate.machine x)).state = true :=
+        hAccept.mpr hLanguage
+      refine ⟨
+        candidate.machine.run
+          (candidate.timeBound x.length)
+          (initialTMConfig candidate.machine x),
+        ?_, ?_⟩
+      · rw [runBranches_to_tm_run]
+        simp
+      · simp [toNTM, hHalt, hCandidateAccept]
+
+def realization_to_ntm
+    {language : BitLanguage}
+    (R : PolyDTMRealization language) :
+    PolyNTMRealization language :=
+  { candidate := toNTMCandidate R.candidate
+    decides := fun x => correctAt_to_ntm R.candidate language x (R.decides x) }
+
+theorem inP_subset_inNP
+    (language : BitLanguage) :
+    InP language → InNP language := by
+  rintro ⟨R⟩
+  exact ⟨realization_to_ntm R⟩
+
+#print axioms MCore.Real.CanonicalPSubsetNP.accept_or_reject_eq_halting
+#print axioms MCore.Real.CanonicalPSubsetNP.runBranches_to_tm_run
+#print axioms MCore.Real.CanonicalPSubsetNP.correctAt_to_ntm
+#print axioms MCore.Real.CanonicalPSubsetNP.inP_subset_inNP
+
+end CanonicalPSubsetNP
+end Real
+end MCore
