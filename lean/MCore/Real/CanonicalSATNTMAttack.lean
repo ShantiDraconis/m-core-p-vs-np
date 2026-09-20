@@ -85,8 +85,6 @@ theorem scan_run_reaches_halt
       exact scanMachine_halted_at_one
   | cons b bs ih =>
       rw [List.length_cons]
-      simp only [Nat.succ_eq_add_one]
-      rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by omega]
       rw [TM.run]
       rw [scanConfig_state]
       rw [scanMachine_not_halted_at_zero]
