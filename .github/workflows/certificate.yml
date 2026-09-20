@@ -96,6 +96,24 @@ jobs:
           lake env lean CanonicalFinalProofAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalFinalProof-axioms.log
           if grep -E 'sorryAx' audit/PNP-CanonicalFinalProof-axioms.log; then exit 1; fi
 
+      - name: Build canonical P subset NP embedding
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalPSubsetNP 2>&1 | tee audit/PNP-CanonicalPSubsetNP-targeted.log
+
+      - name: Axiom audit canonical P subset NP embedding
+        run: |
+          set -euo pipefail
+          cat > CanonicalPSubsetNPAxiomAudit.lean <<'EOF'
+          import MCore.Real.CanonicalPSubsetNP
+          #print axioms MCore.Real.CanonicalPSubsetNP.accept_or_reject_eq_halting
+          #print axioms MCore.Real.CanonicalPSubsetNP.runBranches_to_tm_run
+          #print axioms MCore.Real.CanonicalPSubsetNP.correctAt_to_ntm
+          #print axioms MCore.Real.CanonicalPSubsetNP.inP_subset_inNP
+          EOF
+          lake env lean CanonicalPSubsetNPAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalPSubsetNP-axioms.log
+          if grep -E 'sorryAx' audit/PNP-CanonicalPSubsetNP-axioms.log; then exit 1; fi
+
       - name: Build all-gap fail-proof compression
         run: |
           set -euo pipefail
