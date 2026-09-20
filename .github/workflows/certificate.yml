@@ -123,19 +123,23 @@ jobs:
       - name: Build canonical Circuit bit encoding
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBits 2>&1 | tee audit/PNP-CanonicalCircuitBits-targeted.log
+          lake build MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness 2>&1 | tee audit/PNP-CanonicalCircuitBits-targeted.log
 
       - name: Axiom audit canonical Circuit bit encoding
         run: |
           set -euo pipefail
           cat > CanonicalCircuitBitsAxiomAudit.lean <<'EOF'
           import MCore.Real.CanonicalCircuitBits
+          import MCore.Real.CanonicalSATWitness
           #print axioms MCore.Real.CanonicalCircuitBits.decodeNat_encodeNat_append
           #print axioms MCore.Real.CanonicalCircuitBits.size_le_encodeCircuit_length
           #print axioms MCore.Real.CanonicalCircuitBits.decodeCircuitCore_encode_append
           #print axioms MCore.Real.CanonicalCircuitBits.decodeCircuit_encode
           #print axioms MCore.Real.CanonicalCircuitBits.canonical_sat_encoding_closed
           #print axioms MCore.Real.CanonicalCircuitBits.encoded_sat_equivalence
+          #print axioms MCore.Real.CanonicalSATWitness.satLanguage_iff_exists_finite_witness
+          #print axioms MCore.Real.CanonicalSATWitness.varBound_le_encoded_length
+          #print axioms MCore.Real.CanonicalSATWitness.witness_bits_linear_bound
           EOF
           lake env lean CanonicalCircuitBitsAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalCircuitBits-axioms.log
           if grep -E 'sorryAx' audit/PNP-CanonicalCircuitBits-axioms.log; then exit 1; fi
