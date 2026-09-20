@@ -639,19 +639,30 @@ def ToDigitsFoldRoundtrip : Prop :=
 theorem toDigitsFoldRoundtrip_target :
     ToDigitsFoldRoundtrip := by
   intro n
-  induction n using Nat.strongRecOn with
-  | ind n ih =>
-      unfold Nat.toDigits
-      by_cases hzero : n / 10 = 0
-      · simp [Nat.toDigitsCore, hzero, charToDigit_digitChar_decimal,
-          Nat.mod_lt n (by decide)]
-      · simp [Nat.toDigitsCore, hzero]
-        have hlt : n / 10 < n := Nat.div_lt_self (Nat.zero_lt_of_ne_zero (by
-          intro hn
-          subst n
-          simp at hzero)) (by decide)
-        have hrec := ih (n / 10) hlt
-        exact hrec
+  unfold Nat.toDigits
+  have hdigits :
+      ∀ fuel n acc,
+        fuel > n →
+        (Nat.toDigitsCore 10 fuel n []).foldl
+          (fun a ch =>
+            match charToDigit? ch with
+            | some d => 10 * a + d
+            | none => a) acc =
+          acc * 10 ^ (Nat.toDigitsCore 10 fuel n []).length + n := by
+    intro fuel
+    induction fuel with
+    | zero =>
+        intro n acc hf
+        omega
+    | succ fuel ih =>
+        intro n acc hf
+        rw [Nat.toDigitsCore]
+        by_cases hq : n / 10 = 0
+        · simp [hq, charToDigit_digitChar_decimal, Nat.mod_lt n (by decide)]
+          omega
+        · simp [hq]
+          omega
+  simpa using hdigits (n + 1) n 0 (by omega)
 
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
