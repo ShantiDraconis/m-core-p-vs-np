@@ -97,6 +97,12 @@ theorem correctAt_to_ntm
     (hCorrect : candidate.CorrectAt language x) :
     (toNTMCandidate candidate).CorrectAt language x := by
   rcases hCorrect with ⟨hHalt, hAccept⟩
+  have hHaltEq :
+      candidate.machine.halting
+        (candidate.machine.run
+          (candidate.timeBound x.length)
+          (initialTMConfig candidate.machine x)).state = true :=
+    hHalt
   constructor
   · intro reached hMem
     have hRuns :=
@@ -122,7 +128,7 @@ theorem correctAt_to_ntm
             (candidate.timeBound x.length)
             (initialTMConfig candidate.machine x)).state = true
     · left
-      simp [toNTMCandidate, toNTM, hHalt, ha]
+      simp [toNTMCandidate, toNTM, hHaltEq, ha]
     · right
       have haFalse :
           candidate.accepting
@@ -130,7 +136,7 @@ theorem correctAt_to_ntm
               (candidate.timeBound x.length)
               (initialTMConfig candidate.machine x)).state = false :=
         Bool.eq_false_of_not_eq_true ha
-      simp [toNTMCandidate, toNTM, hHalt, haFalse]
+      simp [toNTMCandidate, toNTM, hHaltEq, haFalse]
   · constructor
     · intro hNAcc
       rcases hNAcc with ⟨reached, hMem, hAcc⟩
@@ -156,7 +162,7 @@ theorem correctAt_to_ntm
               (candidate.machine.run
                 (candidate.timeBound x.length)
                 (initialTMConfig candidate.machine x)).state = true := by
-        simpa [toNTMCandidate, toNTM, hHalt] using hAcc
+        simpa [toNTMCandidate, toNTM, hHaltEq] using hAcc
       exact hAccept.mp hCandidateAccept
     · intro hLanguage
       have hCandidateAccept :
@@ -179,7 +185,7 @@ theorem correctAt_to_ntm
               [initialTMConfig candidate.machine x]
         rw [runBranches_to_tm_run]
         simp
-      · simp [toNTMCandidate, toNTM, hHalt, hCandidateAccept]
+      · simp [toNTMCandidate, toNTM, hHaltEq, hCandidateAccept]
 
 def realization_to_ntm
     {language : BitLanguage}
