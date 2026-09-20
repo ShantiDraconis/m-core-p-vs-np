@@ -473,10 +473,11 @@ def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
 /-- The local decimal decoder inverts Lean's canonical decimal digit character. -/
 theorem charToDigit_digitChar {d : Nat} (hd : d < 10) :
     charToDigit? (Nat.digitChar d) = some d := by
+  rcases Nat.lt_succ_iff.mp hd with hd
   omega
 
-/-- Once a prefix has been consumed, appending one canonical decimal digit
-    advances exactly from the parser state produced by that prefix. -/
+/-- Appending one canonical decimal digit after a completely consumed prefix
+    continues from exactly the numeric parser state produced by that prefix. -/
 theorem parseNatChars_append_digit
     {xs tail : List Char} {acc v d : Nat} {seen : Bool}
     (hxs : parseNatChars xs acc seen = some (v, []))
@@ -496,12 +497,13 @@ theorem parseNatChars_append_digit
           split at hxs <;> simp_all
       | some e =>
           simp only [hcd]
-          exact ih (by simpa [hcd] using hxs) hd
+          apply ih
+          simpa [hcd] using hxs
 
 /-- Lean's canonical decimal rendering is decoded by the local parser. -/
 theorem decimal_roundtrip (n : Nat) :
     parseNatChars (Nat.toDigits 10 n) 0 false = some (n, []) := by
-  induction n using Nat.strongRec with
+  induction n using Nat.strongRecOn with
   | ind n ih =>
       rw [Nat.toDigits_eq_ite (by decide : 1 < 10)]
       split <;> rename_i hn
