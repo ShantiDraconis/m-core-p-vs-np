@@ -1,5 +1,6 @@
 import MCore.Real.CNFStructure
 import MCore.Real.Semantics
+import MCore.Real.SATMachine
 import MCore.Real.FailProofAllGaps
 
 namespace MCore
