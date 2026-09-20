@@ -185,6 +185,7 @@ theorem tag_input_state
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_false]
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_three, tag_step_3_false]
   simp [TM.run, tagConfig]
+  cases tail <;> rfl
 
 theorem tag_false_const_state
     (tail : BitString) :
@@ -198,6 +199,7 @@ theorem tag_false_const_state
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_false]
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_three, tag_step_3_true]
   simp [TM.run, tagConfig]
+  cases tail <;> rfl
 
 theorem tag_true_const_state
     (tail : BitString) :
@@ -211,6 +213,7 @@ theorem tag_true_const_state
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_true]
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_four, tag_step_4_false]
   simp [TM.run, tagConfig]
+  cases tail <;> rfl
 
 theorem tag_not_state
     (tail : BitString) :
@@ -224,6 +227,7 @@ theorem tag_not_state
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_true]
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_four, tag_step_4_true]
   simp [TM.run, tagConfig]
+  cases tail <;> rfl
 
 theorem tag_and_state
     (tail : BitString) :
@@ -237,6 +241,7 @@ theorem tag_and_state
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_two, tag_step_2_false]
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_five, tag_step_5_false]
   simp [TM.run, tagConfig]
+  cases tail <;> rfl
 
 theorem tag_or_state
     (tail : BitString) :
@@ -250,6 +255,7 @@ theorem tag_or_state
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_two, tag_step_2_false]
   rw [TM.run, tagConfig_state, tagMachine_not_halted_at_five, tag_step_5_true]
   simp [TM.run, tagConfig]
+  cases tail <;> rfl
 
 theorem tag_invalid_11_rejects
     (third : Bool)
