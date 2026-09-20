@@ -479,8 +479,35 @@ theorem toDigits_unfold (n : Nat) :
 theorem charToDigit_digitChar_decimal :
     (∀ d : Nat, d < 10 → charToDigit? (Nat.digitChar d) = some d) := by
   intro d hd
-  rcases Nat.lt_succ_iff.mp hd with hd
-  interval_cases d <;> rfl
+  rcases Nat.lt_or_ge d 1 with h0 | h0
+  · have : d = 0 := Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ h0)
+    subst d; rfl
+  rcases Nat.lt_or_ge d 2 with h1 | h1
+  · have : d = 1 := Nat.le_antisymm (Nat.le_of_lt_succ h1) h0
+    subst d; rfl
+  rcases Nat.lt_or_ge d 3 with h2 | h2
+  · have : d = 2 := Nat.le_antisymm (Nat.le_of_lt_succ h2) h1
+    subst d; rfl
+  rcases Nat.lt_or_ge d 4 with h3 | h3
+  · have : d = 3 := Nat.le_antisymm (Nat.le_of_lt_succ h3) h2
+    subst d; rfl
+  rcases Nat.lt_or_ge d 5 with h4 | h4
+  · have : d = 4 := Nat.le_antisymm (Nat.le_of_lt_succ h4) h3
+    subst d; rfl
+  rcases Nat.lt_or_ge d 6 with h5 | h5
+  · have : d = 5 := Nat.le_antisymm (Nat.le_of_lt_succ h5) h4
+    subst d; rfl
+  rcases Nat.lt_or_ge d 7 with h6 | h6
+  · have : d = 6 := Nat.le_antisymm (Nat.le_of_lt_succ h6) h5
+    subst d; rfl
+  rcases Nat.lt_or_ge d 8 with h7 | h7
+  · have : d = 7 := Nat.le_antisymm (Nat.le_of_lt_succ h7) h6
+    subst d; rfl
+  rcases Nat.lt_or_ge d 9 with h8 | h8
+  · have : d = 8 := Nat.le_antisymm (Nat.le_of_lt_succ h8) h7
+    subst d; rfl
+  · have : d = 9 := Nat.le_antisymm (Nat.le_of_lt_succ hd) h8
+    subst d; rfl
 
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
