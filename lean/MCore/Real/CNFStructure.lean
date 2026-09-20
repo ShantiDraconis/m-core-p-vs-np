@@ -575,6 +575,14 @@ theorem toDigitsCore_decimal_mod_lt {n : Nat} :
     n % 10 < 10 := by
   exact Nat.mod_lt n (by decide)
 
+/-- Parser-side invariant for appending one canonical decimal digit after a
+    successfully accumulated prefix.  This is the algebraic step used by the
+    general representation/parser induction. -/
+theorem parseNatChars_append_digit {d acc : Nat} (hd : d < 10) :
+    parseNatChars [Nat.digitChar d] acc true =
+      some (10 * acc + d, []) := by
+  simp [parseNatChars, charToDigit_digitChar_decimal d hd]
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
