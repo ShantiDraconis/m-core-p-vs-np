@@ -77,6 +77,25 @@ jobs:
           set -euo pipefail
           lake build MCore.Real.FinalProof 2>&1 | tee audit/PNP-FinalProof-targeted.log
 
+      - name: RED attack arbitrary-encode loophole
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalProofAttack 2>&1 | tee audit/PNP-FinalProofAttack-targeted.log
+
+      - name: Axiom audit final-proof attack
+        run: |
+          set -euo pipefail
+          cat > FinalProofAttackAxiomAudit.lean <<'EOF'
+          import MCore.Real.FinalProofAttack
+          #print axioms MCore.Real.FinalProofAttack.smuggledCandidate_correct
+          #print axioms MCore.Real.FinalProofAttack.every_language_inP_under_arbitrary_encode
+          #print axioms MCore.Real.FinalProofAttack.current_SATNotInP_refuted
+          #print axioms MCore.Real.FinalProofAttack.current_UniversalSATFailure_refuted
+          #print axioms MCore.Real.FinalProofAttack.current_SATLowerBoundCertificate_refuted
+          EOF
+          lake env lean FinalProofAttackAxiomAudit.lean 2>&1 | tee audit/PNP-FinalProofAttack-axioms.log
+          if grep -E 'sorryAx' audit/PNP-FinalProofAttack-axioms.log; then exit 1; fi
+
       - name: Axiom audit direct final-proof compression
         run: |
           set -euo pipefail
