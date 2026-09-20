@@ -45,18 +45,18 @@ theorem evalCircuit_eq_of_agree_below
   | and a b iha ihb =>
       have ha : ∀ i, i < varBound a → σ i = τ i := by
         intro i hi
-        exact hAgree i (lt_of_lt_of_le hi (Nat.le_max_left _ _))
+        exact hAgree i (Nat.lt_of_lt_of_le hi (Nat.le_max_left _ _))
       have hb : ∀ i, i < varBound b → σ i = τ i := by
         intro i hi
-        exact hAgree i (lt_of_lt_of_le hi (Nat.le_max_right _ _))
+        exact hAgree i (Nat.lt_of_lt_of_le hi (Nat.le_max_right _ _))
       simp [varBound, evalCircuit, iha ha, ihb hb]
   | or a b iha ihb =>
       have ha : ∀ i, i < varBound a → σ i = τ i := by
         intro i hi
-        exact hAgree i (lt_of_lt_of_le hi (Nat.le_max_left _ _))
+        exact hAgree i (Nat.lt_of_lt_of_le hi (Nat.le_max_left _ _))
       have hb : ∀ i, i < varBound b → σ i = τ i := by
         intro i hi
-        exact hAgree i (lt_of_lt_of_le hi (Nat.le_max_right _ _))
+        exact hAgree i (Nat.lt_of_lt_of_le hi (Nat.le_max_right _ _))
       simp [varBound, evalCircuit, iha ha, ihb hb]
 
 theorem witness_from_assignment_recovers_eval
