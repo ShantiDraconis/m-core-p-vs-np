@@ -470,6 +470,17 @@ def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
       | some d => parseNatChars cs (10 * acc + d) true
       | none => if seen then some (acc, c :: cs) else none
 
+/-- Base-level probe for the decimal representation API actually shipped in Lean 4.19. -/
+theorem toDigits_unfold (n : Nat) :
+    Nat.toDigits 10 n = Nat.toDigitsCore 10 (n + 1) n [] := rfl
+
+/-- The local decoder agrees with the ten canonical decimal digit characters.
+    Written without optional tactics or post-4.19 ToString lemmas. -/
+theorem charToDigit_digitChar_decimal :
+    (∀ d : Nat, d < 10 → charToDigit? (Nat.digitChar d) = some d) := by
+  intro d hd
+  omega
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
