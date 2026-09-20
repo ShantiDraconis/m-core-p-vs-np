@@ -40,6 +40,23 @@ jobs:
           mkdir -p audit
           lake build MCore.Real.CNFStructure 2>&1 | tee audit/PNP-CNFStructure-targeted.log
 
+      - name: Targeted build MCore.Real.Semantics
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.Semantics 2>&1 | tee audit/PNP-Semantics-targeted.log
+
+      - name: Axiom audit Semantics
+        run: |
+          set -euo pipefail
+          cat > SemanticsAxiomAudit.lean <<'EOF'
+          import MCore.Real.Semantics
+          #print axioms MCore.Real.semanticallyEquivalent_refl
+          #print axioms MCore.Real.semanticallyRepresents_of_parse_eq
+          #print axioms MCore.Real.semanticallyRepresents_has_parse
+          #print axioms MCore.Real.semanticallyRepresents_eval
+          EOF
+          lake env lean SemanticsAxiomAudit.lean 2>&1 | tee audit/PNP-Semantics-axioms.log
+
       - name: Axiom audit CNFStructure
         run: |
           set -euo pipefail
