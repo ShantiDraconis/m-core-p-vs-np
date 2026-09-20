@@ -37,10 +37,22 @@ structure SATMachineRealization where
   machine : NTM State Symbol
   encode : Circuit → Configuration State Symbol
   timeBound : TimeBound
+  /-- Encoding may write the input tape, but it may not smuggle input-dependent
+      computation into the control state. Every run starts in machine.initial. -/
+  encode_initial :
+    ∀ φ : Circuit, (encode φ).state = machine.initial
   decides :
     NTM.DecidesWithin machine encode CircuitK1.size SATLanguage timeBound
 
 /-- Any supplied realization exposes its exact fixed-time decision contract. -/
+theorem satMachineRealization_starts_initial
+    (R : SATMachineRealization)
+    (φ : Circuit) :
+    (R.encode φ).state = R.machine.initial :=
+  R.encode_initial φ
+
+#print axioms MCore.Real.satMachineRealization_starts_initial
+
 theorem satMachineRealization_decides
     (R : SATMachineRealization) :
     NTM.DecidesWithin
