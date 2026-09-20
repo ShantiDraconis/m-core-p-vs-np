@@ -642,7 +642,6 @@ theorem toDigitsFoldRoundtrip_target :
   induction n using Nat.strongRecOn with
   | ind n ih =>
       unfold Nat.toDigits
-      rw [toDigits_unfold]
       by_cases hzero : n / 10 = 0
       · simp [Nat.toDigitsCore, hzero, charToDigit_digitChar_decimal,
           Nat.mod_lt n (by decide)]
