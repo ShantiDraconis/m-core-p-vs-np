@@ -64,32 +64,37 @@ theorem runBranches_to_tm_run
       rfl
   | succ n ih =>
       by_cases h : candidate.machine.halting config.state = true
-      · cases ha : candidate.accepting config.state
-        · calc
-            (toNTM candidate).runBranches (n + 1) [config]
-                = (toNTM candidate).runBranches n [config] := by
-                    simp [NTM.runBranches, toNTM, h, ha]
-            _ = [candidate.machine.run n config] := ih config
-            _ = [config] := by
-                    rw [tm_run_of_halted candidate config h n]
-            _ = [candidate.machine.run (n + 1) config] := by
-                    simp [TM.run, h]
-        · calc
-            (toNTM candidate).runBranches (n + 1) [config]
-                = (toNTM candidate).runBranches n [config] := by
-                    simp [NTM.runBranches, toNTM, h, ha]
-            _ = [candidate.machine.run n config] := ih config
-            _ = [config] := by
-                    rw [tm_run_of_halted candidate config h n]
-            _ = [candidate.machine.run (n + 1) config] := by
-                    simp [TM.run, h]
-      · have hFalse : candidate.machine.halting config.state = false := by
-          cases hval : candidate.machine.halting config.state <;> simp_all
+      · have hstop :
+          ((toNTM candidate).accepting config.state ||
+            (toNTM candidate).rejecting config.state) = true := by
+          rw [accept_or_reject_eq_halting]
+          exact h
         calc
           (toNTM candidate).runBranches (n + 1) [config]
-              = (toNTM candidate).runBranches n [candidate.machine.step config] := by
-                  simp [NTM.runBranches, toNTM, h, hFalse,
-                    successors_toNTM]
+              = (toNTM candidate).runBranches n [config] := by
+                  rw [NTM.runBranches]
+                  simp [hstop]
+          _ = [candidate.machine.run n config] := ih config
+          _ = [config] := by
+                rw [tm_run_of_halted candidate config h n]
+          _ = [candidate.machine.run (n + 1) config] := by
+                simp [TM.run, h]
+      · have hFalse : candidate.machine.halting config.state = false := by
+          cases hval : candidate.machine.halting config.state <;> simp_all
+        have hstop :
+          ((toNTM candidate).accepting config.state ||
+            (toNTM candidate).rejecting config.state) = false := by
+          rw [accept_or_reject_eq_halting]
+          exact hFalse
+        calc
+          (toNTM candidate).runBranches (n + 1) [config]
+              = (toNTM candidate).runBranches n
+                  ((toNTM candidate).successors config) := by
+                  rw [NTM.runBranches]
+                  simp [hstop]
+          _ = (toNTM candidate).runBranches n
+                  [candidate.machine.step config] := by
+                rw [successors_toNTM]
           _ = [candidate.machine.run n (candidate.machine.step config)] :=
                 ih (candidate.machine.step config)
           _ = [candidate.machine.run (n + 1) config] := by
