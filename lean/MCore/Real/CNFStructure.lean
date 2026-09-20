@@ -520,6 +520,13 @@ theorem parseNatChars_cons_digit {d acc : Nat} {tail : List Char} (hd : d < 10) 
       parseNatChars tail (10 * acc + d) true := by
   simp [parseNatChars, charToDigit_digitChar_decimal d hd]
 
+/-- Consuming a canonical decimal digit is independent of the incoming seen flag. -/
+theorem parseNatChars_cons_digit_seen {d acc : Nat} {tail : List Char} {seen : Bool}
+    (hd : d < 10) :
+    parseNatChars (Nat.digitChar d :: tail) acc seen =
+      parseNatChars tail (10 * acc + d) true := by
+  simp [parseNatChars, charToDigit_digitChar_decimal d hd]
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
