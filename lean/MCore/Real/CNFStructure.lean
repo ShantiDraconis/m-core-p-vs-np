@@ -536,7 +536,8 @@ theorem parseNatChars_toDigitsCore_terminal {n fuel acc : Nat}
   cases fuel with
   | zero => omega
   | succ fuel =>
-      simp [Nat.toDigitsCore, Nat.div_eq_of_lt hn,
+      have hmod : n % 10 = n := Nat.mod_eq_of_lt hn
+      simp [Nat.toDigitsCore, Nat.div_eq_of_lt hn, hmod,
         charToDigit_digitChar_decimal n hn, parseNatChars]
 
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
