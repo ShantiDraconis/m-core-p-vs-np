@@ -592,6 +592,35 @@ theorem parseNatChars_digit_tail {d acc : Nat} {tail : List Char} {seen : Bool}
       parseNatChars tail (10 * acc + d) true := by
   exact parseNatChars_cons_digit_seen hd
 
+/-- Exact parser invariant for any list of canonical decimal digits:
+    parsing from an accumulator is equivalent to folding the base-10 update
+    across the digit values.  This is independent of Nat.toDigitsCore and is
+    the compositional parser half of the representation roundtrip. -/
+theorem parseNatChars_digit_list
+    (ds : List Nat) (acc : Nat) (seen : Bool)
+    (hds : ∀ d ∈ ds, d < 10) :
+    parseNatChars (ds.map Nat.digitChar) acc seen =
+      if ds = [] then
+        (if seen then some (acc, []) else none)
+      else
+        some (ds.foldl (fun a d => 10 * a + d) acc, []) := by
+  induction ds generalizing acc seen with
+  | nil =>
+      simp [parseNatChars]
+  | cons d ds ih =>
+      have hd : d < 10 := hds d (by simp)
+      have htail : ∀ e ∈ ds, e < 10 := by
+        intro e he
+        exact hds e (by simp [he])
+      rw [List.map_cons, parseNatChars_digit_tail hd]
+      cases ds with
+      | nil =>
+          simp [parseNatChars]
+      | cons e es =>
+          simp only [List.foldl_cons]
+          have hi := ih (acc := 10 * acc + d) (seen := true) htail
+          simpa using hi
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
