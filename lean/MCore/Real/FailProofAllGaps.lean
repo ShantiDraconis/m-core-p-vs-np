@@ -21,7 +21,7 @@ theorem failure_generator_implies_universal_failure
   intro candidate
   exact ⟨G.counterexample candidate, G.fails candidate⟩
 
-noncomputable theorem universal_failure_implies_failure_generator
+theorem universal_failure_implies_failure_generator
     {language : BitLanguage}
     (h : UniversalFailure language) :
     FailureGenerator language := by
@@ -56,7 +56,7 @@ def OfficialPneqNP
 
 theorem internal_separation_transfers
     {officialP officialNP : BitLanguage → Prop}
-    (match : ExternalModelMatch officialP officialNP)
+    (hMatch : ExternalModelMatch officialP officialNP)
     (hInternal : PneqNP) :
     OfficialPneqNP officialP officialNP := by
   intro hEq
@@ -64,13 +64,13 @@ theorem internal_separation_transfers
   intro language
   constructor
   · intro hP
-    have hOfficialP := (match.p_match language).mp hP
+    have hOfficialP := (hMatch.p_match language).mp hP
     have hOfficialNP := (hEq language).mp hOfficialP
-    exact (match.np_match language).mpr hOfficialNP
+    exact (hMatch.np_match language).mpr hOfficialNP
   · intro hNP
-    have hOfficialNP := (match.np_match language).mp hNP
+    have hOfficialNP := (hMatch.np_match language).mp hNP
     have hOfficialP := (hEq language).mpr hOfficialNP
-    exact (match.p_match language).mpr hOfficialP
+    exact (hMatch.p_match language).mpr hOfficialP
 
 /-- Exact three-gap payload:
     G1: one explicit NP target;
