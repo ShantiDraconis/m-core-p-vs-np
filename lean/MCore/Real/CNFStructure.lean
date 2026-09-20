@@ -583,6 +583,15 @@ theorem parseNatChars_append_digit {d acc : Nat} (hd : d < 10) :
       some (10 * acc + d, []) := by
   simp [parseNatChars, charToDigit_digitChar_decimal d hd]
 
+/-- Parsing a canonical decimal digit in front of a tail is exactly the
+    accumulator update, independently of the incoming seen flag.  This is the
+    parser-side compositional invariant used by the full toDigitsCore induction. -/
+theorem parseNatChars_digit_tail {d acc : Nat} {tail : List Char} {seen : Bool}
+    (hd : d < 10) :
+    parseNatChars (Nat.digitChar d :: tail) acc seen =
+      parseNatChars tail (10 * acc + d) true := by
+  exact parseNatChars_cons_digit_seen hd
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
