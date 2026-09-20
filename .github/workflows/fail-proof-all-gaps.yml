@@ -73,6 +73,25 @@ jobs:
         run: |
           set -euo pipefail
           lake build MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier
+      - name: Build canonical SAT NTM attack
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalSATNTMAttack
+
+      - name: Axiom audit canonical SAT NTM attack
+        run: |
+          set -euo pipefail
+          cat > CanonicalSATNTMAttackAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATNTMAttack
+          #print axioms MCore.Real.CanonicalSATNTMAttack.scan_step_cons
+          #print axioms MCore.Real.CanonicalSATNTMAttack.scan_step_nil
+          #print axioms MCore.Real.CanonicalSATNTMAttack.scan_run_reaches_halt
+          #print axioms MCore.Real.CanonicalSATNTMAttack.scan_halts_within_linear
+          #print axioms MCore.Real.CanonicalSATNTMAttack.canonical_sat_machine_closure_gives_bridge
+          EOF
+          lake env lean CanonicalSATNTMAttackAudit.lean 2>&1 | tee gap-sat-ntm-attack.log
+          if grep -q 'sorryAx' gap-sat-ntm-attack.log; then exit 1; fi
+
       - name: Axiom audit SAT foundations
         run: |
           set -euo pipefail
