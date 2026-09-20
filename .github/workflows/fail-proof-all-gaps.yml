@@ -78,6 +78,27 @@ jobs:
           set -euo pipefail
           lake build MCore.Real.CanonicalSATNTMAttack
 
+      - name: Build canonical SAT parser attack
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalSATParserAttack
+
+      - name: Axiom audit canonical SAT parser attack
+        run: |
+          set -euo pipefail
+          cat > CanonicalSATParserAttackAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATParserAttack
+          #print axioms MCore.Real.CanonicalSATParserAttack.tag_input_state
+          #print axioms MCore.Real.CanonicalSATParserAttack.tag_false_const_state
+          #print axioms MCore.Real.CanonicalSATParserAttack.tag_true_const_state
+          #print axioms MCore.Real.CanonicalSATParserAttack.tag_not_state
+          #print axioms MCore.Real.CanonicalSATParserAttack.tag_and_state
+          #print axioms MCore.Real.CanonicalSATParserAttack.tag_or_state
+          #print axioms MCore.Real.CanonicalSATParserAttack.tag_invalid_11_rejects
+          EOF
+          lake env lean CanonicalSATParserAttackAudit.lean 2>&1 | tee gap-sat-parser-attack.log
+          if grep -q 'sorryAx' gap-sat-parser-attack.log; then exit 1; fi
+
       - name: Axiom audit canonical SAT NTM attack
         run: |
           set -euo pipefail
