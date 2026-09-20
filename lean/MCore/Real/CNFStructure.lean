@@ -551,6 +551,13 @@ theorem toDigitsCore_decimal_step {n fuel : Nat}
   | succ k =>
       simp [Nat.toDigitsCore, Nat.ne_of_gt (Nat.div_pos hn (by decide))]
 
+/-- The representation recursion strictly decreases its numeric argument once the
+    numeral has at least two decimal digits.  This is the induction measure
+    needed by the full decimal parser invariant. -/
+theorem toDigitsCore_decimal_decreases {n : Nat} (hn : 10 ≤ n) :
+    n / 10 < n := by
+  exact Nat.div_lt_self (by omega) (by decide)
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
