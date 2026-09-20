@@ -96,7 +96,6 @@ theorem encodeNat_length
   | zero => rfl
   | succ n ih =>
       simp [encodeNat, ih]
-      omega
 
 theorem varBound_le_encoded_length
     (φ : Circuit) :
