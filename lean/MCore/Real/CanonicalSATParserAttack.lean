@@ -52,53 +52,197 @@ def tagMachine : TM (Fin 13) (Option Bool) :=
 def tagInput (bitsPrefix : List Bool) (tail : BitString) : BitString :=
   bitsPrefix ++ tail
 
+def tagConfig
+    (q : Fin 13)
+    (left : List (Option Bool))
+    (bits : BitString) :
+    Configuration (Fin 13) (Option Bool) :=
+  match bits with
+  | [] =>
+      { state := q
+        tape := { left := left, head := none, right := [] } }
+  | b :: bs =>
+      { state := q
+        tape := { left := left, head := some b, right := bs.map some } }
+
+theorem initial_tagConfig
+    (bits : BitString) :
+    initialTMConfig tagMachine bits = tagConfig 0 [] bits := by
+  cases bits <;> rfl
+
+@[simp] theorem tagMachine_not_halted_at_one :
+    tagMachine.halting (1 : Fin 13) = false := by decide
+@[simp] theorem tagMachine_not_halted_at_two :
+    tagMachine.halting (2 : Fin 13) = false := by decide
+@[simp] theorem tagMachine_not_halted_at_three :
+    tagMachine.halting (3 : Fin 13) = false := by decide
+@[simp] theorem tagMachine_not_halted_at_four :
+    tagMachine.halting (4 : Fin 13) = false := by decide
+@[simp] theorem tagMachine_not_halted_at_five :
+    tagMachine.halting (5 : Fin 13) = false := by decide
+@[simp] theorem tagMachine_halted_at_twelve :
+    tagMachine.halting (12 : Fin 13) = true := by decide
+
+theorem tag_step_0_false
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 0 left (false :: rest)) =
+      tagConfig 1 (some false :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_0_true
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 0 left (true :: rest)) =
+      tagConfig 2 (some true :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_1_false
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 1 left (false :: rest)) =
+      tagConfig 3 (some false :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_1_true
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 1 left (true :: rest)) =
+      tagConfig 4 (some true :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_2_false
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 2 left (false :: rest)) =
+      tagConfig 5 (some false :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_2_true_sink
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 2 left (true :: rest)) =
+      tagConfig 12 left (true :: rest) := by
+  simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_3_false
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 3 left (false :: rest)) =
+      tagConfig 6 (some false :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_3_true
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 3 left (true :: rest)) =
+      tagConfig 7 (some true :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_4_false
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 4 left (false :: rest)) =
+      tagConfig 8 (some false :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_4_true
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 4 left (true :: rest)) =
+      tagConfig 9 (some true :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_5_false
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 5 left (false :: rest)) =
+      tagConfig 10 (some false :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
+theorem tag_step_5_true
+    (left : List (Option Bool)) (rest : BitString) :
+    tagMachine.step (tagConfig 5 left (true :: rest)) =
+      tagConfig 11 (some true :: left) rest := by
+  cases rest <;>
+    simp [tagMachine, tagConfig, TM.step, Tape.write, Tape.move]
+
 theorem tag_input_state
     (tail : BitString) :
     (tagMachine.run 3
       (initialTMConfig tagMachine
         (tagInput [false, false, false] tail))).state = (6 : Fin 13) := by
-  simp [tagInput, tagMachine, initialTMConfig, inputTape,
-    TM.run, TM.step, Tape.write, Tape.move]
+  rw [show tagInput [false, false, false] tail = false :: false :: false :: tail by
+    simp [tagInput]]
+  rw [initial_tagConfig]
+  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_false]
+  rw [TM.run, tagMachine_not_halted_at_three, tag_step_3_false]
+  rfl
 
 theorem tag_false_const_state
     (tail : BitString) :
     (tagMachine.run 3
       (initialTMConfig tagMachine
         (tagInput [false, false, true] tail))).state = (7 : Fin 13) := by
-  simp [tagInput, tagMachine, initialTMConfig, inputTape,
-    TM.run, TM.step, Tape.write, Tape.move]
+  rw [show tagInput [false, false, true] tail = false :: false :: true :: tail by
+    simp [tagInput]]
+  rw [initial_tagConfig]
+  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_false]
+  rw [TM.run, tagMachine_not_halted_at_three, tag_step_3_true]
+  rfl
 
 theorem tag_true_const_state
     (tail : BitString) :
     (tagMachine.run 3
       (initialTMConfig tagMachine
         (tagInput [false, true, false] tail))).state = (8 : Fin 13) := by
-  simp [tagInput, tagMachine, initialTMConfig, inputTape,
-    TM.run, TM.step, Tape.write, Tape.move]
+  rw [show tagInput [false, true, false] tail = false :: true :: false :: tail by
+    simp [tagInput]]
+  rw [initial_tagConfig]
+  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_true]
+  rw [TM.run, tagMachine_not_halted_at_four, tag_step_4_false]
+  rfl
 
 theorem tag_not_state
     (tail : BitString) :
     (tagMachine.run 3
       (initialTMConfig tagMachine
         (tagInput [false, true, true] tail))).state = (9 : Fin 13) := by
-  simp [tagInput, tagMachine, initialTMConfig, inputTape,
-    TM.run, TM.step, Tape.write, Tape.move]
+  rw [show tagInput [false, true, true] tail = false :: true :: true :: tail by
+    simp [tagInput]]
+  rw [initial_tagConfig]
+  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_true]
+  rw [TM.run, tagMachine_not_halted_at_four, tag_step_4_true]
+  rfl
 
 theorem tag_and_state
     (tail : BitString) :
     (tagMachine.run 3
       (initialTMConfig tagMachine
         (tagInput [true, false, false] tail))).state = (10 : Fin 13) := by
-  simp [tagInput, tagMachine, initialTMConfig, inputTape,
-    TM.run, TM.step, Tape.write, Tape.move]
+  rw [show tagInput [true, false, false] tail = true :: false :: false :: tail by
+    simp [tagInput]]
+  rw [initial_tagConfig]
+  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_true]
+  rw [TM.run, tagMachine_not_halted_at_two, tag_step_2_false]
+  rw [TM.run, tagMachine_not_halted_at_five, tag_step_5_false]
+  rfl
 
 theorem tag_or_state
     (tail : BitString) :
     (tagMachine.run 3
       (initialTMConfig tagMachine
         (tagInput [true, false, true] tail))).state = (11 : Fin 13) := by
-  simp [tagInput, tagMachine, initialTMConfig, inputTape,
-    TM.run, TM.step, Tape.write, Tape.move]
+  rw [show tagInput [true, false, true] tail = true :: false :: true :: tail by
+    simp [tagInput]]
+  rw [initial_tagConfig]
+  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_true]
+  rw [TM.run, tagMachine_not_halted_at_two, tag_step_2_false]
+  rw [TM.run, tagMachine_not_halted_at_five, tag_step_5_true]
+  rfl
 
 theorem tag_invalid_11_rejects
     (third : Bool)
@@ -106,8 +250,12 @@ theorem tag_invalid_11_rejects
     (tagMachine.run 2
       (initialTMConfig tagMachine
         (tagInput [true, true, third] tail))).state = (12 : Fin 13) := by
-  simp [tagInput, tagMachine, initialTMConfig, inputTape,
-    TM.run, TM.step, Tape.write, Tape.move]
+  rw [show tagInput [true, true, third] tail = true :: true :: third :: tail by
+    simp [tagInput]]
+  rw [initial_tagConfig]
+  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_true]
+  rw [TM.run, tagMachine_not_halted_at_two, tag_step_2_true_sink]
+  rfl
 
 /-- The finite tag decoder is now concrete. The remaining parser obligation is
     unbounded recursive syntax bookkeeping on the same single tape. -/
