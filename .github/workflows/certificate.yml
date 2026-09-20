@@ -82,6 +82,9 @@ jobs:
           set -euo pipefail
           cat > FinalProofAxiomAudit.lean <<'EOF'
           import MCore.Real.FinalProof
+          #print axioms MCore.Real.universal_sat_failure_implies_sat_not_in_p
+          #print axioms MCore.Real.sat_not_in_p_implies_universal_sat_failure
+          #print axioms MCore.Real.universal_sat_failure_iff_sat_not_in_p
           #print axioms MCore.Real.sat_not_in_p_of_lower_bound_certificate
           #print axioms MCore.Real.sat_boundary_implies_machine_p_ne_np
           #print axioms MCore.Real.sat_certificate_implies_machine_p_ne_np
