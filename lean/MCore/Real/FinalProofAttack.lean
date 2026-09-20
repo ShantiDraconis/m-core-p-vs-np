@@ -28,7 +28,7 @@ def smuggledAccepting : Option Bool → Bool
     writes the answer bit into the initial tape. -/
 noncomputable def smuggledEncode
     (language : CircuitLanguage)
-    (φ : Circuit) :
+    (φ : CircuitK1.Circuit) :
     Configuration (Option Bool) Bool :=
   { state := none
     tape :=
