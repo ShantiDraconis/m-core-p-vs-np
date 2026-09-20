@@ -83,6 +83,23 @@ jobs:
           set -euo pipefail
           lake build MCore.Real.CanonicalSATParserAttack
 
+      - name: Build canonical SAT unary payload attack
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalSATNatParserAttack
+
+      - name: Axiom audit canonical SAT unary payload attack
+        run: |
+          set -euo pipefail
+          cat > CanonicalSATNatParserAttackAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATNatParserAttack
+          #print axioms MCore.Real.CanonicalSATNatParserAttack.nat_run_encodeNat_state
+          #print axioms MCore.Real.CanonicalSATNatParserAttack.nat_scan_encodeNat_halts_linear
+          #print axioms MCore.Real.CanonicalSATNatParserAttack.nat_scan_blank_rejects
+          EOF
+          lake env lean CanonicalSATNatParserAttackAudit.lean 2>&1 | tee gap-sat-nat-parser-attack.log
+          if grep -q 'sorryAx' gap-sat-nat-parser-attack.log; then exit 1; fi
+
       - name: Axiom audit canonical SAT parser attack
         run: |
           set -euo pipefail
