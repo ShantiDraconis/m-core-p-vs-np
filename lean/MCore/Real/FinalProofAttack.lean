@@ -30,7 +30,7 @@ noncomputable def smuggledEncode
     (language : CircuitLanguage)
     (φ : CircuitK1.Circuit) :
     Configuration (Option Bool) Bool :=
-  letI : Decidable (language φ) := Classical.propComplete (language φ)
+  letI : Decidable (language φ) := Classical.propDecidable (language φ)
   { state := none
     tape :=
       { left := []
