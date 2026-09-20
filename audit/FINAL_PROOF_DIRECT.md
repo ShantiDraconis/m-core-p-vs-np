@@ -19,15 +19,15 @@ No SAT-completeness theorem is required for this implication: a single language 
 
 ## Positive lower-bound certificate
 
-`SATLowerBoundCertificate` is the fail-closed target:
+`SATLowerBoundCertificate` is the operational fail-closed target:
 
-for every concrete `PolyDTMRealization SATLanguage`, derive `False`.
+for every `PolyDTMCandidate`, produce a concrete Circuit `φ` for which the candidate is not correct on SAT.
 
-This is equivalent inside the module to:
+The module proves:
 
-`SATNotInP := ¬ InP SATLanguage`.
+`UniversalSATFailure ↔ SATNotInP`.
 
-It is intentionally universal over all deterministic polynomial-time SAT realizations in the repository's concrete machine model.
+Thus the fail proof is exactly equivalent, inside the concrete machine model, to excluding every deterministic polynomial-time SAT decider.
 
 ## Current residue
 
