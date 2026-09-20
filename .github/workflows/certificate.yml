@@ -72,6 +72,24 @@ jobs:
           EOF
           lake env lean SATMachineAxiomAudit.lean 2>&1 | tee audit/PNP-SATMachine-axioms.log
 
+      - name: Targeted build MCore.Real.FinalProof
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalProof 2>&1 | tee audit/PNP-FinalProof-targeted.log
+
+      - name: Axiom audit direct final-proof compression
+        run: |
+          set -euo pipefail
+          cat > FinalProofAxiomAudit.lean <<'EOF'
+          import MCore.Real.FinalProof
+          #print axioms MCore.Real.sat_not_in_p_of_lower_bound_certificate
+          #print axioms MCore.Real.sat_boundary_implies_machine_p_ne_np
+          #print axioms MCore.Real.sat_certificate_implies_machine_p_ne_np
+          #print axioms MCore.Real.final_proof_from_residual
+          EOF
+          lake env lean FinalProofAxiomAudit.lean 2>&1 | tee audit/PNP-FinalProof-axioms.log
+          if grep -E 'sorryAx' audit/PNP-FinalProof-axioms.log; then exit 1; fi
+
       - name: Axiom audit CNFStructure
         run: |
           set -euo pipefail
