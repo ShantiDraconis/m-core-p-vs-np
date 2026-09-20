@@ -77,6 +77,25 @@ jobs:
           set -euo pipefail
           lake build MCore.Real.FinalProof 2>&1 | tee audit/PNP-FinalProof-targeted.log
 
+      - name: Hardened canonical final-proof model
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalFinalProof 2>&1 | tee audit/PNP-CanonicalFinalProof-targeted.log
+
+      - name: Axiom audit hardened canonical endpoint
+        run: |
+          set -euo pipefail
+          cat > CanonicalFinalProofAxiomAudit.lean <<'EOF'
+          import MCore.Real.CanonicalFinalProof
+          #print axioms MCore.Real.CanonicalFinalProof.universal_failure_implies_not_in_p
+          #print axioms MCore.Real.CanonicalFinalProof.not_in_p_implies_universal_failure
+          #print axioms MCore.Real.CanonicalFinalProof.universal_failure_iff_not_in_p
+          #print axioms MCore.Real.CanonicalFinalProof.target_failure_implies_p_ne_np
+          #print axioms MCore.Real.CanonicalFinalProof.separation_certificate_closes
+          EOF
+          lake env lean CanonicalFinalProofAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalFinalProof-axioms.log
+          if grep -E 'sorryAx' audit/PNP-CanonicalFinalProof-axioms.log; then exit 1; fi
+
       - name: RED attack arbitrary-encode loophole
         run: |
           set -euo pipefail
