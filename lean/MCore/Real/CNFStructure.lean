@@ -621,6 +621,18 @@ theorem parseNatChars_digit_list
           have hi := ih (acc := 10 * acc + d) (seen := true) htail
           simpa using hi
 
+/-- Concrete bridge target from Lean's decimal representation primitive to
+    the parser: the canonical base-10 digit list must fold back to the original
+    natural number.  Kept explicit so the next proof attempt tests the real
+    representation boundary rather than another parser-only lemma. -/
+def ToDigitsFoldRoundtrip : Prop :=
+  ∀ n : Nat,
+    (Nat.toDigits 10 n).foldl
+      (fun acc ch =>
+        match charToDigit? ch with
+        | some d => 10 * acc + d
+        | none => acc) 0 = n
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
