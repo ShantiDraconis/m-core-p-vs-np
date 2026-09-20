@@ -568,6 +568,13 @@ theorem toDigitsCore_decimal_step_decreases {n fuel : Nat}
       n / 10 < n := by
   exact ⟨toDigitsCore_decimal_step hf hn, toDigitsCore_decimal_decreases hn⟩
 
+/-- Every nonterminal decimal recursion step keeps the emitted digit in base 10.
+    This is the digit-side invariant needed when the parser consumes the
+    recursive representation. -/
+theorem toDigitsCore_decimal_mod_lt {n : Nat} :
+    n % 10 < 10 := by
+  exact Nat.mod_lt n (by decide)
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
