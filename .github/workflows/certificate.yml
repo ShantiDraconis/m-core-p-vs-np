@@ -131,7 +131,7 @@ jobs:
           import MCore.Real.FailProofFiniteAttack
           import MCore.Real.CanonicalSATBoundary
           #print axioms MCore.Real.FailProofAllGaps.failure_generator_implies_universal_failure
-          #print axioms MCore.Real.FailProofAllGaps.universal_failure_implies_failure_generator
+          #print axioms MCore.Real.FailProofAllGaps.failureGeneratorOfUniversalFailure
           #print axioms MCore.Real.FailProofAllGaps.final_gap_certificate_closes
           #print axioms MCore.Real.FailProofFiniteAttack.finite_to_universal_principle_refuted
           #print axioms MCore.Real.CanonicalSATBoundary.encoded_sat_iff
