@@ -540,6 +540,17 @@ theorem parseNatChars_toDigitsCore_terminal {n fuel acc : Nat}
       simp [Nat.toDigitsCore, Nat.div_eq_of_lt hn, hmod,
         charToDigit_digitChar_decimal n hn, parseNatChars]
 
+/-- Recursive representation probe: for a nonterminal decimal numeral, expose the
+    quotient/remainder step used by Lean 4.19 toDigitsCore. -/
+theorem toDigitsCore_decimal_step {n fuel : Nat}
+    (hf : fuel > 0) (hn : 10 ≤ n) :
+    Nat.toDigitsCore 10 fuel n [] =
+      Nat.toDigitsCore 10 (fuel - 1) (n / 10) [Nat.digitChar (n % 10)] := by
+  cases fuel with
+  | zero => omega
+  | succ k =>
+      simp [Nat.toDigitsCore, Nat.ne_of_gt (Nat.div_pos hn (by decide))]
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
