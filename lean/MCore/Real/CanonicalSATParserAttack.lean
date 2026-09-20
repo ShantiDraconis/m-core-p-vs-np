@@ -65,6 +65,13 @@ def tagConfig
       { state := q
         tape := { left := left, head := some b, right := bs.map some } }
 
+@[simp] theorem tagConfig_state
+    (q : Fin 13)
+    (left : List (Option Bool))
+    (bits : BitString) :
+    (tagConfig q left bits).state = q := by
+  cases bits <;> rfl
+
 theorem initial_tagConfig
     (bits : BitString) :
     initialTMConfig tagMachine bits = tagConfig 0 [] bits := by
@@ -174,9 +181,9 @@ theorem tag_input_state
   rw [show tagInput [false, false, false] tail = false :: false :: false :: tail by
     simp [tagInput]]
   rw [initial_tagConfig]
-  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
-  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_false]
-  rw [TM.run, tagMachine_not_halted_at_three, tag_step_3_false]
+  rw [TM.run, tagConfig_state, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_three, tag_step_3_false]
   rfl
 
 theorem tag_false_const_state
@@ -187,9 +194,9 @@ theorem tag_false_const_state
   rw [show tagInput [false, false, true] tail = false :: false :: true :: tail by
     simp [tagInput]]
   rw [initial_tagConfig]
-  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
-  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_false]
-  rw [TM.run, tagMachine_not_halted_at_three, tag_step_3_true]
+  rw [TM.run, tagConfig_state, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_three, tag_step_3_true]
   rfl
 
 theorem tag_true_const_state
@@ -200,9 +207,9 @@ theorem tag_true_const_state
   rw [show tagInput [false, true, false] tail = false :: true :: false :: tail by
     simp [tagInput]]
   rw [initial_tagConfig]
-  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
-  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_true]
-  rw [TM.run, tagMachine_not_halted_at_four, tag_step_4_false]
+  rw [TM.run, tagConfig_state, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_true]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_four, tag_step_4_false]
   rfl
 
 theorem tag_not_state
@@ -213,9 +220,9 @@ theorem tag_not_state
   rw [show tagInput [false, true, true] tail = false :: true :: true :: tail by
     simp [tagInput]]
   rw [initial_tagConfig]
-  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_false]
-  rw [TM.run, tagMachine_not_halted_at_one, tag_step_1_true]
-  rw [TM.run, tagMachine_not_halted_at_four, tag_step_4_true]
+  rw [TM.run, tagConfig_state, tagMachine_initial_not_halted, tag_step_0_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_one, tag_step_1_true]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_four, tag_step_4_true]
   rfl
 
 theorem tag_and_state
@@ -226,9 +233,9 @@ theorem tag_and_state
   rw [show tagInput [true, false, false] tail = true :: false :: false :: tail by
     simp [tagInput]]
   rw [initial_tagConfig]
-  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_true]
-  rw [TM.run, tagMachine_not_halted_at_two, tag_step_2_false]
-  rw [TM.run, tagMachine_not_halted_at_five, tag_step_5_false]
+  rw [TM.run, tagConfig_state, tagMachine_initial_not_halted, tag_step_0_true]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_two, tag_step_2_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_five, tag_step_5_false]
   rfl
 
 theorem tag_or_state
@@ -239,9 +246,9 @@ theorem tag_or_state
   rw [show tagInput [true, false, true] tail = true :: false :: true :: tail by
     simp [tagInput]]
   rw [initial_tagConfig]
-  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_true]
-  rw [TM.run, tagMachine_not_halted_at_two, tag_step_2_false]
-  rw [TM.run, tagMachine_not_halted_at_five, tag_step_5_true]
+  rw [TM.run, tagConfig_state, tagMachine_initial_not_halted, tag_step_0_true]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_two, tag_step_2_false]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_five, tag_step_5_true]
   rfl
 
 theorem tag_invalid_11_rejects
@@ -253,8 +260,8 @@ theorem tag_invalid_11_rejects
   rw [show tagInput [true, true, third] tail = true :: true :: third :: tail by
     simp [tagInput]]
   rw [initial_tagConfig]
-  rw [TM.run, tagMachine_initial_not_halted, tag_step_0_true]
-  rw [TM.run, tagMachine_not_halted_at_two, tag_step_2_true_sink]
+  rw [TM.run, tagConfig_state, tagMachine_initial_not_halted, tag_step_0_true]
+  rw [TM.run, tagConfig_state, tagMachine_not_halted_at_two, tag_step_2_true_sink]
   rfl
 
 /-- The finite tag decoder is now concrete. The remaining parser obligation is
