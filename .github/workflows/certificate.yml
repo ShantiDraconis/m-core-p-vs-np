@@ -99,17 +99,19 @@ jobs:
       - name: Build canonical P subset NP embedding
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalPSubsetNP 2>&1 | tee audit/PNP-CanonicalPSubsetNP-targeted.log
+          lake build MCore.Real.CanonicalPSubsetNP MCore.Real.CanonicalComplexityBridge 2>&1 | tee audit/PNP-CanonicalPSubsetNP-targeted.log
 
       - name: Axiom audit canonical P subset NP embedding
         run: |
           set -euo pipefail
           cat > CanonicalPSubsetNPAxiomAudit.lean <<'EOF'
           import MCore.Real.CanonicalPSubsetNP
+          import MCore.Real.CanonicalComplexityBridge
           #print axioms MCore.Real.CanonicalPSubsetNP.accept_or_reject_eq_halting
           #print axioms MCore.Real.CanonicalPSubsetNP.runBranches_to_tm_run
           #print axioms MCore.Real.CanonicalPSubsetNP.correctAt_to_ntm
           #print axioms MCore.Real.CanonicalPSubsetNP.inP_subset_inNP
+          #print axioms MCore.Real.CanonicalComplexityBridge.canonical_failure_witness_separates_legacy_interface
           EOF
           lake env lean CanonicalPSubsetNPAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalPSubsetNP-axioms.log
           if grep -E 'sorryAx' audit/PNP-CanonicalPSubsetNP-axioms.log; then exit 1; fi
