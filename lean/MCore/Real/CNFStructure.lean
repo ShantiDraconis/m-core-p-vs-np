@@ -640,7 +640,7 @@ theorem toDigitsFoldRoundtrip_target :
     ToDigitsFoldRoundtrip := by
   intro n
   induction n using Nat.strongRecOn with
-  | h n ih =>
+  | ind n ih =>
       unfold Nat.toDigits
       rw [toDigits_unfold]
       by_cases hzero : n / 10 = 0
