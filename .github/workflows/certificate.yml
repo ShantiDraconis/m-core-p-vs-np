@@ -96,6 +96,37 @@ jobs:
           lake env lean CanonicalFinalProofAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalFinalProof-axioms.log
           if grep -E 'sorryAx' audit/PNP-CanonicalFinalProof-axioms.log; then exit 1; fi
 
+      - name: Build all-gap fail-proof compression
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FailProofAllGaps \
+            MCore.Real.FailProofFiniteAttack \
+            MCore.Real.CanonicalSATBoundary 2>&1 | tee audit/PNP-FailProof-AllGaps-targeted.log
+
+      - name: Axiom audit all-gap fail-proof compression
+        run: |
+          set -euo pipefail
+          cat > FailProofAllGapsAxiomAudit.lean <<'EOF'
+          import MCore.Real.FailProofAllGaps
+          import MCore.Real.FailProofFiniteAttack
+          import MCore.Real.CanonicalSATBoundary
+          #print axioms MCore.Real.FailProofAllGaps.failure_generator_implies_universal_failure
+          #print axioms MCore.Real.FailProofAllGaps.universal_failure_implies_failure_generator
+          #print axioms MCore.Real.FailProofAllGaps.final_gap_certificate_closes
+          #print axioms MCore.Real.FailProofFiniteAttack.finite_to_universal_principle_refuted
+          #print axioms MCore.Real.CanonicalSATBoundary.encoded_sat_iff
+          #print axioms MCore.Real.CanonicalSATBoundary.sat_external_closure_implies_official_separation
+          EOF
+          lake env lean FailProofAllGapsAxiomAudit.lean 2>&1 | tee audit/PNP-FailProof-AllGaps-axioms.log
+          if grep -E 'sorryAx' audit/PNP-FailProof-AllGaps-axioms.log; then exit 1; fi
+
+      - name: Reproduce C12 semantic-proxy counterexample
+        run: |
+          set -euo pipefail
+          lake env lean audit/C12/SRepresentationCounterexample.lean 2>&1 | tee audit/PNP-C12-SemanticCounterexample.log
+          if grep -E 'sorryAx' audit/PNP-C12-SemanticCounterexample.log; then exit 1; fi
+          grep -q 'direct_potential_semantic_identification_refuted' audit/PNP-C12-SemanticCounterexample.log
+
       - name: RED attack arbitrary-encode loophole
         run: |
           set -euo pipefail
