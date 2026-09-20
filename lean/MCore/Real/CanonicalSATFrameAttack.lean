@@ -98,14 +98,83 @@ theorem decodeFrames_push
       some (f :: fs) := by
   simpa [encodeFrames] using decodeFrames_encodeFrames (f :: fs)
 
-/-- Exact next operational boundary: realize constant-width frame push/pop on
-    the same canonical Option Bool tape with finite control and polynomial
-    traversal overhead. No implementation is postulated here. -/
-structure FrameTapeMachineCertificate where
+/-!
+Fail-proof hardening of the frame-tape boundary.
+
+The previous certificate carried only an arbitrary machine and a polynomial
+bound.  That shape is trivially inhabitable and therefore cannot certify
+frame push/pop semantics.  The hardened certificate below fixes an explicit
+command protocol and requires the machine to halt and return the exact
+canonical stack encoding.
+-/
+
+def pushCommand (f : Frame) (fs : List Frame) : BitString :=
+  true :: (encodeFrame f ++ encodeFrames fs)
+
+def popCommand (fs : List Frame) : BitString :=
+  false :: encodeFrames fs
+
+/-- Legacy under-specified shape, retained only for the fail-proof theorem. -/
+structure LegacyFrameTapeMachineCertificate where
   stateCount : Nat
   machine : TM (Fin (stateCount + 1)) (Option Bool)
   timeBound : TimeBound
   time_poly : PolynomialTimeBound timeBound
+
+/-- The legacy gate is vacuous: a one-state halted machine with zero time
+    bound inhabits it without implementing any stack operation. -/
+theorem legacy_frame_gate_is_trivially_inhabited :
+    Nonempty LegacyFrameTapeMachineCertificate := by
+  let trivialMachine : TM (Fin 1) (Option Bool) :=
+    { initial := 0
+      blank := none
+      transition := fun q symbol => (q, symbol, .stay)
+      halting := fun _ => true }
+  have hpoly : PolynomialTimeBound (fun _ => 0) := by
+    refine ⟨0, 0, ?_⟩
+    intro n
+    simp
+  exact ⟨
+    { stateCount := 0
+      machine := trivialMachine
+      timeBound := fun _ => 0
+      time_poly := hpoly }⟩
+
+/-- Hardened operational boundary.  Push is presented as
+    1 || frame || stack and pop as 0 || stack.  Successful execution must
+    normalize the final tape back to the canonical stack encoding. -/
+structure FrameTapeMachineCertificate where
+  stateCount : Nat
+  machine : TM (Fin (stateCount + 1)) (Option Bool)
+  blank_none : machine.blank = none
+  timeBound : TimeBound
+  time_poly : PolynomialTimeBound timeBound
+
+  push_halts :
+    ∀ (f : Frame) (fs : List Frame),
+      machine.HaltsWithin
+        (timeBound (pushCommand f fs).length)
+        (initialTMConfig machine (pushCommand f fs))
+
+  push_correct :
+    ∀ (f : Frame) (fs : List Frame),
+      (machine.run
+        (timeBound (pushCommand f fs).length)
+        (initialTMConfig machine (pushCommand f fs))).tape =
+      inputTape (encodeFrames (f :: fs))
+
+  pop_halts :
+    ∀ (f : Frame) (fs : List Frame),
+      machine.HaltsWithin
+        (timeBound (popCommand (f :: fs)).length)
+        (initialTMConfig machine (popCommand (f :: fs)))
+
+  pop_correct :
+    ∀ (f : Frame) (fs : List Frame),
+      (machine.run
+        (timeBound (popCommand (f :: fs)).length)
+        (initialTMConfig machine (popCommand (f :: fs))).tape =
+      inputTape (encodeFrames fs)
 
 def FrameTapeOperationalGap : Prop :=
   Nonempty FrameTapeMachineCertificate
@@ -115,6 +184,7 @@ def FrameTapeOperationalGap : Prop :=
 #print axioms MCore.Real.CanonicalSATFrameAttack.encodeFrames_length
 #print axioms MCore.Real.CanonicalSATFrameAttack.encoded_stack_linear_space
 #print axioms MCore.Real.CanonicalSATFrameAttack.decodeFrames_push
+#print axioms MCore.Real.CanonicalSATFrameAttack.legacy_frame_gate_is_trivially_inhabited
 
 end CanonicalSATFrameAttack
 end Real
