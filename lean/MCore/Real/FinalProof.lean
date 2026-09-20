@@ -14,10 +14,10 @@ def PolynomialTimeBound (T : TimeBound) : Prop :=
   ∃ coefficient exponent : Nat, ∀ n : Nat,
     T n ≤ coefficient * (n + 1) ^ exponent
 
-/-- Deterministic polynomial-time realization of one Circuit language.
-    Acceptance is read from the halting state; the input-dependent encoder is
-    forbidden from changing the machine control state. -/
-structure PolyDTMRealization (language : CircuitLanguage) where
+/-- A deterministic polynomial-time candidate, before claiming that it decides
+    any particular language.  This is the domain quantified over by the direct
+    fail-proof target. -/
+structure PolyDTMCandidate where
   State : Type
   Symbol : Type
   machine : TM State Symbol
@@ -28,12 +28,27 @@ structure PolyDTMRealization (language : CircuitLanguage) where
     ∀ φ : Circuit, (encode φ).state = machine.initial
   time_poly :
     PolynomialTimeBound timeBound
+
+/-- Exact correctness condition for one input. -/
+def PolyDTMCandidate.CorrectAt
+    (candidate : PolyDTMCandidate)
+    (language : CircuitLanguage)
+    (φ : Circuit) : Prop :=
+  candidate.machine.HaltsWithin
+      (candidate.timeBound (CircuitK1.size φ))
+      (candidate.encode φ) ∧
+    (candidate.accepting
+        (candidate.machine.run
+          (candidate.timeBound (CircuitK1.size φ))
+          (candidate.encode φ)).state = true
+      ↔ language φ)
+
+/-- A deterministic polynomial-time realization is exactly a candidate that is
+    correct on every input. -/
+structure PolyDTMRealization (language : CircuitLanguage) where
+  candidate : PolyDTMCandidate
   decides :
-    ∀ φ : Circuit,
-      machine.HaltsWithin (timeBound (CircuitK1.size φ)) (encode φ) ∧
-      (accepting
-          (machine.run (timeBound (CircuitK1.size φ)) (encode φ)).state = true
-        ↔ language φ)
+    ∀ φ : Circuit, candidate.CorrectAt language φ
 
 /-- Nondeterministic polynomial-time realization of one Circuit language.
     This reuses the already-certified NTM.DecidesWithin contract. -/
@@ -74,26 +89,64 @@ def SATInNP : Prop :=
 def SATNotInP : Prop :=
   ¬ InP SATLanguage
 
+/-- One explicit failure of one polynomial-time deterministic candidate. -/
+def PolyDTMCandidate.FailsOn
+    (candidate : PolyDTMCandidate)
+    (language : CircuitLanguage)
+    (φ : Circuit) : Prop :=
+  ¬ candidate.CorrectAt language φ
+
+/-- Operational universal lower bound: every deterministic polynomial-time SAT
+    candidate has a concrete input on which it fails. -/
+def UniversalSATFailure : Prop :=
+  ∀ candidate : PolyDTMCandidate,
+    ∃ φ : Circuit, candidate.FailsOn SATLanguage φ
+
+/-- The fail-proof statement excludes every genuine SAT realization. -/
+theorem universal_sat_failure_implies_sat_not_in_p
+    (hFail : UniversalSATFailure) :
+    SATNotInP := by
+  intro hP
+  rcases hP with ⟨realization⟩
+  rcases hFail realization.candidate with ⟨φ, hBad⟩
+  exact hBad (realization.decides φ)
+
+/-- Conversely, non-membership in P forces a failing input for every candidate.
+    This direction uses only classical propositional reasoning. -/
+theorem sat_not_in_p_implies_universal_sat_failure
+    (hNotP : SATNotInP) :
+    UniversalSATFailure := by
+  intro candidate
+  apply Classical.byContradiction
+  intro hNoFailure
+  apply hNotP
+  refine ⟨{ candidate := candidate, decides := ?_ }⟩
+  intro φ
+  apply Classical.byContradiction
+  intro hBad
+  exact hNoFailure ⟨φ, hBad⟩
+
+theorem universal_sat_failure_iff_sat_not_in_p :
+    UniversalSATFailure ↔ SATNotInP := by
+  constructor
+  · exact universal_sat_failure_implies_sat_not_in_p
+  · exact sat_not_in_p_implies_universal_sat_failure
+
 /-- Positive certificate form of the lower-bound target.
-    This is the fail-closed analogue of a positive numerical certificate:
-    every proposed deterministic polynomial-time SAT decider is excluded. -/
+    Unlike timing evidence, its payload is universal over every polynomial-time
+    deterministic candidate and produces a failing SAT instance for each one. -/
 structure SATLowerBoundCertificate : Prop where
-  excludes :
-    ∀ candidate : PolyDTMRealization SATLanguage, False
+  fail_proof : UniversalSATFailure
 
 theorem sat_not_in_p_of_lower_bound_certificate
     (cert : SATLowerBoundCertificate) :
-    SATNotInP := by
-  intro hP
-  rcases hP with ⟨candidate⟩
-  exact cert.excludes candidate
+    SATNotInP :=
+  universal_sat_failure_implies_sat_not_in_p cert.fail_proof
 
 theorem lower_bound_certificate_of_sat_not_in_p
     (hNotP : SATNotInP) :
-    SATLowerBoundCertificate := by
-  refine ⟨?_⟩
-  intro candidate
-  exact hNotP ⟨candidate⟩
+    SATLowerBoundCertificate :=
+  ⟨sat_not_in_p_implies_universal_sat_failure hNotP⟩
 
 theorem sat_lower_bound_certificate_iff :
     SATLowerBoundCertificate ↔ SATNotInP := by
@@ -120,7 +173,7 @@ theorem sat_certificate_implies_machine_p_ne_np
 
 /-- The direct FINAL_PROOF residual.
     The first conjunct is the concrete NP witness.
-    The second conjunct is the genuine universal deterministic lower bound.
+    The second conjunct is the genuine universal deterministic fail proof.
     No benchmark, finite search, C12/C13 table, or elliptic-curve timing result
     inhabits this proposition by definition. -/
 def FINAL_PROOF_RESIDUAL : Prop :=
@@ -131,7 +184,9 @@ theorem final_proof_from_residual
     MachinePneqNP := by
   exact sat_certificate_implies_machine_p_ne_np h.1 h.2
 
-#print axioms MCore.Real.sat_not_in_p_of_lower_bound_certificate
+#print axioms MCore.Real.universal_sat_failure_implies_sat_not_in_p
+#print axioms MCore.Real.sat_not_in_p_implies_universal_sat_failure
+#print axioms MCore.Real.universal_sat_failure_iff_sat_not_in_p
 #print axioms MCore.Real.sat_boundary_implies_machine_p_ne_np
 #print axioms MCore.Real.sat_certificate_implies_machine_p_ne_np
 #print axioms MCore.Real.final_proof_from_residual
