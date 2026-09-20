@@ -73,12 +73,21 @@ theorem runBranches_to_tm_run
             [config].filter (fun c =>
               (toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state) = [config] := by
-          simp [hstop]
+          change
+            (if ((toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state)
+             then [config] else []) = [config]
+          rw [hstop]
         have hActive :
             [config].filter (fun c =>
               !((toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state)) = [] := by
-          simp [hstop]
+          change
+            (if !((toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state)
+             then [config] else []) = []
+          rw [hstop]
+          rfl
         calc
           (toNTM candidate).runBranches (n + 1) [config]
               = (toNTM candidate).runBranches n [config] := by
@@ -101,12 +110,21 @@ theorem runBranches_to_tm_run
             [config].filter (fun c =>
               (toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state) = [] := by
-          simp [hstop]
+          change
+            (if ((toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state)
+             then [config] else []) = []
+          rw [hstop]
         have hActive :
             [config].filter (fun c =>
               !((toNTM candidate).accepting c.state ||
                 (toNTM candidate).rejecting c.state)) = [config] := by
-          simp [hstop]
+          change
+            (if !((toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state)
+             then [config] else []) = [config]
+          rw [hstop]
+          rfl
         calc
           (toNTM candidate).runBranches (n + 1) [config]
               = (toNTM candidate).runBranches n
