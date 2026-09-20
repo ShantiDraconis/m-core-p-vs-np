@@ -509,6 +509,11 @@ theorem charToDigit_digitChar_decimal :
   · have : d = 9 := Nat.le_antisymm (Nat.le_of_lt_succ hd) h8
     subst d; rfl
 
+/-- A one-digit decimal numeral is decoded exactly. -/
+theorem parseNatChars_single_digit {d : Nat} (hd : d < 10) :
+    parseNatChars [Nat.digitChar d] 0 false = some (d, []) := by
+  simp [parseNatChars, charToDigit_digitChar_decimal d hd]
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
