@@ -22,7 +22,6 @@ theorem verifyWitness_correct
   unfold verifyWitness SATWitnessAccepts
   rw [bool_and_eq_true_iff]
   rw [isCNFBool_eq_true_iff]
-  rfl
 
 /-- Structural work budget for the high-level verifier. This is NOT yet a
     theorem about canonical Turing-machine steps. -/
