@@ -57,6 +57,20 @@ jobs:
           EOF
           lake env lean SemanticsAxiomAudit.lean 2>&1 | tee audit/PNP-Semantics-axioms.log
 
+      - name: Targeted build MCore.Real.SATMachine
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.SATMachine 2>&1 | tee audit/PNP-SATMachine-targeted.log
+
+      - name: Axiom audit SATMachine interface
+        run: |
+          set -euo pipefail
+          cat > SATMachineAxiomAudit.lean <<'EOF'
+          import MCore.Real.SATMachine
+          #print axioms MCore.Real.satMachineRealization_decides
+          EOF
+          lake env lean SATMachineAxiomAudit.lean 2>&1 | tee audit/PNP-SATMachine-axioms.log
+
       - name: Axiom audit CNFStructure
         run: |
           set -euo pipefail
