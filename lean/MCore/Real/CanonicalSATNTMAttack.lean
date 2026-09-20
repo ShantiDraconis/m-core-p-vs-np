@@ -69,14 +69,19 @@ theorem scan_run_reaches_halt
       (scanMachine.run (bits.length + 1) (scanConfig left bits)).state = true := by
   induction bits generalizing left with
   | nil =>
-      simp [TM.run, scan_step_nil, scanMachine]
+      change
+        scanMachine.halting
+          (scanMachine.run 1 (scanConfig left [])).state = true
+      rw [TM.run]
+      rw [scanMachine_not_halted_at_zero]
+      rw [scan_step_nil]
+      exact scanMachine_halted_at_one
   | cons b bs ih =>
       rw [List.length_cons]
       simp only [Nat.succ_eq_add_one]
       rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by omega]
       rw [TM.run]
       rw [scanMachine_not_halted_at_zero]
-      rw [if_false]
       rw [scan_step_cons]
       exact ih (some b :: left)
 
