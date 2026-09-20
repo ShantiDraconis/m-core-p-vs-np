@@ -64,13 +64,36 @@ theorem runBranches_to_tm_run
       rfl
   | succ n ih =>
       by_cases h : candidate.machine.halting config.state = true
-      · cases ha : candidate.accepting config.state <;>
-          simp [NTM.runBranches, toNTM, h, ha, ih,
-            tm_run_of_halted candidate config h, TM.run]
+      · cases ha : candidate.accepting config.state
+        · calc
+            (toNTM candidate).runBranches (n + 1) [config]
+                = (toNTM candidate).runBranches n [config] := by
+                    simp [NTM.runBranches, toNTM, h, ha]
+            _ = [candidate.machine.run n config] := ih config
+            _ = [config] := by
+                    rw [tm_run_of_halted candidate config h n]
+            _ = [candidate.machine.run (n + 1) config] := by
+                    simp [TM.run, h]
+        · calc
+            (toNTM candidate).runBranches (n + 1) [config]
+                = (toNTM candidate).runBranches n [config] := by
+                    simp [NTM.runBranches, toNTM, h, ha]
+            _ = [candidate.machine.run n config] := ih config
+            _ = [config] := by
+                    rw [tm_run_of_halted candidate config h n]
+            _ = [candidate.machine.run (n + 1) config] := by
+                    simp [TM.run, h]
       · have hFalse : candidate.machine.halting config.state = false := by
           cases hval : candidate.machine.halting config.state <;> simp_all
-        simp [NTM.runBranches, toNTM, h, hFalse,
-          successors_toNTM, ih, TM.run]
+        calc
+          (toNTM candidate).runBranches (n + 1) [config]
+              = (toNTM candidate).runBranches n [candidate.machine.step config] := by
+                  simp [NTM.runBranches, toNTM, h, hFalse,
+                    successors_toNTM]
+          _ = [candidate.machine.run n (candidate.machine.step config)] :=
+                ih (candidate.machine.step config)
+          _ = [candidate.machine.run (n + 1) config] := by
+                simp [TM.run, h]
 
 def toNTMCandidate
     (candidate : PolyDTMCandidate) :
