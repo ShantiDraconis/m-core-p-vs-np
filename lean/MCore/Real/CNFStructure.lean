@@ -527,6 +527,18 @@ theorem parseNatChars_cons_digit_seen {d acc : Nat} {tail : List Char} {seen : B
       parseNatChars tail (10 * acc + d) true := by
   simp [parseNatChars, charToDigit_digitChar_decimal d hd]
 
+/-- First recursive probe against the representation primitive shipped by Lean 4.19:
+    when the quotient is zero, toDigitsCore emits exactly the final digit. -/
+theorem parseNatChars_toDigitsCore_terminal {n fuel acc : Nat}
+    (hn : n < 10) (hf : fuel > 0) :
+    parseNatChars (Nat.toDigitsCore 10 fuel n []) acc false =
+      some (10 * acc + n, []) := by
+  cases fuel with
+  | zero => omega
+  | succ fuel =>
+      simp [Nat.toDigitsCore, Nat.div_eq_of_lt hn,
+        charToDigit_digitChar_decimal n hn, parseNatChars]
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
