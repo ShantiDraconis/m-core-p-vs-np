@@ -1,4 +1,5 @@
 import MCore.C12.Families
+import Init.Data.Nat.ToString
 
 namespace MCore
 namespace Real
@@ -474,6 +475,15 @@ def parseNatChars : List Char → Nat → Bool → Option (Nat × List Char)
 theorem charToDigit_digitChar {d : Nat} (hd : d < 10) :
     charToDigit? (Nat.digitChar d) = some d := by
   rcases Nat.lt_succ_iff.mp hd with hd
+  rcases Nat.le_iff_lt_or_eq.mp hd with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
+  rcases Nat.le_iff_lt_or_eq.mp (Nat.le_of_lt h) with h | rfl <;> try rfl
   omega
 
 /-- Appending one canonical decimal digit after a completely consumed prefix
@@ -487,18 +497,24 @@ theorem parseNatChars_append_digit
   induction xs generalizing acc seen v with
   | nil =>
       simp only [parseNatChars] at hxs
-      split at hxs <;> simp_all [parseNatChars, charToDigit_digitChar hd]
+      split at hxs
+      · cases hxs
+        simp [parseNatChars, charToDigit_digitChar hd]
+      · contradiction
   | cons c cs ih =>
       simp only [List.cons_append]
       unfold parseNatChars at hxs ⊢
       cases hcd : charToDigit? c with
       | none =>
-          simp [hcd] at hxs ⊢
-          split at hxs <;> simp_all
+          simp [hcd] at hxs
+          split at hxs
+          · cases hxs
+          · contradiction
       | some e =>
           simp only [hcd]
-          apply ih
-          simpa [hcd] using hxs
+          have hs : parseNatChars cs (10 * acc + e) true = some (v, []) := by
+            simpa [hcd] using hxs
+          exact ih hs
 
 /-- Lean's canonical decimal rendering is decoded by the local parser. -/
 theorem decimal_roundtrip (n : Nat) :
