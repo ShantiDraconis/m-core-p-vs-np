@@ -49,8 +49,8 @@ def tagMachine : TM (Fin 13) (Option Bool) :=
     tagMachine.halting (0 : Fin 13) = false := by
   decide
 
-def tagInput (prefix : List Bool) (tail : BitString) : BitString :=
-  prefix ++ tail
+def tagInput (bitsPrefix : List Bool) (tail : BitString) : BitString :=
+  bitsPrefix ++ tail
 
 theorem tag_input_state
     (tail : BitString) :
