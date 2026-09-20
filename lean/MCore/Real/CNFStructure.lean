@@ -558,6 +558,16 @@ theorem toDigitsCore_decimal_decreases {n : Nat} (hn : 10 ≤ n) :
     n / 10 < n := by
   exact Nat.div_lt_self (by omega) (by decide)
 
+/-- One recursive decimal representation step exposes the strictly smaller quotient.
+    This packages the representation equation and its induction measure for the
+    forthcoming parser invariant. -/
+theorem toDigitsCore_decimal_step_decreases {n fuel : Nat}
+    (hf : fuel > 0) (hn : 10 ≤ n) :
+    Nat.toDigitsCore 10 fuel n [] =
+        Nat.toDigitsCore 10 (fuel - 1) (n / 10) [Nat.digitChar (n % 10)] ∧
+      n / 10 < n := by
+  exact ⟨toDigitsCore_decimal_step hf hn, toDigitsCore_decimal_decreases hn⟩
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
