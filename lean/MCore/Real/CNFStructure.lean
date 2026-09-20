@@ -514,6 +514,12 @@ theorem parseNatChars_single_digit {d : Nat} (hd : d < 10) :
     parseNatChars [Nat.digitChar d] 0 false = some (d, []) := by
   simp [parseNatChars, charToDigit_digitChar_decimal d hd]
 
+/-- A canonical decimal digit can be consumed from an arbitrary accumulator and tail. -/
+theorem parseNatChars_cons_digit {d acc : Nat} {tail : List Char} (hd : d < 10) :
+    parseNatChars (Nat.digitChar d :: tail) acc false =
+      parseNatChars tail (10 * acc + d) true := by
+  simp [parseNatChars, charToDigit_digitChar_decimal d hd]
+
 /-- Fuelled parser for the frozen renderCNF prefix language. -/
 def parseCircuitChars : Nat → List Char → Option (Circuit × List Char)
   | 0, _ => none
