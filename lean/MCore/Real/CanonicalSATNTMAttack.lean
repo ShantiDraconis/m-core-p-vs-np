@@ -38,6 +38,12 @@ def scanConfig
       { state := 0
         tape := { left := left, head := some b, right := bs.map some } }
 
+@[simp] theorem scanConfig_state
+    (left : List (Option Bool))
+    (bits : BitString) :
+    (scanConfig left bits).state = (0 : Fin 2) := by
+  cases bits <;> rfl
+
 @[simp] theorem scanMachine_not_halted_at_zero :
     scanMachine.halting (0 : Fin 2) = false := by
   rfl
@@ -73,6 +79,7 @@ theorem scan_run_reaches_halt
         scanMachine.halting
           (scanMachine.run 1 (scanConfig left [])).state = true
       rw [TM.run]
+      rw [scanConfig_state]
       rw [scanMachine_not_halted_at_zero]
       rw [scan_step_nil]
       exact scanMachine_halted_at_one
@@ -81,6 +88,7 @@ theorem scan_run_reaches_halt
       simp only [Nat.succ_eq_add_one]
       rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by omega]
       rw [TM.run]
+      rw [scanConfig_state]
       rw [scanMachine_not_halted_at_zero]
       rw [scan_step_cons]
       exact ih (some b :: left)
