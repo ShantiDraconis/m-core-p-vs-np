@@ -20,11 +20,11 @@ def toNTM
 theorem accept_or_reject_eq_halting
     (candidate : PolyDTMCandidate)
     (q : Fin (candidate.stateCount + 1)) :
-    (toNTM candidate).accepting q || (toNTM candidate).rejecting q =
+    ((toNTM candidate).accepting q || (toNTM candidate).rejecting q) =
       candidate.machine.halting q := by
   cases h : candidate.machine.halting q <;>
     cases a : candidate.accepting q <;>
-    rfl
+    simp [toNTM, h, a]
 
 theorem successors_toNTM
     (candidate : PolyDTMCandidate)
@@ -65,19 +65,21 @@ theorem runBranches_to_tm_run
   | succ n ih =>
       by_cases h : candidate.machine.halting config.state = true
       · have hstop :
-          (toNTM candidate).accepting config.state ||
-              (toNTM candidate).rejecting config.state = true := by
+          ((toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state) = true := by
           rw [accept_or_reject_eq_halting]
           exact h
         simp [NTM.runBranches, hstop, ih,
           tm_run_of_halted candidate config h, TM.run, h]
-      · have hstop :
-          (toNTM candidate).accepting config.state ||
-              (toNTM candidate).rejecting config.state = false := by
+      · have hFalse : candidate.machine.halting config.state = false :=
+          Bool.eq_false_of_not_eq_true h
+        have hstop :
+          ((toNTM candidate).accepting config.state ||
+              (toNTM candidate).rejecting config.state) = false := by
           rw [accept_or_reject_eq_halting]
-          exact Bool.eq_false_of_not_eq_true h
+          exact hFalse
         simp [NTM.runBranches, hstop, successors_toNTM,
-          ih, TM.run, h]
+          ih, TM.run, h, hFalse]
 
 def toNTMCandidate
     (candidate : PolyDTMCandidate) :
@@ -114,8 +116,21 @@ theorem correctAt_to_ntm
             (initialTMConfig candidate.machine x) := by
       simpa using hMem
     subst reached
-    rw [accept_or_reject_eq_halting]
-    exact hHalt
+    by_cases ha :
+        candidate.accepting
+          (candidate.machine.run
+            (candidate.timeBound x.length)
+            (initialTMConfig candidate.machine x)).state = true
+    · left
+      simp [toNTMCandidate, toNTM, hHalt, ha]
+    · right
+      have haFalse :
+          candidate.accepting
+            (candidate.machine.run
+              (candidate.timeBound x.length)
+              (initialTMConfig candidate.machine x)).state = false :=
+        Bool.eq_false_of_not_eq_true ha
+      simp [toNTMCandidate, toNTM, hHalt, haFalse]
   · constructor
     · intro hNAcc
       rcases hNAcc with ⟨reached, hMem, hAcc⟩
@@ -141,7 +156,7 @@ theorem correctAt_to_ntm
               (candidate.machine.run
                 (candidate.timeBound x.length)
                 (initialTMConfig candidate.machine x)).state = true := by
-        simpa [toNTM, hHalt] using hAcc
+        simpa [toNTMCandidate, toNTM, hHalt] using hAcc
       exact hAccept.mp hCandidateAccept
     · intro hLanguage
       have hCandidateAccept :
@@ -155,9 +170,16 @@ theorem correctAt_to_ntm
           (candidate.timeBound x.length)
           (initialTMConfig candidate.machine x),
         ?_, ?_⟩
-      · rw [runBranches_to_tm_run]
+      · change
+          candidate.machine.run
+              (candidate.timeBound x.length)
+              (initialTMConfig candidate.machine x) ∈
+            (toNTM candidate).runBranches
+              (candidate.timeBound x.length)
+              [initialTMConfig candidate.machine x]
+        rw [runBranches_to_tm_run]
         simp
-      · simp [toNTM, hHalt, hCandidateAccept]
+      · simp [toNTMCandidate, toNTM, hHalt, hCandidateAccept]
 
 def realization_to_ntm
     {language : BitLanguage}
