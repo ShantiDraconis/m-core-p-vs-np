@@ -155,7 +155,11 @@ theorem decodeCircuit_encode
   have hCore :=
     decodeCircuitCore_encode_append
       c ([] : BitString) ((encodeCircuit c).length + 1) hFuel
-  simp [decodeCircuit, hCore]
+  have hCore' :
+      decodeCircuitCore ((encodeCircuit c).length + 1) (encodeCircuit c) =
+        some (c, []) := by
+    simpa using hCore
+  simp [decodeCircuit, hCore']
 
 def circuitBitEncoding : CircuitBitEncoding :=
   { encode := encodeCircuit
