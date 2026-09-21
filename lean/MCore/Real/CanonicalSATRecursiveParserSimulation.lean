@@ -12,7 +12,7 @@ open CanonicalSATSlotParserSpec
 open CanonicalSATParserMachine
 
 /--
-Exact remaining proof payload for the canonical Fin 31 parser machine.
+Exact remaining proof payload for the canonical Fin 25 parser machine.
 No parallel parser model is introduced here.
 
 The machine-specific semantic obligation is only realization of slotAccept;
@@ -53,7 +53,7 @@ theorem simulation_correct
 def SlotParserMachineSimulationCertificate.toCanonicalCertificate
     (S : SlotParserMachineSimulationCertificate) :
     CanonicalRecursiveParserMachineCertificate :=
-  { stateCount := 30
+  { stateCount := 24
     machine := parserMachine
     blank_none := rfl
     accepting := parserAccepting
