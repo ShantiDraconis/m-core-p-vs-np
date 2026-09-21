@@ -28,6 +28,7 @@ jobs:
             lean/MCore/Real/CanonicalFinalProof.lean
             lean/MCore/Real/CanonicalSATBoundary.lean
             lean/MCore/Real/CanonicalCircuitBits.lean
+            lean/MCore/Real/CanonicalCircuitBitsInverse.lean
             lean/MCore/Real/CanonicalSATWitness.lean
             lean/MCore/Real/CanonicalSATVerifier.lean
             lean/MCore/Real/CanonicalSATNTMAttack.lean
@@ -48,7 +49,21 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+
+      - name: Axiom audit canonical decoder inverse
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01InverseAudit.lean <<'EOF'
+          import MCore.Real.CanonicalCircuitBitsInverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeNat_inverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuitCore_inverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_inverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_eq_some_iff
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.exists_decodeCircuit_iff_exists_exact_encoding
+          EOF
+          lake env lean /tmp/P01InverseAudit.lean 2>&1 | tee /tmp/p01-inverse.log
+          if grep -q 'sorryAx' /tmp/p01-inverse.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
