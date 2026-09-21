@@ -42,3 +42,5 @@ import MCore.Real.CanonicalCircuitBitsInverse
 import MCore.Real.CanonicalSATSlotParserSpec
 import MCore.Real.CanonicalSATVarPayloadMachine
 import MCore.Real.CanonicalSATTagConsumerMachine
+import MCore.Real.CanonicalSATParserTapeLayout
+import MCore.Real.CanonicalSATParserInitMachine
