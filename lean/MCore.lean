@@ -47,3 +47,4 @@ import MCore.Real.CanonicalSATParserInitMachine
 import MCore.Real.CanonicalSATSlotLog
 import MCore.Real.CanonicalSATSlotLogMachine
 import MCore.Real.CanonicalSATParserMachine
+import MCore.Real.P02TerminalFrontier
