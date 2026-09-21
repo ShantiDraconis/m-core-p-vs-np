@@ -8,22 +8,22 @@ namespace CanonicalSATSlotLogMachine
 open CanonicalFinalProof
 open CanonicalSATSlotLog
 
-/-- Work-region configuration.  The left prefix is arbitrary parser data plus
+/-- Work-region configuration.  The left pre is arbitrary parser data plus
 its blank delimiter.  The head is the first slot-log cell, or blank for an
 empty log. -/
 def workConfig
     {n : Nat}
     (q : Fin n)
-    (prefix : List (Option Bool))
+    (pre : List (Option Bool))
     (log : SlotLog) :
     Configuration (Fin n) (Option Bool) :=
   match log with
   | [] =>
       { state := q
-        tape := { left := prefix, head := none, right := [] } }
+        tape := { left := pre, head := none, right := [] } }
   | b :: bs =>
       { state := q
-        tape := { left := prefix, head := some b, right := bs.map some } }
+        tape := { left := pre, head := some b, right := bs.map some } }
 
 /-- Two-state append machine. State 0 scans to the first blank after the work
 log; state 1 halts after writing one active-slot cell. -/
@@ -46,37 +46,37 @@ def pushSlotMachine : TM (Fin 2) (Option Bool) :=
     pushSlotMachine.halting (1 : Fin 2) = true := rfl
 
 theorem push_step_cons
-    (prefix : List (Option Bool))
+    (pre : List (Option Bool))
     (b : Bool)
     (bs : SlotLog) :
-    pushSlotMachine.step (workConfig 0 prefix (b :: bs)) =
-      workConfig 0 (some b :: prefix) bs := by
+    pushSlotMachine.step (workConfig 0 pre (b :: bs)) =
+      workConfig 0 (some b :: pre) bs := by
   cases bs <;>
     simp [pushSlotMachine, workConfig, TM.step, Tape.write, Tape.move]
 
 theorem push_step_nil
-    (prefix : List (Option Bool)) :
-    pushSlotMachine.step (workConfig 0 prefix []) =
+    (pre : List (Option Bool)) :
+    pushSlotMachine.step (workConfig 0 pre []) =
       { state := (1 : Fin 2)
-        tape := { left := prefix, head := some true, right := [] } } := by
+        tape := { left := pre, head := some true, right := [] } } := by
   simp [pushSlotMachine, workConfig, TM.step, Tape.write, Tape.move]
 
 /-- Exact append behavior.  The machine runs one step per old log cell plus
 one write step. -/
 theorem push_run
-    (prefix : List (Option Bool))
+    (pre : List (Option Bool))
     (log : SlotLog) :
     let final :=
-      pushSlotMachine.run (log.length + 1) (workConfig 0 prefix log)
+      pushSlotMachine.run (log.length + 1) (workConfig 0 pre log)
     final.state = (1 : Fin 2) ∧
       final.tape.right = [] ∧
       final.tape.head = some true := by
-  induction log generalizing prefix with
+  induction log generalizing pre with
   | nil =>
       simp [TM.run, push_not_halted, push_step_nil, pushSlotMachine]
   | cons b bs ih =>
       rw [List.length_cons, TM.run, push_not_halted, push_step_cons]
-      exact ih (some b :: prefix)
+      exact ih (some b :: pre)
 
 /--
 Four-state pop machine.
@@ -124,7 +124,7 @@ theorem slotLogTimeBound_poly :
   omega
 
 /-- Semantic consequence needed by the parser: push changes represented slot
-count by +1, independent of physical parser prefix. -/
+count by +1, independent of physical parser pre. -/
 theorem push_semantic
     {slots : Nat}
     {log : SlotLog}
