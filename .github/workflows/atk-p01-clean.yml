@@ -1,6 +1,9 @@
 name: ATK P01 clean operational SAT
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - attack/material-orientation-clean-v2-20260921
