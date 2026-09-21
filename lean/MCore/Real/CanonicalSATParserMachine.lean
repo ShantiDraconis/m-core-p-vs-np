@@ -6,45 +6,48 @@ namespace Real
 namespace CanonicalSATParserMachine
 
 open CanonicalFinalProof
-open CanonicalSATSlotParserSpec
-open CanonicalSATSlotLog
 
-/-
-State map (Fin 31):
- 0 INIT_SCAN_RIGHT
- 1 INIT_WRITE_SLOT
- 2 INIT_CROSS_DELIM
- 3 INIT_REWIND
- 4 TAG_0
- 5 TAG_AFTER_0
- 6 TAG_AFTER_1
- 7 TAG_AFTER_00
- 8 TAG_AFTER_01
- 9 TAG_AFTER_10
+/--
+Canonical single-tape parser with constant finite control.
+
+State map (Fin 25):
+0 INIT_SCAN_RIGHT
+1 INIT_WRITE_SLOT
+2 INIT_CROSS_LEFT
+3 INIT_REWIND
+4 TAG_0
+5 TAG_AFTER_0
+6 TAG_AFTER_1
+7 TAG_AFTER_00
+8 TAG_AFTER_01
+9 TAG_AFTER_10
 10 VAR_LOOP
-11 LEAF_SEEK_DELIM
-12 UNARY_SEEK_DELIM
-13 BINARY_SEEK_DELIM
-14 LEAF_SCAN_LOG_END
-15 UNARY_SCAN_LOG_END
-16 BINARY_SCAN_LOG_END
-17 LEAF_POP_SEARCH
-18 UNARY_POP_SEARCH
-19 BINARY_POP_SEARCH
-20 LEAF_CHECK_ACTIVE_LEFT
-21 LEAF_RETURN_ACTIVE_DELIM
-22 UNARY_GO_END
-23 CROSS_INPUT_ACTIVE
-24 CROSS_INPUT_ZERO
-25 RETURN_DELIM_ACTIVE
-26 BINARY_GO_END
-27 BINARY_PUSH_SECOND
-28 REWIND_INPUT_ACTIVE
-29 ACCEPT
-30 REJECT
--/
+11 LEAF_SEEK_DELIMITER
+12 LEAF_SCAN_LOG_RIGHT
+13 LEAF_POP_RIGHTMOST_ACTIVE
+14 LEAF_SCAN_REMAINING_NO_ACTIVE
+15 LEAF_SCAN_REMAINING_ACTIVE
+16 LEAF_CHECK_UNREAD_NO_ACTIVE
+17 LEAF_CHECK_UNREAD_ACTIVE
+18 BINARY_SEEK_DELIMITER
+19 BINARY_SCAN_LOG_RIGHT
+20 BINARY_RETURN_LOG_LEFT
+21 BINARY_CHECK_UNREAD
+22 REWIND_UNREAD_LEFT
+23 ACCEPT
+24 REJECT
 
-def parserMachine : TM (Fin 31) (Option Bool) :=
+Invariant used to simplify the work log:
+* TAG_0 is entered only with at least one active slot.
+* NOT consumes one slot and opens one slot: the work log is unchanged.
+* AND/OR consume one slot and open two: net effect is push one active slot.
+* leaves consume one slot: pop the rightmost active slot.
+
+Thus only leaf needs an actual pop search.  This is equivalent to the slot
+recurrence slots' = slots - 1 + arity while avoiding unnecessary pop+push
+cycles for unary/binary constructors.
+-/
+def parserMachine : TM (Fin 25) (Option Bool) :=
   { initial := 0
     blank := none
     transition := fun q symbol =>
@@ -62,169 +65,133 @@ def parserMachine : TM (Fin 31) (Option Bool) :=
         | none => (4, none, .right)
       else if q = 4 then
         match symbol with
-        | none => (30, none, .stay)
         | some false => (5, none, .right)
         | some true => (6, none, .right)
+        | none => (24, none, .stay)
       else if q = 5 then
         match symbol with
-        | none => (30, none, .stay)
         | some false => (7, none, .right)
         | some true => (8, none, .right)
+        | none => (24, none, .stay)
       else if q = 6 then
         match symbol with
-        | none => (30, none, .stay)
         | some false => (9, none, .right)
-        | some true => (30, none, .right)
+        | some true => (24, none, .stay)
+        | none => (24, none, .stay)
       else if q = 7 then
         match symbol with
-        | none => (30, none, .stay)
         | some false => (10, none, .right)
         | some true => (11, none, .right)
+        | none => (24, none, .stay)
       else if q = 8 then
         match symbol with
-        | none => (30, none, .stay)
         | some false => (11, none, .right)
-        | some true => (12, none, .right)
+        | some true => (4, none, .right)
+        | none => (24, none, .stay)
       else if q = 9 then
         match symbol with
-        | none => (30, none, .stay)
-        | some _ => (13, none, .right)
+        | some _ => (18, none, .right)
+        | none => (24, none, .stay)
       else if q = 10 then
         match symbol with
-        | none => (30, none, .stay)
         | some true => (10, none, .right)
         | some false => (11, none, .right)
+        | none => (24, none, .stay)
       else if q = 11 then
         match symbol with
         | some b => (11, some b, .right)
-        | none => (14, none, .right)
+        | none => (12, none, .right)
       else if q = 12 then
         match symbol with
         | some b => (12, some b, .right)
-        | none => (15, none, .right)
+        | none => (13, none, .left)
       else if q = 13 then
         match symbol with
-        | some b => (13, some b, .right)
-        | none => (16, none, .right)
+        | some false => (13, some false, .left)
+        | some true => (14, some false, .left)
+        | none => (24, none, .stay)
       else if q = 14 then
         match symbol with
-        | some b => (14, some b, .right)
-        | none => (17, none, .left)
+        | some false => (14, some false, .left)
+        | some true => (15, some true, .left)
+        | none => (16, none, .left)
       else if q = 15 then
         match symbol with
-        | some b => (15, some b, .right)
-        | none => (18, none, .left)
+        | some _ => (15, symbol, .left)
+        | none => (17, none, .left)
       else if q = 16 then
         match symbol with
-        | some b => (16, some b, .right)
-        | none => (19, none, .left)
+        | none => (23, none, .stay)
+        | some b => (24, some b, .stay)
       else if q = 17 then
         match symbol with
-        | some false => (17, some false, .left)
-        | some true => (20, some false, .left)
-        | none => (30, none, .stay)
+        | none => (24, none, .stay)
+        | some b => (22, some b, .left)
       else if q = 18 then
         match symbol with
-        | some false => (18, some false, .left)
-        | some true => (22, some false, .right)
-        | none => (30, none, .stay)
+        | some b => (18, some b, .right)
+        | none => (19, none, .right)
       else if q = 19 then
         match symbol with
-        | some false => (19, some false, .left)
-        | some true => (26, some false, .right)
-        | none => (30, none, .stay)
+        | some b => (19, some b, .right)
+        | none => (20, some true, .left)
       else if q = 20 then
         match symbol with
-        | some false => (20, some false, .left)
-        | some true => (21, some true, .left)
-        | none => (24, none, .left)
+        | some b => (20, some b, .left)
+        | none => (21, none, .left)
       else if q = 21 then
         match symbol with
-        | some b => (21, some b, .left)
-        | none => (23, none, .left)
+        | none => (24, none, .stay)
+        | some b => (22, some b, .left)
       else if q = 22 then
         match symbol with
-        | some b => (22, some b, .right)
-        | none => (25, some true, .left)
-      else if q = 23 then
-        match symbol with
-        | none => (30, none, .stay)
-        | some b => (28, some b, .left)
-      else if q = 24 then
-        match symbol with
-        | none => (29, none, .stay)
-        | some b => (30, some b, .stay)
-      else if q = 25 then
-        match symbol with
-        | some b => (25, some b, .left)
-        | none => (23, none, .left)
-      else if q = 26 then
-        match symbol with
-        | some b => (26, some b, .right)
-        | none => (27, some true, .right)
-      else if q = 27 then
-        (25, some true, .left)
-      else if q = 28 then
-        match symbol with
-        | some b => (28, some b, .left)
+        | some b => (22, some b, .left)
         | none => (4, none, .right)
       else
         (q, symbol, .stay)
-    halting := fun q => (q == 29) || (q == 30) }
+    halting := fun q => (q == 23) || (q == 24) }
 
 @[simp] theorem parserMachine_blank_none :
     parserMachine.blank = none := rfl
 
-def parserAccepting : Fin 31 → Bool :=
-  fun q => q == 29
+def parserAccepting : Fin 25 → Bool :=
+  fun q => q == 23
 
 @[simp] theorem parserAccepting_accept :
-    parserAccepting 29 = true := by decide
+    parserAccepting (23 : Fin 25) = true := by decide
 
 @[simp] theorem parserAccepting_reject :
-    parserAccepting 30 = false := by decide
+    parserAccepting (24 : Fin 25) = false := by decide
 
 @[simp] theorem parserMachine_halts_accept :
-    parserMachine.halting 29 = true := by decide
+    parserMachine.halting (23 : Fin 25) = true := by decide
 
 @[simp] theorem parserMachine_halts_reject :
-    parserMachine.halting 30 = true := by decide
+    parserMachine.halting (24 : Fin 25) = true := by decide
 
-@[simp] theorem parserMachine_not_halted_tag0 :
-    parserMachine.halting 4 = false := by decide
-
-/-- Conservative global budget for the eventual macro-simulation proof. -/
 def parserTimeBound : TimeBound :=
   fun n => 256 * (n + 1) ^ 2
 
 theorem parserTimeBound_poly :
     PolynomialTimeBound parserTimeBound := by
-  refine ⟨256, 2, ?_⟩
-  intro n
-  exact Nat.le_refl _
+  exact ⟨256, 2, fun _ => le_rfl⟩
 
-/-- Type-level finite-control/fixed-alphabet firewall. -/
 theorem parserMachine_has_canonical_type :
-    Nonempty (TM (Fin 31) (Option Bool)) :=
+    Nonempty (TM (Fin 25) (Option Bool)) :=
   ⟨parserMachine⟩
 
-/-- The chosen literal state count for CanonicalRecursiveParserMachineCertificate. -/
-def parserStateCount : Nat := 30
+def parserStateCount : Nat := 24
 
 theorem parserStateType :
-    Fin (parserStateCount + 1) = Fin 31 := by
+    Fin (parserStateCount + 1) = Fin 25 := by
   rfl
 
-/--
-The machine has no semantic input parameter: its only eventual public input is
-the canonical initial tape built from bits.
--/
 def parserInitialConfig (bits : BitString) :
-    Configuration (Fin 31) (Option Bool) :=
+    Configuration (Fin 25) (Option Bool) :=
   initialTMConfig parserMachine bits
 
 @[simp] theorem parserInitialConfig_state (bits : BitString) :
-    (parserInitialConfig bits).state = (0 : Fin 31) := by
+    (parserInitialConfig bits).state = (0 : Fin 25) := by
   rfl
 
 #print axioms MCore.Real.CanonicalSATParserMachine.parserMachine_blank_none
