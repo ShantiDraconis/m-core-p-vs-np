@@ -1,4 +1,4 @@
-import MCore.Real.CanonicalSATRecursiveParserMachine
+import MCore.Real.CanonicalSATParserMachine
 import MCore.Real.CanonicalSATSlotLog
 import MCore.Real.MachineRunLemmas
 
@@ -7,7 +7,7 @@ namespace Real
 namespace CanonicalSATRecursiveParserInitProof
 
 open CanonicalFinalProof
-open CanonicalSATRecursiveParserMachine
+open CanonicalSATParserMachine
 open CanonicalSATSlotLog
 
 def forwardConfig
