@@ -32,6 +32,10 @@ theorem run_add
       rw [TM.run]
       by_cases h : machine.halting config.state = true
       · simp only [h, if_pos]
+        have hm :
+            machine.run (m + 1) config = config :=
+          run_halted machine config h (m + 1)
+        rw [hm]
         exact (run_halted machine config h n).symm
       · have hf : machine.halting config.state = false := by
           cases hh : machine.halting config.state <;> simp_all
