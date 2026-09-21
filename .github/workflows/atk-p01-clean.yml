@@ -181,15 +181,14 @@ jobs:
       - name: Axiom audit recursive parser machine shell
         run: |
           set -euo pipefail
-          cat >/tmp/P01ParserMachineAudit.lean <<'EOF'
-          import import #print axioms .parserMachine_blank_none
-          #print axioms .parserTimeBound_poly
-          #print axioms .closure_gives_operational_gap
-          #print axioms .p02_iff_sat_not_in_p
-          #print axioms .p01_p02_close_internal
+          cat >/tmp/P01RecursiveParserAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATRecursiveParserMachine
+          #print axioms MCore.Real.CanonicalSATRecursiveParserMachine.parserMachine_blank_none
+          #print axioms MCore.Real.CanonicalSATRecursiveParserMachine.parserTimeBound_poly
+          #print axioms MCore.Real.CanonicalSATRecursiveParserMachine.closure_gives_operational_gap
           EOF
-          lake env lean /tmp/P01ParserMachineAudit.lean 2>&1 | tee /tmp/p01-parser-machine.log
-          if grep -q 'sorryAx' /tmp/p01-parser-machine.log; then exit 1; fi
+          lake env lean /tmp/P01RecursiveParserAudit.lean 2>&1 | tee /tmp/p01-recursive-parser.log
+          if grep -q 'sorryAx' /tmp/p01-recursive-parser.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
