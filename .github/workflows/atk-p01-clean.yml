@@ -40,6 +40,7 @@ jobs:
             lean/MCore/Real/CanonicalSATParserTapeLayout.lean
             lean/MCore/Real/CanonicalSATParserInitMachine.lean
             lean/MCore/Real/CanonicalSATSlotLog.lean
+            lean/MCore/Real/CanonicalSATSlotLogMachine.lean
             lean/MCore/Real/CanonicalSATFrameAttack.lean
             lean/MCore/Real/CanonicalSATFrameMachineV2.lean
             lean/MCore/Real/P01VerifiedRelation.lean
@@ -56,7 +57,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -144,6 +145,19 @@ jobs:
           EOF
           lake env lean /tmp/P01SlotLogAudit.lean 2>&1 | tee /tmp/p01-slot-log.log
           if grep -q 'sorryAx' /tmp/p01-slot-log.log; then exit 1; fi
+
+      - name: Axiom audit slot-log machines
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01SlotLogMachineAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATSlotLogMachine
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.push_run
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.slotLogTimeBound_poly
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.push_semantic
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.pop_semantic
+          EOF
+          lake env lean /tmp/P01SlotLogMachineAudit.lean 2>&1 | tee /tmp/p01-slot-log-machine.log
+          if grep -q 'sorryAx' /tmp/p01-slot-log-machine.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
