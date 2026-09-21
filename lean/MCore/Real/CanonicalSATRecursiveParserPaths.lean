@@ -1,4 +1,4 @@
-import MCore.Real.CanonicalSATRecursiveParserMachine
+import MCore.Real.CanonicalSATParserMachine
 import MCore.Real.CanonicalCircuitBits
 import MCore.Real.CanonicalSATSlotParserSpec
 import MCore.Real.MachineRunLemmas
@@ -10,7 +10,7 @@ namespace CanonicalSATRecursiveParserPaths
 open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalSATSlotParserSpec
-open CanonicalSATRecursiveParserMachine
+open CanonicalSATParserMachine
 
 /-- Configuration whose head is the first source bit and whose suffix contains
 all non-source work data. -/
