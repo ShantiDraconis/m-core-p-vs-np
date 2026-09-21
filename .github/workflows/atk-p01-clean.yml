@@ -76,6 +76,9 @@ jobs:
           #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_encodeCircuit
           #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_invalid_11
           #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_truncated_tag
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_sound
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_exists_exact_encoding
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_decodeCircuit
           EOF
           lake env lean /tmp/P01SlotAudit.lean 2>&1 | tee /tmp/p01-slot.log
           if grep -q 'sorryAx' /tmp/p01-slot.log; then exit 1; fi
