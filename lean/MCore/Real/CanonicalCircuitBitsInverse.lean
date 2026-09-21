@@ -173,9 +173,10 @@ theorem exists_decodeCircuit_iff_exists_exact_encoding
   · rintro ⟨c, rfl⟩
     exact ⟨c, decodeCircuit_encode c⟩
 
-theorem encodeCircuit_injective :
-    Function.Injective encodeCircuit := by
-  intro a b h
+theorem encodeCircuit_injective
+    {a b : Circuit}
+    (h : encodeCircuit a = encodeCircuit b) :
+    a = b := by
   have ha : decodeCircuit (encodeCircuit a) = some a :=
     decodeCircuit_encode a
   have hb : decodeCircuit (encodeCircuit b) = some b :=
