@@ -9,68 +9,147 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalCircuitBitsInverse
 
-/-- Parse exactly one constructor token and return its arity plus the remaining
-bitstring. INPUT consumes its unary natural-number payload here; no Nat is
-stored in machine control. -/
-def tokenArity : BitString → Option (Nat × BitString)
+/-- One constructor token with exactly the finite information carried by its
+tag/payload. Child circuits are never stored in the token. -/
+inductive Head where
+  | input : Nat → Head
+  | const : Bool → Head
+  | not : Head
+  | and : Head
+  | or : Head
+  deriving DecidableEq, Repr
+
+namespace Head
+
+def arity : Head → Nat
+  | .input _ => 0
+  | .const _ => 0
+  | .not => 1
+  | .and => 2
+  | .or => 2
+
+def encode : Head → BitString
+  | .input i => [false, false, false] ++ encodeNat i
+  | .const false => [false, false, true]
+  | .const true => [false, true, false]
+  | .not => [false, true, true]
+  | .and => [true, false, false]
+  | .or => [true, false, true]
+
+end Head
+
+/-- Parse one constructor head. INPUT consumes its unary index payload; the
+remaining recursive children stay on the bitstring. -/
+def parseHead : BitString → Option (Head × BitString)
   | false :: false :: false :: rest =>
       match decodeNat rest with
-      | some (_, tail) => some (0, tail)
+      | some (i, tail) => some (.input i, tail)
       | none => none
-  | false :: false :: true :: rest => some (0, rest)
-  | false :: true :: false :: rest => some (0, rest)
-  | false :: true :: true :: rest => some (1, rest)
-  | true :: false :: false :: rest => some (2, rest)
-  | true :: false :: true :: rest => some (2, rest)
+  | false :: false :: true :: rest => some (.const false, rest)
+  | false :: true :: false :: rest => some (.const true, rest)
+  | false :: true :: true :: rest => some (.not, rest)
+  | true :: false :: false :: rest => some (.and, rest)
+  | true :: false :: true :: rest => some (.or, rest)
   | _ => none
 
+/-- Compatibility view used by the operational design: only the arity is
+needed to update the outstanding-slot counter. -/
+def tokenArity (bits : BitString) : Option (Nat × BitString) :=
+  match parseHead bits with
+  | none => none
+  | some (h, tail) => some (h.arity, tail)
+
+/-- Successful token parsing determines the exact consumed canonical head. -/
+theorem parseHead_inverse
+    (bits : BitString)
+    (h : Head)
+    (tail : BitString)
+    (hp : parseHead bits = some (h, tail)) :
+    bits = h.encode ++ tail := by
+  cases bits with
+  | nil =>
+      simp [parseHead] at hp
+  | cons b1 r1 =>
+      cases r1 with
+      | nil =>
+          simp [parseHead] at hp
+      | cons b2 r2 =>
+          cases r2 with
+          | nil =>
+              simp [parseHead] at hp
+          | cons b3 rest =>
+              cases b1 <;> cases b2 <;> cases b3
+              · cases hn : decodeNat rest with
+                | none =>
+                    simp [parseHead, hn] at hp
+                | some p =>
+                    rcases p with ⟨i, t⟩
+                    simp [parseHead, hn] at hp
+                    rcases hp with ⟨rfl, rfl⟩
+                    have hNat := decodeNat_inverse rest i t hn
+                    simp [Head.encode, hNat, List.append_assoc]
+              · simp [parseHead] at hp
+                rcases hp with ⟨rfl, rfl⟩
+                rfl
+              · simp [parseHead] at hp
+                rcases hp with ⟨rfl, rfl⟩
+                rfl
+              · simp [parseHead] at hp
+                rcases hp with ⟨rfl, rfl⟩
+                rfl
+              · simp [parseHead] at hp
+                rcases hp with ⟨rfl, rfl⟩
+                rfl
+              · simp [parseHead] at hp
+                rcases hp with ⟨rfl, rfl⟩
+                rfl
+              · simp [parseHead] at hp
+              · simp [parseHead] at hp
+
 /-- Prefix-tree slot recognizer. The slot count is the number of subtrees still
-required. A token consumes one slot and opens arity new slots. -/
+required. A token consumes one slot and opens h.arity new slots. -/
 def slotParseCore : Nat → Nat → BitString → Bool
   | 0, _, _ => false
   | _ + 1, 0, bits => bits.isEmpty
   | fuel + 1, slots + 1, bits =>
-      match tokenArity bits with
+      match parseHead bits with
       | none => false
-      | some (arity, rest) =>
-          slotParseCore fuel (slots + arity) rest
+      | some (h, rest) =>
+          slotParseCore fuel (slots + h.arity) rest
 
-/-- Public total recognizer. Input length supplies more fuel than the number
-of AST nodes because every constructor uses at least three bits. -/
 def slotAccept (bits : BitString) : Bool :=
   slotParseCore (bits.length + 1) 1 bits
 
-@[simp] theorem tokenArity_input
+@[simp] theorem parseHead_input
     (i : Nat) (tail : BitString) :
-    tokenArity (encodeCircuit (.input i) ++ tail) = some (0, tail) := by
-  simp [tokenArity, encodeCircuit, decodeNat_encodeNat_append, List.append_assoc]
+    parseHead (encodeCircuit (.input i) ++ tail) = some (.input i, tail) := by
+  simp [parseHead, encodeCircuit, decodeNat_encodeNat_append, List.append_assoc]
 
-@[simp] theorem tokenArity_const
+@[simp] theorem parseHead_const
     (b : Bool) (tail : BitString) :
-    tokenArity (encodeCircuit (.const b) ++ tail) = some (0, tail) := by
-  cases b <;> simp [tokenArity, encodeCircuit]
+    parseHead (encodeCircuit (.const b) ++ tail) = some (.const b, tail) := by
+  cases b <;> simp [parseHead, encodeCircuit]
 
-@[simp] theorem tokenArity_not
+@[simp] theorem parseHead_not
     (c : Circuit) (tail : BitString) :
-    tokenArity (encodeCircuit (.not c) ++ tail) =
-      some (1, encodeCircuit c ++ tail) := by
-  simp [tokenArity, encodeCircuit, List.append_assoc]
+    parseHead (encodeCircuit (.not c) ++ tail) =
+      some (.not, encodeCircuit c ++ tail) := by
+  simp [parseHead, encodeCircuit, List.append_assoc]
 
-@[simp] theorem tokenArity_and
+@[simp] theorem parseHead_and
     (a b : Circuit) (tail : BitString) :
-    tokenArity (encodeCircuit (.and a b) ++ tail) =
-      some (2, encodeCircuit a ++ encodeCircuit b ++ tail) := by
-  simp [tokenArity, encodeCircuit, List.append_assoc]
+    parseHead (encodeCircuit (.and a b) ++ tail) =
+      some (.and, encodeCircuit a ++ encodeCircuit b ++ tail) := by
+  simp [parseHead, encodeCircuit, List.append_assoc]
 
-@[simp] theorem tokenArity_or
+@[simp] theorem parseHead_or
     (a b : Circuit) (tail : BitString) :
-    tokenArity (encodeCircuit (.or a b) ++ tail) =
-      some (2, encodeCircuit a ++ encodeCircuit b ++ tail) := by
-  simp [tokenArity, encodeCircuit, List.append_assoc]
+    parseHead (encodeCircuit (.or a b) ++ tail) =
+      some (.or, encodeCircuit a ++ encodeCircuit b ++ tail) := by
+  simp [parseHead, encodeCircuit, List.append_assoc]
 
-/-- Strong compositional theorem: parsing one canonical Circuit consumes
-exactly size c macro steps and exactly one outstanding slot, independently
-of the surrounding forest represented by slots and tail. -/
+/-- Parsing one canonical circuit consumes exactly size c macro steps and one
+outstanding slot, independently of the surrounding forest. -/
 theorem slotParseCore_encode_append
     (c : Circuit)
     (tail : BitString)
@@ -80,23 +159,22 @@ theorem slotParseCore_encode_append
       slotParseCore fuel slots tail := by
   induction c generalizing tail slots fuel with
   | input i =>
-      simp [CircuitK1.size, slotParseCore, tokenArity_input,
+      simp [CircuitK1.size, slotParseCore, parseHead_input, Head.arity,
         Nat.add_assoc, Nat.add_left_comm, Nat.add_comm]
   | const b =>
       cases b <;>
-        simp [CircuitK1.size, slotParseCore, tokenArity_const,
+        simp [CircuitK1.size, slotParseCore, parseHead_const, Head.arity,
           Nat.add_assoc, Nat.add_left_comm, Nat.add_comm]
   | not c ih =>
-      simp [CircuitK1.size, slotParseCore, tokenArity_not, ih,
+      simp [CircuitK1.size, slotParseCore, parseHead_not, Head.arity, ih,
         Nat.add_assoc, Nat.add_left_comm, Nat.add_comm, List.append_assoc]
   | and a b iha ihb =>
-      simp [CircuitK1.size, slotParseCore, tokenArity_and, iha, ihb,
+      simp [CircuitK1.size, slotParseCore, parseHead_and, Head.arity, iha, ihb,
         Nat.add_assoc, Nat.add_left_comm, Nat.add_comm, List.append_assoc]
   | or a b iha ihb =>
-      simp [CircuitK1.size, slotParseCore, tokenArity_or, iha, ihb,
+      simp [CircuitK1.size, slotParseCore, parseHead_or, Head.arity, iha, ihb,
         Nat.add_assoc, Nat.add_left_comm, Nat.add_comm, List.append_assoc]
 
-/-- Every canonical encoding is accepted by the slot recognizer. -/
 theorem slotAccept_encodeCircuit
     (c : Circuit) :
     slotAccept (encodeCircuit c) = true := by
@@ -114,40 +192,173 @@ theorem slotAccept_encodeCircuit
   rw [slotParseCore_encode_append c [] 0 (extra + 1)]
   simp [slotParseCore]
 
-/-- Invalid constructor prefix 11 is rejected for every positive fuel. -/
+def encodeForest : List Circuit → BitString
+  | [] => []
+  | c :: cs => encodeCircuit c ++ encodeForest cs
+
+def ForestEncoded (slots : Nat) (bits : BitString) : Prop :=
+  ∃ cs : List Circuit, cs.length = slots ∧ bits = encodeForest cs
+
+/-- Soundness of the slot discipline: successful parsing with k slots means
+the entire bitstring is exactly a forest of k canonical circuits. -/
+theorem slotParseCore_sound
+    (fuel slots : Nat)
+    (bits : BitString)
+    (h : slotParseCore fuel slots bits = true) :
+    ForestEncoded slots bits := by
+  induction fuel generalizing slots bits with
+  | zero =>
+      simp [slotParseCore] at h
+  | succ fuel ih =>
+      cases slots with
+      | zero =>
+          cases bits with
+          | nil =>
+              exact ⟨[], rfl, rfl⟩
+          | cons b bs =>
+              simp [slotParseCore] at h
+      | succ slots =>
+          cases hp : parseHead bits with
+          | none =>
+              simp [slotParseCore, hp] at h
+          | some p =>
+              rcases p with ⟨head, restBits⟩
+              have hrec :
+                  slotParseCore fuel (slots + head.arity) restBits = true := by
+                simpa [slotParseCore, hp] using h
+              rcases ih (slots + head.arity) restBits hrec with
+                ⟨cs, hlen, henc⟩
+              have hbits : bits = head.encode ++ restBits :=
+                parseHead_inverse bits head restBits hp
+              cases head with
+              | input i =>
+                  have hlen' : cs.length = slots := by
+                    simpa [Head.arity] using hlen
+                  refine ⟨.input i :: cs, ?_, ?_⟩
+                  · simp [hlen']
+                  · rw [hbits, henc]
+                    simp [Head.encode, encodeForest, encodeCircuit, List.append_assoc]
+              | const b =>
+                  have hlen' : cs.length = slots := by
+                    simpa [Head.arity] using hlen
+                  refine ⟨.const b :: cs, ?_, ?_⟩
+                  · simp [hlen']
+                  · rw [hbits, henc]
+                    cases b <;>
+                      simp [Head.encode, encodeForest, encodeCircuit, List.append_assoc]
+              | not =>
+                  have hlen' : cs.length = slots + 1 := by
+                    simpa [Head.arity] using hlen
+                  cases cs with
+                  | nil =>
+                      simp at hlen'
+                  | cons child rest =>
+                      have hrest : rest.length = slots := by
+                        simp at hlen'
+                        omega
+                      refine ⟨.not child :: rest, ?_, ?_⟩
+                      · simp [hrest]
+                      · rw [hbits, henc]
+                        simp [Head.encode, encodeForest, encodeCircuit, List.append_assoc]
+              | and =>
+                  have hlen' : cs.length = slots + 2 := by
+                    simpa [Head.arity] using hlen
+                  cases cs with
+                  | nil =>
+                      simp at hlen'
+                  | cons a rest1 =>
+                      cases rest1 with
+                      | nil =>
+                          simp at hlen'
+                      | cons b rest =>
+                          have hrest : rest.length = slots := by
+                            simp at hlen'
+                            omega
+                          refine ⟨.and a b :: rest, ?_, ?_⟩
+                          · simp [hrest]
+                          · rw [hbits, henc]
+                            simp [Head.encode, encodeForest, encodeCircuit, List.append_assoc]
+              | or =>
+                  have hlen' : cs.length = slots + 2 := by
+                    simpa [Head.arity] using hlen
+                  cases cs with
+                  | nil =>
+                      simp at hlen'
+                  | cons a rest1 =>
+                      cases rest1 with
+                      | nil =>
+                          simp at hlen'
+                      | cons b rest =>
+                          have hrest : rest.length = slots := by
+                            simp at hlen'
+                            omega
+                          refine ⟨.or a b :: rest, ?_, ?_⟩
+                          · simp [hrest]
+                          · rw [hbits, henc]
+                            simp [Head.encode, encodeForest, encodeCircuit, List.append_assoc]
+
+/-- Initial one-slot acceptance is exactly membership in the range of the
+canonical Circuit encoding. -/
+theorem slotAccept_iff_exists_exact_encoding
+    (bits : BitString) :
+    slotAccept bits = true ↔ ∃ c : Circuit, bits = encodeCircuit c := by
+  constructor
+  · intro h
+    rcases slotParseCore_sound (bits.length + 1) 1 bits h with
+      ⟨cs, hlen, henc⟩
+    cases cs with
+    | nil =>
+        simp at hlen
+    | cons c rest =>
+        cases rest with
+        | nil =>
+            exact ⟨c, by simpa [encodeForest] using henc⟩
+        | cons d ds =>
+            simp at hlen
+  · rintro ⟨c, rfl⟩
+    exact slotAccept_encodeCircuit c
+
+/-- Exact semantic target for the operational TM: slot acceptance agrees with
+the repository's total decoder, including rejection of residual garbage. -/
+theorem slotAccept_iff_decodeCircuit
+    (bits : BitString) :
+    slotAccept bits = true ↔
+      ∃ c : Circuit, decodeCircuit bits = some c := by
+  exact
+    (slotAccept_iff_exists_exact_encoding bits).trans
+      (exists_decodeCircuit_iff_exists_exact_encoding bits).symm
+
 theorem slotParse_invalid_11
     (fuel slots : Nat)
     (third : Bool)
     (tail : BitString) :
     slotParseCore (fuel + 1) (slots + 1)
       (true :: true :: third :: tail) = false := by
-  simp [slotParseCore, tokenArity]
+  simp [slotParseCore, parseHead]
 
-/-- A truncated tag cannot be accepted. -/
 theorem slotParse_truncated_tag
     (fuel slots : Nat)
     (b1 b2 : Bool) :
     slotParseCore (fuel + 1) (slots + 1) [b1, b2] = false := by
-  cases b1 <;> cases b2 <;> simp [slotParseCore, tokenArity]
+  cases b1 <;> cases b2 <;> simp [slotParseCore, parseHead]
 
-/-- An INPUT token whose unary payload never reaches its false terminator is
-rejected. -/
 theorem tokenArity_truncated_input
     (ones : Nat) :
     tokenArity
       ([false, false, false] ++ List.replicate ones true) = none := by
   induction ones with
   | zero =>
-      simp [tokenArity, decodeNat]
+      simp [tokenArity, parseHead, decodeNat]
   | succ n ih =>
-      simp [tokenArity, decodeNat, List.replicate_succ, ih]
+      simp [tokenArity, parseHead, decodeNat, List.replicate_succ, ih]
 
-#print axioms MCore.Real.CanonicalSATSlotParserSpec.tokenArity_input
+#print axioms MCore.Real.CanonicalSATSlotParserSpec.parseHead_inverse
 #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_encode_append
 #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_encodeCircuit
+#print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_sound
+#print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_exists_exact_encoding
+#print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_decodeCircuit
 #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_invalid_11
-#print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_truncated_tag
-#print axioms MCore.Real.CanonicalSATSlotParserSpec.tokenArity_truncated_input
 
 end CanonicalSATSlotParserSpec
 end Real
