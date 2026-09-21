@@ -239,8 +239,9 @@ theorem slotAccept_encodeCircuit
           simp [Nat.add_assoc]
   unfold slotAccept
   rw [hEq]
-  rw [slotParseCore_encode_append c [] 0 (extra + 1)]
-  simp [slotParseCore]
+  have hParse :=
+    slotParseCore_encode_append c [] 0 (extra + 1)
+  simpa [slotParseCore] using hParse
 
 def encodeForest : List Circuit → BitString
   | [] => []
