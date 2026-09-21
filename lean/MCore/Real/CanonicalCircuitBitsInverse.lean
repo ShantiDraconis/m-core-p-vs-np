@@ -161,10 +161,34 @@ theorem decodeCircuit_eq_some_iff
     subst bits
     exact decodeCircuit_encode c
 
+/-- The parser correctness target can now be stated as exact membership in the
+range of encodeCircuit. -/
+theorem exists_decodeCircuit_iff_exists_exact_encoding
+    (bits : BitString) :
+    (∃ c : Circuit, decodeCircuit bits = some c) ↔
+      ∃ c : Circuit, bits = encodeCircuit c := by
+  constructor
+  · rintro ⟨c, hc⟩
+    exact ⟨c, decodeCircuit_inverse bits c hc⟩
+  · rintro ⟨c, rfl⟩
+    exact ⟨c, decodeCircuit_encode c⟩
+
+theorem encodeCircuit_injective :
+    Function.Injective encodeCircuit := by
+  intro a b h
+  have ha : decodeCircuit (encodeCircuit a) = some a :=
+    decodeCircuit_encode a
+  have hb : decodeCircuit (encodeCircuit b) = some b :=
+    decodeCircuit_encode b
+  rw [h] at ha
+  exact Option.some.inj (ha.trans hb.symm)
+
 #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeNat_inverse
 #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuitCore_inverse
 #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_inverse
 #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_eq_some_iff
+#print axioms MCore.Real.CanonicalCircuitBitsInverse.exists_decodeCircuit_iff_exists_exact_encoding
+#print axioms MCore.Real.CanonicalCircuitBitsInverse.encodeCircuit_injective
 
 end CanonicalCircuitBitsInverse
 end Real
