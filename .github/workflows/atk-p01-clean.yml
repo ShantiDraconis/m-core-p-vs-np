@@ -36,6 +36,7 @@ jobs:
             lean/MCore/Real/CanonicalSATParserAttack.lean
             lean/MCore/Real/CanonicalSATNatParserAttack.lean
             lean/MCore/Real/CanonicalSATVarPayloadMachine.lean
+            lean/MCore/Real/CanonicalSATTagConsumerMachine.lean
             lean/MCore/Real/CanonicalSATFrameAttack.lean
             lean/MCore/Real/CanonicalSATFrameMachineV2.lean
             lean/MCore/Real/P01VerifiedRelation.lean
@@ -52,7 +53,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -96,6 +97,22 @@ jobs:
           EOF
           lake env lean /tmp/P01VarAudit.lean 2>&1 | tee /tmp/p01-var.log
           if grep -q 'sorryAx' /tmp/p01-var.log; then exit 1; fi
+
+      - name: Axiom audit tag consumer
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01TagConsumerAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATTagConsumerMachine
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_input_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_const_false_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_const_true_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_not_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_and_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_or_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_invalid_11_tag
+          EOF
+          lake env lean /tmp/P01TagConsumerAudit.lean 2>&1 | tee /tmp/p01-tag-consumer.log
+          if grep -q 'sorryAx' /tmp/p01-tag-consumer.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
