@@ -25,6 +25,14 @@ def workConfig
       { state := q
         tape := { left := pre, head := some b, right := bs.map some } }
 
+@[simp] theorem workConfig_state
+    {n : Nat}
+    (q : Fin n)
+    (pre : List (Option Bool))
+    (log : SlotLog) :
+    (workConfig q pre log).state = q := by
+  cases log <;> rfl
+
 /-- Two-state append machine. State 0 scans to the first blank after the work
 log; state 1 halts after writing one active-slot cell. -/
 def pushSlotMachine : TM (Fin 2) (Option Bool) :=
@@ -73,9 +81,12 @@ theorem push_run
       final.tape.head = some true := by
   induction log generalizing pre with
   | nil =>
-      simp [TM.run, push_not_halted, push_step_nil, pushSlotMachine]
+      simp [TM.run, workConfig, pushSlotMachine, TM.step, Tape.write, Tape.move]
   | cons b bs ih =>
-      rw [List.length_cons, TM.run, push_not_halted, push_step_cons]
+      rw [List.length_cons]
+      rw [show Nat.succ bs.length + 1 = (bs.length + 1) + 1 by omega]
+      rw [TM.run, workConfig_state, push_not_halted]
+      rw [push_step_cons]
       exact ih (some b :: pre)
 
 /--
