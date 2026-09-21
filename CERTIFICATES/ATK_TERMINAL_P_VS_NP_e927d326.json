@@ -1,0 +1,57 @@
+{
+  "certificate_scope": "CANONICAL_TERMINAL_FAIL_PROOF_BOUNDARY",
+  "certifies": [
+    "The hardened canonical bit-language model and fail-proof boundary are frozen at this source commit.",
+    "UniversalFailure is kernel-related to not-InP in the canonical model.",
+    "A CanonicalNotInPWitness is sufficient for the separation lane, but no such witness is manufactured by the frozen artifact."
+  ],
+  "certifying_runs": [
+    {
+      "conclusion": "success",
+      "id": 35632081050,
+      "workflow": "fail-proof-all-gaps"
+    },
+    {
+      "conclusion": "success",
+      "id": 35632081097,
+      "workflow": "certificate"
+    },
+    {
+      "conclusion": "success",
+      "id": 35629473883,
+      "workflow": "atk-terminal-producer"
+    },
+    {
+      "conclusion": "success",
+      "id": 35629474058,
+      "workflow": "certificate"
+    },
+    {
+      "conclusion": "success",
+      "id": 35629473878,
+      "workflow": "fail-proof-all-gaps"
+    }
+  ],
+  "does_not_certify": [
+    "Canonical SAT in NP via a fully operational canonical NTM unless separately supplied.",
+    "SAT not in P.",
+    "P != NP."
+  ],
+  "fail_closed_rules": {
+    "admit_allowed": false,
+    "hidden_axiom_promotion_allowed": false,
+    "proxy_to_endpoint_promotion_allowed": false,
+    "sorry_allowed": false,
+    "vacuous_witness_promotion_allowed": false
+  },
+  "final_proof_global": "0/7",
+  "generated_date": "2026-09-21",
+  "mathematical_endpoint_status": "OPEN",
+  "next_open_delta": "P01: hardened recursive parser/canonical SAT NTM; P02: genuine universal deterministic lower bound / SAT not in P.",
+  "problem": "P versus NP",
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "schema": "atk.terminal.frozen-certificate.v1",
+  "source_frozen_branch": "frozen/canonical-terminal-green-e927d326",
+  "source_frozen_commit": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+  "source_status": "GREEN_FROZEN"
+}
