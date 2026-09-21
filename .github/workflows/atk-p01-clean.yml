@@ -35,6 +35,7 @@ jobs:
             lean/MCore/Real/CanonicalSATNTMAttack.lean
             lean/MCore/Real/CanonicalSATParserAttack.lean
             lean/MCore/Real/CanonicalSATNatParserAttack.lean
+            lean/MCore/Real/CanonicalSATVarPayloadMachine.lean
             lean/MCore/Real/CanonicalSATFrameAttack.lean
             lean/MCore/Real/CanonicalSATFrameMachineV2.lean
             lean/MCore/Real/P01VerifiedRelation.lean
@@ -51,7 +52,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -82,6 +83,19 @@ jobs:
           EOF
           lake env lean /tmp/P01SlotAudit.lean 2>&1 | tee /tmp/p01-slot.log
           if grep -q 'sorryAx' /tmp/p01-slot.log; then exit 1; fi
+
+      - name: Axiom audit variable payload consumer
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01VarAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATVarPayloadMachine
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.var_run_encodeNat
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.var_payload_halts_on_encodeNat
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.var_payload_success_postcondition
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.varPayloadTimeBound_poly
+          EOF
+          lake env lean /tmp/P01VarAudit.lean 2>&1 | tee /tmp/p01-var.log
+          if grep -q 'sorryAx' /tmp/p01-var.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
