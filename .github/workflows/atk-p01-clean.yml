@@ -29,6 +29,7 @@ jobs:
             lean/MCore/Real/CanonicalSATBoundary.lean
             lean/MCore/Real/CanonicalCircuitBits.lean
             lean/MCore/Real/CanonicalCircuitBitsInverse.lean
+            lean/MCore/Real/CanonicalSATSlotParserSpec.lean
             lean/MCore/Real/CanonicalSATWitness.lean
             lean/MCore/Real/CanonicalSATVerifier.lean
             lean/MCore/Real/CanonicalSATNTMAttack.lean
@@ -49,7 +50,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -64,6 +65,19 @@ jobs:
           EOF
           lake env lean /tmp/P01InverseAudit.lean 2>&1 | tee /tmp/p01-inverse.log
           if grep -q 'sorryAx' /tmp/p01-inverse.log; then exit 1; fi
+
+      - name: Axiom audit slot parser spec
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01SlotAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATSlotParserSpec
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_encode_append
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_encodeCircuit
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_invalid_11
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_truncated_tag
+          EOF
+          lake env lean /tmp/P01SlotAudit.lean 2>&1 | tee /tmp/p01-slot.log
+          if grep -q 'sorryAx' /tmp/p01-slot.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
