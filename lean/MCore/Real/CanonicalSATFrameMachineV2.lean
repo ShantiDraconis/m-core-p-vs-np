@@ -30,12 +30,9 @@ def paddedInputTape (k : Nat) : BitString → Tape (Option Bool)
 theorem paddedInputTape_represents
     (k : Nat) (bits : BitString) :
     TapeRepresentsModuloBlankPadding bits (paddedInputTape k bits) := by
-  constructor
-  · intro s hs
-    simp [paddedInputTape] at hs ⊢
-    rcases hs with ⟨_, rfl⟩
-    rfl
-  · cases bits <;> simp [paddedInputTape, tapeWord, readTapeCells]
+  cases bits <;>
+    simp [TapeRepresentsModuloBlankPadding, LeftBlankPadding,
+      paddedInputTape, tapeWord, readTapeCells]
 
 /-- Five-state finite-control machine implementing the frame command protocol.
 State 0 dispatches on the command bit. A push command erases one prefix cell
@@ -135,7 +132,7 @@ structure BlankNormalizedFrameTapeMachineCertificate where
         (encodeFrames fs)
         (machine.run
           (timeBound (popCommand (f :: fs)).length)
-          (initialTMConfig machine (popCommand (f :: fs))).tape
+          (initialTMConfig machine (popCommand (f :: fs)))).tape
 
 theorem frameCommandMachine_certificate :
     BlankNormalizedFrameTapeMachineCertificate := by
