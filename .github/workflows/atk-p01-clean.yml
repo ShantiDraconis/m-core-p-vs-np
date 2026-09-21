@@ -37,6 +37,8 @@ jobs:
             lean/MCore/Real/CanonicalSATNatParserAttack.lean
             lean/MCore/Real/CanonicalSATVarPayloadMachine.lean
             lean/MCore/Real/CanonicalSATTagConsumerMachine.lean
+            lean/MCore/Real/CanonicalSATParserTapeLayout.lean
+            lean/MCore/Real/CanonicalSATParserInitMachine.lean
             lean/MCore/Real/CanonicalSATFrameAttack.lean
             lean/MCore/Real/CanonicalSATFrameMachineV2.lean
             lean/MCore/Real/P01VerifiedRelation.lean
@@ -53,7 +55,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -113,6 +115,20 @@ jobs:
           EOF
           lake env lean /tmp/P01TagConsumerAudit.lean 2>&1 | tee /tmp/p01-tag-consumer.log
           if grep -q 'sorryAx' /tmp/p01-tag-consumer.log; then exit 1; fi
+
+      - name: Axiom audit parser tape initializer
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01InitAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATParserInitMachine
+          #print axioms MCore.Real.CanonicalSATParserTapeLayout.tapeWord_parserBoundaryTape
+          #print axioms MCore.Real.CanonicalSATParserTapeLayout.boundary_disposition_total
+          #print axioms MCore.Real.CanonicalSATParserInitMachine.parserInitTimeBound_poly
+          #print axioms MCore.Real.CanonicalSATParserInitMachine.parserInit_scan_bit
+          #print axioms MCore.Real.CanonicalSATParserInitMachine.parserInit_write_one_slot
+          EOF
+          lake env lean /tmp/P01InitAudit.lean 2>&1 | tee /tmp/p01-init.log
+          if grep -q 'sorryAx' /tmp/p01-init.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
