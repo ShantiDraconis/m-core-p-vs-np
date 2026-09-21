@@ -35,3 +35,4 @@ import MCore.BackwardAudit.MaterialOrientationKernel
 
 import MCore.Real.P01VerifiedRelation
 import MCore.Real.P01ComponentFailProof
+import MCore.Real.CanonicalSATFrameMachineV2
