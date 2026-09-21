@@ -50,3 +50,5 @@ import MCore.Real.P02TerminalFrontier
 import MCore.Real.CanonicalSATRecursiveParserSimulation
 
 import MCore.Real.MachineRunLemmas
+import MCore.Real.CanonicalSATParserWorkScanProof
+import MCore.Real.CanonicalSATParserRewindProof
