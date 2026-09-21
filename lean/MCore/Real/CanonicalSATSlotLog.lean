@@ -165,9 +165,9 @@ all cells to its right were already false. -/
 theorem popSlot_decompose
     (log log' : SlotLog)
     (hpop : popSlot log = some log') :
-    ∃ prefix suffix : SlotLog,
-      log = prefix ++ true :: suffix ∧
-      log' = prefix ++ false :: suffix ∧
+    ∃ pre suffix : SlotLog,
+      log = pre ++ true :: suffix ∧
+      log' = pre ++ false :: suffix ∧
       (∀ b ∈ suffix, b = false) := by
   induction log generalizing log' with
   | nil =>
@@ -177,8 +177,8 @@ theorem popSlot_decompose
       | some bs' =>
           simp [popSlot, hbs] at hpop
           subst log'
-          rcases ih bs' hbs with ⟨prefix, suffix, hlog, hlog', hsuffix⟩
-          refine ⟨b :: prefix, suffix, ?_, ?_, hsuffix⟩
+          rcases ih bs' hbs with ⟨pre, suffix, hlog, hlog', hsuffix⟩
+          refine ⟨b :: pre, suffix, ?_, ?_, hsuffix⟩
           · simp [hlog, List.append_assoc]
           · simp [hlog', List.append_assoc]
       | none =>
