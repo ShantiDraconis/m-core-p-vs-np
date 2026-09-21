@@ -31,3 +31,5 @@ jobs:
           grep -q 'OPEN_MATH: construct CanonicalNotInPWitness' lean/MCore/Attack/CanonicalTerminalProducer.lean
           echo "PNP_TERMINAL_REDUCTION=GREEN"
           echo "PNP_PROOF=OPEN"
+
+# retrigger after canonical type qualification
