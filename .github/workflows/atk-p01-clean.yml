@@ -50,6 +50,7 @@ jobs:
             lean/MCore/Real/P01VerifiedRelation.lean
             lean/MCore/Real/P01ComponentFailProof.lean
             lean/MCore/Real/P01RecursiveFiniteControlFrontier.lean
+            lean/MCore/Real/P02TerminalFrontier.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
             exit 1
@@ -61,7 +62,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -188,6 +189,18 @@ jobs:
           EOF
           lake env lean /tmp/P01FrameAudit.lean 2>&1 | tee /tmp/p01-frame.log
           if grep -q 'sorryAx' /tmp/p01-frame.log; then exit 1; fi
+
+      - name: Axiom audit P02 terminal frontier
+        run: |
+          set -euo pipefail
+          cat >/tmp/P02Audit.lean <<'EOF'
+          import MCore.Real.P02TerminalFrontier
+          #print axioms MCore.Real.P02TerminalFrontier.p02_target_iff_sat_not_in_p
+          #print axioms MCore.Real.P02TerminalFrontier.p01_p02_close_internal_separation
+          #print axioms MCore.Real.P02TerminalFrontier.pnp_final_pair_closes
+          EOF
+          lake env lean /tmp/P02Audit.lean 2>&1 | tee /tmp/p02-terminal.log
+          if grep -q 'sorryAx' /tmp/p02-terminal.log; then exit 1; fi
 
       - name: Preserve P01 boundary
         run: |
