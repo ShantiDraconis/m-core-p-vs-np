@@ -1,0 +1,31 @@
+{
+  "schema": "AINUM_INDETERMINACY_CERT_V1",
+  "date": "2026-09-21",
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "frozen_base": "3668d7ab9102310779222dbecb78d655a8009373",
+  "source_branch": "brain/ainum-indeterminacy-constant-v1",
+  "source_commit": "4bc9b0e4f0b99fff98dd2254b8a3bf87b291c096",
+  "source_sha256": "1529df014f330da61418e5a66daa9da8a58b8cf1c382be18c365a0ac3d2d04b5",
+  "g9_run": 35658789329,
+  "g9_job": 106528821471,
+  "regression_run": 35658789325,
+  "regression_job": 106528821262,
+  "status": "GREEN_FROZEN_CANDIDATE",
+  "checks": {
+    "frozen_base_delta_firewall": "PASS",
+    "commitment_integrity": "PASS",
+    "source_hygiene": "PASS",
+    "lean_build": "PASS",
+    "endpoint_regression": "PASS",
+    "full_certificate_regression": "PASS",
+    "custom_cryptography": false,
+    "secret_constant_present": false,
+    "automatic_orientation_from_unresolved": false
+  },
+  "semantics": {
+    "p_equals_np_promoted": false,
+    "p_not_equals_np_promoted": false,
+    "third_classical_truth_value_claimed": false,
+    "indeterminacy": "NO_AUTOMATIC_ORIENTATION_WITHOUT_CERTIFIED_EVIDENCE"
+  }
+}
