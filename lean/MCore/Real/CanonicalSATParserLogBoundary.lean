@@ -1,4 +1,4 @@
-import MCore.Real.CanonicalSATRecursiveParserMachine
+import MCore.Real.CanonicalSATParserMachine
 import MCore.Real.CanonicalSATSlotLog
 
 namespace MCore
@@ -7,7 +7,7 @@ namespace CanonicalSATParserLogBoundary
 
 open CanonicalFinalProof
 open CanonicalSATSlotLog
-open CanonicalSATRecursiveParserMachine
+open CanonicalSATParserMachine
 
 /-- Physical parser boundary with arbitrary tombstone slot log. -/
 def logBoundaryTape
@@ -30,7 +30,7 @@ def logBoundaryConfig
     (leftBlankCount : Nat)
     (unread : BitString)
     (log : SlotLog) :
-    Configuration (Fin 25) (Option Bool) :=
+    Configuration (Fin 31) (Option Bool) :=
   { state := 4
     tape := logBoundaryTape leftBlankCount unread log }
 
@@ -38,7 +38,7 @@ def logBoundaryConfig
     (leftBlankCount : Nat)
     (unread : BitString)
     (log : SlotLog) :
-    (logBoundaryConfig leftBlankCount unread log).state = (4 : Fin 25) := rfl
+    (logBoundaryConfig leftBlankCount unread log).state = (4 : Fin 31) := rfl
 
 /-- Total initialization budget: one scan right, constant setup, one rewind. -/
 def initSteps (n : Nat) : Nat :=
@@ -48,7 +48,7 @@ def initSteps (n : Nat) : Nat :=
 def initScanConfig
     (left : List (Option Bool))
     (bits : BitString) :
-    Configuration (Fin 25) (Option Bool) :=
+    Configuration (Fin 31) (Option Bool) :=
   match bits with
   | [] =>
       { state := 0
@@ -60,13 +60,13 @@ def initScanConfig
 @[simp] theorem initScanConfig_state
     (left : List (Option Bool))
     (bits : BitString) :
-    (initScanConfig left bits).state = (0 : Fin 25) := by
+    (initScanConfig left bits).state = (0 : Fin 31) := by
   cases bits <;> rfl
 
 @[simp] theorem parser_not_halted_0 :
-    parserMachine.halting (0 : Fin 25) = false := by decide
+    parserMachine.halting (0 : Fin 31) = false := by decide
 @[simp] theorem parser_not_halted_3 :
-    parserMachine.halting (3 : Fin 25) = false := by decide
+    parserMachine.halting (3 : Fin 31) = false := by decide
 
 theorem init_step_scan_cons
     (left : List (Option Bool))
@@ -102,7 +102,7 @@ theorem init_scan_all_extra
 /-- State-3 rewind configuration. -/
 def rewindConfig
     (remaining processed : BitString) :
-    Configuration (Fin 25) (Option Bool) :=
+    Configuration (Fin 31) (Option Bool) :=
   match remaining with
   | [] =>
       { state := 3
@@ -119,7 +119,7 @@ def rewindConfig
 
 @[simp] theorem rewindConfig_state
     (remaining processed : BitString) :
-    (rewindConfig remaining processed).state = (3 : Fin 25) := by
+    (rewindConfig remaining processed).state = (3 : Fin 31) := by
   cases remaining <;> rfl
 
 theorem rewind_step_cons
