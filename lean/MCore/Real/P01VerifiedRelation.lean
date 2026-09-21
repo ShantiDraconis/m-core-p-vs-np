@@ -60,9 +60,8 @@ theorem encoded_sat_has_short_verified_witness
     SATBits circuitBitEncoding (encodeCircuit φ) ↔
       ∃ w : SATWitness φ,
         verifyWitness φ w = true ∧
-        (witnessBits w).length ≤ (encodeCircuit φ).length := by
-  rw [encoded_sat_iff]
-  exact sat_has_short_verified_witness φ
+        (witnessBits w).length ≤ (encodeCircuit φ).length :=
+  (encoded_sat_equivalence φ).trans (sat_has_short_verified_witness φ)
 
 #print axioms MCore.Real.P01VerifiedRelation.satBits_iff_verified_witness
 #print axioms MCore.Real.P01VerifiedRelation.satBits_iff_short_verified_witness
