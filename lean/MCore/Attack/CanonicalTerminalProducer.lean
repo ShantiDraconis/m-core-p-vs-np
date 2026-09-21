@@ -26,7 +26,7 @@ theorem canonicalModelMatch :
 /-- A genuine fixed not-in-P witness is exactly enough for the separation lane. -/
 theorem canonicalWitness_closes_separation
     (w : CanonicalNotInPWitness) :
-    BackwardAudit.SeparationFinal
+    ClosedDiscriminant.SeparationFinal
       Real.CanonicalComplexityBridge.canonicalInterface.inP
       Real.CanonicalComplexityBridge.canonicalInterface.inNP := by
   exact BackwardAudit.typeB_closes_separation
