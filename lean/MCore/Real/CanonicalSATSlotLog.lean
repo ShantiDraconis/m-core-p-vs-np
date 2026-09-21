@@ -149,11 +149,66 @@ theorem popSlot_represents
   omega
 
 #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_append
+
+theorem activeSlots_eq_zero_iff_all_false
+    (log : SlotLog) :
+    activeSlots log = 0 ↔ ∀ b ∈ log, b = false := by
+  induction log with
+  | nil =>
+      simp [activeSlots]
+  | cons b bs ih =>
+      cases b <;>
+        simp [activeSlots, ih]
+
+/-- A successful pop changes the rightmost active true into a false tombstone;
+all cells to its right were already false. -/
+theorem popSlot_decompose
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log') :
+    ∃ prefix suffix : SlotLog,
+      log = prefix ++ true :: suffix ∧
+      log' = prefix ++ false :: suffix ∧
+      (∀ b ∈ suffix, b = false) := by
+  induction log generalizing log' with
+  | nil =>
+      simp [popSlot] at hpop
+  | cons b bs ih =>
+      cases hbs : popSlot bs with
+      | some bs' =>
+          simp [popSlot, hbs] at hpop
+          subst log'
+          rcases ih bs' hbs with ⟨prefix, suffix, hlog, hlog', hsuffix⟩
+          refine ⟨b :: prefix, suffix, ?_, ?_, hsuffix⟩
+          · simp [hlog, List.append_assoc]
+          · simp [hlog', List.append_assoc]
+      | none =>
+          have hzero : activeSlots bs = 0 :=
+            (popSlot_none_iff bs).mp hbs
+          have hall : ∀ x ∈ bs, x = false :=
+            (activeSlots_eq_zero_iff_all_false bs).mp hzero
+          cases b with
+          | false =>
+              simp [popSlot, hbs] at hpop
+          | true =>
+              simp [popSlot, hbs] at hpop
+              subst log'
+              exact ⟨[], bs, by simp, by simp, hall⟩
+
+theorem popSlot_result_has_one_less_active
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log') :
+    activeSlots log' + 1 = activeSlots log := by
+  have h := activeSlots_popSlot log log' hpop
+  omega
+
 #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_pushSlot
 #print axioms MCore.Real.CanonicalSATSlotLog.popSlot_none_iff
 #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_popSlot
 #print axioms MCore.Real.CanonicalSATSlotLog.pushSlot_represents
 #print axioms MCore.Real.CanonicalSATSlotLog.popSlot_represents
+#print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_eq_zero_iff_all_false
+#print axioms MCore.Real.CanonicalSATSlotLog.popSlot_decompose
+#print axioms MCore.Real.CanonicalSATSlotLog.popSlot_result_has_one_less_active
 
 end CanonicalSATSlotLog
 end Real
