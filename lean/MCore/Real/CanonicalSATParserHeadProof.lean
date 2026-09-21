@@ -70,7 +70,7 @@ theorem step_erase_right
     parserMachine.step (phaseConfig q pad (b :: rest) log) =
       phaseConfig q' (pad + 1) rest log := by
   cases rest <;>
-    simp [phaseConfig, parserMachine, TM.step, Tape.write, Tape.move,
+    simp [phaseConfig, TM.step, Tape.write, Tape.move,
       htrans, replicate_none_add_one]
 
 @[simp] theorem not_halted_4 :
