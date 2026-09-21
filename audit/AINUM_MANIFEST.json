@@ -1,0 +1,26 @@
+{
+  "schema": "AINUM_INDETERMINACY_V1",
+  "date": "2026-09-21",
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "frozen_base": "3668d7ab9102310779222dbecb78d655a8009373",
+  "source_file": "audit/AINUMIndeterminacy.lean",
+  "source_sha256": "1529df014f330da61418e5a66daa9da8a58b8cf1c382be18c365a0ac3d2d04b5",
+  "semantics": {
+    "classical_endpoint_rewritten": false,
+    "third_truth_value_claimed": false,
+    "indeterminacy_meaning": "NO_AUTOMATIC_ORIENTATION_WITHOUT_CERTIFIED_EVIDENCE",
+    "default_state": "unresolved",
+    "conflict_state_fail_closed": true
+  },
+  "security": {
+    "commitment_public": true,
+    "secret_constant_present": false,
+    "custom_vrf_implemented": false,
+    "custom_cryptography_implemented": false
+  },
+  "promotion": {
+    "p_equals_np": false,
+    "p_not_equals_np": false,
+    "target_certificate": false
+  }
+}
