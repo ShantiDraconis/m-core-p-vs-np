@@ -159,21 +159,65 @@ theorem slotParseCore_encode_append
       slotParseCore fuel slots tail := by
   induction c generalizing tail slots fuel with
   | input i =>
-      simp [CircuitK1.size, slotParseCore, parseHead_input, Head.arity,
-        Nat.add_assoc, Nat.add_left_comm, Nat.add_comm]
+      have hFuel : CircuitK1.size (.input i) + fuel = fuel + 1 := by
+        simp [CircuitK1.size, Nat.add_comm]
+      rw [hFuel]
+      simp [slotParseCore, parseHead_input, Head.arity]
   | const b =>
-      cases b <;>
-        simp [CircuitK1.size, slotParseCore, parseHead_const, Head.arity,
-          Nat.add_assoc, Nat.add_left_comm, Nat.add_comm]
+      have hFuel : CircuitK1.size (.const b) + fuel = fuel + 1 := by
+        simp [CircuitK1.size, Nat.add_comm]
+      rw [hFuel]
+      cases b <;> simp [slotParseCore, parseHead_const, Head.arity]
   | not c ih =>
-      simp [CircuitK1.size, slotParseCore, parseHead_not, Head.arity, ih,
-        Nat.add_assoc, Nat.add_left_comm, Nat.add_comm, List.append_assoc]
+      have hFuel :
+          CircuitK1.size (.not c) + fuel =
+            (CircuitK1.size c + fuel) + 1 := by
+        simp [CircuitK1.size, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+      rw [hFuel]
+      simp only [slotParseCore]
+      rw [parseHead_not]
+      simp only [Head.arity]
+      exact ih tail slots fuel
   | and a b iha ihb =>
-      simp [CircuitK1.size, slotParseCore, parseHead_and, Head.arity, iha, ihb,
-        Nat.add_assoc, Nat.add_left_comm, Nat.add_comm, List.append_assoc]
+      have hFuel :
+          CircuitK1.size (.and a b) + fuel =
+            (CircuitK1.size a + (CircuitK1.size b + fuel)) + 1 := by
+        simp [CircuitK1.size, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+      rw [hFuel]
+      simp only [slotParseCore]
+      rw [parseHead_and]
+      simp only [Head.arity]
+      have ha :=
+        iha (encodeCircuit b ++ tail) (slots + 1)
+          (CircuitK1.size b + fuel)
+      have hb := ihb tail slots fuel
+      rw [show slots + 2 = (slots + 1) + 1 by simp [Nat.add_assoc]]
+      rw [show
+          encodeCircuit a ++ encodeCircuit b ++ tail =
+            encodeCircuit a ++ (encodeCircuit b ++ tail) by
+          simp [List.append_assoc]]
+      rw [ha]
+      exact hb
   | or a b iha ihb =>
-      simp [CircuitK1.size, slotParseCore, parseHead_or, Head.arity, iha, ihb,
-        Nat.add_assoc, Nat.add_left_comm, Nat.add_comm, List.append_assoc]
+      have hFuel :
+          CircuitK1.size (.or a b) + fuel =
+            (CircuitK1.size a + (CircuitK1.size b + fuel)) + 1 := by
+        simp [CircuitK1.size, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+      rw [hFuel]
+      simp only [slotParseCore]
+      rw [parseHead_or]
+      simp only [Head.arity]
+      have ha :=
+        iha (encodeCircuit b ++ tail) (slots + 1)
+          (CircuitK1.size b + fuel)
+      have hb := ihb tail slots fuel
+      rw [show slots + 2 = (slots + 1) + 1 by simp [Nat.add_assoc]]
+      rw [show
+          encodeCircuit a ++ encodeCircuit b ++ tail =
+            encodeCircuit a ++ (encodeCircuit b ++ tail) by
+          simp [List.append_assoc]]
+      rw [ha]
+      exact hb
 
 theorem slotAccept_encodeCircuit
     (c : Circuit) :
@@ -181,12 +225,18 @@ theorem slotAccept_encodeCircuit
   have hSize :
       CircuitK1.size c ≤ (encodeCircuit c).length :=
     size_le_encodeCircuit_length c
-  obtain ⟨extra, hEq⟩ :
-      ∃ extra : Nat,
-        (encodeCircuit c).length + 1 =
-          CircuitK1.size c + (extra + 1) := by
-    use (encodeCircuit c).length - CircuitK1.size c
-    omega
+  let extra := (encodeCircuit c).length - CircuitK1.size c
+  have hDecomp :
+      CircuitK1.size c + extra = (encodeCircuit c).length := by
+    exact Nat.add_sub_of_le hSize
+  have hEq :
+      (encodeCircuit c).length + 1 =
+        CircuitK1.size c + (extra + 1) := by
+    calc
+      (encodeCircuit c).length + 1 =
+          (CircuitK1.size c + extra) + 1 := by rw [hDecomp]
+      _ = CircuitK1.size c + (extra + 1) := by
+          simp [Nat.add_assoc]
   unfold slotAccept
   rw [hEq]
   rw [slotParseCore_encode_append c [] 0 (extra + 1)]
@@ -342,15 +392,20 @@ theorem slotParse_truncated_tag
     slotParseCore (fuel + 1) (slots + 1) [b1, b2] = false := by
   cases b1 <;> cases b2 <;> simp [slotParseCore, parseHead]
 
+theorem decodeNat_replicate_true_none
+    (ones : Nat) :
+    decodeNat (List.replicate ones true) = none := by
+  induction ones with
+  | zero =>
+      rfl
+  | succ n ih =>
+      simp [List.replicate_succ, decodeNat, ih]
+
 theorem tokenArity_truncated_input
     (ones : Nat) :
     tokenArity
       ([false, false, false] ++ List.replicate ones true) = none := by
-  induction ones with
-  | zero =>
-      simp [tokenArity, parseHead, decodeNat]
-  | succ n ih =>
-      simp [tokenArity, parseHead, decodeNat, List.replicate_succ, ih]
+  simp [tokenArity, parseHead, decodeNat_replicate_true_none]
 
 #print axioms MCore.Real.CanonicalSATSlotParserSpec.parseHead_inverse
 #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_encode_append
