@@ -132,70 +132,70 @@ theorem binary_seek_to_work
 one cell left. -/
 def afterEndMoveLeft
     (q : Fin 25)
-    (prefix : List (Option Bool))
+    (pref : List (Option Bool))
     (log : SlotLog)
     (writtenEnd : Option Bool) :
     Configuration (Fin 25) (Option Bool) :=
   { state := q
     tape :=
       Tape.move none .left
-        { left := (log.map some).reverse ++ prefix
+        { left := (log.map some).reverse ++ pref
           head := writtenEnd
           right := [] } }
 
 theorem leaf_log_scan_step_cons
-    (prefix : List (Option Bool))
+    (pref : List (Option Bool))
     (b : Bool)
     (bs : SlotLog) :
-    parserMachine.step (workConfig (n := 25) 12 prefix (b :: bs)) =
-      workConfig (n := 25) 12 (some b :: prefix) bs := by
+    parserMachine.step (workConfig (n := 25) 12 pref (b :: bs)) =
+      workConfig (n := 25) 12 (some b :: pref) bs := by
   cases bs <;>
     simp [parserMachine, workConfig, TM.step, Tape.write, Tape.move]
 
 theorem leaf_log_end_step
-    (prefix : List (Option Bool)) :
-    parserMachine.step (workConfig (n := 25) 12 prefix []) =
-      afterEndMoveLeft 13 prefix [] none := by
+    (pref : List (Option Bool)) :
+    parserMachine.step (workConfig (n := 25) 12 pref []) =
+      afterEndMoveLeft 13 pref [] none := by
   simp [parserMachine, workConfig, afterEndMoveLeft,
     TM.step, Tape.write, Tape.move]
 
 /-- State 12 scans the full work log; the final blank step enters pop-search. -/
 theorem leaf_scan_log_to_pop
-    (prefix : List (Option Bool))
+    (pref : List (Option Bool))
     (log : SlotLog) :
     parserMachine.run (log.length + 1)
-      (workConfig (n := 25) 12 prefix log) =
-    afterEndMoveLeft 13 prefix log none := by
-  induction log generalizing prefix with
+      (workConfig (n := 25) 12 pref log) =
+    afterEndMoveLeft 13 pref log none := by
+  induction log generalizing pref with
   | nil =>
-      simpa using leaf_log_end_step prefix
+      simpa using leaf_log_end_step pref
   | cons b bs ih =>
       rw [List.length_cons]
       rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by rfl]
       rw [TM.run]
       simp [workConfig, parserMachine]
       rw [leaf_log_scan_step_cons]
-      rw [ih (some b :: prefix)]
+      rw [ih (some b :: pref)]
       simp [afterEndMoveLeft, List.reverse_cons, List.map_append,
         List.append_assoc]
 
 theorem binary_log_scan_step_cons
-    (prefix : List (Option Bool))
+    (pref : List (Option Bool))
     (b : Bool)
     (bs : SlotLog) :
-    parserMachine.step (workConfig (n := 25) 19 prefix (b :: bs)) =
-      workConfig (n := 25) 19 (some b :: prefix) bs := by
+    parserMachine.step (workConfig (n := 25) 19 pref (b :: bs)) =
+      workConfig (n := 25) 19 (some b :: pref) bs := by
   cases bs <;>
     simp [parserMachine, workConfig, TM.step, Tape.write, Tape.move]
 
 /-- Binary end step appends one active slot and starts returning left. -/
 theorem binary_scan_log_to_return
-    (prefix : List (Option Bool))
+    (pref : List (Option Bool))
     (log : SlotLog) :
     parserMachine.run (log.length + 1)
-      (workConfig (n := 25) 19 prefix log) =
-    afterEndMoveLeft 20 prefix log (some true) := by
-  induction log generalizing prefix with
+      (workConfig (n := 25) 19 pref log) =
+    afterEndMoveLeft 20 pref log (some true) := by
+  induction log generalizing pref with
   | nil =>
       simp [TM.run, workConfig, parserMachine, afterEndMoveLeft,
         TM.step, Tape.write, Tape.move]
@@ -205,7 +205,7 @@ theorem binary_scan_log_to_return
       rw [TM.run]
       simp [workConfig, parserMachine]
       rw [binary_log_scan_step_cons]
-      rw [ih (some b :: prefix)]
+      rw [ih (some b :: pref)]
       simp [afterEndMoveLeft, List.reverse_cons, List.map_append,
         List.append_assoc]
 
