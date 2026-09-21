@@ -1,4 +1,4 @@
-import MCore.Real.CanonicalSATRecursiveParserMachine
+import MCore.Real.CanonicalSATParserMachine
 import MCore.Real.CanonicalCircuitBits
 
 namespace MCore
@@ -7,16 +7,16 @@ namespace CanonicalSATRecursiveParserPaths
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
-open CanonicalSATRecursiveParserMachine
+open CanonicalSATParserMachine
 
 /-- Configuration whose head is the first source bit and whose suffix contains
 all non-source work data (delimiter + slot log). -/
 def sourceConfig
-    (q : Fin 25)
+    (q : Fin 31)
     (left : List (Option Bool))
     (bits : BitString)
     (suffix : List (Option Bool)) :
-    Configuration (Fin 25) (Option Bool) :=
+    Configuration (Fin 31) (Option Bool) :=
   match bits with
   | [] =>
       { state := q
@@ -27,7 +27,7 @@ def sourceConfig
           right := bs.map some ++ suffix } }
 
 @[simp] theorem sourceConfig_state
-    (q : Fin 25)
+    (q : Fin 31)
     (left : List (Option Bool))
     (bits : BitString)
     (suffix : List (Option Bool)) :
@@ -35,19 +35,19 @@ def sourceConfig
   cases bits <;> rfl
 
 @[simp] theorem parser_not_halted_4 :
-    parserMachine.halting (4 : Fin 25) = false := by decide
+    parserMachine.halting (4 : Fin 31) = false := by decide
 @[simp] theorem parser_not_halted_5 :
-    parserMachine.halting (5 : Fin 25) = false := by decide
+    parserMachine.halting (5 : Fin 31) = false := by decide
 @[simp] theorem parser_not_halted_6 :
-    parserMachine.halting (6 : Fin 25) = false := by decide
+    parserMachine.halting (6 : Fin 31) = false := by decide
 @[simp] theorem parser_not_halted_7 :
-    parserMachine.halting (7 : Fin 25) = false := by decide
+    parserMachine.halting (7 : Fin 31) = false := by decide
 @[simp] theorem parser_not_halted_8 :
-    parserMachine.halting (8 : Fin 25) = false := by decide
+    parserMachine.halting (8 : Fin 31) = false := by decide
 @[simp] theorem parser_not_halted_9 :
-    parserMachine.halting (9 : Fin 25) = false := by decide
+    parserMachine.halting (9 : Fin 31) = false := by decide
 @[simp] theorem parser_not_halted_10 :
-    parserMachine.halting (10 : Fin 25) = false := by decide
+    parserMachine.halting (10 : Fin 31) = false := by decide
 
 theorem step_tag_4_false
     (left : List (Option Bool))
@@ -143,7 +143,7 @@ theorem step_tag_8_true
     (suffix : List (Option Bool)) :
     parserMachine.step
       (sourceConfig 8 left (true :: rest) suffix) =
-    sourceConfig 4 (none :: left) rest suffix := by
+    sourceConfig 12 (none :: left) rest suffix := by
   cases rest <;>
     simp [parserMachine, sourceConfig, TM.step, Tape.write, Tape.move,
       List.append_assoc]
@@ -155,7 +155,7 @@ theorem step_tag_9_bit
     (suffix : List (Option Bool)) :
     parserMachine.step
       (sourceConfig 9 left (third :: rest) suffix) =
-    sourceConfig 18 (none :: left) rest suffix := by
+    sourceConfig 13 (none :: left) rest suffix := by
   cases third <;> cases rest <;>
     simp [parserMachine, sourceConfig, TM.step, Tape.write, Tape.move,
       List.append_assoc]
@@ -169,7 +169,7 @@ theorem run_not_tag
     parserMachine.run 3
       (sourceConfig 4 left
         (false :: true :: true :: childAndTail) suffix) =
-    sourceConfig 4 ([none, none, none] ++ left) childAndTail suffix := by
+    sourceConfig 12 ([none, none, none] ++ left) childAndTail suffix := by
   rw [TM.run, sourceConfig_state, parser_not_halted_4, step_tag_4_false]
   rw [TM.run, sourceConfig_state, parser_not_halted_5, step_tag_5_true]
   rw [TM.run, sourceConfig_state, parser_not_halted_8, step_tag_8_true]
@@ -205,7 +205,7 @@ theorem run_and_tag
     (suffix : List (Option Bool)) :
     parserMachine.run 3
       (sourceConfig 4 left (true :: false :: false :: tail) suffix) =
-    sourceConfig 18 ([none, none, none] ++ left) tail suffix := by
+    sourceConfig 13 ([none, none, none] ++ left) tail suffix := by
   rw [TM.run, sourceConfig_state, parser_not_halted_4, step_tag_4_true]
   rw [TM.run, sourceConfig_state, parser_not_halted_6, step_tag_6_false]
   rw [TM.run, sourceConfig_state, parser_not_halted_9, step_tag_9_bit]
@@ -217,7 +217,7 @@ theorem run_or_tag
     (suffix : List (Option Bool)) :
     parserMachine.run 3
       (sourceConfig 4 left (true :: false :: true :: tail) suffix) =
-    sourceConfig 18 ([none, none, none] ++ left) tail suffix := by
+    sourceConfig 13 ([none, none, none] ++ left) tail suffix := by
   rw [TM.run, sourceConfig_state, parser_not_halted_4, step_tag_4_true]
   rw [TM.run, sourceConfig_state, parser_not_halted_6, step_tag_6_false]
   rw [TM.run, sourceConfig_state, parser_not_halted_9, step_tag_9_bit]
