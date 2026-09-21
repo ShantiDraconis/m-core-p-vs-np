@@ -281,6 +281,75 @@ structure RecursiveParserMachineCertificate where
 def RecursiveParserOperationalGap : Prop :=
   Nonempty RecursiveParserMachineCertificate
 
+/-- Fail-proof: the legacy recursive-parser gate is under-specified.  A halted
+    one-state machine inhabits it without recognizing a single constructor. -/
+theorem legacy_recursive_parser_gate_is_trivially_inhabited :
+    RecursiveParserOperationalGap := by
+  let trivialMachine : TM (Fin 1) (Option Bool) :=
+    { initial := 0
+      blank := none
+      transition := fun q symbol => (q, symbol, .stay)
+      halting := fun _ => true }
+  have hpoly : PolynomialTimeBound (fun _ => 0) := by
+    refine ⟨0, 0, ?_⟩
+    intro n
+    simp
+  exact ⟨
+    { stateCount := 0
+      machine := trivialMachine
+      timeBound := fun _ => 0
+      time_poly := hpoly }⟩
+
+/-- Hardened recursive parser boundary.  A witness must halt in polynomial
+    time on every canonical bit tape and its accepting state must agree exactly
+    with the total functional decoder.  This is the operational content that
+    the legacy existence-only structure did not express. -/
+structure CanonicalRecursiveParserMachineCertificate where
+  stateCount : Nat
+  machine : TM (Fin (stateCount + 1)) (Option Bool)
+  blank_none : machine.blank = none
+  accepting : Fin (stateCount + 1) → Bool
+  timeBound : TimeBound
+  time_poly : PolynomialTimeBound timeBound
+
+  halts :
+    ∀ bits : BitString,
+      machine.HaltsWithin
+        (timeBound bits.length)
+        (initialTMConfig machine bits)
+
+  correct :
+    ∀ bits : BitString,
+      accepting
+          (machine.run
+            (timeBound bits.length)
+            (initialTMConfig machine bits)).state = true
+        ↔
+      ∃ φ : CircuitK1.Circuit,
+        CanonicalCircuitBits.decodeCircuit bits = some φ
+
+def CanonicalRecursiveParserOperationalGap : Prop :=
+  Nonempty CanonicalRecursiveParserMachineCertificate
+
+/-- A genuine hardened parser also supplies the old existence-only payload.
+    The converse is intentionally unavailable. -/
+def CanonicalRecursiveParserMachineCertificate.toLegacy
+    (C : CanonicalRecursiveParserMachineCertificate) :
+    RecursiveParserMachineCertificate :=
+  { stateCount := C.stateCount
+    machine := C.machine
+    timeBound := C.timeBound
+    time_poly := C.time_poly }
+
+theorem canonical_recursive_parser_closes_legacy_gap
+    (h : CanonicalRecursiveParserOperationalGap) :
+    RecursiveParserOperationalGap := by
+  rcases h with ⟨C⟩
+  exact ⟨C.toLegacy⟩
+
+#print axioms MCore.Real.CanonicalSATParserAttack.legacy_recursive_parser_gate_is_trivially_inhabited
+#print axioms MCore.Real.CanonicalSATParserAttack.canonical_recursive_parser_closes_legacy_gap
+
 #print axioms MCore.Real.CanonicalSATParserAttack.tag_input_state
 #print axioms MCore.Real.CanonicalSATParserAttack.tag_false_const_state
 #print axioms MCore.Real.CanonicalSATParserAttack.tag_true_const_state
