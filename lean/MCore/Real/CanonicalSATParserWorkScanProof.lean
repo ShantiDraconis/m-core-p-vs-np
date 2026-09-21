@@ -172,8 +172,7 @@ theorem leaf_scan_log_to_pop
   | cons b bs ih =>
       rw [List.length_cons]
       rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by rfl]
-      rw [TM.run]
-      simp [workConfig, parserMachine]
+      rw [TM.run, workConfig_state, not_halted_12]
       rw [leaf_log_scan_step_cons]
       rw [ih (some b :: pref)]
       simp [afterEndMoveLeft, List.reverse_cons, List.map_append,
@@ -202,8 +201,7 @@ theorem binary_scan_log_to_return
   | cons b bs ih =>
       rw [List.length_cons]
       rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by rfl]
-      rw [TM.run]
-      simp [workConfig, parserMachine]
+      rw [TM.run, workConfig_state, not_halted_19]
       rw [binary_log_scan_step_cons]
       rw [ih (some b :: pref)]
       simp [afterEndMoveLeft, List.reverse_cons, List.map_append,
