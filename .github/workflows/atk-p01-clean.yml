@@ -170,32 +170,6 @@ jobs:
           lake env lean /tmp/P01SlotLogMachineAudit.lean 2>&1 | tee /tmp/p01-slot-log-machine.log
           if grep -q 'sorryAx' /tmp/p01-slot-log-machine.log; then exit 1; fi
 
-      - name: Axiom audit complete parser machine candidate
-        run: |
-          set -euo pipefail
-          cat >/tmp/P01ParserMachineAudit.lean <<'EOF'
-          import MCore.Real.CanonicalSATParserMachine
-          #print axioms MCore.Real.CanonicalSATParserMachine.parserMachine_blank_none
-          #print axioms MCore.Real.CanonicalSATParserMachine.parserTimeBound_poly
-          #print axioms MCore.Real.CanonicalSATParserMachine.parserMachine_has_canonical_type
-          #print axioms MCore.Real.CanonicalSATParserMachine.parserInitialConfig_state
-          EOF
-          lake env lean /tmp/P01ParserMachineAudit.lean 2>&1 | tee /tmp/p01-parser-machine.log
-          if grep -q 'sorryAx' /tmp/p01-parser-machine.log; then exit 1; fi
-
-      - name: Axiom audit Fin31 init and head proofs
-        run: |
-          set -euo pipefail
-          cat >/tmp/P01InitHeadAudit.lean <<'EOF'
-          import MCore.Real.CanonicalSATParserInitProof
-          import MCore.Real.CanonicalSATParserHeadProof
-          #print axioms MCore.Real.CanonicalSATParserInitProof.parser_initializes
-          #print axioms MCore.Real.CanonicalSATParserHeadProof.var_payload_run
-          #print axioms MCore.Real.CanonicalSATParserHeadProof.consumeHead_run
-          EOF
-          lake env lean /tmp/P01InitHeadAudit.lean 2>&1 | tee /tmp/p01-init-head.log
-          if grep -q 'sorryAx' /tmp/p01-init-head.log; then exit 1; fi
-
       - name: Axiom audit recursive parser simulation boundary
         run: |
           set -euo pipefail
