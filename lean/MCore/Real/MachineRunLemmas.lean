@@ -4,23 +4,6 @@ namespace MCore
 namespace Real
 namespace MachineRunLemmas
 
-theorem run_add
-    {State Symbol : Type}
-    (machine : TM State Symbol)
-    (m n : Nat)
-    (config : Configuration State Symbol) :
-    machine.run (m + n) config =
-      machine.run n (machine.run m config) := by
-  induction m generalizing config with
-  | zero =>
-      rfl
-  | succ m ih =>
-      rw [Nat.succ_add]
-      rw [TM.run]
-      by_cases h : machine.halting config.state
-      · simp [h, TM.run]
-      · simp [h, ih]
-
 theorem run_halted
     {State Symbol : Type}
     (machine : TM State Symbol)
@@ -33,6 +16,33 @@ theorem run_halted
       rfl
   | succ fuel ih =>
       simp [TM.run, hhalt]
+
+theorem run_add
+    {State Symbol : Type}
+    (machine : TM State Symbol)
+    (m n : Nat)
+    (config : Configuration State Symbol) :
+    machine.run (m + n) config =
+      machine.run n (machine.run m config) := by
+  induction m generalizing config with
+  | zero =>
+      simp [TM.run]
+  | succ m ih =>
+      rw [Nat.succ_add]
+      rw [TM.run]
+      by_cases h : machine.halting config.state = true
+      · simp only [h, if_pos]
+        exact (run_halted machine config h n).symm
+      · have hf : machine.halting config.state = false := by
+          cases hh : machine.halting config.state <;> simp_all
+        simp only [hf, Bool.false_eq_true, if_false]
+        rw [ih (machine.step config)]
+        have hrunSucc :
+            machine.run (m + 1) config =
+              machine.run m (machine.step config) := by
+          rw [TM.run]
+          simp [hf]
+        rw [hrunSucc]
 
 theorem haltsWithin_mono
     {State Symbol : Type}
