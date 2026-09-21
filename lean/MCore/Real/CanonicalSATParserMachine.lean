@@ -201,7 +201,7 @@ theorem parserTimeBound_poly :
     PolynomialTimeBound parserTimeBound := by
   refine ⟨256, 2, ?_⟩
   intro n
-  rfl
+  exact Nat.le_refl _
 
 /-- Type-level finite-control/fixed-alphabet firewall. -/
 theorem parserMachine_has_canonical_type :
