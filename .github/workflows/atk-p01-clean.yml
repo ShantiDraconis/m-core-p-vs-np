@@ -43,10 +43,6 @@ jobs:
             lean/MCore/Real/CanonicalSATParserTapeLayout.lean
             lean/MCore/Real/CanonicalSATParserInitMachine.lean
             lean/MCore/Real/CanonicalSATSlotLog.lean
-            lean/MCore/Real/CanonicalSATParserMachine.lean
-            lean/MCore/Real/CanonicalSATParserHeadProof.lean
-            lean/MCore/Real/CanonicalSATParserInitProof.lean
-            lean/MCore/Real/MachineRunLemmas.lean
             lean/MCore/Real/CanonicalSATSlotLogMachine.lean
             lean/MCore/Real/CanonicalSATFrameAttack.lean
             lean/MCore/Real/CanonicalSATFrameMachineV2.lean
@@ -54,6 +50,7 @@ jobs:
             lean/MCore/Real/P01ComponentFailProof.lean
             lean/MCore/Real/P01RecursiveFiniteControlFrontier.lean
             lean/MCore/Real/CanonicalSATRecursiveParserSimulation.lean
+            lean/MCore/Real/CanonicalSATRecursiveParserPaths.lean
             lean/MCore/Real/P02TerminalFrontier.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
@@ -66,7 +63,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.MachineRunLemmas MCore.Real.CanonicalSATParserInitProof MCore.Real.CanonicalSATParserHeadProof MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.CanonicalSATRecursiveParserPaths MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
