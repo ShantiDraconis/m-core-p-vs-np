@@ -52,3 +52,6 @@ import MCore.Real.CanonicalSATRecursiveParserSimulation
 import MCore.Real.CanonicalSATRecursiveParserPaths
 
 import MCore.Real.CanonicalSATParserLogBoundary
+import MCore.Real.MachineRunLemmas
+import MCore.Real.CanonicalSATParserInitProof
+import MCore.Real.CanonicalSATParserHeadProof
