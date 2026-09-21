@@ -81,7 +81,9 @@ theorem push_run
       final.tape.head = some true := by
   induction log generalizing pre with
   | nil =>
-      simp [TM.run, workConfig, pushSlotMachine, TM.step, Tape.write, Tape.move]
+      rw [TM.run, workConfig_state, push_not_halted]
+      rw [push_step_nil]
+      simp [TM.run, pushSlotMachine]
   | cons b bs ih =>
       rw [List.length_cons]
       rw [show Nat.succ bs.length + 1 = (bs.length + 1) + 1 by omega]
