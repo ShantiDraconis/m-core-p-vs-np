@@ -48,6 +48,4 @@ import MCore.Real.CanonicalSATSlotLog
 import MCore.Real.CanonicalSATSlotLogMachine
 import MCore.Real.CanonicalSATParserMachine
 import MCore.Real.P02TerminalFrontier
-import MCore.Real.CanonicalSATRecursiveParserMachine
-import MCore.Real.P02ExactFrontier
 import MCore.Real.CanonicalSATRecursiveParserSimulation
