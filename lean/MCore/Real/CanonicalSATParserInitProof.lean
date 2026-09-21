@@ -9,6 +9,23 @@ open CanonicalFinalProof
 open CanonicalSATParserMachine
 open CanonicalSATSlotLog
 
+theorem run_add_local
+    {State Symbol : Type}
+    (machine : TM State Symbol)
+    (m n : Nat)
+    (config : Configuration State Symbol) :
+    machine.run (m + n) config =
+      machine.run n (machine.run m config) := by
+  induction m generalizing config with
+  | zero =>
+      rfl
+  | succ m ih =>
+      rw [Nat.succ_add]
+      rw [TM.run]
+      by_cases h : machine.halting config.state
+      · simp [h, TM.run]
+      · simp [h, ih]
+
 def forwardConfig
     (left : List (Option Bool))
     (bits : BitString) :
@@ -152,7 +169,7 @@ theorem parser_initializes
           (xs ++ [b]).length + (3 + ((xs ++ [b]).reverse.length + 1)) by
             simp
             omega]
-      rw [TM.run_add]
+      rw [run_add_local]
       rw [forward_scan_run]
       simp [TM.run, parserMachine, TM.step, Tape.write, Tape.move,
         rewindConfig, boundaryConfig, initialSlotLog, rewind_run,
