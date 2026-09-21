@@ -30,6 +30,8 @@ def forwardConfig
 
 @[simp] theorem parserMachine_not_halted_0 :
     parserMachine.halting (0 : Fin 25) = false := by decide
+@[simp] theorem parserMachine_not_halted_3 :
+    parserMachine.halting (3 : Fin 25) = false := by decide
 
 theorem forward_step_cons
     (left : List (Option Bool))
@@ -50,8 +52,7 @@ theorem forward_scan_run
             head := none
             right := [] } } := by
   induction bits generalizing left with
-  | nil =>
-      rfl
+  | nil => rfl
   | cons b bs ih =>
       rw [List.length_cons, TM.run]
       rw [forwardConfig_state, parserMachine_not_halted_0]
@@ -59,7 +60,6 @@ theorem forward_scan_run
       rw [ih (some b :: left)]
       simp [List.reverse_cons, List.append_assoc]
 
-/-- Configuration used while state 3 rewinds the original input. -/
 def rewindConfig
     (remaining : List Bool)
     (right : List (Option Bool)) :
@@ -78,9 +78,6 @@ def rewindConfig
     (rewindConfig remaining right).state = (3 : Fin 25) := by
   cases remaining <;> rfl
 
-@[simp] theorem parserMachine_not_halted_3 :
-    parserMachine.halting (3 : Fin 25) = false := by decide
-
 theorem rewind_step_cons
     (b : Bool)
     (bs : List Bool)
@@ -96,8 +93,7 @@ theorem rewind_run
     parserMachine.run remaining.length (rewindConfig remaining right) =
       rewindConfig [] ((remaining.reverse.map some) ++ right) := by
   induction remaining generalizing right with
-  | nil =>
-      rfl
+  | nil => rfl
   | cons b bs ih =>
       rw [List.length_cons, TM.run]
       rw [rewindConfig_state, parserMachine_not_halted_3]
@@ -105,7 +101,6 @@ theorem rewind_run
       rw [ih (some b :: right)]
       simp [List.reverse_cons, List.map_append, List.append_assoc]
 
-/-- Canonical q4 parser boundary. -/
 def boundaryConfig
     (leftBlankCount : Nat)
     (unread : BitString)
@@ -132,7 +127,39 @@ def boundaryConfig
     (boundaryConfig leftBlankCount unread log).state = (4 : Fin 25) := by
   cases unread <;> rfl
 
-/-- Exact initial transformation: scan input, create one active slot, rewind. -/
+def endConfig (bits : BitString) :
+    Configuration (Fin 25) (Option Bool) :=
+  { state := 0
+    tape :=
+      { left := bits.reverse.map some
+        head := none
+        right := [] } }
+
+theorem setup_to_rewind
+    (bits : BitString) :
+    parserMachine.run 3 (endConfig bits) =
+      rewindConfig bits.reverse [none, some true] := by
+  cases h : bits.reverse with
+  | nil =>
+      simp [endConfig, h, parserMachine, rewindConfig, TM.run,
+        TM.step, Tape.write, Tape.move]
+  | cons b bs =>
+      simp [endConfig, h, parserMachine, rewindConfig, TM.run,
+        TM.step, Tape.write, Tape.move]
+
+theorem rewind_finish
+    (bits : BitString) :
+    parserMachine.run (bits.length + 1)
+      (rewindConfig bits.reverse [none, some true]) =
+      boundaryConfig 1 bits initialSlotLog := by
+  rw [show bits.length + 1 = bits.reverse.length + 1 by simp]
+  rw [MachineRunLemmas.run_add parserMachine bits.reverse.length 1]
+  rw [rewind_run]
+  have hrr : bits.reverse.reverse = bits := List.reverse_reverse bits
+  simp [hrr, boundaryConfig, initialSlotLog, rewindConfig, parserMachine,
+    TM.run, TM.step, Tape.write, Tape.move]
+  cases bits <;> simp [boundaryConfig, initialSlotLog]
+
 theorem parser_initializes
     (bits : BitString) :
     parserMachine.run (2 * bits.length + 4)
@@ -143,27 +170,33 @@ theorem parser_initializes
     cases bits <;> rfl
   rw [hInitial]
   rw [show 2 * bits.length + 4 =
-      bits.length + (bits.length + 4) by omega]
-  rw [MachineRunLemmas.run_add]
+      bits.length + (3 + (bits.length + 1)) by omega]
+  rw [MachineRunLemmas.run_add parserMachine bits.length
+      (3 + (bits.length + 1))]
   rw [forward_scan_run]
-  -- Three fixed setup transitions: cross end blank, write initial slot,
-  -- cross delimiter, then rewind the source.
-  cases bits using List.reverseRecOn with
-  | nil =>
-      simp [parserMachine, TM.run, TM.step, Tape.write, Tape.move,
-        rewindConfig, boundaryConfig, initialSlotLog]
-  | append_singleton xs b =>
-      simp [parserMachine, TM.run, TM.step, Tape.write, Tape.move,
-        rewindConfig, boundaryConfig, initialSlotLog, rewind_run,
-        List.map_append, List.append_assoc]
-      omega
+  change parserMachine.run (3 + (bits.length + 1)) (endConfig bits) =
+    boundaryConfig 1 bits initialSlotLog
+  rw [MachineRunLemmas.run_add parserMachine 3 (bits.length + 1)]
+  rw [setup_to_rewind]
+  exact rewind_finish bits
 
-/-- Initialization fits easily inside the global quadratic parser budget. -/
 theorem parser_initialization_within_global_bound
     (bits : BitString) :
     2 * bits.length + 4 ≤ parserTimeBound bits.length := by
-  unfold parserTimeBound
-  omega
+  let n := bits.length
+  have h1 : 2 * n + 4 ≤ 4 * (n + 1) := by omega
+  have h2 : 4 * (n + 1) ≤ 256 * (n + 1) := by
+    exact Nat.mul_le_mul_right (n + 1) (by decide)
+  have hpos : 1 ≤ n + 1 := by omega
+  have hsq : n + 1 ≤ (n + 1) ^ 2 := by
+    calc
+      n + 1 = 1 * (n + 1) := by simp
+      _ ≤ (n + 1) * (n + 1) :=
+        Nat.mul_le_mul_right (n + 1) hpos
+      _ = (n + 1) ^ 2 := by simp [pow_two]
+  have h3 : 256 * (n + 1) ≤ 256 * (n + 1) ^ 2 :=
+    Nat.mul_le_mul_left 256 hsq
+  exact h1.trans (h2.trans h3)
 
 #print axioms MCore.Real.CanonicalSATRecursiveParserInitProof.forward_scan_run
 #print axioms MCore.Real.CanonicalSATRecursiveParserInitProof.rewind_run
