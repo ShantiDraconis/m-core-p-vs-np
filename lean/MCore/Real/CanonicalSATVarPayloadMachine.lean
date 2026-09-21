@@ -117,10 +117,9 @@ theorem var_run_encodeNat
       rw [var_step_true]
       rw [ih (none :: left)]
       apply congrArg (fun xs => varConfig 1 xs tail)
-      simp only [Nat.succ_eq_add_one, Nat.add_assoc]
-      rw [show n + 1 + 1 = (n + 1) + 1 by rfl]
-      simp only [List.replicate_succ]
-      exact (replicate_none_append_cons (n + 1) left).symm
+      simp only [Nat.succ_eq_add_one, Nat.add_assoc, List.replicate_succ]
+      exact congrArg (fun xs => none :: xs)
+        (replicate_none_append_cons n left)
 
 theorem var_payload_halts_on_encodeNat
     (n : Nat)
