@@ -1,0 +1,38 @@
+name: atk-p01-verified-relation
+
+on:
+  push:
+    branches:
+      - 'attack/p01-operational-sat-20260921'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verified-relation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve dependencies
+        run: |
+          lake update
+          lake exe cache get || true
+      - name: Source firewall
+        run: |
+          FILE=lean/MCore/Real/P01VerifiedRelation.lean
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx|native_decide|unsafe|cheat|bypass|placeholder|TODO|FIXME)([^[:alnum:]_]|$)' "$FILE"
+          ! grep -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' "$FILE"
+      - name: Build verified relation
+        run: lake build MCore.Real.P01VerifiedRelation
+      - name: Axiom report
+        run: |
+          cat > P01RelationAxioms.lean <<'EOF'
+          import MCore.Real.P01VerifiedRelation
+          #print axioms MCore.Real.P01VerifiedRelation.satBits_iff_short_verified_witness
+          EOF
+          lake env lean P01RelationAxioms.lean
