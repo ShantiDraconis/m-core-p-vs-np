@@ -38,3 +38,4 @@ import MCore.Real.P01ComponentFailProof
 import MCore.Real.CanonicalSATFrameMachineV2
 
 import MCore.Real.P01RecursiveFiniteControlFrontier
+import MCore.Real.CanonicalCircuitBitsInverse
