@@ -179,6 +179,26 @@ structure FrameTapeMachineCertificate where
 def FrameTapeOperationalGap : Prop :=
   Nonempty FrameTapeMachineCertificate
 
+/-- The hardened frame-tape certificate is strong enough to discharge the
+    earlier structural recursive-frame existence gate.  This does not create
+    the missing machine; it wires a genuine future implementation into the
+    existing parser chain without weakening its semantics. -/
+def FrameTapeMachineCertificate.toRecursiveFrameMachineCertificate
+    (C : FrameTapeMachineCertificate) :
+    CanonicalSATNatParserAttack.RecursiveFrameMachineCertificate :=
+  { stateCount := C.stateCount
+    machine := C.machine
+    timeBound := C.timeBound
+    time_poly := C.time_poly }
+
+theorem frame_tape_operational_closes_recursive_frame
+    (h : FrameTapeOperationalGap) :
+    CanonicalSATNatParserAttack.RecursiveFrameOperationalGap := by
+  rcases h with ⟨C⟩
+  exact ⟨C.toRecursiveFrameMachineCertificate⟩
+
+#print axioms MCore.Real.CanonicalSATFrameAttack.frame_tape_operational_closes_recursive_frame
+
 #print axioms MCore.Real.CanonicalSATFrameAttack.decodeFrame_encodeFrame
 #print axioms MCore.Real.CanonicalSATFrameAttack.decodeFrames_encodeFrames
 #print axioms MCore.Real.CanonicalSATFrameAttack.encodeFrames_length
