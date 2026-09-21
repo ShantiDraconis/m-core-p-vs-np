@@ -13,7 +13,7 @@ open CanonicalSATSlotLog
 def forwardConfig
     (left : List (Option Bool))
     (bits : BitString) :
-    Configuration (Fin 31) (Option Bool) :=
+    Configuration (Fin 25) (Option Bool) :=
   match bits with
   | [] =>
       { state := 0
@@ -25,11 +25,11 @@ def forwardConfig
 @[simp] theorem forwardConfig_state
     (left : List (Option Bool))
     (bits : BitString) :
-    (forwardConfig left bits).state = (0 : Fin 31) := by
+    (forwardConfig left bits).state = (0 : Fin 25) := by
   cases bits <;> rfl
 
 @[simp] theorem parserMachine_not_halted_0 :
-    parserMachine.halting (0 : Fin 31) = false := by decide
+    parserMachine.halting (0 : Fin 25) = false := by decide
 
 theorem forward_step_cons
     (left : List (Option Bool))
@@ -44,7 +44,7 @@ theorem forward_scan_run
     (left : List (Option Bool))
     (bits : BitString) :
     parserMachine.run bits.length (forwardConfig left bits) =
-      { state := (0 : Fin 31)
+      { state := (0 : Fin 25)
         tape :=
           { left := (bits.map some).reverse ++ left
             head := none
@@ -64,7 +64,7 @@ toward the left boundary: head first, then successive cells to the left. -/
 def rewindConfig
     (remaining : List Bool)
     (right : List (Option Bool)) :
-    Configuration (Fin 31) (Option Bool) :=
+    Configuration (Fin 25) (Option Bool) :=
   match remaining with
   | [] =>
       { state := 3
@@ -76,11 +76,11 @@ def rewindConfig
 @[simp] theorem rewindConfig_state
     (remaining : List Bool)
     (right : List (Option Bool)) :
-    (rewindConfig remaining right).state = (3 : Fin 31) := by
+    (rewindConfig remaining right).state = (3 : Fin 25) := by
   cases remaining <;> rfl
 
 @[simp] theorem parserMachine_not_halted_3 :
-    parserMachine.halting (3 : Fin 31) = false := by decide
+    parserMachine.halting (3 : Fin 25) = false := by decide
 
 theorem rewind_step_cons
     (b : Bool)
@@ -111,7 +111,7 @@ def boundaryConfig
     (leftBlankCount : Nat)
     (unread : BitString)
     (log : SlotLog) :
-    Configuration (Fin 31) (Option Bool) :=
+    Configuration (Fin 25) (Option Bool) :=
   match unread with
   | [] =>
       { state := 4
@@ -130,7 +130,7 @@ def boundaryConfig
     (leftBlankCount : Nat)
     (unread : BitString)
     (log : SlotLog) :
-    (boundaryConfig leftBlankCount unread log).state = (4 : Fin 31) := by
+    (boundaryConfig leftBlankCount unread log).state = (4 : Fin 25) := by
   cases unread <;> rfl
 
 /-- The first 2*|bits|+4 steps deterministically create exactly one active
