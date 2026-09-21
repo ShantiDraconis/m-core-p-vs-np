@@ -41,3 +41,4 @@ import MCore.Real.P01RecursiveFiniteControlFrontier
 import MCore.Real.CanonicalCircuitBitsInverse
 import MCore.Real.CanonicalSATSlotParserSpec
 import MCore.Real.CanonicalSATVarPayloadMachine
+import MCore.Real.CanonicalSATTagConsumerMachine
