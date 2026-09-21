@@ -39,6 +39,7 @@ jobs:
             lean/MCore/Real/CanonicalSATFrameMachineV2.lean
             lean/MCore/Real/P01VerifiedRelation.lean
             lean/MCore/Real/P01ComponentFailProof.lean
+            lean/MCore/Real/P01RecursiveFiniteControlFrontier.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
             exit 1
