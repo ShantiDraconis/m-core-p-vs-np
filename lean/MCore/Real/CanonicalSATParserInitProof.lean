@@ -150,11 +150,20 @@ theorem rewind_to_boundary
     parserMachine.run (revBits.length + 1)
       (rewindConfig revBits [none, some true]) =
     boundaryConfig 1 revBits.reverse initialSlotLog := by
-  rw [show revBits.length + 1 = revBits.length + 1 by rfl]
   rw [MachineRunLemmas.run_add]
   rw [rewind_run]
-  simp [rewindConfig, boundaryConfig, initialSlotLog, parserMachine,
-    TM.run, TM.step, Tape.write, Tape.move]
+  have hmap :
+      (revBits.map some).reverse =
+        revBits.reverse.map some := by
+    simp
+  rw [hmap]
+  cases hrev : revBits.reverse with
+  | nil =>
+      simp [rewindConfig, boundaryConfig, initialSlotLog, parserMachine,
+        TM.run, TM.step, Tape.write, Tape.move, hrev]
+  | cons b bs =>
+      simp [rewindConfig, boundaryConfig, initialSlotLog, parserMachine,
+        TM.run, TM.step, Tape.write, Tape.move, hrev]
 
 /-- The first 2*|bits|+4 steps deterministically create exactly one active
 slot, rewind to the beginning, and enter TAG_0. -/
@@ -174,7 +183,12 @@ theorem parser_initializes
   rw [MachineRunLemmas.run_add]
   rw [forward_scan_run]
   rw [MachineRunLemmas.run_add]
-  rw [setup_to_rewind]
+  have hmap :
+      (bits.map some).reverse =
+        bits.reverse.map some := by
+    simp
+  rw [hmap]
+  rw [setup_to_rewind (bits.reverse)]
   rw [rewind_to_boundary]
   simp
 
