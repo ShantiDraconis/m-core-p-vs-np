@@ -134,7 +134,7 @@ structure BlankNormalizedFrameTapeMachineCertificate where
           (timeBound (popCommand (f :: fs)).length)
           (initialTMConfig machine (popCommand (f :: fs)))).tape
 
-theorem frameCommandMachine_certificate :
+def frameCommandMachine_certificate :
     BlankNormalizedFrameTapeMachineCertificate := by
   refine
     { stateCount := 4
