@@ -87,6 +87,16 @@ theorem var_step_blank_rejects
 Running on encodeNat n consumes exactly n unary true cells plus the false
 terminator and halts with the head on the untouched tail.
 -/
+theorem replicate_none_append_cons
+    (n : Nat)
+    (left : List (Option Bool)) :
+    List.replicate n none ++ none :: left =
+      none :: List.replicate n none ++ left := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp [List.replicate_succ, ih, List.append_assoc]
+
 theorem var_run_encodeNat
     (left : List (Option Bool))
     (n : Nat)
@@ -106,7 +116,11 @@ theorem var_run_encodeNat
       rw [TM.run, varConfig_state, varPayloadMachine_not_halted_zero]
       rw [var_step_true]
       rw [ih (none :: left)]
-      simp [List.replicate_succ, List.append_assoc]
+      apply congrArg (fun xs => varConfig 1 xs tail)
+      simp only [Nat.succ_eq_add_one, Nat.add_assoc]
+      rw [show n + 1 + 1 = (n + 1) + 1 by rfl]
+      simp only [List.replicate_succ]
+      exact (replicate_none_append_cons (n + 1) left).symm
 
 theorem var_payload_halts_on_encodeNat
     (n : Nat)
@@ -115,6 +129,7 @@ theorem var_payload_halts_on_encodeNat
       (varConfig 0 [] (encodeNat n ++ tail)) := by
   rw [TM.HaltsWithin]
   rw [var_run_encodeNat]
+  rw [varConfig_state]
   exact varPayloadMachine_halted_one
 
 /--
