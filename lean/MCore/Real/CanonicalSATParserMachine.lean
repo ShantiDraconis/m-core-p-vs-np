@@ -174,7 +174,7 @@ def parserTimeBound : TimeBound :=
 
 theorem parserTimeBound_poly :
     PolynomialTimeBound parserTimeBound := by
-  exact ⟨256, 2, fun _ => le_rfl⟩
+  exact ⟨256, 2, fun n => Nat.le_refl _⟩
 
 theorem parserMachine_has_canonical_type :
     Nonempty (TM (Fin 25) (Option Bool)) :=
