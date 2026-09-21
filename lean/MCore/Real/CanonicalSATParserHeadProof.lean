@@ -172,6 +172,7 @@ theorem var_payload_run
         exact step_erase_right 10 10 pad true (encodeNat i ++ tail) log rfl
       rw [hstep]
       rw [ih (pad + 1)]
+      simp only [Bool.false_eq_true, if_false]
       rw [show (pad + 1) + (i + 1) = pad + (Nat.succ i + 1) by omega]
 
 def continuationState : Head → Fin 25
@@ -199,11 +200,11 @@ theorem consumeHead_run
           3 + (i + 1) by
             simp [encodeNat_length]
             omega]
+      simp only [List.cons_append]
       rw [MachineRunLemmas.run_add parserMachine 3 (i + 1)]
       rw [tag_input_run]
       rw [var_payload_run]
-      simp [continuationState]
-      omega
+      simpa [continuationState, Nat.add_assoc]
   | const b =>
       cases b with
       | false =>
