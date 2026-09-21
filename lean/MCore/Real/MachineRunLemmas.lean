@@ -29,14 +29,21 @@ theorem run_add
       simp [TM.run]
   | succ m ih =>
       rw [Nat.succ_add]
-      rw [TM.run]
       by_cases h : machine.halting config.state = true
-      · simp [h]
+      · have hleft :
+            machine.run (Nat.succ (m + n)) config = config :=
+          run_halted machine config h (Nat.succ (m + n))
+        have hm :
+            machine.run (Nat.succ m) config = config :=
+          run_halted machine config h (Nat.succ m)
+        rw [hleft, hm]
         exact (run_halted machine config h n).symm
       · have hf : machine.halting config.state = false := by
           cases hh : machine.halting config.state <;> simp_all
-        simp [hf]
+        rw [TM.run]
+        simp only [hf, Bool.false_eq_true, ↓reduceIte]
         rw [ih]
+        congr 1
         rw [TM.run]
         simp [hf]
 
