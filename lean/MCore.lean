@@ -34,3 +34,4 @@ import MCore.Audit
 import MCore.BackwardAudit.MaterialOrientationKernel
 
 import MCore.Real.P01VerifiedRelation
+import MCore.Real.P01ComponentFailProof
