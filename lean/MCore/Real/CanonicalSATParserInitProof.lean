@@ -144,20 +144,40 @@ theorem parser_initializes
       initialTMConfig parserMachine bits = forwardConfig [] bits := by
     cases bits <;> rfl
   rw [hInitial]
-  cases bits using List.reverseRecOn with
-  | nil =>
-      simp [TM.run, parserMachine, forwardConfig, rewindConfig,
-        boundaryConfig, initialSlotLog, TM.step, Tape.write, Tape.move]
-  | append_singleton xs b =>
-      rw [show 2 * (xs ++ [b]).length + 4 =
-          (xs ++ [b]).length + (3 + ((xs ++ [b]).reverse.length + 1)) by
-            simp
-            omega]
-      rw [MachineRunLemmas.run_add]
-      rw [forward_scan_run]
-      simp [TM.run, parserMachine, TM.step, Tape.write, Tape.move,
-        rewindConfig, boundaryConfig, initialSlotLog, rewind_run,
-        List.map_append, List.append_assoc]
+  have hrevlen : bits.reverse.length = bits.length := by
+    simp
+  rw [show 2 * bits.length + 4 =
+      bits.length + (3 + (bits.reverse.length + 1)) by
+        rw [hrevlen]
+        omega]
+  rw [MachineRunLemmas.run_add]
+  rw [forward_scan_run]
+  have hThree :
+      parserMachine.run 3
+        { state := (0 : Fin 25)
+          tape :=
+            { left := (bits.map some).reverse
+              head := none
+              right := [] } } =
+      rewindConfig bits.reverse [none, some true] := by
+    have hmap :
+        (bits.map some).reverse = bits.reverse.map some := by
+      simp
+    rw [hmap]
+    cases hrev : bits.reverse with
+    | nil =>
+        simp [TM.run, parserMachine, rewindConfig, TM.step,
+          Tape.write, Tape.move, hrev]
+    | cons b bs =>
+        simp [TM.run, parserMachine, rewindConfig, TM.step,
+          Tape.write, Tape.move, hrev]
+  rw [MachineRunLemmas.run_add]
+  rw [hThree]
+  rw [MachineRunLemmas.run_add]
+  rw [rewind_run]
+  simp [rewindConfig, boundaryConfig, initialSlotLog,
+    TM.run, parserMachine, TM.step, Tape.write, Tape.move]
+  cases bits <;> simp [boundaryConfig, initialSlotLog, List.append_assoc]
 
 #print axioms MCore.Real.CanonicalSATParserInitProof.forward_scan_run
 #print axioms MCore.Real.CanonicalSATParserInitProof.rewind_run
