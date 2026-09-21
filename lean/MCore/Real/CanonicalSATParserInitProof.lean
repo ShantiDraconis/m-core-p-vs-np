@@ -179,6 +179,20 @@ theorem parser_initializes
   rw [forward_scan_run]
   rw [MachineRunLemmas.run_add]
   simp only [List.append_nil]
+  have hScanCfg :
+      ({ state := (0 : Fin 25)
+         tape :=
+           { left := (bits.map some).reverse
+             head := none
+             right := [] } } :
+        Configuration (Fin 25) (Option Bool)) =
+      { state := (0 : Fin 25)
+        tape :=
+          { left := bits.reverse.map some
+            head := none
+            right := [] } } := by
+    simp
+  rw [hScanCfg]
   rw [setup_to_rewind (bits.reverse)]
   rw [rewind_to_boundary]
   simp
