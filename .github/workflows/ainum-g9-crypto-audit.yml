@@ -1,0 +1,90 @@
+name: AINUM G9 Crypto Audit
+
+on:
+  push:
+    branches:
+      - brain/ainum-indeterminacy-constant-v1
+  pull_request:
+    paths:
+      - 'audit/AINUMIndeterminacy.lean'
+      - 'audit/AINUM_MANIFEST.json'
+      - '.github/workflows/ainum-g9-crypto-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g9-ainum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: leanprover/lean-action@v1
+
+      - name: G9.1 frozen-base delta firewall
+        run: |
+          set -euo pipefail
+          base=3668d7ab9102310779222dbecb78d655a8009373
+          git cat-file -e "$base^{commit}"
+          git diff --name-only "$base"...HEAD | sort | tee /tmp/ainum-delta.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed = {
+              "audit/AINUMIndeterminacy.lean",
+              "audit/AINUM_MANIFEST.json",
+              ".github/workflows/ainum-g9-crypto-audit.yml",
+          }
+          got = {x for x in Path("/tmp/ainum-delta.txt").read_text().splitlines() if x}
+          bad = got - allowed
+          if bad:
+              raise SystemExit(f"AINUM modified frozen/non-allowlisted files: {sorted(bad)}")
+          PY
+
+      - name: G9.2 commitment integrity
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          m = json.loads(Path("audit/AINUM_MANIFEST.json").read_text())
+          data = Path(m["source_file"]).read_bytes()
+          got = hashlib.sha256(data).hexdigest()
+          if got != m["source_sha256"]:
+              raise SystemExit(f"commitment mismatch: {got} != {m['source_sha256']}")
+          assert m["frozen_base"] == "3668d7ab9102310779222dbecb78d655a8009373"
+          assert m["semantics"]["classical_endpoint_rewritten"] is False
+          assert m["semantics"]["third_truth_value_claimed"] is False
+          assert m["security"]["secret_constant_present"] is False
+          assert m["security"]["custom_vrf_implemented"] is False
+          assert m["security"]["custom_cryptography_implemented"] is False
+          assert m["promotion"]["target_certificate"] is False
+          print("AINUM_COMMITMENT=PASS")
+          PY
+
+      - name: G9.3 source hygiene
+        run: |
+          set -euo pipefail
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' audit/AINUMIndeterminacy.lean; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' audit/AINUMIndeterminacy.lean; then exit 1; fi
+
+      - name: G9.4 build AINUM and endpoint regression
+        run: |
+          set -euo pipefail
+          lake update
+          lake env lean audit/AINUMIndeterminacy.lean 2>&1 | tee /tmp/ainum.log
+          lake env lean audit/FinalEndpoint.lean
+          lake env lean audit/EndpointCompression.lean
+          if grep -q 'sorryAx' /tmp/ainum.log; then exit 1; fi
+          grep -q "MCore.AINUM.indeterminacy_blocks_auto_orientation" /tmp/ainum.log
+          grep -q "MCore.AINUM.genuine_middle_branches_exclusive" /tmp/ainum.log
+
+      - name: G9.5 no home-grown cryptography
+        run: |
+          set -euo pipefail
+          if grep -R -nE '(private[_ -]?key|secret[_ -]?key|seed[_ -]?phrase|implement.*VRF|custom.*cipher|home.?grown.*crypto)' audit/AINUM*; then
+            echo "AINUM must not contain key material or custom cryptography"; exit 1
+          fi
+          echo "G9_AINUM_CRYPTO_AUDIT=GREEN"
