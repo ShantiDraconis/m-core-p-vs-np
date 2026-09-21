@@ -14,11 +14,11 @@ open CanonicalSATSlotParserSpec
 open CanonicalSATSlotLog
 
 def phaseConfig
-    (q : Fin 31)
+    (q : Fin 25)
     (leftBlankCount : Nat)
     (unread : BitString)
     (log : SlotLog) :
-    Configuration (Fin 31) (Option Bool) :=
+    Configuration (Fin 25) (Option Bool) :=
   match unread with
   | [] =>
       { state := q
@@ -34,7 +34,7 @@ def phaseConfig
             right := bs.map some ++ none :: log.map some } }
 
 @[simp] theorem phaseConfig_state
-    (q : Fin 31)
+    (q : Fin 25)
     (leftBlankCount : Nat)
     (unread : BitString)
     (log : SlotLog) :
@@ -47,7 +47,7 @@ def phaseConfig
   cases unread <;> rfl
 
 theorem step_erase_right
-    (q q' : Fin 31)
+    (q q' : Fin 25)
     (pad : Nat)
     (b : Bool)
     (rest : BitString)
@@ -60,19 +60,19 @@ theorem step_erase_right
       htrans, List.replicate_add]
 
 @[simp] theorem not_halted_4 :
-    parserMachine.halting (4 : Fin 31) = false := by decide
+    parserMachine.halting (4 : Fin 25) = false := by decide
 @[simp] theorem not_halted_5 :
-    parserMachine.halting (5 : Fin 31) = false := by decide
+    parserMachine.halting (5 : Fin 25) = false := by decide
 @[simp] theorem not_halted_6 :
-    parserMachine.halting (6 : Fin 31) = false := by decide
+    parserMachine.halting (6 : Fin 25) = false := by decide
 @[simp] theorem not_halted_7 :
-    parserMachine.halting (7 : Fin 31) = false := by decide
+    parserMachine.halting (7 : Fin 25) = false := by decide
 @[simp] theorem not_halted_8 :
-    parserMachine.halting (8 : Fin 31) = false := by decide
+    parserMachine.halting (8 : Fin 25) = false := by decide
 @[simp] theorem not_halted_9 :
-    parserMachine.halting (9 : Fin 31) = false := by decide
+    parserMachine.halting (9 : Fin 25) = false := by decide
 @[simp] theorem not_halted_10 :
-    parserMachine.halting (10 : Fin 31) = false := by decide
+    parserMachine.halting (10 : Fin 25) = false := by decide
 
 theorem tag_input_run
     (pad : Nat) (payload : BitString) (log : SlotLog) :
@@ -157,7 +157,7 @@ theorem var_payload_run
       congr 1
       omega
 
-def continuationState : Head → Fin 31
+def continuationState : Head → Fin 25
   | .input _ => 11
   | .const _ => 11
   | .not => 12
