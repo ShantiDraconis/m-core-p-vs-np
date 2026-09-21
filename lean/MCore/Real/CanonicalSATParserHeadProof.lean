@@ -15,6 +15,18 @@ open CanonicalSATSlotParserSpec
 open CanonicalSATSlotLog
 open CanonicalSATWitness
 
+private theorem replicate_none_add_one (pad : Nat) :
+    List.replicate (pad + 1) (none : Option Bool) =
+      none :: List.replicate pad none := by
+  rw [show pad + 1 = Nat.succ pad by omega]
+  simp [List.replicate_succ]
+
+private theorem replicate_none_add_three (pad : Nat) :
+    List.replicate (pad + 3) (none : Option Bool) =
+      none :: none :: none :: List.replicate pad none := by
+  rw [show pad + 3 = Nat.succ (Nat.succ (Nat.succ pad)) by omega]
+  simp [List.replicate_succ]
+
 def phaseConfig
     (q : Fin 25)
     (leftBlankCount : Nat)
@@ -59,7 +71,7 @@ theorem step_erase_right
       phaseConfig q' (pad + 1) rest log := by
   cases rest <;>
     simp [phaseConfig, parserMachine, TM.step, Tape.write, Tape.move,
-      htrans, List.replicate_succ]
+      htrans, replicate_none_add_one]
 
 @[simp] theorem not_halted_4 :
     parserMachine.halting (4 : Fin 25) = false := by decide
@@ -82,8 +94,9 @@ theorem tag_input_run
       (phaseConfig 4 pad
         (false :: false :: false :: payload) log) =
       phaseConfig 10 (pad + 3) payload log := by
-  simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
-    List.replicate_succ, Nat.add_assoc]
+  cases payload <;>
+    simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
+      replicate_none_add_one, replicate_none_add_three, Nat.add_assoc]
 
 theorem tag_const_false_run
     (pad : Nat) (tail : BitString) (log : SlotLog) :
@@ -91,8 +104,9 @@ theorem tag_const_false_run
       (phaseConfig 4 pad
         (false :: false :: true :: tail) log) =
       phaseConfig 11 (pad + 3) tail log := by
-  simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
-    List.replicate_succ, Nat.add_assoc]
+  cases tail <;>
+    simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
+      replicate_none_add_one, replicate_none_add_three, Nat.add_assoc]
 
 theorem tag_const_true_run
     (pad : Nat) (tail : BitString) (log : SlotLog) :
@@ -100,8 +114,9 @@ theorem tag_const_true_run
       (phaseConfig 4 pad
         (false :: true :: false :: tail) log) =
       phaseConfig 11 (pad + 3) tail log := by
-  simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
-    List.replicate_succ, Nat.add_assoc]
+  cases tail <;>
+    simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
+      replicate_none_add_one, replicate_none_add_three, Nat.add_assoc]
 
 theorem tag_not_run
     (pad : Nat) (tail : BitString) (log : SlotLog) :
@@ -109,8 +124,9 @@ theorem tag_not_run
       (phaseConfig 4 pad
         (false :: true :: true :: tail) log) =
       phaseConfig 4 (pad + 3) tail log := by
-  simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
-    List.replicate_succ, Nat.add_assoc]
+  cases tail <;>
+    simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
+      replicate_none_add_one, replicate_none_add_three, Nat.add_assoc]
 
 theorem tag_and_run
     (pad : Nat) (tail : BitString) (log : SlotLog) :
@@ -118,8 +134,9 @@ theorem tag_and_run
       (phaseConfig 4 pad
         (true :: false :: false :: tail) log) =
       phaseConfig 18 (pad + 3) tail log := by
-  simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
-    List.replicate_succ, Nat.add_assoc]
+  cases tail <;>
+    simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
+      replicate_none_add_one, replicate_none_add_three, Nat.add_assoc]
 
 theorem tag_or_run
     (pad : Nat) (tail : BitString) (log : SlotLog) :
@@ -127,8 +144,9 @@ theorem tag_or_run
       (phaseConfig 4 pad
         (true :: false :: true :: tail) log) =
       phaseConfig 18 (pad + 3) tail log := by
-  simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
-    List.replicate_succ, Nat.add_assoc]
+  cases tail <;>
+    simp [TM.run, parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
+      replicate_none_add_one, replicate_none_add_three, Nat.add_assoc]
 
 theorem var_payload_run
     (pad i : Nat)
@@ -141,7 +159,7 @@ theorem var_payload_run
   | zero =>
       cases tail <;>
         simp [encodeNat, TM.run, parserMachine, phaseConfig, TM.step,
-          Tape.write, Tape.move, List.replicate_succ, Nat.add_assoc]
+          Tape.write, Tape.move, replicate_none_add_one]
   | succ i ih =>
       rw [show Nat.succ i + 1 = (i + 1) + 1 by omega]
       simp only [encodeNat, List.cons_append]
@@ -151,13 +169,10 @@ theorem var_payload_run
           parserMachine.step
             (phaseConfig 10 pad (true :: (encodeNat i ++ tail)) log) =
           phaseConfig 10 (pad + 1) (encodeNat i ++ tail) log := by
-        cases (encodeNat i ++ tail) <;>
-          simp [parserMachine, phaseConfig, TM.step, Tape.write, Tape.move,
-            List.replicate_succ, Nat.add_assoc]
+        exact step_erase_right 10 10 pad true (encodeNat i ++ tail) log rfl
       rw [hstep]
       rw [ih (pad + 1)]
-      congr 1
-      omega
+      rw [show (pad + 1) + (i + 1) = pad + (Nat.succ i + 1) by omega]
 
 def continuationState : Head → Fin 25
   | .input _ => 11
@@ -182,22 +197,30 @@ theorem consumeHead_run
           false :: false :: false :: encodeNat i by rfl]
       rw [show (false :: false :: false :: encodeNat i).length =
           3 + (i + 1) by
-            simp [encodeNat_length]]
-      rw [MachineRunLemmas.run_add]
+            simp [encodeNat_length]
+            omega]
+      rw [MachineRunLemmas.run_add parserMachine 3 (i + 1)]
       rw [tag_input_run]
       rw [var_payload_run]
-      simp [continuationState, Head.encode, encodeNat_length]
+      simp [continuationState]
       omega
   | const b =>
-      cases b <;>
-        simp [Head.encode, continuationState, tag_const_false_run,
-          tag_const_true_run]
+      cases b with
+      | false =>
+          simpa [Head.encode, continuationState] using
+            (tag_const_false_run pad tail log)
+      | true =>
+          simpa [Head.encode, continuationState] using
+            (tag_const_true_run pad tail log)
   | not =>
-      simp [Head.encode, continuationState, tag_not_run]
+      simpa [Head.encode, continuationState] using
+        (tag_not_run pad tail log)
   | and =>
-      simp [Head.encode, continuationState, tag_and_run]
+      simpa [Head.encode, continuationState] using
+        (tag_and_run pad tail log)
   | or =>
-      simp [Head.encode, continuationState, tag_or_run]
+      simpa [Head.encode, continuationState] using
+        (tag_or_run pad tail log)
 
 #print axioms MCore.Real.CanonicalSATParserHeadProof.tag_input_run
 #print axioms MCore.Real.CanonicalSATParserHeadProof.var_payload_run
