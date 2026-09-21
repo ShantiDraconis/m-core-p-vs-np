@@ -116,20 +116,18 @@ theorem var_run_encodeNat
       rw [TM.run, varConfig_state, varPayloadMachine_not_halted_zero]
       rw [var_step_true]
       rw [ih (none :: left)]
-      apply congrArg (fun xs => varConfig 1 xs tail)
-      simp only [Nat.succ_eq_add_one, Nat.add_assoc, List.replicate_succ]
-      exact congrArg (fun xs => none :: xs)
-        (replicate_none_append_cons n left)
+      simpa [Nat.succ_eq_add_one, List.replicate_succ, List.append_assoc] using
+        congrArg (fun xs => varConfig 1 (none :: xs) tail)
+          (replicate_none_append_cons n left)
 
 theorem var_payload_halts_on_encodeNat
     (n : Nat)
     (tail : BitString) :
     varPayloadMachine.HaltsWithin (n + 1)
       (varConfig 0 [] (encodeNat n ++ tail)) := by
-  rw [TM.HaltsWithin]
+  unfold TM.HaltsWithin
   rw [var_run_encodeNat]
-  rw [varConfig_state]
-  exact varPayloadMachine_halted_one
+  simpa using varPayloadMachine_halted_one
 
 /--
 The operational postcondition is stronger than mere halting: after success,
