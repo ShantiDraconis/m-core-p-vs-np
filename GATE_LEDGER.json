@@ -1,0 +1,17 @@
+{
+  "schema": "ATK_GATE_LEDGER_V1",
+  "repo": "m-core-p-vs-np",
+  "queue": "PNP",
+  "hard_composite_remaining": 2,
+  "hard_atomic_remaining": 2,
+  "current_gate": "P01",
+  "current_head": "95963a2f6408606f4f691f49647b2dc75f156289",
+  "state_ci": "RED",
+  "state_math": "OPEN_MATH",
+  "last_certificate_run": 35565621649,
+  "last_failproof_run": 35565621643,
+  "last_hard_run": 35565621664,
+  "next": "P01 SAT operational NTM -> P02 SAT notin P lower bound",
+  "progress_metric": "FROZEN_HARD/TOTAL_HARD",
+  "tests_are_progress_metric": false
+}
