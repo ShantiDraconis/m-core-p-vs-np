@@ -2,8 +2,8 @@
   "schema": "ATK_SEMANTIC_GATE_V1",
   "date": "2026-09-21",
   "gate": "P01",
-  "audited_head": "9e21b631cd56bf49376b9e4a391b3cde45af60da",
-  "kernel_gate": "P01_COMPONENT_FAILPROOF_GREEN; P01_HARD_OPEN",
+  "audited_head": "1453539c13ba5224d1b84198f162075741a12a98",
+  "kernel_gate": "COMPONENT_FAILPROOF_GREEN; VERIFIED_RELATION_GREEN; P01_HARD_OPEN",
   "semantic_status": "P01_FORMALIZATION_OPEN; P02_OPEN_MATH",
   "promotion_allowed": false,
   "promotion_scope": "P01_ATOMIC_ONLY",
@@ -16,20 +16,28 @@
     "Finite constructor-tag scanner",
     "Unary natural payload scanner",
     "Functional parser frame encoding and hardened frame-machine interfaces",
-    "Legacy ParserMachineCertificate/WitnessGuessMachineCertificate/VerifierMachineCertificate certified vacuous at 9e21b631"
+    "Legacy ParserMachineCertificate/WitnessGuessMachineCertificate/VerifierMachineCertificate certified vacuous at 9e21b631",
+    "SATBits iff decoded circuit + accepted finite witness, with linear witness-length bound"
   ],
   "frozen_nonhard_artifacts": [
-    "frozen/p01-component-failproof-green-9e21b631"
+    "frozen/p01-component-failproof-green-9e21b631",
+    "frozen/p01-verified-relation-green-1453539c"
   ],
   "failproof_runs": {
     "dedicated": 35586024302,
     "certificate": 35586024027,
     "fail_proof_all_gaps": 35586024076
   },
-  "first_open_bridge": "Construct a concrete CanonicalRecursiveParserMachineCertificate and compose concrete parser/guess/verifier machinery into a PolyNTMRealization of SATBits",
+  "first_open_bridge": "Implement the canonical parser/guess/verifier semantics as a concrete polynomial-time single-tape NTM and package it as PolyNTMRealization (SATBits circuitBitEncoding)",
   "forbidden_shortcut": "The three legacy component records are specification-vacuous and cannot be used for promotion.",
   "after_P01": "P02 remains the genuine SAT not-in-P lower-bound problem",
-  "nontriviality": "PASS_FOR_FAILPROOF; P01 witness not yet constructed",
+  "nontriviality": "GREEN_FOR_VERIFIER_RELATION; OPERATIONAL_MACHINE_WITNESS_ABSENT",
   "semantic_equivalence": "P01 is only SAT membership in NP in the fixed canonical model; it must never be counted as P != NP",
-  "freeze_rule": "P01 may freeze only after a concrete operational PolyNTM realization; P02 remains independently required"
+  "freeze_rule": "P01 may freeze only after a concrete operational PolyNTM realization; P02 remains independently required",
+  "validation_runs": {
+    "component_failproof": 35586024302,
+    "verified_relation": 35587134807,
+    "certificate": 35587134861,
+    "fail_proof_all_gaps": 35587134839
+  }
 }
