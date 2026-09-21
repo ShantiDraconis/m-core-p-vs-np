@@ -1,0 +1,72 @@
+name: ATK P01 clean operational SAT
+
+on:
+  push:
+    branches:
+      - attack/material-orientation-clean-v2-20260921
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Fail-closed source hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/Model.lean
+            lean/MCore/Real/CanonicalFinalProof.lean
+            lean/MCore/Real/CanonicalSATBoundary.lean
+            lean/MCore/Real/CanonicalCircuitBits.lean
+            lean/MCore/Real/CanonicalSATWitness.lean
+            lean/MCore/Real/CanonicalSATVerifier.lean
+            lean/MCore/Real/CanonicalSATNTMAttack.lean
+            lean/MCore/Real/CanonicalSATParserAttack.lean
+            lean/MCore/Real/CanonicalSATNatParserAttack.lean
+            lean/MCore/Real/CanonicalSATFrameAttack.lean
+            lean/MCore/Real/CanonicalSATFrameMachineV2.lean
+            lean/MCore/Real/P01VerifiedRelation.lean
+            lean/MCore/Real/P01ComponentFailProof.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
+            exit 1
+          fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then
+            exit 1
+          fi
+
+      - name: Build recovered P01 chain
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof
+
+      - name: Axiom audit concrete frame machine
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01FrameAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATFrameMachineV2
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_push
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_pop
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_certificate
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.blank_normalized_frame_tape_operational_closed
+          EOF
+          lake env lean /tmp/P01FrameAudit.lean 2>&1 | tee /tmp/p01-frame.log
+          if grep -q 'sorryAx' /tmp/p01-frame.log; then exit 1; fi
+
+      - name: Preserve P01 boundary
+        run: |
+          set -euo pipefail
+          grep -q 'CanonicalSATMachineClosure' lean/MCore/Real/CanonicalSATNTMAttack.lean
+          grep -q 'P01OperationalTarget' lean/MCore/Real/P01ComponentFailProof.lean
+          echo "P01_FRAME_SOURCE=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_HARD=OPEN"
