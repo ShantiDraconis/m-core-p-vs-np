@@ -23,11 +23,16 @@ def sourceConfig
   match bits with
   | [] =>
       { state := q
-        tape := { left := left, head := none, right := suffix } }
+        tape :=
+          { left := left
+            head := none
+            right := suffix } }
   | b :: bs =>
       { state := q
-        tape := { left := left, head := some b,
-          right := bs.map some ++ suffix } }
+        tape :=
+          { left := left
+            head := some b
+            right := bs.map some ++ suffix } }
 
 @[simp] theorem sourceConfig_state
     (q : Fin 25)
@@ -227,6 +232,15 @@ theorem step_var_false
     simp [parserMachine, sourceConfig, TM.step, Tape.write, Tape.move,
       List.append_assoc]
 
+theorem replicate_none_succ_append
+    (n : Nat)
+    (left : List (Option Bool)) :
+    List.replicate (n + 1) none ++ none :: left =
+      List.replicate (n + 2) none ++ left := by
+  rw [show n + 2 = (n + 1) + 1 by omega]
+  rw [List.replicate_add]
+  simp [List.append_assoc]
+
 theorem run_var_payload
     (left : List (Option Bool)) (n : Nat) (tail : BitString)
     (suffix : List (Option Bool)) :
@@ -244,7 +258,7 @@ theorem run_var_payload
       rw [show Nat.succ n + 1 = (n + 1) + 1 by omega]
       rw [TM.run, sourceConfig_state, parser_not_halted_10, step_var_true]
       rw [ih (none :: left)]
-      simp [List.replicate_succ, List.append_assoc]
+      rw [replicate_none_succ_append n left]
 
 theorem encodeNat_length_local (n : Nat) :
     (encodeNat n).length = n + 1 := by
@@ -272,18 +286,18 @@ theorem consumeHead_run
       (List.replicate h.encode.length none ++ left) tail suffix := by
   cases h with
   | input i =>
-      rw [show Head.encode (.input i) =
-          false :: false :: false :: encodeNat i by rfl]
-      have hlen :
-          (false :: false :: false :: encodeNat i).length =
-            3 + (i + 1) := by
-        simp [encodeNat_length_local]
-      rw [hlen]
-      rw [MachineRunLemmas.run_add]
+      change
+        parserMachine.run (3 + (i + 1))
+          (sourceConfig 4 left
+            (false :: false :: false :: (encodeNat i ++ tail)) suffix) =
+        sourceConfig 11
+          (List.replicate (3 + (i + 1)) none ++ left) tail suffix
+      rw [MachineRunLemmas.run_add parserMachine 3 (i + 1)]
       rw [run_input_tag]
       rw [run_var_payload]
-      simp [continuationState, Head.encode, encodeNat_length_local,
-        List.replicate_add, List.append_assoc]
+      congr 2
+      simp [← List.replicate_add, Nat.add_comm, Nat.add_left_comm,
+        Nat.add_assoc]
   | const b =>
       cases b <;>
         simp [Head.encode, continuationState, run_const_false_tag,
