@@ -38,7 +38,7 @@ theorem activeSlots_append
     activeSlots (a ++ b) = activeSlots a + activeSlots b := by
   induction a with
   | nil =>
-      rfl
+      simp [activeSlots]
   | cons x xs ih =>
       cases x <;>
         simp [activeSlots, ih, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
