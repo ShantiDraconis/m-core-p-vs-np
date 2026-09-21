@@ -1,5 +1,6 @@
-import MCore.Real.CanonicalSATRecursiveParserMachine
+import MCore.Real.CanonicalSATParserMachine
 import MCore.Real.CanonicalSATSlotParserSpec
+import MCore.Real.CanonicalSATParserAttack
 
 namespace MCore
 namespace Real
@@ -8,14 +9,14 @@ namespace CanonicalSATRecursiveParserSimulation
 open CanonicalFinalProof
 open CanonicalSATParserAttack
 open CanonicalSATSlotParserSpec
-open CanonicalSATRecursiveParserMachine
+open CanonicalSATParserMachine
 
 /--
-Exact remaining proof payload for the concrete Fin 25 parser machine.
+Exact remaining proof payload for the canonical Fin 31 parser machine.
+No parallel parser model is introduced here.
 
-The semantic decoder is no longer mentioned here.  The only machine-specific
-correctness theorem required is equality with slotAccept, whose equivalence to
-decodeCircuit has already been isolated separately.
+The machine-specific semantic obligation is only realization of slotAccept;
+slotAccept <-> decodeCircuit is already isolated in CanonicalSATSlotParserSpec.
 -/
 structure SlotParserMachineSimulationCertificate where
   halts :
@@ -33,35 +34,39 @@ structure SlotParserMachineSimulationCertificate where
         ↔
       slotAccept bits = true
 
-/-- Machine simulation plus the already-isolated semantic slot theorem gives
-the exact hardened parser correctness statement. -/
 theorem simulation_correct
     (S : SlotParserMachineSimulationCertificate) :
-    ParserCorrect := by
+    ∀ bits : BitString,
+      parserAccepting
+          (parserMachine.run
+            (parserTimeBound bits.length)
+            (initialTMConfig parserMachine bits)).state = true
+        ↔
+      ∃ c : CircuitK1.Circuit,
+        CanonicalCircuitBits.decodeCircuit bits = some c := by
   intro bits
   exact
     (S.realizes_slotAccept bits).trans
       (slotAccept_iff_decodeCircuit bits)
 
-/-- The simulation certificate supplies the previous closure-proof payload. -/
-def SlotParserMachineSimulationCertificate.toParserClosureProof
-    (S : SlotParserMachineSimulationCertificate) :
-    ParserClosureProof :=
-  { halts := S.halts
-    correct := simulation_correct S }
-
-/-- Therefore this one exact simulation object closes the hardened parser gap. -/
+/-- The exact hardened parser certificate induced by the Fin31 simulation. -/
 def SlotParserMachineSimulationCertificate.toCanonicalCertificate
     (S : SlotParserMachineSimulationCertificate) :
     CanonicalRecursiveParserMachineCertificate :=
-  certificateOfClosure S.toParserClosureProof
+  { stateCount := 30
+    machine := parserMachine
+    blank_none := rfl
+    accepting := parserAccepting
+    timeBound := parserTimeBound
+    time_poly := parserTimeBound_poly
+    halts := S.halts
+    correct := simulation_correct S }
 
 theorem simulation_closes_operational_gap
     (S : SlotParserMachineSimulationCertificate) :
     CanonicalRecursiveParserOperationalGap := by
   exact ⟨S.toCanonicalCertificate⟩
 
-/-- Exact current parser frontier. -/
 def ParserSimulationGap : Prop :=
   Nonempty SlotParserMachineSimulationCertificate
 
