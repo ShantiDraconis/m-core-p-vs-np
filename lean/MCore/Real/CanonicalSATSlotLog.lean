@@ -33,15 +33,19 @@ def activeSlots : SlotLog → Nat
 def pushSlot (log : SlotLog) : SlotLog :=
   log ++ [true]
 
-theorem activeSlots_pushSlot (log : SlotLog) :
-    activeSlots (pushSlot log) = activeSlots log + 1 := by
-  induction log with
+theorem activeSlots_append
+    (a b : SlotLog) :
+    activeSlots (a ++ b) = activeSlots a + activeSlots b := by
+  induction a with
   | nil =>
       rfl
-  | cons b bs ih =>
-      cases b <;>
-        simp [pushSlot, activeSlots, ih, Nat.add_assoc, Nat.add_comm,
-          Nat.add_left_comm]
+  | cons x xs ih =>
+      cases x <;>
+        simp [activeSlots, ih, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+
+theorem activeSlots_pushSlot (log : SlotLog) :
+    activeSlots (pushSlot log) = activeSlots log + 1 := by
+  simp [pushSlot, activeSlots_append, activeSlots]
 
 /--
 Consume the rightmost active slot. Tombstones are retained, so no tape
@@ -131,7 +135,8 @@ theorem pushSlot_represents
     {slots : Nat} {log : SlotLog}
     (h : RepresentsSlots slots log) :
     RepresentsSlots (slots + 1) (pushSlot log) := by
-  simpa [RepresentsSlots, activeSlots_pushSlot] using congrArg (fun n => n + 1) h
+  unfold RepresentsSlots at h ⊢
+  rw [activeSlots_pushSlot, h]
 
 theorem popSlot_represents
     {slots : Nat} {log log' : SlotLog}
@@ -143,6 +148,7 @@ theorem popSlot_represents
   simp [RepresentsSlots] at *
   omega
 
+#print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_append
 #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_pushSlot
 #print axioms MCore.Real.CanonicalSATSlotLog.popSlot_none_iff
 #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_popSlot
