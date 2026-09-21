@@ -133,6 +133,29 @@ def boundaryConfig
     (boundaryConfig leftBlankCount unread log).state = (4 : Fin 25) := by
   cases unread <;> rfl
 
+/-- Three fixed transitions after the right scan create the initial slot,
+cross back over the delimiter, and enter the rewind state. -/
+theorem setup_to_rewind
+    (revBits : BitString) :
+    parserMachine.run 3
+      { state := (0 : Fin 25)
+        tape := { left := revBits.map some, head := none, right := [] } } =
+    rewindConfig revBits [none, some true] := by
+  cases revBits <;>
+    simp [parserMachine, rewindConfig, TM.run, TM.step, Tape.write, Tape.move]
+
+/-- Rewind the reversed input and cross the left boundary into TAG_0. -/
+theorem rewind_to_boundary
+    (revBits : BitString) :
+    parserMachine.run (revBits.length + 1)
+      (rewindConfig revBits [none, some true]) =
+    boundaryConfig 1 revBits.reverse initialSlotLog := by
+  rw [show revBits.length + 1 = revBits.length + 1 by rfl]
+  rw [MachineRunLemmas.run_add]
+  rw [rewind_run]
+  simp [rewindConfig, boundaryConfig, initialSlotLog, parserMachine,
+    TM.run, TM.step, Tape.write, Tape.move]
+
 /-- The first 2*|bits|+4 steps deterministically create exactly one active
 slot, rewind to the beginning, and enter TAG_0. -/
 theorem parser_initializes
@@ -144,23 +167,21 @@ theorem parser_initializes
       initialTMConfig parserMachine bits = forwardConfig [] bits := by
     cases bits <;> rfl
   rw [hInitial]
-  cases bits using List.reverseRecOn with
-  | nil =>
-      simp [TM.run, parserMachine, forwardConfig, rewindConfig,
-        boundaryConfig, initialSlotLog, TM.step, Tape.write, Tape.move]
-  | append_singleton xs b =>
-      rw [show 2 * (xs ++ [b]).length + 4 =
-          (xs ++ [b]).length + (3 + ((xs ++ [b]).reverse.length + 1)) by
-            simp
-            omega]
-      rw [MachineRunLemmas.run_add]
-      rw [forward_scan_run]
-      simp [TM.run, parserMachine, TM.step, Tape.write, Tape.move,
-        rewindConfig, boundaryConfig, initialSlotLog, rewind_run,
-        List.map_append, List.append_assoc]
+  rw [show 2 * bits.length + 4 =
+      bits.length + (3 + (bits.reverse.length + 1)) by
+        simp
+        omega]
+  rw [MachineRunLemmas.run_add]
+  rw [forward_scan_run]
+  rw [MachineRunLemmas.run_add]
+  rw [setup_to_rewind]
+  rw [rewind_to_boundary]
+  simp
 
 #print axioms MCore.Real.CanonicalSATParserInitProof.forward_scan_run
 #print axioms MCore.Real.CanonicalSATParserInitProof.rewind_run
+#print axioms MCore.Real.CanonicalSATParserInitProof.setup_to_rewind
+#print axioms MCore.Real.CanonicalSATParserInitProof.rewind_to_boundary
 #print axioms MCore.Real.CanonicalSATParserInitProof.parser_initializes
 
 end CanonicalSATParserInitProof
