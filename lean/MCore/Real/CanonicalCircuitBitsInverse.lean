@@ -182,7 +182,8 @@ theorem encodeCircuit_injective
   have hb : decodeCircuit (encodeCircuit b) = some b :=
     decodeCircuit_encode b
   rw [h] at ha
-  exact Option.some.inj (ha.trans hb.symm)
+  rw [decodeCircuit_encode b] at ha
+  exact (Option.some.inj ha).symm
 
 #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeNat_inverse
 #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuitCore_inverse
