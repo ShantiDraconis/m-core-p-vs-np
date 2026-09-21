@@ -152,11 +152,6 @@ theorem rewind_to_boundary
     boundaryConfig 1 revBits.reverse initialSlotLog := by
   rw [MachineRunLemmas.run_add]
   rw [rewind_run]
-  have hmap :
-      (revBits.map some).reverse =
-        revBits.reverse.map some := by
-    simp
-  rw [hmap]
   cases hrev : revBits.reverse with
   | nil =>
       simp [rewindConfig, boundaryConfig, initialSlotLog, parserMachine,
@@ -183,11 +178,7 @@ theorem parser_initializes
   rw [MachineRunLemmas.run_add]
   rw [forward_scan_run]
   rw [MachineRunLemmas.run_add]
-  have hmap :
-      (bits.map some).reverse =
-        bits.reverse.map some := by
-    simp
-  rw [hmap]
+  simp only [List.append_nil]
   rw [setup_to_rewind (bits.reverse)]
   rw [rewind_to_boundary]
   simp
