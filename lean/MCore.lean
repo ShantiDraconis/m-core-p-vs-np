@@ -50,3 +50,5 @@ import MCore.Real.CanonicalSATParserMachine
 import MCore.Real.P02TerminalFrontier
 import MCore.Real.CanonicalSATRecursiveParserSimulation
 import MCore.Real.CanonicalSATRecursiveParserPaths
+
+import MCore.Real.CanonicalSATParserLogBoundary
