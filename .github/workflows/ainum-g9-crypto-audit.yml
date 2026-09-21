@@ -75,6 +75,7 @@ jobs:
         run: |
           set -euo pipefail
           lake update
+          lake build MCore.BackwardAudit.ClosedDiscriminant
           lake env lean audit/AINUMIndeterminacy.lean 2>&1 | tee /tmp/ainum.log
           lake env lean audit/FinalEndpoint.lean
           lake env lean audit/EndpointCompression.lean
