@@ -48,10 +48,18 @@ theorem parserBoundary_left_blank_padding
     (slots : Nat) :
     CanonicalSATFrameMachineV2.LeftBlankPadding
       (parserBoundaryTape leftBlankCount unread slots) := by
-  intro s hs
-  simp [parserBoundaryTape] at hs ⊢
-  rcases hs with ⟨_, rfl⟩
-  rfl
+  cases unread <;>
+    simp [CanonicalSATFrameMachineV2.LeftBlankPadding, parserBoundaryTape]
+
+theorem readTapeCells_map_some_until_blank
+    (bits : BitString)
+    (suffix : List (Option Bool)) :
+    readTapeCells (bits.map some ++ none :: suffix) = bits := by
+  induction bits with
+  | nil =>
+      rfl
+  | cons b bs ih =>
+      simp [readTapeCells, ih]
 
 /--
 The semantic visible word at a parser boundary is exactly the unread input.
@@ -67,7 +75,8 @@ theorem tapeWord_parserBoundaryTape
   | nil =>
       rfl
   | cons b bs =>
-      simp [parserBoundaryTape, tapeWord, readTapeCells, slotCells]
+      simp [parserBoundaryTape, tapeWord,
+        readTapeCells_map_some_until_blank]
 
 /-- The zero-slot/empty-input accepting boundary has no data to the right. -/
 @[simp] theorem parserBoundary_empty_zero
