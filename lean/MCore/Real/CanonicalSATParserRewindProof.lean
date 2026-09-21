@@ -23,7 +23,7 @@ def rewindUnreadConfig
   | [] =>
       { state := 22
         tape :=
-          { left := List.replicate leftBlankCount none
+          { left := List.replicate leftBlankCount.pred none
             head := none
             right := processed.map some ++ none :: log.map some } }
   | b :: bs =>
@@ -52,9 +52,9 @@ theorem rewindUnread_step_cons
     parserMachine.step
       (rewindUnreadConfig (b :: bs) processed leftBlankCount log) =
     rewindUnreadConfig bs (b :: processed) leftBlankCount log := by
-  cases bs <;>
+  cases bs <;> cases leftBlankCount <;>
     simp [rewindUnreadConfig, parserMachine, TM.step, Tape.write, Tape.move,
-      List.append_assoc]
+      List.append_assoc, List.replicate_succ]
 
 theorem rewindUnread_finish
     (processed : BitString)
@@ -63,7 +63,7 @@ theorem rewindUnread_finish
     (log : SlotLog) :
     parserMachine.step
       (rewindUnreadConfig [] processed leftBlankCount log) =
-    phaseConfig 4 leftBlankCount processed.reverse log := by
+    phaseConfig 4 leftBlankCount processed log := by
   cases leftBlankCount with
   | zero => omega
   | succ n =>
@@ -80,7 +80,7 @@ theorem rewindUnread_run
     parserMachine.run (remaining.length + 1)
       (rewindUnreadConfig remaining processed leftBlankCount log) =
     phaseConfig 4 leftBlankCount
-      (remaining.reverse ++ processed.reverse) log := by
+      (remaining.reverse ++ processed) log := by
   induction remaining generalizing processed with
   | nil =>
       simpa using rewindUnread_finish processed leftBlankCount hpos log
