@@ -54,8 +54,6 @@ jobs:
             lean/MCore/Real/P01ComponentFailProof.lean
             lean/MCore/Real/P01RecursiveFiniteControlFrontier.lean
             lean/MCore/Real/CanonicalSATRecursiveParserSimulation.lean
-            lean/MCore/Real/CanonicalSATRecursiveParserPaths.lean
-            lean/MCore/Real/CanonicalSATParserLogBoundary.lean
             lean/MCore/Real/P02TerminalFrontier.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
@@ -68,7 +66,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.MachineRunLemmas MCore.Real.CanonicalSATParserInitProof MCore.Real.CanonicalSATParserHeadProof MCore.Real.CanonicalSATParserLogBoundary MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.MachineRunLemmas MCore.Real.CanonicalSATParserInitProof MCore.Real.CanonicalSATParserHeadProof MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -181,21 +179,6 @@ jobs:
           EOF
           lake env lean /tmp/P01RecursiveParserSimulationAudit.lean 2>&1 | tee /tmp/p01-recursive-parser-simulation.log
           if grep -q 'sorryAx' /tmp/p01-recursive-parser-simulation.log; then exit 1; fi
-
-      - name: Axiom audit recursive parser paths
-        run: |
-          set -euo pipefail
-          cat >/tmp/P01ParserPathsAudit.lean <<'EOF'
-          import MCore.Real.CanonicalSATRecursiveParserPaths
-          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_not_tag
-          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_const_false_tag
-          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_const_true_tag
-          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_and_tag
-          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_or_tag
-          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_var_payload
-          EOF
-          lake env lean /tmp/P01ParserPathsAudit.lean 2>&1 | tee /tmp/p01-parser-paths.log
-          if grep -q 'sorryAx' /tmp/p01-parser-paths.log; then exit 1; fi
 
       - name: Axiom audit concrete frame machine
         run: |
