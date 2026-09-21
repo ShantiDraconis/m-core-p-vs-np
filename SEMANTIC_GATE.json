@@ -1,0 +1,25 @@
+{
+  "schema": "ATK_SEMANTIC_GATE_V1",
+  "date": "2026-09-21",
+  "gate": "P01",
+  "audited_head": "95963a2f6408606f4f691f49647b2dc75f156289",
+  "kernel_gate": "RED_FOR_HARD; CERTIFICATE_AND_FAILPROOF_GREEN",
+  "semantic_status": "P01_FORMALIZATION_OPEN; P02_OPEN_MATH",
+  "promotion_allowed": false,
+  "promotion_scope": "P01_ATOMIC_ONLY",
+  "endpoint": "P versus NP",
+  "established_prefix": [
+    "Canonical bit encoding of Circuit syntax",
+    "Finite SAT witness semantics",
+    "Witness verification correctness",
+    "Linear witness-length bound",
+    "Finite constructor-tag scanner",
+    "Unary natural payload scanner",
+    "Functional parser frame encoding and hardened frame-machine interfaces"
+  ],
+  "first_open_bridge": "Concrete polynomial-time single-tape recursive parser/stack machinery and composition into a canonical PolyNTM realization of SATBits",
+  "after_P01": "P02 remains the genuine SAT not-in-P lower-bound problem",
+  "nontriviality": "PASS: legacy parser/frame existence gates have explicit vacuity fail-proofs",
+  "semantic_equivalence": "P01 is a standard NP-membership sublemma only; it must never be counted as P != NP",
+  "freeze_rule": "P01 may freeze only after a concrete operational PolyNTM realization; P02 remains independently required"
+}
