@@ -190,6 +190,21 @@ jobs:
           lake env lean /tmp/P01RecursiveParserAudit.lean 2>&1 | tee /tmp/p01-recursive-parser.log
           if grep -q 'sorryAx' /tmp/p01-recursive-parser.log; then exit 1; fi
 
+      - name: Axiom audit recursive parser paths
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01ParserPathsAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATRecursiveParserPaths
+          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_not_tag
+          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_const_false_tag
+          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_const_true_tag
+          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_and_tag
+          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_or_tag
+          #print axioms MCore.Real.CanonicalSATRecursiveParserPaths.run_var_payload
+          EOF
+          lake env lean /tmp/P01ParserPathsAudit.lean 2>&1 | tee /tmp/p01-parser-paths.log
+          if grep -q 'sorryAx' /tmp/p01-parser-paths.log; then exit 1; fi
+
       - name: Axiom audit concrete frame machine
         run: |
           set -euo pipefail
