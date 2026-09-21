@@ -2,8 +2,8 @@
   "schema": "ATK_SEMANTIC_GATE_V1",
   "date": "2026-09-21",
   "gate": "P01",
-  "audited_head": "95963a2f6408606f4f691f49647b2dc75f156289",
-  "kernel_gate": "RED_FOR_HARD; CERTIFICATE_AND_FAILPROOF_GREEN",
+  "audited_head": "9e21b631cd56bf49376b9e4a391b3cde45af60da",
+  "kernel_gate": "P01_COMPONENT_FAILPROOF_GREEN; P01_HARD_OPEN",
   "semantic_status": "P01_FORMALIZATION_OPEN; P02_OPEN_MATH",
   "promotion_allowed": false,
   "promotion_scope": "P01_ATOMIC_ONLY",
@@ -15,11 +15,21 @@
     "Linear witness-length bound",
     "Finite constructor-tag scanner",
     "Unary natural payload scanner",
-    "Functional parser frame encoding and hardened frame-machine interfaces"
+    "Functional parser frame encoding and hardened frame-machine interfaces",
+    "Legacy ParserMachineCertificate/WitnessGuessMachineCertificate/VerifierMachineCertificate certified vacuous at 9e21b631"
   ],
-  "first_open_bridge": "Concrete polynomial-time single-tape recursive parser/stack machinery and composition into a canonical PolyNTM realization of SATBits",
+  "frozen_nonhard_artifacts": [
+    "frozen/p01-component-failproof-green-9e21b631"
+  ],
+  "failproof_runs": {
+    "dedicated": 35586024302,
+    "certificate": 35586024027,
+    "fail_proof_all_gaps": 35586024076
+  },
+  "first_open_bridge": "Construct a concrete CanonicalRecursiveParserMachineCertificate and compose concrete parser/guess/verifier machinery into a PolyNTMRealization of SATBits",
+  "forbidden_shortcut": "The three legacy component records are specification-vacuous and cannot be used for promotion.",
   "after_P01": "P02 remains the genuine SAT not-in-P lower-bound problem",
-  "nontriviality": "PASS: legacy parser/frame existence gates have explicit vacuity fail-proofs",
-  "semantic_equivalence": "P01 is a standard NP-membership sublemma only; it must never be counted as P != NP",
+  "nontriviality": "PASS_FOR_FAILPROOF; P01 witness not yet constructed",
+  "semantic_equivalence": "P01 is only SAT membership in NP in the fixed canonical model; it must never be counted as P != NP",
   "freeze_rule": "P01 may freeze only after a concrete operational PolyNTM realization; P02 remains independently required"
 }
