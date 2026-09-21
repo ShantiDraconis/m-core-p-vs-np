@@ -140,6 +140,58 @@ theorem legacy_frame_gate_is_trivially_inhabited :
       timeBound := fun _ => 0
       time_poly := hpoly }⟩
 
+/-- Read the finite Boolean word from the current head to the first blank.
+    Explicit blanks after the semantic end are ignored, matching the intended
+    infinite-blank tape semantics rather than raw list representation. -/
+def readTapeCells : List (Option Bool) → BitString
+  | [] => []
+  | none :: _ => []
+  | some b :: rest => b :: readTapeCells rest
+
+/-- Boolean word represented from the current tape head. -/
+def tapeWord (t : Tape (Option Bool)) : BitString :=
+  match t.head with
+  | none => []
+  | some b => b :: readTapeCells t.right
+
+/-- Canonical-head semantic representation: the machine has rewound to the
+    left boundary and the visible word agrees with the requested bitstring. -/
+def TapeRepresents (bits : BitString) (t : Tape (Option Bool)) : Prop :=
+  t.left = [] ∧ tapeWord t = bits
+
+@[simp] theorem readTapeCells_map_some
+    (bits : BitString) :
+    readTapeCells (bits.map some) = bits := by
+  induction bits with
+  | nil => rfl
+  | cons b bs ih =>
+      simp [readTapeCells, ih]
+
+@[simp] theorem tapeWord_inputTape
+    (bits : BitString) :
+    tapeWord (inputTape bits) = bits := by
+  cases bits <;> simp [tapeWord, inputTape, readTapeCells]
+
+theorem inputTape_represents
+    (bits : BitString) :
+    TapeRepresents bits (inputTape bits) := by
+  constructor
+  · cases bits <;> rfl
+  · exact tapeWord_inputTape bits
+
+/-- Raw Tape equality is strictly stronger than represented-word equality:
+    an explicit trailing blank changes the structure but not the word. -/
+def trailingBlankTape : Tape (Option Bool) :=
+  { left := [], head := some true, right := [none] }
+
+theorem trailingBlankTape_represents :
+    TapeRepresents [true] trailingBlankTape := by
+  simp [TapeRepresents, trailingBlankTape, tapeWord, readTapeCells]
+
+theorem trailingBlankTape_ne_inputTape :
+    trailingBlankTape ≠ inputTape [true] := by
+  simp [trailingBlankTape, inputTape]
+
 /-- Hardened operational boundary.  Push is presented as
     1 || frame || stack and pop as 0 || stack.  Successful execution must
     normalize the final tape back to the canonical stack encoding. -/
@@ -178,6 +230,74 @@ structure FrameTapeMachineCertificate where
 
 def FrameTapeOperationalGap : Prop :=
   Nonempty FrameTapeMachineCertificate
+
+/-- Semantically hardened variant: exact represented output is required, while
+    harmless explicit trailing blanks are quotient-like implementation detail. -/
+structure SemanticFrameTapeMachineCertificate where
+  stateCount : Nat
+  machine : TM (Fin (stateCount + 1)) (Option Bool)
+  blank_none : machine.blank = none
+  timeBound : TimeBound
+  time_poly : PolynomialTimeBound timeBound
+
+  push_halts :
+    ∀ (f : Frame) (fs : List Frame),
+      machine.HaltsWithin
+        (timeBound (pushCommand f fs).length)
+        (initialTMConfig machine (pushCommand f fs))
+
+  push_correct :
+    ∀ (f : Frame) (fs : List Frame),
+      TapeRepresents
+        (encodeFrames (f :: fs))
+        (machine.run
+          (timeBound (pushCommand f fs).length)
+          (initialTMConfig machine (pushCommand f fs))).tape
+
+  pop_halts :
+    ∀ (f : Frame) (fs : List Frame),
+      machine.HaltsWithin
+        (timeBound (popCommand (f :: fs)).length)
+        (initialTMConfig machine (popCommand (f :: fs)))
+
+  pop_correct :
+    ∀ (f : Frame) (fs : List Frame),
+      TapeRepresents
+        (encodeFrames fs)
+        (machine.run
+          (timeBound (popCommand (f :: fs)).length)
+          (initialTMConfig machine (popCommand (f :: fs))).tape
+
+def SemanticFrameTapeOperationalGap : Prop :=
+  Nonempty SemanticFrameTapeMachineCertificate
+
+def FrameTapeMachineCertificate.toSemantic
+    (C : FrameTapeMachineCertificate) :
+    SemanticFrameTapeMachineCertificate :=
+  { stateCount := C.stateCount
+    machine := C.machine
+    blank_none := C.blank_none
+    timeBound := C.timeBound
+    time_poly := C.time_poly
+    push_halts := C.push_halts
+    push_correct := by
+      intro f fs
+      rw [C.push_correct f fs]
+      exact inputTape_represents _
+    pop_halts := C.pop_halts
+    pop_correct := by
+      intro f fs
+      rw [C.pop_correct f fs]
+      exact inputTape_represents _ }
+
+theorem exact_frame_tape_implies_semantic
+    (h : FrameTapeOperationalGap) :
+    SemanticFrameTapeOperationalGap := by
+  rcases h with ⟨C⟩
+  exact ⟨C.toSemantic⟩
+
+#print axioms MCore.Real.CanonicalSATFrameAttack.trailingBlankTape_ne_inputTape
+#print axioms MCore.Real.CanonicalSATFrameAttack.exact_frame_tape_implies_semantic
 
 /-- The hardened frame-tape certificate is strong enough to discharge the
     earlier structural recursive-frame existence gate.  This does not create
