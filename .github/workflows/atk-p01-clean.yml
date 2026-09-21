@@ -48,7 +48,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof
+          lake build MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier
 
       - name: Axiom audit concrete frame machine
         run: |
@@ -70,3 +70,11 @@ jobs:
           grep -q 'P01OperationalTarget' lean/MCore/Real/P01ComponentFailProof.lean
           echo "P01_FRAME_SOURCE=GREEN_IF_JOB_SUCCEEDS"
           echo "P01_HARD=OPEN"
+
+
+      - name: Run fail-closed certificate runner
+        run: |
+          set -euo pipefail
+          python3 certificado-runner/00_cert_runner.py || rc=$?
+          test "${rc:-0}" -eq 1
+          echo "P01_EXPECTED_OPEN=PASS"
