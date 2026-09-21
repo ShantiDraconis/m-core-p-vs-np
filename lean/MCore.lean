@@ -46,3 +46,4 @@ import MCore.Real.CanonicalSATParserTapeLayout
 import MCore.Real.CanonicalSATParserInitMachine
 import MCore.Real.CanonicalSATSlotLog
 import MCore.Real.CanonicalSATSlotLogMachine
+import MCore.Real.CanonicalSATParserMachine
