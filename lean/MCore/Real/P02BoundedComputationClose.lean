@@ -277,6 +277,9 @@ theorem left_case_preserves_snapshot
     (htrans :
       M.machine.transition config.state config.tape.head =
         (qNext, write, .left))
+    (hleftBoundary :
+      config.tape.left.getD (radius x t) M.machine.blank =
+        M.machine.blank)
     (hmatch : SnapshotMatches sigma M x t s config)
     (hcase :
       evalCNF sigma
@@ -319,7 +322,7 @@ theorem left_case_preserves_snapshot
       copySymbolClauses_forces sigma guard
         (leftVar M x t s 0) (headVar M t (s + 1))
         a hguard hhead
-    rw [hf, hleftOld 0 (by unfold radius; omega) a]
+    rw [hf, hleftOld 0 (by simp [radius]) a]
     simp [TM.step, htrans, Tape.write, Tape.move,
       P02BoundedComputationTape.move_left_head_getD]
   constructor
@@ -331,10 +334,8 @@ theorem left_case_preserves_snapshot
             M.machine.blank = M.machine.blank := by
         simp [TM.step, htrans, Tape.write,
           P02BoundedComputationTape.move_left_left_getD]
-        apply P02BoundedComputationTape.getD_eq_default_of_length_le
-        have hlen := P02BoundedComputationTape.move_left_length_le
-          M.machine.blank (config.tape.write write)
-        omega
+        have hrpos : 0 < radius x t := by simp [radius]
+        convert hleftBoundary using 1 <;> omega
       have hset :
           evalCNF sigma
             (setLeftCell guard M x t (s + 1) (radius x t - 1)
@@ -352,14 +353,14 @@ theorem left_case_preserves_snapshot
             (copyLeftCell guard M x t s (i + 1) (s + 1) i) = true := by
         apply evalCNF_subset_true sigma _ _ hleftCase
         intro cl hcl
-        unfold leftMoveCaseCNF
-        simp only [List.mem_append, List.mem_flatMap, List.mem_range]
-        aesop
+        simp [leftMoveCaseCNF, guard, his, hcl]
       have hf :=
         copySymbolClauses_forces sigma guard
           (leftVar M x t s (i + 1))
           (leftVar M x t (s + 1) i) a hguard hcopy
-      rw [hf, hleftOld (i + 1) (by omega) a]
+      rw [hf, hleftOld (i + 1) (by
+        have hrpos : 0 < radius x t := by simp [radius]
+        omega) a]
       simp [TM.step, htrans, Tape.write,
         P02BoundedComputationTape.move_left_left_getD]
   · intro i hi a
@@ -377,21 +378,23 @@ theorem left_case_preserves_snapshot
       simpa [TM.step, htrans, Tape.write,
         P02BoundedComputationTape.move_left_right_zero] using hf
     · obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hz
-      have hj : j < radius x t - 1 := by omega
+      have hj : j < radius x t - 1 := by
+        have hrpos : 0 < radius x t := by simp [radius]
+        omega
       have hcopy :
           evalCNF sigma
             (copyRightCell guard M x t s j (s + 1) (j + 1)) = true := by
         apply evalCNF_subset_true sigma _ _ hleftCase
         intro cl hcl
-        unfold leftMoveCaseCNF
-        simp only [List.mem_append, List.mem_flatMap, List.mem_range]
-        aesop
+        simp [leftMoveCaseCNF, guard, hj, hcl]
       have hf :=
         copySymbolClauses_forces sigma guard
           (rightVar M x t s j)
           (rightVar M x t (s + 1) (j + 1))
           a hguard hcopy
-      rw [hf, hrightOld j (by omega) a]
+      rw [hf, hrightOld j (by
+        have hrpos : 0 < radius x t := by simp [radius]
+        omega) a]
       simp [TM.step, htrans, Tape.write,
         P02BoundedComputationTape.move_left_right_succ]
 
