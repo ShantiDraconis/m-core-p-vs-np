@@ -231,11 +231,12 @@ def decoderEvaluatorLocalCertificate : DecoderEvaluatorLocalCertificate where
   or_not_terminal := decoderEvaluatorMachine_or_not_terminal
   push_not_terminal := decoderEvaluatorMachine_push_not_terminal
 
-theorem decoderEvaluatorLocalGap_closed : DecoderEvaluatorLocalGap :=
-  ⟨decoderEvaluatorLocalCertificate⟩
-
 def DecoderEvaluatorLocalGap : Prop :=
   Nonempty DecoderEvaluatorLocalCertificate
+
+
+theorem decoderEvaluatorLocalGap_closed : DecoderEvaluatorLocalGap :=
+  ⟨decoderEvaluatorLocalCertificate⟩
 
 /-- The scanner-only machine cannot accidentally inhabit the hardened
 decoder/evaluator certificate: every non-scan phase currently transitions
