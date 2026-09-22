@@ -17,14 +17,38 @@ theorem runBranches_append
   | zero =>
       rfl
   | succ fuel ih =>
-      simp only [NTM.runBranches]
-      rw [List.filter_append, List.filter_append, List.flatMap_append]
-      rw [List.append_assoc, ← List.append_assoc
-        (List.filter (fun c => !(witnessGuessMachine.accepting c.state ||
-          witnessGuessMachine.rejecting c.state)) xs).flatMap
-            witnessGuessMachine.successors]
-      rw [ih]
-      simp only [List.append_assoc]
+      simp only [NTM.runBranches, List.filter_append, List.flatMap_append]
+      have hreassoc :
+          (xs.filter (fun c =>
+              witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state) ++
+            ys.filter (fun c =>
+              witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state)) ++
+          ((xs.filter (fun c =>
+              !(witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state))).flatMap
+              witnessGuessMachine.successors ++
+            (ys.filter (fun c =>
+              !(witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state))).flatMap
+              witnessGuessMachine.successors) =
+          (xs.filter (fun c =>
+              witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state) ++
+            (xs.filter (fun c =>
+              !(witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state))).flatMap
+              witnessGuessMachine.successors) ++
+          (ys.filter (fun c =>
+              witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state) ++
+            (ys.filter (fun c =>
+              !(witnessGuessMachine.accepting c.state ||
+                witnessGuessMachine.rejecting c.state))).flatMap
+              witnessGuessMachine.successors) := by
+        simp [List.append_assoc]
+      rw [hreassoc, ih]
 
 theorem witnessGuess_complete_from
     (left : List (Option Bool))
@@ -35,11 +59,11 @@ theorem witnessGuess_complete_from
         [guessConfig left source] := by
   induction source generalizing left witness with
   | nil =>
-      have hw : witness = [] := by
-        simpa using List.length_eq_zero.mp (by simpa using hlen)
+      have hwlen : witness.length = 0 := by simpa using hlen
+      have hw : witness = [] := List.length_eq_zero_iff.mp hwlen
       subst witness
-      simp [NTM.runBranches, witnessGuess_successors_nil,
-        guessConfig, witnessGuessMachine, doneConfig]
+      simp [NTM.runBranches, witnessGuessMachine, guessConfig, doneConfig,
+        NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
   | cons b bs ih =>
       cases witness with
       | nil =>
@@ -47,20 +71,44 @@ theorem witnessGuess_complete_from
       | cons w ws =>
           have hlen' : ws.length = bs.length := by
             simpa using Nat.succ.inj hlen
-          rw [List.length_cons]
-          simp only [NTM.runBranches]
-          have hsucc := witnessGuess_successors_cons left b bs
-          simp [witnessGuessMachine, guessConfig_state, hsucc]
-          rw [runBranches_append]
+          have hstep :
+              witnessGuessMachine.runBranches ((b :: bs).length + 1)
+                  [guessConfig left (b :: bs)] =
+                witnessGuessMachine.runBranches (bs.length + 1)
+                  [ guessConfig (some false :: left) bs,
+                    guessConfig (some true :: left) bs ] := by
+            simp [NTM.runBranches, witnessGuessMachine, guessConfig_state,
+              witnessGuess_successors_cons]
+          rw [hstep]
+          have hsplit :
+              witnessGuessMachine.runBranches (bs.length + 1)
+                  [ guessConfig (some false :: left) bs,
+                    guessConfig (some true :: left) bs ] =
+                witnessGuessMachine.runBranches (bs.length + 1)
+                    [guessConfig (some false :: left) bs] ++
+                  witnessGuessMachine.runBranches (bs.length + 1)
+                    [guessConfig (some true :: left) bs] := by
+            simpa using runBranches_append (bs.length + 1)
+              [guessConfig (some false :: left) bs]
+              [guessConfig (some true :: left) bs]
+          rw [hsplit]
           cases w with
           | false =>
               have hmem := ih (some false :: left) ws hlen'
-              simpa [List.reverse_cons, List.map_append, List.append_assoc] using
-                List.mem_append_left _ hmem
+              have htarget :
+                  doneConfig (ws.reverse.map some ++ some false :: left) ∈
+                    witnessGuessMachine.runBranches (bs.length + 1)
+                      [guessConfig (some false :: left) bs] := by
+                simpa [List.append_assoc] using hmem
+              exact List.mem_append_left _ htarget
           | true =>
               have hmem := ih (some true :: left) ws hlen'
-              simpa [List.reverse_cons, List.map_append, List.append_assoc] using
-                List.mem_append_right _ hmem
+              have htarget :
+                  doneConfig (ws.reverse.map some ++ some true :: left) ∈
+                    witnessGuessMachine.runBranches (bs.length + 1)
+                      [guessConfig (some true :: left) bs] := by
+                simpa [List.append_assoc] using hmem
+              exact List.mem_append_right _ htarget
 
 theorem witnessGuess_complete
     (source witness : BitString)
@@ -69,7 +117,6 @@ theorem witnessGuess_complete
       witnessGuessMachine.runBranches (source.length + 1)
         [guessConfig [] source] := by
   simpa using witnessGuess_complete_from [] source witness hlen
-
 
 theorem witnessGuess_halts_from
     (left : List (Option Bool))
@@ -80,17 +127,33 @@ theorem witnessGuess_halts_from
   induction source generalizing left with
   | nil =>
       intro reached hmem
-      simp [NTM.runBranches, witnessGuess_successors_nil,
-        guessConfig, witnessGuessMachine, doneConfig] at hmem
+      simp [NTM.runBranches, witnessGuessMachine, guessConfig, doneConfig,
+        NTM.successors, NTM.stepBranch, Tape.write, Tape.move] at hmem
       subst reached
       exact Or.inl (doneConfig_accepting left)
   | cons b bs ih =>
       intro reached hmem
-      rw [List.length_cons] at hmem
-      simp only [NTM.runBranches] at hmem
-      have hsucc := witnessGuess_successors_cons left b bs
-      simp [witnessGuessMachine, guessConfig_state, hsucc] at hmem
-      rw [runBranches_append] at hmem
+      have hstep :
+          witnessGuessMachine.runBranches ((b :: bs).length + 1)
+              [guessConfig left (b :: bs)] =
+            witnessGuessMachine.runBranches (bs.length + 1)
+              [ guessConfig (some false :: left) bs,
+                guessConfig (some true :: left) bs ] := by
+        simp [NTM.runBranches, witnessGuessMachine, guessConfig_state,
+          witnessGuess_successors_cons]
+      rw [hstep] at hmem
+      have hsplit :
+          witnessGuessMachine.runBranches (bs.length + 1)
+              [ guessConfig (some false :: left) bs,
+                guessConfig (some true :: left) bs ] =
+            witnessGuessMachine.runBranches (bs.length + 1)
+                [guessConfig (some false :: left) bs] ++
+              witnessGuessMachine.runBranches (bs.length + 1)
+                [guessConfig (some true :: left) bs] := by
+        simpa using runBranches_append (bs.length + 1)
+          [guessConfig (some false :: left) bs]
+          [guessConfig (some true :: left) bs]
+      rw [hsplit] at hmem
       rcases List.mem_append.mp hmem with hfalse | htrue
       · exact ih (some false :: left) reached hfalse
       · exact ih (some true :: left) reached htrue
