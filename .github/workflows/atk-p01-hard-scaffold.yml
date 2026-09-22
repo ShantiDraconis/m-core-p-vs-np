@@ -24,29 +24,37 @@ jobs:
       - name: Fail-closed hygiene
         run: |
           set -euo pipefail
-          file=lean/MCore/Real/P01FinalCertificate.lean
-          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then
+          files=(
+            lean/MCore/Real/P01FinalCertificate.lean
+            lean/MCore/Real/CanonicalSATParserNTM.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
             exit 1
           fi
-          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then
             exit 1
           fi
-          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "$file"; then
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "${files[@]}"; then
             exit 1
           fi
 
       - name: Build P01 HARD scaffold
         run: |
           set -euo pipefail
-          lake build MCore.Real.P01FinalCertificate
+          lake build MCore.Real.P01FinalCertificate MCore.Real.CanonicalSATParserNTM
 
       - name: Axiom audit scaffold
         run: |
           set -euo pipefail
           cat >/tmp/P01HardScaffoldAudit.lean <<'EOF'
           import MCore.Real.P01FinalCertificate
+          import MCore.Real.CanonicalSATParserNTM
           #print axioms MCore.Real.P01FinalCertificate.P01MachineConstruction.correctAt
           #print axioms MCore.Real.P01FinalCertificate.construction_closes_p01
+          #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_runBranches_singleton
+          #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_haltsWithin_iff
+          #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_acceptsWithin_iff
+          #print axioms MCore.Real.CanonicalSATParserNTM.parserSimulationGap_to_ntm_phase
           EOF
           lake env lean /tmp/P01HardScaffoldAudit.lean 2>&1 | tee /tmp/p01-hard-scaffold.log
           if grep -q 'sorryAx' /tmp/p01-hard-scaffold.log; then
