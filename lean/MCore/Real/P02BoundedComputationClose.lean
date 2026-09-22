@@ -46,20 +46,10 @@ theorem active_transition_case_true
     (boundedExecTableauCNF M x t)
     htableau
   intro c hc
-  unfold boundedExecTableauCNF transitionsCNF transitionStepCNF
-  simp only [List.mem_append, List.mem_flatMap, List.mem_range,
-    List.mem_flatten, List.mem_ofFn]
-  right
-  left
-  refine ⟨s, hs, ?_⟩
-  refine ⟨?_, hc⟩
-  refine ⟨?_, ?_⟩
-  · exact ⟨config.state, rfl⟩
-  · cases hhead : config.tape.head with
-    | none =>
-        simp [alphabet]
-    | some b =>
-        cases b <;> simp [alphabet]
+  simp only [boundedExecTableauCNF, List.mem_append]
+  apply Or.inr
+  apply Or.inl
+  simp [transitionsCNF, transitionStepCNF, hs, hc, alphabet]
 
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
