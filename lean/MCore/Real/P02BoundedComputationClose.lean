@@ -289,6 +289,125 @@ theorem rightVar_injective_valid
   unfold rightVar at h
   exact Nat.add_left_cancel h
 
+
+theorem headBase_le_leftBase
+    (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
+    headBase M t ≤ leftBase M x t := by
+  unfold leftBase
+  exact Nat.le_add_right _ _
+
+theorem leftBase_le_rightBase
+    (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
+    leftBase M x t ≤ rightBase M x t := by
+  unfold rightBase
+  exact Nat.le_add_right _ _
+
+theorem stateVar_ne_headVar_valid
+    (M : PolyDTMCandidate) (t s₁ s₂ : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hs₁ : s₁ ≤ t) :
+    stateVar M t s₁ q ≠ headVar M t s₂ a := by
+  intro h
+  have hlt := stateVar_lt_headBase_valid M t s₁ q hs₁
+  have hge := headVar_ge_headBase M t s₂ a
+  omega
+
+theorem stateVar_ne_leftVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ s₂ i : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hs₁ : s₁ ≤ t) :
+    stateVar M t s₁ q ≠ leftVar M x t s₂ i a := by
+  intro h
+  have hlt := stateVar_lt_headBase_valid M t s₁ q hs₁
+  have hbase := headBase_le_leftBase M x t
+  have hge := leftVar_ge_leftBase M x t s₂ i a
+  omega
+
+theorem stateVar_ne_rightVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ s₂ i : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hs₁ : s₁ ≤ t) :
+    stateVar M t s₁ q ≠ rightVar M x t s₂ i a := by
+  intro h
+  have hlt := stateVar_lt_headBase_valid M t s₁ q hs₁
+  have hbl := headBase_le_leftBase M x t
+  have hlr := leftBase_le_rightBase M x t
+  have hge := rightVar_ge_rightBase M x t s₂ i a
+  omega
+
+theorem headVar_ne_leftVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ s₂ i : Nat)
+    (a b : Option Bool)
+    (hs₁ : s₁ ≤ t) :
+    headVar M t s₁ a ≠ leftVar M x t s₂ i b := by
+  intro h
+  have hlt := headVar_lt_leftBase_valid M x t s₁ a hs₁
+  have hge := leftVar_ge_leftBase M x t s₂ i b
+  omega
+
+theorem headVar_ne_rightVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ s₂ i : Nat)
+    (a b : Option Bool)
+    (hs₁ : s₁ ≤ t) :
+    headVar M t s₁ a ≠ rightVar M x t s₂ i b := by
+  intro h
+  have hlt := headVar_lt_leftBase_valid M x t s₁ a hs₁
+  have hlr := leftBase_le_rightBase M x t
+  have hge := rightVar_ge_rightBase M x t s₂ i b
+  omega
+
+theorem leftVar_ne_rightVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i₁ s₂ i₂ : Nat)
+    (a b : Option Bool)
+    (hs₁ : s₁ ≤ t) (hi₁ : i₁ < radius x t) :
+    leftVar M x t s₁ i₁ a ≠ rightVar M x t s₂ i₂ b := by
+  intro h
+  have hlt := leftVar_lt_rightBase_valid M x t s₁ i₁ a hs₁ hi₁
+  have hge := rightVar_ge_rightBase M x t s₂ i₂ b
+  omega
+
+theorem headVar_ne_stateVar_valid
+    (M : PolyDTMCandidate) (t s₁ s₂ : Nat)
+    (a : Option Bool) (q : Fin (M.stateCount + 1))
+    (hs₂ : s₂ ≤ t) :
+    headVar M t s₁ a ≠ stateVar M t s₂ q :=
+  fun h => stateVar_ne_headVar_valid M t s₂ s₁ q a hs₂ h.symm
+
+theorem leftVar_ne_stateVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i s₂ : Nat)
+    (a : Option Bool) (q : Fin (M.stateCount + 1))
+    (hs₂ : s₂ ≤ t) :
+    leftVar M x t s₁ i a ≠ stateVar M t s₂ q :=
+  fun h => stateVar_ne_leftVar_valid M x t s₂ s₁ i q a hs₂ h.symm
+
+theorem rightVar_ne_stateVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i s₂ : Nat)
+    (a : Option Bool) (q : Fin (M.stateCount + 1))
+    (hs₂ : s₂ ≤ t) :
+    rightVar M x t s₁ i a ≠ stateVar M t s₂ q :=
+  fun h => stateVar_ne_rightVar_valid M x t s₂ s₁ i q a hs₂ h.symm
+
+theorem leftVar_ne_headVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i s₂ : Nat)
+    (a b : Option Bool)
+    (hs₂ : s₂ ≤ t) :
+    leftVar M x t s₁ i a ≠ headVar M t s₂ b :=
+  fun h => headVar_ne_leftVar_valid M x t s₂ s₁ i b a hs₂ h.symm
+
+theorem rightVar_ne_headVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i s₂ : Nat)
+    (a b : Option Bool)
+    (hs₂ : s₂ ≤ t) :
+    rightVar M x t s₁ i a ≠ headVar M t s₂ b :=
+  fun h => headVar_ne_rightVar_valid M x t s₂ s₁ i b a hs₂ h.symm
+
+theorem rightVar_ne_leftVar_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i₁ s₂ i₂ : Nat)
+    (a b : Option Bool)
+    (hs₂ : s₂ ≤ t) (hi₂ : i₂ < radius x t) :
+    rightVar M x t s₁ i₁ a ≠ leftVar M x t s₂ i₂ b :=
+  fun h => leftVar_ne_rightVar_valid M x t s₂ i₂ s₁ i₁ b a hs₂ hi₂ h.symm
+
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -1014,6 +1133,12 @@ def TransitionSoundnessGap : Prop :=
 def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
+#print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_headVar_valid
+#print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_leftVar_valid
+#print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_rightVar_valid
+#print axioms MCore.Real.P02BoundedComputationClose.headVar_ne_leftVar_valid
+#print axioms MCore.Real.P02BoundedComputationClose.headVar_ne_rightVar_valid
+#print axioms MCore.Real.P02BoundedComputationClose.leftVar_ne_rightVar_valid
 #print axioms MCore.Real.P02BoundedComputationClose.tableauSlot_injective_valid
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_injective_valid
 #print axioms MCore.Real.P02BoundedComputationClose.headVar_injective_valid
