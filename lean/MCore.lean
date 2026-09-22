@@ -58,3 +58,7 @@ import MCore.Real.P01FullVerifierPhysicalMoves
 import MCore.Real.P01FullVerifierPhysicalShuttles
 import MCore.Real.P01FullVerifierReadWitnessLocal
 import MCore.Real.P01FullVerifierEvalLocal
+
+import MCore.Real.P01FullVerifierPhysicalRefinement
+import MCore.Real.P01FullVerifierPhysicalStackV2
+import MCore.Real.P01PhysicalRealizationAssembly
