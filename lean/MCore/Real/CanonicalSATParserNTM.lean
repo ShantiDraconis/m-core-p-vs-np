@@ -1,4 +1,5 @@
 import MCore.Real.CanonicalSATRecursiveParserSimulation
+import MCore.Real.MachineRunLemmas
 
 namespace MCore
 namespace Real
@@ -37,7 +38,10 @@ theorem parserNTM_stepBranch_eq_parser_step
     parserNTM.stepBranch config
         (parserMachine.transition config.state config.tape.head) =
       parserMachine.step config := by
-  simp [parserNTM, NTM.stepBranch, TM.step]
+  rcases h :
+      parserMachine.transition config.state config.tape.head with
+    ⟨nextState, nextSymbol, direction⟩
+  simp [parserNTM, NTM.stepBranch, TM.step, h]
 
 theorem parserNTM_successors_singleton
     (config : Configuration (Fin 25) (Option Bool)) :
@@ -61,27 +65,56 @@ theorem parserNTM_runBranches_singleton
           simp [NTM.runBranches, parserNTM_terminal_eq_parser_halt,
             hhalt, parserNTM_successors_singleton, TM.run, ih]
       | true =>
-          have hrun :
-              parserMachine.run (fuel + 1) config = config := by
-            simp [TM.run, hhalt]
+          have hrunFuel :
+              parserMachine.run fuel config = config :=
+            MachineRunLemmas.run_halted parserMachine config hhalt fuel
+          have hrunSucc :
+              parserMachine.run (fuel + 1) config = config :=
+            MachineRunLemmas.run_halted parserMachine config hhalt (fuel + 1)
           simp [NTM.runBranches, parserNTM_terminal_eq_parser_halt,
-            hhalt, ih, hrun]
+            hhalt, ih, hrunFuel, hrunSucc]
 
 theorem parserNTM_haltsWithin_iff
     (fuel : Nat)
     (config : Configuration (Fin 25) (Option Bool)) :
     parserNTM.HaltsWithin fuel config ↔
       parserMachine.HaltsWithin fuel config := by
-  simp [NTM.HaltsWithin, TM.HaltsWithin,
-    parserNTM_runBranches_singleton,
-    parserNTM_terminal_eq_parser_halt]
+  unfold NTM.HaltsWithin TM.HaltsWithin
+  rw [parserNTM_runBranches_singleton]
+  constructor
+  · intro h
+    have hterm :=
+      h (parserMachine.run fuel config) (by simp)
+    have hor :
+        (parserNTM.accepting (parserMachine.run fuel config).state ||
+          parserNTM.rejecting (parserMachine.run fuel config).state) = true := by
+      simpa using hterm
+    rw [parserNTM_terminal_eq_parser_halt] at hor
+    exact hor
+  · intro h reached hmem
+    simp only [List.mem_singleton] at hmem
+    subst reached
+    have hor :
+        (parserNTM.accepting (parserMachine.run fuel config).state ||
+          parserNTM.rejecting (parserMachine.run fuel config).state) = true := by
+      rw [parserNTM_terminal_eq_parser_halt]
+      exact h
+    simpa using hor
 
 theorem parserNTM_acceptsWithin_iff
     (fuel : Nat)
     (config : Configuration (Fin 25) (Option Bool)) :
     parserNTM.AcceptsWithin fuel config ↔
       parserAccepting (parserMachine.run fuel config).state = true := by
-  simp [NTM.AcceptsWithin, parserNTM_runBranches_singleton, parserNTM]
+  unfold NTM.AcceptsWithin
+  rw [parserNTM_runBranches_singleton]
+  constructor
+  · rintro ⟨reached, hmem, hacc⟩
+    simp only [List.mem_singleton] at hmem
+    subst reached
+    exact hacc
+  · intro hacc
+    exact ⟨parserMachine.run fuel config, by simp, hacc⟩
 
 /-- A completed Fin-25 parser simulation can be reused directly as the parser
     phase of an integrated canonical NTM. -/
@@ -99,7 +132,7 @@ structure ParserNTMPhaseCertificate where
         ∃ c : CircuitK1.Circuit,
           decodeCircuit bits = some c
 
-def SlotParserMachineSimulationCertificate.toNTMPhase
+def simulationToNTMPhase
     (S : SlotParserMachineSimulationCertificate) :
     ParserNTMPhaseCertificate := by
   refine
@@ -118,12 +151,12 @@ theorem parserSimulationGap_to_ntm_phase
     (h : ParserSimulationGap) :
     Nonempty ParserNTMPhaseCertificate := by
   rcases h with ⟨S⟩
-  exact ⟨S.toNTMPhase⟩
+  exact ⟨simulationToNTMPhase S⟩
 
 #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_runBranches_singleton
 #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_haltsWithin_iff
 #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_acceptsWithin_iff
-#print axioms MCore.Real.CanonicalSATParserNTM.SlotParserMachineSimulationCertificate.toNTMPhase
+#print axioms MCore.Real.CanonicalSATParserNTM.simulationToNTMPhase
 #print axioms MCore.Real.CanonicalSATParserNTM.parserSimulationGap_to_ntm_phase
 
 end CanonicalSATParserNTM
