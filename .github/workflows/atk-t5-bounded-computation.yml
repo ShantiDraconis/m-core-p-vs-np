@@ -31,7 +31,7 @@ jobs:
       - name: Build T5 A1 source
         run: |
           set -euo pipefail
-          lake build MCore.Real.P02BoundedComputationEncoding MCore.Real.P02BoundedComputationLogic
+          lake build MCore.Real.P02BoundedComputationEncoding MCore.Real.P02BoundedComputationLogic MCore.Real.P02BoundedComputationSoundness
 
       - name: Axiom audit
         run: |
@@ -39,6 +39,7 @@ jobs:
           cat >/tmp/T5A1Audit.lean <<'EOF'
           import MCore.Real.P02BoundedComputationEncoding
           import MCore.Real.P02BoundedComputationLogic
+          import MCore.Real.P02BoundedComputationSoundness
           #print axioms MCore.Real.P02BoundedComputationEncoding.cnfCircuit_isCNF
           #print axioms MCore.Real.P02BoundedComputationEncoding.satLanguage_cnfCircuit_iff
           #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecCircuit_isCNF
@@ -50,6 +51,7 @@ jobs:
           #print axioms MCore.Real.P02BoundedComputationLogic.setStateClauses_forces
           #print axioms MCore.Real.P02BoundedComputationLogic.setSymbolClauses_forces
           #print axioms MCore.Real.P02BoundedComputationLogic.copySymbolClauses_forces
+          #print axioms MCore.Real.P02BoundedComputationSoundness.initialCNF_sound
           EOF
           lake env lean /tmp/T5A1Audit.lean 2>&1 | tee /tmp/t5-a1-audit.log
           if grep -q 'sorryAx' /tmp/t5-a1-audit.log; then exit 1; fi
