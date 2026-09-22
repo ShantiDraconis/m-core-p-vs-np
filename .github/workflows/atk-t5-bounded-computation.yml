@@ -5,6 +5,7 @@ on:
     branches:
       - attack/t5-bounded-computation-20260922
       - attack/t5-a1-transition-soundness-20260922
+      - attack/t5-a1-final-correctness-20260922
   workflow_dispatch:
 
 permissions:
