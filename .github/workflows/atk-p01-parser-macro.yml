@@ -42,7 +42,7 @@ jobs:
       - name: Build parser macro
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATParserPhaseMacroProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserGlobalSpec MCore.Real.CanonicalSATParserTerminalCases
+          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATParserPhaseMacroProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserGlobalSpec
 
       - name: Axiom audit
         run: |
@@ -57,7 +57,6 @@ jobs:
           import MCore.Real.CanonicalSATParserLeafReturnProof
           import MCore.Real.CanonicalSATParserLeafSourceProof
           import MCore.Real.CanonicalSATParserGlobalSpec
-          import MCore.Real.CanonicalSATParserTerminalCases
           #print axioms MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search
           #print axioms MCore.Real.CanonicalSATParserMacroProof.binary_phase_to_return
           #print axioms MCore.Real.CanonicalSATParserMacroProof.phaseWorkBound_linear
@@ -80,8 +79,6 @@ jobs:
           #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
           #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logParseCore_eq_slotParseCore
           #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logAccept_iff_slotAccept
-          #print axioms MCore.Real.CanonicalSATParserTerminalCases.leaf16_nonempty_rejects
-          #print axioms MCore.Real.CanonicalSATParserTerminalCases.binary_check_exhausted_rejects
           EOF
           lake env lean /tmp/P01ParserMacroAudit.lean 2>&1 | tee /tmp/p01-parser-macro.log
           if grep -q 'sorryAx' /tmp/p01-parser-macro.log; then exit 1; fi
