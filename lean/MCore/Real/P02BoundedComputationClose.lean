@@ -372,12 +372,11 @@ theorem left_case_preserves_snapshot
             (copyLeftCell guard M x t s (i + 1) (s + 1) i) = true := by
         apply evalCNF_subset_true sigma _ _ hleftCase
         intro cl hcl
-        unfold leftMoveCaseCNF
-        simp only [List.mem_append]
-        right
-        right
-        left
-        exact List.mem_flatMap.mpr ⟨i, by simpa using his, hcl⟩
+        have hshift :
+            cl ∈ (List.range (radius x t - 1)).flatMap (fun j =>
+              copyLeftCell guard M x t s (j + 1) (s + 1) j) := by
+          exact List.mem_flatMap.mpr ⟨i, by simpa using his, hcl⟩
+        simpa [leftMoveCaseCNF, guard, hshift]
       have hf :=
         copySymbolClauses_forces sigma guard
           (leftVar M x t s (i + 1))
@@ -424,14 +423,11 @@ theorem left_case_preserves_snapshot
             (copyRightCell guard M x t s j (s + 1) (j + 1)) = true := by
         apply evalCNF_subset_true sigma _ _ hleftCase
         intro cl hcl
-        unfold leftMoveCaseCNF
-        simp only [List.mem_append]
-        right
-        right
-        right
-        right
-        right
-        exact List.mem_flatMap.mpr ⟨j, by simpa using hj, hcl⟩
+        have hshift :
+            cl ∈ (List.range (radius x t - 1)).flatMap (fun k =>
+              copyRightCell guard M x t s k (s + 1) (k + 1)) := by
+          exact List.mem_flatMap.mpr ⟨j, by simpa using hj, hcl⟩
+        simpa [leftMoveCaseCNF, guard, hshift]
       have hf :=
         copySymbolClauses_forces sigma guard
           (rightVar M x t s j)
