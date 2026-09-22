@@ -166,8 +166,9 @@ theorem acceptingStateList_false_of_nonaccepting_snapshot
         have hsigma : sigma (stateVar M t t q) = false := by
           rw [hstate q]
           simp [hneq]
-        simp [hq, evalClause, evalLiteral, pos, hsigma, ih]
-      · simp [hq, ih]
+        simp [hq, evalClause, evalLiteral, pos, hsigma]
+        exact ih
+      · simpa [hq] using ih
 
 theorem acceptingStateLits_false_of_nonaccepting_snapshot
     (sigma : Assignment)
