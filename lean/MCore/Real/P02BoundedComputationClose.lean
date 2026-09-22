@@ -361,7 +361,9 @@ theorem left_case_preserves_snapshot
         M.machine.blank a hguard hset
     · have his : i < radius x t - 1 := by
         have hle : i ≤ radius x t - 1 := by
-          simpa [radius] using hi
+          have hle' : i ≤ x.length + t := by
+            exact Nat.le_of_lt_succ (by simpa [radius, Nat.succ_eq_add_one] using hi)
+          simpa [radius] using hle'
         rcases Nat.lt_or_eq_of_le hle with hlt | heq
         · exact hlt
         · exact False.elim (hlast heq)
@@ -370,7 +372,12 @@ theorem left_case_preserves_snapshot
             (copyLeftCell guard M x t s (i + 1) (s + 1) i) = true := by
         apply evalCNF_subset_true sigma _ _ hleftCase
         intro cl hcl
-        simp [leftMoveCaseCNF, guard, his, hcl]
+        unfold leftMoveCaseCNF
+        simp only [List.mem_append]
+        right
+        right
+        left
+        exact List.mem_flatMap.mpr ⟨i, by simpa using his, hcl⟩
       have hf :=
         copySymbolClauses_forces sigma guard
           (leftVar M x t s (i + 1))
@@ -397,8 +404,13 @@ theorem left_case_preserves_snapshot
       have hf :=
         setSymbolClauses_forces sigma guard
           (rightVar M x t (s + 1) 0) write a hguard hset
-      simpa [TM.step, htrans, Tape.write,
-        P02BoundedComputationTape.move_left_right_zero] using hf
+      have hmoveRightZero :
+          (M.machine.step config).tape.right.getD 0 M.machine.blank = write := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_left_right_zero
+            M.machine.blank (config.tape.write write)
+      rw [hmoveRightZero]
+      exact hf
     · obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hz
       have hj : j < radius x t - 1 := by
         have hsucclt : j + 1 < x.length + t + 1 := by
@@ -412,7 +424,14 @@ theorem left_case_preserves_snapshot
             (copyRightCell guard M x t s j (s + 1) (j + 1)) = true := by
         apply evalCNF_subset_true sigma _ _ hleftCase
         intro cl hcl
-        simp [leftMoveCaseCNF, guard, hj, hcl]
+        unfold leftMoveCaseCNF
+        simp only [List.mem_append]
+        right
+        right
+        right
+        right
+        right
+        exact List.mem_flatMap.mpr ⟨j, by simpa using hj, hcl⟩
       have hf :=
         copySymbolClauses_forces sigma guard
           (rightVar M x t s j)
