@@ -831,12 +831,12 @@ theorem parserProofBudget_le_parserTimeBound
   have hu0 := Nat.mul_le_mul_left 16 hs
   have hu :
       16 * (n + 3) ≤ 48 * (n + 1) := by
-    simpa [Nat.mul_assoc] using hu0
-  have hp0 := Nat.mul_le_mul_right (n + 1) hu
-  have hp :
-      16 * (n + 3) * (n + 1) ≤
-        48 * (n + 1) * (n + 1) := by
-    exact hp0
+    calc
+      16 * (n + 3) ≤ 16 * (3 * (n + 1)) := hu0
+      _ = 48 * (n + 1) := by
+        rw [← Nat.mul_assoc]
+  have hp :=
+    Nat.mul_le_mul_right (n + 1) hu
   have hone : 1 ≤ n + 1 := by omega
   have hsq0 := Nat.mul_le_mul_left (n + 1) hone
   have hsq : n + 1 ≤ (n + 1) * (n + 1) := by
@@ -845,22 +845,22 @@ theorem parserProofBudget_le_parserTimeBound
   have hi1 := Nat.mul_le_mul_left 4 hsq
   have hi :
       2 * n + 4 ≤ 4 * ((n + 1) * (n + 1)) :=
-    Nat.le_trans hi0 (by simpa [Nat.mul_assoc] using hi1)
+    Nat.le_trans hi0 hi1
   have hsum :=
     Nat.add_le_add hi hp
   have h52 :
       4 * ((n + 1) * (n + 1)) +
-          48 * (n + 1) * (n + 1) =
+          48 * ((n + 1) * (n + 1)) =
         52 * ((n + 1) * (n + 1)) := by
-    simp [Nat.mul_add, Nat.add_mul, Nat.mul_assoc,
-      Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+    calc
+      4 * ((n + 1) * (n + 1)) +
+          48 * ((n + 1) * (n + 1)) =
+        (4 + 48) * ((n + 1) * (n + 1)) :=
+          (Nat.add_mul 4 48 ((n + 1) * (n + 1))).symm
+      _ = 52 * ((n + 1) * (n + 1)) := by rfl
   have hcoef : 52 ≤ 256 := by omega
-  have hfinal0 :=
+  have hfinal :=
     Nat.mul_le_mul_right ((n + 1) * (n + 1)) hcoef
-  have hfinal :
-      52 * ((n + 1) * (n + 1)) ≤
-        256 * ((n + 1) * (n + 1)) := by
-    exact hfinal0
   unfold parserProofBudget parserTimeBound
   unfold phaseRuntimeBudget phaseRuntimeUnit phaseRuntimeScale
   simp only [initialSlotLog, List.length_cons, List.length_nil]
@@ -872,14 +872,19 @@ theorem parserProofBudget_le_parserTimeBound
         16 * (n + 3) * (n + 1) := by
     congr 2 <;> omega
   rw [hphaseShape]
+  have hsum' :
+      2 * n + 4 + (16 * (n + 3) * (n + 1)) ≤
+        4 * ((n + 1) * (n + 1)) +
+          48 * ((n + 1) * (n + 1)) := by
+    simpa [Nat.mul_assoc] using hsum
   calc
     2 * n + 4 + (16 * (n + 3) * (n + 1))
         ≤ 4 * ((n + 1) * (n + 1)) +
-          48 * (n + 1) * (n + 1) := hsum
+          48 * ((n + 1) * (n + 1)) := hsum'
     _ = 52 * ((n + 1) * (n + 1)) := h52
     _ ≤ 256 * ((n + 1) * (n + 1)) := hfinal
     _ = 256 * (n + 1) ^ 2 := by
-      simp [pow_two, Nat.mul_assoc]
+      simp [Nat.pow_succ, Nat.mul_assoc]
 
 #print axioms MCore.Real.P01GlobalParserBound.phase_correct_at_budget
 #print axioms MCore.Real.P01GlobalParserBound.parserProofBudget_le_parserTimeBound
