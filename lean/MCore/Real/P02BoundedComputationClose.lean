@@ -904,7 +904,28 @@ theorem executionAssignment_initialCNF
       simpa [cfg, initialTMConfig] using hright i hi a
     exact evalCNF_member_true sigma _ clause hc hcell
   unfold initialCNF
-  simp [evalCNF_append_eq, hs, hh, hl, hr, sigma]
+  rw [evalCNF_append_eq, evalCNF_append_eq, evalCNF_append_eq]
+  have hs' :
+      evalCNF (executionAssignment M x t)
+        (setStateClauses [] M t 0 M.machine.initial) = true := by
+    simpa [sigma] using hs
+  have hh' :
+      evalCNF (executionAssignment M x t)
+        (setSymbolClauses [] (headVar M t 0) (inputTape x).head) = true := by
+    simpa [sigma] using hh
+  have hl' :
+      evalCNF (executionAssignment M x t)
+        ((List.range (radius x t)).flatMap fun i =>
+          setLeftCell [] M x t 0 i
+            ((inputTape x).left.getD i M.machine.blank)) = true := by
+    simpa [sigma] using hl
+  have hr' :
+      evalCNF (executionAssignment M x t)
+        ((List.range (radius x t)).flatMap fun i =>
+          setRightCell [] M x t 0 i
+            ((inputTape x).right.getD i M.machine.blank)) = true := by
+    simpa [sigma] using hr
+  simp [hs', hh', hl', hr']
 
 
 theorem evalClause_true_of_member_true
