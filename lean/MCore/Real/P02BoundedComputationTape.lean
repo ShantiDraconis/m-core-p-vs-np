@@ -5,6 +5,7 @@ namespace Real
 namespace P02BoundedComputationTape
 
 open CanonicalFinalProof
+open P02BoundedComputationEncoding
 
 theorem move_left_head_getD
     {Symbol : Type}
@@ -108,7 +109,7 @@ theorem move_left_length_le
     (Tape.move blank .left tape).right.length ≤ tape.right.length + 1 := by
   cases tape with
   | mk left head right =>
-      cases left <;> simp [Tape.move]
+      cases left <;> simp [Tape.move] <;> omega
 
 theorem move_right_length_le
     {Symbol : Type}
@@ -118,7 +119,7 @@ theorem move_right_length_le
     (Tape.move blank .right tape).right.length ≤ tape.right.length + 1 := by
   cases tape with
   | mk left head right =>
-      cases right <;> simp [Tape.move]
+      cases right <;> simp [Tape.move] <;> omega
 
 theorem move_length_le
     {Symbol : Type}
@@ -179,7 +180,17 @@ theorem canonical_run_left_length_le
     (M.machine.run s (initialTMConfig M.machine x)).tape.left.length ≤ s := by
   have h := (run_tape_length_le M.machine s
     (initialTMConfig M.machine x)).1
-  simpa [initialTMConfig, inputTape] using h
+  have hz : (inputTape x).left.length = 0 := by
+    cases x <;> rfl
+  change
+    (M.machine.run s
+      { state := M.machine.initial, tape := inputTape x }).tape.left.length ≤ s
+  change
+    (M.machine.run s
+      { state := M.machine.initial, tape := inputTape x }).tape.left.length ≤
+        (inputTape x).left.length + s at h
+  rw [hz] at h
+  simpa using h
 
 theorem canonical_run_right_length_le
     (M : PolyDTMCandidate)
@@ -190,7 +201,14 @@ theorem canonical_run_right_length_le
   have h := (run_tape_length_le M.machine s
     (initialTMConfig M.machine x)).2
   have hinput := inputTape_right_length_le x
-  dsimp [initialTMConfig] at h
+  change
+    (M.machine.run s
+      { state := M.machine.initial, tape := inputTape x }).tape.right.length ≤
+        x.length + s
+  change
+    (M.machine.run s
+      { state := M.machine.initial, tape := inputTape x }).tape.right.length ≤
+        (inputTape x).right.length + s at h
   omega
 
 theorem canonical_run_left_radius_blank
