@@ -1,0 +1,33 @@
+name: ATK t5-f terminal semantic frontier
+on:
+  push:
+    branches:
+      - atk/t5-f-total-semantic-counterexample-20260922
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Build certified semantic frontier
+        run: |
+          lake build MCore.Real.P02UniversalFailureAlgebra
+          lake build MCore.Real.P02CandidateCodingFrontier
+          lake build MCore.Real.P02DiagonalCompilerFrontierV2
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          for file in             lean/MCore/Real/P02UniversalFailureAlgebra.lean             lean/MCore/Real/P02CandidateCodingFrontier.lean             lean/MCore/Real/P02DiagonalCompilerFrontierV2.lean
+          do
+            if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then exit 1; fi
+            if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then exit 1; fi
+          done
+      - name: Fail closed terminal
+        run: echo "T5_F_TERMINAL=TOTAL_SEMANTIC_COUNTEREXAMPLE_OPEN_MATH"
