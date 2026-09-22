@@ -17,7 +17,7 @@ structure ParserWitnessAvailable where
   guesser : NTM (Fin 2) (Option Bool)
   guesser_is_canonical : guesser = witnessGuessMachine
 
-theorem available_of_parser_simulation
+def available_of_parser_simulation
     (S : SlotParserMachineSimulationCertificate) :
     ParserWitnessAvailable :=
   { parserPhase := simulationToNTMPhase S
