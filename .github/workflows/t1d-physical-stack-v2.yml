@@ -1,0 +1,39 @@
+name: T1D Physical Stack V2
+
+on:
+  push:
+    branches:
+      - attack/t1d-physical-stack-v2-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stack-v2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01FullVerifierPhysicalStackV2.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+      - name: Build
+        run: lake build MCore.Real.P01FullVerifierPhysicalStackV2
+      - name: Axiom audit
+        run: |
+          cat >/tmp/T1DStackV2Audit.lean <<'EOF'
+          import MCore.Real.P01FullVerifierPhysicalStackV2
+          #print axioms MCore.Real.P01FullVerifierPhysicalStackV2.sourceEnd_to_stackV2
+          #print axioms MCore.Real.P01FullVerifierPhysicalStackV2.physicalStackRepV2_push
+          #print axioms MCore.Real.P01FullVerifierPhysicalStackV2.physicalStackRepV2_pop
+          EOF
+          lake env lean /tmp/T1DStackV2Audit.lean 2>&1 | tee /tmp/audit.log
+          ! grep -q 'sorryAx' /tmp/audit.log
