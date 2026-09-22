@@ -38,9 +38,9 @@ theorem paddedWitnessBits_agree_below
       assignmentOfWitness φ w i := by
   have hiBits : i < (witnessBits w).length := by
     simpa [witnessBits_length] using hi
-  unfold assignmentOfBits paddedWitnessBits
-  rw [List.getElem?_append_left hiBits]
-  simp [assignmentOfWitness, witnessBits, hi, hiBits]
+  simp [assignmentOfBits, paddedWitnessBits, List.getD,
+    List.getElem?_append_left, assignmentOfWitness,
+    witnessBits, hi, hiBits]
 
 /-- Padding the guessed witness out to source length is semantically inert. -/
 theorem paddedWitnessBits_preserves_eval
