@@ -40,3 +40,5 @@ import MCore.Real.P02LiteralFixedPointCountermodel
 import MCore.Real.P02G21G22Attack
 import MCore.Real.P02UniversalWitnessChain
 import MCore.Real.FinalExternalCertificate
+
+import MCore.Real.P02FinalAttack
