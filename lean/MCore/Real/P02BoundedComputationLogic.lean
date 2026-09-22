@@ -5,6 +5,7 @@ namespace Real
 namespace P02BoundedComputationLogic
 
 open CircuitK1
+open CanonicalFinalProof
 open P02BoundedComputationEncoding
 
 theorem evalCNF_member_true
