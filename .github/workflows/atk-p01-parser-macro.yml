@@ -40,7 +40,7 @@ jobs:
       - name: Build parser macro
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof
+          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof
 
       - name: Axiom audit
         run: |
@@ -49,6 +49,7 @@ jobs:
           import MCore.Real.CanonicalSATParserMacroProof
           import MCore.Real.CanonicalSATParserReturnProof
           import MCore.Real.CanonicalSATParserLeafPopProof
+          import MCore.Real.CanonicalSATParserLeafSourceProof
           import MCore.Real.CanonicalSATParserLeafReturnProof
           import MCore.Real.CanonicalSATParserLeafSourceProof
           #print axioms MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search
@@ -58,6 +59,10 @@ jobs:
           #print axioms MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_to_delimiter
           #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leafPop_run_false_prefix
           #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf16_exhausted_accepts
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_exhausted_rejects
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_step_to_rewind
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
           #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leaf14_active_run
           #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
           EOF
@@ -68,4 +73,5 @@ jobs:
         run: |
           set -euo pipefail
           echo "P01_PARSER_MACRO=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_LEAF_SOURCE_RETURN=GREEN_IF_JOB_SUCCEEDS"
           echo "P01_HARD=OPEN"
