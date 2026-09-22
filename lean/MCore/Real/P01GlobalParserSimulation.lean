@@ -1534,9 +1534,10 @@ theorem phaseSemantics_active_by_length
           · have hpush : activeSlots (pushSlot log) ≠ 0 := by
               rw [activeSlots_pushSlot]
               omega
-            have hprefix :=
-              and_head_roundtrip_any_nonempty
-                pad hpad rest hrest log
+            rcases
+                and_head_roundtrip_any_nonempty
+                  pad hpad rest hrest log with
+              ⟨prefixSteps, hprefix⟩
             have hchild :
                 PhaseSemantics (rest.length + 1)
                   (pad + (Head.encode .and).length)
@@ -1551,12 +1552,10 @@ theorem phaseSemantics_active_by_length
                 pad (pad + (Head.encode .and).length)
                 log (pushSlot log)
                 bits rest
-                (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                    Head.and rest.length log.length +
-                  (log.length + 2 + (rest.length - 1 + 1)))
+                prefixSteps
                 (by
                   rw [hshape]
-                  simpa using hprefix)
+                  exact hprefix)
                 habstract hchild
       | or =>
           have habstract :=
@@ -1608,9 +1607,10 @@ theorem phaseSemantics_active_by_length
           · have hpush : activeSlots (pushSlot log) ≠ 0 := by
               rw [activeSlots_pushSlot]
               omega
-            have hprefix :=
-              or_head_roundtrip_any_nonempty
-                pad hpad rest hrest log
+            rcases
+                or_head_roundtrip_any_nonempty
+                  pad hpad rest hrest log with
+              ⟨prefixSteps, hprefix⟩
             have hchild :
                 PhaseSemantics (rest.length + 1)
                   (pad + (Head.encode .or).length)
@@ -1625,12 +1625,10 @@ theorem phaseSemantics_active_by_length
                 pad (pad + (Head.encode .or).length)
                 log (pushSlot log)
                 bits rest
-                (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                    Head.or rest.length log.length +
-                  (log.length + 2 + (rest.length - 1 + 1)))
+                prefixSteps
                 (by
                   rw [hshape]
-                  simpa using hprefix)
+                  exact hprefix)
                 habstract hchild
 
 /-- The active-phase theorem specialized without an external length parameter. -/
