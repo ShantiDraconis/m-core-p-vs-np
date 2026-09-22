@@ -184,6 +184,7 @@ theorem binary_delimiter_enters_rewind
   simp only [binaryCheckConfig_state, parser_not_halted_21,
     Bool.false_eq_true, if_false]
   rw [binaryCheck_step_to_rewind pad hpad last rest log]
+  rfl
 
 /-- Complete the binary post-head macro: append one active slot, return across
 the work log, cross the source delimiter, rewind the unread source, and re-enter
