@@ -138,7 +138,46 @@ theorem snapshot_head_true
   simpa using hmatch.2.1 config.tape.head
 
 
+theorem finalAcceptanceCNF_sound_of_snapshot
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hmatch : SnapshotMatches sigma M x t t config)
+    (hfinal : evalCNF sigma (finalAcceptanceCNF M t) = true) :
+    M.accepting config.state = true := by
+  classical
+  have hclause :
+      evalClause sigma (acceptingStateLits M t) = true := by
+    simpa [finalAcceptanceCNF, evalCNF] using hfinal
+  by_contra hacc
+  have haccFalse : M.accepting config.state = false := by
+    cases h : M.accepting config.state <;> simp_all
+  have hstate := hmatch.1
+  unfold acceptingStateLits at hclause
+  simp only [List.filterMap_ofFn] at hclause
+  simp [evalClause, evalLiteral, pos, hstate, haccFalse] at hclause
+
+theorem boundedExecTableau_final_acceptance_sound
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hmatch : SnapshotMatches sigma M x t t config)
+    (htableau : evalCNF sigma (boundedExecTableauCNF M x t) = true) :
+    M.accepting config.state = true := by
+  apply finalAcceptanceCNF_sound_of_snapshot sigma M x t config hmatch
+  apply evalCNF_subset_true sigma _ (boundedExecTableauCNF M x t) htableau
+  intro c hc
+  simp [boundedExecTableauCNF, finalAcceptanceCNF] at hc ⊢
+  exact hc
+
+
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_transition_guard_false
+#print axioms MCore.Real.P02BoundedComputationSoundness.finalAcceptanceCNF_sound_of_snapshot
+#print axioms MCore.Real.P02BoundedComputationSoundness.boundedExecTableau_final_acceptance_sound
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_state_true
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_head_true
 #print axioms MCore.Real.P02BoundedComputationSoundness.boundedExecTableau_initial_sound
