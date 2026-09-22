@@ -31,3 +31,12 @@ import MCore.C12.Families
 import MCore.Frontier.K3Gaps
 import MCore.AttackDAG.K3AlgebraAttacks
 import MCore.Audit
+
+import MCore.Real.P02CanonicalNormalization
+import MCore.Real.P02DiagonalFrontier
+import MCore.Real.P02ClockedDiagonalCompiler
+import MCore.Real.P02LiteralFixedPointFirewall
+import MCore.Real.P02LiteralFixedPointCountermodel
+import MCore.Real.P02G21G22Attack
+import MCore.Real.P02UniversalWitnessChain
+import MCore.Real.FinalExternalCertificate
