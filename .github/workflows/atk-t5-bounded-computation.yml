@@ -31,7 +31,7 @@ jobs:
       - name: Build T5 A1 source
         run: |
           set -euo pipefail
-          lake build MCore.Real.P02BoundedComputationEncoding MCore.Real.P02BoundedComputationLogic MCore.Real.P02BoundedComputationSoundness
+          lake build MCore.Real.P02BoundedComputationEncoding MCore.Real.P02BoundedComputationLogic MCore.Real.P02BoundedComputationTape MCore.Real.P02BoundedComputationSoundness
 
       - name: Axiom audit
         run: |
@@ -39,6 +39,7 @@ jobs:
           cat >/tmp/T5A1Audit.lean <<'EOF'
           import MCore.Real.P02BoundedComputationEncoding
           import MCore.Real.P02BoundedComputationLogic
+          import MCore.Real.P02BoundedComputationTape
           import MCore.Real.P02BoundedComputationSoundness
           #print axioms MCore.Real.P02BoundedComputationEncoding.cnfCircuit_isCNF
           #print axioms MCore.Real.P02BoundedComputationEncoding.satLanguage_cnfCircuit_iff
@@ -51,6 +52,9 @@ jobs:
           #print axioms MCore.Real.P02BoundedComputationLogic.setStateClauses_forces
           #print axioms MCore.Real.P02BoundedComputationLogic.setSymbolClauses_forces
           #print axioms MCore.Real.P02BoundedComputationLogic.copySymbolClauses_forces
+          #print axioms MCore.Real.P02BoundedComputationTape.run_tape_length_le
+          #print axioms MCore.Real.P02BoundedComputationTape.canonical_run_left_radius_blank
+          #print axioms MCore.Real.P02BoundedComputationTape.canonical_run_right_radius_blank
           #print axioms MCore.Real.P02BoundedComputationSoundness.initialCNF_sound
           EOF
           lake env lean /tmp/T5A1Audit.lean 2>&1 | tee /tmp/t5-a1-audit.log
