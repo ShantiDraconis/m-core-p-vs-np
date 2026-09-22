@@ -108,7 +108,6 @@ theorem execMoves_moveLeftSeq_head_getD {Symbol : Type}
               (Tape.move blank .left t) := by
         simp [moveLeftSeq, List.replicate_succ, execMoves]
       rw [hstep, ih, move_left_left_getD]
-      congr 1
       omega
 
 /-- Every shuttle used by the verifier is built solely from legal TM moves. -/
