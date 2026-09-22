@@ -10,8 +10,6 @@ open FailProofAllGaps
 open OfficialModel
 open EncodingNormalization
 
-/-- Polynomial overhead attached to one simulation direction.  The cost is
-indexed by source input length and must itself be polynomial. -/
 structure PolySimulationOverhead where
   cost : TimeBound
   cost_poly : PolynomialTimeBound cost
@@ -19,9 +17,9 @@ structure PolySimulationOverhead where
 /-- Complete two-way bridge data required for G3.
 
 All four realization translations are explicit, and every direction carries
-its own polynomial simulation-overhead certificate.  Encoding normalization is
-also part of the payload, so representation conversion cannot be hidden outside
-the runtime model. -/
+its own polynomial simulation-overhead certificate. Encoding normalization is
+part of the payload, so representation conversion cannot be hidden outside the
+runtime model. -/
 structure G3ModelBridge (M : OfficialComplexityModel) where
   normalization : EncodingNormalization
 
@@ -74,9 +72,19 @@ def G3ModelBridge.toExternalModelMatch
   { p_match := G.p_match
     np_match := G.np_match }
 
-/-- Exact G3 open payload for one selected external model. -/
-def G3Gap (M : OfficialComplexityModel) : Prop :=
-  Nonempty (G3ModelBridge M)
+/-- G3 cannot be promoted from a bare bridge alone: the external model and its
+source record must be selected explicitly. -/
+structure G3ExternalContract where
+  selection : OfficialModelSelection
+  bridge : G3ModelBridge selection.model
+
+def G3ExternalContract.toExternalModelMatch
+    (G : G3ExternalContract) :
+    ExternalModelMatch G.selection.model.P G.selection.model.NP :=
+  G.bridge.toExternalModelMatch
+
+def G3Gap : Prop :=
+  Nonempty G3ExternalContract
 
 #print axioms MCore.Real.G3ModelMatch.G3ModelBridge.p_match
 #print axioms MCore.Real.G3ModelMatch.G3ModelBridge.np_match
