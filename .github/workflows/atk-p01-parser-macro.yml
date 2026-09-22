@@ -33,6 +33,7 @@ jobs:
             lean/MCore/Real/CanonicalSATParserLeafReturnProof.lean
             lean/MCore/Real/CanonicalSATParserLeafSourceProof.lean
             lean/MCore/Real/CanonicalSATParserTerminalBranches.lean
+            lean/MCore/Real/CanonicalSATParserPhaseMacroProof.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
@@ -41,7 +42,7 @@ jobs:
       - name: Build parser macro
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof
+          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATParserPhaseMacroProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof
 
       - name: Axiom audit
         run: |
@@ -52,6 +53,7 @@ jobs:
           import MCore.Real.CanonicalSATParserLeafPopProof
           import MCore.Real.CanonicalSATParserLeafSourceProof
           import MCore.Real.CanonicalSATParserTerminalBranches
+          import MCore.Real.CanonicalSATParserPhaseMacroProof
           import MCore.Real.CanonicalSATParserLeafReturnProof
           import MCore.Real.CanonicalSATParserLeafSourceProof
           #print axioms MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search
@@ -67,6 +69,11 @@ jobs:
           #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
           #print axioms MCore.Real.CanonicalSATParserTerminalBranches.leaf16_residual_rejects
           #print axioms MCore.Real.CanonicalSATParserTerminalBranches.binary_exhausted_rejects
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.input_head_to_pop_search
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.const_head_to_pop_search
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.not_head_roundtrip
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.and_head_to_return
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.or_head_to_return
           #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leaf14_active_run
           #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
           EOF
@@ -79,4 +86,5 @@ jobs:
           echo "P01_PARSER_MACRO=GREEN_IF_JOB_SUCCEEDS"
           echo "P01_LEAF_SOURCE_RETURN=GREEN_IF_JOB_SUCCEEDS"
           echo "P01_TERMINAL_BRANCHES=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_PHASE_MACROS=GREEN_IF_JOB_SUCCEEDS"
           echo "P01_HARD=OPEN"
