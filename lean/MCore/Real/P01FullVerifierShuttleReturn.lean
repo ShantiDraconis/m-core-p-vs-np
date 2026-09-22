@@ -18,13 +18,13 @@ theorem execMoves_append {Symbol : Type}
 
 theorem witness_roundTrip_exec
     (witness source : BitString) (i : Nat) :
-    execMoves none
+    execMoves (none : Option Bool)
       (moveToWitnessSeq source i ++ moveToStackSeq source i)
       (sourceEndTape witness source) =
-    execMoves none (moveToStackSeq source i)
-      (execMoves none (moveToWitnessSeq source i)
+    execMoves (none : Option Bool) (moveToStackSeq source i)
+      (execMoves (none : Option Bool) (moveToWitnessSeq source i)
         (sourceEndTape witness source)) := by
-  exact execMoves_append none _ _ _
+  exact execMoves_append (none : Option Bool) _ _ _
 
 #print axioms MCore.Real.P01FullVerifierShuttleReturn.execMoves_append
 #print axioms MCore.Real.P01FullVerifierShuttleReturn.witness_roundTrip_exec
