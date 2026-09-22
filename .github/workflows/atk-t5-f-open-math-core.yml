@@ -25,6 +25,13 @@ jobs:
           lake build MCore.Real.OpenMathCore.Calculus
           lake build MCore.Real.OpenMathCore.Behavior
           lake build MCore.Real.OpenMathCore.T5FBridge
+          lake build MCore.Real.OpenMathCore.Foundation
+          lake build MCore.Real.OpenMathCore.Semantics
+          lake build MCore.Real.OpenMathCore.ReductionBarrier
+          lake build MCore.Real.OpenMathCore.Invariants
+          lake build MCore.Real.OpenMathCore.Asymptotic
+          lake build MCore.Real.OpenMathCore.Functoriality
+          lake build MCore.Real.OpenMathCore.Stability
       - name: Hygiene
         run: |
           set -euo pipefail
