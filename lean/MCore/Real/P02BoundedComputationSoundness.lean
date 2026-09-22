@@ -83,6 +83,29 @@ theorem initialCNF_sound
     exact setSymbolClauses_forces
       sigma [] (rightVar M x t 0 i) target a rfl hcell
 
+theorem snapshot_transition_guard_false
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hmatch : SnapshotMatches sigma M x t s config) :
+    evalClause sigma
+      [neg (stateVar M t s config.state),
+       neg (headVar M t s config.tape.head)] = false := by
+  rcases hmatch with ⟨hstate, hhead, _, _⟩
+  have hs :
+      sigma (stateVar M t s config.state) = true := by
+    simpa using hstate config.state
+  have hh :
+      sigma (headVar M t s config.tape.head) = true := by
+    simpa using hhead config.tape.head
+  simp [evalClause, evalLiteral, neg, hs, hh]
+
+
+#print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_transition_guard_false
+
+
 #print axioms MCore.Real.P02BoundedComputationSoundness.initialCNF_sound
 
 end P02BoundedComputationSoundness
