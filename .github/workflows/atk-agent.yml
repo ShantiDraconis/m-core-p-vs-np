@@ -1,0 +1,133 @@
+name: ATK Agent Mission
+
+on:
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: "Agent id (00-09)"
+        required: true
+        default: "01"
+        type: choice
+        options: ["00","01","02","03","04","05","06","07","08","09"]
+  push:
+    branches:
+      - "agent-start/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atk-agent-${{ github.ref_name }}-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  mission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Resolve agent and mission
+        id: mission
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            agent="${{ inputs.agent }}"
+          else
+            ref="${GITHUB_REF_NAME}"
+            agent="${ref#agent-start/}"
+            agent="${agent%%-*}"
+          fi
+          case "$agent" in
+            00) f="agents/00-orchestrator.md" ;;
+            01) f="agents/01-t1-physical-verifier.md" ;;
+            02) f="agents/02-t1-machine-construction.md" ;;
+            03) f="agents/03-t5-a1-bounded-execution.md" ;;
+            04) f="agents/04-t5-a2-semantic-self-embedding.md" ;;
+            05) f="agents/05-t5-a3-size-time-closure.md" ;;
+            06) f="agents/06-self-code-universal-witness.md" ;;
+            07) f="agents/07-g21-p02-target.md" ;;
+            08) f="agents/08-final-external-integrator.md" ;;
+            09) f="agents/09-freeze-certify-audit.md" ;;
+            *) echo "invalid agent: $agent"; exit 2 ;;
+          esac
+          echo "agent=$agent" >> "$GITHUB_OUTPUT"
+          echo "file=$f" >> "$GITHUB_OUTPUT"
+
+      - name: Require OpenAI API key
+        shell: bash
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          test -n "$OPENAI_API_KEY" || {
+            echo "Repository secret OPENAI_API_KEY is required."
+            exit 3
+          }
+
+      - name: Install Codex CLI
+        run: npm install -g @openai/codex
+
+      - name: Create isolated worker branch
+        id: branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          b="agent/${{ steps.mission.outputs.agent }}-${GITHUB_RUN_ID}"
+          git checkout -b "$b"
+          echo "name=$b" >> "$GITHUB_OUTPUT"
+
+      - name: Execute mission
+        shell: bash
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          GLOBAL="$(cat agents/README.md)"
+          MISSION="$(cat '${{ steps.mission.outputs.file }}')"
+          codex exec --full-auto "$GLOBAL
+
+          $MISSION
+
+          Work directly in this repository. Inspect the actual current code before changing it.
+          Run the relevant builds/tests after edits.
+          Do not merely describe a patch: implement it.
+          At the end, write .atk-agent-status.txt containing:
+          STATE=<GREEN|OPEN_MATH|RED_BLOCKED|IN_PROCESS>
+          TARGET=<short target>
+          EVIDENCE=<tests/builds actually run>
+          "
+
+      - name: Commit and push worker result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          a="${{ steps.mission.outputs.agent }}"
+          git config user.name "atk-agent-$a"
+          git config user.email "atk-agent-$a@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No repository changes to commit."
+          else
+            git commit -m "atk(agent-$a): mission run ${GITHUB_RUN_ID}"
+            git push origin "HEAD:${{ steps.branch.outputs.name }}"
+          fi
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          if [ -f .atk-agent-status.txt ]; then
+            cat .atk-agent-status.txt >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "STATE=RED_BLOCKED" >> "$GITHUB_STEP_SUMMARY"
+            echo "TARGET=agent-${{ steps.mission.outputs.agent }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "EVIDENCE=no status artifact produced" >> "$GITHUB_STEP_SUMMARY"
+          fi
