@@ -27,7 +27,7 @@ theorem input_head_to_pop_search
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        headWorkFuel (.input i) tail.length log.length
+        (headWorkFuel (Head.input i) tail.length log.length)
         (phaseConfig 4 pad (Head.encode (.input i) ++ tail) log) =
       afterEndMoveLeft 13
         (none :: tail.reverse.map some ++
@@ -48,7 +48,7 @@ theorem const_head_to_pop_search
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        headWorkFuel (.const b) tail.length log.length
+        (headWorkFuel (Head.const b) tail.length log.length)
         (phaseConfig 4 pad (Head.encode (.const b) ++ tail) log) =
       afterEndMoveLeft 13
         (none :: tail.reverse.map some ++
@@ -81,7 +81,7 @@ theorem and_head_to_return
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        headWorkFuel .and tail.length log.length
+        (headWorkFuel Head.and tail.length log.length)
         (phaseConfig 4 pad (Head.encode .and ++ tail) log) =
       afterEndMoveLeft 20
         (none :: tail.reverse.map some ++
@@ -101,7 +101,7 @@ theorem or_head_to_return
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        headWorkFuel .or tail.length log.length
+        (headWorkFuel Head.or tail.length log.length)
         (phaseConfig 4 pad (Head.encode .or ++ tail) log) =
       afterEndMoveLeft 20
         (none :: tail.reverse.map some ++
