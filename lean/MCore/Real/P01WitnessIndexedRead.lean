@@ -23,9 +23,11 @@ stored as an unbounded control-state parameter.
 /-- Command layout for an isolated indexed-read macro: witness on the left of
 one blank delimiter, unary index at the head. -/
 def witnessReadTape (witness : BitString) (i : Nat) : Tape (Option Bool) :=
-  { left := none :: witness.map some
-    head := (encodeNat i).head?.join
-    right := (encodeNat i).tail.map some }
+  match encodeNat i with
+  | [] =>
+      { left := none :: witness.map some, head := none, right := [] }
+  | b :: bs =>
+      { left := none :: witness.map some, head := some b, right := bs.map some }
 
 /-- Exact operational payload needed for indexed witness access. -/
 structure WitnessIndexedReadCertificate where
