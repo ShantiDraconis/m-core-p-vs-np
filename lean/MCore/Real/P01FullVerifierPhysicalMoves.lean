@@ -87,6 +87,28 @@ theorem execMoves_moveRightSeq {Symbol : Type}
   | succ n ih =>
       simp [moveRightSeq, List.replicate_succ, execMoves, repeatMove, ih]
 
+
+/-- After n+1 left moves, the head contains the n-th cell of the original
+left list, defaulting to blank beyond its end. -/
+theorem execMoves_moveLeftSeq_head_getD {Symbol : Type}
+    (blank : Symbol) (n : Nat) (t : Tape Symbol) :
+    (execMoves blank (moveLeftSeq (n + 1)) t).head =
+      t.left.getD n blank := by
+  induction n generalizing t with
+  | zero =>
+      cases t with
+      | mk left head right =>
+          cases left <;>
+            simp [moveLeftSeq, execMoves, Tape.move, List.getD_cons_zero]
+  | succ n ih =>
+      rw [show Nat.succ n + 1 = (n + 1) + 1 by omega]
+      simp only [moveLeftSeq, List.replicate_succ, execMoves]
+      rw [ih]
+      cases t with
+      | mk left head right =>
+          cases left <;>
+            simp [Tape.move, List.getD_cons_succ]
+
 /-- Every shuttle used by the verifier is built solely from legal TM moves. -/
 def LegalMoveSeq (ds : List Direction) : Prop :=
   ∀ d ∈ ds, d = .left ∨ d = .right ∨ d = .stay
@@ -111,6 +133,7 @@ structure ShuttleCertificate
 
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveLeftSeq
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveRightSeq
+#print axioms MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveLeftSeq_head_getD
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.moveLeftSeq_legal
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.moveRightSeq_legal
 
