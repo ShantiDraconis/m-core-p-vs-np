@@ -227,7 +227,6 @@ theorem leftVar_injective_valid
   have hslot :
       s₁ * r + i₁ = s₂ * r + i₂ := by
     unfold leftVar at h
-    simp [r] at h
     omega
   have hsi :=
     tableauSlot_injective_valid r s₁ i₁ s₂ i₂ hr
@@ -254,7 +253,6 @@ theorem rightVar_injective_valid
   have hslot :
       s₁ * r + i₁ = s₂ * r + i₂ := by
     unfold rightVar at h
-    simp [r] at h
     omega
   have hsi :=
     tableauSlot_injective_valid r s₁ i₁ s₂ i₂ hr
