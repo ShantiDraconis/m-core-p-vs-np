@@ -484,6 +484,162 @@ theorem executionAssignment_stateVar
             i M.machine.blank) hs heq
     simp [executionAssignment, hq, hnot]
 
+
+theorem executionAssignment_headVar
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (a : Option Bool) (hs : s ≤ t) :
+    executionAssignment M x t (headVar M t s a) =
+      decide (a =
+        (M.machine.run s (initialTMConfig M.machine x)).tape.head) := by
+  let cfg := M.machine.run s (initialTMConfig M.machine x)
+  by_cases ha : a = cfg.tape.head
+  · subst a
+    simp [executionAssignment, cfg, hs]
+  · have hnot :
+      ¬ (
+        (∃ s' : Nat, s' ≤ t ∧
+          headVar M t s a =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          headVar M t s a =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          headVar M t s a =
+            leftVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank)) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          headVar M t s a =
+            rightVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank))) := by
+      intro h
+      rcases h with hstate | hhead | hleft | hright
+      · rcases hstate with ⟨s', hs', heq⟩
+        exact headVar_ne_stateVar_valid M t s s' a
+          (M.machine.run s' (initialTMConfig M.machine x)).state hs' heq
+      · rcases hhead with ⟨s', hs', heq⟩
+        have hinj := headVar_injective_valid M t s s' a
+          (M.machine.run s' (initialTMConfig M.machine x)).tape.head hs hs' heq
+        exact ha (by
+          change a = cfg.tape.head
+          simpa [cfg, hinj.1] using hinj.2)
+      · rcases hleft with ⟨s', i, hs', hi, heq⟩
+        exact headVar_ne_leftVar_valid M x t s s' i a
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+            i M.machine.blank) hs heq
+      · rcases hright with ⟨s', i, hs', hi, heq⟩
+        exact headVar_ne_rightVar_valid M x t s s' i a
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+            i M.machine.blank) hs heq
+    simp [executionAssignment, ha, hnot]
+
+theorem executionAssignment_leftVar
+    (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool) (hs : s ≤ t) (hi : i < radius x t) :
+    executionAssignment M x t (leftVar M x t s i a) =
+      decide (a =
+        (M.machine.run s (initialTMConfig M.machine x)).tape.left.getD
+          i M.machine.blank) := by
+  let cfg := M.machine.run s (initialTMConfig M.machine x)
+  by_cases ha : a = cfg.tape.left.getD i M.machine.blank
+  · subst a
+    simp [executionAssignment, cfg, hs, hi]
+  · have hnot :
+      ¬ (
+        (∃ s' : Nat, s' ≤ t ∧
+          leftVar M x t s i a =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          leftVar M x t s i a =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          leftVar M x t s i a =
+            leftVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i' M.machine.blank)) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          leftVar M x t s i a =
+            rightVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i' M.machine.blank))) := by
+      intro h
+      rcases h with hstate | hhead | hleft | hright
+      · rcases hstate with ⟨s', hs', heq⟩
+        exact leftVar_ne_stateVar_valid M x t s i s' a
+          (M.machine.run s' (initialTMConfig M.machine x)).state hs' heq
+      · rcases hhead with ⟨s', hs', heq⟩
+        exact leftVar_ne_headVar_valid M x t s i s' a
+          (M.machine.run s' (initialTMConfig M.machine x)).tape.head hs' heq
+      · rcases hleft with ⟨s', i', hs', hi', heq⟩
+        have hinj := leftVar_injective_valid M x t s i s' i' a
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+            i' M.machine.blank) hs hs' hi hi' heq
+        exact ha (by
+          change a = cfg.tape.left.getD i M.machine.blank
+          simpa [cfg, hinj.1, hinj.2.1] using hinj.2.2)
+      · rcases hright with ⟨s', i', hs', hi', heq⟩
+        exact leftVar_ne_rightVar_valid M x t s i s' i' a
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+            i' M.machine.blank) hs hi heq
+    simp [executionAssignment, ha, hnot]
+
+theorem executionAssignment_rightVar
+    (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool) (hs : s ≤ t) (hi : i < radius x t) :
+    executionAssignment M x t (rightVar M x t s i a) =
+      decide (a =
+        (M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
+          i M.machine.blank) := by
+  let cfg := M.machine.run s (initialTMConfig M.machine x)
+  by_cases ha : a = cfg.tape.right.getD i M.machine.blank
+  · subst a
+    simp [executionAssignment, cfg, hs, hi]
+  · have hnot :
+      ¬ (
+        (∃ s' : Nat, s' ≤ t ∧
+          rightVar M x t s i a =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          rightVar M x t s i a =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          rightVar M x t s i a =
+            leftVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i' M.machine.blank)) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          rightVar M x t s i a =
+            rightVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i' M.machine.blank))) := by
+      intro h
+      rcases h with hstate | hhead | hleft | hright
+      · rcases hstate with ⟨s', hs', heq⟩
+        exact rightVar_ne_stateVar_valid M x t s i s' a
+          (M.machine.run s' (initialTMConfig M.machine x)).state hs' heq
+      · rcases hhead with ⟨s', hs', heq⟩
+        exact rightVar_ne_headVar_valid M x t s i s' a
+          (M.machine.run s' (initialTMConfig M.machine x)).tape.head hs' heq
+      · rcases hleft with ⟨s', i', hs', hi', heq⟩
+        exact rightVar_ne_leftVar_valid M x t s i s' i' a
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+            i' M.machine.blank) hs' hi' heq
+      · rcases hright with ⟨s', i', hs', hi', heq⟩
+        have hinj := rightVar_injective_valid M x t s i s' i' a
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+            i' M.machine.blank) hs hs' hi hi' heq
+        exact ha (by
+          change a = cfg.tape.right.getD i M.machine.blank
+          simpa [cfg, hinj.1, hinj.2.1] using hinj.2.2)
+    simp [executionAssignment, ha, hnot]
+
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -1210,6 +1366,9 @@ def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_stateVar
+#print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_headVar
+#print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_leftVar
+#print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_rightVar
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_headVar_valid
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_leftVar_valid
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_rightVar_valid
