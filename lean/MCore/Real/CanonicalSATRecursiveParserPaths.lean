@@ -233,18 +233,28 @@ theorem step_var_false
     simp [parserMachine, sourceConfig, TM.step, Tape.write, Tape.move,
       List.append_assoc]
 
+theorem replicate_none_concat
+    (a b : Nat) :
+    List.replicate a none ++ List.replicate b none =
+      List.replicate (a + b) none := by
+  induction a with
+  | zero =>
+      rfl
+  | succ a ih =>
+      simp only [List.replicate_succ, List.cons_append, Nat.succ_add]
+      exact congrArg (fun xs => none :: xs) ih
+
 theorem replicate_none_succ_append
     (n : Nat)
     (left : List (Option Bool)) :
     List.replicate (n + 1) none ++ none :: left =
       List.replicate (n + 2) none ++ left := by
-  induction n with
-  | zero =>
-      rfl
-  | succ n ih =>
-      simp only [List.replicate_succ]
-      simpa [Nat.add_assoc, List.append_assoc] using
-        congrArg (fun xs => none :: xs) ih
+  have hcat := replicate_none_concat (n + 1) 1
+  simp only [List.replicate_succ, List.replicate_zero,
+    List.append_nil] at hcat
+  rw [← List.append_assoc, hcat]
+  congr 1
+  omega
 
 theorem run_var_payload
     (left : List (Option Bool)) (n : Nat) (tail : BitString)
@@ -292,20 +302,29 @@ theorem consumeHead_run
       (List.replicate h.encode.length none ++ left) tail suffix := by
   cases h with
   | input i =>
-      simp only [Head.encode, continuationState, List.length_append,
-        List.length_cons, List.length_nil, encodeNat_length_local]
-      change
-        parserMachine.run (3 + (i + 1))
-          (sourceConfig 4 left
-            (false :: false :: false :: (encodeNat i ++ tail)) suffix) =
-        sourceConfig 11
-          (List.replicate (3 + (i + 1)) none ++ left) tail suffix
+      have hlen :
+          (Head.input i).encode.length = 3 + (i + 1) := by
+        simp [Head.encode, encodeNat_length_local]
+      have hbits :
+          (Head.input i).encode ++ tail =
+            false :: false :: false :: (encodeNat i ++ tail) := by
+        rfl
+      rw [hlen, hbits]
+      simp only [continuationState]
       rw [MachineRunLemmas.run_add parserMachine 3 (i + 1)]
       rw [run_input_tag]
       rw [run_var_payload]
-      congr 2
-      simp [← List.replicate_add, Nat.add_comm, Nat.add_left_comm,
-        Nat.add_assoc]
+      apply congrArg (fun xs => sourceConfig 11 xs tail suffix)
+      have hcat := replicate_none_concat (i + 1) 3
+      have hthree : List.replicate 3 none = [none, none, none] := rfl
+      rw [hthree] at hcat
+      calc
+        List.replicate (i + 1) none ++ [none, none, none] ++ left
+            = List.replicate ((i + 1) + 3) none ++ left := by
+                rw [← List.append_assoc, hcat]
+        _ = List.replicate (3 + (i + 1)) none ++ left := by
+              congr 2
+              omega
   | const b =>
       cases b <;>
         simp [Head.encode, continuationState, run_const_false_tag,
