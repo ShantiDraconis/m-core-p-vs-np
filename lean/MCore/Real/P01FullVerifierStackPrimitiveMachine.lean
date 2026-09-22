@@ -69,7 +69,7 @@ theorem push_run_one
       pushStep b (physicalStackV2Tape witness source stack padding) := by
   cases b <;>
     simp [stackPrimitiveMachine, pushConfig, pushFalse, pushTrue, haltPush,
-      reject, TM.run, TM.step, pushStep, Tape.write]
+      haltPopFalse, haltPopTrue, reject, TM.run, TM.step, pushStep, Tape.write]
 
 theorem push_run_one_rep
     (witness source : BitString)
@@ -88,8 +88,9 @@ theorem pop_run_two_false
       (popConfig (physicalStackV2Tape witness source (false :: stack) padding))
     final.state = haltPopFalse /\
       PhysicalStackRepV2 final.tape witness source stack := by
-  simp [stackPrimitiveMachine, popConfig, popStart, popRead, haltPopFalse,
-    haltPopTrue, reject, TM.run, TM.step, physicalStackV2Tape, Tape.write,
+  simp [stackPrimitiveMachine, popConfig, pushFalse, pushTrue, popStart, popRead,
+    haltPush, haltPopFalse, haltPopTrue, reject, TM.run, TM.step,
+    physicalStackV2Tape, Tape.write,
     Tape.move, PhysicalStackRepV2, List.map_cons, List.replicate_succ,
     Nat.add_comm]
   exact ⟨padding + 1, by
@@ -102,8 +103,9 @@ theorem pop_run_two_true
       (popConfig (physicalStackV2Tape witness source (true :: stack) padding))
     final.state = haltPopTrue /\
       PhysicalStackRepV2 final.tape witness source stack := by
-  simp [stackPrimitiveMachine, popConfig, popStart, popRead, haltPopFalse,
-    haltPopTrue, reject, TM.run, TM.step, physicalStackV2Tape, Tape.write,
+  simp [stackPrimitiveMachine, popConfig, pushFalse, pushTrue, popStart, popRead,
+    haltPush, haltPopFalse, haltPopTrue, reject, TM.run, TM.step,
+    physicalStackV2Tape, Tape.write,
     Tape.move, PhysicalStackRepV2, List.map_cons, List.replicate_succ,
     Nat.add_comm]
   exact ⟨padding + 1, by
