@@ -364,7 +364,7 @@ theorem and_head_roundtrip_any_nonempty_exact
   have h :=
     CanonicalSATParserBinaryHeadProof.and_head_roundtrip_nonempty
       pad hpad last rest log
-  simpa using h
+  simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using h
 
 theorem or_head_roundtrip_any_nonempty_exact
     (pad : Nat)
@@ -386,7 +386,7 @@ theorem or_head_roundtrip_any_nonempty_exact
   have h :=
     CanonicalSATParserBinaryHeadProof.or_head_roundtrip_nonempty
       pad hpad last rest log
-  simpa using h
+  simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using h
 
 /-- Final-slot leaf with exhausted source reaches the canonical accept state in
 exactly log.length+2 post-head steps. -/
@@ -559,7 +559,7 @@ theorem phase_parseHead_none_reject_bound
               · refine ⟨2, by simp, ?_⟩
                 simp [TM.run, phaseConfig, parserMachine, TM.step,
                   Tape.write, Tape.move]
-              · refine ⟨2, by simp; omega, ?_⟩
+              · refine ⟨2, by simp, ?_⟩
                 simp [TM.run, phaseConfig, parserMachine, TM.step,
                   Tape.write, Tape.move]
 
