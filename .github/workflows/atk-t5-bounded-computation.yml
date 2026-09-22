@@ -31,19 +31,25 @@ jobs:
       - name: Build T5 A1 source
         run: |
           set -euo pipefail
-          lake build MCore.Real.P02BoundedComputationEncoding
+          lake build MCore.Real.P02BoundedComputationEncoding MCore.Real.P02BoundedComputationLogic
 
       - name: Axiom audit
         run: |
           set -euo pipefail
           cat >/tmp/T5A1Audit.lean <<'EOF'
           import MCore.Real.P02BoundedComputationEncoding
+          import MCore.Real.P02BoundedComputationLogic
           #print axioms MCore.Real.P02BoundedComputationEncoding.cnfCircuit_isCNF
           #print axioms MCore.Real.P02BoundedComputationEncoding.satLanguage_cnfCircuit_iff
           #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecCircuit_isCNF
           #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecBits_valid
           #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecBits_sat_iff_circuit_sat
           #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecCorrectness_to_bits
+          #print axioms MCore.Real.P02BoundedComputationLogic.evalCNF_member_true
+          #print axioms MCore.Real.P02BoundedComputationLogic.evalClause_append
+          #print axioms MCore.Real.P02BoundedComputationLogic.setStateClauses_forces
+          #print axioms MCore.Real.P02BoundedComputationLogic.setSymbolClauses_forces
+          #print axioms MCore.Real.P02BoundedComputationLogic.copySymbolClauses_forces
           EOF
           lake env lean /tmp/T5A1Audit.lean 2>&1 | tee /tmp/t5-a1-audit.log
           if grep -q 'sorryAx' /tmp/t5-a1-audit.log; then exit 1; fi
