@@ -81,12 +81,12 @@ theorem afterEndMoveLeft_binary_eq_return
       subst log
       simp [afterEndMoveLeft, binaryReturnConfig, Tape.move]
   | cons b bs =>
-      have hmap :
-          (log.map (fun x => some x)).reverse =
-            (b :: bs).map (fun x => some x) := by
-        simp [List.map_reverse, hlog]
-      simp [afterEndMoveLeft, binaryReturnConfig, Tape.move, hlog, hmap,
-        List.map_append, List.append_assoc]
+      have hrev := congrArg List.reverse hlog
+      have hshape : log = bs.reverse ++ [b] := by
+        simpa using hrev
+      subst log
+      simp [afterEndMoveLeft, binaryReturnConfig, Tape.move,
+        List.map_reverse, List.map_append, List.append_assoc]
 
 /-- Complete the binary work-log return scan up to the source delimiter.
 The right side now contains exactly pushSlot log. -/
