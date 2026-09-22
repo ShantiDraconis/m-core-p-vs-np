@@ -1,0 +1,60 @@
+name: FINAL_PROOF P01 T1A kernel
+
+on:
+  push:
+    branches:
+      - final-proof-p01-construction
+    paths:
+      - 'lean/MCore/Real/P01GlobalParserSimulation.lean'
+      - '.github/workflows/final-proof-p01-t1a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  t1a-kernel:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Source hygiene
+        run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01GlobalParserSimulation.lean
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$f"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"; then exit 1; fi
+
+      - name: Build T1A
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01GlobalParserSimulation
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/T1A.lean <<'EOF'
+          import MCore.Real.P01GlobalParserSimulation
+          #print axioms MCore.Real.P01GlobalParserSimulation.parser_step_respects_right_blank
+          #print axioms MCore.Real.P01GlobalParserSimulation.parser_run_respects_right_blank
+          #print axioms MCore.Real.P01GlobalParserSimulation.parseHead_rest_length_lt
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_active_to_source
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_to_source
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_roundtrip_nonempty_active
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_exhausted_accepts
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_residual_rejects
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_active_exhausted_rejects
+          EOF
+          lake env lean /tmp/T1A.lean 2>&1 | tee /tmp/t1a.log
+          if grep -q 'sorryAx' /tmp/t1a.log; then exit 1; fi
+
+      - name: Boundary
+        run: |
+          echo "T1A_GLOBAL_PARSER_PREFIX=GREEN_IF_JOB_SUCCEEDS"
+          echo "T1A_SLOT_PARSER_MACHINE_SIMULATION=OPEN"
+          echo "P01_CONSTRUCTION_GAP=OPEN"
