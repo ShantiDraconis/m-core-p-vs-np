@@ -1,5 +1,7 @@
 import MCore.Real.P01FinalCertificate
 import MCore.Real.CanonicalSATParserPhaseMacroProof
+import MCore.Real.CanonicalSATParserGlobalSpec
+import MCore.Real.CanonicalSATParserBinaryHeadProof
 import MCore.Real.CanonicalSATParserTerminalBranches
 import MCore.Real.CanonicalSATParserNTM
 import MCore.Real.CanonicalSATWitnessGuessNTM
@@ -15,6 +17,8 @@ open CanonicalSATBoundary
 open CanonicalSATNTMAttack
 open P01FinalCertificate
 open CanonicalSATParserPhaseMacroProof
+open CanonicalSATParserGlobalSpec
+open CanonicalSATParserBinaryHeadProof
 open CanonicalSATParserTerminalBranches
 open CanonicalSATParserNTM
 open CanonicalSATWitnessGuessNTM
