@@ -7,6 +7,7 @@ namespace CanonicalSATParserReturnProof
 
 open CanonicalFinalProof
 open CanonicalSATParserMachine
+open CanonicalSATParserHeadProof
 open CanonicalSATParserWorkScanProof
 open CanonicalSATParserMacroProof
 open CanonicalSATParserRewindProof
@@ -109,6 +110,57 @@ theorem binary_afterEnd_to_delimiter
 #print axioms MCore.Real.CanonicalSATParserReturnProof.afterEndMoveLeft_binary_eq_return
 #print axioms MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_to_delimiter
 
+/-- State-21 configuration immediately after crossing the source/work
+delimiter from the work-log side. -/
+def binaryCheckConfig
+    (last : Bool)
+    (sourceTail right : List (Option Bool)) :
+    Configuration (Fin 25) (Option Bool) :=
+  { state := 21
+    tape :=
+      { left := sourceTail
+        head := some last
+        right := none :: right } }
+
+@[simp] theorem binaryCheckConfig_state
+    (last : Bool)
+    (sourceTail right : List (Option Bool)) :
+    (binaryCheckConfig last sourceTail right).state = (21 : Fin 25) := rfl
+
+@[simp] theorem parser_not_halted_21 :
+    parserMachine.halting (21 : Fin 25) = false := by decide
+
+theorem binaryReturn_step_delimiter_nonempty
+    (last : Bool)
+    (sourceTail right : List (Option Bool)) :
+    parserMachine.step
+        (binaryReturnConfig [] (some last :: sourceTail) right) =
+      binaryCheckConfig last sourceTail right := by
+  simp [binaryReturnConfig, binaryCheckConfig, parserMachine,
+    TM.step, Tape.write, Tape.move]
+
+theorem binaryCheck_step_to_rewind
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (last : Bool)
+    (rest : BitString)
+    (log : SlotLog) :
+    parserMachine.step
+        (binaryCheckConfig last
+          (rest.map some ++ List.replicate pad (none : Option Bool))
+          ((pushSlot log).map some)) =
+      rewindUnreadConfig rest [last] pad (pushSlot log) := by
+  cases rest with
+  | nil =>
+      cases pad with
+      | zero => omega
+      | succ p =>
+          simp [binaryCheckConfig, parserMachine, rewindUnreadConfig,
+            TM.step, Tape.write, Tape.move, List.replicate_succ, pushSlot]
+  | cons b bs =>
+      simp [binaryCheckConfig, parserMachine, rewindUnreadConfig,
+        TM.step, Tape.write, Tape.move, List.append_assoc, pushSlot]
+
 /-- After the old log has been scanned back to its delimiter, two parser steps
 cross that delimiter and enter state 22 with the unread suffix represented by
 the existing rewind invariant. -/
@@ -124,18 +176,14 @@ theorem binary_delimiter_enters_rewind
             List.replicate pad (none : Option Bool))
           ((pushSlot log).map some)) =
       rewindUnreadConfig rest [last] pad (pushSlot log) := by
-  cases rest with
-  | nil =>
-      cases pad with
-      | zero => omega
-      | succ p =>
-          simp [TM.run, binaryReturnConfig, parserMachine,
-            rewindUnreadConfig, Tape.write, Tape.move,
-            List.replicate_succ, pushSlot]
-  | cons b bs =>
-      simp [TM.run, binaryReturnConfig, parserMachine,
-        rewindUnreadConfig, Tape.write, Tape.move,
-        List.append_assoc, pushSlot]
+  rw [TM.run]
+  simp only [binaryReturnConfig_state, parser_not_halted_20,
+    Bool.false_eq_true, if_false]
+  rw [binaryReturn_step_delimiter_nonempty]
+  rw [TM.run]
+  simp only [binaryCheckConfig_state, parser_not_halted_21,
+    Bool.false_eq_true, if_false]
+  rw [binaryCheck_step_to_rewind pad hpad last rest log]
 
 /-- Complete the binary post-head macro: append one active slot, return across
 the work log, cross the source delimiter, rewind the unread source, and re-enter
@@ -161,7 +209,6 @@ theorem binary_afterEnd_roundtrip
   rw [binary_afterEnd_to_delimiter
     (some last :: rest.map some ++
       List.replicate pad (none : Option Bool)) log]
-  rw [show 2 + (rest.length + 1) = 2 + (rest.length + 1) by rfl]
   rw [MachineRunLemmas.run_add]
   rw [binary_delimiter_enters_rewind pad hpad last rest log]
   exact rewindUnread_run rest [last] pad hpad (pushSlot log)
