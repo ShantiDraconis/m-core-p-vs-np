@@ -1218,6 +1218,138 @@ theorem logParseCore_or_step_stable
     (logParseCore_fuel_stable rest (pushSlot log)
       bits.length (rest.length + 1) (by omega) (by omega))
 
+
+
+/-- Generic semantic closure for a leaf after the already-certified head/work
+prefix has reached the physical pop-search configuration.  This packages all
+four leaf continuations without duplicating INPUT/CONST reasoning. -/
+theorem phaseSemantics_leaf_from_pop
+    (parentFuel parentPad leafPad prefixSteps : Nat)
+    (parentLog log' : SlotLog)
+    (parentBits rest : BitString)
+    (hpad : 0 < leafPad)
+    (hpop : popSlot parentLog = some log')
+    (hprefix :
+      parserMachine.run prefixSteps
+          (phaseConfig 4 parentPad parentBits parentLog) =
+        CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+          (none :: rest.reverse.map some ++
+            List.replicate leafPad (none : Option Bool))
+          parentLog none)
+    (habstract :
+      CanonicalSATParserGlobalSpec.logParseCore
+          parentFuel parentLog parentBits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          (rest.length + 1) log' rest)
+    (hchild :
+      activeSlots log' ≠ 0 →
+      rest ≠ [] →
+      PhaseSemantics (rest.length + 1) leafPad log' rest) :
+    PhaseSemantics parentFuel parentPad parentLog parentBits := by
+  by_cases hzero : activeSlots log' = 0
+  · by_cases hrest : rest = []
+    · subst rest
+      rcases
+          leaf_afterEnd_inactive_exhausted_accepts
+            leafPad hpad parentLog log' hpop hzero with
+        ⟨leafSteps, right, hleaf⟩
+      have hrun :
+          parserMachine.run (prefixSteps + leafSteps)
+              (phaseConfig 4 parentPad parentBits parentLog) =
+            CanonicalSATParserLeafSourceProof.leafAcceptConfig
+              leafPad right := by
+        rw [MachineRunLemmas.run_add, hprefix]
+        exact hleaf
+      have hstate :
+          (parserMachine.run (prefixSteps + leafSteps)
+            (phaseConfig 4 parentPad parentBits parentLog)).state =
+            (23 : Fin 25) := by
+        rw [hrun]
+        rfl
+      have hchildTrue :
+          CanonicalSATParserGlobalSpec.logParseCore 1 log' [] = true := by
+        simp [CanonicalSATParserGlobalSpec.logParseCore, hzero]
+      have habstractTrue :
+          CanonicalSATParserGlobalSpec.logParseCore
+              parentFuel parentLog parentBits = true := by
+        exact habstract.trans hchildTrue
+      exact
+        phaseSemantics_of_accept_state
+          parentFuel parentPad parentLog parentBits
+          (prefixSteps + leafSteps) hstate habstractTrue
+    · rcases
+          leaf_afterEnd_inactive_residual_rejects
+            leafPad hpad rest hrest parentLog log' hpop hzero with
+        ⟨leafSteps, cfg, hleaf, hhalt, hreject⟩
+      have hchildFalse :
+          CanonicalSATParserGlobalSpec.logParseCore
+              (rest.length + 1) log' rest = false := by
+        rw [logParseCore_zero_slots
+          (rest.length + 1) (by omega) log' rest hzero]
+        cases rest with
+        | nil => contradiction
+        | cons b bs => rfl
+      have habstractFalse :
+          CanonicalSATParserGlobalSpec.logParseCore
+              parentFuel parentLog parentBits = false := by
+        exact habstract.trans hchildFalse
+      refine ⟨prefixSteps + leafSteps, ?_, ?_⟩
+      · rw [MachineRunLemmas.run_add, hprefix, hleaf]
+        exact hhalt
+      · rw [MachineRunLemmas.run_add, hprefix, hleaf, habstractFalse]
+        simp [hreject]
+  · have hactive : activeSlots log' ≠ 0 := hzero
+    by_cases hrest : rest = []
+    · subst rest
+      rcases
+          leaf_afterEnd_active_exhausted_rejects
+            leafPad hpad parentLog log' hpop hactive with
+        ⟨leafSteps, right, hleaf⟩
+      have hrun :
+          parserMachine.run (prefixSteps + leafSteps)
+              (phaseConfig 4 parentPad parentBits parentLog) =
+            CanonicalSATParserLeafSourceProof.leafRejectConfig
+              leafPad right := by
+        rw [MachineRunLemmas.run_add, hprefix]
+        exact hleaf
+      have hstate :
+          (parserMachine.run (prefixSteps + leafSteps)
+            (phaseConfig 4 parentPad parentBits parentLog)).state =
+            (24 : Fin 25) := by
+        rw [hrun]
+        rfl
+      have hchildFalse :
+          CanonicalSATParserGlobalSpec.logParseCore 1 log' [] = false := by
+        exact logParseCore_active_empty 1 (by omega) log' hactive
+      have habstractFalse :
+          CanonicalSATParserGlobalSpec.logParseCore
+              parentFuel parentLog parentBits = false := by
+        exact habstract.trans hchildFalse
+      exact
+        phaseSemantics_of_reject_state
+          parentFuel parentPad parentLog parentBits
+          (prefixSteps + leafSteps) hstate habstractFalse
+    · rcases
+          leaf_afterEnd_roundtrip_any_nonempty_active
+            leafPad hpad rest hrest parentLog log' hpop hactive with
+        ⟨leafSteps, hleaf⟩
+      have hcombined :
+          ConfigRightBlankEq
+            (parserMachine.run (prefixSteps + leafSteps)
+              (phaseConfig 4 parentPad parentBits parentLog))
+            (phaseConfig 4 leafPad rest log') := by
+        rw [MachineRunLemmas.run_add, hprefix]
+        exact hleaf
+      exact
+        phaseSemantics_compose_rightBlank
+          parentFuel (rest.length + 1)
+          parentPad leafPad
+          parentLog log'
+          parentBits rest
+          (prefixSteps + leafSteps)
+          hcombined habstract
+          (hchild hactive hrest)
+
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_reject_state
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_accept_state
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_parseHead_none
