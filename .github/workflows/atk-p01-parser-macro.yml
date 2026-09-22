@@ -6,6 +6,7 @@ on:
       - attack/p01-hard-realization-20260922
       - attack/p01-binary-head-clean-20260922
       - final-proof-p01-construction
+      - attack/p01-t1a-global-20260922
   pull_request:
     branches:
       - main
