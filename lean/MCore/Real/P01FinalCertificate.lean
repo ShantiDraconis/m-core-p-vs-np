@@ -99,10 +99,8 @@ theorem construction_closes_p01
   exact ⟨C.toRealization⟩
 
 /-
-The final promotion theorem must eventually be proved with no hypotheses:
-
-theorem p01_final_certificate : CanonicalSATMachineClosure := by
-  exact construction_closes_p01 <concrete P01MachineConstruction>
+A future no-hypothesis final promotion theorem must construct a concrete
+P01MachineConstruction and discharge construction_closes_p01.
 
 Until that concrete inhabitant is constructed, P01 HARD remains OPEN.
 -/
