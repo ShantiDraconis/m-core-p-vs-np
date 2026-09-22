@@ -80,7 +80,7 @@ theorem and_head_exhausted_rejects
         ((pushSlot log).map some) := by
   rw [MachineRunLemmas.run_add]
   rw [and_head_to_return]
-  rw [show log.length + 2 = log.length + 2 by rfl]
+  simp only [List.reverse_nil, List.map_nil, List.nil_append]
   rw [MachineRunLemmas.run_add]
   rw [binary_afterEnd_to_delimiter
     (List.replicate (pad + (Head.encode .and).length)
@@ -105,7 +105,7 @@ theorem or_head_exhausted_rejects
         ((pushSlot log).map some) := by
   rw [MachineRunLemmas.run_add]
   rw [or_head_to_return]
-  rw [show log.length + 2 = log.length + 2 by rfl]
+  simp only [List.reverse_nil, List.map_nil, List.nil_append]
   rw [MachineRunLemmas.run_add]
   rw [binary_afterEnd_to_delimiter
     (List.replicate (pad + (Head.encode .or).length)
