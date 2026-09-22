@@ -1,4 +1,3 @@
-import MCore.Real.P02DiagonalFrontier
 import MCore.Real.CanonicalCircuitBits
 
 namespace MCore
@@ -9,7 +8,6 @@ open CircuitK1
 open CanonicalFinalProof
 open CanonicalSATBoundary
 open CanonicalCircuitBits
-open P02DiagonalFrontier
 
 /-!
 T5.A1 bounded-computation encoding.
@@ -418,9 +416,9 @@ def boundedExecBits
 
 theorem boundedExecBits_valid
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
-    CanonicalSATValid (boundedExecBits M x t) := by
-  refine ⟨boundedExecCircuit M x t, ?_⟩
-  exact decodeCircuit_encode _
+    ∃ phi : Circuit,
+      decodeCircuit (boundedExecBits M x t) = some phi := by
+  exact ⟨boundedExecCircuit M x t, decodeCircuit_encode _⟩
 
 def AcceptsAtFuel
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) : Prop :=
