@@ -153,9 +153,10 @@ straight to `halt`. -/
 theorem scanner_only_not_decoder_evaluator :
     ¬ (∃ h : DecoderEvaluatorLocalCertificate,
         h.machine = physicalControlMachine) := by
-  rintro ⟨h, rfl⟩
+  rintro ⟨h, heq⟩
   have hnt := h.decode_not_terminal none
-  simp [physicalControlMachine, decodeInstr, halt] at hnt
+  rw [heq] at hnt
+  simp [physicalControlMachine, decodeInstr, halt, scanEncode] at hnt
 
 #print axioms MCore.Real.P01FullVerifierPhysicalControl.physical_scan_run
 #print axioms MCore.Real.P01FullVerifierPhysicalControl.physical_scan_from_prepared
