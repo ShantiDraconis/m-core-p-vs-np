@@ -638,6 +638,124 @@ theorem leaf_afterEnd_active_exhausted_rejects
       pad hpad right
   simpa [TM.run] using hstep
 
+
+/-- A failed unary natural-number decode means that the payload contains only
+true bits and never reaches its required false terminator. -/
+theorem decodeNat_none_eq_replicate_true
+    (bits : BitString)
+    (h : CanonicalCircuitBits.decodeNat bits = none) :
+    bits = List.replicate bits.length true := by
+  induction bits with
+  | nil =>
+      rfl
+  | cons b bs ih =>
+      cases b with
+      | false =>
+          simp [CanonicalCircuitBits.decodeNat] at h
+      | true =>
+          cases htail : CanonicalCircuitBits.decodeNat bs with
+          | none =>
+              have hrec := ih htail
+              rw [hrec]
+              simp [List.replicate_succ]
+          | some p =>
+              simp [CanonicalCircuitBits.decodeNat, htail] at h
+
+/-- State 10 rejects a unary INPUT payload that consists only of true bits and
+therefore never supplies the mandatory false terminator. -/
+theorem q10_true_payload_rejects
+    (pad n : Nat)
+    (log : SlotLog) :
+    parserMachine.run (n + 1)
+        (phaseConfig 10 pad (List.replicate n true) log) =
+      phaseConfig 24 (pad + n) [] log := by
+  induction n generalizing pad with
+  | zero =>
+      simp [TM.run, phaseConfig, parserMachine]
+  | succ n ih =>
+      rw [show Nat.succ n + 1 = (n + 1) + 1 by omega]
+      simp only [List.replicate_succ]
+      rw [TM.run, phaseConfig_state,
+        CanonicalSATParserHeadProof.not_halted_10]
+      have hstep :
+          parserMachine.step
+              (phaseConfig 10 pad
+                (true :: List.replicate n true) log) =
+            phaseConfig 10 (pad + 1)
+              (List.replicate n true) log := by
+        exact CanonicalSATParserHeadProof.step_erase_right
+          10 10 pad true (List.replicate n true) log rfl
+      rw [hstep]
+      rw [ih (pad + 1)]
+      congr 2 <;> omega
+
+/-- If the abstract head parser fails while an active parser phase is at TAG_0,
+the concrete parser deterministically reaches its rejecting state. -/
+theorem phase_parseHead_none_rejects
+    (pad : Nat)
+    (bits : BitString)
+    (log : SlotLog)
+    (hnone : parseHead bits = none) :
+    ∃ steps : Nat,
+      parserMachine.halting
+          (parserMachine.run steps
+            (phaseConfig 4 pad bits log)).state = true ∧
+      parserAccepting
+          (parserMachine.run steps
+            (phaseConfig 4 pad bits log)).state = false := by
+  cases bits with
+  | nil =>
+      refine ⟨1, ?_, ?_⟩ <;>
+        simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+  | cons b1 r1 =>
+      cases r1 with
+      | nil =>
+          cases b1 <;>
+            refine ⟨2, ?_, ?_⟩ <;>
+              simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+      | cons b2 r2 =>
+          cases r2 with
+          | nil =>
+              cases b1 <;> cases b2
+              · refine ⟨3, ?_, ?_⟩ <;>
+                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+              · refine ⟨3, ?_, ?_⟩ <;>
+                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+              · refine ⟨3, ?_, ?_⟩ <;>
+                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+              · refine ⟨2, ?_, ?_⟩ <;>
+                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+          | cons b3 rest =>
+              cases b1 <;> cases b2 <;> cases b3
+              · have hdec :
+                    CanonicalCircuitBits.decodeNat rest = none := by
+                  simpa [parseHead] using hnone
+                have hrep :=
+                  decodeNat_none_eq_replicate_true rest hdec
+                rw [hrep]
+                refine ⟨3 + (rest.length + 1), ?_, ?_⟩
+                · rw [MachineRunLemmas.run_add]
+                  rw [CanonicalSATParserHeadProof.tag_input_run]
+                  rw [q10_true_payload_rejects (pad + 3) rest.length log]
+                  simp [phaseConfig, parserMachine]
+                · rw [MachineRunLemmas.run_add]
+                  rw [CanonicalSATParserHeadProof.tag_input_run]
+                  rw [q10_true_payload_rejects (pad + 3) rest.length log]
+                  simp [phaseConfig, parserAccepting]
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · refine ⟨2, ?_, ?_⟩ <;>
+                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+              · refine ⟨2, ?_, ?_⟩ <;>
+                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+
+#print axioms MCore.Real.P01GlobalParserSimulation.decodeNat_none_eq_replicate_true
+#print axioms MCore.Real.P01GlobalParserSimulation.q10_true_payload_rejects
+#print axioms MCore.Real.P01GlobalParserSimulation.phase_parseHead_none_rejects
+
 #print axioms MCore.Real.P01GlobalParserSimulation.nonempty_eq_reverse_append_last
 #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_exhausted_accepts
 #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_residual_rejects
