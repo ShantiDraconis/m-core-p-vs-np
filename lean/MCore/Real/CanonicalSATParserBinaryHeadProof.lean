@@ -8,6 +8,8 @@ namespace CanonicalSATParserBinaryHeadProof
 open CanonicalFinalProof
 open CanonicalSATSlotParserSpec
 open CanonicalSATParserMachine
+open CanonicalSATParserHeadProof
+open CanonicalSATParserLeafSourceProof
 open CanonicalSATParserPhaseMacroProof
 open CanonicalSATParserReturnProof
 open CanonicalSATParserTerminalBranches
