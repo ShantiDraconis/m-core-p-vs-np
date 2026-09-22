@@ -14,7 +14,7 @@ open CanonicalCircuitBitsInverse
 /-- Exact fail-closed boundary for the still-missing physical reverse decoder.
 No inhabitant is asserted here. -/
 structure ReverseDecoderCertificate where
-  scanReverse : BitString -> List EvalInstr
+  scanReverse : CanonicalFinalProof.BitString -> List EvalInstr
   correct :
     forall phi : Circuit,
       scanReverse (encodeCircuit phi) = evalProgram phi
