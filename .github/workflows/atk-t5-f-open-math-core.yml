@@ -32,6 +32,7 @@ jobs:
           lake build MCore.Real.OpenMathCore.Asymptotic
           lake build MCore.Real.OpenMathCore.Functoriality
           lake build MCore.Real.OpenMathCore.Stability
+          lake build MCore.Real.OpenMathUniversalSeparationLaw
       - name: Hygiene
         run: |
           set -euo pipefail
