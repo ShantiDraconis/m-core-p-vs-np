@@ -408,6 +408,82 @@ theorem rightVar_ne_leftVar_valid
     rightVar M x t s₁ i₁ a ≠ leftVar M x t s₂ i₂ b :=
   fun h => leftVar_ne_rightVar_valid M x t s₂ i₂ s₁ i₁ b a hs₂ hi₂ h.symm
 
+
+/-- Canonical satisfying assignment induced directly by the genuine bounded
+execution.  A variable is true exactly when it names the actually realized
+state/head/tape symbol at some valid tableau coordinate. -/
+def executionAssignment
+    (M : PolyDTMCandidate) (x : BitString) (t : Nat) : Assignment :=
+  fun n =>
+    decide (
+      (∃ s : Nat, s ≤ t ∧
+        n = stateVar M t s
+          (M.machine.run s (initialTMConfig M.machine x)).state) ∨
+      (∃ s : Nat, s ≤ t ∧
+        n = headVar M t s
+          (M.machine.run s (initialTMConfig M.machine x)).tape.head) ∨
+      (∃ s i : Nat, s ≤ t ∧ i < radius x t ∧
+        n = leftVar M x t s i
+          ((M.machine.run s (initialTMConfig M.machine x)).tape.left.getD
+            i M.machine.blank)) ∨
+      (∃ s i : Nat, s ≤ t ∧ i < radius x t ∧
+        n = rightVar M x t s i
+          ((M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
+            i M.machine.blank)))
+
+theorem executionAssignment_stateVar
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1))
+    (hs : s ≤ t) :
+    executionAssignment M x t (stateVar M t s q) =
+      decide (q =
+        (M.machine.run s (initialTMConfig M.machine x)).state) := by
+  let cfg :=
+    M.machine.run s (initialTMConfig M.machine x)
+  by_cases hq : q = cfg.state
+  · subst q
+    simp [executionAssignment, cfg, hs]
+  · have hnot :
+      ¬ (
+        (∃ s' : Nat, s' ≤ t ∧
+          stateVar M t s q =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          stateVar M t s q =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          stateVar M t s q =
+            leftVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank)) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          stateVar M t s q =
+            rightVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank))) := by
+      intro h
+      rcases h with hstate | hhead | hleft | hright
+      · rcases hstate with ⟨s', hs', heq⟩
+        have hinj := stateVar_injective_valid M t s s' q
+          (M.machine.run s' (initialTMConfig M.machine x)).state hs hs' heq
+        exact hq (by
+          change q = cfg.state
+          simpa [cfg, hinj.1] using hinj.2)
+      · rcases hhead with ⟨s', hs', heq⟩
+        exact stateVar_ne_headVar_valid M t s s' q
+          (M.machine.run s' (initialTMConfig M.machine x)).tape.head hs heq
+      · rcases hleft with ⟨s', i, hs', hi, heq⟩
+        exact stateVar_ne_leftVar_valid M x t s s' i q
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+            i M.machine.blank) hs heq
+      · rcases hright with ⟨s', i, hs', hi, heq⟩
+        exact stateVar_ne_rightVar_valid M x t s s' i q
+          ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+            i M.machine.blank) hs heq
+    simp [executionAssignment, hq, hnot]
+
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -1133,6 +1209,7 @@ def TransitionSoundnessGap : Prop :=
 def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
+#print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_stateVar
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_headVar_valid
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_leftVar_valid
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_ne_rightVar_valid
