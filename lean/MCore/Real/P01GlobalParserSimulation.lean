@@ -868,6 +868,123 @@ theorem leaf_afterEnd_roundtrip_any_nonempty_active
   refine ⟨steps, ?_⟩
   simpa [List.map_append, List.append_assoc] using hsim
 
+
+/-- Semantic simulation predicate for one abstract parser phase.  Runtime
+bounding is intentionally separated from semantic correctness so the global
+induction cannot hide a complexity assumption. -/
+def PhaseSemantics
+    (fuel : Nat)
+    (pad : Nat)
+    (log : SlotLog)
+    (bits : BitString) : Prop :=
+  ∃ steps : Nat,
+    parserMachine.halting
+        (parserMachine.run steps
+          (phaseConfig 4 pad bits log)).state = true ∧
+    (parserAccepting
+        (parserMachine.run steps
+          (phaseConfig 4 pad bits log)).state = true ↔
+      CanonicalSATParserGlobalSpec.logParseCore fuel log bits = true)
+
+/-- Compose an exact concrete phase prefix with a recursively certified phase.
+-/
+theorem phaseSemantics_compose_exact
+    (parentFuel childFuel : Nat)
+    (parentPad childPad : Nat)
+    (parentLog childLog : SlotLog)
+    (parentBits childBits : BitString)
+    (prefix : Nat)
+    (hprefix :
+      parserMachine.run prefix
+          (phaseConfig 4 parentPad parentBits parentLog) =
+        phaseConfig 4 childPad childBits childLog)
+    (habstract :
+      CanonicalSATParserGlobalSpec.logParseCore
+          parentFuel parentLog parentBits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          childFuel childLog childBits)
+    (hchild :
+      PhaseSemantics childFuel childPad childLog childBits) :
+    PhaseSemantics parentFuel parentPad parentLog parentBits := by
+  rcases hchild with ⟨steps, hhalt, hcorrect⟩
+  refine ⟨prefix + steps, ?_, ?_⟩
+  · rw [MachineRunLemmas.run_add, hprefix]
+    exact hhalt
+  · rw [MachineRunLemmas.run_add, hprefix, habstract]
+    exact hcorrect
+
+/-- Same composition when the concrete prefix reaches a tape-equivalent phase
+modulo finitely many explicit far-right blanks.  State equality is enough for
+halting and acceptance, while the parser-step bisimulation carries it through
+the recursive suffix. -/
+theorem phaseSemantics_compose_rightBlank
+    (parentFuel childFuel : Nat)
+    (parentPad childPad : Nat)
+    (parentLog childLog : SlotLog)
+    (parentBits childBits : BitString)
+    (prefix : Nat)
+    (hprefix :
+      ConfigRightBlankEq
+        (parserMachine.run prefix
+          (phaseConfig 4 parentPad parentBits parentLog))
+        (phaseConfig 4 childPad childBits childLog))
+    (habstract :
+      CanonicalSATParserGlobalSpec.logParseCore
+          parentFuel parentLog parentBits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          childFuel childLog childBits)
+    (hchild :
+      PhaseSemantics childFuel childPad childLog childBits) :
+    PhaseSemantics parentFuel parentPad parentLog parentBits := by
+  rcases hchild with ⟨steps, hhalt, hcorrect⟩
+  have hrun :=
+    parser_run_respects_right_blank steps hprefix
+  have hstate :
+      (parserMachine.run steps
+        (parserMachine.run prefix
+          (phaseConfig 4 parentPad parentBits parentLog))).state =
+      (parserMachine.run steps
+        (phaseConfig 4 childPad childBits childLog)).state :=
+    hrun.1
+  refine ⟨prefix + steps, ?_, ?_⟩
+  · rw [MachineRunLemmas.run_add]
+    rw [hstate]
+    exact hhalt
+  · rw [MachineRunLemmas.run_add]
+    rw [hstate, habstract]
+    exact hcorrect
+
+theorem logParseCore_zero_slots
+    (fuel : Nat)
+    (hfuel : 0 < fuel)
+    (log : SlotLog)
+    (bits : BitString)
+    (hzero : activeSlots log = 0) :
+    CanonicalSATParserGlobalSpec.logParseCore fuel log bits =
+      bits.isEmpty := by
+  cases fuel with
+  | zero =>
+      omega
+  | succ fuel =>
+      simp [CanonicalSATParserGlobalSpec.logParseCore, hzero]
+
+theorem logParseCore_active_empty
+    (fuel : Nat)
+    (hfuel : 0 < fuel)
+    (log : SlotLog)
+    (hactive : activeSlots log ≠ 0) :
+    CanonicalSATParserGlobalSpec.logParseCore fuel log [] = false := by
+  cases fuel with
+  | zero =>
+      omega
+  | succ fuel =>
+      simp [CanonicalSATParserGlobalSpec.logParseCore, hactive, parseHead]
+
+#print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_compose_exact
+#print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_compose_rightBlank
+#print axioms MCore.Real.P01GlobalParserSimulation.logParseCore_zero_slots
+#print axioms MCore.Real.P01GlobalParserSimulation.logParseCore_active_empty
+
 #print axioms MCore.Real.P01GlobalParserSimulation.and_head_roundtrip_any_nonempty
 #print axioms MCore.Real.P01GlobalParserSimulation.or_head_roundtrip_any_nonempty
 #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_roundtrip_any_nonempty_active
