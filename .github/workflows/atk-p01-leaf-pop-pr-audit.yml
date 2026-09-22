@@ -1,0 +1,59 @@
+name: ATK P01 leaf-pop PR audit
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'lean/MCore/Real/CanonicalSATParserLeafPopProof.lean'
+      - 'lean/MCore/Real/CanonicalSATParserReturnProof.lean'
+      - 'lean/MCore/Real/CanonicalSATParserMacroProof.lean'
+      - '.github/workflows/atk-p01-leaf-pop-pr-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  p01-leaf-pop-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/CanonicalSATParserLeafPopProof.lean
+            lean/MCore/Real/CanonicalSATParserReturnProof.lean
+            lean/MCore/Real/CanonicalSATParserMacroProof.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalSATParserMacroProof
+          lake build MCore.Real.CanonicalSATParserReturnProof
+          lake build MCore.Real.CanonicalSATParserLeafPopProof
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01LeafPopAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATParserLeafPopProof
+          #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leafPop_run_false_prefix
+          #print axioms MCore.Real.CanonicalSATParserLeafPopProof.afterEndMoveLeft_leaf_eq_popScan
+          #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+          EOF
+          lake env lean /tmp/P01LeafPopAudit.lean 2>&1 | tee /tmp/p01-leaf-pop.log
+          if grep -q 'sorryAx' /tmp/p01-leaf-pop.log; then exit 1; fi
+
+      - name: Boundary
+        run: |
+          echo "P01_LEAF_POP=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_ENDPOINT=OPEN"
