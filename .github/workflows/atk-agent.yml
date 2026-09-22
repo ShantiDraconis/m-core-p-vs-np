@@ -8,23 +8,16 @@ on:
         required: true
         default: "01"
         type: choice
-        options:
-          - "00"
-          - "01"
-          - "02"
-          - "03"
-          - "04"
-          - "05"
-          - "06"
-          - "07"
-          - "08"
-          - "09"
+        options: ["00","01","02","03","04","05","06","07","08","09"]
+  push:
+    branches:
+      - "agent-start/**"
 
 permissions:
   contents: write
 
 concurrency:
-  group: atk-agent-${{ inputs.agent }}-${{ github.run_id }}
+  group: atk-agent-${{ github.ref_name }}-${{ github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -40,12 +33,19 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Resolve mission
+      - name: Resolve agent and mission
         id: mission
         shell: bash
         run: |
           set -euo pipefail
-          case "${{ inputs.agent }}" in
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            agent="${{ inputs.agent }}"
+          else
+            ref="${GITHUB_REF_NAME}"
+            agent="${ref#agent-start/}"
+            agent="${agent%%-*}"
+          fi
+          case "$agent" in
             00) f="agents/00-orchestrator.md" ;;
             01) f="agents/01-t1-physical-verifier.md" ;;
             02) f="agents/02-t1-machine-construction.md" ;;
@@ -56,8 +56,9 @@ jobs:
             07) f="agents/07-g21-p02-target.md" ;;
             08) f="agents/08-final-external-integrator.md" ;;
             09) f="agents/09-freeze-certify-audit.md" ;;
-            *) echo "invalid agent"; exit 2 ;;
+            *) echo "invalid agent: $agent"; exit 2 ;;
           esac
+          echo "agent=$agent" >> "$GITHUB_OUTPUT"
           echo "file=$f" >> "$GITHUB_OUTPUT"
 
       - name: Require OpenAI API key
@@ -78,7 +79,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          b="agent/${{ inputs.agent }}-${GITHUB_RUN_ID}"
+          b="agent/${{ steps.mission.outputs.agent }}-${GITHUB_RUN_ID}"
           git checkout -b "$b"
           echo "name=$b" >> "$GITHUB_OUTPUT"
 
@@ -97,7 +98,7 @@ jobs:
           Work directly in this repository. Inspect the actual current code before changing it.
           Run the relevant builds/tests after edits.
           Do not merely describe a patch: implement it.
-          At the end, write a concise machine-readable status to .atk-agent-status.txt with:
+          At the end, write .atk-agent-status.txt containing:
           STATE=<GREEN|OPEN_MATH|RED_BLOCKED|IN_PROCESS>
           TARGET=<short target>
           EVIDENCE=<tests/builds actually run>
@@ -108,13 +109,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "atk-agent-${{ inputs.agent }}"
-          git config user.email "atk-agent-${{ inputs.agent }}@users.noreply.github.com"
+          a="${{ steps.mission.outputs.agent }}"
+          git config user.name "atk-agent-$a"
+          git config user.email "atk-agent-$a@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
             echo "No repository changes to commit."
           else
-            git commit -m "atk(agent-${{ inputs.agent }}): mission run ${GITHUB_RUN_ID}"
+            git commit -m "atk(agent-$a): mission run ${GITHUB_RUN_ID}"
             git push origin "HEAD:${{ steps.branch.outputs.name }}"
           fi
 
@@ -126,6 +128,6 @@ jobs:
             cat .atk-agent-status.txt >> "$GITHUB_STEP_SUMMARY"
           else
             echo "STATE=RED_BLOCKED" >> "$GITHUB_STEP_SUMMARY"
-            echo "TARGET=agent-${{ inputs.agent }}" >> "$GITHUB_STEP_SUMMARY"
+            echo "TARGET=agent-${{ steps.mission.outputs.agent }}" >> "$GITHUB_STEP_SUMMARY"
             echo "EVIDENCE=no status artifact produced" >> "$GITHUB_STEP_SUMMARY"
           fi
