@@ -176,7 +176,7 @@ theorem leaf_pop_decomposed
   rw [hrs]
   exact leafPop_run_false_prefix suffix.length pre.reverse leftBase [none]
 
-/-- ATK audit checkpoint: leaf-pop remains a prefix proof; P01 endpoint is not promoted here. -/
+-- ATK audit checkpoint: leaf-pop remains a prefix proof; P01 endpoint is not promoted here.
 #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leafPop_run_false_prefix
 #print axioms MCore.Real.CanonicalSATParserLeafPopProof.afterEndMoveLeft_leaf_eq_popScan
 #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leaf_pop_decomposed
