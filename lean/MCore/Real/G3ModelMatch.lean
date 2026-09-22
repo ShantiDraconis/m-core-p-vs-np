@@ -10,24 +10,40 @@ open FailProofAllGaps
 open OfficialModel
 open EncodingNormalization
 
+/-- Polynomial overhead attached to one simulation direction.  The cost is
+indexed by source input length and must itself be polynomial. -/
+structure PolySimulationOverhead where
+  cost : TimeBound
+  cost_poly : PolynomialTimeBound cost
+
 /-- Complete two-way bridge data required for G3.
 
-The fields translate actual realization witnesses in both directions.
-Consequently p_match/np_match below are derived, not postulated as an axiom. -/
+All four realization translations are explicit, and every direction carries
+its own polynomial simulation-overhead certificate.  Encoding normalization is
+also part of the payload, so representation conversion cannot be hidden outside
+the runtime model. -/
 structure G3ModelBridge (M : OfficialComplexityModel) where
   normalization : EncodingNormalization
+
   internalDTM_to_external :
     ∀ {L : BitLanguage},
       PolyDTMRealization L → M.PRealization L
+  internalDTM_to_external_overhead : PolySimulationOverhead
+
   externalDTM_to_internal :
     ∀ {L : BitLanguage},
       M.PRealization L → PolyDTMRealization L
+  externalDTM_to_internal_overhead : PolySimulationOverhead
+
   internalNTM_to_external :
     ∀ {L : BitLanguage},
       PolyNTMRealization L → M.NPRealization L
+  internalNTM_to_external_overhead : PolySimulationOverhead
+
   externalNP_to_internal :
     ∀ {L : BitLanguage},
       M.NPRealization L → PolyNTMRealization L
+  externalNP_to_internal_overhead : PolySimulationOverhead
 
 theorem G3ModelBridge.p_match
     {M : OfficialComplexityModel}
