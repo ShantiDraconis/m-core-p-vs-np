@@ -925,7 +925,8 @@ theorem executionAssignment_initialCNF
           setRightCell [] M x t 0 i
             ((inputTape x).right.getD i M.machine.blank)) = true := by
     simpa [sigma] using hr
-  simp [hs', hh', hl', hr']
+  simp only [Bool.and_eq_true, hs', hh', true_and]
+  exact ⟨hl', hr'⟩
 
 
 theorem evalClause_true_of_member_true
