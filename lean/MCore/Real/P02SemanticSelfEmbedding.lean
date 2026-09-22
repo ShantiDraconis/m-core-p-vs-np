@@ -55,7 +55,22 @@ theorem semantic_self_embedding_closes_p02
   exact diagonal_fixed_point_gap_closes_p02
     ((semantic_self_embedding_gap_iff_diagonal_fixed_point_gap).mp h)
 
+theorem semantic_self_embedding_implies_sat_not_in_p
+    (h : SemanticSelfEmbeddingGap) :
+    ¬ InP (SATBits circuitBitEncoding) := by
+  exact (p02_target_iff_sat_not_in_p.mp
+    (semantic_self_embedding_closes_p02 h))
+
+theorem sat_in_p_refutes_semantic_self_embedding
+    (hP : InP (SATBits circuitBitEncoding)) :
+    ¬ SemanticSelfEmbeddingGap := by
+  intro h
+  exact (semantic_self_embedding_implies_sat_not_in_p h) hP
+
+
 #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_gap_iff_diagonal_fixed_point_gap
+#print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_implies_sat_not_in_p
+#print axioms MCore.Real.P02SemanticSelfEmbedding.sat_in_p_refutes_semantic_self_embedding
 #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_closes_p02
 
 end P02SemanticSelfEmbedding
