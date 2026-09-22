@@ -69,6 +69,16 @@ theorem leafPop_step_true
   simp [leafPopScanConfig, leafAfterPopConfig, parserMachine,
     TM.step, Tape.write]
 
+theorem replicate_option_false_rotate
+    (k : Nat)
+    (right : List (Option Bool)) :
+    List.replicate k (some false) ++ some false :: right =
+      some false :: (List.replicate k (some false) ++ right) := by
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+      simp [List.replicate_succ, ih]
+
 /-- State 13 scans an arbitrary run of false tombstones and consumes the next
 active true slot in exactly k+1 steps. -/
 theorem leafPop_run_false_prefix
@@ -99,14 +109,7 @@ theorem leafPop_run_false_prefix
         Bool.false_eq_true, if_false]
       rw [leafPop_step_false _ _ _ (by simp)]
       rw [ih (some false :: right)]
-      have hrep :
-          List.replicate k (some false) ++ some false :: right =
-            some false :: (List.replicate k (some false) ++ right) := by
-        induction k with
-        | zero => rfl
-        | succ j hj =>
-            simp [List.replicate_succ, hj]
-      rw [hrep]
+      rw [replicate_option_false_rotate k right]
       rfl
 
 theorem all_false_eq_replicate
@@ -143,10 +146,12 @@ theorem afterEndMoveLeft_leaf_eq_popScan
         List.map_reverse, List.map_append, List.reverse_append,
         List.append_assoc]
   | cons b bs =>
+      have hmap :=
+        congrArg (List.map (fun x => some x)) hrev
       have hmaprev :
           (suffix.map (fun x => some x)).reverse =
             (b :: bs).map (fun x => some x) := by
-        rw [List.map_reverse, hrev]
+        simpa using hmap
       simp [afterEndMoveLeft, leafPopScanConfig, Tape.move,
         List.map_reverse, List.map_append, List.reverse_append,
         List.append_assoc, hrev, hmaprev]
