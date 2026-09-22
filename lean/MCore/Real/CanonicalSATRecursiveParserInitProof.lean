@@ -10,6 +10,10 @@ open CanonicalFinalProof
 open CanonicalSATParserMachine
 open CanonicalSATSlotLog
 
+theorem nat_pow_two_init_local (x : Nat) : x ^ 2 = x * x := by
+  change x * (x * 1) = x * x
+  simp
+
 def forwardConfig
     (left : List (Option Bool))
     (bits : BitString) :
@@ -200,7 +204,7 @@ theorem parser_initialization_within_global_bound
       _ ≤ (n + 1) * (n + 1) :=
         Nat.mul_le_mul_right (n + 1) hpos
       _ = (n + 1) ^ 2 := by
-        simp [pow_succ, Nat.mul_assoc]
+        rw [nat_pow_two_init_local]
   have h3 : 256 * (n + 1) ≤ 256 * (n + 1) ^ 2 :=
     Nat.mul_le_mul_left 256 hsq
   exact Nat.le_trans h1 (Nat.le_trans h2 h3)
