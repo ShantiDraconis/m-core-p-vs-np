@@ -16,14 +16,14 @@ open MachineRunLemmas
 explicit trailing blank cells. Internal blanks are preserved. -/
 def RightBlankEq
     (a b : List (Option Bool)) : Prop :=
-  ∃ core ka kb : Nat,
+  ∃ (core : List (Option Bool)) (ka kb : Nat),
     a = core ++ List.replicate ka none ∧
     b = core ++ List.replicate kb none
 
 theorem rightBlankEq_refl
     (a : List (Option Bool)) :
     RightBlankEq a a := by
-  refine ⟨a, 0, 0, ?_, ?_⟩ <;> simp
+  exact ⟨a, 0, 0, by simp, by simp⟩
 
 theorem rightBlankEq_symm
     {a b : List (Option Bool)}
@@ -41,6 +41,13 @@ theorem rightBlankEq_cons
   refine ⟨x :: core, ka, kb, ?_, ?_⟩
   · simp [ha]
   · simp [hb]
+
+theorem rightBlankEq_replicate
+    (ka kb : Nat) :
+    RightBlankEq
+      (List.replicate ka (none : Option Bool))
+      (List.replicate kb (none : Option Bool)) := by
+  exact ⟨[], ka, kb, by simp, by simp⟩
 
 /-- Configurations represent the same parser tape modulo explicit blank
 padding at the far right. -/
@@ -64,77 +71,96 @@ theorem configRightBlankEq_symm
   exact ⟨hs.symm, hl.symm, hh.symm, rightBlankEq_symm hr⟩
 
 private theorem move_stay_preserves
+    (q : Fin 25)
     {left : List (Option Bool)}
     {head : Option Bool}
     {ra rb : List (Option Bool)}
     (h : RightBlankEq ra rb) :
     ConfigRightBlankEq
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none .stay
           { left := left, head := head, right := ra } }
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none .stay
           { left := left, head := head, right := rb } } := by
-  simp [ConfigRightBlankEq, Tape.move, h, rightBlankEq_refl]
+  exact ⟨rfl, rfl, rfl, h⟩
 
 private theorem move_left_preserves
+    (q : Fin 25)
     {left : List (Option Bool)}
     {head : Option Bool}
     {ra rb : List (Option Bool)}
     (h : RightBlankEq ra rb) :
     ConfigRightBlankEq
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none .left
           { left := left, head := head, right := ra } }
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none .left
           { left := left, head := head, right := rb } } := by
   cases left with
   | nil =>
-      simp [ConfigRightBlankEq, Tape.move, rightBlankEq_cons head h]
+      exact ⟨rfl, rfl, rfl, rightBlankEq_cons head h⟩
   | cons x xs =>
-      simp [ConfigRightBlankEq, Tape.move, rightBlankEq_cons head h]
+      exact ⟨rfl, rfl, rfl, rightBlankEq_cons head h⟩
 
 private theorem move_right_preserves
+    (q : Fin 25)
     {left : List (Option Bool)}
     {head : Option Bool}
     {ra rb : List (Option Bool)}
     (h : RightBlankEq ra rb) :
     ConfigRightBlankEq
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none .right
           { left := left, head := head, right := ra } }
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none .right
           { left := left, head := head, right := rb } } := by
   rcases h with ⟨core, ka, kb, ha, hb⟩
-  subst ra
-  subst rb
+  rw [ha, hb]
   cases core with
   | nil =>
-      cases ka <;> cases kb <;>
-        simp [ConfigRightBlankEq, Tape.move, RightBlankEq]
+      simp only [List.nil_append]
+      cases ka with
+      | zero =>
+          cases kb with
+          | zero =>
+              exact ⟨rfl, rfl, rfl, rightBlankEq_refl []⟩
+          | succ kb =>
+              simp only [List.replicate_zero, List.replicate_succ, Tape.move]
+              exact ⟨rfl, rfl, rfl, rightBlankEq_replicate 0 kb⟩
+      | succ ka =>
+          cases kb with
+          | zero =>
+              simp only [List.replicate_zero, List.replicate_succ, Tape.move]
+              exact ⟨rfl, rfl, rfl, rightBlankEq_replicate ka 0⟩
+          | succ kb =>
+              simp only [List.replicate_succ, Tape.move]
+              exact ⟨rfl, rfl, rfl, rightBlankEq_replicate ka kb⟩
   | cons x xs =>
-      simp [ConfigRightBlankEq, Tape.move, RightBlankEq]
+      simp only [List.cons_append, Tape.move]
+      refine ⟨rfl, rfl, rfl, ?_⟩
       exact ⟨xs, ka, kb, rfl, rfl⟩
 
 private theorem move_preserves
+    (q : Fin 25)
     (dir : Direction)
     {left : List (Option Bool)}
     {head : Option Bool}
     {ra rb : List (Option Bool)}
     (h : RightBlankEq ra rb) :
     ConfigRightBlankEq
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none dir
           { left := left, head := head, right := ra } }
-      { state := (0 : Fin 25)
+      { state := q
         tape := Tape.move none dir
           { left := left, head := head, right := rb } } := by
   cases dir with
-  | left => exact move_left_preserves h
-  | stay => exact move_stay_preserves h
-  | right => exact move_right_preserves h
+  | left => exact move_left_preserves q h
+  | stay => exact move_stay_preserves q h
+  | right => exact move_right_preserves q h
 
 /-- The concrete parser transition is insensitive to explicit blank padding
 beyond the represented right-hand tape contents. -/
@@ -144,26 +170,21 @@ theorem parser_step_respects_right_blank
     ConfigRightBlankEq
       (parserMachine.step c)
       (parserMachine.step d) := by
+  rcases c with ⟨cs, ct⟩
+  rcases ct with ⟨cl, ch, cr⟩
+  rcases d with ⟨ds, dt⟩
+  rcases dt with ⟨dl, dh, dr⟩
   rcases h with ⟨hs, hl, hh, hr⟩
-  have ht :
-      parserMachine.transition c.state c.tape.head =
-        parserMachine.transition d.state d.tape.head := by
-    simpa [hs, hh]
+  subst ds
+  subst dl
+  subst dh
   rcases htrans :
-      parserMachine.transition c.state c.tape.head with
+      parserMachine.transition cs ch with
       ⟨nextState, nextSymbol, dir⟩
-  have htrans' :
-      parserMachine.transition d.state d.tape.head =
-        (nextState, nextSymbol, dir) := by
-    rw [← ht]
-    exact htrans
   unfold TM.step
-  rw [htrans, htrans']
-  have hm := move_preserves (dir := dir) (left := c.tape.left)
-    (head := nextSymbol) hr
-  rcases hm with ⟨_, hleft, hhead, hright⟩
-  refine ⟨rfl, ?_, hhead, hright⟩
-  simpa [hl] using hleft
+  rw [htrans]
+  simp only [Tape.write, parserMachine_blank_none]
+  exact move_preserves nextState dir hr
 
 /-- Right-blank equivalence is a bisimulation for every bounded parser run. -/
 theorem parser_run_respects_right_blank
@@ -175,24 +196,26 @@ theorem parser_run_respects_right_blank
       (parserMachine.run fuel d) := by
   induction fuel generalizing c d with
   | zero =>
-      simpa [TM.run] using h
+      exact h
   | succ fuel ih =>
-      rcases h with ⟨hs, hl, hh, hr⟩
+      have hs := h.1
       have hhalt :
           parserMachine.halting c.state =
             parserMachine.halting d.state := by
-        simp [hs]
+        rw [hs]
       by_cases hc : parserMachine.halting c.state = true
       · have hd : parserMachine.halting d.state = true := by
-          simpa [hhalt] using hc
-        simp [TM.run, hc, hd, ConfigRightBlankEq, hs, hl, hh, hr]
+          rw [← hhalt]
+          exact hc
+        simp only [TM.run, hc, hd, if_true]
+        exact h
       · have hcf : parserMachine.halting c.state = false := by
           cases hq : parserMachine.halting c.state <;> simp_all
         have hdf : parserMachine.halting d.state = false := by
           rw [← hhalt]
           exact hcf
         simp only [TM.run, hcf, hdf, Bool.false_eq_true, if_false]
-        exact ih (parser_step_respects_right_blank ⟨hs, hl, hh, hr⟩)
+        exact ih (parser_step_respects_right_blank h)
 
 theorem parser_run_state_eq_of_right_blank
     (fuel : Nat)
@@ -213,19 +236,23 @@ theorem parseHead_rest_length_lt
   cases head with
   | input i =>
       rw [hshape]
-      simp [Head.encode, encodeNat_length]
+      simp [Head.encode]
+      omega
   | const b =>
       rw [hshape]
-      cases b <;> simp [Head.encode]
+      cases b <;> simp [Head.encode] <;> omega
   | not =>
       rw [hshape]
       simp [Head.encode]
+      omega
   | and =>
       rw [hshape]
       simp [Head.encode]
+      omega
   | or =>
       rw [hshape]
       simp [Head.encode]
+      omega
 
 /-- A physical rightmost-slot pop changes only a bit, never the work-log
 length. -/
@@ -260,7 +287,8 @@ theorem popSlot_exists_of_active
   | none =>
       exact False.elim (hactive ((popSlot_none_iff log).mp h))
   | some log' =>
-      exact ⟨log', h⟩
+      refine ⟨log', ?_⟩
+      simpa using h
 
 #print axioms MCore.Real.P01GlobalParserSimulation.parser_step_respects_right_blank
 #print axioms MCore.Real.P01GlobalParserSimulation.parser_run_respects_right_blank
