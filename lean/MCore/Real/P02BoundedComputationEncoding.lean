@@ -129,9 +129,28 @@ theorem symbolCode_lt_three (a : Option Bool) :
 theorem symbolCode_injective :
     ∀ {a b : Option Bool}, symbolCode a = symbolCode b → a = b := by
   intro a b h
-  cases a <;> cases b <;> simp [symbolCode] at h ⊢
-  case some.some a b =>
-    cases a <;> cases b <;> simp [symbolCode] at h ⊢
+  cases a with
+  | none =>
+      cases b with
+      | none => rfl
+      | some b =>
+          cases b <;> simp [symbolCode] at h
+  | some a =>
+      cases a with
+      | false =>
+          cases b with
+          | none => simp [symbolCode] at h
+          | some b =>
+              cases b with
+              | false => rfl
+              | true => simp [symbolCode] at h
+      | true =>
+          cases b with
+          | none => simp [symbolCode] at h
+          | some b =>
+              cases b with
+              | false => simp [symbolCode] at h
+              | true => rfl
 
 def radius (x : BitString) (t : Nat) : Nat :=
   x.length + t + 1
