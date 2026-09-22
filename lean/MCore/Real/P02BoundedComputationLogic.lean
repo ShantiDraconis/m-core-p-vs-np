@@ -26,6 +26,30 @@ theorem evalCNF_member_true
       | tail _ hc' =>
           exact ih hc' hparts.2
 
+theorem evalCNF_true_of_forall_mem
+    (sigma : Assignment) (f : CNF)
+    (h : ∀ c ∈ f, evalClause sigma c = true) :
+    evalCNF sigma f = true := by
+  induction f with
+  | nil =>
+      rfl
+  | cons c cs ih =>
+      apply (bool_and_eq_true_iff _ _).mpr
+      constructor
+      · exact h c (List.Mem.head cs)
+      · apply ih
+        intro d hd
+        exact h d (List.Mem.tail c hd)
+
+theorem evalCNF_subset_true
+    (sigma : Assignment) (small big : CNF)
+    (hbig : evalCNF sigma big = true)
+    (hsub : ∀ c ∈ small, c ∈ big) :
+    evalCNF sigma small = true := by
+  apply evalCNF_true_of_forall_mem
+  intro c hc
+  exact evalCNF_member_true sigma big c (hsub c hc) hbig
+
 theorem evalClause_append
     (sigma : Assignment) (a b : Clause) :
     evalClause sigma (a ++ b) =
