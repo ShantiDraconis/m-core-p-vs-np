@@ -173,7 +173,7 @@ jobs:
           grep -q "MCore.BackwardAudit.typeA_closes_equality" audit/OrientedWitnessBoundary.log
           grep -q "MCore.BackwardAudit.typeB_closes_separation" audit/OrientedWitnessBoundary.log
           grep -q "MCore.BackwardAudit.oriented_material_closes_terminal" audit/OrientedWitnessBoundary.log
-          grep -q "MCore.Real.P02WitnessChain.universalWitnessExists_to_p02TargetCore" audit/P02UniversalWitnessChain.log
+          grep -q "MCore.Real.P02WitnessChain.universalWitnessExists_to_p02Target" audit/P02UniversalWitnessChain.log
 
           python3 - <<'PY'
           from pathlib import Path
