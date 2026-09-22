@@ -31,6 +31,29 @@ structure TableauCompletenessCertificate where
         (boundedExecTableauCNF M x t) = true
 
 
+theorem transitionCaseCNF_mem_transitionsCNF
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool)
+    (c : Clause)
+    (hc : c ∈ transitionCaseCNF M x t s q a) :
+    c ∈ transitionsCNF M x t := by
+  unfold transitionsCNF
+  simp only [List.mem_flatMap, List.mem_range]
+  refine ⟨s, hs, ?_⟩
+  unfold transitionStepCNF
+  simp only [List.mem_flatten, List.mem_ofFn, List.mem_flatMap]
+  refine ⟨alphabet.flatMap fun a' => transitionCaseCNF M x t s q a', ?_, ?_⟩
+  · exact ⟨q, rfl⟩
+  · refine ⟨a, ?_, hc⟩
+    cases a with
+    | none => simp [alphabet]
+    | some b =>
+        cases b <;> simp [alphabet]
+
 theorem active_transition_case_true
     (sigma : Assignment)
     (M : PolyDTMCandidate)
@@ -47,9 +70,9 @@ theorem active_transition_case_true
     htableau
   intro c hc
   simp only [boundedExecTableauCNF, List.mem_append]
-  apply Or.inr
-  apply Or.inl
-  simp [transitionsCNF, transitionStepCNF, hs, hc, alphabet]
+  exact Or.inr (Or.inl
+    (transitionCaseCNF_mem_transitionsCNF M x t s hs
+      config.state config.tape.head c hc))
 
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
@@ -114,6 +137,7 @@ def TransitionSoundnessGap : Prop :=
 def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
+#print axioms MCore.Real.P02BoundedComputationClose.transitionCaseCNF_mem_transitionsCNF
 #print axioms MCore.Real.P02BoundedComputationClose.active_transition_case_true
 #print axioms MCore.Real.P02BoundedComputationClose.snapshots_all
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_sound
