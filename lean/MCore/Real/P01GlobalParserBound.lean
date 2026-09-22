@@ -59,9 +59,9 @@ theorem budget_compose_same_scale
         ≤ 16 * S + (16 * S * (childLen + 1)) :=
       Nat.add_le_add_right hprefix _
     _ = 16 * S * (childLen + 2) := by
-      rw [show childLen + 2 = 1 + (childLen + 1) by omega]
-      rw [Nat.mul_add]
-      simp [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+      rw [show childLen + 2 = Nat.succ (childLen + 1) by omega]
+      rw [Nat.mul_succ]
+      omega
     _ ≤ 16 * S * (parentLen + 1) := hmul
 
 /-- Binary heads add one tombstone-log cell but consume three source bits.
@@ -78,14 +78,13 @@ theorem budget_compose_scale_succ
     calc
       (S + 1) * (childLen + 1)
           = S * (childLen + 1) + (childLen + 1) := by
-        rw [Nat.add_mul]
-        simp [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+        rw [show S + 1 = Nat.succ S by omega]
+        rw [Nat.succ_mul]
       _ ≤ S * (childLen + 1) + S :=
         Nat.add_le_add_left hchildScale _
       _ = S * (childLen + 2) := by
-        rw [show childLen + 2 = (childLen + 1) + 1 by omega]
-        rw [Nat.mul_add]
-        simp [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+        rw [show childLen + 2 = Nat.succ (childLen + 1) by omega]
+        rw [Nat.mul_succ]
   have hscale16 :
       16 * ((S + 1) * (childLen + 1)) ≤
         16 * (S * (childLen + 2)) :=
@@ -107,9 +106,9 @@ theorem budget_compose_scale_succ
     prefixSteps + (16 * (S + 1) * (childLen + 1))
         ≤ 16 * S + (16 * S * (childLen + 2)) := hprechild
     _ = 16 * S * (childLen + 3) := by
-      rw [show childLen + 3 = 1 + (childLen + 2) by omega]
-      rw [Nat.mul_add]
-      simp [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+      rw [show childLen + 3 = Nat.succ (childLen + 2) by omega]
+      rw [Nat.mul_succ]
+      omega
     _ ≤ 16 * S * (parentLen + 1) := hmul
 
 theorem phaseBudget_positive
