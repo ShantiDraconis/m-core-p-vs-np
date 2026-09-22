@@ -1,0 +1,67 @@
+name: ATK T5 bounded computation
+
+on:
+  push:
+    branches:
+      - attack/t5-bounded-computation-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  t5-a1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/P02BoundedComputationEncoding.lean
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then exit 1; fi
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "$file"; then exit 1; fi
+
+      - name: Build T5 A1 source
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02BoundedComputationEncoding
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/T5A1Audit.lean <<'EOF'
+          import MCore.Real.P02BoundedComputationEncoding
+          #print axioms MCore.Real.P02BoundedComputationEncoding.cnfCircuit_isCNF
+          #print axioms MCore.Real.P02BoundedComputationEncoding.satLanguage_cnfCircuit_iff
+          #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecCircuit_isCNF
+          #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecBits_valid
+          #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecBits_sat_iff_circuit_sat
+          #print axioms MCore.Real.P02BoundedComputationEncoding.boundedExecCorrectness_to_bits
+          EOF
+          lake env lean /tmp/T5A1Audit.lean 2>&1 | tee /tmp/t5-a1-audit.log
+          if grep -q 'sorryAx' /tmp/t5-a1-audit.log; then exit 1; fi
+
+      - name: Noncircularity and semantic-precompute firewall
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/P02BoundedComputationEncoding.lean
+          if grep -nE '^import .*P02TerminalFrontier|^import .*P02G21G22Attack' "$file"; then exit 1; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path("lean/MCore/Real/P02BoundedComputationEncoding.lean").read_text()
+          start = text.index("def boundedExecTableauCNF")
+          end = text.index("def boundedExecCircuit", start)
+          body = text[start:end]
+          if ".run" in body or "TM.run" in body:
+              raise SystemExit("boundedExecTableauCNF must not precompute TM.run")
+          PY
+          echo "T5_A1_BUILDER=SOURCE"
+          echo "T5_A1_CORRECTNESS=OPEN_PROOF"
+          echo "T5_A2=OPEN_MATH"
