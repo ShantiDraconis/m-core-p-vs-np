@@ -151,13 +151,18 @@ theorem finalAcceptanceCNF_sound_of_snapshot
   have hclause :
       evalClause sigma (acceptingStateLits M t) = true := by
     simpa [finalAcceptanceCNF, evalCNF] using hfinal
-  by_contra hacc
-  have haccFalse : M.accepting config.state = false := by
-    cases h : M.accepting config.state <;> simp_all
-  have hstate := hmatch.1
-  unfold acceptingStateLits at hclause
-  simp only [List.filterMap_ofFn] at hclause
-  simp [evalClause, evalLiteral, pos, hstate, haccFalse] at hclause
+  by_cases hacc : M.accepting config.state = true
+  · exact hacc
+  · have haccFalse : M.accepting config.state = false := by
+      cases h : M.accepting config.state <;> simp_all
+    have hstate := hmatch.1
+    have hallFalse :
+        evalClause sigma (acceptingStateLits M t) = false := by
+      unfold acceptingStateLits
+      simp [evalClause, evalLiteral, pos, hstate, haccFalse]
+    rw [hallFalse] at hclause
+    contradiction
+
 
 theorem boundedExecTableau_final_acceptance_sound
     (sigma : Assignment)
@@ -172,7 +177,7 @@ theorem boundedExecTableau_final_acceptance_sound
   apply evalCNF_subset_true sigma _ (boundedExecTableauCNF M x t) htableau
   intro c hc
   simp [boundedExecTableauCNF, finalAcceptanceCNF] at hc ⊢
-  exact hc
+  exact Or.inr (Or.inr hc)
 
 
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_transition_guard_false
