@@ -44,6 +44,7 @@ jobs:
           lake build MCore.Real.OpenMathCore.SATCircuitCompiler
           lake build MCore.Real.OpenMathCore.SameInputClosure
           lake build MCore.Real.OpenMathCore.TerminalArchitecture
+          lake build MCore.Real.SemanticSelfQuotation
 
       - name: Hygiene
         run: |
