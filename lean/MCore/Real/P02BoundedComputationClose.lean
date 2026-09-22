@@ -446,6 +446,189 @@ theorem left_case_preserves_snapshot
             M.machine.blank (config.tape.write write) j
       rw [hf, hrightOld j hjr a, hmoveRight]
 
+
+theorem right_case_preserves_snapshot
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (qNext : Fin (M.stateCount + 1))
+    (write : Option Bool)
+    (hs : s < t)
+    (hhalt : M.machine.halting config.state = false)
+    (htrans :
+      M.machine.transition config.state config.tape.head =
+        (qNext, write, .right))
+    (hrightBoundary :
+      config.tape.right.getD (radius x t) M.machine.blank =
+        M.machine.blank)
+    (hmatch : SnapshotMatches sigma M x t s config)
+    (hcase :
+      evalCNF sigma
+        (transitionCaseCNF M x t s config.state config.tape.head) = true) :
+    SnapshotMatches sigma M x t (s + 1) (M.machine.step config) := by
+  let guard : Clause :=
+    [neg (stateVar M t s config.state),
+     neg (headVar M t s config.tape.head)]
+  have hguard : evalClause sigma guard = false := by
+    simpa [guard] using
+      snapshot_transition_guard_false sigma M x t s config hmatch
+  have hrightCase :
+      evalCNF sigma
+        (rightMoveCaseCNF M x t s config.state config.tape.head qNext write) = true := by
+    simpa [transitionCaseCNF, hhalt, htrans] using hcase
+  have hstate :
+      evalCNF sigma
+        (setStateClauses guard M t (s + 1) qNext) = true := by
+    apply evalCNF_subset_true sigma _ _ hrightCase
+    intro cl hcl
+    simp [rightMoveCaseCNF, guard, hcl]
+  have hhead :
+      evalCNF sigma
+        (copySymbolClauses guard
+          (rightVar M x t s 0)
+          (headVar M t (s + 1))) = true := by
+    apply evalCNF_subset_true sigma _ _ hrightCase
+    intro cl hcl
+    simp [rightMoveCaseCNF, guard, hcl]
+  rcases hmatch with ⟨hstateOld, hheadOld, hleftOld, hrightOld⟩
+  unfold SnapshotMatches
+  constructor
+  · intro q
+    have hf :=
+      setStateClauses_forces sigma guard M t (s + 1) qNext q hguard hstate
+    simpa [TM.step, htrans, Tape.write, Tape.move] using hf
+  constructor
+  · intro a
+    have hf :=
+      copySymbolClauses_forces sigma guard
+        (rightVar M x t s 0) (headVar M t (s + 1))
+        a hguard hhead
+    have hmoveHead :
+        (M.machine.step config).tape.head =
+          config.tape.right.getD 0 M.machine.blank := by
+      simpa [TM.step, htrans, Tape.write] using
+        P02BoundedComputationTape.move_right_head_getD
+          M.machine.blank (config.tape.write write)
+    rw [hf, hrightOld 0 (by simp [radius]) a, hmoveHead]
+  constructor
+  · intro i hi a
+    by_cases hz : i = 0
+    · subst i
+      have hset :
+          evalCNF sigma
+            (setLeftCell guard M x t (s + 1) 0 write) = true := by
+        apply evalCNF_subset_true sigma _ _ hrightCase
+        intro cl hcl
+        simp [rightMoveCaseCNF, guard, hcl]
+      have hf :=
+        setSymbolClauses_forces sigma guard
+          (leftVar M x t (s + 1) 0) write a hguard hset
+      have hmoveLeftZero :
+          (M.machine.step config).tape.left.getD 0 M.machine.blank = write := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_right_left_zero
+            M.machine.blank (config.tape.write write)
+      rw [hmoveLeftZero]
+      exact hf
+    · obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hz
+      have hj : j < radius x t - 1 := by
+        have hsucclt : j + 1 < x.length + t + 1 := by
+          simpa [radius] using hi
+        have hbase : j < x.length + t := by
+          exact Nat.lt_of_succ_lt_succ (by
+            simpa [Nat.succ_eq_add_one] using hsucclt)
+        simpa [radius] using hbase
+      have hcopy :
+          evalCNF sigma
+            (copyLeftCell guard M x t s j (s + 1) (j + 1)) = true := by
+        apply evalCNF_subset_true sigma _ _ hrightCase
+        intro cl hcl
+        have hshift :
+            cl ∈ (List.range (radius x t - 1)).flatMap (fun k =>
+              copyLeftCell guard M x t s k (s + 1) (k + 1)) := by
+          exact List.mem_flatMap.mpr ⟨j, by simpa using hj, hcl⟩
+        simpa [rightMoveCaseCNF, guard, hshift]
+      have hf :=
+        copySymbolClauses_forces sigma guard
+          (leftVar M x t s j)
+          (leftVar M x t (s + 1) (j + 1))
+          a hguard hcopy
+      have hjr : j < radius x t := by
+        exact Nat.lt_trans hj (by
+          exact Nat.sub_lt (by simp [radius]) (by decide))
+      have hmoveLeft :
+          (M.machine.step config).tape.left.getD (j + 1)
+            M.machine.blank =
+          config.tape.left.getD j M.machine.blank := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_right_left_succ
+            M.machine.blank (config.tape.write write) j
+      rw [hf, hleftOld j hjr a, hmoveLeft]
+  · intro i hi a
+    by_cases hlast : i = radius x t - 1
+    · subst i
+      have hrone : 1 ≤ radius x t := by simp [radius]
+      have hidx : radius x t - 1 + 1 = radius x t :=
+        Nat.sub_add_cancel hrone
+      have hmoveRight :
+          (M.machine.step config).tape.right.getD (radius x t - 1)
+            M.machine.blank =
+          config.tape.right.getD ((radius x t - 1) + 1)
+            M.machine.blank := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_right_right_getD
+            M.machine.blank (config.tape.write write) (radius x t - 1)
+      have hblank :
+          (M.machine.step config).tape.right.getD (radius x t - 1)
+            M.machine.blank = M.machine.blank := by
+        rw [hmoveRight, hidx, hrightBoundary]
+      have hset :
+          evalCNF sigma
+            (setRightCell guard M x t (s + 1) (radius x t - 1)
+              M.machine.blank) = true := by
+        apply evalCNF_subset_true sigma _ _ hrightCase
+        intro cl hcl
+        simp [rightMoveCaseCNF, guard, hcl]
+      rw [hblank]
+      exact setSymbolClauses_forces sigma guard
+        (rightVar M x t (s + 1) (radius x t - 1))
+        M.machine.blank a hguard hset
+    · have his : i < radius x t - 1 := by
+        have hle : i ≤ radius x t - 1 := by
+          have hle' : i ≤ x.length + t := by
+            exact Nat.le_of_lt_succ (by simpa [radius, Nat.succ_eq_add_one] using hi)
+          simpa [radius] using hle'
+        rcases Nat.lt_or_eq_of_le hle with hlt | heq
+        · exact hlt
+        · exact False.elim (hlast heq)
+      have hcopy :
+          evalCNF sigma
+            (copyRightCell guard M x t s (i + 1) (s + 1) i) = true := by
+        apply evalCNF_subset_true sigma _ _ hrightCase
+        intro cl hcl
+        have hshift :
+            cl ∈ (List.range (radius x t - 1)).flatMap (fun j =>
+              copyRightCell guard M x t s (j + 1) (s + 1) j) := by
+          exact List.mem_flatMap.mpr ⟨i, by simpa using his, hcl⟩
+        simpa [rightMoveCaseCNF, guard, hshift]
+      have hf :=
+        copySymbolClauses_forces sigma guard
+          (rightVar M x t s (i + 1))
+          (rightVar M x t (s + 1) i)
+          a hguard hcopy
+      have hi1 : i + 1 < radius x t := by
+        have hbase : i < x.length + t := by simpa [radius] using his
+        simpa [radius, Nat.succ_eq_add_one] using Nat.succ_lt_succ hbase
+      have hmoveRight :
+          (M.machine.step config).tape.right.getD i M.machine.blank =
+            config.tape.right.getD (i + 1) M.machine.blank := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_right_right_getD
+            M.machine.blank (config.tape.write write) i
+      rw [hf, hrightOld (i + 1) hi1 a, hmoveRight]
+
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
     (sigma : Assignment)
