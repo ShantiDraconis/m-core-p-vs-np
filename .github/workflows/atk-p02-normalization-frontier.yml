@@ -28,6 +28,7 @@ jobs:
             lean/MCore/Real/P02DiagonalFrontier.lean
             lean/MCore/Real/P02ClockedDiagonalCompiler.lean
             lean/MCore/Real/P02LiteralFixedPointFirewall.lean
+            lean/MCore/Real/P02LiteralFixedPointCountermodel.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
@@ -36,7 +37,7 @@ jobs:
       - name: Build
         run: |
           set -euo pipefail
-          lake build MCore.Real.P02CanonicalNormalization MCore.Real.P02DiagonalFrontier MCore.Real.P02ClockedDiagonalCompiler MCore.Real.P02LiteralFixedPointFirewall
+          lake build MCore.Real.P02CanonicalNormalization MCore.Real.P02DiagonalFrontier MCore.Real.P02ClockedDiagonalCompiler MCore.Real.P02LiteralFixedPointFirewall MCore.Real.P02LiteralFixedPointCountermodel
 
       - name: Axiom audit
         run: |
@@ -46,6 +47,7 @@ jobs:
           import MCore.Real.P02DiagonalFrontier
           import MCore.Real.P02ClockedDiagonalCompiler
           import MCore.Real.P02LiteralFixedPointFirewall
+          import MCore.Real.P02LiteralFixedPointCountermodel
           #print axioms MCore.Real.P02CanonicalNormalization.canonical_normalization
           #print axioms MCore.Real.P02DiagonalFrontier.diagonal_witness_fails
           #print axioms MCore.Real.P02DiagonalFrontier.diagonal_family_closes_p02
@@ -55,6 +57,7 @@ jobs:
           #print axioms MCore.Real.P02ClockedDiagonalCompiler.semanticDiagonalBits_flip
           #print axioms MCore.Real.P02ClockedDiagonalCompiler.semantic_fixed_point_fails
           #print axioms MCore.Real.P02LiteralFixedPointFirewall.no_literal_fixed_point_if_constants_correct
+          #print axioms MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point
           EOF
           lake env lean /tmp/P02Audit.lean 2>&1 | tee /tmp/p02-audit.log
           if grep -q 'sorryAx' /tmp/p02-audit.log; then exit 1; fi
