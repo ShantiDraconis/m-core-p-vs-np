@@ -1,5 +1,4 @@
 import MCore.Real.P02UniversalFailureAlgebra
-import MCore.Real.P02CandidateCodingFrontier
 
 namespace MCore
 namespace Real
@@ -9,10 +8,7 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open P02DiagonalFrontier
 open P02UniversalFailureAlgebra
-open P02CandidateCodingFrontier
 
-/-- Nonliteral diagonal compiler contract. It does not require x = compiler M x.
-Instead it directly exposes a canonical SAT instance plus its semantic flip law. -/
 structure DiagonalCompilerV2 where
   compile : PolyDTMCandidate → BitString
   valid : ∀ M, CanonicalSATValid (compile M)
