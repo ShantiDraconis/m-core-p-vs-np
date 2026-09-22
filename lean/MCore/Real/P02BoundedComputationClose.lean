@@ -32,6 +32,59 @@ structure TableauCompletenessCertificate where
         (boundedExecTableauCNF M x t) = true
 
 
+
+/-! Variable-family range separation for the concrete tableau assignment. -/
+
+theorem stateVar_lt_headBase_valid
+    (M : PolyDTMCandidate) (t s : Nat)
+    (q : Fin (M.stateCount + 1))
+    (hs : s ≤ t) :
+    stateVar M t s q < headBase M t := by
+  unfold stateVar headBase stateSlots stateCount
+  have hq := q.isLt
+  omega
+
+theorem headVar_ge_headBase
+    (M : PolyDTMCandidate) (t s : Nat) (a : Option Bool) :
+    headBase M t ≤ headVar M t s a := by
+  unfold headVar
+  omega
+
+theorem headVar_lt_leftBase_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (a : Option Bool)
+    (hs : s ≤ t) :
+    headVar M t s a < leftBase M x t := by
+  unfold headVar leftBase
+  have ha := symbolCode_lt_three a
+  omega
+
+theorem leftVar_ge_leftBase
+    (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool) :
+    leftBase M x t ≤ leftVar M x t s i a := by
+  unfold leftVar
+  omega
+
+theorem leftVar_lt_rightBase_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool)
+    (hs : s ≤ t)
+    (hi : i < radius x t) :
+    leftVar M x t s i a < rightBase M x t := by
+  unfold leftVar rightBase
+  have ha := symbolCode_lt_three a
+  have hr := radius_pos x t
+  omega
+
+theorem rightVar_ge_rightBase
+    (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool) :
+    rightBase M x t ≤ rightVar M x t s i a := by
+  unfold rightVar
+  omega
+
+
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -757,6 +810,9 @@ def TransitionSoundnessGap : Prop :=
 def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
+#print axioms MCore.Real.P02BoundedComputationClose.stateVar_lt_headBase_valid
+#print axioms MCore.Real.P02BoundedComputationClose.headVar_lt_leftBase_valid
+#print axioms MCore.Real.P02BoundedComputationClose.leftVar_lt_rightBase_valid
 #print axioms MCore.Real.P02BoundedComputationClose.transitionCaseCNF_mem_transitionsCNF
 #print axioms MCore.Real.P02BoundedComputationClose.active_transition_case_true
 #print axioms MCore.Real.P02BoundedComputationClose.stay_case_preserves_snapshot
