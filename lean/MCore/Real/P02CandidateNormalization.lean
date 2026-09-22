@@ -146,17 +146,39 @@ structure NormalizedCandidateWitness
         M.CorrectAt language x →
           (normalizedCandidate M coefficient exponent).CorrectAt language x
 
+noncomputable def normalizationCoefficient
+    (M : PolyDTMCandidate) : Nat :=
+  Classical.choose M.time_poly
+
+noncomputable def normalizationExponent
+    (M : PolyDTMCandidate) : Nat :=
+  Classical.choose (Classical.choose_spec M.time_poly)
+
+theorem normalizationBound
+    (M : PolyDTMCandidate) :
+    ∀ n : Nat,
+      M.timeBound n ≤
+        normalizationCoefficient M *
+          (n + 1) ^ normalizationExponent M := by
+  exact Classical.choose_spec (Classical.choose_spec M.time_poly)
+
 noncomputable def normalizationWitness
     (M : PolyDTMCandidate) :
     NormalizedCandidateWitness M := by
-  classical
-  rcases canonical_normalization M with
-    ⟨coefficient, exponent, hbound, hCorrect⟩
+  let coefficient := normalizationCoefficient M
+  let exponent := normalizationExponent M
+  have hbound :
+      ∀ n : Nat,
+        M.timeBound n ≤ coefficient * (n + 1) ^ exponent := by
+    exact normalizationBound M
   exact
     { coefficient := coefficient
       exponent := exponent
       dominates := hbound
-      preserves_correctAt := hCorrect }
+      preserves_correctAt := by
+        intro language x hCorrect
+        exact correctAt_preserved_by_dominating_bound
+          M coefficient exponent hbound language x hCorrect }
 
 #print axioms MCore.Real.P02CandidateNormalization.correctAt_preserved_by_dominating_bound
 #print axioms MCore.Real.P02CandidateNormalization.canonical_normalization
