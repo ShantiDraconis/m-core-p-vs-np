@@ -125,12 +125,41 @@ structure DecoderEvaluatorLocalCertificate where
   extends_scan :
     ∀ (q : VerifierState) (s : Option Bool), q = scanEncode →
       machine.transition q s = physicalControlMachine.transition q s
+  decode_not_terminal :
+    ∀ s : Option Bool,
+      (machine.transition decodeInstr s).1 ≠ halt
+  read_not_terminal :
+    ∀ s : Option Bool,
+      (machine.transition readWitness s).1 ≠ halt
+  neg_not_terminal :
+    ∀ s : Option Bool,
+      (machine.transition evalNeg s).1 ≠ halt
+  and_not_terminal :
+    ∀ s : Option Bool,
+      (machine.transition evalAnd s).1 ≠ halt
+  or_not_terminal :
+    ∀ s : Option Bool,
+      (machine.transition evalOr s).1 ≠ halt
+  push_not_terminal :
+    ∀ s : Option Bool,
+      (machine.transition pushRes s).1 ≠ halt
 
 def DecoderEvaluatorLocalGap : Prop :=
   Nonempty DecoderEvaluatorLocalCertificate
 
+/-- The scanner-only machine cannot accidentally inhabit the hardened
+decoder/evaluator certificate: every non-scan phase currently transitions
+straight to `halt`. -/
+theorem scanner_only_not_decoder_evaluator :
+    ¬ (∃ h : DecoderEvaluatorLocalCertificate,
+        h.machine = physicalControlMachine) := by
+  rintro ⟨h, rfl⟩
+  have hnt := h.decode_not_terminal none
+  simp [physicalControlMachine, decodeInstr, halt] at hnt
+
 #print axioms MCore.Real.P01FullVerifierPhysicalControl.physical_scan_run
 #print axioms MCore.Real.P01FullVerifierPhysicalControl.physical_scan_from_prepared
+#print axioms MCore.Real.P01FullVerifierPhysicalControl.scanner_only_not_decoder_evaluator
 
 end P01FullVerifierPhysicalControl
 end Real
