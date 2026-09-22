@@ -39,33 +39,53 @@ theorem moveRightSeq_length (n : Nat) :
 
 theorem moveLeftSeq_all_legal (n : Nat) :
     ∀ d ∈ moveLeftSeq n, d = .left := by
-  intro d hd
-  simpa [moveLeftSeq] using hd
+  induction n with
+  | zero =>
+      simp [moveLeftSeq]
+  | succ n ih =>
+      intro d hd
+      simp only [moveLeftSeq, List.replicate_succ, List.mem_cons] at hd
+      rcases hd with h | h
+      · exact h
+      · exact ih d h
 
 theorem moveRightSeq_all_legal (n : Nat) :
     ∀ d ∈ moveRightSeq n, d = .right := by
-  intro d hd
-  simpa [moveRightSeq] using hd
+  induction n with
+  | zero =>
+      simp [moveRightSeq]
+  | succ n ih =>
+      intro d hd
+      simp only [moveRightSeq, List.replicate_succ, List.mem_cons] at hd
+      rcases hd with h | h
+      · exact h
+      · exact ih d h
 
-/-- Repeated left motion is exactly iteration of the primitive tape move. -/
+/-- Structural iteration of one primitive tape move. -/
+def repeatMove {Symbol : Type}
+    (blank : Symbol) (d : Direction) : Nat → Tape Symbol → Tape Symbol
+  | 0, tape => tape
+  | n + 1, tape => repeatMove blank d n (Tape.move blank d tape)
+
+/-- Repeated left motion is exactly structural iteration of the primitive move. -/
 theorem execMoves_moveLeftSeq {Symbol : Type}
     (blank : Symbol) (n : Nat) (t : Tape Symbol) :
     execMoves blank (moveLeftSeq n) t =
-      Nat.iterate (Tape.move blank .left) n t := by
+      repeatMove blank .left n t := by
   induction n generalizing t with
   | zero => rfl
   | succ n ih =>
-      simp [moveLeftSeq, execMoves, List.replicate_succ, ih, Nat.iterate_succ_apply]
+      simp [moveLeftSeq, List.replicate_succ, execMoves, repeatMove, ih]
 
-/-- Repeated right motion is exactly iteration of the primitive tape move. -/
+/-- Repeated right motion is exactly structural iteration of the primitive move. -/
 theorem execMoves_moveRightSeq {Symbol : Type}
     (blank : Symbol) (n : Nat) (t : Tape Symbol) :
     execMoves blank (moveRightSeq n) t =
-      Nat.iterate (Tape.move blank .right) n t := by
+      repeatMove blank .right n t := by
   induction n generalizing t with
   | zero => rfl
   | succ n ih =>
-      simp [moveRightSeq, execMoves, List.replicate_succ, ih, Nat.iterate_succ_apply]
+      simp [moveRightSeq, List.replicate_succ, execMoves, repeatMove, ih]
 
 /-- Every shuttle used by the verifier is built solely from legal TM moves. -/
 def LegalMoveSeq (ds : List Direction) : Prop :=
