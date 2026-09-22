@@ -28,6 +28,7 @@ jobs:
             lean/MCore/Real/EncodingNormalization.lean
             lean/MCore/Real/G3ModelMatch.lean
             lean/MCore/Real/FinalExternalCertificate.lean
+            lean/MCore/Real/FinalExternalTwoGap.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
@@ -36,17 +37,21 @@ jobs:
       - name: Build external scaffold
         run: |
           set -euo pipefail
-          lake build MCore.Real.OfficialModel MCore.Real.EncodingNormalization MCore.Real.G3ModelMatch MCore.Real.FinalExternalCertificate
+          lake build MCore.Real.OfficialModel MCore.Real.EncodingNormalization MCore.Real.G3ModelMatch MCore.Real.FinalExternalCertificate MCore.Real.FinalExternalTwoGap
 
       - name: Axiom audit external scaffold
         run: |
           set -euo pipefail
           cat >/tmp/ExternalAudit.lean <<'EOF'
           import MCore.Real.FinalExternalCertificate
+          import MCore.Real.FinalExternalTwoGap
           #print axioms MCore.Real.G3ModelMatch.G3ModelBridge.p_match
           #print axioms MCore.Real.G3ModelMatch.G3ModelBridge.np_match
           #print axioms MCore.Real.FinalExternalCertificate.final_external_certificate
           #print axioms MCore.Real.FinalExternalCertificate.final_external_gap_closes
+          #print axioms MCore.Real.FinalExternalTwoGap.finalExternalInputsOfTwoGaps
+          #print axioms MCore.Real.FinalExternalTwoGap.final_external_gap_of_two_gap
+          #print axioms MCore.Real.FinalExternalTwoGap.final_external_two_gap_closes
           EOF
           lake env lean /tmp/ExternalAudit.lean 2>&1 | tee /tmp/external-audit.log
           if grep -q 'sorryAx' /tmp/external-audit.log; then exit 1; fi
@@ -57,4 +62,7 @@ jobs:
           grep -q 'FinalExternalGap' lean/MCore/Real/FinalExternalCertificate.lean
           grep -q 'G3Gap' lean/MCore/Real/G3ModelMatch.lean
           echo "G3_SCAFFOLD=GREEN_IF_JOB_SUCCEEDS"
+          echo "FINAL_EXTERNAL_TWO_GAP=WIRING_GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_HARD=OPEN"
+          echo "G2_1_POINTWISE=OPEN_MATH"
           echo "FINAL_EXTERNAL=OPEN"
