@@ -9,6 +9,7 @@ open CircuitK1
 open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalSATWitness
+open CanonicalSATBoundary
 open CanonicalSATVerifier
 open P01VerifiedRelation
 
