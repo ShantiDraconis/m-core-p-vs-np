@@ -1097,6 +1097,554 @@ theorem phaseSemantics_parseHead_none
     (fuel + 1) pad log bits steps hstate
   simp [CanonicalSATParserGlobalSpec.logParseCore, hactive, hnone]
 
+
+/-- Global semantic simulation of the concrete parser phase.  The recursion is
+on unread source length; every successful head decode strictly shortens that
+source.  The theorem assumes the phase invariant that at least one active slot
+is present. -/
+theorem phaseSemantics_global
+    (pad : Nat)
+    (log : SlotLog)
+    (bits : BitString)
+    (hpad : 0 < pad)
+    (hactive : activeSlots log ≠ 0) :
+    PhaseSemantics (bits.length + 1) pad log bits := by
+  cases hparse : parseHead bits with
+  | none =>
+      simpa using
+        (phaseSemantics_parseHead_none bits.length pad log bits hactive hparse)
+  | some p =>
+      rcases p with ⟨head, tail⟩
+      have hlt : tail.length < bits.length :=
+        parseHead_rest_length_lt hparse
+      have hshape : bits = head.encode ++ tail :=
+        parseHead_inverse bits head tail hparse
+      have hfuel : tail.length + 1 ≤ bits.length := by omega
+      cases head with
+      | not =>
+          have hchild :
+              PhaseSemantics (tail.length + 1)
+                (pad + (Head.encode .not).length) log tail :=
+            phaseSemantics_global
+              (pad + (Head.encode .not).length) log tail
+              (by omega) hactive
+          have hpref :
+              parserMachine.run (Head.encode .not).length
+                  (phaseConfig 4 pad bits log) =
+                phaseConfig 4
+                  (pad + (Head.encode .not).length) tail log := by
+            rw [hshape]
+            exact CanonicalSATParserPhaseMacroProof.not_head_roundtrip
+              pad tail log
+          have hstep :
+              CanonicalSATParserGlobalSpec.logParseCore
+                  (bits.length + 1) log bits =
+                CanonicalSATParserGlobalSpec.logParseCore
+                  bits.length log tail := by
+            rw [show bits.length + 1 = Nat.succ bits.length by omega]
+            simp [CanonicalSATParserGlobalSpec.logParseCore,
+              hactive, hparse, Head.arity]
+          have hstable :
+              CanonicalSATParserGlobalSpec.logParseCore bits.length log tail =
+                CanonicalSATParserGlobalSpec.logParseCore
+                  (tail.length + 1) log tail :=
+            logParseCore_fuel_stable tail log bits.length
+              (tail.length + 1) hfuel (by omega)
+          exact phaseSemantics_compose_exact
+            (bits.length + 1) (tail.length + 1)
+            pad (pad + (Head.encode .not).length)
+            log log bits tail (Head.encode .not).length
+            hpref (hstep.trans hstable) hchild
+      | and =>
+          by_cases htail : tail = []
+          · subst tail
+            have hrun :=
+              CanonicalSATParserBinaryHeadProof.and_head_exhausted_rejects
+                pad hpad log
+            have hrun' :
+                parserMachine.run
+                    (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                        Head.and 0 log.length +
+                      (log.length + 2))
+                    (phaseConfig 4 pad bits log) =
+                  CanonicalSATParserLeafSourceProof.leafRejectConfig
+                    (pad + (Head.encode .and).length)
+                    ((pushSlot log).map some) := by
+              simpa [hshape] using hrun
+            have hstate :
+                (parserMachine.run
+                    (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                        Head.and 0 log.length +
+                      (log.length + 2))
+                    (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
+              rw [hrun']
+              rfl
+            apply phaseSemantics_of_reject_state
+              (bits.length + 1) pad log bits
+              (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  Head.and 0 log.length + (log.length + 2))
+              hstate
+            rw [show bits.length + 1 = Nat.succ bits.length by omega]
+            have hpush : activeSlots (pushSlot log) ≠ 0 := by
+              rw [activeSlots_pushSlot]
+              omega
+            have hpos : 0 < bits.length := by omega
+            simp [CanonicalSATParserGlobalSpec.logParseCore,
+              hactive, hparse, Head.arity,
+              logParseCore_active_empty bits.length hpos
+                (pushSlot log) hpush]
+          · have hpush : activeSlots (pushSlot log) ≠ 0 := by
+              rw [activeSlots_pushSlot]
+              omega
+            have hchild :
+                PhaseSemantics (tail.length + 1)
+                  (pad + (Head.encode .and).length)
+                  (pushSlot log) tail :=
+              phaseSemantics_global
+                (pad + (Head.encode .and).length)
+                (pushSlot log) tail (by omega) hpush
+            rcases and_head_roundtrip_any_nonempty
+                pad hpad tail htail log with ⟨steps, hprefEncoded⟩
+            have hpref :
+                parserMachine.run steps
+                    (phaseConfig 4 pad bits log) =
+                  phaseConfig 4
+                    (pad + (Head.encode .and).length)
+                    tail (pushSlot log) := by
+              rw [hshape]
+              exact hprefEncoded
+            have hstep :
+                CanonicalSATParserGlobalSpec.logParseCore
+                    (bits.length + 1) log bits =
+                  CanonicalSATParserGlobalSpec.logParseCore
+                    bits.length (pushSlot log) tail := by
+              rw [show bits.length + 1 = Nat.succ bits.length by omega]
+              simp [CanonicalSATParserGlobalSpec.logParseCore,
+                hactive, hparse, Head.arity]
+            have hstable :
+                CanonicalSATParserGlobalSpec.logParseCore
+                    bits.length (pushSlot log) tail =
+                  CanonicalSATParserGlobalSpec.logParseCore
+                    (tail.length + 1) (pushSlot log) tail :=
+              logParseCore_fuel_stable tail (pushSlot log)
+                bits.length (tail.length + 1) hfuel (by omega)
+            exact phaseSemantics_compose_exact
+              (bits.length + 1) (tail.length + 1)
+              pad (pad + (Head.encode .and).length)
+              log (pushSlot log) bits tail steps
+              hpref (hstep.trans hstable) hchild
+      | or =>
+          by_cases htail : tail = []
+          · subst tail
+            have hrun :=
+              CanonicalSATParserBinaryHeadProof.or_head_exhausted_rejects
+                pad hpad log
+            have hrun' :
+                parserMachine.run
+                    (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                        Head.or 0 log.length +
+                      (log.length + 2))
+                    (phaseConfig 4 pad bits log) =
+                  CanonicalSATParserLeafSourceProof.leafRejectConfig
+                    (pad + (Head.encode .or).length)
+                    ((pushSlot log).map some) := by
+              simpa [hshape] using hrun
+            have hstate :
+                (parserMachine.run
+                    (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                        Head.or 0 log.length +
+                      (log.length + 2))
+                    (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
+              rw [hrun']
+              rfl
+            apply phaseSemantics_of_reject_state
+              (bits.length + 1) pad log bits
+              (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  Head.or 0 log.length + (log.length + 2))
+              hstate
+            rw [show bits.length + 1 = Nat.succ bits.length by omega]
+            have hpush : activeSlots (pushSlot log) ≠ 0 := by
+              rw [activeSlots_pushSlot]
+              omega
+            have hpos : 0 < bits.length := by omega
+            simp [CanonicalSATParserGlobalSpec.logParseCore,
+              hactive, hparse, Head.arity,
+              logParseCore_active_empty bits.length hpos
+                (pushSlot log) hpush]
+          · have hpush : activeSlots (pushSlot log) ≠ 0 := by
+              rw [activeSlots_pushSlot]
+              omega
+            have hchild :
+                PhaseSemantics (tail.length + 1)
+                  (pad + (Head.encode .or).length)
+                  (pushSlot log) tail :=
+              phaseSemantics_global
+                (pad + (Head.encode .or).length)
+                (pushSlot log) tail (by omega) hpush
+            rcases or_head_roundtrip_any_nonempty
+                pad hpad tail htail log with ⟨steps, hprefEncoded⟩
+            have hpref :
+                parserMachine.run steps
+                    (phaseConfig 4 pad bits log) =
+                  phaseConfig 4
+                    (pad + (Head.encode .or).length)
+                    tail (pushSlot log) := by
+              rw [hshape]
+              exact hprefEncoded
+            have hstep :
+                CanonicalSATParserGlobalSpec.logParseCore
+                    (bits.length + 1) log bits =
+                  CanonicalSATParserGlobalSpec.logParseCore
+                    bits.length (pushSlot log) tail := by
+              rw [show bits.length + 1 = Nat.succ bits.length by omega]
+              simp [CanonicalSATParserGlobalSpec.logParseCore,
+                hactive, hparse, Head.arity]
+            have hstable :
+                CanonicalSATParserGlobalSpec.logParseCore
+                    bits.length (pushSlot log) tail =
+                  CanonicalSATParserGlobalSpec.logParseCore
+                    (tail.length + 1) (pushSlot log) tail :=
+              logParseCore_fuel_stable tail (pushSlot log)
+                bits.length (tail.length + 1) hfuel (by omega)
+            exact phaseSemantics_compose_exact
+              (bits.length + 1) (tail.length + 1)
+              pad (pad + (Head.encode .or).length)
+              log (pushSlot log) bits tail steps
+              hpref (hstep.trans hstable) hchild
+      | input i =>
+          rcases popSlot_exists_of_active log hactive with ⟨log', hpop⟩
+          have hhead :=
+            CanonicalSATParserPhaseMacroProof.input_head_to_pop_search
+              pad i tail log
+          have hhead' :
+              parserMachine.run
+                  (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                    (Head.input i) tail.length log.length)
+                  (phaseConfig 4 pad bits log) =
+                CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                  (none :: tail.reverse.map some ++
+                    List.replicate
+                      (pad + (Head.encode (.input i)).length)
+                      (none : Option Bool))
+                  log none := by
+            simpa [hshape] using hhead
+          by_cases hzero : activeSlots log' = 0
+          · by_cases htail : tail = []
+            · subst tail
+              rcases leaf_afterEnd_inactive_exhausted_accepts
+                  (pad + (Head.encode (.input i)).length) (by omega)
+                  log log' hpop hzero with
+                ⟨k, right, hleaf⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.input i) 0 log.length
+              have hrun :
+                  parserMachine.run (hs + k)
+                      (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserLeafSourceProof.leafAcceptConfig
+                      (pad + (Head.encode (.input i)).length) right := by
+                rw [MachineRunLemmas.run_add]
+                simpa [hs] using hhead'.trans hleaf
+              have hstate :
+                  (parserMachine.run (hs + k)
+                    (phaseConfig 4 pad bits log)).state = (23 : Fin 25) := by
+                rw [hrun]
+                rfl
+              apply phaseSemantics_of_accept_state
+                (bits.length + 1) pad log bits (hs + k) hstate
+              rw [show bits.length + 1 = Nat.succ bits.length by omega]
+              have hpos : 0 < bits.length := by omega
+              simp [CanonicalSATParserGlobalSpec.logParseCore,
+                hactive, hparse, hpop,
+                logParseCore_zero_slots bits.length hpos log' [] hzero]
+            · rcases leaf_afterEnd_inactive_residual_rejects
+                  (pad + (Head.encode (.input i)).length) (by omega)
+                  tail htail log log' hpop hzero with
+                ⟨k, cfg, hleaf, hhalt, haccept⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.input i) tail.length log.length
+              refine ⟨hs + k, ?_, ?_⟩
+              · rw [MachineRunLemmas.run_add]
+                rw [show parserMachine.run hs
+                    (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: tail.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.input i)).length)
+                          (none : Option Bool))
+                      log none by simpa [hs] using hhead']
+                rw [hleaf]
+                exact hhalt
+              · rw [MachineRunLemmas.run_add]
+                rw [show parserMachine.run hs
+                    (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: tail.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.input i)).length)
+                          (none : Option Bool))
+                      log none by simpa [hs] using hhead']
+                rw [hleaf, haccept]
+                have hzeroSem :=
+                  logParseCore_zero_slots bits.length (by omega)
+                    log' tail hzero
+                have hnotempty : tail.isEmpty = false := by
+                  cases tail with
+                  | nil => contradiction
+                  | cons _ _ => rfl
+                rw [show bits.length + 1 = Nat.succ bits.length by omega]
+                simp [CanonicalSATParserGlobalSpec.logParseCore,
+                  hactive, hparse, hpop, hzeroSem, hnotempty]
+          · by_cases htail : tail = []
+            · subst tail
+              rcases leaf_afterEnd_active_exhausted_rejects
+                  (pad + (Head.encode (.input i)).length) (by omega)
+                  log log' hpop hzero with
+                ⟨k, right, hleaf⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.input i) 0 log.length
+              have hrun :
+                  parserMachine.run (hs + k)
+                      (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserLeafSourceProof.leafRejectConfig
+                      (pad + (Head.encode (.input i)).length) right := by
+                rw [MachineRunLemmas.run_add]
+                simpa [hs] using hhead'.trans hleaf
+              have hstate :
+                  (parserMachine.run (hs + k)
+                    (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
+                rw [hrun]
+                rfl
+              apply phaseSemantics_of_reject_state
+                (bits.length + 1) pad log bits (hs + k) hstate
+              rw [show bits.length + 1 = Nat.succ bits.length by omega]
+              have hpos : 0 < bits.length := by omega
+              simp [CanonicalSATParserGlobalSpec.logParseCore,
+                hactive, hparse, hpop,
+                logParseCore_active_empty bits.length hpos log' hzero]
+            · have hchild :
+                  PhaseSemantics (tail.length + 1)
+                    (pad + (Head.encode (.input i)).length)
+                    log' tail :=
+                phaseSemantics_global
+                  (pad + (Head.encode (.input i)).length)
+                  log' tail (by omega) hzero
+              rcases leaf_afterEnd_roundtrip_any_nonempty_active
+                  (pad + (Head.encode (.input i)).length) (by omega)
+                  tail htail log log' hpop hzero with
+                ⟨k, hleaf⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.input i) tail.length log.length
+              have hpref :
+                  ConfigRightBlankEq
+                    (parserMachine.run (hs + k)
+                      (phaseConfig 4 pad bits log))
+                    (phaseConfig 4
+                      (pad + (Head.encode (.input i)).length)
+                      tail log') := by
+                rw [MachineRunLemmas.run_add]
+                rw [show parserMachine.run hs
+                    (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: tail.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.input i)).length)
+                          (none : Option Bool))
+                      log none by simpa [hs] using hhead']
+                exact hleaf
+              have hstep :
+                  CanonicalSATParserGlobalSpec.logParseCore
+                      (bits.length + 1) log bits =
+                    CanonicalSATParserGlobalSpec.logParseCore
+                      bits.length log' tail := by
+                rw [show bits.length + 1 = Nat.succ bits.length by omega]
+                simp [CanonicalSATParserGlobalSpec.logParseCore,
+                  hactive, hparse, hpop]
+              have hstable :
+                  CanonicalSATParserGlobalSpec.logParseCore
+                      bits.length log' tail =
+                    CanonicalSATParserGlobalSpec.logParseCore
+                      (tail.length + 1) log' tail :=
+                logParseCore_fuel_stable tail log' bits.length
+                  (tail.length + 1) hfuel (by omega)
+              exact phaseSemantics_compose_rightBlank
+                (bits.length + 1) (tail.length + 1)
+                pad (pad + (Head.encode (.input i)).length)
+                log log' bits tail (hs + k)
+                hpref (hstep.trans hstable) hchild
+      | const b =>
+          rcases popSlot_exists_of_active log hactive with ⟨log', hpop⟩
+          have hhead :=
+            CanonicalSATParserPhaseMacroProof.const_head_to_pop_search
+              pad b tail log
+          have hhead' :
+              parserMachine.run
+                  (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                    (Head.const b) tail.length log.length)
+                  (phaseConfig 4 pad bits log) =
+                CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                  (none :: tail.reverse.map some ++
+                    List.replicate
+                      (pad + (Head.encode (.const b)).length)
+                      (none : Option Bool))
+                  log none := by
+            simpa [hshape] using hhead
+          by_cases hzero : activeSlots log' = 0
+          · by_cases htail : tail = []
+            · subst tail
+              rcases leaf_afterEnd_inactive_exhausted_accepts
+                  (pad + (Head.encode (.const b)).length) (by omega)
+                  log log' hpop hzero with
+                ⟨k, right, hleaf⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.const b) 0 log.length
+              have hrun :
+                  parserMachine.run (hs + k)
+                      (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserLeafSourceProof.leafAcceptConfig
+                      (pad + (Head.encode (.const b)).length) right := by
+                rw [MachineRunLemmas.run_add]
+                simpa [hs] using hhead'.trans hleaf
+              have hstate :
+                  (parserMachine.run (hs + k)
+                    (phaseConfig 4 pad bits log)).state = (23 : Fin 25) := by
+                rw [hrun]
+                rfl
+              apply phaseSemantics_of_accept_state
+                (bits.length + 1) pad log bits (hs + k) hstate
+              rw [show bits.length + 1 = Nat.succ bits.length by omega]
+              have hpos : 0 < bits.length := by omega
+              simp [CanonicalSATParserGlobalSpec.logParseCore,
+                hactive, hparse, hpop,
+                logParseCore_zero_slots bits.length hpos log' [] hzero]
+            · rcases leaf_afterEnd_inactive_residual_rejects
+                  (pad + (Head.encode (.const b)).length) (by omega)
+                  tail htail log log' hpop hzero with
+                ⟨k, cfg, hleaf, hhalt, haccept⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.const b) tail.length log.length
+              refine ⟨hs + k, ?_, ?_⟩
+              · rw [MachineRunLemmas.run_add]
+                rw [show parserMachine.run hs
+                    (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: tail.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.const b)).length)
+                          (none : Option Bool))
+                      log none by simpa [hs] using hhead']
+                rw [hleaf]
+                exact hhalt
+              · rw [MachineRunLemmas.run_add]
+                rw [show parserMachine.run hs
+                    (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: tail.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.const b)).length)
+                          (none : Option Bool))
+                      log none by simpa [hs] using hhead']
+                rw [hleaf, haccept]
+                have hzeroSem :=
+                  logParseCore_zero_slots bits.length (by omega)
+                    log' tail hzero
+                have hnotempty : tail.isEmpty = false := by
+                  cases tail with
+                  | nil => contradiction
+                  | cons _ _ => rfl
+                rw [show bits.length + 1 = Nat.succ bits.length by omega]
+                simp [CanonicalSATParserGlobalSpec.logParseCore,
+                  hactive, hparse, hpop, hzeroSem, hnotempty]
+          · by_cases htail : tail = []
+            · subst tail
+              rcases leaf_afterEnd_active_exhausted_rejects
+                  (pad + (Head.encode (.const b)).length) (by omega)
+                  log log' hpop hzero with
+                ⟨k, right, hleaf⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.const b) 0 log.length
+              have hrun :
+                  parserMachine.run (hs + k)
+                      (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserLeafSourceProof.leafRejectConfig
+                      (pad + (Head.encode (.const b)).length) right := by
+                rw [MachineRunLemmas.run_add]
+                simpa [hs] using hhead'.trans hleaf
+              have hstate :
+                  (parserMachine.run (hs + k)
+                    (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
+                rw [hrun]
+                rfl
+              apply phaseSemantics_of_reject_state
+                (bits.length + 1) pad log bits (hs + k) hstate
+              rw [show bits.length + 1 = Nat.succ bits.length by omega]
+              have hpos : 0 < bits.length := by omega
+              simp [CanonicalSATParserGlobalSpec.logParseCore,
+                hactive, hparse, hpop,
+                logParseCore_active_empty bits.length hpos log' hzero]
+            · have hchild :
+                  PhaseSemantics (tail.length + 1)
+                    (pad + (Head.encode (.const b)).length)
+                    log' tail :=
+                phaseSemantics_global
+                  (pad + (Head.encode (.const b)).length)
+                  log' tail (by omega) hzero
+              rcases leaf_afterEnd_roundtrip_any_nonempty_active
+                  (pad + (Head.encode (.const b)).length) (by omega)
+                  tail htail log log' hpop hzero with
+                ⟨k, hleaf⟩
+              let hs :=
+                CanonicalSATParserPhaseMacroProof.headWorkFuel
+                  (Head.const b) tail.length log.length
+              have hpref :
+                  ConfigRightBlankEq
+                    (parserMachine.run (hs + k)
+                      (phaseConfig 4 pad bits log))
+                    (phaseConfig 4
+                      (pad + (Head.encode (.const b)).length)
+                      tail log') := by
+                rw [MachineRunLemmas.run_add]
+                rw [show parserMachine.run hs
+                    (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: tail.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.const b)).length)
+                          (none : Option Bool))
+                      log none by simpa [hs] using hhead']
+                exact hleaf
+              have hstep :
+                  CanonicalSATParserGlobalSpec.logParseCore
+                      (bits.length + 1) log bits =
+                    CanonicalSATParserGlobalSpec.logParseCore
+                      bits.length log' tail := by
+                rw [show bits.length + 1 = Nat.succ bits.length by omega]
+                simp [CanonicalSATParserGlobalSpec.logParseCore,
+                  hactive, hparse, hpop]
+              have hstable :
+                  CanonicalSATParserGlobalSpec.logParseCore
+                      bits.length log' tail =
+                    CanonicalSATParserGlobalSpec.logParseCore
+                      (tail.length + 1) log' tail :=
+                logParseCore_fuel_stable tail log' bits.length
+                  (tail.length + 1) hfuel (by omega)
+              exact phaseSemantics_compose_rightBlank
+                (bits.length + 1) (tail.length + 1)
+                pad (pad + (Head.encode (.const b)).length)
+                log log' bits tail (hs + k)
+                hpref (hstep.trans hstable) hchild
+termination_by bits.length
+decreasing_by
+  all_goals exact hlt
+
+#print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_global
+
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_reject_state
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_accept_state
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_parseHead_none
