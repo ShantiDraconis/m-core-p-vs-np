@@ -5,6 +5,7 @@ on:
     branches:
       - attack/t5-a2-semantic-self-embedding-20260922
       - attack/t5-a2-universal-existence-20260922
+      - attack/t5-a2-close-contract-20260922
   workflow_dispatch:
 
 permissions:
@@ -29,14 +30,17 @@ jobs:
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then exit 1; fi
 
       - name: Build T5 A2 boundary
-        run: lake build MCore.Real.P02SemanticSelfEmbedding
+        run: lake build MCore.Real.P02SemanticSelfEmbedding MCore.Real.P02SemanticSelfEmbeddingClose
 
       - name: Axiom audit
         run: |
           cat >/tmp/T5A2Audit.lean <<'EOF'
           import MCore.Real.P02SemanticSelfEmbedding
+          import MCore.Real.P02SemanticSelfEmbeddingClose
           #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_gap_iff_diagonal_fixed_point_gap
           #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_closes_p02
+          #print axioms MCore.Real.P02SemanticSelfEmbeddingClose.universal_witness_closes_p02
+          #print axioms MCore.Real.P02SemanticSelfEmbeddingClose.diagonalSATConstruction_iff_universal_witness
           EOF
           lake env lean /tmp/T5A2Audit.lean 2>&1 | tee /tmp/t5-a2-audit.log
           if grep -q 'sorryAx' /tmp/t5-a2-audit.log; then exit 1; fi
