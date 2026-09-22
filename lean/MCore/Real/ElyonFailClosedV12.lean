@@ -111,7 +111,13 @@ def scientificAmericanForceCriticismMetadata : ExternalClaimMetadata :=
   { sourceName := "Scientific American"
     publicationDate := "2026-09-21"
     claimSummary :=
-      "Reports expert criticism that the forced blow-up construction vanishes when the force is removed; must be independently formalized before theorem use." }
+      "Reports expert criticism of extending the forced construction to the force-free problem; documentary metadata only." }
+
+def constantinIgnatovaVicolMetadata : ExternalClaimMetadata :=
+  { sourceName := "arXiv:2609.20803v1 — Constantin, Ignatova, Vicol"
+    publicationDate := "2026-09-17"
+    claimSummary :=
+      "Under the paper's asymptotic-axisymmetry and Type-II hypotheses, real-analytic forcing yields regularity; in particular the cited construction cannot retain those properties with a force vanishing near the putative singularity. This record imports no theorem." }
 
 /-! ### Artificial-component firewall -/
 
@@ -214,10 +220,10 @@ structure G21PolynomialPayload
   sizeBound : TimeBound
   sizeBoundPoly : PolynomialTimeBound sizeBound
   sizeControl :
-    ∀ candidate,
+    ∀ candidate : PolyDTMCandidate,
       (counterexample candidate).length ≤ sizeBound (candidateSize candidate)
   fails :
-    ∀ candidate,
+    ∀ candidate : PolyDTMCandidate,
       ¬ candidate.CorrectAt SATTarget (counterexample candidate)
 
 theorem polynomial_payload_implies_exact_g21
