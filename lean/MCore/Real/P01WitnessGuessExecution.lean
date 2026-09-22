@@ -70,9 +70,41 @@ theorem witnessGuess_complete
         [guessConfig [] source] := by
   simpa using witnessGuess_complete_from [] source witness hlen
 
+
+theorem witnessGuess_halts_from
+    (left : List (Option Bool))
+    (source : BitString) :
+    witnessGuessMachine.HaltsWithin (source.length + 1)
+      (guessConfig left source) := by
+  unfold NTM.HaltsWithin
+  induction source generalizing left with
+  | nil =>
+      intro reached hmem
+      simp [NTM.runBranches, witnessGuess_successors_nil,
+        guessConfig, witnessGuessMachine, doneConfig] at hmem
+      subst reached
+      exact Or.inl (doneConfig_accepting left)
+  | cons b bs ih =>
+      intro reached hmem
+      rw [List.length_cons] at hmem
+      simp only [NTM.runBranches] at hmem
+      have hsucc := witnessGuess_successors_cons left b bs
+      simp [witnessGuessMachine, guessConfig_state, hsucc] at hmem
+      rw [runBranches_append] at hmem
+      rcases List.mem_append.mp hmem with hfalse | htrue
+      · exact ih (some false :: left) reached hfalse
+      · exact ih (some true :: left) reached htrue
+
+theorem witnessGuess_halts
+    (source : BitString) :
+    witnessGuessMachine.HaltsWithin (source.length + 1)
+      (guessConfig [] source) :=
+  witnessGuess_halts_from [] source
+
 #print axioms MCore.Real.P01WitnessGuessExecution.runBranches_append
 #print axioms MCore.Real.P01WitnessGuessExecution.witnessGuess_complete_from
 #print axioms MCore.Real.P01WitnessGuessExecution.witnessGuess_complete
+#print axioms MCore.Real.P01WitnessGuessExecution.witnessGuess_halts
 
 end P01WitnessGuessExecution
 end Real
