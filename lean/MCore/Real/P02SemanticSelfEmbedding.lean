@@ -6,6 +6,7 @@ namespace P02SemanticSelfEmbedding
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
+open CanonicalSATBoundary
 open P02TerminalFrontier
 open P02DiagonalFrontier
 
