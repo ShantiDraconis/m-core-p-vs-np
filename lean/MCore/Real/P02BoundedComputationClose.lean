@@ -1,4 +1,5 @@
 import MCore.Real.P02BoundedComputationSoundness
+import MCore.Real.MachineRunLemmas
 
 namespace MCore
 namespace Real
@@ -629,6 +630,70 @@ theorem right_case_preserves_snapshot
             M.machine.blank (config.tape.write write) i
       rw [hf, hrightOld (i + 1) hi1 a, hmoveRight]
 
+
+def transitionSoundnessCertificate : TransitionSoundnessCertificate where
+  step := by
+    intro sigma M x t s hs htableau hmatch
+    let init := initialTMConfig M.machine x
+    let config := M.machine.run s init
+    have hcase :
+        evalCNF sigma
+          (transitionCaseCNF M x t s config.state config.tape.head) = true :=
+      active_transition_case_true sigma M x t s hs htableau config
+    have hrunSucc :
+        M.machine.run (s + 1) init = M.machine.run 1 config := by
+      simpa [config] using
+        (MachineRunLemmas.run_add M.machine s 1 init)
+    by_cases hhalt : M.machine.halting config.state = true
+    · have hpres :=
+        halting_case_preserves_snapshot sigma M x t s config
+          hhalt hmatch hcase
+      have hnext :
+          M.machine.run (s + 1) init = config := by
+        rw [hrunSucc]
+        simpa [TM.run, hhalt]
+      simpa [init, config] using (hnext ▸ hpres)
+    · have hhaltFalse : M.machine.halting config.state = false := by
+        cases hh : M.machine.halting config.state <;> simp_all
+      rcases htrans :
+          M.machine.transition config.state config.tape.head with
+        ⟨qNext, write, dir⟩
+      have hnext :
+          M.machine.run (s + 1) init = M.machine.step config := by
+        rw [hrunSucc]
+        simp [TM.run, hhaltFalse]
+      cases dir with
+      | stay =>
+          have hpres :=
+            stay_case_preserves_snapshot sigma M x t s config
+              qNext write hhaltFalse htrans hmatch hcase
+          rw [hnext]
+          exact hpres
+      | left =>
+          have hboundary :
+              config.tape.left.getD (radius x t) M.machine.blank =
+                M.machine.blank := by
+            simpa [config, init] using
+              P02BoundedComputationTape.canonical_run_left_radius_blank
+                M x t s (Nat.le_of_lt hs)
+          have hpres :=
+            left_case_preserves_snapshot sigma M x t s config
+              qNext write hs hhaltFalse htrans hboundary hmatch hcase
+          rw [hnext]
+          exact hpres
+      | right =>
+          have hboundary :
+              config.tape.right.getD (radius x t) M.machine.blank =
+                M.machine.blank := by
+            simpa [config, init] using
+              P02BoundedComputationTape.canonical_run_right_radius_blank
+                M x t s (Nat.le_of_lt hs)
+          have hpres :=
+            right_case_preserves_snapshot sigma M x t s config
+              qNext write hs hhaltFalse htrans hboundary hmatch hcase
+          rw [hnext]
+          exact hpres
+
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
     (sigma : Assignment)
@@ -697,6 +762,8 @@ def TableauCompletenessGap : Prop :=
 #print axioms MCore.Real.P02BoundedComputationClose.stay_case_preserves_snapshot
 #print axioms MCore.Real.P02BoundedComputationClose.halting_case_preserves_snapshot
 #print axioms MCore.Real.P02BoundedComputationClose.left_case_preserves_snapshot
+#print axioms MCore.Real.P02BoundedComputationClose.right_case_preserves_snapshot
+#print axioms MCore.Real.P02BoundedComputationClose.transitionSoundnessCertificate
 #print axioms MCore.Real.P02BoundedComputationClose.snapshots_all
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_sound
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_complete
