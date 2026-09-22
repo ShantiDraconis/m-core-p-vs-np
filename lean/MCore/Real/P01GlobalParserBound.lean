@@ -753,6 +753,137 @@ decreasing_by
 
 #print axioms MCore.Real.P01GlobalParserBound.phase_halts_budget_global
 
+
+/-- Any two halted fuel snapshots of this deterministic parser are the same
+configuration. -/
+theorem parser_halted_runs_eq
+    (config : Configuration (Fin 25) (Option Bool))
+    (m n : Nat)
+    (hm :
+      parserMachine.halting
+        (parserMachine.run m config).state = true)
+    (hn :
+      parserMachine.halting
+        (parserMachine.run n config).state = true) :
+    parserMachine.run m config =
+      parserMachine.run n config := by
+  rcases Nat.le_total m n with hmn | hnm
+  · have h :=
+      MachineRunLemmas.run_to_larger_fuel_of_halt
+        parserMachine config (parserMachine.run m config)
+        hmn rfl hm
+    exact h.symm
+  · exact
+      MachineRunLemmas.run_to_larger_fuel_of_halt
+        parserMachine config (parserMachine.run n config)
+        hnm rfl hn
+
+/-- The fixed quadratic phase fuel realizes the same Boolean semantics as the
+existential semantic induction. -/
+theorem phase_correct_at_budget
+    (pad : Nat)
+    (log : SlotLog)
+    (bits : BitString)
+    (hpad : 0 < pad)
+    (hactive : activeSlots log ≠ 0) :
+    parserAccepting
+        (parserMachine.run
+          (phaseRuntimeBudget pad log bits)
+          (phaseConfig 4 pad bits log)).state = true ↔
+      CanonicalSATParserGlobalSpec.logParseCore
+        (bits.length + 1) log bits = true := by
+  rcases phaseSemantics_global pad log bits hpad hactive with
+    ⟨steps, hhaltSem, hcorrectSem⟩
+  have hhaltBudget :=
+    phase_halts_budget_global pad log bits hpad hactive
+  have heq :=
+    parser_halted_runs_eq
+      (phaseConfig 4 pad bits log)
+      (phaseRuntimeBudget pad log bits) steps
+      hhaltBudget hhaltSem
+  rw [heq]
+  exact hcorrectSem
+
+/-- Initial phase semantics at the canonical one-slot log. -/
+theorem phase_initial_accepts_iff_slotAccept
+    (bits : BitString) :
+    parserAccepting
+        (parserMachine.run
+          (phaseRuntimeBudget 1 initialSlotLog bits)
+          (phaseConfig 4 1 bits initialSlotLog)).state = true ↔
+      slotAccept bits = true := by
+  exact
+    (phase_correct_at_budget
+      1 initialSlotLog bits (by decide) (by decide)).trans
+      (CanonicalSATParserGlobalSpec.logAccept_iff_slotAccept bits)
+
+/-- Exact proof-side total fuel: deterministic initialization plus the bounded
+global parser phase. -/
+def parserProofBudget (bits : BitString) : Nat :=
+  2 * bits.length + 4 +
+    phaseRuntimeBudget 1 initialSlotLog bits
+
+theorem parserProofBudget_le_parserTimeBound
+    (bits : BitString) :
+    parserProofBudget bits ≤ parserTimeBound bits.length := by
+  let n := bits.length
+  have hs : n + 3 ≤ 3 * (n + 1) := by omega
+  have hu0 := Nat.mul_le_mul_left 16 hs
+  have hu :
+      16 * (n + 3) ≤ 48 * (n + 1) := by
+    simpa [Nat.mul_assoc] using hu0
+  have hp0 := Nat.mul_le_mul_right (n + 1) hu
+  have hp :
+      16 * (n + 3) * (n + 1) ≤
+        48 * (n + 1) * (n + 1) := by
+    exact hp0
+  have hone : 1 ≤ n + 1 := by omega
+  have hsq0 := Nat.mul_le_mul_left (n + 1) hone
+  have hsq : n + 1 ≤ (n + 1) * (n + 1) := by
+    simpa using hsq0
+  have hi0 : 2 * n + 4 ≤ 4 * (n + 1) := by omega
+  have hi1 := Nat.mul_le_mul_left 4 hsq
+  have hi :
+      2 * n + 4 ≤ 4 * ((n + 1) * (n + 1)) :=
+    Nat.le_trans hi0 (by simpa [Nat.mul_assoc] using hi1)
+  have hsum :=
+    Nat.add_le_add hi hp
+  have h52 :
+      4 * ((n + 1) * (n + 1)) +
+          48 * (n + 1) * (n + 1) =
+        52 * ((n + 1) * (n + 1)) := by
+    simp [Nat.mul_add, Nat.add_mul, Nat.mul_assoc,
+      Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+  have hcoef : 52 ≤ 256 := by omega
+  have hfinal0 :=
+    Nat.mul_le_mul_right ((n + 1) * (n + 1)) hcoef
+  have hfinal :
+      52 * ((n + 1) * (n + 1)) ≤
+        256 * ((n + 1) * (n + 1)) := by
+    exact hfinal0
+  unfold parserProofBudget parserTimeBound
+  unfold phaseRuntimeBudget phaseRuntimeUnit phaseRuntimeScale
+  simp only [initialSlotLog, List.length_cons, List.length_nil]
+  change
+    2 * n + 4 + (16 * (1 + n + 1 + 1) * (n + 1)) ≤
+      256 * (n + 1) ^ 2
+  have hphaseShape :
+      16 * (1 + n + 1 + 1) * (n + 1) =
+        16 * (n + 3) * (n + 1) := by
+    congr 2 <;> omega
+  rw [hphaseShape]
+  calc
+    2 * n + 4 + (16 * (n + 3) * (n + 1))
+        ≤ 4 * ((n + 1) * (n + 1)) +
+          48 * (n + 1) * (n + 1) := hsum
+    _ = 52 * ((n + 1) * (n + 1)) := h52
+    _ ≤ 256 * ((n + 1) * (n + 1)) := hfinal
+    _ = 256 * (n + 1) ^ 2 := by
+      simp [pow_two, Nat.mul_assoc]
+
+#print axioms MCore.Real.P01GlobalParserBound.phase_correct_at_budget
+#print axioms MCore.Real.P01GlobalParserBound.parserProofBudget_le_parserTimeBound
+
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
 
