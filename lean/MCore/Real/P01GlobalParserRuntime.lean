@@ -213,6 +213,108 @@ theorem leaf_afterEnd_roundtrip_nonempty_active_exact
   rw [hcanon'] at hrun
   exact hrun
 
+
+/-- Exact terminal count when the last active slot is consumed exactly at end
+of source. -/
+theorem leaf_afterEnd_inactive_exhausted_accepts_exact
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log')
+    (hzero : activeSlots log' = 0) :
+    ∃ right : List (Option Bool),
+      parserMachine.run (log.length + 2)
+        (CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+          (none :: List.replicate pad (none : Option Bool))
+          log none) =
+        CanonicalSATParserLeafSourceProof.leafAcceptConfig pad right := by
+  let right := log'.map some ++ [none]
+  refine ⟨right, ?_⟩
+  rw [show log.length + 2 = (log.length + 1) + 1 by omega]
+  rw [MachineRunLemmas.run_add]
+  rw [leaf_afterEnd_inactive_to_source_exact
+    (List.replicate pad (none : Option Bool)) log log' hpop hzero]
+  have hstep :=
+    CanonicalSATParserLeafSourceProof.leaf16_exhausted_accepts
+      pad hpad right
+  simpa [TM.run, right] using hstep
+
+/-- Exact terminal count when the last active slot is consumed while residual
+source remains. -/
+theorem leaf_afterEnd_inactive_residual_rejects_exact
+    (pad : Nat)
+    (tail : BitString)
+    (htail : tail ≠ [])
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log')
+    (hzero : activeSlots log' = 0) :
+    ∃ cfg : Configuration (Fin 25) (Option Bool),
+      parserMachine.run (log.length + 2)
+        (CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+          (none :: tail.reverse.map some ++
+            List.replicate pad (none : Option Bool))
+          log none) = cfg ∧
+      parserMachine.halting cfg.state = true ∧
+      parserAccepting cfg.state = false := by
+  rcases P01GlobalParserSimulation.nonempty_eq_reverse_append_last tail htail with
+    ⟨rest, last, htailShape⟩
+  subst tail
+  let sourceLeft : List (Option Bool) :=
+    some last :: (rest.map some ++ List.replicate pad (none : Option Bool))
+  let right := log'.map some ++ [none]
+  let cfg :=
+    CanonicalSATParserTerminalBranches.leafResidualRejectConfig
+      pad last rest right
+  refine ⟨cfg, ?_, ?_, ?_⟩
+  · rw [show log.length + 2 = (log.length + 1) + 1 by omega]
+    rw [MachineRunLemmas.run_add]
+    have hsource :=
+      leaf_afterEnd_inactive_to_source_exact
+        sourceLeft log log' hpop hzero
+    rw [show
+      parserMachine.run (log.length + 1)
+        (CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+          (none :: (rest.reverse ++ [last]).reverse.map some ++
+            List.replicate pad (none : Option Bool))
+          log none) =
+        CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+          16 sourceLeft (log'.map some ++ [none]) by
+      simpa [sourceLeft, List.map_append, List.append_assoc] using hsource]
+    have hstep :=
+      CanonicalSATParserTerminalBranches.leaf16_residual_rejects
+        pad last rest right
+    simpa [TM.run, cfg, right, sourceLeft] using hstep
+  · exact
+      CanonicalSATParserTerminalBranches.leafResidualRejectConfig_halted
+        pad last rest right
+  · simp [cfg, CanonicalSATParserTerminalBranches.leafResidualRejectConfig,
+      parserAccepting]
+
+/-- Exact terminal count when source is exhausted but an older active slot
+remains after the leaf pop. -/
+theorem leaf_afterEnd_active_exhausted_rejects_exact
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log')
+    (hactive : activeSlots log' ≠ 0) :
+    ∃ right : List (Option Bool),
+      parserMachine.run (log.length + 2)
+        (CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+          (none :: List.replicate pad (none : Option Bool))
+          log none) =
+        CanonicalSATParserLeafSourceProof.leafRejectConfig pad right := by
+  let right := log'.map some ++ [none]
+  refine ⟨right, ?_⟩
+  rw [show log.length + 2 = (log.length + 1) + 1 by omega]
+  rw [MachineRunLemmas.run_add]
+  rw [leaf_afterEnd_active_to_source_exact
+    (List.replicate pad (none : Option Bool)) log log' hpop hactive]
+  have hstep :=
+    CanonicalSATParserLeafSourceProof.leaf17_exhausted_rejects
+      pad hpad right
+  simpa [TM.run, right] using hstep
+
 #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_active_to_source_exact
 #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_inactive_to_source_exact
 #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_roundtrip_nonempty_active_exact
