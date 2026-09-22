@@ -368,6 +368,157 @@ theorem parser_compose_scale_succ_exact_to_budget
     parserMachine (phaseConfig 4 parentPad parentBits parentLog)
     hbudget hsmall
 
+
+/-- Generic bounded leaf phase.  INPUT and CONST instantiate this with their
+already-certified head-to-pop-search macro. -/
+theorem leaf_head_halts_budget
+    (pad : Nat) (log : SlotLog)
+    (bits tail : BitString) (head : Head)
+    (hpad : 0 < pad)
+    (hactive : activeSlots log ≠ 0)
+    (hlt : tail.length < bits.length)
+    (hshape : bits = head.encode ++ tail)
+    (hhead :
+      parserMachine.run
+          (CanonicalSATParserPhaseMacroProof.headWorkFuel
+            head tail.length log.length)
+          (phaseConfig 4 pad bits log) =
+        CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+          (none :: tail.reverse.map some ++
+            List.replicate
+              (pad + head.encode.length)
+              (none : Option Bool))
+          log none)
+    (hchild :
+      ∀ log' : SlotLog,
+        popSlot log = some log' →
+        activeSlots log' ≠ 0 →
+        tail ≠ [] →
+        parserMachine.HaltsWithin
+          (phaseRuntimeBudget
+            (pad + head.encode.length) log' tail)
+          (phaseConfig 4
+            (pad + head.encode.length) tail log')) :
+    parserMachine.HaltsWithin
+      (phaseRuntimeBudget pad log bits)
+      (phaseConfig 4 pad bits log) := by
+  rcases popSlot_exists_of_active log hactive with ⟨log', hpop⟩
+  let hs :=
+    CanonicalSATParserPhaseMacroProof.headWorkFuel
+      head tail.length log.length
+  by_cases hzero : activeSlots log' = 0
+  · by_cases htail : tail = []
+    · subst tail
+      let steps := hs + (log.length + 2)
+      rcases leaf_afterEnd_inactive_exhausted_accepts_exact
+          (pad + head.encode.length) (by omega)
+          log log' hpop hzero with ⟨right, hleaf⟩
+      have hrun :
+          parserMachine.run steps (phaseConfig 4 pad bits log) =
+            CanonicalSATParserLeafSourceProof.leafAcceptConfig
+              (pad + head.encode.length) right := by
+        dsimp [steps, hs]
+        rw [MachineRunLemmas.run_add, hhead]
+        exact hleaf
+      have hhalt :
+          parserMachine.HaltsWithin steps
+            (phaseConfig 4 pad bits log) := by
+        unfold TM.HaltsWithin
+        rw [hrun]
+        exact parserMachine_halts_accept
+      have hprefBound :=
+        phasePrefixTerminal_le_unit pad hpad head [] log
+      have hsteps :
+          steps ≤ phaseRuntimeUnit pad log bits := by
+        dsimp [steps, hs]
+        rw [hshape]
+        simpa using hprefBound
+      exact parser_terminal_halt_to_budget
+        pad log bits steps hsteps hhalt
+    · let steps := hs + (log.length + 2)
+      rcases leaf_afterEnd_inactive_residual_rejects_exact
+          (pad + head.encode.length)
+          tail htail log log' hpop hzero with
+        ⟨cfg, hleaf, hhaltCfg, _⟩
+      have hhalt :
+          parserMachine.HaltsWithin steps
+            (phaseConfig 4 pad bits log) := by
+        unfold TM.HaltsWithin
+        dsimp [steps, hs]
+        rw [MachineRunLemmas.run_add, hhead, hleaf]
+        exact hhaltCfg
+      have hprefBound :=
+        phasePrefixTerminal_le_unit pad hpad head tail log
+      have hsteps :
+          steps ≤ phaseRuntimeUnit pad log bits := by
+        dsimp [steps, hs]
+        rw [hshape]
+        simpa using hprefBound
+      exact parser_terminal_halt_to_budget
+        pad log bits steps hsteps hhalt
+  · by_cases htail : tail = []
+    · subst tail
+      let steps := hs + (log.length + 2)
+      rcases leaf_afterEnd_active_exhausted_rejects_exact
+          (pad + head.encode.length) (by omega)
+          log log' hpop hzero with ⟨right, hleaf⟩
+      have hrun :
+          parserMachine.run steps (phaseConfig 4 pad bits log) =
+            CanonicalSATParserLeafSourceProof.leafRejectConfig
+              (pad + head.encode.length) right := by
+        dsimp [steps, hs]
+        rw [MachineRunLemmas.run_add, hhead]
+        exact hleaf
+      have hhalt :
+          parserMachine.HaltsWithin steps
+            (phaseConfig 4 pad bits log) := by
+        unfold TM.HaltsWithin
+        rw [hrun]
+        exact parserMachine_halts_reject
+      have hprefBound :=
+        phasePrefixTerminal_le_unit pad hpad head [] log
+      have hsteps :
+          steps ≤ phaseRuntimeUnit pad log bits := by
+        dsimp [steps, hs]
+        rw [hshape]
+        simpa using hprefBound
+      exact parser_terminal_halt_to_budget
+        pad log bits steps hsteps hhalt
+    · have hchild' := hchild log' hpop hzero htail
+      let k := (log.length + 1) + (tail.length + 1)
+      let steps := hs + k
+      have hleaf :=
+        leaf_afterEnd_roundtrip_any_nonempty_active_exact
+          (pad + head.encode.length) (by omega)
+          tail htail log log' hpop hzero
+      have hpref :
+          ConfigRightBlankEq
+            (parserMachine.run steps
+              (phaseConfig 4 pad bits log))
+            (phaseConfig 4
+              (pad + head.encode.length) tail log') := by
+        dsimp [steps, k, hs]
+        rw [MachineRunLemmas.run_add, hhead]
+        exact hleaf
+      have hscale :
+          phaseRuntimeScale
+              (pad + head.encode.length) log' tail =
+            phaseRuntimeScale pad log bits := by
+        rw [hshape]
+        exact phaseRuntimeScale_pop_same
+          pad head tail log log' hpop
+      have hprefBound0 :=
+        phasePrefixLinear_le_unit pad hpad head tail log
+      have hprefBound :
+          steps ≤ phaseRuntimeUnit pad log bits := by
+        dsimp [steps, k, hs]
+        rw [hshape]
+        simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+          hprefBound0
+      exact parser_compose_same_scale_rightBlank_to_budget
+        pad (pad + head.encode.length)
+        log log' bits tail steps hlt hscale hprefBound hpref hchild'
+
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
 
