@@ -17,7 +17,6 @@ theorem head_encode_length_ge_three
   cases h with
   | input i =>
       simp [Head.encode]
-      omega
   | const b =>
       cases b <;> decide
   | not => decide
@@ -32,7 +31,9 @@ def macroIterationBound : TimeBound :=
 /-- The macro budget is polynomial. -/
 theorem macroIterationBound_poly :
     PolynomialTimeBound macroIterationBound := by
-  exact ⟨16, 1, fun n => Nat.le_refl _⟩
+  refine ⟨16, 1, ?_⟩
+  intro n
+  simp [macroIterationBound, pow_succ]
 
 /-- At most n+1 macro iterations can occur on an n-bit source because every
 successful iteration consumes at least one source bit; malformed paths halt
@@ -57,12 +58,13 @@ theorem global_budget_dominates
         n + 1 = 1 * (n + 1) := by simp
         _ ≤ (n + 1) * (n + 1) :=
           Nat.mul_le_mul_right (n + 1) hp
-        _ = (n + 1) ^ 2 := by simp
+        _ = (n + 1) ^ 2 := by
+          simp [pow_succ, Nat.mul_assoc]
     exact Nat.mul_le_mul_left 4 hs
   have hiter :
       (n + 1) * (16 * (n + 1)) =
         16 * (n + 1) ^ 2 := by
-    simp [Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
+    simp [pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
   rw [hiter]
   calc
     2 * n + 4 + 16 * (n + 1) ^ 2
