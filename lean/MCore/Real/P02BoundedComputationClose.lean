@@ -237,7 +237,7 @@ theorem leftVar_injective_valid
   refine ⟨rfl, rfl, ?_⟩
   apply symbolCode_injective
   unfold leftVar at h
-  omega
+  exact Nat.add_left_cancel h
 
 theorem rightVar_injective_valid
     (M : PolyDTMCandidate) (x : BitString) (t s₁ i₁ s₂ i₂ : Nat)
@@ -263,7 +263,7 @@ theorem rightVar_injective_valid
   refine ⟨rfl, rfl, ?_⟩
   apply symbolCode_injective
   unfold rightVar at h
-  omega
+  exact Nat.add_left_cancel h
 
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
