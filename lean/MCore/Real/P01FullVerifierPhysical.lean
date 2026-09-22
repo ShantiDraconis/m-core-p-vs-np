@@ -88,6 +88,48 @@ theorem stackPop_push_inverse
       some (v, valueStackTape basePrefix stack) := by
   rfl
 
+
+/-- Exact representation of the mutable Boolean stack on the physical tape.
+The immutable source/witness prefix is carried explicitly as basePrefix. -/
+def PhysicalStackRep
+    (tape : Tape (Option Bool))
+    (basePrefix : List (Option Bool))
+    (stack : List Bool) : Prop :=
+  tape = valueStackTape basePrefix stack
+
+theorem physicalStackRep_empty
+    (basePrefix : List (Option Bool)) :
+    PhysicalStackRep (valueStackTape basePrefix []) basePrefix [] := by
+  rfl
+
+theorem physicalStackRep_push
+    {tape : Tape (Option Bool)}
+    {basePrefix : List (Option Bool)}
+    {stack : List Bool}
+    (v : Bool)
+    (hrep : PhysicalStackRep tape basePrefix stack) :
+    PhysicalStackRep
+      (stackPushCert basePrefix v stack)
+      basePrefix (v :: stack) := by
+  rfl
+
+theorem physicalStackRep_pop
+    (basePrefix : List (Option Bool))
+    (stack : List Bool) :
+    PhysicalStackRep
+      (valueStackTape basePrefix stack)
+      basePrefix stack := by
+  rfl
+
+theorem physicalStackRep_preserves_prefix
+    {tape : Tape (Option Bool)}
+    {basePrefix : List (Option Bool)}
+    {stack : List Bool}
+    (hrep : PhysicalStackRep tape basePrefix stack) :
+    tape.left = basePrefix := by
+  rw [hrep]
+  cases stack <;> rfl
+
 /-- Exact remaining realization object.  It is intentionally not inhabited
 here: an inhabitant must be one fixed finite-control TM and must simulate the
 certified logical stack semantics on the real verifier tape. -/
@@ -138,6 +180,8 @@ theorem physical_realization_closes_full_verifier
 #print axioms MCore.Real.P01FullVerifierPhysical.readWitnessIndexed_correct
 #print axioms MCore.Real.P01FullVerifierPhysical.source_end_preserves_witness_and_source
 #print axioms MCore.Real.P01FullVerifierPhysical.stackPop_push_inverse
+#print axioms MCore.Real.P01FullVerifierPhysical.physicalStackRep_push
+#print axioms MCore.Real.P01FullVerifierPhysical.physicalStackRep_preserves_prefix
 #print axioms MCore.Real.P01FullVerifierPhysical.physical_realization_closes_full_verifier
 
 end P01FullVerifierPhysical
