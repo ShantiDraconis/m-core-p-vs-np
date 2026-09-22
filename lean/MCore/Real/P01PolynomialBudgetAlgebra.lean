@@ -28,7 +28,7 @@ theorem degreeBound_add
         cT * (n + 1) ^ k + cU * (n + 1) ^ k :=
       Nat.add_le_add (hT n) (hU n)
     _ = (cT + cU) * (n + 1) ^ k := by
-      omega
+      rw [Nat.add_mul]
 
 theorem degreeBound_add3
     {T U V : TimeBound} {k : Nat}
