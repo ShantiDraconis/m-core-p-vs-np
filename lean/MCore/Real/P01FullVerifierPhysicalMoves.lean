@@ -75,7 +75,8 @@ theorem execMoves_moveLeftSeq {Symbol : Type}
   induction n generalizing t with
   | zero => rfl
   | succ n ih =>
-      simp [moveLeftSeq, List.replicate_succ, execMoves, repeatMove, ih]
+      simpa [moveLeftSeq, List.replicate_succ, execMoves, repeatMove] using
+        ih (Tape.move blank .left t)
 
 /-- Repeated right motion is exactly structural iteration of the primitive move. -/
 theorem execMoves_moveRightSeq {Symbol : Type}
@@ -85,7 +86,8 @@ theorem execMoves_moveRightSeq {Symbol : Type}
   induction n generalizing t with
   | zero => rfl
   | succ n ih =>
-      simp [moveRightSeq, List.replicate_succ, execMoves, repeatMove, ih]
+      simpa [moveRightSeq, List.replicate_succ, execMoves, repeatMove] using
+        ih (Tape.move blank .right t)
 
 
 /-- After n+1 left moves, the head contains the n-th cell of the original
