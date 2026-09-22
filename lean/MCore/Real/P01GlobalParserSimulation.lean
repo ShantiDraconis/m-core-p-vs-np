@@ -1345,8 +1345,11 @@ theorem phaseSemantics_global
                       (pad + (Head.encode (.input i)).length) right := by
                 rw [MachineRunLemmas.run_add]
                 dsimp [hs]
-                rw [hhead']
-                simpa using hleaf
+                have hhead0 := hhead'
+                simp only [List.length_nil, List.reverse_nil, List.map_nil,
+                  List.nil_append] at hhead0
+                rw [hhead0]
+                exact hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (23 : Fin 25) := by
@@ -1414,8 +1417,11 @@ theorem phaseSemantics_global
                       (pad + (Head.encode (.input i)).length) right := by
                 rw [MachineRunLemmas.run_add]
                 dsimp [hs]
-                rw [hhead']
-                simpa using hleaf
+                have hhead0 := hhead'
+                simp only [List.length_nil, List.reverse_nil, List.map_nil,
+                  List.nil_append] at hhead0
+                rw [hhead0]
+                exact hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
@@ -1513,8 +1519,11 @@ theorem phaseSemantics_global
                       (pad + (Head.encode (.const b)).length) right := by
                 rw [MachineRunLemmas.run_add]
                 dsimp [hs]
-                rw [hhead']
-                simpa using hleaf
+                have hhead0 := hhead'
+                simp only [List.length_nil, List.reverse_nil, List.map_nil,
+                  List.nil_append] at hhead0
+                rw [hhead0]
+                exact hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (23 : Fin 25) := by
@@ -1582,8 +1591,11 @@ theorem phaseSemantics_global
                       (pad + (Head.encode (.const b)).length) right := by
                 rw [MachineRunLemmas.run_add]
                 dsimp [hs]
-                rw [hhead']
-                simpa using hleaf
+                have hhead0 := hhead'
+                simp only [List.length_nil, List.reverse_nil, List.map_nil,
+                  List.nil_append] at hhead0
+                rw [hhead0]
+                exact hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
