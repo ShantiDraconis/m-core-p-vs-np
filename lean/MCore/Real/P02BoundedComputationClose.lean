@@ -835,6 +835,16 @@ theorem setSymbolClauses_satisfied_of_assignment
       (varAt a) (decide (a = target))).2 (hvals a)
   simp [evalClause, hlit]
 
+theorem evalCNF_append_eq
+    (sigma : Assignment) (a b : CNF) :
+    evalCNF sigma (a ++ b) =
+      Bool.and (evalCNF sigma a) (evalCNF sigma b) := by
+  induction a with
+  | nil =>
+      rfl
+  | cons c cs ih =>
+      simp [evalCNF, ih, Bool.and_assoc]
+
 theorem executionAssignment_initialCNF
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
     evalCNF (executionAssignment M x t) (initialCNF M x t) = true := by
@@ -894,10 +904,7 @@ theorem executionAssignment_initialCNF
       simpa [cfg, initialTMConfig] using hright i hi a
     exact evalCNF_member_true sigma _ clause hc hcell
   unfold initialCNF
-  simp only [evalCNF]
-  simpa [sigma] using
-    show Bool.and hs (Bool.and hh (Bool.and hl hr)) = true by
-      simp [hs, hh, hl, hr]
+  simp [evalCNF_append_eq, hs, hh, hl, hr, sigma]
 
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
