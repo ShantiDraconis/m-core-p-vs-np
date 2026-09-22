@@ -265,7 +265,7 @@ theorem activeSlots_reverse
   | nil => rfl
   | cons b bs ih =>
       rw [List.reverse_cons, activeSlots_append, ih]
-      cases b <;> simp [activeSlots]
+      cases b <;> simp [activeSlots, Nat.add_comm]
 
 theorem rightBlankEq_append_none
     (right : List (Option Bool)) :
@@ -340,12 +340,25 @@ theorem leaf_afterEnd_active_to_source
   rw [CanonicalSATParserLeafPopProof.leaf_pop_decomposed
     pre suffix (none :: sourceLeft) hsuffix]
   rw [CanonicalSATParserLeafReturnProof.leafAfterPop_eq_check]
-  rw [CanonicalSATParserLeafReturnProof.leaf14_active_run
-    pre.reverse sourceLeft
-    (some false ::
-      (List.replicate suffix.length (some false) ++ [none]))
-    hpreRev]
-  simp only [List.reverse_reverse]
+  have hscan :=
+    CanonicalSATParserLeafReturnProof.leaf14_active_run
+      pre.reverse sourceLeft
+      (some false ::
+        (List.replicate suffix.length (some false) ++ [none]))
+      hpreRev
+  have hscan' :
+      parserMachine.run (pre.length + 1)
+        (CanonicalSATParserLeafReturnProof.leafCheckConfig 14
+          pre.reverse sourceLeft
+          (some false ::
+            (List.replicate suffix.length (some false) ++ [none]))) =
+        CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
+          sourceLeft
+          (pre.map some ++
+            (some false ::
+              (List.replicate suffix.length (some false) ++ [none])))) := by
+    simpa using hscan
+  rw [hscan']
   exact congrArg
     (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
       (17 : Fin 25) sourceLeft)
@@ -389,12 +402,25 @@ theorem leaf_afterEnd_inactive_to_source
   rw [CanonicalSATParserLeafPopProof.leaf_pop_decomposed
     pre suffix (none :: sourceLeft) hsuffix]
   rw [CanonicalSATParserLeafReturnProof.leafAfterPop_eq_check]
-  rw [CanonicalSATParserLeafReturnProof.leaf14_all_false_run
-    pre.reverse sourceLeft
-    (some false ::
-      (List.replicate suffix.length (some false) ++ [none]))
-    hpreRevAll]
-  simp only [List.reverse_reverse]
+  have hscan :=
+    CanonicalSATParserLeafReturnProof.leaf14_all_false_run
+      pre.reverse sourceLeft
+      (some false ::
+        (List.replicate suffix.length (some false) ++ [none]))
+      hpreRevAll
+  have hscan' :
+      parserMachine.run (pre.length + 1)
+        (CanonicalSATParserLeafReturnProof.leafCheckConfig 14
+          pre.reverse sourceLeft
+          (some false ::
+            (List.replicate suffix.length (some false) ++ [none]))) =
+        CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 16
+          sourceLeft
+          (pre.map some ++
+            (some false ::
+              (List.replicate suffix.length (some false) ++ [none])))) := by
+    simpa using hscan
+  rw [hscan']
   exact congrArg
     (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
       (16 : Fin 25) sourceLeft)
