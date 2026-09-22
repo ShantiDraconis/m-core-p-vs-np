@@ -436,6 +436,144 @@ theorem popSlot_exists_of_active
       refine ⟨log', ?_⟩
       simpa using h
 
+
+/-- Active-slot count is invariant under reversal of the physical log. -/
+theorem activeSlots_reverse
+    (log : SlotLog) :
+    activeSlots log.reverse = activeSlots log := by
+  induction log with
+  | nil =>
+      rfl
+  | cons b bs ih =>
+      rw [List.reverse_cons, activeSlots_append, ih]
+      cases b <;> simp [activeSlots]
+
+/-- Appending one explicit blank on the far right does not change the
+represented infinite tape. -/
+theorem rightBlankEq_append_none
+    (core : List (Option Bool)) :
+    RightBlankEq
+      (core ++ [none])
+      core := by
+  exact ⟨core, 1, 0, by simp, by simp⟩
+
+/-- The source-check configuration constructor respects right-blank
+equivalence. This is the transport needed after a physical rightmost-slot pop,
+whose certified macro may retain one explicit trailing blank. -/
+theorem leafSourceCheckConfig_respects_right_blank
+    (q : Fin 25)
+    (sourceLeft : List (Option Bool))
+    {ra rb : List (Option Bool)}
+    (h : RightBlankEq ra rb) :
+    ConfigRightBlankEq
+      (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig q sourceLeft ra)
+      (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig q sourceLeft rb) := by
+  unfold CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+  exact move_left_preserves q h
+
+/-- Core leaf-return composition used by the global simulation.
+
+If a leaf successfully pops one active slot, an older active slot remains, and
+unread source is nonempty, the concrete machine returns to TAG_0 with exactly
+the abstract popped log, modulo finitely many explicit right blanks.  No parser
+or endpoint hypothesis is introduced. -/
+theorem leaf_afterEnd_roundtrip_nonempty_active
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (last : Bool)
+    (rest : BitString)
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log')
+    (hactive : activeSlots log' ≠ 0) :
+    ∃ steps : Nat,
+      ConfigRightBlankEq
+        (parserMachine.run steps
+          (CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+            (none :: some last ::
+              (rest.map some ++
+                List.replicate pad (none : Option Bool)))
+            log none))
+        (phaseConfig 4 pad (rest.reverse ++ [last]) log') := by
+  rcases popSlot_decompose log log' hpop with
+    ⟨pre, suffix, hlog, hlog', hsuffix⟩
+  have hsuffixRep :
+      suffix = List.replicate suffix.length false :=
+    CanonicalSATParserLeafPopProof.all_false_eq_replicate suffix hsuffix
+  have hsuffixZero : activeSlots suffix = 0 := by
+    exact (activeSlots_eq_zero_iff_all_false suffix).mpr hsuffix
+  have hpreActive : activeSlots pre ≠ 0 := by
+    intro hpreZero
+    apply hactive
+    rw [hlog', activeSlots_append]
+    simp [activeSlots, hsuffixZero, hpreZero]
+  have hpreRevActive : activeSlots pre.reverse ≠ 0 := by
+    rw [activeSlots_reverse]
+    exact hpreActive
+  let sourceLeft : List (Option Bool) :=
+    some last ::
+      (rest.map some ++ List.replicate pad (none : Option Bool))
+  let popRight : List (Option Bool) :=
+    List.replicate suffix.length (some false) ++ [none]
+  let kPop : Nat := suffix.length + 1
+  let kCheck : Nat := pre.length + 1
+  let kReturn : Nat := rest.length + 2
+  refine ⟨kPop + (kCheck + kReturn), ?_⟩
+  rw [MachineRunLemmas.run_add]
+  have hpopRun :=
+    CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+      pre suffix
+      (none :: sourceLeft)
+      hsuffix
+  change
+    parserMachine.run kPop
+      (CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+        (none :: sourceLeft) log none) =
+      CanonicalSATParserLeafPopProof.leafAfterPopConfig
+        pre.reverse (none :: sourceLeft) popRight at hpopRun
+  rw [hlog]
+  rw [hpopRun]
+  rw [CanonicalSATParserLeafReturnProof.leafAfterPop_eq_check]
+  rw [MachineRunLemmas.run_add]
+  have hcheck :=
+    CanonicalSATParserLeafReturnProof.leaf14_active_run
+      pre.reverse sourceLeft
+      (some false :: popRight)
+      hpreRevActive
+  change
+    parserMachine.run kCheck
+      (CanonicalSATParserLeafReturnProof.leafCheckConfig 14
+        pre.reverse sourceLeft (some false :: popRight)) =
+      CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
+        sourceLeft
+        (pre.map some ++ (some false :: popRight)) at hcheck
+  rw [hcheck]
+  have hright :
+      pre.map some ++ (some false :: popRight) =
+        log'.map some ++ [none] := by
+    rw [hlog', hsuffixRep]
+    simp [popRight, List.map_append, List.append_assoc]
+  rw [hright]
+  have hcfg :
+      ConfigRightBlankEq
+        (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
+          sourceLeft (log'.map some ++ [none]))
+        (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
+          sourceLeft (log'.map some)) :=
+    leafSourceCheckConfig_respects_right_blank 17 sourceLeft
+      (rightBlankEq_append_none (log'.map some))
+  have hrun :=
+    parser_run_respects_right_blank kReturn hcfg
+  have hcanon :=
+    CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
+      pad hpad last rest log'
+  change
+    parserMachine.run kReturn
+      (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
+        sourceLeft (log'.map some)) =
+      phaseConfig 4 pad (rest.reverse ++ [last]) log' at hcanon
+  rw [hcanon] at hrun
+  exact hrun
+
 #print axioms MCore.Real.P01GlobalParserSimulation.parser_step_respects_right_blank
 #print axioms MCore.Real.P01GlobalParserSimulation.parser_run_respects_right_blank
 #print axioms MCore.Real.P01GlobalParserSimulation.parseHead_rest_length_lt
