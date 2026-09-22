@@ -12,8 +12,9 @@ open CanonicalCircuitBits
 open CanonicalSATSlotParserSpec
 open CanonicalSATParserMachine
 
-/-- Configuration whose head is the first source bit and whose suffix contains
-all non-source work data. -/
+/-- Configuration whose head is the first source bit. The suffix is the work
+region only; this helper inserts exactly one blank delimiter between unread
+source and work data. When unread is empty the head itself is that delimiter. -/
 def sourceConfig
     (q : Fin 25)
     (left : List (Option Bool))
@@ -32,7 +33,7 @@ def sourceConfig
         tape :=
           { left := left
             head := some b
-            right := bs.map some ++ suffix } }
+            right := bs.map some ++ none :: suffix } }
 
 @[simp] theorem sourceConfig_state
     (q : Fin 25)
