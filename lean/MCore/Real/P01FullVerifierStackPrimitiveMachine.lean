@@ -69,7 +69,8 @@ theorem push_run_one
       pushStep b (physicalStackV2Tape witness source stack padding) := by
   cases b <;>
     simp [stackPrimitiveMachine, pushConfig, pushFalse, pushTrue, haltPush,
-      haltPopFalse, haltPopTrue, reject, TM.run, TM.step, pushStep, Tape.write]
+      haltPopFalse, haltPopTrue, reject, TM.run, TM.step, pushStep,
+      physicalStackV2Tape, Tape.write, Tape.move]
 
 theorem push_run_one_rep
     (witness source : BitString)
