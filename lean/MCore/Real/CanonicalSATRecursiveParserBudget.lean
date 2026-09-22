@@ -9,13 +9,12 @@ open CanonicalFinalProof
 open CanonicalSATParserMachine
 open CanonicalSATSlotParserSpec
 
-theorem nat_pow_one_local (x : Nat) : x ^ 1 = x := by
-  change x * 1 = x
-  simp
+theorem nat_pow_one_local (x : Nat) : x ^ 1 = x :=
+  Nat.pow_one x
 
 theorem nat_pow_two_local (x : Nat) : x ^ 2 = x * x := by
-  change x * (x * 1) = x * x
-  simp
+  rw [show (2 : Nat) = Nat.succ 1 by rfl]
+  rw [Nat.pow_succ, Nat.pow_one]
 
 /-- Every successfully parsed constructor head consumes at least three source
 bits. INPUT may consume more because of its unary payload. -/
@@ -41,8 +40,9 @@ theorem macroIterationBound_poly :
     PolynomialTimeBound macroIterationBound := by
   refine ⟨16, 1, ?_⟩
   intro n
-  rw [nat_pow_one_local]
-  rfl
+  unfold macroIterationBound
+  rw [Nat.pow_one]
+  exact Nat.le_refl _
 
 /-- At most n+1 macro iterations can occur on an n-bit source because every
 successful iteration consumes at least one source bit; malformed paths halt
