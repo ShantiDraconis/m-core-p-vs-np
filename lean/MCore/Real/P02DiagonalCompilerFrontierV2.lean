@@ -6,8 +6,11 @@ namespace P02DiagonalCompilerFrontierV2
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
+open CanonicalSATBoundary
 open P02DiagonalFrontier
 open P02UniversalFailureAlgebra
+open P02SemanticSelfEmbedding
+open P02TerminalFrontier
 
 structure DiagonalCompilerV2 where
   compile : PolyDTMCandidate → BitString
