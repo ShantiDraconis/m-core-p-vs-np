@@ -20,7 +20,6 @@ theorem identityCost_poly :
   refine ⟨1, 1, ?_⟩
   intro n
   simp [identityCost]
-  omega
 
 def identityNormalization : EncodingNormalization :=
   { canonicalToExternal := id
