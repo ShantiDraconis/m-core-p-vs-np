@@ -45,3 +45,6 @@ import MCore.Real.P02FinalAttack
 
 import MCore.Real.P02KleeneSelfReferenceBridge
 
+
+import MCore.Real.P02KleeneE1
+import MCore.Real.P02KleeneBridgeAudit
