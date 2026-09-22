@@ -13,7 +13,9 @@ def canonicalTimeBound (coefficient exponent : Nat) : TimeBound :=
 theorem canonicalTimeBound_poly
     (coefficient exponent : Nat) :
     PolynomialTimeBound (canonicalTimeBound coefficient exponent) := by
-  exact ⟨coefficient, exponent, fun _ => le_rfl⟩
+  refine ⟨coefficient, exponent, ?_⟩
+  intro n
+  exact Nat.le_refl _
 
 def normalizedCandidate
     (M : PolyDTMCandidate)
