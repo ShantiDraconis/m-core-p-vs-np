@@ -42,6 +42,12 @@ jobs:
       - name: Preserve prior G2.0 and G2.1/G2.2 lane
         run: |
           set -euo pipefail
-          git diff --exit-code attack/g21-g22-only-20260922 --             lean/MCore/Real/P02G21G22Attack.lean             lean/MCore/Real/P02TerminalFrontier.lean || {
-              echo "Prior attack/frozen logic changed"; exit 1;
-            }
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          if git diff --name-only "$BASE_SHA" HEAD -- \
+            lean/MCore/Real/P02G21G22Attack.lean \
+            lean/MCore/Real/P02TerminalFrontier.lean \
+            lean/MCore/Real/P02CandidateNormalization.lean | grep -q .; then
+            echo "Prior attack/frozen logic changed"
+            exit 1
+          fi
