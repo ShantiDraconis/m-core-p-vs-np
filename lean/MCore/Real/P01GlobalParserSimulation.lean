@@ -674,7 +674,11 @@ theorem q10_true_payload_rejects
       rw [show 0 + 1 = 1 by rfl]
       rw [TM.run, phaseConfig_state,
         CanonicalSATParserHeadProof.not_halted_10]
-      simp [phaseConfig, parserMachine, TM.step, Tape.write, Tape.move]
+      change parserMachine.run 0
+          (parserMachine.step
+            (phaseConfig 10 pad [] log)) =
+        phaseConfig 24 pad [] log
+      rfl
   | succ n ih =>
       rw [show Nat.succ n + 1 = (n + 1) + 1 by omega]
       simp only [List.replicate_succ]
@@ -689,7 +693,8 @@ theorem q10_true_payload_rejects
         exact CanonicalSATParserHeadProof.step_erase_right
           10 10 pad true (List.replicate n true) log rfl
       rw [hstep]
-      simpa [Nat.add_assoc] using ih (pad + 1)
+      simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+        ih (pad + 1)
 
 /-- If parseHead fails at TAG_0, the concrete finite-control parser reaches the
 canonical reject state 24. -/
@@ -737,7 +742,7 @@ theorem phase_parseHead_none_state_rejects
                     CanonicalCircuitBits.decodeNat rest = none := by
                   cases hd : CanonicalCircuitBits.decodeNat rest with
                   | none =>
-                      exact hd
+                      rfl
                   | some p =>
                       rcases p with ⟨i, tail⟩
                       simp [parseHead, hd] at hnone
