@@ -8,6 +8,9 @@ namespace CanonicalSATParserBinaryHeadProof
 open CanonicalFinalProof
 open CanonicalSATSlotParserSpec
 open CanonicalSATParserMachine
+open CanonicalSATParserHeadProof
+open CanonicalSATParserWorkScanProof
+open CanonicalSATParserLeafSourceProof
 open CanonicalSATParserPhaseMacroProof
 open CanonicalSATParserReturnProof
 open CanonicalSATParserTerminalBranches
@@ -24,7 +27,7 @@ theorem and_head_roundtrip_nonempty
     (rest : BitString)
     (log : SlotLog) :
     parserMachine.run
-        (headWorkFuel .and (rest.reverse ++ [last]).length log.length +
+        (headWorkFuel Head.and (rest.reverse ++ [last]).length log.length +
           (log.length + 2 + (rest.length + 1)))
         (phaseConfig 4 pad
           (Head.encode .and ++ (rest.reverse ++ [last])) log) =
@@ -48,7 +51,7 @@ theorem or_head_roundtrip_nonempty
     (rest : BitString)
     (log : SlotLog) :
     parserMachine.run
-        (headWorkFuel .or (rest.reverse ++ [last]).length log.length +
+        (headWorkFuel Head.or (rest.reverse ++ [last]).length log.length +
           (log.length + 2 + (rest.length + 1)))
         (phaseConfig 4 pad
           (Head.encode .or ++ (rest.reverse ++ [last])) log) =
@@ -71,14 +74,14 @@ theorem and_head_exhausted_rejects
     (hpad : 0 < pad)
     (log : SlotLog) :
     parserMachine.run
-        (headWorkFuel .and 0 log.length + (log.length + 2))
+        (headWorkFuel Head.and 0 log.length + (log.length + 2))
         (phaseConfig 4 pad (Head.encode .and) log) =
       leafRejectConfig
         (pad + (Head.encode .and).length)
         ((pushSlot log).map some) := by
   rw [MachineRunLemmas.run_add]
   have hHead :
-      parserMachine.run (headWorkFuel .and 0 log.length)
+      parserMachine.run (headWorkFuel Head.and 0 log.length)
           (phaseConfig 4 pad (Head.encode .and) log) =
         afterEndMoveLeft 20
           (none :: List.replicate (pad + (Head.encode .and).length)
@@ -104,14 +107,14 @@ theorem or_head_exhausted_rejects
     (hpad : 0 < pad)
     (log : SlotLog) :
     parserMachine.run
-        (headWorkFuel .or 0 log.length + (log.length + 2))
+        (headWorkFuel Head.or 0 log.length + (log.length + 2))
         (phaseConfig 4 pad (Head.encode .or) log) =
       leafRejectConfig
         (pad + (Head.encode .or).length)
         ((pushSlot log).map some) := by
   rw [MachineRunLemmas.run_add]
   have hHead :
-      parserMachine.run (headWorkFuel .or 0 log.length)
+      parserMachine.run (headWorkFuel Head.or 0 log.length)
           (phaseConfig 4 pad (Head.encode .or) log) =
         afterEndMoveLeft 20
           (none :: List.replicate (pad + (Head.encode .or).length)
