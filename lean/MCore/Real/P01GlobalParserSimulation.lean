@@ -175,6 +175,10 @@ theorem parser_step_respects_right_blank
   rcases d with ⟨ds, dt⟩
   rcases dt with ⟨dl, dh, dr⟩
   rcases h with ⟨hs, hl, hh, hr⟩
+  change cs = ds at hs
+  change cl = dl at hl
+  change ch = dh at hh
+  change RightBlankEq cr dr at hr
   subst ds
   subst dl
   subst dh
