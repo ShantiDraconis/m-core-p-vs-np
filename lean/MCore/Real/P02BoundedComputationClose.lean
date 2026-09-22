@@ -1,4 +1,4 @@
-import Std.Tactic.Omega
+import Lean.Elab.Tactic.Omega
 import MCore.Real.P02BoundedComputationSoundness
 
 namespace MCore
