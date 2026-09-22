@@ -50,7 +50,7 @@ theorem transitionCaseCNF_mem_transitionsCNF
     alphabet.flatMap fun a' => transitionCaseCNF M x t s q a'
   refine ⟨block, ?_, ?_⟩
   · unfold block
-    simp
+    exact List.mem_ofFn.mpr ⟨q, rfl⟩
   · unfold block
     apply List.mem_flatMap.mpr
     refine ⟨a, ?_, hc⟩
