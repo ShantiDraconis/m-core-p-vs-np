@@ -1,0 +1,80 @@
+name: ATK FINAL_EXTERNAL two-gap attempt
+
+on:
+  push:
+    branches:
+      - attack/final-external-two-gap-attempt-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  two-gap-attempt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Fail-closed source policy
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P01MachineConstructionAttempt.lean
+            lean/MCore/Real/G21PointwiseAttempt.lean
+            lean/MCore/Real/FinalExternalIntegrationAttempt.lean
+          )
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then
+            exit 1
+          fi
+          if grep -nE '(^|[^[:alnum:]_])admit([^[:alnum:]_]|$)' "${files[@]}"; then
+            exit 1
+          fi
+          sorry_count="$(grep -hEc '^[[:space:]]*sorry[[:space:]]*$' "${files[@]}" | awk '{s+=$1} END {print s+0}')"
+          test "$sorry_count" -eq 2
+          echo "OPEN_SORRY_COUNT=$sorry_count"
+
+      - name: Build exact two-gap attempt
+        run: |
+          set -euo pipefail
+          lake build \
+            MCore.Real.P01MachineConstructionAttempt \
+            MCore.Real.G21PointwiseAttempt \
+            MCore.Real.FinalExternalIntegrationAttempt
+
+      - name: Audit certified conditional logic
+        run: |
+          set -euo pipefail
+          cat >/tmp/FinalExternalTwoGapAttemptAudit.lean <<'EOF'
+          import MCore.Real.FinalExternalIntegrationAttempt
+          #print axioms MCore.Real.G21PointwiseAttempt.G21Pointwise_iff_P02Target
+          #print axioms MCore.Real.G21PointwiseAttempt.G21Pointwise_iff_SAT_notin_P
+          #print axioms MCore.Real.FinalExternalIntegrationAttempt.finalExternalGap_closes_if_two_gaps_close
+          #print axioms MCore.Real.FinalExternalTwoGap.final_external_gap_of_two_gap
+          #print axioms MCore.Real.FinalExternalTwoGap.final_external_two_gap_closes
+          EOF
+          lake env lean /tmp/FinalExternalTwoGapAttemptAudit.lean 2>&1 | tee /tmp/two-gap-clean-audit.log
+          if grep -q 'sorryAx' /tmp/two-gap-clean-audit.log; then
+            exit 1
+          fi
+
+      - name: Preserve non-issuance boundary
+        run: |
+          set -euo pipefail
+          grep -qE 'def FINAL_ROOT[[:space:]]*:[[:space:]]*Option FinalExternalGap[[:space:]]*:=[[:space:]]*none' \
+            lean/MCore/Real/FinalExternalIntegrationAttempt.lean
+          grep -qE 'def FINAL_EXTERNAL_ISSUED[[:space:]]*:[[:space:]]*Bool[[:space:]]*:=[[:space:]]*false' \
+            lean/MCore/Real/FinalExternalIntegrationAttempt.lean
+          grep -qE 'def FINAL_PROOF[[:space:]]*:[[:space:]]*Nat[[:space:]]*:=[[:space:]]*0' \
+            lean/MCore/Real/FinalExternalIntegrationAttempt.lean
+          echo "P01_ENDPOINT=OPEN_IMPLEMENTATION"
+          echo "P02_ENDPOINT=OPEN_MATH"
+          echo "FINAL_ROOT=null"
+          echo "FINAL_EXTERNAL_ISSUED=false"
+          echo "FINAL_PROOF=0/7"
+          echo "TWO_GAP_ATTEMPT=COMPILES_WITH_EXACTLY_TWO_OPEN_SORRIES_IF_JOB_SUCCEEDS"
