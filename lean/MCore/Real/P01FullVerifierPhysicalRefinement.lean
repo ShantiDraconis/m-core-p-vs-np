@@ -47,7 +47,7 @@ theorem physical_execInstr_input
       (physicalStackTape basePrefix (sigma i :: stack))
       basePrefix (sigma i :: stack) := by
   constructor
-  · rfl
+  · simp [execInstr]
   · rfl
 
 /-- Constant instructions push their Boolean payload. -/
@@ -60,7 +60,9 @@ theorem physical_execInstr_const
     PhysicalStackRep
       (physicalStackTape basePrefix (b :: stack))
       basePrefix (b :: stack) := by
-  constructor <;> rfl
+  constructor
+  · simp [execInstr]
+  · rfl
 
 theorem physical_execInstr_neg
     (sigma : Assignment)
