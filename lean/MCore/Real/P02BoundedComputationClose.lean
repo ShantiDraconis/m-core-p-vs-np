@@ -416,7 +416,7 @@ noncomputable def executionAssignment
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) : Assignment :=
   fun n => by
     classical
-    exact decide (
+    exact if _h : (
       (∃ s : Nat, s ≤ t ∧
         n = stateVar M t s
           (M.machine.run s (initialTMConfig M.machine x)).state) ∨
@@ -430,7 +430,7 @@ noncomputable def executionAssignment
       (∃ s i : Nat, s ≤ t ∧ i < radius x t ∧
         n = rightVar M x t s i
           ((M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
-            i M.machine.blank)))
+            i M.machine.blank))) then true else false
 
 theorem executionAssignment_stateVar
     (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
@@ -468,7 +468,8 @@ theorem executionAssignment_stateVar
               ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
                 i M.machine.blank)) := by
       exact Or.inl ⟨s, hs, rfl⟩
-    simp [executionAssignment, hp]
+    simp only [executionAssignment]
+    rw [dif_pos hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -510,7 +511,8 @@ theorem executionAssignment_stateVar
             i M.machine.blank) hs heq
     have hfalse :
         executionAssignment M x t (stateVar M t s q) = false := by
-      simp [executionAssignment, hnot]
+      simp only [executionAssignment]
+      rw [dif_neg hnot]
     rw [hfalse]
     simp [cfg, hq]
 
@@ -549,7 +551,8 @@ theorem executionAssignment_headVar
               ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
                 i M.machine.blank)) := by
       exact Or.inr (Or.inl ⟨s, hs, rfl⟩)
-    simp [executionAssignment, hp]
+    simp only [executionAssignment]
+    rw [dif_pos hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -591,7 +594,8 @@ theorem executionAssignment_headVar
             i M.machine.blank) hs heq
     have hfalse :
         executionAssignment M x t (headVar M t s a) = false := by
-      simp [executionAssignment, hnot]
+      simp only [executionAssignment]
+      rw [dif_neg hnot]
     rw [hfalse]
     simp [cfg, ha]
 
@@ -634,7 +638,8 @@ theorem executionAssignment_leftVar
               ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
                 i' M.machine.blank)) := by
       exact Or.inr (Or.inr (Or.inl ⟨s, i, hs, hi, rfl⟩))
-    simp [executionAssignment, hp]
+    simp only [executionAssignment]
+    rw [dif_pos hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -676,7 +681,8 @@ theorem executionAssignment_leftVar
             i' M.machine.blank) hs hi heq
     have hfalse :
         executionAssignment M x t (leftVar M x t s i a) = false := by
-      simp [executionAssignment, hnot]
+      simp only [executionAssignment]
+      rw [dif_neg hnot]
     rw [hfalse]
     simp [cfg, ha]
 
@@ -719,7 +725,8 @@ theorem executionAssignment_rightVar
               ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
                 i' M.machine.blank)) := by
       exact Or.inr (Or.inr (Or.inr ⟨s, i, hs, hi, rfl⟩))
-    simp [executionAssignment, hp]
+    simp only [executionAssignment]
+    rw [dif_pos hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -761,7 +768,8 @@ theorem executionAssignment_rightVar
           simpa [cfg, hinj.1, hinj.2.1] using hinj.2.2)
     have hfalse :
         executionAssignment M x t (rightVar M x t s i a) = false := by
-      simp [executionAssignment, hnot]
+      simp only [executionAssignment]
+      rw [dif_neg hnot]
     rw [hfalse]
     simp [cfg, ha]
 
