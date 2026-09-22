@@ -70,8 +70,13 @@ theorem parserNTM_successors_singleton
   rcases htr :
       parserMachine.transition config.state config.tape.head with
     ⟨q, symbol, direction⟩
-  simp [NTM.successors, parserNTM, tmAsSingletonNTM, htr,
-    parserNTM_stepBranch_eq_parser_step]
+  have hstep :
+      parserNTM.stepBranch config (q, symbol, direction) =
+        parserMachine.step config := by
+    have h := parserNTM_stepBranch_eq_parser_step config
+    rw [htr] at h
+    exact h
+  simp [NTM.successors, parserNTM, tmAsSingletonNTM, htr, hstep]
 
 /-- Singleton-branch execution is extensionally identical to deterministic
     parserMachine.run, including preservation of halted configurations. -/
