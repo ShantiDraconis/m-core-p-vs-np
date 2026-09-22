@@ -42,17 +42,23 @@ theorem transitionCaseCNF_mem_transitionsCNF
     (hc : c ∈ transitionCaseCNF M x t s q a) :
     c ∈ transitionsCNF M x t := by
   unfold transitionsCNF
-  simp only [List.mem_flatMap, List.mem_range]
-  refine ⟨s, hs, ?_⟩
+  apply List.mem_flatMap.mpr
+  refine ⟨s, by simpa using hs, ?_⟩
   unfold transitionStepCNF
-  simp only [List.mem_flatten, List.mem_ofFn, List.mem_flatMap]
-  refine ⟨alphabet.flatMap fun a' => transitionCaseCNF M x t s q a', ?_, ?_⟩
-  · exact ⟨q, rfl⟩
-  · refine ⟨a, ?_, hc⟩
+  apply List.mem_flatten.mpr
+  let block : List Clause :=
+    alphabet.flatMap fun a' => transitionCaseCNF M x t s q a'
+  refine ⟨block, ?_, ?_⟩
+  · unfold block
+    simp
+  · unfold block
+    apply List.mem_flatMap.mpr
+    refine ⟨a, ?_, hc⟩
     cases a with
     | none => simp [alphabet]
     | some b =>
         cases b <;> simp [alphabet]
+
 
 theorem active_transition_case_true
     (sigma : Assignment)
@@ -70,7 +76,7 @@ theorem active_transition_case_true
     htableau
   intro c hc
   simp only [boundedExecTableauCNF, List.mem_append]
-  exact Or.inr (Or.inl
+  exact Or.inl (Or.inr
     (transitionCaseCNF_mem_transitionsCNF M x t s hs
       config.state config.tape.head c hc))
 
