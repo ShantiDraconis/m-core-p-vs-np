@@ -6,6 +6,7 @@ namespace P02SemanticMismatchAlgebra
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
+open CanonicalSATBoundary
 open P02DiagonalFrontier
 open P02UniversalFailureAlgebra
 
