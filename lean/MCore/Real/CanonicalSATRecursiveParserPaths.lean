@@ -256,9 +256,10 @@ theorem replicate_none_succ_append
   have hOne :
       List.replicate 1 (none : Option Bool) = [none] := rfl
   rw [hOne] at hcat
-  rw [← List.append_assoc, hcat]
-  congr 1
-  omega
+  have hidx : n + 1 + 1 = n + 2 := by omega
+  rw [hidx] at hcat
+  have happ := congrArg (fun xs : List (Option Bool) => xs ++ left) hcat
+  simpa [List.append_assoc] using happ
 
 theorem run_var_payload
     (left : List (Option Bool)) (n : Nat) (tail : BitString)
@@ -309,6 +310,7 @@ theorem consumeHead_run
       have hlen :
           (Head.input i).encode.length = 3 + (i + 1) := by
         simp [Head.encode, encodeNat_length_local]
+        omega
       have hbits :
           (Head.input i).encode ++ tail =
             false :: false :: false :: (encodeNat i ++ tail) := by
@@ -324,13 +326,11 @@ theorem consumeHead_run
           List.replicate 3 (none : Option Bool) =
             [(none : Option Bool), none, none] := rfl
       rw [hthree] at hcat
-      calc
-        List.replicate (i + 1) none ++ [none, none, none] ++ left
-            = List.replicate ((i + 1) + 3) none ++ left := by
-                rw [← List.append_assoc, hcat]
-        _ = List.replicate (3 + (i + 1)) none ++ left := by
-              congr 2
-              omega
+      have happ := congrArg
+        (fun xs : List (Option Bool) => xs ++ left) hcat
+      have hcomm : (i + 1) + 3 = 3 + (i + 1) := by omega
+      rw [hcomm] at happ
+      simpa [List.append_assoc] using happ
   | const b =>
       cases b <;>
         simp [Head.encode, continuationState, run_const_false_tag,
