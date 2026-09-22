@@ -1,84 +1,88 @@
-# P02 Universal Witness Chain
+# P02 Universal Witness Integrated Chain
 
-Status: INTEGRATION SOURCE / OPEN_MATH PRODUCER PRESERVED
+Status: **INTEGRATED SOURCE / OPEN_MATH PRODUCER PRESERVED**
 
-This file makes the existing separation-witness chain explicit without adding
-any new mathematical assumption.
+## Provenance reused
 
-## Canonical chain
+- frozen source: `frozen/p02-g2-2-wiring-green-38db71b4`
+- source SHA: `38db71b416906e5b7138774842e91d3e367aad09`
+- certified G2.2 run: `35722282451`
+- semantic diagonal snapshot: `f29f5984a92d7681887801e50ec2b6143d9f7ee4`
+- literal fixed-point firewall: `26e721ab25425d62312945200baa9c127910d320`
+- literal fixed-point countermodel: `9d6dd9575a61782c70137abff348356f805bc654`
+- canonical normalization: `d72e53bc7f667c75a432226a23adc59a255c5652`
+
+The complete 58-module `lean/MCore/Real` dependency snapshot from the G2.2
+frozen lane is imported into the integration branch so the P02 endpoint is
+buildable as one graph rather than as detached historical files.
+
+## Exact canonical chain
 
 ```text
-MCore.SeparationWitnessData                         [existing K10 payload]
-        |
-        | k10DataToUniversalWitness
-        v
-MCore.Real.P02WitnessChain.UniversalWitness        [alias of LowerBoundWitness]
+UniversalWitness
+  = FailureGenerator SATTarget
         |
         | Nonempty
         v
-UniversalWitnessExists                             [OPEN_MATH producer]
+UniversalWitnessExists / UniversalWitnessProducer     OPEN_MATH
         |
-        | universalWitnessExists_iff_g21PointwiseCore
+        | iff
         v
-G21PointwiseCore                                   [same fixed-model lower bound]
+G21Pointwise
+  = forall PolyDTMCandidate, exists x, not CorrectAt SATTarget x
         |
-        | g21PointwiseCore_to_p02TargetCore
+        | iff
         v
-P02TargetCore                                      [separation endpoint]
+P02Target
+  = SATFailGap circuitBitEncoding
+        |
+        | iff
+        v
+not InP SATTarget
 ```
 
-## Existing sources reused
+## Stronger reusable diagonal route
 
-- `lean/MCore/K10.lean`
-  - `SeparationWitnessData`
-  - `separation_witness_not_in_P`
-  - `separation_witness_separates`
-  - `k10_open_obligation`
-- `lean/MCore/BackwardAudit/OrientedWitnessBoundary.lean`
-  - `LowerBoundWitness`
-  - `LowerBoundWitness.toSeparationWitness`
-  - `typeB_closes_separation`
-- `audit/EndpointCompression.lean`
-  - historical `FixedWitness`
-  - historical `FixedK10WitnessData`
-  - `F2_FixedK10WitnessExistence`
-  - `fixed_k10_to_witness`
-  - `fixed_witness_implies_final`
-  - `endpoint_compression`
-- `audit/FinalEndpoint.lean`
-  - historical final separation statement and firewall.
-- `audit/ORIENTED_WITNESS_BOUNDARY.md`
-  - records that the substantive missing payload is a genuine `not_in_p` proof.
-
-## Adapter policy
-
-The new importable file
-`lean/MCore/Real/P02UniversalWitnessChain.lean` does not claim that
-`UniversalWitnessExists` is inhabited. It only proves the downstream
-equivalences/composition.
-
-The exact terminal producer remains:
-
-```lean
-UniversalWitnessProducer C
-= UniversalWitnessExists C
-= Nonempty (LowerBoundWitness C.inP C.inNP)
+```text
+DiagonalCounterexampleWitness M
+        |
+        v
+DiagonalFamily
+        |
+        v
+DiagonalFixedPointGap
+        |
+        v
+UniversalWitnessExists
+        |
+        v
+G21Pointwise -> P02Target
 ```
 
-Equivalently, for a fixed classical model, one must produce a language `L`
-with both:
+The semantic clocked transformer is retained because its validity, constant
+length and semantic flip theorems are proved. Its literal fixed-point route is
+also retained, but explicitly as a falsified sub-route:
+`no_universal_literal_fixed_point`.
 
-```lean
-C.inNP L
-¬ C.inP L
+## K9/K10 route
+
+K9/K10 remain connected as a generic separation route:
+`SeparationWitnessData -> LowerBoundWitness -> generic separation`.
+They are not silently identified with the SAT-specific G21 producer. To enter
+the canonical P02 chain they must produce the fixed canonical SAT target and
+its genuine `not_in_p` proof.
+
+## Final internal endpoint
+
+```text
+SATInNPGap circuitBitEncoding
+        +
+UniversalWitnessExists
+        |
+        v
+PneqNP
 ```
 
-No C12 finite evidence, diagonalization label, metadata, or endpoint wiring is
-accepted as a substitute for this producer.
-
-## Promotion rule
-
-This lane may be promoted from OPEN_MATH only after a kernel-checked term of
-`UniversalWitnessProducer C` exists for the intended fixed official model,
-with no `sorry`, `admit`, hidden axiom/oracle, circular import, or semantic
-weakening.
+The theorem `p01_universalWitness_closes_internal` performs this final
+composition conditionally. The integration does not claim an inhabitant of
+`UniversalWitnessProducer`.
