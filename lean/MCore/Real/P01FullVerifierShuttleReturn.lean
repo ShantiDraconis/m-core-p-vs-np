@@ -4,6 +4,7 @@ namespace MCore
 namespace Real
 namespace P01FullVerifierShuttleReturn
 
+open CanonicalFinalProof
 open P01FullVerifierPhysicalMoves
 open P01FullVerifierPhysicalShuttles
 
@@ -17,7 +18,7 @@ theorem execMoves_append {Symbol : Type}
       simp [execMoves, ih]
 
 theorem witness_roundTrip_exec
-    (witness source : BitString) (i : Nat) :
+    (witness source : CanonicalFinalProof.BitString) (i : Nat) :
     execMoves (none : Option Bool)
       (moveToWitnessSeq source i ++ moveToStackSeq source i)
       (sourceEndTape witness source) =
