@@ -1,0 +1,272 @@
+name: ATK P01 clean operational SAT
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - attack/material-orientation-clean-v2-20260921
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Fail-closed source hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/Model.lean
+            lean/MCore/Real/CanonicalFinalProof.lean
+            lean/MCore/Real/CanonicalSATBoundary.lean
+            lean/MCore/Real/CanonicalCircuitBits.lean
+            lean/MCore/Real/CanonicalCircuitBitsInverse.lean
+            lean/MCore/Real/CanonicalSATSlotParserSpec.lean
+            lean/MCore/Real/CanonicalSATWitness.lean
+            lean/MCore/Real/CanonicalSATVerifier.lean
+            lean/MCore/Real/CanonicalSATNTMAttack.lean
+            lean/MCore/Real/CanonicalSATParserAttack.lean
+            lean/MCore/Real/CanonicalSATNatParserAttack.lean
+            lean/MCore/Real/CanonicalSATVarPayloadMachine.lean
+            lean/MCore/Real/CanonicalSATTagConsumerMachine.lean
+            lean/MCore/Real/CanonicalSATParserTapeLayout.lean
+            lean/MCore/Real/CanonicalSATParserInitMachine.lean
+            lean/MCore/Real/CanonicalSATSlotLog.lean
+            lean/MCore/Real/CanonicalSATSlotLogMachine.lean
+            lean/MCore/Real/CanonicalSATFrameAttack.lean
+            lean/MCore/Real/CanonicalSATFrameMachineV2.lean
+            lean/MCore/Real/P01VerifiedRelation.lean
+            lean/MCore/Real/P01ComponentFailProof.lean
+            lean/MCore/Real/P01RecursiveFiniteControlFrontier.lean
+            lean/MCore/Real/CanonicalSATRecursiveParserSimulation.lean
+            lean/MCore/Real/CanonicalSATRecursiveParserInitProof.lean
+            lean/MCore/Real/CanonicalSATRecursiveParserPaths.lean
+            lean/MCore/Real/CanonicalSATRecursiveParserBoundaryProof.lean
+            lean/MCore/Real/CanonicalSATRecursiveParserBudget.lean
+            lean/MCore/Real/CanonicalSATRecursiveParserWorkScans.lean
+            lean/MCore/Real/P02TerminalFrontier.lean
+            lean/MCore/Real/P02CandidateNormalization.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
+            exit 1
+          fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then
+            exit 1
+          fi
+
+      - name: Build recovered P01 chain
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.CanonicalSATRecursiveParserInitProof MCore.Real.CanonicalSATRecursiveParserPaths MCore.Real.CanonicalSATRecursiveParserBoundaryProof MCore.Real.CanonicalSATRecursiveParserBudget MCore.Real.CanonicalSATRecursiveParserWorkScans MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier MCore.Real.P02CandidateNormalization
+
+      - name: Axiom audit canonical decoder inverse
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01InverseAudit.lean <<'EOF'
+          import MCore.Real.CanonicalCircuitBitsInverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeNat_inverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuitCore_inverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_inverse
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_eq_some_iff
+          #print axioms MCore.Real.CanonicalCircuitBitsInverse.exists_decodeCircuit_iff_exists_exact_encoding
+          EOF
+          lake env lean /tmp/P01InverseAudit.lean 2>&1 | tee /tmp/p01-inverse.log
+          if grep -q 'sorryAx' /tmp/p01-inverse.log; then exit 1; fi
+
+      - name: Axiom audit slot parser spec
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01SlotAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATSlotParserSpec
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_encode_append
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_encodeCircuit
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_invalid_11
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParse_truncated_tag
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_sound
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_exists_exact_encoding
+          #print axioms MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_decodeCircuit
+          EOF
+          lake env lean /tmp/P01SlotAudit.lean 2>&1 | tee /tmp/p01-slot.log
+          if grep -q 'sorryAx' /tmp/p01-slot.log; then exit 1; fi
+
+      - name: Axiom audit variable payload consumer
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01VarAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATVarPayloadMachine
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.var_run_encodeNat
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.var_payload_halts_on_encodeNat
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.var_payload_success_postcondition
+          #print axioms MCore.Real.CanonicalSATVarPayloadMachine.varPayloadTimeBound_poly
+          EOF
+          lake env lean /tmp/P01VarAudit.lean 2>&1 | tee /tmp/p01-var.log
+          if grep -q 'sorryAx' /tmp/p01-var.log; then exit 1; fi
+
+      - name: Axiom audit tag consumer
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01TagConsumerAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATTagConsumerMachine
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_input_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_const_false_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_const_true_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_not_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_and_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_or_tag
+          #print axioms MCore.Real.CanonicalSATTagConsumerMachine.run_invalid_11_tag
+          EOF
+          lake env lean /tmp/P01TagConsumerAudit.lean 2>&1 | tee /tmp/p01-tag-consumer.log
+          if grep -q 'sorryAx' /tmp/p01-tag-consumer.log; then exit 1; fi
+
+      - name: Axiom audit parser tape initializer
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01InitAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATParserInitMachine
+          #print axioms MCore.Real.CanonicalSATParserTapeLayout.tapeWord_parserBoundaryTape
+          #print axioms MCore.Real.CanonicalSATParserTapeLayout.boundary_disposition_total
+          #print axioms MCore.Real.CanonicalSATParserInitMachine.parserInitTimeBound_poly
+          #print axioms MCore.Real.CanonicalSATParserInitMachine.parserInit_scan_bit
+          #print axioms MCore.Real.CanonicalSATParserInitMachine.parserInit_write_one_slot
+          EOF
+          lake env lean /tmp/P01InitAudit.lean 2>&1 | tee /tmp/p01-init.log
+          if grep -q 'sorryAx' /tmp/p01-init.log; then exit 1; fi
+
+      - name: Axiom audit slot log
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01SlotLogAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATSlotLog
+          #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_pushSlot
+          #print axioms MCore.Real.CanonicalSATSlotLog.popSlot_none_iff
+          #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_popSlot
+          #print axioms MCore.Real.CanonicalSATSlotLog.pushSlot_represents
+          #print axioms MCore.Real.CanonicalSATSlotLog.popSlot_represents
+          EOF
+          lake env lean /tmp/P01SlotLogAudit.lean 2>&1 | tee /tmp/p01-slot-log.log
+          if grep -q 'sorryAx' /tmp/p01-slot-log.log; then exit 1; fi
+
+      - name: Axiom audit slot-log machines
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01SlotLogMachineAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATSlotLogMachine
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.push_run
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.slotLogTimeBound_poly
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.push_semantic
+          #print axioms MCore.Real.CanonicalSATSlotLogMachine.pop_semantic
+          EOF
+          lake env lean /tmp/P01SlotLogMachineAudit.lean 2>&1 | tee /tmp/p01-slot-log-machine.log
+          if grep -q 'sorryAx' /tmp/p01-slot-log-machine.log; then exit 1; fi
+
+      - name: Axiom audit recursive parser simulation boundary
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01RecursiveParserSimulationAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATRecursiveParserSimulation
+          #print axioms MCore.Real.CanonicalSATRecursiveParserSimulation.simulation_correct
+          #print axioms MCore.Real.CanonicalSATRecursiveParserSimulation.simulation_closes_operational_gap
+          #print axioms MCore.Real.CanonicalSATRecursiveParserSimulation.parserSimulationGap_closes
+          EOF
+          lake env lean /tmp/P01RecursiveParserSimulationAudit.lean 2>&1 | tee /tmp/p01-recursive-parser-simulation.log
+          if grep -q 'sorryAx' /tmp/p01-recursive-parser-simulation.log; then exit 1; fi
+
+      - name: Axiom audit parser boundary bridge
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01BoundaryAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATRecursiveParserBoundaryProof
+          #print axioms MCore.Real.CanonicalSATRecursiveParserBoundaryProof.boundaryConfig_eq_sourceConfig
+          #print axioms MCore.Real.CanonicalSATRecursiveParserBoundaryProof.parser_initializes_to_sourceConfig
+          EOF
+          lake env lean /tmp/P01BoundaryAudit.lean 2>&1 | tee /tmp/p01-boundary.log
+          if grep -q 'sorryAx' /tmp/p01-boundary.log; then exit 1; fi
+
+      - name: Axiom audit parser macro budget
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01BudgetAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATRecursiveParserBudget
+          #print axioms MCore.Real.CanonicalSATRecursiveParserBudget.head_encode_length_ge_three
+          #print axioms MCore.Real.CanonicalSATRecursiveParserBudget.global_budget_dominates
+          #print axioms MCore.Real.CanonicalSATRecursiveParserBudget.one_iteration_plus_rest_fits
+          EOF
+          lake env lean /tmp/P01BudgetAudit.lean 2>&1 | tee /tmp/p01-budget.log
+          if grep -q 'sorryAx' /tmp/p01-budget.log; then exit 1; fi
+
+      - name: Axiom audit parser work scans
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01WorkScanAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATRecursiveParserWorkScans
+          #print axioms MCore.Real.CanonicalSATRecursiveParserWorkScans.run_source_11_to_delimiter
+          #print axioms MCore.Real.CanonicalSATRecursiveParserWorkScans.run_source_18_to_delimiter
+          #print axioms MCore.Real.CanonicalSATRecursiveParserWorkScans.run_log_12_to_end
+          #print axioms MCore.Real.CanonicalSATRecursiveParserWorkScans.run_log_19_to_end
+          EOF
+          lake env lean /tmp/P01WorkScanAudit.lean 2>&1 | tee /tmp/p01-work-scans.log
+          if grep -q 'sorryAx' /tmp/p01-work-scans.log; then exit 1; fi
+
+      - name: Axiom audit concrete frame machine
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01FrameAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATFrameMachineV2
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_push
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_pop
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_certificate
+          #print axioms MCore.Real.CanonicalSATFrameMachineV2.blank_normalized_frame_tape_operational_closed
+          EOF
+          lake env lean /tmp/P01FrameAudit.lean 2>&1 | tee /tmp/p01-frame.log
+          if grep -q 'sorryAx' /tmp/p01-frame.log; then exit 1; fi
+
+      - name: Axiom audit P02 terminal frontier
+        run: |
+          set -euo pipefail
+          cat >/tmp/P02Audit.lean <<'EOF'
+          import MCore.Real.P02TerminalFrontier
+          #print axioms MCore.Real.P02TerminalFrontier.p02_target_iff_sat_not_in_p
+          #print axioms MCore.Real.P02TerminalFrontier.p01_p02_close_internal_separation
+          #print axioms MCore.Real.P02TerminalFrontier.pnp_final_pair_closes
+          EOF
+          lake env lean /tmp/P02Audit.lean 2>&1 | tee /tmp/p02-terminal.log
+          if grep -q 'sorryAx' /tmp/p02-terminal.log; then exit 1; fi
+
+      - name: Axiom audit P02 candidate normalization
+        run: |
+          set -euo pipefail
+          cat >/tmp/P02NormAudit.lean <<'EOF'
+          import MCore.Real.P02CandidateNormalization
+          #print axioms MCore.Real.P02CandidateNormalization.correctAt_preserved_by_dominating_bound
+          #print axioms MCore.Real.P02CandidateNormalization.canonical_normalization
+          #print axioms MCore.Real.P02CandidateNormalization.normalizationWitness
+          EOF
+          lake env lean /tmp/P02NormAudit.lean 2>&1 | tee /tmp/p02-norm.log
+          if grep -q 'sorryAx' /tmp/p02-norm.log; then exit 1; fi
+
+      - name: Preserve P01 boundary
+        run: |
+          set -euo pipefail
+          grep -q 'CanonicalSATMachineClosure' lean/MCore/Real/CanonicalSATNTMAttack.lean
+          grep -q 'P01OperationalTarget' lean/MCore/Real/P01ComponentFailProof.lean
+          echo "P01_FRAME_SOURCE=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_HARD=OPEN"
+
+
+      - name: Run fail-closed certificate runner
+        run: |
+          set -euo pipefail
+          python3 certificado-runner/00_cert_runner.py || rc=$?
+          test "${rc:-0}" -eq 1
+          echo "P01_EXPECTED_OPEN=PASS"
