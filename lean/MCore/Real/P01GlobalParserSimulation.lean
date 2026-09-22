@@ -1362,7 +1362,7 @@ theorem phaseSemantics_active_by_length
       activeSlots log ≠ 0 →
       0 < pad →
       PhaseSemantics (bits.length + 1) pad log bits := by
-  apply Nat.strong_induction_on n
+  apply Nat.strongRecOn n
   intro n ih bits log pad hlen hactive hpad
   cases hparse : parseHead bits with
   | none =>
