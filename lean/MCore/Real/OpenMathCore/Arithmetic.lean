@@ -45,7 +45,8 @@ theorem bitWeight_le_length (x : BitString) :
   | nil => simp [bitWeight, bitLength]
   | cons b xs ih =>
       simp only [bitWeight, bitLength, List.length_cons]
-      exact Nat.add_le_add (bitNat_le_one b) ih
+      have hb : bitNat b ≤ 1 := bitNat_le_one b
+      omega
 
 theorem arithmeticMass_append (x y : BitString) :
     arithmeticMass (x ++ y) = arithmeticMass x + arithmeticMass y := by
