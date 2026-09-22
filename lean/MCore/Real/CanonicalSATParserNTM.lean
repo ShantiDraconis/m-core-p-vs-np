@@ -67,7 +67,10 @@ theorem parserNTM_stepBranch_eq_parser_step
 theorem parserNTM_successors_singleton
     (config : Configuration (Fin 25) (Option Bool)) :
     parserNTM.successors config = [parserMachine.step config] := by
-  simp [NTM.successors, parserNTM,
+  rcases htr :
+      parserMachine.transition config.state config.tape.head with
+    ⟨q, symbol, direction⟩
+  simp [NTM.successors, parserNTM, tmAsSingletonNTM, htr,
     parserNTM_stepBranch_eq_parser_step]
 
 /-- Singleton-branch execution is extensionally identical to deterministic
