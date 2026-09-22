@@ -12,29 +12,24 @@ open P02DiagonalFrontier
 open P02G21G22Attack
 open P02SemanticSelfEmbedding
 
-/-- Candidate halts within its own declared polynomial clock on one input. -/
 def DeclaredHalts
     (M : PolyDTMCandidate) (x : BitString) : Prop :=
   M.machine.HaltsWithin
     (M.timeBound x.length)
     (initialTMConfig M.machine x)
 
-/-- Candidate's declared acceptance bit agrees with canonical SAT on one input. -/
 def DeclaredSATMatch
     (M : PolyDTMCandidate) (x : BitString) : Prop :=
   AcceptsAtDeclaredBound M x ↔ SATBits circuitBitEncoding x
 
-/-- Semantic disagreement, split into the two Boolean directions. -/
 def SemanticMismatch
     (M : PolyDTMCandidate) (x : BitString) : Prop :=
   (AcceptsAtDeclaredBound M x ∧ ¬ SATBits circuitBitEncoding x) ∨
   (¬ AcceptsAtDeclaredBound M x ∧ SATBits circuitBitEncoding x)
 
-/-- Totality at the candidate's own declared clock. -/
 def DeclaredClockTotal (M : PolyDTMCandidate) : Prop :=
   ∀ x : BitString, DeclaredHalts M x
 
-/-- Semantic SAT correctness at the candidate's own declared clock. -/
 def DeclaredSATCorrect (M : PolyDTMCandidate) : Prop :=
   ∀ x : BitString, DeclaredSATMatch M x
 
@@ -48,14 +43,49 @@ theorem not_correctAt_iff_clock_or_match_failure
     (M : PolyDTMCandidate) (x : BitString) :
     ¬ M.CorrectAt (SATBits circuitBitEncoding) x ↔
       ¬ DeclaredHalts M x ∨ ¬ DeclaredSATMatch M x := by
-  rw [correctAt_iff_declared_halts_and_match]
-  tauto
+  constructor
+  · intro h
+    by_cases hH : DeclaredHalts M x
+    · right
+      intro hM
+      exact h ((correctAt_iff_declared_halts_and_match M x).mpr ⟨hH, hM⟩)
+    · exact Or.inl hH
+  · intro h hC
+    have hc :=
+      (correctAt_iff_declared_halts_and_match M x).mp hC
+    rcases h with hH | hM
+    · exact hH hc.1
+    · exact hM hc.2
 
 theorem not_declaredSATMatch_iff_semanticMismatch
     (M : PolyDTMCandidate) (x : BitString) :
     ¬ DeclaredSATMatch M x ↔ SemanticMismatch M x := by
   unfold DeclaredSATMatch SemanticMismatch
-  tauto
+  constructor
+  · intro h
+    by_cases hA : AcceptsAtDeclaredBound M x
+    · left
+      refine ⟨hA, ?_⟩
+      intro hS
+      apply h
+      constructor
+      · intro _
+        exact hS
+      · intro _
+        exact hA
+    · by_cases hS : SATBits circuitBitEncoding x
+      · exact Or.inr ⟨hA, hS⟩
+      · exfalso
+        apply h
+        constructor
+        · intro hAx
+          exact False.elim (hA hAx)
+        · intro hSx
+          exact False.elim (hS hSx)
+  · intro h hEq
+    rcases h with ⟨hA, hNS⟩ | ⟨hNA, hS⟩
+    · exact hNS (hEq.mp hA)
+    · exact hNA (hEq.mpr hS)
 
 theorem not_correctAt_iff_clock_or_semantic_mismatch
     (M : PolyDTMCandidate) (x : BitString) :
@@ -64,7 +94,6 @@ theorem not_correctAt_iff_clock_or_semantic_mismatch
   rw [not_correctAt_iff_clock_or_match_failure,
       not_declaredSATMatch_iff_semanticMismatch]
 
-/-- Pointwise G21 in its exact normalized two-mode form. -/
 def ClockOrSemanticFailure : Prop :=
   ∀ M : PolyDTMCandidate,
     ∃ x : BitString,
@@ -84,9 +113,17 @@ theorem not_declaredClockTotal_iff_exists_clock_failure
     (M : PolyDTMCandidate) :
     ¬ DeclaredClockTotal M ↔
       ∃ x : BitString, ¬ DeclaredHalts M x := by
-  unfold DeclaredClockTotal
-  push_neg
-  rfl
+  constructor
+  · intro hNotTotal
+    apply Classical.byContradiction
+    intro hNoWitness
+    apply hNotTotal
+    intro x
+    apply Classical.byContradiction
+    intro hx
+    exact hNoWitness ⟨x, hx⟩
+  · rintro ⟨x, hx⟩ hTotal
+    exact hx (hTotal x)
 
 theorem total_candidate_failure_iff_exists_semanticMismatch
     (M : PolyDTMCandidate)
@@ -106,8 +143,6 @@ theorem total_candidate_failure_iff_exists_semanticMismatch
       (not_correctAt_iff_clock_or_semantic_mismatch M x).mpr
         (Or.inr hmismatch)⟩
 
-/-- Universal G21 reduces exactly to: every candidate either violates its
-declared total clock, or has a semantic SAT mismatch. -/
 def TotalityOrSemanticCounterexample : Prop :=
   ∀ M : PolyDTMCandidate,
     ¬ DeclaredClockTotal M ∨
@@ -137,8 +172,6 @@ theorem g21_iff_totality_or_semantic_counterexample :
   exact g21_iff_clock_or_semantic_failure.trans
     clock_or_semantic_failure_iff_totality_or_semantic
 
-/-- A semantic self-code witness always supplies the semantic-mismatch branch;
-literal string fixed points are unnecessary for this implication. -/
 theorem self_embed_witness_gives_semanticMismatch
     (M : PolyDTMCandidate)
     (x : BitString)
