@@ -40,9 +40,19 @@ theorem stateVar_lt_headBase_valid
     (q : Fin (M.stateCount + 1))
     (hs : s ≤ t) :
     stateVar M t s q < headBase M t := by
-  unfold stateVar headBase stateSlots stateCount
-  have hq := q.isLt
-  omega
+  let n := stateCount M
+  have hn : 0 < n := by
+    simp [n, stateCount]
+  have hq : q.val < n := by
+    simpa [n, stateCount] using q.isLt
+  have hlocal : s * n + q.val < (s + 1) * n := by
+    calc
+      s * n + q.val < s * n + n := Nat.add_lt_add_left hq _
+      _ = (s + 1) * n := by omega
+  have hstep : (s + 1) * n ≤ (t + 1) * n := by
+    exact Nat.mul_le_mul_right n (Nat.succ_le_succ hs)
+  unfold stateVar headBase stateSlots
+  simpa [n] using Nat.lt_of_lt_of_le hlocal hstep
 
 theorem headVar_ge_headBase
     (M : PolyDTMCandidate) (t s : Nat) (a : Option Bool) :
@@ -72,10 +82,36 @@ theorem leftVar_lt_rightBase_valid
     (hs : s ≤ t)
     (hi : i < radius x t) :
     leftVar M x t s i a < rightBase M x t := by
+  let r := radius x t
+  have hr : 0 < r := by
+    simpa [r] using radius_pos x t
+  have ha : symbolCode a < 3 := symbolCode_lt_three a
+  have hcell : s * r + i < (s + 1) * r := by
+    calc
+      s * r + i < s * r + r := Nat.add_lt_add_left hi _
+      _ = (s + 1) * r := by omega
+  have htime : (s + 1) * r ≤ (t + 1) * r := by
+    exact Nat.mul_le_mul_right r (Nat.succ_le_succ hs)
+  have hslot : (s * r + i) * 3 + symbolCode a <
+      ((s + 1) * r) * 3 := by
+    have hcode :
+        (s * r + i) * 3 + symbolCode a <
+          (s * r + i) * 3 + 3 :=
+      Nat.add_lt_add_left ha _
+    have hnext :
+        (s * r + i) * 3 + 3 =
+          (s * r + i + 1) * 3 := by omega
+    have hsucc : s * r + i + 1 ≤ (s + 1) * r :=
+      Nat.succ_le_of_lt hcell
+    have hmul := Nat.mul_le_mul_right 3 hsucc
+    rw [hnext] at hcode
+    exact Nat.lt_of_lt_of_le hcode hmul
+  have hbound :
+      ((s + 1) * r) * 3 ≤ ((t + 1) * r) * 3 :=
+    Nat.mul_le_mul_right 3 htime
   unfold leftVar rightBase
-  have ha := symbolCode_lt_three a
-  have hr := radius_pos x t
-  omega
+  simpa [r, Nat.add_assoc] using
+    Nat.add_lt_add_left (Nat.lt_of_lt_of_le hslot hbound) (leftBase M x t)
 
 theorem rightVar_ge_rightBase
     (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
