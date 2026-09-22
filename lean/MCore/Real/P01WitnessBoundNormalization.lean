@@ -6,6 +6,7 @@ namespace P01WitnessBoundNormalization
 
 open CircuitK1
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open CanonicalSATWitness
 open CanonicalSATVerifier
 
