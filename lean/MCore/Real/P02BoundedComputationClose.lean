@@ -906,6 +906,58 @@ theorem executionAssignment_initialCNF
   unfold initialCNF
   simp [evalCNF_append_eq, hs, hh, hl, hr, sigma]
 
+
+theorem evalClause_true_of_member_true
+    (sigma : Assignment) (c : Clause) (l : Literal)
+    (hl : l ∈ c)
+    (htrue : evalLiteral sigma l = true) :
+    evalClause sigma c = true := by
+  induction c with
+  | nil =>
+      cases hl
+  | cons d ds ih =>
+      simp only [List.mem_cons] at hl
+      rcases hl with rfl | hl
+      · simp [evalClause, htrue]
+      · have ht := ih hl
+        simp [evalClause, ht]
+
+theorem acceptingStateLiteral_mem
+    (M : PolyDTMCandidate) (t : Nat)
+    (q : Fin (M.stateCount + 1))
+    (hacc : M.accepting q = true) :
+    pos (stateVar M t t q) ∈ acceptingStateLits M t := by
+  unfold acceptingStateLits
+  apply List.mem_filterMap.mpr
+  refine ⟨q, ?_, ?_⟩
+  · exact List.mem_ofFn.mpr ⟨q, rfl⟩
+  · simp [hacc]
+
+theorem executionAssignment_finalAcceptanceCNF
+    (M : PolyDTMCandidate) (x : BitString) (t : Nat)
+    (hacc : AcceptsAtFuel M x t) :
+    evalCNF (executionAssignment M x t)
+      (finalAcceptanceCNF M t) = true := by
+  let cfg := M.machine.run t (initialTMConfig M.machine x)
+  have hstate :
+      executionAssignment M x t (stateVar M t t cfg.state) = true := by
+    have h :=
+      executionAssignment_stateVar M x t t cfg.state (Nat.le_refl t)
+    simpa [cfg] using h
+  have hmem :
+      pos (stateVar M t t cfg.state) ∈ acceptingStateLits M t := by
+    apply acceptingStateLiteral_mem
+    simpa [AcceptsAtFuel, cfg] using hacc
+  have hlit :
+      evalLiteral (executionAssignment M x t)
+        (pos (stateVar M t t cfg.state)) = true := by
+    simp [evalLiteral, pos, hstate]
+  have hclause :
+      evalClause (executionAssignment M x t)
+        (acceptingStateLits M t) = true :=
+    evalClause_true_of_member_true _ _ _ hmem hlit
+  simpa [finalAcceptanceCNF, evalCNF] using hclause
+
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -1634,6 +1686,7 @@ def TableauCompletenessGap : Prop :=
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_stateVar
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_snapshot_matches
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_initialCNF
+#print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_finalAcceptanceCNF
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_headVar
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_leftVar
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_rightVar
