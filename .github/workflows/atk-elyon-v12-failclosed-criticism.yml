@@ -1,0 +1,47 @@
+name: atk-elyon-v12-failclosed-criticism
+
+on:
+  push:
+    branches:
+      - attack/elyon-v12-failclosed-criticism-20260922
+  pull_request:
+    branches:
+      - attack/g21-g22-only-20260922
+
+jobs:
+  failclosed-v12:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Additive-source hygiene
+        run: |
+          set -euo pipefail
+          FILE=lean/MCore/Real/ElyonFailClosedV12.lean
+          if grep -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$FILE"; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -n -E '^[[:space:]]*(@\\[[^]]*\\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' "$FILE"; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+
+      - name: Build v1.2 fail-closed module
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.ElyonFailClosedV12
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/ElyonFailClosedV12.lean 2>&1 | tee ElyonFailClosedV12.log
+          if grep -E 'sorryAx' ElyonFailClosedV12.log; then exit 1; fi
+
+      - name: Preserve prior G2.0 and G2.1/G2.2 lane
+        run: |
+          set -euo pipefail
+          git diff --exit-code attack/g21-g22-only-20260922 --             lean/MCore/Real/P02G21G22Attack.lean             lean/MCore/Real/P02TerminalFrontier.lean || {
+              echo "Prior attack/frozen logic changed"; exit 1;
+            }
