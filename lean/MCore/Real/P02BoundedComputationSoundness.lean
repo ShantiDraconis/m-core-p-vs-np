@@ -138,6 +138,35 @@ theorem snapshot_head_true
   simpa using hmatch.2.1 config.tape.head
 
 
+theorem acceptingStateLits_false_of_nonaccepting_snapshot
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (t : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hstate :
+      ∀ q : Fin (M.stateCount + 1),
+        sigma (stateVar M t t q) = decide (q = config.state))
+    (haccFalse : M.accepting config.state = false) :
+    evalClause sigma (acceptingStateLits M t) = false := by
+  classical
+  unfold acceptingStateLits
+  generalize hqs :
+      (List.ofFn fun q : Fin (M.stateCount + 1) => q) = qs
+  induction qs with
+  | nil =>
+      rfl
+  | cons q qs ih =>
+      by_cases hq : M.accepting q = true
+      · have hneq : q ≠ config.state := by
+          intro heq
+          subst q
+          simp [haccFalse] at hq
+        have hsigma : sigma (stateVar M t t q) = false := by
+          rw [hstate q]
+          simp [hneq]
+        simp [hq, evalClause, evalLiteral, pos, hsigma, ih]
+      · simp [hq, ih]
+
 theorem finalAcceptanceCNF_sound_of_snapshot
     (sigma : Assignment)
     (M : PolyDTMCandidate)
@@ -147,7 +176,6 @@ theorem finalAcceptanceCNF_sound_of_snapshot
     (hmatch : SnapshotMatches sigma M x t t config)
     (hfinal : evalCNF sigma (finalAcceptanceCNF M t) = true) :
     M.accepting config.state = true := by
-  classical
   have hclause :
       evalClause sigma (acceptingStateLits M t) = true := by
     simpa [finalAcceptanceCNF, evalCNF] using hfinal
@@ -155,11 +183,9 @@ theorem finalAcceptanceCNF_sound_of_snapshot
   · exact hacc
   · have haccFalse : M.accepting config.state = false := by
       cases h : M.accepting config.state <;> simp_all
-    have hstate := hmatch.1
-    have hallFalse :
-        evalClause sigma (acceptingStateLits M t) = false := by
-      unfold acceptingStateLits
-      simp [evalClause, evalLiteral, pos, hstate, haccFalse]
+    have hallFalse :=
+      acceptingStateLits_false_of_nonaccepting_snapshot
+        sigma M t config hmatch.1 haccFalse
     rw [hallFalse] at hclause
     contradiction
 
@@ -181,6 +207,7 @@ theorem boundedExecTableau_final_acceptance_sound
 
 
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_transition_guard_false
+#print axioms MCore.Real.P02BoundedComputationSoundness.acceptingStateLits_false_of_nonaccepting_snapshot
 #print axioms MCore.Real.P02BoundedComputationSoundness.finalAcceptanceCNF_sound_of_snapshot
 #print axioms MCore.Real.P02BoundedComputationSoundness.boundedExecTableau_final_acceptance_sound
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_state_true
