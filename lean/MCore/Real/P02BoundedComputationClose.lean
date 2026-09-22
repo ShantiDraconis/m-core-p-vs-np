@@ -29,6 +29,37 @@ structure TableauCompletenessCertificate where
       evalCNF (assignment M x t hacc)
         (boundedExecTableauCNF M x t) = true
 
+
+theorem active_transition_case_true
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (hs : s < t)
+    (htableau : evalCNF sigma (boundedExecTableauCNF M x t) = true)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool)) :
+    evalCNF sigma
+      (transitionCaseCNF M x t s config.state config.tape.head) = true := by
+  apply evalCNF_subset_true sigma
+    (transitionCaseCNF M x t s config.state config.tape.head)
+    (boundedExecTableauCNF M x t)
+    htableau
+  intro c hc
+  unfold boundedExecTableauCNF transitionsCNF transitionStepCNF
+  simp only [List.mem_append, List.mem_flatMap, List.mem_range,
+    List.mem_flatten, List.mem_ofFn]
+  right
+  left
+  refine ⟨s, hs, ?_⟩
+  refine ⟨?_, hc⟩
+  refine ⟨?_, ?_⟩
+  · exact ⟨config.state, rfl⟩
+  · cases hhead : config.tape.head with
+    | none =>
+        simp [alphabet]
+    | some b =>
+        cases b <;> simp [alphabet]
+
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
     (sigma : Assignment)
@@ -92,6 +123,7 @@ def TransitionSoundnessGap : Prop :=
 def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
+#print axioms MCore.Real.P02BoundedComputationClose.active_transition_case_true
 #print axioms MCore.Real.P02BoundedComputationClose.snapshots_all
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_sound
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_complete
