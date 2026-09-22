@@ -145,16 +145,16 @@ def universalLaw_to_separation
       DeclaredClockTotal M → ∃ x : BitString, SemanticMismatch M x :=
   L.separation
 
-def UniversalSeparationLaw.toTerminalLaw
+noncomputable def UniversalSeparationLaw.toTerminalLaw
     (L : UniversalSeparationLaw) : TotalCandidateSeparationLaw where
-  witness := fun M => Classical.choose (L.separation M (by
-    classical
-    by_cases h : DeclaredClockTotal M
-    · exact h
-    · exact Classical.choice (show Nonempty (DeclaredClockTotal M) from
-        ⟨by intro x; exfalso; exact h (by intro y; exact Classical.choice inferInstance)⟩)))
+  witness := fun M =>
+    if h : DeclaredClockTotal M then
+      Classical.choose (L.separation M h)
+    else
+      []
   separates := by
     intro M hTotal
+    simp only [dif_pos hTotal]
     exact Classical.choose_spec (L.separation M hTotal)
 
 /-- Safe promotion: a law that actually carries the universal separation proof
