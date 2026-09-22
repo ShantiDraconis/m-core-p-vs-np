@@ -30,6 +30,8 @@ jobs:
             lean/MCore/Real/CanonicalSATParserMacroProof.lean
             lean/MCore/Real/CanonicalSATParserReturnProof.lean
             lean/MCore/Real/CanonicalSATParserLeafPopProof.lean
+            lean/MCore/Real/CanonicalSATParserLeafReturnProof.lean
+            lean/MCore/Real/CanonicalSATParserLeafSourceProof.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
@@ -38,7 +40,7 @@ jobs:
       - name: Build parser macro
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof
+          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof
 
       - name: Axiom audit
         run: |
@@ -47,6 +49,8 @@ jobs:
           import MCore.Real.CanonicalSATParserMacroProof
           import MCore.Real.CanonicalSATParserReturnProof
           import MCore.Real.CanonicalSATParserLeafPopProof
+          import MCore.Real.CanonicalSATParserLeafReturnProof
+          import MCore.Real.CanonicalSATParserLeafSourceProof
           #print axioms MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search
           #print axioms MCore.Real.CanonicalSATParserMacroProof.binary_phase_to_return
           #print axioms MCore.Real.CanonicalSATParserMacroProof.phaseWorkBound_linear
@@ -54,6 +58,8 @@ jobs:
           #print axioms MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_to_delimiter
           #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leafPop_run_false_prefix
           #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+          #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leaf14_active_run
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
           EOF
           lake env lean /tmp/P01ParserMacroAudit.lean 2>&1 | tee /tmp/p01-parser-macro.log
           if grep -q 'sorryAx' /tmp/p01-parser-macro.log; then exit 1; fi
