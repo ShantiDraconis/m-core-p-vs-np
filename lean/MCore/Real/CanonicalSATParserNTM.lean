@@ -16,13 +16,14 @@ open CanonicalSATRecursiveParserSimulation
     exactly one step of parserMachine. -/
 def parserNTM : NTM (Fin 25) (Option Bool) :=
   { initial := parserMachine.initial
-    blank := none
+    blank := parserMachine.blank
     transition := fun q symbol => [parserMachine.transition q symbol]
     accepting := parserAccepting
     rejecting := fun q => q == 24 }
 
 @[simp] theorem parserNTM_blank_none :
-    parserNTM.blank = none := rfl
+    parserNTM.blank = none := by
+  exact parserMachine_blank_none
 
 @[simp] theorem parserNTM_initial :
     parserNTM.initial = (0 : Fin 25) := rfl
@@ -38,11 +39,6 @@ theorem parserNTM_stepBranch_eq_parser_step
     parserNTM.stepBranch config
         (parserMachine.transition config.state config.tape.head) =
       parserMachine.step config := by
-  rcases htrans :
-      parserMachine.transition config.state config.tape.head with
-    ⟨nextState, nextSymbol, direction⟩
-  unfold NTM.stepBranch TM.step
-  simp only [parserNTM, htrans]
   rfl
 
 theorem parserNTM_successors_singleton
