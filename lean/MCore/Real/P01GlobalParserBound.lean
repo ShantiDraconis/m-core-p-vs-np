@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Ring
 import MCore.Real.P01GlobalParserRuntime
 
 namespace MCore
