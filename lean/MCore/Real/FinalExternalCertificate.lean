@@ -13,51 +13,47 @@ open FailProofAllGaps
 open OfficialModel
 open G3ModelMatch
 
-/-- The exact three-producer payload for the external certificate.
+/-- Exact three-producer payload for external promotion.
 
-G1 is a concrete canonical SAT NP realization.
-G2 is a concrete universal deterministic failure generator.
-G3 is the two-way bridge to one externally selected reference-bearing model. -/
-structure FinalExternalInputs (M : OfficialComplexityModel) where
+G1: concrete canonical SAT NP realization.
+G2: concrete universal deterministic failure generator.
+G3: explicit external-model selection, provenance, normalization and two-way
+polynomial simulations. -/
+structure FinalExternalInputs where
   g1 : SATInNPGap circuitBitEncoding
   g2 : FailureGenerator (SATBits circuitBitEncoding)
-  g3 : G3ModelBridge M
+  g3 : G3ExternalContract
 
 def FinalExternalInputs.toSATExternalClosure
-    {M : OfficialComplexityModel}
-    (I : FinalExternalInputs M) :
-    SATExternalClosure M.P M.NP :=
+    (I : FinalExternalInputs) :
+    SATExternalClosure I.g3.selection.model.P I.g3.selection.model.NP :=
   { encoding := circuitBitEncoding
     sat_in_np := I.g1
     fail_generator := I.g2
     model_match := I.g3.toExternalModelMatch }
 
 def FinalExternalInputs.toFinalGapCertificate
-    {M : OfficialComplexityModel}
-    (I : FinalExternalInputs M) :
-    FinalGapCertificate M.P M.NP :=
+    (I : FinalExternalInputs) :
+    FinalGapCertificate I.g3.selection.model.P I.g3.selection.model.NP :=
   { target := SATBits circuitBitEncoding
     target_in_np := I.g1
     fail_generator := I.g2
     model_match := I.g3.toExternalModelMatch }
 
 theorem final_external_certificate
-    {M : OfficialComplexityModel}
-    (I : FinalExternalInputs M) :
-    OfficialPneqNP M.P M.NP := by
+    (I : FinalExternalInputs) :
+    OfficialPneqNP I.g3.selection.model.P I.g3.selection.model.NP := by
   exact final_gap_certificate_closes I.toFinalGapCertificate
 
-/-- Fail-closed external frontier.  It remains OPEN until G1+G2+G3 are all
-inhabited; no no-hypothesis final theorem is manufactured in this file. -/
-def FinalExternalGap (M : OfficialComplexityModel) : Prop :=
-  Nonempty (FinalExternalInputs M)
+def FinalExternalGap : Prop :=
+  Nonempty FinalExternalInputs
 
 theorem final_external_gap_closes
-    {M : OfficialComplexityModel}
-    (h : FinalExternalGap M) :
-    OfficialPneqNP M.P M.NP := by
+    (h : FinalExternalGap) :
+    ∃ S : OfficialModelSelection,
+      OfficialPneqNP S.model.P S.model.NP := by
   rcases h with ⟨I⟩
-  exact final_external_certificate I
+  exact ⟨I.g3.selection, final_external_certificate I⟩
 
 #print axioms MCore.Real.FinalExternalCertificate.final_external_certificate
 #print axioms MCore.Real.FinalExternalCertificate.final_external_gap_closes
