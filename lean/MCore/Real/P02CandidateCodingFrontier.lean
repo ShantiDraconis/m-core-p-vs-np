@@ -21,7 +21,7 @@ def CandidateCodingGap : Prop := Nonempty CandidateCodingInterface
 /-- Any coding interface gives injectivity of encode. -/
 theorem encode_injective
     (C : CandidateCodingInterface) :
-    Function.Injective C.encode := by
+    ∀ ⦃M N : PolyDTMCandidate⦄, C.encode M = C.encode N → M = N := by
   intro M N h
   have hM := C.decode_encode M
   have hN := C.decode_encode N
