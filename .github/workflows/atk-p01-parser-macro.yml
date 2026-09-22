@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - attack/p01-hard-realization-20260922
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
