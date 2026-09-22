@@ -11,8 +11,8 @@ open CanonicalSATParserMachine
 open CanonicalSATSlotLog
 
 theorem nat_pow_two_init_local (x : Nat) : x ^ 2 = x * x := by
-  change x * (x * 1) = x * x
-  simp
+  rw [show (2 : Nat) = Nat.succ 1 by rfl]
+  rw [Nat.pow_succ, Nat.pow_one]
 
 def forwardConfig
     (left : List (Option Bool))
