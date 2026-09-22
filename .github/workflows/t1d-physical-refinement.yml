@@ -1,0 +1,39 @@
+name: T1D Physical Refinement
+
+on:
+  push:
+    branches:
+      - attack/t1d-physical-refinement-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  physical-refinement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01FullVerifierPhysicalRefinement.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+      - name: Build
+        run: lake build MCore.Real.P01FullVerifierPhysicalRefinement
+      - name: Axiom audit
+        run: |
+          cat >/tmp/T1DPhysicalRefinementAudit.lean <<'EOF'
+          import MCore.Real.P01FullVerifierPhysicalRefinement
+          #print axioms MCore.Real.P01FullVerifierPhysicalRefinement.physical_execInstr_refines
+          #print axioms MCore.Real.P01FullVerifierPhysicalRefinement.physical_runProgram_refines
+          #print axioms MCore.Real.P01FullVerifierPhysicalRefinement.physical_eq_logical_global
+          EOF
+          lake env lean /tmp/T1DPhysicalRefinementAudit.lean 2>&1 | tee /tmp/audit.log
+          ! grep -q 'sorryAx' /tmp/audit.log
