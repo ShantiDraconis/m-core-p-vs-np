@@ -57,7 +57,10 @@ theorem constantPair_false_correct :
       (SATBits circuitBitEncoding) falseBits := by
   unfold PolyDTMCandidate.CorrectAt
   constructor
-  · decide
+  ·
+    simp [TM.HaltsWithin, constantPairCandidate, constantPairTimeBound,
+      constantPairMachine, initialTMConfig, inputTape, TM.run, TM.step,
+      Tape.write, Tape.move, falseBits, encodeCircuit]
   · constructor
     · intro h
       have : False := by
@@ -74,7 +77,10 @@ theorem constantPair_true_correct :
       (SATBits circuitBitEncoding) trueBits := by
   unfold PolyDTMCandidate.CorrectAt
   constructor
-  · decide
+  ·
+    simp [TM.HaltsWithin, constantPairCandidate, constantPairTimeBound,
+      constantPairMachine, initialTMConfig, inputTape, TM.run, TM.step,
+      Tape.write, Tape.move, trueBits, encodeCircuit]
   · constructor
     · intro _
       exact trueBits_sat
