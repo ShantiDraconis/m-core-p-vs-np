@@ -6,6 +6,15 @@ frontier:
   - id: P02-UNIVERSAL-WITNESS-PRODUCER
     status: OPEN_MATH
     proposition: MCore.Real.P02WitnessChain.UniversalWitnessProducer
-    equivalent_core: MCore.Real.P02WitnessChain.G21PointwiseCore
-    downstream_endpoint: MCore.Real.P02WitnessChain.P02TargetCore
-    note: downstream adapters do not inhabit the producer
+    equivalent_to:
+      - MCore.Real.P02G21G22Attack.G21Pointwise
+      - MCore.Real.P02TerminalFrontier.P02Target
+      - Nonempty(FailureGenerator SATTarget)
+      - not_InP(SATTarget)
+    reusable_routes:
+      diagonal_family: OPEN_MATH
+      semantic_diagonal_transformer: GREEN_REUSED
+      literal_fixed_point: CLOSED_BY_FALSIFICATION
+      g22_wiring: GREEN_FROZEN_CERTIFIED
+      c12_to_fixed_k10: OPEN_BRIDGE
+    note: no downstream equivalence inhabits the producer
