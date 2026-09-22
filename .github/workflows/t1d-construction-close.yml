@@ -22,3 +22,10 @@ jobs:
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
           lake build MCore.Real.P01ConstructionClose
+          cat >/tmp/terminal.lean <<'EOF'
+          import MCore.Real.P01ConstructionClose
+          #check MCore.Real.P01ConstructionClose.p01_construction_closed
+          #print axioms MCore.Real.P01ConstructionClose.p01_construction_closed
+          EOF
+          lake env lean /tmp/terminal.lean 2>&1 | tee /tmp/terminal.log
+          if grep -q 'sorryAx' /tmp/terminal.log; then exit 1; fi
