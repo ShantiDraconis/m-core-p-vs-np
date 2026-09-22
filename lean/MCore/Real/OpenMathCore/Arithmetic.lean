@@ -44,9 +44,10 @@ theorem bitWeight_le_length (x : BitString) :
   induction x with
   | nil => simp [bitWeight, bitLength]
   | cons b xs ih =>
-      simp only [bitWeight, bitLength, List.length_cons]
+      have ih' : bitWeight xs ≤ xs.length := by
+        simpa [bitLength] using ih
       have hb : bitNat b ≤ 1 := bitNat_le_one b
-      omega
+      simpa [bitWeight, bitLength] using Nat.add_le_add hb ih'
 
 theorem arithmeticMass_append (x y : BitString) :
     arithmeticMass (x ++ y) = arithmeticMass x + arithmeticMass y := by
