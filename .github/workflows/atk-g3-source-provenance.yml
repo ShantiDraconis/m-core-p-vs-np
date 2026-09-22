@@ -23,22 +23,28 @@ jobs:
       - name: Hygiene
         run: |
           set -euo pipefail
-          file=lean/MCore/Real/OfficialCookSource.lean
-          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then exit 1; fi
-          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then exit 1; fi
-          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "$file"; then exit 1; fi
+          files=(
+            lean/MCore/Real/OfficialCookSource.lean
+            lean/MCore/Real/CookNormalizedMachineModel.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
 
       - name: Build source record
         run: |
           set -euo pipefail
-          lake build MCore.Real.OfficialCookSource
+          lake build MCore.Real.OfficialCookSource MCore.Real.CookNormalizedMachineModel
 
       - name: Axiom audit
         run: |
           set -euo pipefail
           cat >/tmp/G3SourceAudit.lean <<'EOF'
           import MCore.Real.OfficialCookSource
+          import MCore.Real.CookNormalizedMachineModel
           #print axioms MCore.Real.OfficialCookSource.cookCMISource_is_populated
+          #print axioms MCore.Real.CookNormalizedMachineModel.cookNormalizedModel_P
+          #print axioms MCore.Real.CookNormalizedMachineModel.cookNormalizedModel_NP
           EOF
           lake env lean /tmp/G3SourceAudit.lean 2>&1 | tee /tmp/g3-source.log
           if grep -q 'sorryAx' /tmp/g3-source.log; then exit 1; fi
@@ -47,5 +53,6 @@ jobs:
         run: |
           set -euo pipefail
           echo "G3_SOURCE_PROVENANCE=GREEN_IF_JOB_SUCCEEDS"
-          echo "G3_EXTERNAL_MODEL=OPEN"
+          echo "G3_EXTERNAL_MODEL=NORMALIZED_SOURCE"
+          echo "G3_SOURCE_FIDELITY=OPEN"
           echo "G3_MODEL_MATCH=OPEN"
