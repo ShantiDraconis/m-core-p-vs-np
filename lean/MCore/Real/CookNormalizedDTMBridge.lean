@@ -43,8 +43,9 @@ theorem cookDTMOfInternal_run_eq
       · simp [cookDTMOfInternal, h]
       · have hf : C.machine.halting config.state = false := by
           cases hh : C.machine.halting config.state <;> simp_all
-        simp [cookDTMOfInternal, hf,
-          cookDTMOfInternal_step_eq, ih]
+        simp only [cookDTMOfInternal, hf, Bool.false_eq_true, if_false]
+        rw [cookDTMOfInternal_step_eq]
+        exact ih (C.machine.step config)
 
 def cookCandidateOfInternal
     (C : PolyDTMCandidate) : CookPolyDTMCandidate :=
@@ -63,8 +64,14 @@ theorem cookCandidateOfInternal_correctAt
   dsimp [cookCandidateOfInternal, initialCookDTMConfig,
     initialTMConfig]
   rw [externalInputTape_eq_canonical]
-  rw [cookDTMOfInternal_run_eq]
-  exact h
+  rcases h with ⟨hhalt, hsem⟩
+  constructor
+  · unfold CookDTM.HaltsWithin
+    unfold TM.HaltsWithin at hhalt
+    rw [cookDTMOfInternal_run_eq]
+    exact hhalt
+  · rw [cookDTMOfInternal_run_eq]
+    exact hsem
 
 def internalDTM_to_cook
     {L : BitLanguage}
@@ -106,8 +113,9 @@ theorem internalTMOfCook_run_eq
       · simp [internalTMOfCook, h]
       · have hf : M.halting config.state = false := by
           cases hh : M.halting config.state <;> simp_all
-        simp [internalTMOfCook, hf,
-          internalTMOfCook_step_eq, ih]
+        simp only [internalTMOfCook, hf, Bool.false_eq_true, if_false]
+        rw [internalTMOfCook_step_eq]
+        exact ih (CookDTM.step M config)
 
 def internalCandidateOfCook
     (C : CookPolyDTMCandidate) : PolyDTMCandidate :=
@@ -129,8 +137,14 @@ theorem internalCandidateOfCook_correctAt
   dsimp [internalCandidateOfCook, initialCookDTMConfig,
     initialTMConfig]
   rw [← externalInputTape_eq_canonical]
-  rw [internalTMOfCook_run_eq]
-  exact h
+  rcases h with ⟨hhalt, hsem⟩
+  constructor
+  · unfold TM.HaltsWithin
+    unfold CookDTM.HaltsWithin at hhalt
+    rw [internalTMOfCook_run_eq]
+    exact hhalt
+  · rw [internalTMOfCook_run_eq]
+    exact hsem
 
 def cookDTM_to_internal
     {L : BitLanguage}
