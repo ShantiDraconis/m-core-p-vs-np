@@ -48,3 +48,7 @@ import MCore.Real.P02KleeneSelfReferenceBridge
 
 import MCore.Real.P02KleeneE1
 import MCore.Real.P02KleeneBridgeAudit
+
+import MCore.Real.P02SemanticSelfEmbedding
+import MCore.Real.P02UniversalFailureAlgebra
+import MCore.Real.P02SemanticMismatchAlgebra
