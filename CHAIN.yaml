@@ -1,5 +1,22 @@
 problem: P-vs-NP
-checkpoint: K0
+checkpoint: P02-UNIVERSAL-WITNESS-CHAIN
 claim: architecture-and-boundary-kernel-only
 scientific_endpoint_proved: false
 signature_status: CANDIDATE_OBSTRUCTION
+
+p02_chain:
+  source_payload: MCore.SeparationWitnessData
+  fixed_payload: MCore.Real.P02WitnessChain.FixedK10WitnessDataCore
+  universal_witness: MCore.Real.P02WitnessChain.UniversalWitness
+  existence_producer: MCore.Real.P02WitnessChain.UniversalWitnessProducer
+  pointwise_gate: MCore.Real.P02WitnessChain.G21PointwiseCore
+  endpoint: MCore.Real.P02WitnessChain.P02TargetCore
+  composition:
+    - k10DataToUniversalWitness
+    - fixedK10ToUniversalWitness
+    - universalWitnessExists_iff_g21PointwiseCore
+    - g21PointwiseCore_to_p02TargetCore
+    - universalWitnessExists_to_p02TargetCore
+  producer_status: OPEN_MATH
+  downstream_wiring_status: SOURCE_PENDING_CI
+  audit_map: audit/P02_UNIVERSAL_WITNESS_CHAIN.md
