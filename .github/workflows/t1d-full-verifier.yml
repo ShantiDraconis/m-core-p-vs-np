@@ -1,0 +1,32 @@
+name: T1D Full Verifier
+
+on:
+  push:
+    branches:
+      - final-proof-p01-construction
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P01FullVerifierTraversal.lean
+            lean/MCore/Real/P01FullVerifierMachine.lean
+          )
+          test -f "${files[0]}"
+          test -f "${files[1]}"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+          lake build MCore.Real.P01FullVerifierTraversal MCore.Real.P01FullVerifierMachine
