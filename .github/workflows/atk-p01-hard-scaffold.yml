@@ -1,0 +1,66 @@
+name: ATK P01 HARD scaffold
+
+on:
+  push:
+    branches:
+      - attack/p01-hard-realization-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-hard-scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Fail-closed hygiene
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/P01FinalCertificate.lean
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then
+            exit 1
+          fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then
+            exit 1
+          fi
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "$file"; then
+            exit 1
+          fi
+
+      - name: Build P01 HARD scaffold
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01FinalCertificate
+
+      - name: Axiom audit scaffold
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01HardScaffoldAudit.lean <<'EOF'
+          import MCore.Real.P01FinalCertificate
+          #print axioms MCore.Real.P01FinalCertificate.P01MachineConstruction.correctAt
+          #print axioms MCore.Real.P01FinalCertificate.construction_closes_p01
+          EOF
+          lake env lean /tmp/P01HardScaffoldAudit.lean 2>&1 | tee /tmp/p01-hard-scaffold.log
+          if grep -q 'sorryAx' /tmp/p01-hard-scaffold.log; then
+            exit 1
+          fi
+
+      - name: Preserve HARD boundary
+        run: |
+          set -euo pipefail
+          grep -q 'P01ConstructionGap' lean/MCore/Real/P01FinalCertificate.lean
+          grep -q 'construction_closes_p01' lean/MCore/Real/P01FinalCertificate.lean
+          if grep -qE '^theorem[[:space:]]+p01_final_certificate[[:space:]]*:' lean/MCore/Real/P01FinalCertificate.lean; then
+            echo "Unexpected no-hypothesis final promotion before concrete construction."
+            exit 1
+          fi
+          echo "P01_HARD_SCAFFOLD=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_HARD=OPEN"
