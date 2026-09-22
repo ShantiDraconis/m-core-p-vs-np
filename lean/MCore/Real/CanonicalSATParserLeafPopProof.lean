@@ -84,6 +84,8 @@ theorem leafPop_run_false_prefix
   induction k generalizing right with
   | zero =>
       rw [show 0 + 1 = 1 by rfl]
+      rw [show List.replicate 0 false ++ true :: restTowardLeft =
+          true :: restTowardLeft by rfl]
       rw [TM.run]
       simp only [leafPopScanConfig_state, parser_not_halted_13,
         Bool.false_eq_true, if_false]
@@ -97,6 +99,14 @@ theorem leafPop_run_false_prefix
         Bool.false_eq_true, if_false]
       rw [leafPop_step_false _ _ _ (by simp)]
       rw [ih (some false :: right)]
+      have hrep :
+          List.replicate k (some false) ++ some false :: right =
+            some false :: (List.replicate k (some false) ++ right) := by
+        induction k with
+        | zero => rfl
+        | succ j hj =>
+            simp [List.replicate_succ, hj]
+      rw [hrep]
       rfl
 
 theorem all_false_eq_replicate
@@ -133,9 +143,13 @@ theorem afterEndMoveLeft_leaf_eq_popScan
         List.map_reverse, List.map_append, List.reverse_append,
         List.append_assoc]
   | cons b bs =>
+      have hmaprev :
+          (suffix.map (fun x => some x)).reverse =
+            (b :: bs).map (fun x => some x) := by
+        rw [List.map_reverse, hrev]
       simp [afterEndMoveLeft, leafPopScanConfig, Tape.move,
         List.map_reverse, List.map_append, List.reverse_append,
-        List.append_assoc, hrev]
+        List.append_assoc, hrev, hmaprev]
 
 /-- A successful rightmost-active-slot decomposition therefore reaches state
 14 after exactly suffix.length+1 pop-search steps. -/
