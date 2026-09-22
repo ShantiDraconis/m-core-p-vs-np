@@ -7,6 +7,7 @@ on:
     paths:
       - 'lean/MCore/Real/P01GlobalParserSimulation.lean'
       - 'lean/MCore/Real/P01GlobalParserRuntime.lean'
+      - 'lean/MCore/Real/P01GlobalParserBound.lean'
       - '.github/workflows/final-proof-p01-t1a.yml'
   workflow_dispatch:
 
@@ -27,14 +28,14 @@ jobs:
       - name: Source hygiene
         run: |
           set -euo pipefail
-          files=(lean/MCore/Real/P01GlobalParserSimulation.lean lean/MCore/Real/P01GlobalParserRuntime.lean)
+          files=(lean/MCore/Real/P01GlobalParserSimulation.lean lean/MCore/Real/P01GlobalParserRuntime.lean lean/MCore/Real/P01GlobalParserBound.lean)
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
 
       - name: Build T1A
         run: |
           set -euo pipefail
-          lake build MCore.Real.P01GlobalParserSimulation MCore.Real.P01GlobalParserRuntime
+          lake build MCore.Real.P01GlobalParserSimulation MCore.Real.P01GlobalParserRuntime MCore.Real.P01GlobalParserBound
 
       - name: Axiom audit
         run: |
@@ -42,6 +43,7 @@ jobs:
           cat >/tmp/T1A.lean <<'EOF'
           import MCore.Real.P01GlobalParserSimulation
           import MCore.Real.P01GlobalParserRuntime
+          import MCore.Real.P01GlobalParserBound
           #print axioms MCore.Real.P01GlobalParserSimulation.parser_step_respects_right_blank
           #print axioms MCore.Real.P01GlobalParserSimulation.parser_run_respects_right_blank
           #print axioms MCore.Real.P01GlobalParserSimulation.parseHead_rest_length_lt
@@ -55,6 +57,8 @@ jobs:
           #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_active_to_source_exact
           #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_inactive_to_source_exact
           #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_roundtrip_nonempty_active_exact
+          #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
+          #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
           EOF
           lake env lean /tmp/T1A.lean 2>&1 | tee /tmp/t1a.log
           if grep -q 'sorryAx' /tmp/t1a.log; then exit 1; fi
