@@ -52,39 +52,39 @@ theorem source_end_preserves_witness_and_source
 /-- Canonical representation of a Boolean value stack with its top under the
 head.  The immutable verifier prefix remains in the left field. -/
 def valueStackTape
-    (prefix : List (Option Bool)) : List Bool → Tape (Option Bool)
+    (basePrefix : List (Option Bool)) : List Bool → Tape (Option Bool)
   | [] =>
-      { left := prefix, head := none, right := [] }
+      { left := basePrefix, head := none, right := [] }
   | v :: vs =>
-      { left := prefix, head := some v, right := vs.map some }
+      { left := basePrefix, head := some v, right := vs.map some }
 
 def stackPushCert
-    (prefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
+    (basePrefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
     Tape (Option Bool) :=
-  valueStackTape prefix (v :: stack)
+  valueStackTape basePrefix (v :: stack)
 
 def stackPopCert
-    (prefix : List (Option Bool)) :
+    (basePrefix : List (Option Bool)) :
     List Bool → Option (Bool × Tape (Option Bool))
   | [] => none
-  | v :: vs => some (v, valueStackTape prefix vs)
+  | v :: vs => some (v, valueStackTape basePrefix vs)
 
 theorem stackPush_preserves_prefix
-    (prefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
-    (stackPushCert prefix v stack).left = prefix := by
+    (basePrefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
+    (stackPushCert basePrefix v stack).left = basePrefix := by
   rfl
 
 theorem stackPop_preserves_prefix
-    (prefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
-    match stackPopCert prefix (v :: stack) with
+    (basePrefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
+    match stackPopCert basePrefix (v :: stack) with
     | none => False
-    | some (_, t) => t.left = prefix := by
+    | some (_, t) => t.left = basePrefix := by
   cases stack <;> rfl
 
 theorem stackPop_push_inverse
-    (prefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
-    stackPopCert prefix (v :: stack) =
-      some (v, valueStackTape prefix stack) := by
+    (basePrefix : List (Option Bool)) (v : Bool) (stack : List Bool) :
+    stackPopCert basePrefix (v :: stack) =
+      some (v, valueStackTape basePrefix stack) := by
   rfl
 
 /-- Exact remaining realization object.  It is intentionally not inhabited
