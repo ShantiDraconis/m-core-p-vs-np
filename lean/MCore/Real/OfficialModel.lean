@@ -9,14 +9,12 @@ open CanonicalFinalProof
 /-- External complexity-model contract.
 
 The witness types are intentionally external to the hardened internal
-PolyDTM/PolyNTM realizations.  A concrete external/official model must provide
-these witness types together with a nonempty bibliographic/formal reference.
-This file does not identify the external model with the internal one. -/
+PolyDTM/PolyNTM realizations. A concrete external model must provide these
+witness types together with explicit source provenance. This file never
+identifies the external model with InP/InNP by definition. -/
 structure OfficialComplexityModel where
   PRealization : BitLanguage → Type
   NPRealization : BitLanguage → Type
-  reference : String
-  reference_nonempty : reference ≠ ""
 
 def OfficialComplexityModel.P
     (M : OfficialComplexityModel) :
@@ -28,10 +26,30 @@ def OfficialComplexityModel.NP
     BitLanguage → Prop :=
   fun L => Nonempty (M.NPRealization L)
 
-/-- A model is externally selected only when an actual reference-bearing model
-value is supplied.  No default value is manufactured here. -/
+/-- Provenance required before a model can participate in G3.
+
+These fields are data, not proof of semantic equivalence. The nonempty
+conditions prevent an unlabeled internal alias from being promoted as an
+external/official model. -/
+structure OfficialModelSource where
+  statement : String
+  repository : String
+  namespaceName : String
+  sourceFile : String
+  closureCondition : String
+  statement_nonempty : statement ≠ ""
+  repository_nonempty : repository ≠ ""
+  namespace_nonempty : namespaceName ≠ ""
+  sourceFile_nonempty : sourceFile ≠ ""
+  closureCondition_nonempty : closureCondition ≠ ""
+
+/-- One explicitly selected external model plus its normative source record. -/
+structure OfficialModelSelection where
+  model : OfficialComplexityModel
+  source : OfficialModelSource
+
 def OfficialModelSelected : Prop :=
-  Nonempty OfficialComplexityModel
+  Nonempty OfficialModelSelection
 
 end OfficialModel
 end Real
