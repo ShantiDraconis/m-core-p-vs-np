@@ -1,0 +1,102 @@
+import MCore.Real.P02BoundedComputationSoundness
+
+namespace MCore
+namespace Real
+namespace P02BoundedComputationClose
+
+open CircuitK1
+open CanonicalFinalProof
+open P02BoundedComputationEncoding
+open P02BoundedComputationSoundness
+
+structure TransitionSoundnessCertificate where
+  step :
+    ∀ (sigma : Assignment) (M : PolyDTMCandidate) (x : BitString)
+      (t s : Nat), s < t →
+      evalCNF sigma (boundedExecTableauCNF M x t) = true →
+      SnapshotMatches sigma M x t s
+        (M.machine.run s (initialTMConfig M.machine x)) →
+      SnapshotMatches sigma M x t (s + 1)
+        (M.machine.run (s + 1) (initialTMConfig M.machine x))
+
+structure TableauCompletenessCertificate where
+  assignment :
+    ∀ (M : PolyDTMCandidate) (x : BitString) (t : Nat),
+      AcceptsAtFuel M x t → Assignment
+  satisfies :
+    ∀ (M : PolyDTMCandidate) (x : BitString) (t : Nat)
+      (hacc : AcceptsAtFuel M x t),
+      evalCNF (assignment M x t hacc)
+        (boundedExecTableauCNF M x t) = true
+
+theorem snapshots_all
+    (S : TransitionSoundnessCertificate)
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (hs : s ≤ t)
+    (htableau : evalCNF sigma (boundedExecTableauCNF M x t) = true) :
+    SnapshotMatches sigma M x t s
+      (M.machine.run s (initialTMConfig M.machine x)) := by
+  induction s with
+  | zero =>
+      simpa [TM.run] using
+        boundedExecTableau_initial_sound sigma M x t htableau
+  | succ s ih =>
+      have hslt : s < t := Nat.lt_of_succ_le hs
+      exact S.step sigma M x t s hslt htableau
+        (ih (Nat.le_trans (Nat.le_succ s) hs))
+
+theorem tableau_sound
+    (S : TransitionSoundnessCertificate)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    SATLanguage (boundedExecCircuit M x t) →
+      AcceptsAtFuel M x t := by
+  intro hsat
+  rcases (satLanguage_cnfCircuit_iff
+    (boundedExecTableauCNF M x t)).mp hsat with ⟨sigma, htableau⟩
+  have hmatch :=
+    snapshots_all S sigma M x t t (Nat.le_refl t) htableau
+  exact boundedExecTableau_final_acceptance_sound
+    sigma M x t
+    (M.machine.run t (initialTMConfig M.machine x))
+    hmatch htableau
+
+theorem tableau_complete
+    (C : TableauCompletenessCertificate)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    AcceptsAtFuel M x t →
+      SATLanguage (boundedExecCircuit M x t) := by
+  intro hacc
+  apply (satLanguage_cnfCircuit_iff
+    (boundedExecTableauCNF M x t)).mpr
+  exact ⟨C.assignment M x t hacc, C.satisfies M x t hacc⟩
+
+theorem certificates_close_boundedExecCorrectness
+    (S : TransitionSoundnessCertificate)
+    (C : TableauCompletenessCertificate) :
+    BoundedExecCorrectness := by
+  intro M x t
+  constructor
+  · exact tableau_sound S M x t
+  · exact tableau_complete C M x t
+
+def TransitionSoundnessGap : Prop :=
+  Nonempty TransitionSoundnessCertificate
+
+def TableauCompletenessGap : Prop :=
+  Nonempty TableauCompletenessCertificate
+
+#print axioms MCore.Real.P02BoundedComputationClose.snapshots_all
+#print axioms MCore.Real.P02BoundedComputationClose.tableau_sound
+#print axioms MCore.Real.P02BoundedComputationClose.tableau_complete
+#print axioms MCore.Real.P02BoundedComputationClose.certificates_close_boundedExecCorrectness
+
+end P02BoundedComputationClose
+end Real
+end MCore
