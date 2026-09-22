@@ -980,6 +980,59 @@ theorem logParseCore_active_empty
   | succ fuel =>
       simp [CanonicalSATParserGlobalSpec.logParseCore, hactive, parseHead]
 
+
+theorem phaseSemantics_of_reject_state
+    (fuel pad : Nat)
+    (log : SlotLog)
+    (bits : BitString)
+    (steps : Nat)
+    (hstate :
+      (parserMachine.run steps
+        (phaseConfig 4 pad bits log)).state = (24 : Fin 25))
+    (habstract :
+      CanonicalSATParserGlobalSpec.logParseCore fuel log bits = false) :
+    PhaseSemantics fuel pad log bits := by
+  refine ⟨steps, ?_, ?_⟩
+  · rw [hstate]
+    decide
+  · rw [hstate, habstract]
+    decide
+
+theorem phaseSemantics_of_accept_state
+    (fuel pad : Nat)
+    (log : SlotLog)
+    (bits : BitString)
+    (steps : Nat)
+    (hstate :
+      (parserMachine.run steps
+        (phaseConfig 4 pad bits log)).state = (23 : Fin 25))
+    (habstract :
+      CanonicalSATParserGlobalSpec.logParseCore fuel log bits = true) :
+    PhaseSemantics fuel pad log bits := by
+  refine ⟨steps, ?_, ?_⟩
+  · rw [hstate]
+    decide
+  · rw [hstate, habstract]
+    decide
+
+/-- Malformed-head semantics are now closed at the phase level. -/
+theorem phaseSemantics_parseHead_none
+    (fuel pad : Nat)
+    (log : SlotLog)
+    (bits : BitString)
+    (hactive : activeSlots log ≠ 0)
+    (hnone : parseHead bits = none) :
+    PhaseSemantics (fuel + 1) pad log bits := by
+  rcases phase_parseHead_none_state_rejects pad bits log hnone with
+    ⟨steps, hstate⟩
+  apply phaseSemantics_of_reject_state
+    (fuel + 1) pad log bits steps hstate
+  simp [CanonicalSATParserGlobalSpec.logParseCore, hactive, hnone]
+
+#print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_reject_state
+#print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_accept_state
+#print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_parseHead_none
+
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_compose_exact
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_compose_rightBlank
 #print axioms MCore.Real.P01GlobalParserSimulation.logParseCore_zero_slots
