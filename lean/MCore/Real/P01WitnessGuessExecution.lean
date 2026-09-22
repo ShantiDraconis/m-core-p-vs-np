@@ -1,3 +1,4 @@
+import Mathlib
 import MCore.Real.CanonicalSATWitnessGuessNTM
 
 namespace MCore
@@ -34,8 +35,11 @@ theorem runBranches_guess_cons_step
         [ guessConfig (some false :: left) bs,
           guessConfig (some true :: left) bs ] := by
   rw [NTM.runBranches]
-  simp [witnessGuessMachine, guessConfig_state,
-    witnessGuess_successors_cons]
+  have hterm :
+      (witnessGuessMachine.accepting (guessConfig left (b :: bs)).state ||
+        witnessGuessMachine.rejecting (guessConfig left (b :: bs)).state) = false := by
+    rfl
+  simp [hterm, witnessGuess_successors_cons]
 
 theorem witnessGuess_complete_from
     (left : List (Option Bool))
