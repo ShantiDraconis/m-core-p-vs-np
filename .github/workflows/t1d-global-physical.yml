@@ -26,7 +26,7 @@ jobs:
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
       - name: Build
-        run: lake build MCore.Real.P01T1DGlobalPhysical
+        run: lake build MCore.Real.P01T1DGlobalPhysical MCore.Real.P01T1DPhysicalAssembly
       - name: Status
         run: |
           echo "T1D_LOCAL_CONVERGENCE=GREEN"
