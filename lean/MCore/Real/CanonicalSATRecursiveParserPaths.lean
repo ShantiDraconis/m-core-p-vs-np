@@ -235,23 +235,27 @@ theorem step_var_false
 
 theorem replicate_none_concat
     (a b : Nat) :
-    List.replicate a none ++ List.replicate b none =
-      List.replicate (a + b) none := by
+    List.replicate a (none : Option Bool) ++
+        List.replicate b (none : Option Bool) =
+      List.replicate (a + b) (none : Option Bool) := by
   induction a with
   | zero =>
-      rfl
+      simp
   | succ a ih =>
       simp only [List.replicate_succ, List.cons_append, Nat.succ_add]
-      exact congrArg (fun xs => none :: xs) ih
+      exact congrArg
+        (fun xs : List (Option Bool) => (none : Option Bool) :: xs) ih
 
 theorem replicate_none_succ_append
     (n : Nat)
     (left : List (Option Bool)) :
-    List.replicate (n + 1) none ++ none :: left =
-      List.replicate (n + 2) none ++ left := by
+    List.replicate (n + 1) (none : Option Bool) ++
+        (none : Option Bool) :: left =
+      List.replicate (n + 2) (none : Option Bool) ++ left := by
   have hcat := replicate_none_concat (n + 1) 1
-  simp only [List.replicate_succ, List.replicate_zero,
-    List.append_nil] at hcat
+  have hOne :
+      List.replicate 1 (none : Option Bool) = [none] := rfl
+  rw [hOne] at hcat
   rw [← List.append_assoc, hcat]
   congr 1
   omega
@@ -316,7 +320,9 @@ theorem consumeHead_run
       rw [run_var_payload]
       apply congrArg (fun xs => sourceConfig 11 xs tail suffix)
       have hcat := replicate_none_concat (i + 1) 3
-      have hthree : List.replicate 3 none = [none, none, none] := rfl
+      have hthree :
+          List.replicate 3 (none : Option Bool) =
+            [(none : Option Bool), none, none] := rfl
       rw [hthree] at hcat
       calc
         List.replicate (i + 1) none ++ [none, none, none] ++ left
