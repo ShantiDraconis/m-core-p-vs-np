@@ -1,0 +1,62 @@
+name: ATK FINAL_FAIL external closure
+
+on:
+  push:
+    branches:
+      - final/fail-external-close-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  final-fail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/FinalExternalFailClosure.lean
+            lean/MCore/Real/P01FinalCertificate.lean
+            lean/MCore/Real/P02G21G22Attack.lean
+            lean/MCore/Real/P02LiteralFixedPointCountermodel.lean
+            lean/MCore/Real/CookNormalizedG3Contract.lean
+            lean/MCore/Real/FinalExternalCertificate.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+
+      - name: Build terminal fail closure
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalExternalFailClosure
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/FinalFailAudit.lean <<'EOF'
+          import MCore.Real.FinalExternalFailClosure
+          #print axioms MCore.Real.FinalExternalFailClosure.final_fail_external_record_exists
+          #check MCore.Real.FinalExternalFailClosure.proofEndpointRequired
+          EOF
+          lake env lean /tmp/FinalFailAudit.lean 2>&1 | tee /tmp/final-fail.log
+          if grep -q 'sorryAx' /tmp/final-fail.log; then exit 1; fi
+
+      - name: Boundary
+        run: |
+          echo "P01_PROCESS=CLOSED_BY_FINAL_FAIL_RECORD"
+          echo "G2_1_LITERAL=CLOSED_BY_FALSIFICATION"
+          echo "G2_1_POINTWISE=CLOSED_AS_UNRESOLVED_IN_FINAL_FAIL_RECORD"
+          echo "G2_2=WIRING_GREEN_FROZEN_CERTIFIED"
+          echo "G3=NORMALIZED_CONTRACT_GREEN_FROZEN_CERTIFIED"
+          echo "FINAL_EXTERNAL_FAIL=CLOSED_IF_JOB_SUCCEEDS"
+          echo "FINAL_EXTERNAL_PROOF=NOT_CLAIMED"
