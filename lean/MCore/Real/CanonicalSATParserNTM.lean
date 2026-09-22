@@ -38,10 +38,7 @@ theorem parserNTM_stepBranch_eq_parser_step
     parserNTM.stepBranch config
         (parserMachine.transition config.state config.tape.head) =
       parserMachine.step config := by
-  rcases h :
-      parserMachine.transition config.state config.tape.head with
-    ⟨nextState, nextSymbol, direction⟩
-  simp [parserNTM, NTM.stepBranch, TM.step, h]
+  rfl
 
 theorem parserNTM_successors_singleton
     (config : Configuration (Fin 25) (Option Bool)) :
@@ -85,12 +82,19 @@ theorem parserNTM_haltsWithin_iff
   · intro h
     have hterm :=
       h (parserMachine.run fuel config) (by simp)
-    have hor :
-        (parserNTM.accepting (parserMachine.run fuel config).state ||
-          parserNTM.rejecting (parserMachine.run fuel config).state) = true := by
-      simpa using hterm
-    rw [parserNTM_terminal_eq_parser_halt] at hor
-    exact hor
+    rcases hterm with hacc | hrej
+    · have hor :
+          (parserNTM.accepting (parserMachine.run fuel config).state ||
+            parserNTM.rejecting (parserMachine.run fuel config).state) = true := by
+          simp [hacc]
+      rw [parserNTM_terminal_eq_parser_halt] at hor
+      exact hor
+    · have hor :
+          (parserNTM.accepting (parserMachine.run fuel config).state ||
+            parserNTM.rejecting (parserMachine.run fuel config).state) = true := by
+          simp [hrej]
+      rw [parserNTM_terminal_eq_parser_halt] at hor
+      exact hor
   · intro h reached hmem
     simp only [List.mem_singleton] at hmem
     subst reached
@@ -99,7 +103,9 @@ theorem parserNTM_haltsWithin_iff
           parserNTM.rejecting (parserMachine.run fuel config).state) = true := by
       rw [parserNTM_terminal_eq_parser_halt]
       exact h
-    simpa using hor
+    cases hacc : parserNTM.accepting (parserMachine.run fuel config).state <;>
+      cases hrej : parserNTM.rejecting (parserMachine.run fuel config).state <;>
+      simp_all
 
 theorem parserNTM_acceptsWithin_iff
     (fuel : Nat)
