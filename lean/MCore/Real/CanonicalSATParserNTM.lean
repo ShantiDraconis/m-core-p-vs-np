@@ -38,6 +38,11 @@ theorem parserNTM_stepBranch_eq_parser_step
     parserNTM.stepBranch config
         (parserMachine.transition config.state config.tape.head) =
       parserMachine.step config := by
+  rcases htrans :
+      parserMachine.transition config.state config.tape.head with
+    ⟨nextState, nextSymbol, direction⟩
+  unfold NTM.stepBranch TM.step
+  simp only [parserNTM, htrans]
   rfl
 
 theorem parserNTM_successors_singleton
