@@ -47,7 +47,9 @@ theorem bitWeight_le_length (x : BitString) :
       have ih' : bitWeight xs ≤ xs.length := by
         simpa [bitLength] using ih
       have hb : bitNat b ≤ 1 := bitNat_le_one b
-      simpa [bitWeight, bitLength] using Nat.add_le_add hb ih'
+      have hsum : bitNat b + bitWeight xs ≤ 1 + xs.length :=
+        Nat.add_le_add hb ih'
+      simpa [bitWeight, bitLength, Nat.add_comm] using hsum
 
 theorem arithmeticMass_append (x y : BitString) :
     arithmeticMass (x ++ y) = arithmeticMass x + arithmeticMass y := by
