@@ -172,8 +172,8 @@ theorem binary_delimiter_enters_rewind
     (log : SlotLog) :
     parserMachine.run 2
         (binaryReturnConfig []
-          (some last :: rest.map some ++
-            List.replicate pad (none : Option Bool))
+          (some last :: (rest.map some ++
+            List.replicate pad (none : Option Bool)))
           ((pushSlot log).map some)) =
       rewindUnreadConfig rest [last] pad (pushSlot log) := by
   rw [TM.run]
@@ -197,8 +197,8 @@ theorem binary_afterEnd_roundtrip
     parserMachine.run
         (log.length + 2 + (rest.length + 1))
         (afterEndMoveLeft 20
-          (none :: some last :: rest.map some ++
-            List.replicate pad (none : Option Bool))
+          (none :: some last :: (rest.map some ++
+            List.replicate pad (none : Option Bool)))
           log (some true)) =
       phaseConfig 4 pad
         (rest.reverse ++ [last])
@@ -207,8 +207,8 @@ theorem binary_afterEnd_roundtrip
       log.length + (2 + (rest.length + 1)) by omega]
   rw [MachineRunLemmas.run_add]
   rw [binary_afterEnd_to_delimiter
-    (some last :: rest.map some ++
-      List.replicate pad (none : Option Bool)) log]
+    (some last :: (rest.map some ++
+      List.replicate pad (none : Option Bool))) log]
   rw [MachineRunLemmas.run_add]
   rw [binary_delimiter_enters_rewind pad hpad last rest log]
   exact rewindUnread_run rest [last] pad hpad (pushSlot log)
