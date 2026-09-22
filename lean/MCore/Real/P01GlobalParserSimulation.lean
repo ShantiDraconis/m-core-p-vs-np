@@ -1344,7 +1344,9 @@ theorem phaseSemantics_global
                     CanonicalSATParserLeafSourceProof.leafAcceptConfig
                       (pad + (Head.encode (.input i)).length) right := by
                 rw [MachineRunLemmas.run_add]
-                simpa [hs] using hhead'.trans hleaf
+                dsimp [hs]
+                rw [hhead']
+                simpa using hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (23 : Fin 25) := by
@@ -1411,7 +1413,9 @@ theorem phaseSemantics_global
                     CanonicalSATParserLeafSourceProof.leafRejectConfig
                       (pad + (Head.encode (.input i)).length) right := by
                 rw [MachineRunLemmas.run_add]
-                simpa [hs] using hhead'.trans hleaf
+                dsimp [hs]
+                rw [hhead']
+                simpa using hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
@@ -1508,7 +1512,9 @@ theorem phaseSemantics_global
                     CanonicalSATParserLeafSourceProof.leafAcceptConfig
                       (pad + (Head.encode (.const b)).length) right := by
                 rw [MachineRunLemmas.run_add]
-                simpa [hs] using hhead'.trans hleaf
+                dsimp [hs]
+                rw [hhead']
+                simpa using hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (23 : Fin 25) := by
@@ -1575,7 +1581,9 @@ theorem phaseSemantics_global
                     CanonicalSATParserLeafSourceProof.leafRejectConfig
                       (pad + (Head.encode (.const b)).length) right := by
                 rw [MachineRunLemmas.run_add]
-                simpa [hs] using hhead'.trans hleaf
+                dsimp [hs]
+                rw [hhead']
+                simpa using hleaf
               have hstate :
                   (parserMachine.run (hs + k)
                     (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
