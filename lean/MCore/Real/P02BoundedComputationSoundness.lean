@@ -65,13 +65,10 @@ theorem initialCNF_sound
       intro c hc
       have hiMem : i ∈ List.range (radius x t) := by
         simpa using hi
-      have hflat :
-          c ∈ (List.range (radius x t)).flatMap
-            (fun j =>
-              setLeftCell [] M x t 0 j
-                ((inputTape x).left.getD j M.machine.blank)) := by
-        exact List.mem_flatMap_of_mem hiMem hc
-      simp [initialCNF, hflat]
+      simp only [initialCNF, List.mem_append, List.mem_flatMap,
+        List.mem_range]
+      exact Or.inr (Or.inr (Or.inl
+        ⟨i, hi, by simpa [target] using hc⟩))
     exact setSymbolClauses_forces
       sigma [] (leftVar M x t 0 i) target a rfl hcell
   · intro i hi a
@@ -83,13 +80,10 @@ theorem initialCNF_sound
       intro c hc
       have hiMem : i ∈ List.range (radius x t) := by
         simpa using hi
-      have hflat :
-          c ∈ (List.range (radius x t)).flatMap
-            (fun j =>
-              setRightCell [] M x t 0 j
-                ((inputTape x).right.getD j M.machine.blank)) := by
-        exact List.mem_flatMap_of_mem hiMem hc
-      simp [initialCNF, hflat]
+      simp only [initialCNF, List.mem_append, List.mem_flatMap,
+        List.mem_range]
+      exact Or.inr (Or.inr (Or.inr
+        ⟨i, hi, by simpa [target] using hc⟩))
     exact setSymbolClauses_forces
       sigma [] (rightVar M x t 0 i) target a rfl hcell
 
