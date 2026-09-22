@@ -199,7 +199,8 @@ theorem parser_initialization_within_global_bound
       n + 1 = 1 * (n + 1) := by simp
       _ ≤ (n + 1) * (n + 1) :=
         Nat.mul_le_mul_right (n + 1) hpos
-      _ = (n + 1) ^ 2 := by simp
+      _ = (n + 1) ^ 2 := by
+        simp [pow_succ, Nat.mul_assoc]
   have h3 : 256 * (n + 1) ≤ 256 * (n + 1) ^ 2 :=
     Nat.mul_le_mul_left 256 hsq
   exact Nat.le_trans h1 (Nat.le_trans h2 h3)
