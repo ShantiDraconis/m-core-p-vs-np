@@ -105,71 +105,57 @@ theorem correctAt_preserved_by_dominating_bound
 /--
 G2.0 canonical normalization.
 
-Every PolyDTMCandidate admits an explicit coefficient/exponent presentation
-whose machine semantics are unchanged and whose pointwise CorrectAt facts are
-preserved.
+Every PolyDTMCandidate admits explicit polynomial constants whose canonical
+normalized candidate uses exactly the same underlying machine data by
+construction and preserves every pointwise CorrectAt fact.
 
-No diagonal witness, SAT lower bound, FailureGenerator, or P != NP conclusion
-is produced here.
+No claim of effective enumerability is made here.  No diagonal witness,
+SAT lower bound, FailureGenerator, or P != NP conclusion is produced here.
 -/
 theorem canonical_normalization :
     ∀ M : PolyDTMCandidate,
       ∃ coefficient exponent : Nat,
-        ∃ M' : PolyDTMCandidate,
-          M'.stateCount = M.stateCount ∧
-          M'.machine = M.machine ∧
-          M'.accepting = M.accepting ∧
-          M'.timeBound =
-            (fun n => coefficient * (n + 1) ^ exponent) ∧
-          (∀ language : BitLanguage,
-            ∀ x : BitString,
-              M.CorrectAt language x →
-                M'.CorrectAt language x) := by
+        (∀ n : Nat,
+          M.timeBound n ≤ coefficient * (n + 1) ^ exponent) ∧
+        (∀ language : BitLanguage,
+          ∀ x : BitString,
+            M.CorrectAt language x →
+              (normalizedCandidate M coefficient exponent).CorrectAt
+                language x) := by
   intro M
   rcases M.time_poly with ⟨coefficient, exponent, hbound⟩
-  refine ⟨coefficient, exponent,
-    normalizedCandidate M coefficient exponent, rfl, rfl, rfl, rfl, ?_⟩
+  refine ⟨coefficient, exponent, hbound, ?_⟩
   intro language x hCorrect
   exact correctAt_preserved_by_dominating_bound
     M coefficient exponent hbound language x hCorrect
 
 /--
-A compact G2.0 certificate object.  Keeping the witness packaged makes the
-next gate consume only normalized candidates without re-extracting polynomial
-constants.
+A compact G2.0 certificate object.  Its candidate is definitionally the
+canonical normalization of M at the stored polynomial constants.
 -/
 structure NormalizedCandidateWitness
     (M : PolyDTMCandidate) where
   coefficient : Nat
   exponent : Nat
-  candidate : PolyDTMCandidate
-  stateCount_eq : candidate.stateCount = M.stateCount
-  machine_eq : candidate.machine = M.machine
-  accepting_eq : candidate.accepting = M.accepting
-  timeBound_eq :
-    candidate.timeBound =
-      (fun n => coefficient * (n + 1) ^ exponent)
+  dominates :
+    ∀ n : Nat,
+      M.timeBound n ≤ coefficient * (n + 1) ^ exponent
   preserves_correctAt :
     ∀ language : BitLanguage,
       ∀ x : BitString,
         M.CorrectAt language x →
-          candidate.CorrectAt language x
+          (normalizedCandidate M coefficient exponent).CorrectAt language x
 
 noncomputable def normalizationWitness
     (M : PolyDTMCandidate) :
     NormalizedCandidateWitness M := by
   classical
   rcases canonical_normalization M with
-    ⟨coefficient, exponent, M',
-      hState, hMachine, hAccept, hTime, hCorrect⟩
+    ⟨coefficient, exponent, hbound, hCorrect⟩
   exact
     { coefficient := coefficient
       exponent := exponent
-      candidate := M'
-      stateCount_eq := hState
-      machine_eq := hMachine
-      accepting_eq := hAccept
-      timeBound_eq := hTime
+      dominates := hbound
       preserves_correctAt := hCorrect }
 
 #print axioms MCore.Real.P02CandidateNormalization.correctAt_preserved_by_dominating_bound
