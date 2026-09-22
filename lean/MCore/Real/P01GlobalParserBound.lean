@@ -616,6 +616,143 @@ theorem binary_head_halts_budget
       log (pushSlot log) bits tail steps
       hscale hchildScale hconsume hprefBound hpref hchild'
 
+
+/-- Bounded global parser execution.  Every concrete parser phase halts inside
+the explicit quadratic phase budget, with no semantic or endpoint hypothesis. -/
+theorem phase_halts_budget_global
+    (pad : Nat)
+    (log : SlotLog)
+    (bits : BitString)
+    (hpad : 0 < pad)
+    (hactive : activeSlots log ≠ 0) :
+    parserMachine.HaltsWithin
+      (phaseRuntimeBudget pad log bits)
+      (phaseConfig 4 pad bits log) := by
+  cases hparse : parseHead bits with
+  | none =>
+      rcases phase_parseHead_none_reject_bound pad bits log hparse with
+        ⟨steps, hsteps, hstate⟩
+      have hhalt :
+          parserMachine.HaltsWithin steps
+            (phaseConfig 4 pad bits log) := by
+        unfold TM.HaltsWithin
+        rw [hstate]
+        exact parserMachine_halts_reject
+      have hunit :
+          bits.length + 1 ≤ phaseRuntimeUnit pad log bits := by
+        unfold phaseRuntimeUnit phaseRuntimeScale
+        omega
+      exact parser_terminal_halt_to_budget
+        pad log bits steps (Nat.le_trans hsteps hunit) hhalt
+  | some p =>
+      rcases p with ⟨head, tail⟩
+      have hlt : tail.length < bits.length :=
+        parseHead_rest_length_lt hparse
+      have hshape : bits = head.encode ++ tail :=
+        parseHead_inverse bits head tail hparse
+      cases head with
+      | not =>
+          have hchild :=
+            phase_halts_budget_global
+              (pad + (Head.encode .not).length)
+              log tail (by omega) hactive
+          have hpref :
+              parserMachine.run (Head.encode .not).length
+                  (phaseConfig 4 pad bits log) =
+                phaseConfig 4
+                  (pad + (Head.encode .not).length) tail log := by
+            rw [hshape]
+            exact CanonicalSATParserPhaseMacroProof.not_head_roundtrip
+              pad tail log
+          have hscale :
+              phaseRuntimeScale
+                  (pad + (Head.encode .not).length) log tail =
+                phaseRuntimeScale pad log bits := by
+            rw [hshape]
+            exact phaseRuntimeScale_same pad Head.not tail log
+          have hprefBound0 :=
+            phasePrefixNot_le_unit pad hpad tail log
+          have hprefBound :
+              (Head.encode .not).length ≤
+                phaseRuntimeUnit pad log bits := by
+            rw [hshape]
+            exact hprefBound0
+          exact parser_compose_same_scale_exact_to_budget
+            pad (pad + (Head.encode .not).length)
+            log log bits tail (Head.encode .not).length
+            hlt hscale hprefBound hpref hchild
+      | and =>
+          have hconsume : tail.length + 3 ≤ bits.length := by
+            rw [hshape]
+            simp [Head.encode]
+          apply binary_head_halts_budget
+            pad log bits tail Head.and hpad hlt hshape hconsume
+          · intro htail
+            rw [hshape, htail]
+            simpa using
+              (CanonicalSATParserBinaryHeadProof.and_head_exhausted_rejects
+                pad hpad log)
+          · intro htail
+            rw [hshape]
+            exact and_head_roundtrip_any_nonempty_exact
+              pad hpad tail htail log
+          · intro htail
+            have hpush : activeSlots (pushSlot log) ≠ 0 := by
+              rw [activeSlots_pushSlot]
+              omega
+            exact phase_halts_budget_global
+              (pad + (Head.encode .and).length)
+              (pushSlot log) tail (by omega) hpush
+      | or =>
+          have hconsume : tail.length + 3 ≤ bits.length := by
+            rw [hshape]
+            simp [Head.encode]
+          apply binary_head_halts_budget
+            pad log bits tail Head.or hpad hlt hshape hconsume
+          · intro htail
+            rw [hshape, htail]
+            simpa using
+              (CanonicalSATParserBinaryHeadProof.or_head_exhausted_rejects
+                pad hpad log)
+          · intro htail
+            rw [hshape]
+            exact or_head_roundtrip_any_nonempty_exact
+              pad hpad tail htail log
+          · intro htail
+            have hpush : activeSlots (pushSlot log) ≠ 0 := by
+              rw [activeSlots_pushSlot]
+              omega
+            exact phase_halts_budget_global
+              (pad + (Head.encode .or).length)
+              (pushSlot log) tail (by omega) hpush
+      | input i =>
+          apply leaf_head_halts_budget
+            pad log bits tail (Head.input i)
+            hpad hactive hlt hshape
+          · rw [hshape]
+            exact CanonicalSATParserPhaseMacroProof.input_head_to_pop_search
+              pad i tail log
+          · intro log' hpop hactive' htail
+            exact phase_halts_budget_global
+              (pad + (Head.encode (.input i)).length)
+              log' tail (by omega) hactive'
+      | const b =>
+          apply leaf_head_halts_budget
+            pad log bits tail (Head.const b)
+            hpad hactive hlt hshape
+          · rw [hshape]
+            exact CanonicalSATParserPhaseMacroProof.const_head_to_pop_search
+              pad b tail log
+          · intro log' hpop hactive' htail
+            exact phase_halts_budget_global
+              (pad + (Head.encode (.const b)).length)
+              log' tail (by omega) hactive'
+termination_by bits.length
+decreasing_by
+  all_goals exact hlt
+
+#print axioms MCore.Real.P01GlobalParserBound.phase_halts_budget_global
+
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
 
