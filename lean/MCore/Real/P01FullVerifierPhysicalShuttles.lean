@@ -72,9 +72,14 @@ theorem getD_prefix_separator_witness
       some witness[i] := by
   induction base with
   | nil =>
-      simpa using witness_map_getD witness i hi
+      rw [show 0 + 1 + i = Nat.succ i by omega]
+      simp only [List.nil_append, List.getD_cons_succ]
+      exact witness_map_getD witness i hi
   | cons x xs ih =>
-      simpa [Nat.add_assoc] using ih
+      rw [show (x :: xs).length + 1 + i =
+          Nat.succ (xs.length + 1 + i) by simp; omega]
+      simp only [List.cons_append, List.getD_cons_succ]
+      exact ih
 
 /-- A valid witness index is physically present before the left shuttle can
 run off the represented witness region. -/
