@@ -16,7 +16,7 @@ theorem head_encode_length_ge_three
     3 ≤ h.encode.length := by
   cases h with
   | input i =>
-      simp [Head.encode, CanonicalCircuitBits.encodeNat]
+      simp [Head.encode]
       omega
   | const b =>
       cases b <;> decide
@@ -57,18 +57,18 @@ theorem global_budget_dominates
         n + 1 = 1 * (n + 1) := by simp
         _ ≤ (n + 1) * (n + 1) :=
           Nat.mul_le_mul_right (n + 1) hp
-        _ = (n + 1) ^ 2 := by simp [pow_two]
+        _ = (n + 1) ^ 2 := by simp
     exact Nat.mul_le_mul_left 4 hs
   have hiter :
       (n + 1) * (16 * (n + 1)) =
         16 * (n + 1) ^ 2 := by
-    ring
+    simp [Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
   rw [hiter]
   calc
     2 * n + 4 + 16 * (n + 1) ^ 2
         ≤ 4 * (n + 1) ^ 2 + 16 * (n + 1) ^ 2 := by
-            exact Nat.add_le_add_right (hbase.trans hlin) _
-    _ = 20 * (n + 1) ^ 2 := by ring
+            exact Nat.add_le_add_right (Nat.le_trans hbase hlin) _
+    _ = 20 * (n + 1) ^ 2 := by omega
     _ ≤ 256 * (n + 1) ^ 2 := by
       exact Nat.mul_le_mul_right ((n + 1) ^ 2) (by decide)
 
