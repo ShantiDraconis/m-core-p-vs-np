@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - final-proof-p01-construction
+      - attack/t1d-physical-verifier-20260922
   workflow_dispatch:
 
 permissions:
@@ -82,6 +83,6 @@ jobs:
           test -f "$f"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
-          lake build MCore.Real.P01ConstructionClose
+          lake build MCore.Real.P01ConstructionClose MCore.Real.P01FullVerifierMachine MCore.Real.P01FullVerifierPhysical
           grep -nE '^[[:space:]]*def[[:space:]]+p01MachineConstruction[[:space:]]*:[[:space:]]*P01MachineConstruction[[:space:]]*:=' "$f"
           grep -nE '^[[:space:]]*theorem[[:space:]]+p01_closed_no_hypothesis' "$f"
