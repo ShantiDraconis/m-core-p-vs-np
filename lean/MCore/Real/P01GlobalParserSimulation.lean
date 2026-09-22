@@ -302,7 +302,7 @@ theorem logParseCore_fuel_stable
                     | some log' =>
                         simpa [CanonicalSATParserGlobalSpec.logParseCore,
                           hactive, hparse, hpop] using
-                          ih n log' rest hm' hn'
+                          ih rest log' n hm' hn'
                 | const b =>
                     cases hpop : popSlot log with
                     | none =>
@@ -311,19 +311,19 @@ theorem logParseCore_fuel_stable
                     | some log' =>
                         simpa [CanonicalSATParserGlobalSpec.logParseCore,
                           hactive, hparse, hpop] using
-                          ih n log' rest hm' hn'
+                          ih rest log' n hm' hn'
                 | not =>
                     simpa [CanonicalSATParserGlobalSpec.logParseCore,
                       hactive, hparse] using
-                      ih n log rest hm' hn'
+                      ih rest log n hm' hn'
                 | and =>
                     simpa [CanonicalSATParserGlobalSpec.logParseCore,
                       hactive, hparse] using
-                      ih n (pushSlot log) rest hm' hn'
+                      ih rest (pushSlot log) n hm' hn'
                 | or =>
                     simpa [CanonicalSATParserGlobalSpec.logParseCore,
                       hactive, hparse] using
-                      ih n (pushSlot log) rest hm' hn'
+                      ih rest (pushSlot log) n hm' hn'
 
 #print axioms MCore.Real.P01GlobalParserSimulation.logParseCore_fuel_stable
 
