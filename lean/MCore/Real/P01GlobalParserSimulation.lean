@@ -1352,286 +1352,292 @@ theorem phaseSemantics_leaf_from_pop
 
 
 
-/-- Global semantic simulation for every active parser phase.  The induction is
-on unread-source length; every successful canonical head strictly decreases it.
+/-- Global semantic simulation for every active parser phase, strengthened
+to all unread sources of length at most n.  This permits ordinary Nat
+induction while every successful canonical head strictly shortens the source.
 No runtime bound is used here. -/
-theorem phaseSemantics_active_by_length
+theorem phaseSemantics_active_up_to
     (n : Nat) :
     ∀ (bits : BitString) (log : SlotLog) (pad : Nat),
-      bits.length = n →
+      bits.length ≤ n →
       activeSlots log ≠ 0 →
       0 < pad →
       PhaseSemantics (bits.length + 1) pad log bits := by
-  apply Nat.strongRecOn n
-  intro n ih bits log pad hlen hactive hpad
-  cases hparse : parseHead bits with
-  | none =>
+  induction n with
+  | zero =>
+      intro bits log pad hlen hactive hpad
+      have hlen0 : bits.length = 0 := Nat.eq_zero_of_le_zero hlen
+      have hbits : bits = [] := List.length_eq_zero.mp hlen0
+      subst bits
       exact
         phaseSemantics_parseHead_none
-          bits.length pad log bits hactive hparse
-  | some parsed =>
-      rcases parsed with ⟨head, rest⟩
-      have hlt : rest.length < bits.length :=
-        parseHead_rest_length_lt hparse
-      have hrestlt : rest.length < n := by
-        omega
-      have hshape : bits = head.encode ++ rest :=
-        parseHead_inverse bits head rest hparse
-      cases head with
-      | input i =>
-          rcases popSlot_exists_of_active log hactive with
-            ⟨log', hpop⟩
-          have habstract :=
-            logParseCore_input_step_stable
-              bits rest log log' i hactive hparse hpop
-          have hprefix :
-              parserMachine.run
-                  (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                    (.input i) rest.length log.length)
-                  (phaseConfig 4 pad bits log) =
-                CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
-                  (none :: rest.reverse.map some ++
-                    List.replicate
-                      (pad + (Head.encode (.input i)).length)
-                      (none : Option Bool))
-                  log none := by
-            rw [hshape]
-            exact
-              CanonicalSATParserPhaseMacroProof.input_head_to_pop_search
-                pad i rest log
-          refine
-            phaseSemantics_leaf_from_pop
-              (parentFuel := bits.length + 1)
-              (parentPad := pad)
-              (leafPad := pad + (Head.encode (.input i)).length)
-              (prefixSteps :=
-                CanonicalSATParserPhaseMacroProof.headWorkFuel
-                  (.input i) rest.length log.length)
-              (parentLog := log)
-              (log' := log')
-              (parentBits := bits)
-              (rest := rest)
-              (by omega) hpop hprefix habstract ?_
-          intro hactive' hrest
+          0 pad log [] hactive (by rfl)
+  | succ n ih =>
+      intro bits log pad hlen hactive hpad
+      cases hparse : parseHead bits with
+      | none =>
           exact
-            ih rest.length hrestlt
-              rest log'
-              (pad + (Head.encode (.input i)).length)
-              rfl hactive' (by omega)
-      | const b =>
-          rcases popSlot_exists_of_active log hactive with
-            ⟨log', hpop⟩
-          have habstract :=
-            logParseCore_const_step_stable
-              bits rest log log' b hactive hparse hpop
-          have hprefix :
-              parserMachine.run
-                  (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                    (.const b) rest.length log.length)
-                  (phaseConfig 4 pad bits log) =
-                CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
-                  (none :: rest.reverse.map some ++
-                    List.replicate
-                      (pad + (Head.encode (.const b)).length)
-                      (none : Option Bool))
-                  log none := by
-            rw [hshape]
-            exact
-              CanonicalSATParserPhaseMacroProof.const_head_to_pop_search
-                pad b rest log
-          refine
-            phaseSemantics_leaf_from_pop
-              (parentFuel := bits.length + 1)
-              (parentPad := pad)
-              (leafPad := pad + (Head.encode (.const b)).length)
-              (prefixSteps :=
-                CanonicalSATParserPhaseMacroProof.headWorkFuel
-                  (.const b) rest.length log.length)
-              (parentLog := log)
-              (log' := log')
-              (parentBits := bits)
-              (rest := rest)
-              (by omega) hpop hprefix habstract ?_
-          intro hactive' hrest
-          exact
-            ih rest.length hrestlt
-              rest log'
-              (pad + (Head.encode (.const b)).length)
-              rfl hactive' (by omega)
-      | not =>
-          have habstract :=
-            logParseCore_not_step_stable
-              bits rest log hactive hparse
-          have hprefix :
-              parserMachine.run (Head.encode .not).length
-                  (phaseConfig 4 pad bits log) =
-                phaseConfig 4
-                  (pad + (Head.encode .not).length) rest log := by
-            rw [hshape]
-            exact
-              CanonicalSATParserPhaseMacroProof.not_head_roundtrip
-                pad rest log
-          have hchild :
-              PhaseSemantics (rest.length + 1)
-                (pad + (Head.encode .not).length) log rest :=
-            ih rest.length hrestlt
-              rest log (pad + (Head.encode .not).length)
-              rfl hactive (by omega)
-          exact
-            phaseSemantics_compose_exact
-              (bits.length + 1) (rest.length + 1)
-              pad (pad + (Head.encode .not).length)
-              log log bits rest
-              (Head.encode .not).length
-              hprefix habstract hchild
-      | and =>
-          have habstract :=
-            logParseCore_and_step_stable
-              bits rest log hactive hparse
-          by_cases hrest : rest = []
-          · subst rest
-            have hrun :
-                parserMachine.run
+            phaseSemantics_parseHead_none
+              bits.length pad log bits hactive hparse
+      | some parsed =>
+          rcases parsed with ⟨head, rest⟩
+          have hlt : rest.length < bits.length :=
+            parseHead_rest_length_lt hparse
+          have hrestle : rest.length ≤ n := by
+            omega
+          have hshape : bits = head.encode ++ rest :=
+            parseHead_inverse bits head rest hparse
+          cases head with
+          | input i =>
+              rcases popSlot_exists_of_active log hactive with
+                ⟨log', hpop⟩
+              have habstract :=
+                logParseCore_input_step_stable
+                  bits rest log log' i hactive hparse hpop
+              have hprefix :
+                  parserMachine.run
+                      (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                        (.input i) rest.length log.length)
+                      (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: rest.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.input i)).length)
+                          (none : Option Bool))
+                      log none := by
+                rw [hshape]
+                exact
+                  CanonicalSATParserPhaseMacroProof.input_head_to_pop_search
+                    pad i rest log
+              refine
+                phaseSemantics_leaf_from_pop
+                  (parentFuel := bits.length + 1)
+                  (parentPad := pad)
+                  (leafPad := pad + (Head.encode (.input i)).length)
+                  (prefixSteps :=
+                    CanonicalSATParserPhaseMacroProof.headWorkFuel
+                      (.input i) rest.length log.length)
+                  (parentLog := log)
+                  (log' := log')
+                  (parentBits := bits)
+                  (rest := rest)
+                  (by omega) hpop hprefix habstract ?_
+              intro hactive' hrest
+              exact
+                ih rest log'
+                  (pad + (Head.encode (.input i)).length)
+                  hrestle hactive' (by omega)
+          | const b =>
+              rcases popSlot_exists_of_active log hactive with
+                ⟨log', hpop⟩
+              have habstract :=
+                logParseCore_const_step_stable
+                  bits rest log log' b hactive hparse hpop
+              have hprefix :
+                  parserMachine.run
+                      (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                        (.const b) rest.length log.length)
+                      (phaseConfig 4 pad bits log) =
+                    CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+                      (none :: rest.reverse.map some ++
+                        List.replicate
+                          (pad + (Head.encode (.const b)).length)
+                          (none : Option Bool))
+                      log none := by
+                rw [hshape]
+                exact
+                  CanonicalSATParserPhaseMacroProof.const_head_to_pop_search
+                    pad b rest log
+              refine
+                phaseSemantics_leaf_from_pop
+                  (parentFuel := bits.length + 1)
+                  (parentPad := pad)
+                  (leafPad := pad + (Head.encode (.const b)).length)
+                  (prefixSteps :=
+                    CanonicalSATParserPhaseMacroProof.headWorkFuel
+                      (.const b) rest.length log.length)
+                  (parentLog := log)
+                  (log' := log')
+                  (parentBits := bits)
+                  (rest := rest)
+                  (by omega) hpop hprefix habstract ?_
+              intro hactive' hrest
+              exact
+                ih rest log'
+                  (pad + (Head.encode (.const b)).length)
+                  hrestle hactive' (by omega)
+          | not =>
+              have habstract :=
+                logParseCore_not_step_stable
+                  bits rest log hactive hparse
+              have hprefix :
+                  parserMachine.run (Head.encode .not).length
+                      (phaseConfig 4 pad bits log) =
+                    phaseConfig 4
+                      (pad + (Head.encode .not).length) rest log := by
+                rw [hshape]
+                exact
+                  CanonicalSATParserPhaseMacroProof.not_head_roundtrip
+                    pad rest log
+              have hchild :
+                  PhaseSemantics (rest.length + 1)
+                    (pad + (Head.encode .not).length) log rest :=
+                ih rest log
+                  (pad + (Head.encode .not).length)
+                  hrestle hactive (by omega)
+              exact
+                phaseSemantics_compose_exact
+                  (bits.length + 1) (rest.length + 1)
+                  pad (pad + (Head.encode .not).length)
+                  log log bits rest
+                  (Head.encode .not).length
+                  hprefix habstract hchild
+          | and =>
+              have habstract :=
+                logParseCore_and_step_stable
+                  bits rest log hactive hparse
+              by_cases hrest : rest = []
+              · subst rest
+                have hrun :
+                    parserMachine.run
+                        (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                            Head.and 0 log.length +
+                          (log.length + 2))
+                        (phaseConfig 4 pad bits log) =
+                      CanonicalSATParserLeafSourceProof.leafRejectConfig
+                        (pad + (Head.encode .and).length)
+                        ((pushSlot log).map some) := by
+                  rw [hshape]
+                  simpa using
+                    CanonicalSATParserBinaryHeadProof.and_head_exhausted_rejects
+                      pad hpad log
+                have hstate :
+                    (parserMachine.run
+                        (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                            Head.and 0 log.length +
+                          (log.length + 2))
+                        (phaseConfig 4 pad bits log)).state =
+                      (24 : Fin 25) := by
+                  rw [hrun]
+                  rfl
+                have hpush : activeSlots (pushSlot log) ≠ 0 := by
+                  rw [activeSlots_pushSlot]
+                  omega
+                have hchildFalse :
+                    CanonicalSATParserGlobalSpec.logParseCore
+                        1 (pushSlot log) [] = false :=
+                  logParseCore_active_empty 1 (by omega)
+                    (pushSlot log) hpush
+                have habstractFalse :
+                    CanonicalSATParserGlobalSpec.logParseCore
+                        (bits.length + 1) log bits = false := by
+                  exact habstract.trans hchildFalse
+                exact
+                  phaseSemantics_of_reject_state
+                    (bits.length + 1) pad log bits
                     (CanonicalSATParserPhaseMacroProof.headWorkFuel
                         Head.and 0 log.length +
                       (log.length + 2))
-                    (phaseConfig 4 pad bits log) =
-                  CanonicalSATParserLeafSourceProof.leafRejectConfig
+                    hstate habstractFalse
+              · have hpush : activeSlots (pushSlot log) ≠ 0 := by
+                  rw [activeSlots_pushSlot]
+                  omega
+                rcases
+                    and_head_roundtrip_any_nonempty
+                      pad hpad rest hrest log with
+                  ⟨prefixSteps, hprefix⟩
+                have hchild :
+                    PhaseSemantics (rest.length + 1)
+                      (pad + (Head.encode .and).length)
+                      (pushSlot log) rest :=
+                  ih rest (pushSlot log)
                     (pad + (Head.encode .and).length)
-                    ((pushSlot log).map some) := by
-              rw [hshape]
-              simpa using
-                CanonicalSATParserBinaryHeadProof.and_head_exhausted_rejects
-                  pad hpad log
-            have hstate :
-                (parserMachine.run
-                    (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                        Head.and 0 log.length +
-                      (log.length + 2))
-                    (phaseConfig 4 pad bits log)).state =
-                  (24 : Fin 25) := by
-              rw [hrun]
-              rfl
-            have hpush : activeSlots (pushSlot log) ≠ 0 := by
-              rw [activeSlots_pushSlot]
-              omega
-            have hchildFalse :
-                CanonicalSATParserGlobalSpec.logParseCore
-                    1 (pushSlot log) [] = false :=
-              logParseCore_active_empty 1 (by omega)
-                (pushSlot log) hpush
-            have habstractFalse :
-                CanonicalSATParserGlobalSpec.logParseCore
-                    (bits.length + 1) log bits = false := by
-              exact habstract.trans hchildFalse
-            exact
-              phaseSemantics_of_reject_state
-                (bits.length + 1) pad log bits
-                (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                    Head.and 0 log.length +
-                  (log.length + 2))
-                hstate habstractFalse
-          · have hpush : activeSlots (pushSlot log) ≠ 0 := by
-              rw [activeSlots_pushSlot]
-              omega
-            rcases
-                and_head_roundtrip_any_nonempty
-                  pad hpad rest hrest log with
-              ⟨prefixSteps, hprefix⟩
-            have hchild :
-                PhaseSemantics (rest.length + 1)
-                  (pad + (Head.encode .and).length)
-                  (pushSlot log) rest :=
-              ih rest.length hrestlt
-                rest (pushSlot log)
-                (pad + (Head.encode .and).length)
-                rfl hpush (by omega)
-            exact
-              phaseSemantics_compose_exact
-                (bits.length + 1) (rest.length + 1)
-                pad (pad + (Head.encode .and).length)
-                log (pushSlot log)
-                bits rest
-                prefixSteps
-                (by
+                    hrestle hpush (by omega)
+                exact
+                  phaseSemantics_compose_exact
+                    (bits.length + 1) (rest.length + 1)
+                    pad (pad + (Head.encode .and).length)
+                    log (pushSlot log)
+                    bits rest
+                    prefixSteps
+                    (by
+                      rw [hshape]
+                      exact hprefix)
+                    habstract hchild
+          | or =>
+              have habstract :=
+                logParseCore_or_step_stable
+                  bits rest log hactive hparse
+              by_cases hrest : rest = []
+              · subst rest
+                have hrun :
+                    parserMachine.run
+                        (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                            Head.or 0 log.length +
+                          (log.length + 2))
+                        (phaseConfig 4 pad bits log) =
+                      CanonicalSATParserLeafSourceProof.leafRejectConfig
+                        (pad + (Head.encode .or).length)
+                        ((pushSlot log).map some) := by
                   rw [hshape]
-                  exact hprefix)
-                habstract hchild
-      | or =>
-          have habstract :=
-            logParseCore_or_step_stable
-              bits rest log hactive hparse
-          by_cases hrest : rest = []
-          · subst rest
-            have hrun :
-                parserMachine.run
+                  simpa using
+                    CanonicalSATParserBinaryHeadProof.or_head_exhausted_rejects
+                      pad hpad log
+                have hstate :
+                    (parserMachine.run
+                        (CanonicalSATParserPhaseMacroProof.headWorkFuel
+                            Head.or 0 log.length +
+                          (log.length + 2))
+                        (phaseConfig 4 pad bits log)).state =
+                      (24 : Fin 25) := by
+                  rw [hrun]
+                  rfl
+                have hpush : activeSlots (pushSlot log) ≠ 0 := by
+                  rw [activeSlots_pushSlot]
+                  omega
+                have hchildFalse :
+                    CanonicalSATParserGlobalSpec.logParseCore
+                        1 (pushSlot log) [] = false :=
+                  logParseCore_active_empty 1 (by omega)
+                    (pushSlot log) hpush
+                have habstractFalse :
+                    CanonicalSATParserGlobalSpec.logParseCore
+                        (bits.length + 1) log bits = false := by
+                  exact habstract.trans hchildFalse
+                exact
+                  phaseSemantics_of_reject_state
+                    (bits.length + 1) pad log bits
                     (CanonicalSATParserPhaseMacroProof.headWorkFuel
                         Head.or 0 log.length +
                       (log.length + 2))
-                    (phaseConfig 4 pad bits log) =
-                  CanonicalSATParserLeafSourceProof.leafRejectConfig
+                    hstate habstractFalse
+              · have hpush : activeSlots (pushSlot log) ≠ 0 := by
+                  rw [activeSlots_pushSlot]
+                  omega
+                rcases
+                    or_head_roundtrip_any_nonempty
+                      pad hpad rest hrest log with
+                  ⟨prefixSteps, hprefix⟩
+                have hchild :
+                    PhaseSemantics (rest.length + 1)
+                      (pad + (Head.encode .or).length)
+                      (pushSlot log) rest :=
+                  ih rest (pushSlot log)
                     (pad + (Head.encode .or).length)
-                    ((pushSlot log).map some) := by
-              rw [hshape]
-              simpa using
-                CanonicalSATParserBinaryHeadProof.or_head_exhausted_rejects
-                  pad hpad log
-            have hstate :
-                (parserMachine.run
-                    (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                        Head.or 0 log.length +
-                      (log.length + 2))
-                    (phaseConfig 4 pad bits log)).state =
-                  (24 : Fin 25) := by
-              rw [hrun]
-              rfl
-            have hpush : activeSlots (pushSlot log) ≠ 0 := by
-              rw [activeSlots_pushSlot]
-              omega
-            have hchildFalse :
-                CanonicalSATParserGlobalSpec.logParseCore
-                    1 (pushSlot log) [] = false :=
-              logParseCore_active_empty 1 (by omega)
-                (pushSlot log) hpush
-            have habstractFalse :
-                CanonicalSATParserGlobalSpec.logParseCore
-                    (bits.length + 1) log bits = false := by
-              exact habstract.trans hchildFalse
-            exact
-              phaseSemantics_of_reject_state
-                (bits.length + 1) pad log bits
-                (CanonicalSATParserPhaseMacroProof.headWorkFuel
-                    Head.or 0 log.length +
-                  (log.length + 2))
-                hstate habstractFalse
-          · have hpush : activeSlots (pushSlot log) ≠ 0 := by
-              rw [activeSlots_pushSlot]
-              omega
-            rcases
-                or_head_roundtrip_any_nonempty
-                  pad hpad rest hrest log with
-              ⟨prefixSteps, hprefix⟩
-            have hchild :
-                PhaseSemantics (rest.length + 1)
-                  (pad + (Head.encode .or).length)
-                  (pushSlot log) rest :=
-              ih rest.length hrestlt
-                rest (pushSlot log)
-                (pad + (Head.encode .or).length)
-                rfl hpush (by omega)
-            exact
-              phaseSemantics_compose_exact
-                (bits.length + 1) (rest.length + 1)
-                pad (pad + (Head.encode .or).length)
-                log (pushSlot log)
-                bits rest
-                prefixSteps
-                (by
-                  rw [hshape]
-                  exact hprefix)
-                habstract hchild
+                    hrestle hpush (by omega)
+                exact
+                  phaseSemantics_compose_exact
+                    (bits.length + 1) (rest.length + 1)
+                    pad (pad + (Head.encode .or).length)
+                    log (pushSlot log)
+                    bits rest
+                    prefixSteps
+                    (by
+                      rw [hshape]
+                      exact hprefix)
+                    habstract hchild
 
-/-- The active-phase theorem specialized without an external length parameter. -/
+/-- The active-phase theorem specialized to the exact source length. -/
 theorem phaseSemantics_active
     (bits : BitString)
     (log : SlotLog)
@@ -1639,8 +1645,8 @@ theorem phaseSemantics_active
     (hactive : activeSlots log ≠ 0)
     (hpad : 0 < pad) :
     PhaseSemantics (bits.length + 1) pad log bits :=
-  phaseSemantics_active_by_length bits.length
-    bits log pad rfl hactive hpad
+  phaseSemantics_active_up_to bits.length
+    bits log pad (by omega) hactive hpad
 
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_reject_state
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_accept_state
