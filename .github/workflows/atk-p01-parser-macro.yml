@@ -34,6 +34,7 @@ jobs:
             lean/MCore/Real/CanonicalSATParserLeafSourceProof.lean
             lean/MCore/Real/CanonicalSATParserTerminalBranches.lean
             lean/MCore/Real/CanonicalSATParserPhaseMacroProof.lean
+            lean/MCore/Real/CanonicalSATParserBinaryHeadProof.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
@@ -42,7 +43,7 @@ jobs:
       - name: Build parser macro
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATParserPhaseMacroProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserGlobalSpec
+          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATParserPhaseMacroProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserGlobalSpec MCore.Real.CanonicalSATParserBinaryHeadProof
 
       - name: Axiom audit
         run: |
@@ -57,6 +58,7 @@ jobs:
           import MCore.Real.CanonicalSATParserLeafReturnProof
           import MCore.Real.CanonicalSATParserLeafSourceProof
           import MCore.Real.CanonicalSATParserGlobalSpec
+          import MCore.Real.CanonicalSATParserBinaryHeadProof
           #print axioms MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search
           #print axioms MCore.Real.CanonicalSATParserMacroProof.binary_phase_to_return
           #print axioms MCore.Real.CanonicalSATParserMacroProof.phaseWorkBound_linear
@@ -79,6 +81,10 @@ jobs:
           #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
           #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logParseCore_eq_slotParseCore
           #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logAccept_iff_slotAccept
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.and_head_roundtrip_nonempty
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.or_head_roundtrip_nonempty
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.and_head_exhausted_rejects
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.or_head_exhausted_rejects
           EOF
           lake env lean /tmp/P01ParserMacroAudit.lean 2>&1 | tee /tmp/p01-parser-macro.log
           if grep -q 'sorryAx' /tmp/p01-parser-macro.log; then exit 1; fi
