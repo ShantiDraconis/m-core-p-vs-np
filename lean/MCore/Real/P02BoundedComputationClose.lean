@@ -470,6 +470,7 @@ theorem executionAssignment_stateVar
       exact Or.inl ⟨s, hs, rfl⟩
     simp only [executionAssignment]
     rw [dif_pos hp]
+    simp [cfg]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -553,6 +554,7 @@ theorem executionAssignment_headVar
       exact Or.inr (Or.inl ⟨s, hs, rfl⟩)
     simp only [executionAssignment]
     rw [dif_pos hp]
+    simp [cfg]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -640,6 +642,7 @@ theorem executionAssignment_leftVar
       exact Or.inr (Or.inr (Or.inl ⟨s, i, hs, hi, rfl⟩))
     simp only [executionAssignment]
     rw [dif_pos hp]
+    simp [cfg]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -684,7 +687,7 @@ theorem executionAssignment_leftVar
       simp only [executionAssignment]
       rw [dif_neg hnot]
     rw [hfalse]
-    simp [cfg, ha]
+    simpa [cfg] using ha
 
 theorem executionAssignment_rightVar
     (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
@@ -727,6 +730,7 @@ theorem executionAssignment_rightVar
       exact Or.inr (Or.inr (Or.inr ⟨s, i, hs, hi, rfl⟩))
     simp only [executionAssignment]
     rw [dif_pos hp]
+    simp [cfg]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -771,7 +775,7 @@ theorem executionAssignment_rightVar
       simp only [executionAssignment]
       rw [dif_neg hnot]
     rw [hfalse]
-    simp [cfg, ha]
+    simpa [cfg] using ha
 
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
