@@ -13,7 +13,7 @@ open P01VerifierGateMachine
 theorem evalNeg_local_semantics
     (sigma : Assignment) (v : Bool) (stack : List Bool) :
     execInstr sigma (v :: stack) .neg = some ((!v) :: stack) := by
-  rfl
+  simp [execInstr]
 
 theorem evalAnd_local_semantics
     (sigma : Assignment) (l r : Bool) (stack : List Bool) :
