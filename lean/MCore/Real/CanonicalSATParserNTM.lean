@@ -51,7 +51,7 @@ theorem parserNTM_stepBranch_eq_parser_step
     Configuration.mk q
       (Tape.move parserMachine.blank direction
         (Tape.write config.tape symbol))
-  rfl
+  rw [parserNTM_blank_none, parserMachine_blank_none]
 
 theorem parserNTM_successors_singleton
     (config : Configuration (Fin 25) (Option Bool)) :
