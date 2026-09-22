@@ -39,19 +39,7 @@ theorem parserNTM_stepBranch_eq_parser_step
     parserNTM.stepBranch config
         (parserMachine.transition config.state config.tape.head) =
       parserMachine.step config := by
-  rcases htr :
-      parserMachine.transition config.state config.tape.head with
-    ⟨q, symbol, direction⟩
-  unfold NTM.stepBranch TM.step
-  rw [htr]
-  change
-    Configuration.mk q
-      (Tape.move parserNTM.blank direction
-        (Tape.write config.tape symbol)) =
-    Configuration.mk q
-      (Tape.move parserMachine.blank direction
-        (Tape.write config.tape symbol))
-  rw [parserNTM_blank_none, parserMachine_blank_none]
+  simp [parserNTM, parserMachine, NTM.stepBranch, TM.step]
 
 theorem parserNTM_successors_singleton
     (config : Configuration (Fin 25) (Option Bool)) :
