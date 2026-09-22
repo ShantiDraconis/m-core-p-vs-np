@@ -886,6 +886,91 @@ theorem parserProofBudget_le_parserTimeBound
     _ = 256 * (n + 1) ^ 2 := by
       simp [Nat.pow_succ, Nat.mul_assoc]
 
+
+/-- Deterministic initializer reaches the exact phase-4 one-slot configuration. -/
+theorem parser_initializes_to_phase
+    (bits : BitString) :
+    parserMachine.run (2 * bits.length + 4)
+        (initialTMConfig parserMachine bits) =
+      phaseConfig 4 1 bits initialSlotLog := by
+  simpa using
+    (CanonicalSATParserInitProof.parser_initializes bits)
+
+/-- The complete proof-side execution halts before its exact composite budget. -/
+theorem parserProofBudget_halts
+    (bits : BitString) :
+    parserMachine.HaltsWithin
+      (parserProofBudget bits)
+      (initialTMConfig parserMachine bits) := by
+  unfold parserProofBudget TM.HaltsWithin
+  rw [MachineRunLemmas.run_add]
+  rw [parser_initializes_to_phase]
+  exact
+    phase_halts_budget_global
+      1 initialSlotLog bits (by decide) (by decide)
+
+/-- The exact composite proof-side fuel realizes slotAccept. -/
+theorem parserProofBudget_accepts_iff
+    (bits : BitString) :
+    parserAccepting
+        (parserMachine.run
+          (parserProofBudget bits)
+          (initialTMConfig parserMachine bits)).state = true ↔
+      slotAccept bits = true := by
+  unfold parserProofBudget
+  rw [MachineRunLemmas.run_add]
+  rw [parser_initializes_to_phase]
+  exact phase_initial_accepts_iff_slotAccept bits
+
+/-- Total halting promoted from the proof-side budget to the repository's fixed
+polynomial parserTimeBound. -/
+theorem parser_halts_within_timeBound
+    (bits : BitString) :
+    parserMachine.HaltsWithin
+      (parserTimeBound bits.length)
+      (initialTMConfig parserMachine bits) := by
+  exact MachineRunLemmas.haltsWithin_mono
+    parserMachine
+    (initialTMConfig parserMachine bits)
+    (parserProofBudget_le_parserTimeBound bits)
+    (parserProofBudget_halts bits)
+
+/-- Semantic correctness at the exact fixed parserTimeBound fuel. -/
+theorem parser_realizes_slotAccept_at_timeBound
+    (bits : BitString) :
+    parserAccepting
+        (parserMachine.run
+          (parserTimeBound bits.length)
+          (initialTMConfig parserMachine bits)).state = true ↔
+      slotAccept bits = true := by
+  have hhalt := parserProofBudget_halts bits
+  have hrun :=
+    MachineRunLemmas.run_to_larger_fuel_of_halt
+      parserMachine
+      (initialTMConfig parserMachine bits)
+      (parserMachine.run
+        (parserProofBudget bits)
+        (initialTMConfig parserMachine bits))
+      (parserProofBudget_le_parserTimeBound bits)
+      rfl
+      hhalt
+  rw [hrun]
+  exact parserProofBudget_accepts_iff bits
+
+/-- T1.1 terminal product: a no-hypothesis global simulation certificate for
+the concrete Fin-25 parser machine. -/
+theorem slot_parser_machine_simulation_certificate :
+    CanonicalSATRecursiveParserSimulation.SlotParserMachineSimulationCertificate :=
+  { halts := parser_halts_within_timeBound
+    realizes_slotAccept := parser_realizes_slotAccept_at_timeBound }
+
+#print axioms MCore.Real.P01GlobalParserBound.parser_initializes_to_phase
+#print axioms MCore.Real.P01GlobalParserBound.parserProofBudget_halts
+#print axioms MCore.Real.P01GlobalParserBound.parserProofBudget_accepts_iff
+#print axioms MCore.Real.P01GlobalParserBound.parser_halts_within_timeBound
+#print axioms MCore.Real.P01GlobalParserBound.parser_realizes_slotAccept_at_timeBound
+#print axioms MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate
+
 #print axioms MCore.Real.P01GlobalParserBound.phase_correct_at_budget
 #print axioms MCore.Real.P01GlobalParserBound.parserProofBudget_le_parserTimeBound
 
