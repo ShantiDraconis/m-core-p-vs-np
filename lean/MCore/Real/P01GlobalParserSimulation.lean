@@ -671,7 +671,10 @@ theorem q10_true_payload_rejects
       phaseConfig 24 (pad + n) [] log := by
   induction n generalizing pad with
   | zero =>
-      simp [TM.run, phaseConfig, parserMachine]
+      rw [show 0 + 1 = 1 by rfl]
+      rw [TM.run, phaseConfig_state,
+        CanonicalSATParserHeadProof.not_halted_10]
+      simp [phaseConfig, parserMachine, TM.step, Tape.write, Tape.move]
   | succ n ih =>
       rw [show Nat.succ n + 1 = (n + 1) + 1 by omega]
       simp only [List.replicate_succ]
@@ -686,11 +689,81 @@ theorem q10_true_payload_rejects
         exact CanonicalSATParserHeadProof.step_erase_right
           10 10 pad true (List.replicate n true) log rfl
       rw [hstep]
-      rw [ih (pad + 1)]
-      congr 2 <;> omega
+      simpa [Nat.add_assoc] using ih (pad + 1)
 
-/-- If the abstract head parser fails while an active parser phase is at TAG_0,
-the concrete parser deterministically reaches its rejecting state. -/
+/-- If parseHead fails at TAG_0, the concrete finite-control parser reaches the
+canonical reject state 24. -/
+theorem phase_parseHead_none_state_rejects
+    (pad : Nat)
+    (bits : BitString)
+    (log : SlotLog)
+    (hnone : parseHead bits = none) :
+    ∃ steps : Nat,
+      (parserMachine.run steps
+        (phaseConfig 4 pad bits log)).state = (24 : Fin 25) := by
+  cases bits with
+  | nil =>
+      refine ⟨1, ?_⟩
+      simp [TM.run, phaseConfig, parserMachine, TM.step, Tape.write, Tape.move]
+  | cons b1 r1 =>
+      cases r1 with
+      | nil =>
+          cases b1
+          · refine ⟨2, ?_⟩
+            simp [TM.run, phaseConfig, parserMachine, TM.step,
+              Tape.write, Tape.move]
+          · refine ⟨2, ?_⟩
+            simp [TM.run, phaseConfig, parserMachine, TM.step,
+              Tape.write, Tape.move]
+      | cons b2 r2 =>
+          cases r2 with
+          | nil =>
+              cases b1 <;> cases b2
+              · refine ⟨3, ?_⟩
+                simp [TM.run, phaseConfig, parserMachine, TM.step,
+                  Tape.write, Tape.move]
+              · refine ⟨3, ?_⟩
+                simp [TM.run, phaseConfig, parserMachine, TM.step,
+                  Tape.write, Tape.move]
+              · refine ⟨3, ?_⟩
+                simp [TM.run, phaseConfig, parserMachine, TM.step,
+                  Tape.write, Tape.move]
+              · refine ⟨2, ?_⟩
+                simp [TM.run, phaseConfig, parserMachine, TM.step,
+                  Tape.write, Tape.move]
+          | cons b3 rest =>
+              cases b1 <;> cases b2 <;> cases b3
+              · have hdec :
+                    CanonicalCircuitBits.decodeNat rest = none := by
+                  cases hd : CanonicalCircuitBits.decodeNat rest with
+                  | none =>
+                      exact hd
+                  | some p =>
+                      rcases p with ⟨i, tail⟩
+                      simp [parseHead, hd] at hnone
+                have hrep :=
+                  decodeNat_none_eq_replicate_true rest hdec
+                rw [hrep]
+                refine ⟨3 + (rest.length + 1), ?_⟩
+                rw [MachineRunLemmas.run_add]
+                rw [CanonicalSATParserHeadProof.tag_input_run]
+                rw [q10_true_payload_rejects
+                  (pad + 3) rest.length log]
+                rfl
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · simp [parseHead] at hnone
+              · refine ⟨2, ?_⟩
+                simp [TM.run, phaseConfig, parserMachine, TM.step,
+                  Tape.write, Tape.move]
+              · refine ⟨2, ?_⟩
+                simp [TM.run, phaseConfig, parserMachine, TM.step,
+                  Tape.write, Tape.move]
+
+/-- Head-parser failure is therefore a genuine halted rejection, not merely a
+state-level observation. -/
 theorem phase_parseHead_none_rejects
     (pad : Nat)
     (bits : BitString)
@@ -703,54 +776,13 @@ theorem phase_parseHead_none_rejects
       parserAccepting
           (parserMachine.run steps
             (phaseConfig 4 pad bits log)).state = false := by
-  cases bits with
-  | nil =>
-      refine ⟨1, ?_, ?_⟩ <;>
-        simp [TM.run, phaseConfig, parserMachine, parserAccepting]
-  | cons b1 r1 =>
-      cases r1 with
-      | nil =>
-          cases b1 <;>
-            refine ⟨2, ?_, ?_⟩ <;>
-              simp [TM.run, phaseConfig, parserMachine, parserAccepting]
-      | cons b2 r2 =>
-          cases r2 with
-          | nil =>
-              cases b1 <;> cases b2
-              · refine ⟨3, ?_, ?_⟩ <;>
-                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
-              · refine ⟨3, ?_, ?_⟩ <;>
-                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
-              · refine ⟨3, ?_, ?_⟩ <;>
-                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
-              · refine ⟨2, ?_, ?_⟩ <;>
-                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
-          | cons b3 rest =>
-              cases b1 <;> cases b2 <;> cases b3
-              · have hdec :
-                    CanonicalCircuitBits.decodeNat rest = none := by
-                  simpa [parseHead] using hnone
-                have hrep :=
-                  decodeNat_none_eq_replicate_true rest hdec
-                rw [hrep]
-                refine ⟨3 + (rest.length + 1), ?_, ?_⟩
-                · rw [MachineRunLemmas.run_add]
-                  rw [CanonicalSATParserHeadProof.tag_input_run]
-                  rw [q10_true_payload_rejects (pad + 3) rest.length log]
-                  simp [phaseConfig, parserMachine]
-                · rw [MachineRunLemmas.run_add]
-                  rw [CanonicalSATParserHeadProof.tag_input_run]
-                  rw [q10_true_payload_rejects (pad + 3) rest.length log]
-                  simp [phaseConfig, parserAccepting]
-              · simp [parseHead] at hnone
-              · simp [parseHead] at hnone
-              · simp [parseHead] at hnone
-              · simp [parseHead] at hnone
-              · simp [parseHead] at hnone
-              · refine ⟨2, ?_, ?_⟩ <;>
-                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
-              · refine ⟨2, ?_, ?_⟩ <;>
-                  simp [TM.run, phaseConfig, parserMachine, parserAccepting]
+  rcases phase_parseHead_none_state_rejects pad bits log hnone with
+    ⟨steps, hstate⟩
+  refine ⟨steps, ?_, ?_⟩
+  · rw [hstate]
+    decide
+  · rw [hstate]
+    decide
 
 #print axioms MCore.Real.P01GlobalParserSimulation.decodeNat_none_eq_replicate_true
 #print axioms MCore.Real.P01GlobalParserSimulation.q10_true_payload_rejects
