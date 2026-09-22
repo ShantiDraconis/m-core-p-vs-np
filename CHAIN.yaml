@@ -1,22 +1,35 @@
 problem: P-vs-NP
-checkpoint: P02-UNIVERSAL-WITNESS-CHAIN
+checkpoint: P02-UNIVERSAL-WITNESS-INTEGRATED
 claim: architecture-and-boundary-kernel-only
 scientific_endpoint_proved: false
 signature_status: CANDIDATE_OBSTRUCTION
 
+reuse_base:
+  frozen_branch: frozen/p02-g2-2-wiring-green-38db71b4
+  frozen_sha: 38db71b416906e5b7138774842e91d3e367aad09
+  certified_run: 35722282451
+  imported_real_modules: 58
+
 p02_chain:
-  source_payload: MCore.SeparationWitnessData
-  fixed_payload: MCore.Real.P02WitnessChain.FixedK10WitnessDataCore
+  sat_target: MCore.Real.P02G21G22Attack.SATTarget
   universal_witness: MCore.Real.P02WitnessChain.UniversalWitness
   existence_producer: MCore.Real.P02WitnessChain.UniversalWitnessProducer
-  pointwise_gate: MCore.Real.P02WitnessChain.G21PointwiseCore
-  endpoint: MCore.Real.P02WitnessChain.P02TargetCore
-  composition:
-    - k10DataToUniversalWitness
-    - fixedK10ToUniversalWitness
-    - universalWitnessExists_iff_g21PointwiseCore
-    - g21PointwiseCore_to_p02TargetCore
-    - universalWitnessExists_to_p02TargetCore
+  g21: MCore.Real.P02G21G22Attack.G21Pointwise
+  p02: MCore.Real.P02TerminalFrontier.P02Target
+  exact_edges:
+    - universalWitnessExists_iff_g21Pointwise
+    - g21_pointwise_iff_p02_target
+    - universalWitnessExists_to_p02Target
+  stronger_candidate_route:
+    - DiagonalCounterexampleWitness
+    - DiagonalFamily
+    - DiagonalFixedPointGap
+    - diagonalFamily_to_universalWitnessExists
+  falsified_route:
+    - semanticDiagonalBits
+    - no_universal_literal_fixed_point
   producer_status: OPEN_MATH
   downstream_wiring_status: SOURCE_PENDING_CI
-  audit_map: audit/P02_UNIVERSAL_WITNESS_CHAIN.md
+  final_internal_requires:
+    - SATInNPGap(circuitBitEncoding)
+    - UniversalWitnessExists
