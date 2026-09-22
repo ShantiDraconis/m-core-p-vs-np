@@ -71,9 +71,14 @@ theorem sourceRewind_separator_step
     (hhead : t.head = none) :
     sourceRewindMachine.step { state := scanLeft, tape := t } =
       { state := rewindHalt, tape := Tape.move none .right t } := by
-  rw [show t.head = none from hhead]
-  simp [sourceRewindMachine, scanLeft, rewindHalt, enterSource,
-    TM.step, Tape.write]
+  cases t with
+  | mk left head right =>
+      cases head with
+      | none =>
+          simp [sourceRewindMachine, scanLeft, rewindHalt, enterSource,
+            TM.step, Tape.write]
+      | some b =>
+          simp at hhead
 
 #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewindTimeBound_poly
 #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_enter_step
