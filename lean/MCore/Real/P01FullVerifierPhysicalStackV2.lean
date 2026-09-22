@@ -51,13 +51,13 @@ theorem pushStep_correct
     (padding : Nat) (b : Bool) :
     pushStep b (physicalStackV2Tape witness source stack padding) =
       physicalStackV2Tape witness source (b :: stack)
-        (padding.saturatingSub 1) := by
+        (padding - 1) := by
   cases padding with
   | zero =>
       simp [pushStep, physicalStackV2Tape, Tape.write, Tape.move]
   | succ n =>
       simp [pushStep, physicalStackV2Tape, Tape.write, Tape.move,
-        Nat.saturatingSub]
+        Nat.succ_sub_one]
 
 def popEnter (t : Tape (Option Bool)) : Tape (Option Bool) :=
   Tape.move none .left t
@@ -83,7 +83,7 @@ theorem popErase_correct
         (physicalStackV2Tape witness source (v :: stack) padding)) =
       physicalStackV2Tape witness source stack (padding + 1) := by
   simp [popErase, popEnter, physicalStackV2Tape, Tape.write, Tape.move,
-    List.map_cons, List.append_assoc]
+    List.map_cons, List.append_assoc, List.replicate_succ, Nat.add_comm]
 
 theorem physicalStackRepV2_push
     {tape : Tape (Option Bool)}
@@ -93,7 +93,7 @@ theorem physicalStackRepV2_push
     (hrep : PhysicalStackRepV2 tape witness source stack) :
     PhysicalStackRepV2 (pushStep b tape) witness source (b :: stack) := by
   rcases hrep with ⟨padding, rfl⟩
-  refine ⟨padding.saturatingSub 1, ?_⟩
+  refine ⟨padding - 1, ?_⟩
   exact pushStep_correct witness source stack padding b
 
 theorem physicalStackRepV2_pop
