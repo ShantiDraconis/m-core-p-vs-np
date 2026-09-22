@@ -174,8 +174,14 @@ theorem parser_initializes
   rw [MachineRunLemmas.run_add parserMachine bits.length
       (3 + (bits.length + 1))]
   rw [forward_scan_run]
-  change parserMachine.run (3 + (bits.length + 1)) (endConfig bits) =
-    boundaryConfig 1 bits initialSlotLog
+  have hEnd :
+      { state := (0 : Fin 25)
+        tape :=
+          { left := (bits.map some).reverse ++ []
+            head := none
+            right := [] } } = endConfig bits := by
+    simp [endConfig]
+  rw [hEnd]
   rw [MachineRunLemmas.run_add parserMachine 3 (bits.length + 1)]
   rw [setup_to_rewind]
   exact rewind_finish bits
@@ -193,10 +199,10 @@ theorem parser_initialization_within_global_bound
       n + 1 = 1 * (n + 1) := by simp
       _ ≤ (n + 1) * (n + 1) :=
         Nat.mul_le_mul_right (n + 1) hpos
-      _ = (n + 1) ^ 2 := by simp [pow_two]
+      _ = (n + 1) ^ 2 := by simp
   have h3 : 256 * (n + 1) ≤ 256 * (n + 1) ^ 2 :=
     Nat.mul_le_mul_left 256 hsq
-  exact h1.trans (h2.trans h3)
+  exact Nat.le_trans h1 (Nat.le_trans h2 h3)
 
 #print axioms MCore.Real.CanonicalSATRecursiveParserInitProof.forward_scan_run
 #print axioms MCore.Real.CanonicalSATRecursiveParserInitProof.rewind_run
