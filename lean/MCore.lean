@@ -45,3 +45,9 @@ import MCore.Real.P02FinalAttack
 
 import MCore.Real.P02KleeneSelfReferenceBridge
 
+
+import MCore.Real.P01FullVerifierStackSemantics
+import MCore.Real.P01FullVerifierTraversal
+import MCore.Real.P01FullVerifierMachine
+import MCore.Real.P01IntegratedNTMFrontier
+import MCore.Real.P01ConstructionClose
