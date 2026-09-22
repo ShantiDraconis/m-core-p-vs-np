@@ -1,0 +1,49 @@
+name: ATK P02 literal countermodel PR audit
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'lean/MCore/Real/P02LiteralFixedPointCountermodel.lean'
+      - 'lean/MCore/Real/P02LiteralFixedPointFirewall.lean'
+      - 'lean/MCore/Real/P02ClockedDiagonalCompiler.lean'
+      - '.github/workflows/atk-p02-countermodel-pr-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  p02-literal-countermodel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/P02LiteralFixedPointCountermodel.lean
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then exit 1; fi
+      - name: Build
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02LiteralFixedPointCountermodel
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/P02CountermodelAudit.lean <<'EOF'
+          import MCore.Real.P02LiteralFixedPointCountermodel
+          #print axioms MCore.Real.P02LiteralFixedPointCountermodel.constantPair_false_correct
+          #print axioms MCore.Real.P02LiteralFixedPointCountermodel.constantPair_true_correct
+          #print axioms MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point
+          EOF
+          lake env lean /tmp/P02CountermodelAudit.lean 2>&1 | tee /tmp/p02-countermodel.log
+          if grep -q 'sorryAx' /tmp/p02-countermodel.log; then exit 1; fi
+      - name: Boundary
+        run: |
+          echo "P02_LITERAL_ROUTE=DISPROVED_IF_JOB_SUCCEEDS"
+          echo "G2_1=OPEN_MATH"
