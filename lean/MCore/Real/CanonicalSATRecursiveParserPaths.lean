@@ -238,9 +238,13 @@ theorem replicate_none_succ_append
     (left : List (Option Bool)) :
     List.replicate (n + 1) none ++ none :: left =
       List.replicate (n + 2) none ++ left := by
-  rw [show n + 2 = (n + 1) + 1 by omega]
-  rw [List.replicate_add]
-  simp [List.append_assoc]
+  induction n with
+  | zero =>
+      rfl
+  | succ n ih =>
+      simp only [List.replicate_succ]
+      simpa [Nat.add_assoc, List.append_assoc] using
+        congrArg (fun xs => none :: xs) ih
 
 theorem run_var_payload
     (left : List (Option Bool)) (n : Nat) (tail : BitString)
@@ -259,6 +263,7 @@ theorem run_var_payload
       rw [show Nat.succ n + 1 = (n + 1) + 1 by omega]
       rw [TM.run, sourceConfig_state, parser_not_halted_10, step_var_true]
       rw [ih (none :: left)]
+      simp only [Bool.false_eq_true, if_false]
       rw [replicate_none_succ_append n left]
 
 theorem encodeNat_length_local (n : Nat) :
@@ -287,6 +292,8 @@ theorem consumeHead_run
       (List.replicate h.encode.length none ++ left) tail suffix := by
   cases h with
   | input i =>
+      simp only [Head.encode, continuationState, List.length_append,
+        List.length_cons, List.length_nil, encodeNat_length_local]
       change
         parserMachine.run (3 + (i + 1))
           (sourceConfig 4 left
