@@ -41,12 +41,13 @@ structure KleeneToSATBridge where
 
 /-- Once the computable-code-to-SAT bridge exists, Mathlib's fixed-point
 theorem supplies one diagonal witness for every polynomial candidate. -/
-def KleeneToSATBridge.toDiagonalFamily
+noncomputable def KleeneToSATBridge.toDiagonalFamily
     (B : KleeneToSATBridge) :
     DiagonalFamily where
-  witness := fun M => by
-    rcases kleene_fixed_point (B.compile_computable M) with ⟨c, hc⟩
-    exact B.self_semantics_to_diagonal M c hc
+  witness := fun M =>
+    let h := kleene_fixed_point (B.compile_computable M)
+    let c := Classical.choose h
+    B.self_semantics_to_diagonal M c (Classical.choose_spec h)
 
 /-- The exact D3 producer reduces to the Kleene-to-canonical-SAT bridge. -/
 theorem kleene_bridge_closes_D3
