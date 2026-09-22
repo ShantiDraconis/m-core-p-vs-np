@@ -221,6 +221,153 @@ theorem parser_halts_after_rightBlank_prefix
   rw [hrun.1]
   exact hchild
 
+
+theorem parser_terminal_halt_to_budget
+    (pad : Nat) (log : SlotLog) (bits : BitString)
+    (steps : Nat)
+    (hsteps : steps ≤ phaseRuntimeUnit pad log bits)
+    (hhalt :
+      parserMachine.HaltsWithin steps (phaseConfig 4 pad bits log)) :
+    parserMachine.HaltsWithin
+      (phaseRuntimeBudget pad log bits)
+      (phaseConfig 4 pad bits log) := by
+  have hle :=
+    le_trans hsteps (phaseRuntimeUnit_le_budget pad log bits)
+  exact MachineRunLemmas.haltsWithin_mono
+    parserMachine (phaseConfig 4 pad bits log) hle hhalt
+
+theorem parser_compose_same_scale_exact_to_budget
+    (parentPad childPad : Nat)
+    (parentLog childLog : SlotLog)
+    (parentBits childBits : BitString)
+    (prefixSteps : Nat)
+    (hlt : childBits.length < parentBits.length)
+    (hscale :
+      phaseRuntimeScale childPad childLog childBits =
+        phaseRuntimeScale parentPad parentLog parentBits)
+    (hprefixBound :
+      prefixSteps ≤ phaseRuntimeUnit parentPad parentLog parentBits)
+    (hprefix :
+      parserMachine.run prefixSteps
+          (phaseConfig 4 parentPad parentBits parentLog) =
+        phaseConfig 4 childPad childBits childLog)
+    (hchild :
+      parserMachine.HaltsWithin
+        (phaseRuntimeBudget childPad childLog childBits)
+        (phaseConfig 4 childPad childBits childLog)) :
+    parserMachine.HaltsWithin
+      (phaseRuntimeBudget parentPad parentLog parentBits)
+      (phaseConfig 4 parentPad parentBits parentLog) := by
+  have hsmall :=
+    parser_halts_after_exact_prefix
+      (phaseConfig 4 parentPad parentBits parentLog)
+      (phaseConfig 4 childPad childBits childLog)
+      prefixSteps
+      (phaseRuntimeBudget childPad childLog childBits)
+      hprefix hchild
+  have hbudget :
+      prefixSteps + phaseRuntimeBudget childPad childLog childBits ≤
+        phaseRuntimeBudget parentPad parentLog parentBits := by
+    unfold phaseRuntimeBudget phaseRuntimeUnit
+    rw [hscale]
+    exact budget_compose_same_scale
+      (phaseRuntimeScale parentPad parentLog parentBits)
+      parentBits.length childBits.length prefixSteps
+      hlt (by simpa [phaseRuntimeUnit] using hprefixBound)
+  exact MachineRunLemmas.haltsWithin_mono
+    parserMachine (phaseConfig 4 parentPad parentBits parentLog)
+    hbudget hsmall
+
+theorem parser_compose_same_scale_rightBlank_to_budget
+    (parentPad childPad : Nat)
+    (parentLog childLog : SlotLog)
+    (parentBits childBits : BitString)
+    (prefixSteps : Nat)
+    (hlt : childBits.length < parentBits.length)
+    (hscale :
+      phaseRuntimeScale childPad childLog childBits =
+        phaseRuntimeScale parentPad parentLog parentBits)
+    (hprefixBound :
+      prefixSteps ≤ phaseRuntimeUnit parentPad parentLog parentBits)
+    (hprefix :
+      ConfigRightBlankEq
+        (parserMachine.run prefixSteps
+          (phaseConfig 4 parentPad parentBits parentLog))
+        (phaseConfig 4 childPad childBits childLog))
+    (hchild :
+      parserMachine.HaltsWithin
+        (phaseRuntimeBudget childPad childLog childBits)
+        (phaseConfig 4 childPad childBits childLog)) :
+    parserMachine.HaltsWithin
+      (phaseRuntimeBudget parentPad parentLog parentBits)
+      (phaseConfig 4 parentPad parentBits parentLog) := by
+  have hsmall :=
+    parser_halts_after_rightBlank_prefix
+      (phaseConfig 4 parentPad parentBits parentLog)
+      (phaseConfig 4 childPad childBits childLog)
+      prefixSteps
+      (phaseRuntimeBudget childPad childLog childBits)
+      hprefix hchild
+  have hbudget :
+      prefixSteps + phaseRuntimeBudget childPad childLog childBits ≤
+        phaseRuntimeBudget parentPad parentLog parentBits := by
+    unfold phaseRuntimeBudget phaseRuntimeUnit
+    rw [hscale]
+    exact budget_compose_same_scale
+      (phaseRuntimeScale parentPad parentLog parentBits)
+      parentBits.length childBits.length prefixSteps
+      hlt (by simpa [phaseRuntimeUnit] using hprefixBound)
+  exact MachineRunLemmas.haltsWithin_mono
+    parserMachine (phaseConfig 4 parentPad parentBits parentLog)
+    hbudget hsmall
+
+theorem parser_compose_scale_succ_exact_to_budget
+    (parentPad childPad : Nat)
+    (parentLog childLog : SlotLog)
+    (parentBits childBits : BitString)
+    (prefixSteps : Nat)
+    (hscale :
+      phaseRuntimeScale childPad childLog childBits =
+        phaseRuntimeScale parentPad parentLog parentBits + 1)
+    (hchildScale :
+      childBits.length + 1 ≤
+        phaseRuntimeScale parentPad parentLog parentBits)
+    (hconsume :
+      childBits.length + 3 ≤ parentBits.length)
+    (hprefixBound :
+      prefixSteps ≤ phaseRuntimeUnit parentPad parentLog parentBits)
+    (hprefix :
+      parserMachine.run prefixSteps
+          (phaseConfig 4 parentPad parentBits parentLog) =
+        phaseConfig 4 childPad childBits childLog)
+    (hchild :
+      parserMachine.HaltsWithin
+        (phaseRuntimeBudget childPad childLog childBits)
+        (phaseConfig 4 childPad childBits childLog)) :
+    parserMachine.HaltsWithin
+      (phaseRuntimeBudget parentPad parentLog parentBits)
+      (phaseConfig 4 parentPad parentBits parentLog) := by
+  have hsmall :=
+    parser_halts_after_exact_prefix
+      (phaseConfig 4 parentPad parentBits parentLog)
+      (phaseConfig 4 childPad childBits childLog)
+      prefixSteps
+      (phaseRuntimeBudget childPad childLog childBits)
+      hprefix hchild
+  have hbudget :
+      prefixSteps + phaseRuntimeBudget childPad childLog childBits ≤
+        phaseRuntimeBudget parentPad parentLog parentBits := by
+    unfold phaseRuntimeBudget phaseRuntimeUnit
+    rw [hscale]
+    exact budget_compose_scale_succ
+      (phaseRuntimeScale parentPad parentLog parentBits)
+      parentBits.length childBits.length prefixSteps
+      hchildScale hconsume
+      (by simpa [phaseRuntimeUnit] using hprefixBound)
+  exact MachineRunLemmas.haltsWithin_mono
+    parserMachine (phaseConfig 4 parentPad parentBits parentLog)
+    hbudget hsmall
+
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
 
