@@ -49,13 +49,16 @@ def leafAfterPopConfig
 
 theorem leafPop_step_false
     (bs : List Bool)
-    (leftBase right : List (Option Bool)) :
+    (leftBase right : List (Option Bool))
+    (hne : bs ≠ []) :
     parserMachine.step
         (leafPopScanConfig (false :: bs) leftBase right) =
       leafPopScanConfig bs leftBase (some false :: right) := by
-  cases bs <;>
-    simp [leafPopScanConfig, parserMachine, TM.step, Tape.write, Tape.move,
-      List.append_assoc]
+  cases bs with
+  | nil => exact False.elim (hne rfl)
+  | cons b tail =>
+      simp [leafPopScanConfig, parserMachine, TM.step, Tape.write, Tape.move,
+        List.append_assoc]
 
 theorem leafPop_step_true
     (bs : List Bool)
@@ -81,17 +84,20 @@ theorem leafPop_run_false_prefix
   induction k generalizing right with
   | zero =>
       rw [show 0 + 1 = 1 by rfl]
-      simp [TM.run, leafPopScanConfig_state, parser_not_halted_13,
-        leafPop_step_true, leafAfterPopConfig]
+      rw [TM.run]
+      simp only [leafPopScanConfig_state, parser_not_halted_13,
+        Bool.false_eq_true, if_false]
+      rw [leafPop_step_true]
+      rfl
   | succ k ih =>
       rw [show Nat.succ k + 1 = (k + 1) + 1 by omega]
       rw [TM.run]
       simp only [List.replicate_succ, List.cons_append,
         leafPopScanConfig_state, parser_not_halted_13,
         Bool.false_eq_true, if_false]
-      rw [leafPop_step_false]
+      rw [leafPop_step_false _ _ _ (by simp)]
       rw [ih (some false :: right)]
-      simp [List.replicate_succ, List.append_assoc]
+      rfl
 
 theorem all_false_eq_replicate
     (xs : List Bool)
@@ -105,7 +111,9 @@ theorem all_false_eq_replicate
         intro x hx
         exact h x (by simp [hx])
       subst b
-      simp [ih hbs, List.replicate_succ]
+      have hrec := ih hbs
+      rw [hrec]
+      simp [List.replicate_succ]
 
 /-- Connect the physical state-13 configuration emitted by the leaf work-log
 scan to the abstract right-to-left pop scan. -/
@@ -116,9 +124,18 @@ theorem afterEndMoveLeft_leaf_eq_popScan
       leafPopScanConfig
         (suffix.reverse ++ true :: pre.reverse)
         leftBase [none] := by
-  simp [afterEndMoveLeft, leafPopScanConfig, Tape.move,
-    List.map_reverse, List.map_append, List.reverse_append,
-    List.append_assoc]
+  cases hrev : suffix.reverse with
+  | nil =>
+      have hs : suffix = [] := by
+        simpa using congrArg List.reverse hrev
+      subst suffix
+      simp [afterEndMoveLeft, leafPopScanConfig, Tape.move,
+        List.map_reverse, List.map_append, List.reverse_append,
+        List.append_assoc]
+  | cons b bs =>
+      simp [afterEndMoveLeft, leafPopScanConfig, Tape.move,
+        List.map_reverse, List.map_append, List.reverse_append,
+        List.append_assoc, hrev]
 
 /-- A successful rightmost-active-slot decomposition therefore reaches state
 14 after exactly suffix.length+1 pop-search steps. -/
