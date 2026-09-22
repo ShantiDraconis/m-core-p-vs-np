@@ -27,6 +27,7 @@ jobs:
           files=(
             lean/MCore/Real/P01FinalCertificate.lean
             lean/MCore/Real/CanonicalSATParserNTM.lean
+            lean/MCore/Real/CanonicalSATWitnessGuessNTM.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
             exit 1
@@ -41,7 +42,7 @@ jobs:
       - name: Build P01 HARD scaffold
         run: |
           set -euo pipefail
-          lake build MCore.Real.P01FinalCertificate MCore.Real.CanonicalSATParserNTM
+          lake build MCore.Real.P01FinalCertificate MCore.Real.CanonicalSATParserNTM MCore.Real.CanonicalSATWitnessGuessNTM
 
       - name: Axiom audit scaffold
         run: |
@@ -49,12 +50,16 @@ jobs:
           cat >/tmp/P01HardScaffoldAudit.lean <<'EOF'
           import MCore.Real.P01FinalCertificate
           import MCore.Real.CanonicalSATParserNTM
+          import MCore.Real.CanonicalSATWitnessGuessNTM
           #print axioms MCore.Real.P01FinalCertificate.P01MachineConstruction.correctAt
           #print axioms MCore.Real.P01FinalCertificate.construction_closes_p01
           #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_runBranches_singleton
           #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_haltsWithin_iff
           #print axioms MCore.Real.CanonicalSATParserNTM.parserNTM_acceptsWithin_iff
           #print axioms MCore.Real.CanonicalSATParserNTM.parserSimulationGap_to_ntm_phase
+          #print axioms MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuess_successors_cons
+          #print axioms MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuess_successors_nil
+          #print axioms MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessTimeBound_poly
           EOF
           lake env lean /tmp/P01HardScaffoldAudit.lean 2>&1 | tee /tmp/p01-hard-scaffold.log
           if grep -q 'sorryAx' /tmp/p01-hard-scaffold.log; then
