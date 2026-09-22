@@ -24,8 +24,13 @@ theorem semanticMismatch_iff_xor
 theorem no_semanticMismatch_iff_match
     (M : PolyDTMCandidate) (x : BitString) :
     ¬ SemanticMismatch M x ↔ DeclaredSATMatch M x := by
-  rw [semanticMismatch_iff_not_match]
-  tauto
+  constructor
+  · intro h
+    apply Classical.byContradiction
+    intro hnm
+    exact h ((semanticMismatch_iff_not_match M x).mpr hnm)
+  · intro hm hmis
+    exact (semanticMismatch_iff_not_match M x).mp hmis hm
 
 theorem declaredSATCorrect_iff_no_semanticMismatch
     (M : PolyDTMCandidate) :
