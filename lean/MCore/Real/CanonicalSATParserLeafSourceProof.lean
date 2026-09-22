@@ -113,7 +113,7 @@ theorem leaf17_roundtrip_to_phase
           (some last ::
             (rest.map some ++ List.replicate pad (none : Option Bool)))
           (log.map some)).state = false := by
-    rw [leafSourceCheckConfig_state]
+    change parserMachine.halting (17 : Fin 25) = false
     decide
   have hrun1 :
       parserMachine.run 1
@@ -127,7 +127,8 @@ theorem leaf17_roundtrip_to_phase
             (rest.map some ++ List.replicate pad (none : Option Bool)))
           (log.map some)) := by
     rw [TM.run]
-    simp [hhalt]
+    rw [hhalt]
+    rfl
   rw [hrun1]
   rw [leaf17_step_to_rewind pad hpad last rest log]
   exact rewindUnread_run rest [last] pad hpad log
