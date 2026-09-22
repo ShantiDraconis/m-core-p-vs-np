@@ -66,6 +66,10 @@ theorem semanticDiagonalBits_flip
     (x : BitString) :
     SATBits circuitBitEncoding (semanticDiagonalBits M x) ↔
       ¬ AcceptsAtDeclaredBound M x := by
+  change
+    SATBits circuitBitEncoding
+        (encodeCircuit (semanticDiagonalCircuit M x)) ↔
+      ¬ AcceptsAtDeclaredBound M x
   rw [encoded_sat_equivalence]
   unfold semanticDiagonalCircuit AcceptsAtDeclaredBound declaredAcceptBit
   cases hacc :
@@ -86,10 +90,8 @@ def witnessOfSemanticFixedPoint
     { bits := x
       valid := ?_
       flips := ?_ }
-  · rw [← hfix]
-    exact semanticDiagonalBits_valid M x
-  · rw [← hfix]
-    exact semanticDiagonalBits_flip M x
+  · simpa [hfix] using semanticDiagonalBits_valid M x
+  · simpa [hfix] using semanticDiagonalBits_flip M x
 
 theorem semantic_fixed_point_fails
     (M : PolyDTMCandidate)
