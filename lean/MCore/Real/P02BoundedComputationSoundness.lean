@@ -138,7 +138,7 @@ theorem snapshot_head_true
   simpa using hmatch.2.1 config.tape.head
 
 
-theorem acceptingStateLits_false_of_nonaccepting_snapshot
+theorem acceptingStateList_false_of_nonaccepting_snapshot
     (sigma : Assignment)
     (M : PolyDTMCandidate)
     (t : Nat)
@@ -147,11 +147,13 @@ theorem acceptingStateLits_false_of_nonaccepting_snapshot
       ∀ q : Fin (M.stateCount + 1),
         sigma (stateVar M t t q) = decide (q = config.state))
     (haccFalse : M.accepting config.state = false) :
-    evalClause sigma (acceptingStateLits M t) = false := by
-  classical
-  unfold acceptingStateLits
-  generalize hqs :
-      (List.ofFn fun q : Fin (M.stateCount + 1) => q) = qs
+    ∀ qs : List (Fin (M.stateCount + 1)),
+      evalClause sigma
+        (qs.filterMap fun q =>
+          if M.accepting q = true then
+            some (pos (stateVar M t t q))
+          else none) = false := by
+  intro qs
   induction qs with
   | nil =>
       rfl
@@ -166,6 +168,22 @@ theorem acceptingStateLits_false_of_nonaccepting_snapshot
           simp [hneq]
         simp [hq, evalClause, evalLiteral, pos, hsigma, ih]
       · simp [hq, ih]
+
+theorem acceptingStateLits_false_of_nonaccepting_snapshot
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (t : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hstate :
+      ∀ q : Fin (M.stateCount + 1),
+        sigma (stateVar M t t q) = decide (q = config.state))
+    (haccFalse : M.accepting config.state = false) :
+    evalClause sigma (acceptingStateLits M t) = false := by
+  unfold acceptingStateLits
+  exact acceptingStateList_false_of_nonaccepting_snapshot
+    sigma M t config hstate haccFalse
+    (List.ofFn fun q : Fin (M.stateCount + 1) => q)
+
 
 theorem finalAcceptanceCNF_sound_of_snapshot
     (sigma : Assignment)
@@ -207,6 +225,7 @@ theorem boundedExecTableau_final_acceptance_sound
 
 
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_transition_guard_false
+#print axioms MCore.Real.P02BoundedComputationSoundness.acceptingStateList_false_of_nonaccepting_snapshot
 #print axioms MCore.Real.P02BoundedComputationSoundness.acceptingStateLits_false_of_nonaccepting_snapshot
 #print axioms MCore.Real.P02BoundedComputationSoundness.finalAcceptanceCNF_sound_of_snapshot
 #print axioms MCore.Real.P02BoundedComputationSoundness.boundedExecTableau_final_acceptance_sound
