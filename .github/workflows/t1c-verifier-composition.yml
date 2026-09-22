@@ -1,0 +1,24 @@
+name: T1C verifier-composition worker
+on:
+  push:
+    branches: [ attack/t1c-verifier-composition-20260922 ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  t1c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01VerifierComposition.lean
+          test -f "$f"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+          lake build MCore.Real.P01VerifierComposition
