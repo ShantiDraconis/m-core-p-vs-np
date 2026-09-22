@@ -52,6 +52,14 @@ jobs:
           set -euo pipefail
           cat >/tmp/FinalExternalTwoGapAttemptAudit.lean <<'EOF'
           import MCore.Real.FinalExternalIntegrationAttempt
+          import MCore.Real.CanonicalSATParserGlobalSpec
+          import MCore.Real.CanonicalSATParserBinaryHeadProof
+          #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logParseCore_eq_slotParseCore
+          #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logAccept_iff_slotAccept
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.and_head_roundtrip_nonempty
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.or_head_roundtrip_nonempty
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.and_head_exhausted_rejects
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.or_head_exhausted_rejects
           #print axioms MCore.Real.G21PointwiseAttempt.G21Pointwise_iff_P02Target
           #print axioms MCore.Real.G21PointwiseAttempt.G21Pointwise_iff_SAT_notin_P
           #print axioms MCore.Real.FinalExternalIntegrationAttempt.finalExternalGap_closes_if_two_gaps_close
