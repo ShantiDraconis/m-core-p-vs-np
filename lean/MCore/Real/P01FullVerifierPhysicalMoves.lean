@@ -61,33 +61,32 @@ theorem moveRightSeq_all_legal (n : Nat) :
       · exact h
       · exact ih d h
 
-/-- Structural iteration of one primitive tape move. -/
+/-- Canonical finite iteration of one primitive tape move. -/
 def repeatMove {Symbol : Type}
-    (blank : Symbol) (d : Direction) : Nat → Tape Symbol → Tape Symbol
-  | 0, tape => tape
-  | n + 1, tape => repeatMove blank d n (Tape.move blank d tape)
+    (blank : Symbol) (d : Direction) (n : Nat) (t : Tape Symbol) : Tape Symbol :=
+  execMoves blank (List.replicate n d) t
 
-/-- Repeated left motion is exactly structural iteration of the primitive move. -/
+/-- Repeated left motion is exactly the canonical primitive-move iteration. -/
 theorem execMoves_moveLeftSeq {Symbol : Type}
     (blank : Symbol) (n : Nat) (t : Tape Symbol) :
     execMoves blank (moveLeftSeq n) t =
       repeatMove blank .left n t := by
-  induction n generalizing t with
-  | zero => rfl
-  | succ n ih =>
-      simpa [moveLeftSeq, List.replicate_succ, execMoves, repeatMove] using
-        ih (Tape.move blank .left t)
+  rfl
 
-/-- Repeated right motion is exactly structural iteration of the primitive move. -/
+/-- Repeated right motion is exactly the canonical primitive-move iteration. -/
 theorem execMoves_moveRightSeq {Symbol : Type}
     (blank : Symbol) (n : Nat) (t : Tape Symbol) :
     execMoves blank (moveRightSeq n) t =
       repeatMove blank .right n t := by
-  induction n generalizing t with
-  | zero => rfl
-  | succ n ih =>
-      simpa [moveRightSeq, List.replicate_succ, execMoves, repeatMove] using
-        ih (Tape.move blank .right t)
+  rfl
+
+theorem move_left_left_getD {Symbol : Type}
+    (blank : Symbol) (t : Tape Symbol) (n : Nat) :
+    (Tape.move blank .left t).left.getD n blank =
+      t.left.getD (n + 1) blank := by
+  cases t with
+  | mk left head right =>
+      cases left <;> simp [Tape.move, List.getD_cons_succ]
 
 
 /-- After n+1 left moves, the head contains the n-th cell of the original
@@ -103,13 +102,14 @@ theorem execMoves_moveLeftSeq_head_getD {Symbol : Type}
           cases left <;>
             simp [moveLeftSeq, execMoves, Tape.move, List.getD_cons_zero]
   | succ n ih =>
-      rw [show Nat.succ n + 1 = (n + 1) + 1 by omega]
-      simp only [moveLeftSeq, List.replicate_succ, execMoves]
-      rw [ih]
-      cases t with
-      | mk left head right =>
-          cases left <;>
-            simp [Tape.move, List.getD_cons_succ]
+      have hstep :
+          execMoves blank (moveLeftSeq (Nat.succ n + 1)) t =
+            execMoves blank (moveLeftSeq (n + 1))
+              (Tape.move blank .left t) := by
+        simp [moveLeftSeq, List.replicate_succ, execMoves]
+      rw [hstep, ih, move_left_left_getD]
+      congr 1
+      omega
 
 /-- Every shuttle used by the verifier is built solely from legal TM moves. -/
 def LegalMoveSeq (ds : List Direction) : Prop :=
