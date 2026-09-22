@@ -1,4 +1,5 @@
 import MCore.Real.P02BoundedComputationLogic
+import MCore.Real.P02BoundedComputationTape
 
 namespace MCore
 namespace Real
@@ -116,7 +117,30 @@ theorem boundedExecTableau_initial_sound
   simp [boundedExecTableauCNF, hc]
 
 
+theorem snapshot_state_true
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hmatch : SnapshotMatches sigma M x t s config) :
+    sigma (stateVar M t s config.state) = true := by
+  simpa using hmatch.1 config.state
+
+theorem snapshot_head_true
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hmatch : SnapshotMatches sigma M x t s config) :
+    sigma (headVar M t s config.tape.head) = true := by
+  simpa using hmatch.2.1 config.tape.head
+
+
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_transition_guard_false
+#print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_state_true
+#print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_head_true
 #print axioms MCore.Real.P02BoundedComputationSoundness.boundedExecTableau_initial_sound
 
 
