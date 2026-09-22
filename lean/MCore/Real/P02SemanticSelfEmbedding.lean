@@ -76,7 +76,35 @@ theorem literal_fixed_point_route_not_universal :
   exact P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point
 
 
+def PointwiseSemanticSelfEmbedding : Prop :=
+  ∀ M : PolyDTMCandidate,
+    ∃ x : BitString,
+      CanonicalSATValid x ∧
+      (SATBits circuitBitEncoding x ↔
+        ¬ AcceptsAtDeclaredBound M x)
+
+theorem semantic_self_embedding_gap_iff_pointwise :
+    SemanticSelfEmbeddingGap ↔ PointwiseSemanticSelfEmbedding := by
+  constructor
+  · rintro ⟨S⟩ M
+    exact ⟨S.bits M, S.valid M, S.flips M⟩
+  · intro h
+    classical
+    let chooseBits : PolyDTMCandidate → BitString :=
+      fun M => Classical.choose (h M)
+    refine ⟨{
+      bits := chooseBits
+      valid := ?_
+      flips := ?_
+    }⟩
+    · intro M
+      exact (Classical.choose_spec (h M)).1
+    · intro M
+      exact (Classical.choose_spec (h M)).2
+
+
 #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_gap_iff_diagonal_fixed_point_gap
+#print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_gap_iff_pointwise
 #print axioms MCore.Real.P02SemanticSelfEmbedding.literal_fixed_point_route_not_universal
 #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_implies_sat_not_in_p
 #print axioms MCore.Real.P02SemanticSelfEmbedding.sat_in_p_refutes_semantic_self_embedding
