@@ -333,8 +333,7 @@ theorem left_case_preserves_snapshot
   · intro i hi a
     by_cases hlast : i = radius x t - 1
     · subst i
-      have hrpos : 0 < radius x t := by simp [radius]
-      have hrone : 1 ≤ radius x t := Nat.succ_le_iff.mp hrpos
+      have hrone : 1 ≤ radius x t := by simp [radius]
       have hidx : radius x t - 1 + 1 = radius x t :=
         Nat.sub_add_cancel hrone
       have hmoveLeft :
@@ -360,7 +359,12 @@ theorem left_case_preserves_snapshot
       exact setSymbolClauses_forces sigma guard
         (leftVar M x t (s + 1) (radius x t - 1))
         M.machine.blank a hguard hset
-    · have his : i < radius x t - 1 := by omega
+    · have his : i < radius x t - 1 := by
+        have hle : i ≤ radius x t - 1 := by
+          simpa [radius] using hi
+        rcases Nat.lt_or_eq_of_le hle with hlt | heq
+        · exact hlt
+        · exact False.elim (hlast heq)
       have hcopy :
           evalCNF sigma
             (copyLeftCell guard M x t s (i + 1) (s + 1) i) = true := by
@@ -372,7 +376,8 @@ theorem left_case_preserves_snapshot
           (leftVar M x t s (i + 1))
           (leftVar M x t (s + 1) i) a hguard hcopy
       have hi1 : i + 1 < radius x t := by
-        exact Nat.succ_lt_of_lt his
+        have hbase : i < x.length + t := by simpa [radius] using his
+        simpa [radius, Nat.succ_eq_add_one] using Nat.succ_lt_succ hbase
       have hmoveLeft :
           (M.machine.step config).tape.left.getD i M.machine.blank =
             config.tape.left.getD (i + 1) M.machine.blank := by
@@ -396,8 +401,12 @@ theorem left_case_preserves_snapshot
         P02BoundedComputationTape.move_left_right_zero] using hf
     · obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hz
       have hj : j < radius x t - 1 := by
-        have hsucclt : j + 1 < radius x t := by simpa using hi
-        exact Nat.lt_sub_one_iff.mpr hsucclt
+        have hsucclt : j + 1 < x.length + t + 1 := by
+          simpa [radius] using hi
+        have hbase : j < x.length + t := by
+          exact Nat.lt_of_succ_lt_succ (by
+            simpa [Nat.succ_eq_add_one] using hsucclt)
+        simpa [radius] using hbase
       have hcopy :
           evalCNF sigma
             (copyRightCell guard M x t s j (s + 1) (j + 1)) = true := by
@@ -409,7 +418,10 @@ theorem left_case_preserves_snapshot
           (rightVar M x t s j)
           (rightVar M x t (s + 1) (j + 1))
           a hguard hcopy
-      have hjr : j < radius x t := Nat.lt_trans hj (Nat.sub_lt (by simp [radius]) (by decide))
+      have hjr : j < radius x t := by
+        exact Nat.lt_trans hj (by
+          have hrone : 1 ≤ radius x t := by simp [radius]
+          exact Nat.sub_lt (by simp [radius]) (by decide))
       have hmoveRight :
           (M.machine.step config).tape.right.getD (j + 1)
             M.machine.blank =
