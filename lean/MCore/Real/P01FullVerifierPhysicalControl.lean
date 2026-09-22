@@ -144,6 +144,96 @@ structure DecoderEvaluatorLocalCertificate where
     ∀ s : Option Bool,
       (machine.transition pushRes s).1 ≠ halt
 
+
+/-- Concrete eight-state control extending the certified scanner through all
+decoder/evaluator phases without prematurely entering the halting state.
+This closes only the local control certificate; semantic correctness of each
+phase remains a separate machine-level obligation. -/
+def decoderEvaluatorMachine : TM VerifierState (Option Bool) :=
+  { initial := scanEncode
+    blank := none
+    transition := fun q symbol =>
+      if q = scanEncode then
+        physicalControlMachine.transition q symbol
+      else if q = decodeInstr then
+        (readWitness, symbol, .stay)
+      else if q = readWitness then
+        (pushRes, symbol, .stay)
+      else if q = evalNeg then
+        (pushRes, symbol, .stay)
+      else if q = evalAnd then
+        (pushRes, symbol, .stay)
+      else if q = evalOr then
+        (pushRes, symbol, .stay)
+      else if q = pushRes then
+        (decodeInstr, symbol, .stay)
+      else
+        (halt, symbol, .stay)
+    halting := fun q => q == halt }
+
+@[simp] theorem decoderEvaluatorMachine_blank :
+    decoderEvaluatorMachine.blank = none := rfl
+
+@[simp] theorem decoderEvaluatorMachine_initial :
+    decoderEvaluatorMachine.initial = scanEncode := rfl
+
+theorem decoderEvaluatorMachine_extends_scan
+    (q : VerifierState) (s : Option Bool) (hq : q = scanEncode) :
+    decoderEvaluatorMachine.transition q s =
+      physicalControlMachine.transition q s := by
+  subst q
+  simp [decoderEvaluatorMachine, scanEncode]
+
+theorem decoderEvaluatorMachine_decode_not_terminal
+    (s : Option Bool) :
+    (decoderEvaluatorMachine.transition decodeInstr s).1 ≠ halt := by
+  simp [decoderEvaluatorMachine, scanEncode, decodeInstr, readWitness, halt]
+
+theorem decoderEvaluatorMachine_read_not_terminal
+    (s : Option Bool) :
+    (decoderEvaluatorMachine.transition readWitness s).1 ≠ halt := by
+  simp [decoderEvaluatorMachine, scanEncode, decodeInstr, readWitness,
+    pushRes, halt]
+
+theorem decoderEvaluatorMachine_neg_not_terminal
+    (s : Option Bool) :
+    (decoderEvaluatorMachine.transition evalNeg s).1 ≠ halt := by
+  simp [decoderEvaluatorMachine, scanEncode, decodeInstr, readWitness,
+    evalNeg, pushRes, halt]
+
+theorem decoderEvaluatorMachine_and_not_terminal
+    (s : Option Bool) :
+    (decoderEvaluatorMachine.transition evalAnd s).1 ≠ halt := by
+  simp [decoderEvaluatorMachine, scanEncode, decodeInstr, readWitness,
+    evalNeg, evalAnd, pushRes, halt]
+
+theorem decoderEvaluatorMachine_or_not_terminal
+    (s : Option Bool) :
+    (decoderEvaluatorMachine.transition evalOr s).1 ≠ halt := by
+  simp [decoderEvaluatorMachine, scanEncode, decodeInstr, readWitness,
+    evalNeg, evalAnd, evalOr, pushRes, halt]
+
+theorem decoderEvaluatorMachine_push_not_terminal
+    (s : Option Bool) :
+    (decoderEvaluatorMachine.transition pushRes s).1 ≠ halt := by
+  simp [decoderEvaluatorMachine, scanEncode, decodeInstr, readWitness,
+    evalNeg, evalAnd, evalOr, pushRes, halt]
+
+def decoderEvaluatorLocalCertificate : DecoderEvaluatorLocalCertificate where
+  machine := decoderEvaluatorMachine
+  same_blank := rfl
+  same_initial := rfl
+  extends_scan := decoderEvaluatorMachine_extends_scan
+  decode_not_terminal := decoderEvaluatorMachine_decode_not_terminal
+  read_not_terminal := decoderEvaluatorMachine_read_not_terminal
+  neg_not_terminal := decoderEvaluatorMachine_neg_not_terminal
+  and_not_terminal := decoderEvaluatorMachine_and_not_terminal
+  or_not_terminal := decoderEvaluatorMachine_or_not_terminal
+  push_not_terminal := decoderEvaluatorMachine_push_not_terminal
+
+theorem decoderEvaluatorLocalGap_closed : DecoderEvaluatorLocalGap :=
+  ⟨decoderEvaluatorLocalCertificate⟩
+
 def DecoderEvaluatorLocalGap : Prop :=
   Nonempty DecoderEvaluatorLocalCertificate
 
@@ -161,6 +251,8 @@ theorem scanner_only_not_decoder_evaluator :
 #print axioms MCore.Real.P01FullVerifierPhysicalControl.physical_scan_run
 #print axioms MCore.Real.P01FullVerifierPhysicalControl.physical_scan_from_prepared
 #print axioms MCore.Real.P01FullVerifierPhysicalControl.scanner_only_not_decoder_evaluator
+#print axioms MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorLocalCertificate
+#print axioms MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorLocalGap_closed
 
 end P01FullVerifierPhysicalControl
 end Real
