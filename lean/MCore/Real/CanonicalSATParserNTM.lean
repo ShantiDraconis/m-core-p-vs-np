@@ -11,15 +11,36 @@ open CanonicalSATParserMachine
 open CanonicalSATSlotParserSpec
 open CanonicalSATRecursiveParserSimulation
 
+/-- Generic singleton-branch embedding of a deterministic machine into an NTM.
+    The tape alphabet, blank symbol and transition table are reused verbatim. -/
+def tmAsSingletonNTM
+    {State Symbol : Type}
+    (tm : TM State Symbol)
+    (accepting rejecting : State → Bool) :
+    NTM State Symbol :=
+  { initial := tm.initial
+    blank := tm.blank
+    transition := fun q symbol => [tm.transition q symbol]
+    accepting := accepting
+    rejecting := rejecting }
+
+theorem tmAsSingletonNTM_stepBranch
+    {State Symbol : Type}
+    (tm : TM State Symbol)
+    (accepting rejecting : State → Bool)
+    (config : Configuration State Symbol) :
+    (tmAsSingletonNTM tm accepting rejecting).stepBranch config
+        (tm.transition config.state config.tape.head) =
+      tm.step config := by
+  rcases htr : tm.transition config.state config.tape.head with
+    ⟨q, symbol, direction⟩
+  simp [tmAsSingletonNTM, NTM.stepBranch, TM.step, htr]
+
 /-- Deterministic parser embedded as a singleton-branch NTM.
     This introduces no second parser semantics: every active NTM step is
     exactly one step of parserMachine. -/
 def parserNTM : NTM (Fin 25) (Option Bool) :=
-  { initial := parserMachine.initial
-    blank := parserMachine.blank
-    transition := fun q symbol => [parserMachine.transition q symbol]
-    accepting := parserAccepting
-    rejecting := fun q => q == 24 }
+  tmAsSingletonNTM parserMachine parserAccepting (fun q => q == 24)
 
 @[simp] theorem parserNTM_blank_none :
     parserNTM.blank = none := by
@@ -39,7 +60,9 @@ theorem parserNTM_stepBranch_eq_parser_step
     parserNTM.stepBranch config
         (parserMachine.transition config.state config.tape.head) =
       parserMachine.step config := by
-  simp [parserNTM, parserMachine, NTM.stepBranch, TM.step]
+  exact
+    tmAsSingletonNTM_stepBranch
+      parserMachine parserAccepting (fun q => q == 24) config
 
 theorem parserNTM_successors_singleton
     (config : Configuration (Fin 25) (Option Bool)) :
