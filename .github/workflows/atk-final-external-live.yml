@@ -1,0 +1,47 @@
+name: ATK FINAL external live
+
+on:
+  push:
+    branches:
+      - attack/final-external-live-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  final-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P01FinalCertificate.lean
+            lean/MCore/Real/P02SemanticSelfEmbedding.lean
+            lean/MCore/Real/P02SemanticSelfEmbeddingClose.lean
+            lean/MCore/Real/FinalExternalLiveTwoProducer.lean
+          )
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+      - name: Build live bridge
+        run: lake build MCore.Real.FinalExternalLiveTwoProducer
+      - name: Axiom audit
+        run: |
+          cat >/tmp/FinalLiveAudit.lean <<'EOF'
+          import MCore.Real.FinalExternalLiveTwoProducer
+          #print axioms MCore.Real.FinalExternalLiveTwoProducer.final_external_gap_of_live_two_producers
+          EOF
+          lake env lean /tmp/FinalLiveAudit.lean 2>&1 | tee /tmp/final-live-audit.log
+          ! grep -q 'sorryAx' /tmp/final-live-audit.log
+      - name: Fail closed
+        run: |
+          echo "FINAL_EXTERNAL_WIRING=READY"
+          echo "BLOCKER_1=P01ConstructionGap"
+          echo "BLOCKER_2=UniversalWitnessExists"
