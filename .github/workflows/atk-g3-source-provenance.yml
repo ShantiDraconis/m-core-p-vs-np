@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - attack/p01-hard-realization-20260922
+      - recovery/atk-stopped-bb65456b-20260922
   workflow_dispatch:
 
 permissions:
@@ -29,6 +30,7 @@ jobs:
             lean/MCore/Real/CookNormalizedDTMBridge.lean
             lean/MCore/Real/CookNormalizedNTMBridge.lean
             lean/MCore/Real/CookNormalizedG3Bridge.lean
+            lean/MCore/Real/CookNormalizedG3Contract.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
@@ -37,7 +39,7 @@ jobs:
       - name: Build source record
         run: |
           set -euo pipefail
-          lake build MCore.Real.OfficialCookSource MCore.Real.CookNormalizedMachineModel MCore.Real.CookNormalizedDTMBridge MCore.Real.CookNormalizedNTMBridge MCore.Real.CookNormalizedG3Bridge
+          lake build MCore.Real.OfficialCookSource MCore.Real.CookNormalizedMachineModel MCore.Real.CookNormalizedDTMBridge MCore.Real.CookNormalizedNTMBridge MCore.Real.CookNormalizedG3Bridge MCore.Real.CookNormalizedG3Contract
 
       - name: Axiom audit
         run: |
@@ -48,6 +50,7 @@ jobs:
           import MCore.Real.CookNormalizedDTMBridge
           import MCore.Real.CookNormalizedNTMBridge
           import MCore.Real.CookNormalizedG3Bridge
+          import MCore.Real.CookNormalizedG3Contract
           #print axioms MCore.Real.OfficialCookSource.cookCMISource_is_populated
           #print axioms MCore.Real.CookNormalizedMachineModel.cookNormalizedModel_P
           #print axioms MCore.Real.CookNormalizedMachineModel.cookNormalizedModel_NP
@@ -58,6 +61,9 @@ jobs:
           #print axioms MCore.Real.CookNormalizedG3Bridge.cookNormalized_p_match
           #print axioms MCore.Real.CookNormalizedG3Bridge.cookNormalized_np_match
           #print axioms MCore.Real.CookNormalizedG3Bridge.cookNormalizedBridge_closed
+          #print axioms MCore.Real.CookNormalizedG3Contract.cook_normalized_g3_contract_closed
+          #print axioms MCore.Real.CookNormalizedG3Contract.cook_normalized_contract_p_match
+          #print axioms MCore.Real.CookNormalizedG3Contract.cook_normalized_contract_np_match
           EOF
           lake env lean /tmp/G3SourceAudit.lean 2>&1 | tee /tmp/g3-source.log
           if grep -q 'sorryAx' /tmp/g3-source.log; then exit 1; fi
@@ -67,9 +73,9 @@ jobs:
           set -euo pipefail
           echo "G3_SOURCE_PROVENANCE=GREEN_IF_JOB_SUCCEEDS"
           echo "G3_EXTERNAL_MODEL=NORMALIZED_SOURCE"
-          echo "G3_SOURCE_FIDELITY=OPEN"
           echo "G3_DTM_TWO_WAY=GREEN_IF_JOB_SUCCEEDS"
           echo "G3_NTM_TWO_WAY=GREEN_IF_JOB_SUCCEEDS"
           echo "G3_NORMALIZED_MODEL_MATCH=GREEN_IF_JOB_SUCCEEDS"
+          echo "G3_NORMALIZED_CONTRACT=GREEN_IF_JOB_SUCCEEDS"
           echo "G3_SOURCE_FIDELITY=OPEN"
           echo "G3_MODEL_MATCH=OPEN_SOURCE_FIDELITY"
