@@ -777,6 +777,128 @@ theorem executionAssignment_rightVar
     rw [hfalse]
     simpa [cfg] using ha
 
+
+theorem executionAssignment_snapshot_matches
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (hs : s ≤ t) :
+    SnapshotMatches (executionAssignment M x t) M x t s
+      (M.machine.run s (initialTMConfig M.machine x)) := by
+  unfold SnapshotMatches
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro q
+    exact executionAssignment_stateVar M x t s q hs
+  · intro a
+    exact executionAssignment_headVar M x t s a hs
+  · intro i hi a
+    exact executionAssignment_leftVar M x t s i a hs hi
+  · intro i hi a
+    exact executionAssignment_rightVar M x t s i a hs hi
+
+theorem setStateClauses_satisfied_of_assignment
+    (sigma : Assignment)
+    (guard : Clause)
+    (M : PolyDTMCandidate)
+    (t s : Nat)
+    (target : Fin (M.stateCount + 1))
+    (hvals : ∀ q : Fin (M.stateCount + 1),
+      sigma (stateVar M t s q) = decide (q = target)) :
+    evalCNF sigma (setStateClauses guard M t s target) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro c hc
+  unfold setStateClauses at hc
+  rcases List.mem_ofFn.mp hc with ⟨q, rfl⟩
+  rw [evalClause_append]
+  have hlit :
+      evalLiteral sigma
+        (litFor (stateVar M t s q) (decide (q = target))) = true := by
+    exact (eval_litFor_true_iff sigma
+      (stateVar M t s q) (decide (q = target))).2 (hvals q)
+  simp [evalClause, hlit]
+
+theorem setSymbolClauses_satisfied_of_assignment
+    (sigma : Assignment)
+    (guard : Clause)
+    (varAt : Option Bool → Nat)
+    (target : Option Bool)
+    (hvals : ∀ a : Option Bool,
+      sigma (varAt a) = decide (a = target)) :
+    evalCNF sigma (setSymbolClauses guard varAt target) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro c hc
+  unfold setSymbolClauses at hc
+  rw [List.mem_map] at hc
+  rcases hc with ⟨a, ha, rfl⟩
+  rw [evalClause_append]
+  have hlit :
+      evalLiteral sigma (litFor (varAt a) (decide (a = target))) = true := by
+    exact (eval_litFor_true_iff sigma
+      (varAt a) (decide (a = target))).2 (hvals a)
+  simp [evalClause, hlit]
+
+theorem executionAssignment_initialCNF
+    (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
+    evalCNF (executionAssignment M x t) (initialCNF M x t) = true := by
+  let sigma := executionAssignment M x t
+  let cfg := initialTMConfig M.machine x
+  have hmatch :
+      SnapshotMatches sigma M x t 0 cfg := by
+    simpa [sigma, cfg] using
+      executionAssignment_snapshot_matches M x t 0 (Nat.zero_le t)
+  rcases hmatch with ⟨hstate, hhead, hleft, hright⟩
+  have hs :
+      evalCNF sigma
+        (setStateClauses [] M t 0 M.machine.initial) = true := by
+    apply setStateClauses_satisfied_of_assignment
+    intro q
+    simpa [cfg, initialTMConfig] using hstate q
+  have hh :
+      evalCNF sigma
+        (setSymbolClauses [] (headVar M t 0) (inputTape x).head) = true := by
+    apply setSymbolClauses_satisfied_of_assignment
+    intro a
+    simpa [cfg, initialTMConfig] using hhead a
+  have hl :
+      evalCNF sigma
+        ((List.range (radius x t)).flatMap fun i =>
+          setLeftCell [] M x t 0 i
+            ((inputTape x).left.getD i M.machine.blank)) = true := by
+    apply evalCNF_true_of_forall_mem
+    intro clause hclause
+    simp only [List.mem_flatMap, List.mem_range] at hclause
+    rcases hclause with ⟨i, hi, hc⟩
+    have hcell :
+        evalCNF sigma
+          (setLeftCell [] M x t 0 i
+            ((inputTape x).left.getD i M.machine.blank)) = true := by
+      unfold setLeftCell
+      apply setSymbolClauses_satisfied_of_assignment
+      intro a
+      simpa [cfg, initialTMConfig] using hleft i hi a
+    exact evalCNF_member_true sigma _ clause hc hcell
+  have hr :
+      evalCNF sigma
+        ((List.range (radius x t)).flatMap fun i =>
+          setRightCell [] M x t 0 i
+            ((inputTape x).right.getD i M.machine.blank)) = true := by
+    apply evalCNF_true_of_forall_mem
+    intro clause hclause
+    simp only [List.mem_flatMap, List.mem_range] at hclause
+    rcases hclause with ⟨i, hi, hc⟩
+    have hcell :
+        evalCNF sigma
+          (setRightCell [] M x t 0 i
+            ((inputTape x).right.getD i M.machine.blank)) = true := by
+      unfold setRightCell
+      apply setSymbolClauses_satisfied_of_assignment
+      intro a
+      simpa [cfg, initialTMConfig] using hright i hi a
+    exact evalCNF_member_true sigma _ clause hc hcell
+  unfold initialCNF
+  simp only [evalCNF]
+  simpa [sigma] using
+    show Bool.and hs (Bool.and hh (Bool.and hl hr)) = true by
+      simp [hs, hh, hl, hr]
+
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -1503,6 +1625,8 @@ def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_stateVar
+#print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_snapshot_matches
+#print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_initialCNF
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_headVar
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_leftVar
 #print axioms MCore.Real.P02BoundedComputationClose.executionAssignment_rightVar
