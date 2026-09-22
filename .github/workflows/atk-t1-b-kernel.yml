@@ -1,0 +1,29 @@
+name: ATK t1-b kernel
+
+on:
+  push:
+    branches:
+      - atk/t1-b-physical-realization-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Build
+        run: lake build MCore.Real.P01PhysicalRealizationAssembly
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          file="lean/MCore/Real/P01PhysicalRealizationAssembly.lean"
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then exit 1; fi
