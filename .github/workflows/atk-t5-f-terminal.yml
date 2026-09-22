@@ -15,7 +15,12 @@ jobs:
         with:
           build: false
           test: false
-          lint: false
+          lint: false      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+
       - name: Build certified semantic frontier
         run: |
           lake build MCore.Real.P02UniversalFailureAlgebra
