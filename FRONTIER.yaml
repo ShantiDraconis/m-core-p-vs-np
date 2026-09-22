@@ -3,3 +3,9 @@ frontier:
     status: OPEN_BRIDGE
   - id: PNP-ASYMPTOTIC-BOUNDARY
     status: OPEN_BRIDGE
+  - id: P02-UNIVERSAL-WITNESS-PRODUCER
+    status: OPEN_MATH
+    proposition: MCore.Real.P02WitnessChain.UniversalWitnessProducer
+    equivalent_core: MCore.Real.P02WitnessChain.G21PointwiseCore
+    downstream_endpoint: MCore.Real.P02WitnessChain.P02TargetCore
+    note: downstream adapters do not inhabit the producer
