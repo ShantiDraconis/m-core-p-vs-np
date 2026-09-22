@@ -59,9 +59,7 @@ theorem budget_compose_same_scale
         ≤ 16 * S + (16 * S * (childLen + 1)) :=
       Nat.add_le_add_right hprefix _
     _ = 16 * S * (childLen + 2) := by
-      rw [show childLen + 2 = Nat.succ (childLen + 1) by omega]
-      rw [Nat.mul_succ]
-      exact Nat.add_comm _ _
+      simp [Nat.mul_succ, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
     _ ≤ 16 * S * (parentLen + 1) := hmul
 
 /-- Binary heads add one tombstone-log cell but consume three source bits.
@@ -83,9 +81,7 @@ theorem budget_compose_scale_succ
       _ ≤ S * (childLen + 1) + S :=
         Nat.add_le_add_left hchildScale _
       _ = S * (childLen + 2) := by
-        rw [show childLen + 2 = Nat.succ (childLen + 1) by omega]
-        rw [Nat.mul_succ]
-        simp only [Nat.mul_succ, Nat.add_assoc]
+        simp [Nat.mul_succ, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
   have hscale16 :
       16 * ((S + 1) * (childLen + 1)) ≤
         16 * (S * (childLen + 2)) :=
@@ -107,9 +103,7 @@ theorem budget_compose_scale_succ
     prefixSteps + (16 * (S + 1) * (childLen + 1))
         ≤ 16 * S + (16 * S * (childLen + 2)) := hprechild
     _ = 16 * S * (childLen + 3) := by
-      rw [show childLen + 3 = Nat.succ (childLen + 2) by omega]
-      rw [Nat.mul_succ]
-      exact Nat.add_comm _ _
+      simp [Nat.mul_succ, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
     _ ≤ 16 * S * (parentLen + 1) := hmul
 
 theorem phaseBudget_positive
