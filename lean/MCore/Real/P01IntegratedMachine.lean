@@ -33,19 +33,22 @@ def verifierState (q : Fin 8) : IntegratedState :=
 def integratedAccept : IntegratedState := ⟨45, by decide⟩
 def integratedReject : IntegratedState := ⟨46, by decide⟩
 
-theorem parserState_injective : Function.Injective parserState := by
+theorem parserState_injective :
+    ∀ ⦃a b : Fin 25⦄, parserState a = parserState b → a = b := by
   intro a b h
   apply Fin.ext
   exact congrArg Fin.val h
 
-theorem witnessState_injective : Function.Injective witnessState := by
+theorem witnessState_injective :
+    ∀ ⦃a b : Fin 12⦄, witnessState a = witnessState b → a = b := by
   intro a b h
   apply Fin.ext
   have hv := congrArg Fin.val h
   simp [witnessState] at hv
   omega
 
-theorem verifierState_injective : Function.Injective verifierState := by
+theorem verifierState_injective :
+    ∀ ⦃a b : Fin 8⦄, verifierState a = verifierState b → a = b := by
   intro a b h
   apply Fin.ext
   have hv := congrArg Fin.val h
