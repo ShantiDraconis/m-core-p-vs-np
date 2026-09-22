@@ -57,7 +57,7 @@ theorem pushStep_correct
       simp [pushStep, physicalStackV2Tape, Tape.write, Tape.move]
   | succ n =>
       simp [pushStep, physicalStackV2Tape, Tape.write, Tape.move,
-        Nat.succ_sub_one]
+        Nat.succ_sub_one, List.replicate_succ]
 
 def popEnter (t : Tape (Option Bool)) : Tape (Option Bool) :=
   Tape.move none .left t
