@@ -9,6 +9,7 @@ open CanonicalFinalProof
 open CanonicalSATSlotParserSpec
 open CanonicalSATParserMachine
 open CanonicalSATParserHeadProof
+open CanonicalSATParserWorkScanProof
 open CanonicalSATParserLeafSourceProof
 open CanonicalSATParserPhaseMacroProof
 open CanonicalSATParserReturnProof
