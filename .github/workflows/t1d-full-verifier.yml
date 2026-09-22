@@ -25,10 +25,11 @@ jobs:
             lean/MCore/Real/P01FullVerifierTraversal.lean
             lean/MCore/Real/P01FullVerifierStackSemantics.lean
             lean/MCore/Real/P01WitnessIndexedRead.lean
+            lean/MCore/Real/P01WitnessIndexedReadMachine.lean
             lean/MCore/Real/P01FullVerifierMachine.lean
           )
           test -f "${files[0]}"
           test -f "${files[1]}"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
-          lake build MCore.Real.P01FullVerifierTraversal MCore.Real.P01FullVerifierStackSemantics MCore.Real.P01WitnessIndexedRead MCore.Real.P01FullVerifierMachine
+          lake build MCore.Real.P01FullVerifierTraversal MCore.Real.P01FullVerifierStackSemantics MCore.Real.P01WitnessIndexedRead MCore.Real.P01WitnessIndexedReadMachine MCore.Real.P01FullVerifierMachine
