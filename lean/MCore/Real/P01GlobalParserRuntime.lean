@@ -12,6 +12,7 @@ open CanonicalSATParserLeafReturnProof
 open CanonicalSATParserLeafSourceProof
 open CanonicalSATParserWorkScanProof
 open CanonicalSATSlotLog
+open CanonicalSATSlotParserSpec
 open MachineRunLemmas
 open P01GlobalParserSimulation
 
@@ -455,6 +456,7 @@ theorem leaf_afterEnd_inactive_residual_halts_exact
       (rest.reverse ++ [last]).reverse.map some =
         some last :: rest.map some := by
     simp [List.map_append]
+  unfold TM.HaltsWithin
   rw [show log.length + 2 = (log.length + 1) + 1 by omega]
   rw [MachineRunLemmas.run_add]
   have hsource :=
@@ -473,7 +475,6 @@ theorem leaf_afterEnd_inactive_residual_halts_exact
             (rest.map some ++ List.replicate pad (none : Option Bool)))
           (log'.map some ++ [none]) by
       simpa [hrev, List.append_assoc] using hsource]
-  unfold TM.HaltsWithin
   have hstep :=
     CanonicalSATParserTerminalBranches.leaf16_residual_rejects
       pad last rest (log'.map some ++ [none])
@@ -555,7 +556,7 @@ theorem phase_parseHead_none_reject_bound
               · simp [CanonicalSATSlotParserSpec.parseHead] at hnone
               · simp [CanonicalSATSlotParserSpec.parseHead] at hnone
               · simp [CanonicalSATSlotParserSpec.parseHead] at hnone
-              · refine ⟨2, by simp; omega, ?_⟩
+              · refine ⟨2, by simp, ?_⟩
                 simp [TM.run, phaseConfig, parserMachine, TM.step,
                   Tape.write, Tape.move]
               · refine ⟨2, by simp; omega, ?_⟩
