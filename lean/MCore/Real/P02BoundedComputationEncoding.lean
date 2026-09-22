@@ -102,7 +102,7 @@ theorem eval_cnfCircuit
 
 theorem satLanguage_cnfCircuit_iff
     (f : CNF) :
-    SATLanguage (cnfCircuit f) <-> exists sigma : Assignment,
+    SATLanguage (cnfCircuit f) ↔ ∃ sigma : Assignment,
       evalCNF sigma f = true := by
   constructor
   · rintro ⟨_hcnf, sigma, hsat⟩
@@ -411,13 +411,13 @@ def AcceptsAtFuel
 /-- Exact A1 theorem still to be discharged by tableau soundness/completeness.
 It is a proposition, not an assumption or axiom. -/
 def BoundedExecCorrectness : Prop :=
-  forall (M : PolyDTMCandidate) (x : BitString) (t : Nat),
-    SATLanguage (boundedExecCircuit M x t) <->
+  ∀ (M : PolyDTMCandidate) (x : BitString) (t : Nat),
+    SATLanguage (boundedExecCircuit M x t) ↔
       AcceptsAtFuel M x t
 
 theorem boundedExecBits_sat_iff_circuit_sat
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
-    SATBits circuitBitEncoding (boundedExecBits M x t) <->
+    SATBits circuitBitEncoding (boundedExecBits M x t) ↔
       SATLanguage (boundedExecCircuit M x t) := by
   exact encoded_sat_equivalence _
 
