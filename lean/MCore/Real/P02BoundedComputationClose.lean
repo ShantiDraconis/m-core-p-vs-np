@@ -444,7 +444,31 @@ theorem executionAssignment_stateVar
     M.machine.run s (initialTMConfig M.machine x)
   by_cases hq : q = cfg.state
   · subst q
-    simp [executionAssignment, cfg, hs]
+    have hp :
+        (∃ s' : Nat, s' ≤ t ∧
+          stateVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).state =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          stateVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).state =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          stateVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).state =
+            leftVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank)) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          stateVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).state =
+            rightVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank)) := by
+      exact Or.inl ⟨s, hs, rfl⟩
+    simp [executionAssignment, hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -484,7 +508,11 @@ theorem executionAssignment_stateVar
         exact stateVar_ne_rightVar_valid M x t s s' i q
           ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
             i M.machine.blank) hs heq
-    simp [executionAssignment, hq, hnot]
+    have hfalse :
+        executionAssignment M x t (stateVar M t s q) = false := by
+      simp [executionAssignment, hnot]
+    rw [hfalse]
+    simp [cfg, hq]
 
 
 theorem executionAssignment_headVar
@@ -497,7 +525,31 @@ theorem executionAssignment_headVar
   let cfg := M.machine.run s (initialTMConfig M.machine x)
   by_cases ha : a = cfg.tape.head
   · subst a
-    simp [executionAssignment, cfg, hs]
+    have hp :
+        (∃ s' : Nat, s' ≤ t ∧
+          headVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).tape.head =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          headVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).tape.head =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          headVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).tape.head =
+            leftVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank)) ∨
+        (∃ s' i : Nat, s' ≤ t ∧ i < radius x t ∧
+          headVar M t s
+              (M.machine.run s (initialTMConfig M.machine x)).tape.head =
+            rightVar M x t s' i
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank)) := by
+      exact Or.inr (Or.inl ⟨s, hs, rfl⟩)
+    simp [executionAssignment, hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -537,7 +589,11 @@ theorem executionAssignment_headVar
         exact headVar_ne_rightVar_valid M x t s s' i a
           ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
             i M.machine.blank) hs heq
-    simp [executionAssignment, ha, hnot]
+    have hfalse :
+        executionAssignment M x t (headVar M t s a) = false := by
+      simp [executionAssignment, hnot]
+    rw [hfalse]
+    simp [cfg, ha]
 
 theorem executionAssignment_leftVar
     (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
@@ -550,7 +606,35 @@ theorem executionAssignment_leftVar
   let cfg := M.machine.run s (initialTMConfig M.machine x)
   by_cases ha : a = cfg.tape.left.getD i M.machine.blank
   · subst a
-    simp [executionAssignment, cfg, hs, hi]
+    have hp :
+        (∃ s' : Nat, s' ≤ t ∧
+          leftVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank) =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          leftVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank) =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          leftVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank) =
+            leftVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i' M.machine.blank)) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          leftVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.left.getD
+                i M.machine.blank) =
+            rightVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i' M.machine.blank)) := by
+      exact Or.inr (Or.inr (Or.inl ⟨s, i, hs, hi, rfl⟩))
+    simp [executionAssignment, hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -590,7 +674,11 @@ theorem executionAssignment_leftVar
         exact leftVar_ne_rightVar_valid M x t s i s' i' a
           ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
             i' M.machine.blank) hs hi heq
-    simp [executionAssignment, ha, hnot]
+    have hfalse :
+        executionAssignment M x t (leftVar M x t s i a) = false := by
+      simp [executionAssignment, hnot]
+    rw [hfalse]
+    simp [cfg, ha]
 
 theorem executionAssignment_rightVar
     (M : PolyDTMCandidate) (x : BitString) (t s i : Nat)
@@ -603,7 +691,35 @@ theorem executionAssignment_rightVar
   let cfg := M.machine.run s (initialTMConfig M.machine x)
   by_cases ha : a = cfg.tape.right.getD i M.machine.blank
   · subst a
-    simp [executionAssignment, cfg, hs, hi]
+    have hp :
+        (∃ s' : Nat, s' ≤ t ∧
+          rightVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank) =
+            stateVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).state) ∨
+        (∃ s' : Nat, s' ≤ t ∧
+          rightVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank) =
+            headVar M t s'
+              (M.machine.run s' (initialTMConfig M.machine x)).tape.head) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          rightVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank) =
+            leftVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.left.getD
+                i' M.machine.blank)) ∨
+        (∃ s' i' : Nat, s' ≤ t ∧ i' < radius x t ∧
+          rightVar M x t s i
+              ((M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
+                i M.machine.blank) =
+            rightVar M x t s' i'
+              ((M.machine.run s' (initialTMConfig M.machine x)).tape.right.getD
+                i' M.machine.blank)) := by
+      exact Or.inr (Or.inr (Or.inr ⟨s, i, hs, hi, rfl⟩))
+    simp [executionAssignment, hp]
   · have hnot :
       ¬ (
         (∃ s' : Nat, s' ≤ t ∧
@@ -643,7 +759,11 @@ theorem executionAssignment_rightVar
         exact ha (by
           change a = cfg.tape.right.getD i M.machine.blank
           simpa [cfg, hinj.1, hinj.2.1] using hinj.2.2)
-    simp [executionAssignment, ha, hnot]
+    have hfalse :
+        executionAssignment M x t (rightVar M x t s i a) = false := by
+      simp [executionAssignment, hnot]
+    rw [hfalse]
+    simp [cfg, ha]
 
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
