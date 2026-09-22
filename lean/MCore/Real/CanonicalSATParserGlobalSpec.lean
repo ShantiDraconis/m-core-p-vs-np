@@ -99,14 +99,12 @@ theorem logParseCore_eq_slotParseCore
                   have hpush :
                       activeSlots (pushSlot log) = Nat.succ (Nat.succ slots) := by
                     rw [activeSlots_pushSlot, hcount]
-                    omega
                   simp [logParseCore, slotParseCore, hcount, hhead,
                     Head.arity, ih, hpush]
               | or =>
                   have hpush :
                       activeSlots (pushSlot log) = Nat.succ (Nat.succ slots) := by
                     rw [activeSlots_pushSlot, hcount]
-                    omega
                   simp [logParseCore, slotParseCore, hcount, hhead,
                     Head.arity, ih, hpush]
 
