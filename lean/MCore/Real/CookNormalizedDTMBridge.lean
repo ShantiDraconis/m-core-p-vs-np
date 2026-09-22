@@ -44,6 +44,10 @@ theorem cookDTMOfInternal_run_eq
       · have hf : C.machine.halting config.state = false := by
           cases hh : C.machine.halting config.state <;> simp_all
         simp only [cookDTMOfInternal, hf, Bool.false_eq_true, if_false]
+        change
+          CookDTM.run (cookDTMOfInternal C) fuel
+              (CookDTM.step (cookDTMOfInternal C) config) =
+            C.machine.run fuel (C.machine.step config)
         rw [cookDTMOfInternal_step_eq]
         exact ih (C.machine.step config)
 
@@ -114,6 +118,10 @@ theorem internalTMOfCook_run_eq
       · have hf : M.halting config.state = false := by
           cases hh : M.halting config.state <;> simp_all
         simp only [internalTMOfCook, hf, Bool.false_eq_true, if_false]
+        change
+          (internalTMOfCook M).run fuel
+              ((internalTMOfCook M).step config) =
+            CookDTM.run M fuel (CookDTM.step M config)
         rw [internalTMOfCook_step_eq]
         exact ih (CookDTM.step M config)
 
