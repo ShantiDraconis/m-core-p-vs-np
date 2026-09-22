@@ -63,12 +63,10 @@ theorem initialCNF_sound
           (setLeftCell [] M x t 0 i target) = true := by
       apply evalCNF_subset_true sigma _ (initialCNF M x t) hinit
       intro c hc
-      have hiMem : i ∈ List.range (radius x t) := by
-        simpa using hi
       simp only [initialCNF, List.mem_append, List.mem_flatMap,
         List.mem_range]
-      exact Or.inr (Or.inr (Or.inl
-        ⟨i, hi, by simpa [target] using hc⟩))
+      exact Or.inl (Or.inr
+        ⟨i, hi, by simpa [target] using hc⟩)
     exact setSymbolClauses_forces
       sigma [] (leftVar M x t 0 i) target a rfl hcell
   · intro i hi a
@@ -78,12 +76,10 @@ theorem initialCNF_sound
           (setRightCell [] M x t 0 i target) = true := by
       apply evalCNF_subset_true sigma _ (initialCNF M x t) hinit
       intro c hc
-      have hiMem : i ∈ List.range (radius x t) := by
-        simpa using hi
       simp only [initialCNF, List.mem_append, List.mem_flatMap,
         List.mem_range]
-      exact Or.inr (Or.inr (Or.inr
-        ⟨i, hi, by simpa [target] using hc⟩))
+      exact Or.inr
+        ⟨i, hi, by simpa [target] using hc⟩
     exact setSymbolClauses_forces
       sigma [] (rightVar M x t 0 i) target a rfl hcell
 
