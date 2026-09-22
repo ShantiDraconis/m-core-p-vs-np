@@ -1,4 +1,5 @@
 import MCore.Real.CanonicalSATParserBinaryHeadProof
+import MCore.Real.CanonicalSATParserGlobalSpec
 import MCore.Real.CanonicalSATRecursiveParserSimulation
 
 namespace MCore
@@ -788,6 +789,88 @@ theorem phase_parseHead_none_rejects
     decide
   · rw [hstate]
     decide
+
+
+/-- Reparameterize the certified AND roundtrip over an arbitrary nonempty
+unread suffix. -/
+theorem and_head_roundtrip_any_nonempty
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (tail : BitString)
+    (htail : tail ≠ [])
+    (log : SlotLog) :
+    ∃ steps : Nat,
+      parserMachine.run steps
+          (phaseConfig 4 pad (Head.encode .and ++ tail) log) =
+        phaseConfig 4
+          (pad + (Head.encode .and).length)
+          tail (pushSlot log) := by
+  rcases nonempty_eq_reverse_append_last tail htail with
+    ⟨rest, last, hshape⟩
+  subst tail
+  refine ⟨
+    CanonicalSATParserPhaseMacroProof.headWorkFuel
+        Head.and (rest.reverse ++ [last]).length log.length +
+      (log.length + 2 + (rest.length + 1)),
+    ?_⟩
+  exact CanonicalSATParserBinaryHeadProof.and_head_roundtrip_nonempty
+    pad hpad last rest log
+
+/-- Reparameterize the certified OR roundtrip over an arbitrary nonempty
+unread suffix. -/
+theorem or_head_roundtrip_any_nonempty
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (tail : BitString)
+    (htail : tail ≠ [])
+    (log : SlotLog) :
+    ∃ steps : Nat,
+      parserMachine.run steps
+          (phaseConfig 4 pad (Head.encode .or ++ tail) log) =
+        phaseConfig 4
+          (pad + (Head.encode .or).length)
+          tail (pushSlot log) := by
+  rcases nonempty_eq_reverse_append_last tail htail with
+    ⟨rest, last, hshape⟩
+  subst tail
+  refine ⟨
+    CanonicalSATParserPhaseMacroProof.headWorkFuel
+        Head.or (rest.reverse ++ [last]).length log.length +
+      (log.length + 2 + (rest.length + 1)),
+    ?_⟩
+  exact CanonicalSATParserBinaryHeadProof.or_head_roundtrip_nonempty
+    pad hpad last rest log
+
+/-- Reparameterize the leaf active-slot roundtrip over any nonempty unread
+suffix. -/
+theorem leaf_afterEnd_roundtrip_any_nonempty_active
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (tail : BitString)
+    (htail : tail ≠ [])
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log')
+    (hactive : activeSlots log' ≠ 0) :
+    ∃ steps : Nat,
+      ConfigRightBlankEq
+        (parserMachine.run steps
+          (CanonicalSATParserWorkScanProof.afterEndMoveLeft 13
+            (none :: tail.reverse.map some ++
+              List.replicate pad (none : Option Bool))
+            log none))
+        (phaseConfig 4 pad tail log') := by
+  rcases nonempty_eq_reverse_append_last tail htail with
+    ⟨rest, last, hshape⟩
+  subst tail
+  rcases leaf_afterEnd_roundtrip_nonempty_active
+      pad hpad last rest log log' hpop hactive with
+    ⟨steps, hsim⟩
+  refine ⟨steps, ?_⟩
+  simpa [List.map_append, List.append_assoc] using hsim
+
+#print axioms MCore.Real.P01GlobalParserSimulation.and_head_roundtrip_any_nonempty
+#print axioms MCore.Real.P01GlobalParserSimulation.or_head_roundtrip_any_nonempty
+#print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_roundtrip_any_nonempty_active
 
 #print axioms MCore.Real.P01GlobalParserSimulation.decodeNat_none_eq_replicate_true
 #print axioms MCore.Real.P01GlobalParserSimulation.q10_true_payload_rejects
