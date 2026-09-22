@@ -259,6 +259,74 @@ theorem parseHead_rest_length_lt
       simp [Head.encode]
       omega
 
+/-- Once fuel is at least one more than the unread source length,
+extra abstract parser fuel is semantically irrelevant.  This lets the physical
+global induction recurse with the residual fuel left by a consumed head while
+comparing against the canonical `bits.length + 1` specification. -/
+theorem logParseCore_fuel_stable
+    (bits : BitString)
+    (log : SlotLog)
+    (m n : Nat)
+    (hm : bits.length + 1 ≤ m)
+    (hn : bits.length + 1 ≤ n) :
+    CanonicalSATParserGlobalSpec.logParseCore m log bits =
+      CanonicalSATParserGlobalSpec.logParseCore n log bits := by
+  induction m generalizing n log bits with
+  | zero =>
+      omega
+  | succ m ih =>
+      cases n with
+      | zero =>
+          omega
+      | succ n =>
+          by_cases hactive : activeSlots log = 0
+          · simp [CanonicalSATParserGlobalSpec.logParseCore, hactive]
+          · cases hparse : parseHead bits with
+            | none =>
+                simp [CanonicalSATParserGlobalSpec.logParseCore,
+                  hactive, hparse]
+            | some p =>
+                rcases p with ⟨head, rest⟩
+                have hlt : rest.length < bits.length :=
+                  parseHead_rest_length_lt hparse
+                have hm' : rest.length + 1 ≤ m := by
+                  omega
+                have hn' : rest.length + 1 ≤ n := by
+                  omega
+                cases head with
+                | input i =>
+                    cases hpop : popSlot log with
+                    | none =>
+                        simp [CanonicalSATParserGlobalSpec.logParseCore,
+                          hactive, hparse, hpop]
+                    | some log' =>
+                        simpa [CanonicalSATParserGlobalSpec.logParseCore,
+                          hactive, hparse, hpop] using
+                          ih n log' rest hm' hn'
+                | const b =>
+                    cases hpop : popSlot log with
+                    | none =>
+                        simp [CanonicalSATParserGlobalSpec.logParseCore,
+                          hactive, hparse, hpop]
+                    | some log' =>
+                        simpa [CanonicalSATParserGlobalSpec.logParseCore,
+                          hactive, hparse, hpop] using
+                          ih n log' rest hm' hn'
+                | not =>
+                    simpa [CanonicalSATParserGlobalSpec.logParseCore,
+                      hactive, hparse] using
+                      ih n log rest hm' hn'
+                | and =>
+                    simpa [CanonicalSATParserGlobalSpec.logParseCore,
+                      hactive, hparse] using
+                      ih n (pushSlot log) rest hm' hn'
+                | or =>
+                    simpa [CanonicalSATParserGlobalSpec.logParseCore,
+                      hactive, hparse] using
+                      ih n (pushSlot log) rest hm' hn'
+
+#print axioms MCore.Real.P01GlobalParserSimulation.logParseCore_fuel_stable
+
 theorem activeSlots_reverse
     (log : SlotLog) :
     activeSlots log.reverse = activeSlots log := by
