@@ -59,12 +59,18 @@ jobs:
           #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_roundtrip_nonempty_active_exact
           #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
           #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
+          #print axioms MCore.Real.P01GlobalParserBound.phase_halts_budget_global
+          #print axioms MCore.Real.P01GlobalParserBound.phase_correct_at_budget
+          #print axioms MCore.Real.P01GlobalParserBound.parserProofBudget_le_parserTimeBound
+          #print axioms MCore.Real.P01GlobalParserBound.parser_halts_within_timeBound
+          #print axioms MCore.Real.P01GlobalParserBound.parser_realizes_slotAccept_at_timeBound
+          #print axioms MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate
           EOF
           lake env lean /tmp/T1A.lean 2>&1 | tee /tmp/t1a.log
           if grep -q 'sorryAx' /tmp/t1a.log; then exit 1; fi
 
       - name: Boundary
         run: |
-          echo "T1A_GLOBAL_PARSER_PREFIX=GREEN_IF_JOB_SUCCEEDS"
-          echo "T1A_SLOT_PARSER_MACHINE_SIMULATION=OPEN"
+          echo "T1A_GLOBAL_PARSER_PREFIX=GREEN"
+          echo "T1A_SLOT_PARSER_MACHINE_SIMULATION=GREEN_IF_JOB_SUCCEEDS"
           echo "P01_CONSTRUCTION_GAP=OPEN"
