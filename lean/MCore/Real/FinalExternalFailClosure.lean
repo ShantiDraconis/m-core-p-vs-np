@@ -64,7 +64,7 @@ def finalFailExternalRecord : FinalFailExternalRecord :=
     g3 := .greenFrozenCertified
     externalProcess := .finalFailClosed }
 
-/-- The FINAL_FAIL external audit record is constructible with no sorry/admit
+/-- The FINAL_FAIL external audit record is constructible without placeholder proof terms
 and without asserting FinalExternalGap. -/
 theorem final_fail_external_record_exists :
     Nonempty FinalFailExternalRecord :=
