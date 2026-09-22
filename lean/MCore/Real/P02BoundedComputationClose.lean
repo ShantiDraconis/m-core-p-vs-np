@@ -8,6 +8,7 @@ open CircuitK1
 open CanonicalFinalProof
 open P02BoundedComputationEncoding
 open P02BoundedComputationSoundness
+open P02BoundedComputationLogic
 
 structure TransitionSoundnessCertificate where
   step :
