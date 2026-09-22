@@ -19,3 +19,9 @@ srcDir = "lean"
 name = "c13_probe"
 root = "C13BidirectionalProbe"
 srcDir = "lean"
+
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.19.0"
