@@ -181,8 +181,10 @@ theorem popSlot_decompose_rightmost
   | cons b bs ih =>
       cases htail : popSlot bs with
       | some bs' =>
+          have hsome : some (b :: bs') = some log' := by
+            simpa [popSlot, htail] using hpop
           have hout : log' = b :: bs' := by
-            simpa [popSlot, htail] using Option.some.inj hpop
+            exact (Option.some.inj hsome).symm
           rcases ih bs' htail with ⟨pre, k, hbs, hbs'⟩
           refine ⟨b :: pre, k, ?_, ?_⟩
           · simp [hbs, List.append_assoc]
@@ -193,15 +195,19 @@ theorem popSlot_decompose_rightmost
           | false =>
               simp [popSlot, htail] at hpop
           | true =>
+              have hsome : some (false :: bs) = some log' := by
+                simpa [popSlot, htail] using hpop
               have hout : log' = false :: bs := by
-                simpa [popSlot, htail] using Option.some.inj hpop
+                exact (Option.some.inj hsome).symm
               have hzero : activeSlots bs = 0 :=
                 (popSlot_none_iff bs).mp htail
               have hrep := activeSlots_zero_eq_replicate_false bs hzero
               refine ⟨[], bs.length, ?_, ?_⟩
-              · simp [hrep]
+              · rw [hrep]
+                rfl
               · subst log'
-                simp [hrep]
+                rw [hrep]
+                rfl
 
 /-- Pop succeeds exactly when there is at least one active slot. -/
 theorem popSlot_exists_iff_activeSlots_pos
@@ -217,7 +223,7 @@ theorem popSlot_exists_iff_activeSlots_pos
         have hzero := (popSlot_none_iff log).mp h
         omega
     | some log' =>
-        exact ⟨log', h⟩
+        exact ⟨log', rfl⟩
 
 #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_append
 #print axioms MCore.Real.CanonicalSATSlotLog.activeSlots_pushSlot
