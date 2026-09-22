@@ -103,7 +103,21 @@ theorem snapshot_transition_guard_false
   simp [evalClause, evalLiteral, neg, hs, hh]
 
 
+theorem boundedExecTableau_initial_sound
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (h : evalCNF sigma (boundedExecTableauCNF M x t) = true) :
+    SnapshotMatches sigma M x t 0 (initialTMConfig M.machine x) := by
+  apply initialCNF_sound
+  apply evalCNF_subset_true sigma _ (boundedExecTableauCNF M x t) h
+  intro c hc
+  simp [boundedExecTableauCNF, hc]
+
+
 #print axioms MCore.Real.P02BoundedComputationSoundness.snapshot_transition_guard_false
+#print axioms MCore.Real.P02BoundedComputationSoundness.boundedExecTableau_initial_sound
 
 
 #print axioms MCore.Real.P02BoundedComputationSoundness.initialCNF_sound
