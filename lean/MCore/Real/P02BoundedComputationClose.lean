@@ -123,6 +123,150 @@ theorem rightVar_ge_rightBase
   omega
 
 
+
+theorem tableauSlot_injective_valid
+    (r s₁ i₁ s₂ i₂ : Nat)
+    (hr : 0 < r)
+    (hi₁ : i₁ < r)
+    (hi₂ : i₂ < r)
+    (h : s₁ * r + i₁ = s₂ * r + i₂) :
+    s₁ = s₂ ∧ i₁ = i₂ := by
+  by_cases hs : s₁ = s₂
+  · subst s₂
+    constructor
+    · rfl
+    · omega
+  · by_cases hlt : s₁ < s₂
+    · have hslot₁ : s₁ * r + i₁ < (s₁ + 1) * r := by
+        calc
+          s₁ * r + i₁ < s₁ * r + r := Nat.add_lt_add_left hi₁ _
+          _ = (s₁ + 1) * r := by simp [Nat.add_mul, Nat.add_comm]
+      have hblocks : (s₁ + 1) * r ≤ s₂ * r := by
+        exact Nat.mul_le_mul_right r (Nat.succ_le_of_lt hlt)
+      have hslot₂ : s₂ * r ≤ s₂ * r + i₂ := Nat.le_add_right _ _
+      omega
+    · have hgt : s₂ < s₁ := by omega
+      have hslot₂ : s₂ * r + i₂ < (s₂ + 1) * r := by
+        calc
+          s₂ * r + i₂ < s₂ * r + r := Nat.add_lt_add_left hi₂ _
+          _ = (s₂ + 1) * r := by simp [Nat.add_mul, Nat.add_comm]
+      have hblocks : (s₂ + 1) * r ≤ s₁ * r := by
+        exact Nat.mul_le_mul_right r (Nat.succ_le_of_lt hgt)
+      have hslot₁ : s₁ * r ≤ s₁ * r + i₁ := Nat.le_add_right _ _
+      omega
+
+theorem stateVar_injective_valid
+    (M : PolyDTMCandidate) (t s₁ s₂ : Nat)
+    (q₁ q₂ : Fin (M.stateCount + 1))
+    (hs₁ : s₁ ≤ t) (hs₂ : s₂ ≤ t)
+    (h : stateVar M t s₁ q₁ = stateVar M t s₂ q₂) :
+    s₁ = s₂ ∧ q₁ = q₂ := by
+  let n := stateCount M
+  have hn : 0 < n := by simp [n, stateCount]
+  have hq₁ : q₁.val < n := by simpa [n, stateCount] using q₁.isLt
+  have hq₂ : q₂.val < n := by simpa [n, stateCount] using q₂.isLt
+  by_cases hs : s₁ = s₂
+  · subst s₂
+    constructor
+    · rfl
+    · apply Fin.ext
+      unfold stateVar at h
+      omega
+  · by_cases hlt : s₁ < s₂
+    · have h₁ : s₁ * n + q₁.val < (s₁ + 1) * n := by
+        calc
+          s₁ * n + q₁.val < s₁ * n + n := Nat.add_lt_add_left hq₁ _
+          _ = (s₁ + 1) * n := by simp [Nat.add_mul, Nat.add_comm]
+      have hb : (s₁ + 1) * n ≤ s₂ * n :=
+        Nat.mul_le_mul_right n (Nat.succ_le_of_lt hlt)
+      have h₂ : s₂ * n ≤ s₂ * n + q₂.val := Nat.le_add_right _ _
+      unfold stateVar at h
+      simp [n] at h₁ hb h₂
+      omega
+    · have hgt : s₂ < s₁ := by omega
+      have h₂ : s₂ * n + q₂.val < (s₂ + 1) * n := by
+        calc
+          s₂ * n + q₂.val < s₂ * n + n := Nat.add_lt_add_left hq₂ _
+          _ = (s₂ + 1) * n := by simp [Nat.add_mul, Nat.add_comm]
+      have hb : (s₂ + 1) * n ≤ s₁ * n :=
+        Nat.mul_le_mul_right n (Nat.succ_le_of_lt hgt)
+      have h₁ : s₁ * n ≤ s₁ * n + q₁.val := Nat.le_add_right _ _
+      unfold stateVar at h
+      simp [n] at h₁ hb h₂
+      omega
+
+theorem headVar_injective_valid
+    (M : PolyDTMCandidate) (t s₁ s₂ : Nat)
+    (a₁ a₂ : Option Bool)
+    (hs₁ : s₁ ≤ t) (hs₂ : s₂ ≤ t)
+    (h : headVar M t s₁ a₁ = headVar M t s₂ a₂) :
+    s₁ = s₂ ∧ a₁ = a₂ := by
+  have ha₁ := symbolCode_lt_three a₁
+  have ha₂ := symbolCode_lt_three a₂
+  have hs : s₁ = s₂ := by
+    unfold headVar at h
+    omega
+  subst s₂
+  constructor
+  · rfl
+  · apply symbolCode_injective
+    unfold headVar at h
+    omega
+
+theorem leftVar_injective_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i₁ s₂ i₂ : Nat)
+    (a₁ a₂ : Option Bool)
+    (hs₁ : s₁ ≤ t) (hs₂ : s₂ ≤ t)
+    (hi₁ : i₁ < radius x t) (hi₂ : i₂ < radius x t)
+    (h : leftVar M x t s₁ i₁ a₁ = leftVar M x t s₂ i₂ a₂) :
+    s₁ = s₂ ∧ i₁ = i₂ ∧ a₁ = a₂ := by
+  let r := radius x t
+  have hr : 0 < r := by simpa [r] using radius_pos x t
+  have ha₁ := symbolCode_lt_three a₁
+  have ha₂ := symbolCode_lt_three a₂
+  have hslot :
+      s₁ * r + i₁ = s₂ * r + i₂ := by
+    unfold leftVar at h
+    simp [r] at h
+    omega
+  have hsi :=
+    tableauSlot_injective_valid r s₁ i₁ s₂ i₂ hr
+      (by simpa [r] using hi₁) (by simpa [r] using hi₂) hslot
+  rcases hsi with ⟨hs, hi⟩
+  subst s₂
+  subst i₂
+  refine ⟨rfl, rfl, ?_⟩
+  apply symbolCode_injective
+  unfold leftVar at h
+  omega
+
+theorem rightVar_injective_valid
+    (M : PolyDTMCandidate) (x : BitString) (t s₁ i₁ s₂ i₂ : Nat)
+    (a₁ a₂ : Option Bool)
+    (hs₁ : s₁ ≤ t) (hs₂ : s₂ ≤ t)
+    (hi₁ : i₁ < radius x t) (hi₂ : i₂ < radius x t)
+    (h : rightVar M x t s₁ i₁ a₁ = rightVar M x t s₂ i₂ a₂) :
+    s₁ = s₂ ∧ i₁ = i₂ ∧ a₁ = a₂ := by
+  let r := radius x t
+  have hr : 0 < r := by simpa [r] using radius_pos x t
+  have ha₁ := symbolCode_lt_three a₁
+  have ha₂ := symbolCode_lt_three a₂
+  have hslot :
+      s₁ * r + i₁ = s₂ * r + i₂ := by
+    unfold rightVar at h
+    simp [r] at h
+    omega
+  have hsi :=
+    tableauSlot_injective_valid r s₁ i₁ s₂ i₂ hr
+      (by simpa [r] using hi₁) (by simpa [r] using hi₂) hslot
+  rcases hsi with ⟨hs, hi⟩
+  subst s₂
+  subst i₂
+  refine ⟨rfl, rfl, ?_⟩
+  apply symbolCode_injective
+  unfold rightVar at h
+  omega
+
 theorem transitionCaseCNF_mem_transitionsCNF
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -848,6 +992,11 @@ def TransitionSoundnessGap : Prop :=
 def TableauCompletenessGap : Prop :=
   Nonempty TableauCompletenessCertificate
 
+#print axioms MCore.Real.P02BoundedComputationClose.tableauSlot_injective_valid
+#print axioms MCore.Real.P02BoundedComputationClose.stateVar_injective_valid
+#print axioms MCore.Real.P02BoundedComputationClose.headVar_injective_valid
+#print axioms MCore.Real.P02BoundedComputationClose.leftVar_injective_valid
+#print axioms MCore.Real.P02BoundedComputationClose.rightVar_injective_valid
 #print axioms MCore.Real.P02BoundedComputationClose.stateVar_lt_headBase_valid
 #print axioms MCore.Real.P02BoundedComputationClose.headVar_lt_leftBase_valid
 #print axioms MCore.Real.P02BoundedComputationClose.leftVar_lt_rightBase_valid
