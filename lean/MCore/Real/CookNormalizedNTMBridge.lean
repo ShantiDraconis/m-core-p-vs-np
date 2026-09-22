@@ -46,8 +46,14 @@ theorem cookNTMOfInternal_runBranches_eq
   induction fuel generalizing configs with
   | zero => rfl
   | succ fuel ih =>
-      simp only [CookNTM.runBranches, NTM.runBranches]
-      simp [cookNTMOfInternal, cookNTMOfInternal_successors_eq, ih]
+      rw [CookNTM.runBranches, NTM.runBranches]
+      have hsucc :
+          CookNTM.successors (cookNTMOfInternal C) =
+            C.machine.successors := by
+        funext config
+        exact cookNTMOfInternal_successors_eq C config
+      rw [hsucc]
+      exact ih _
 
 def cookNTMCandidateOfInternal
     (C : PolyNTMCandidate) : CookPolyNTMCandidate :=
@@ -145,8 +151,14 @@ theorem internalNTMOfCook_runBranches_eq
   induction fuel generalizing configs with
   | zero => rfl
   | succ fuel ih =>
-      simp only [NTM.runBranches, CookNTM.runBranches]
-      simp [internalNTMOfCook, internalNTMOfCook_successors_eq, ih]
+      rw [NTM.runBranches, CookNTM.runBranches]
+      have hsucc :
+          (internalNTMOfCook M).successors =
+            CookNTM.successors M := by
+        funext config
+        exact internalNTMOfCook_successors_eq M config
+      rw [hsucc]
+      exact ih _
 
 def internalNTMCandidateOfCook
     (C : CookPolyNTMCandidate) : PolyNTMCandidate :=
