@@ -50,6 +50,21 @@ theorem sourceEndTape_left_length (witness source : BitString) :
   simp [sourceEndTape]
   omega
 
+theorem witness_map_getD
+    (witness : BitString) (i : Nat) (hi : i < witness.length) :
+    (witness.map some).getD i none = some witness[i] := by
+  induction witness generalizing i with
+  | nil =>
+      simp at hi
+  | cons b bs ih =>
+      cases i with
+      | zero =>
+          simp
+      | succ i =>
+          have hi' : i < bs.length := by
+            simpa using hi
+          simpa using ih i hi'
+
 theorem getD_prefix_separator_witness
     (base : List (Option Bool)) (witness : BitString)
     (i : Nat) (hi : i < witness.length) :
@@ -57,9 +72,9 @@ theorem getD_prefix_separator_witness
       some witness[i] := by
   induction base with
   | nil =>
-      simp [hi]
+      simpa using witness_map_getD witness i hi
   | cons x xs ih =>
-      simpa [Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using ih
+      simpa [Nat.add_assoc] using ih
 
 /-- A valid witness index is physically present before the left shuttle can
 run off the represented witness region. -/
@@ -81,7 +96,8 @@ theorem moveToWitnessSeq_head_correct
   rw [show source.length + 2 + i = (source.length + 1 + i) + 1 by omega]
   rw [execMoves_moveLeftSeq_head_getD]
   unfold sourceEndTape
-  exact getD_prefix_separator_witness (source.reverse.map some) witness i hi
+  simpa using
+    getD_prefix_separator_witness (source.reverse.map some) witness i hi
 
 /-- The complete witness round-trip has linear shuttle cost in source length
 plus the selected witness index. -/
