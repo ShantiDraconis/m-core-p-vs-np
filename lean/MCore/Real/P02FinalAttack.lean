@@ -88,7 +88,7 @@ theorem P01_D3_to_internal_final
 
 /-- External terminal composition: the remaining external inputs are exactly
 P01, D3, and the already-separated G3 model contract. -/
-def assembleFinalExternal
+noncomputable def assembleFinalExternal
     (hP01 : SATInNPGap circuitBitEncoding)
     (hD3 : D3SemanticSelfReference)
     (hG3 : G3ModelMatch.G3ExternalContract) :
@@ -102,7 +102,7 @@ theorem P01_D3_G3_to_external_final
     (hP01 : SATInNPGap circuitBitEncoding)
     (hD3 : D3SemanticSelfReference)
     (hG3 : G3ModelMatch.G3ExternalContract) :
-    OfficialModel.OfficialPneqNP
+    FailProofAllGaps.OfficialPneqNP
       hG3.selection.model.P hG3.selection.model.NP :=
   final_external_certificate
     (assembleFinalExternal hP01 hD3 hG3)
