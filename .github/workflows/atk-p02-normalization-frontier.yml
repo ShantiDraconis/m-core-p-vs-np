@@ -29,6 +29,7 @@ jobs:
             lean/MCore/Real/P02ClockedDiagonalCompiler.lean
             lean/MCore/Real/P02LiteralFixedPointFirewall.lean
             lean/MCore/Real/P02LiteralFixedPointCountermodel.lean
+            lean/MCore/Real/P02G21G22Attack.lean
           )
           if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
           if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
@@ -37,7 +38,7 @@ jobs:
       - name: Build
         run: |
           set -euo pipefail
-          lake build MCore.Real.P02CanonicalNormalization MCore.Real.P02DiagonalFrontier MCore.Real.P02ClockedDiagonalCompiler MCore.Real.P02LiteralFixedPointFirewall MCore.Real.P02LiteralFixedPointCountermodel
+          lake build MCore.Real.P02CanonicalNormalization MCore.Real.P02DiagonalFrontier MCore.Real.P02ClockedDiagonalCompiler MCore.Real.P02LiteralFixedPointFirewall MCore.Real.P02LiteralFixedPointCountermodel MCore.Real.P02G21G22Attack
 
       - name: Axiom audit
         run: |
@@ -48,6 +49,7 @@ jobs:
           import MCore.Real.P02ClockedDiagonalCompiler
           import MCore.Real.P02LiteralFixedPointFirewall
           import MCore.Real.P02LiteralFixedPointCountermodel
+          import MCore.Real.P02G21G22Attack
           #print axioms MCore.Real.P02CanonicalNormalization.canonical_normalization
           #print axioms MCore.Real.P02DiagonalFrontier.diagonal_witness_fails
           #print axioms MCore.Real.P02DiagonalFrontier.diagonal_family_closes_p02
@@ -58,6 +60,9 @@ jobs:
           #print axioms MCore.Real.P02ClockedDiagonalCompiler.semantic_fixed_point_fails
           #print axioms MCore.Real.P02LiteralFixedPointFirewall.no_literal_fixed_point_if_constants_correct
           #print axioms MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point
+          #print axioms MCore.Real.P02G21G22Attack.g21_pointwise_iff_p02_target
+          #print axioms MCore.Real.P02G21G22Attack.g21_iff_g22
+          #print axioms MCore.Real.P02G21G22Attack.p01_g21_closes_internal
           EOF
           lake env lean /tmp/P02Audit.lean 2>&1 | tee /tmp/p02-audit.log
           if grep -q 'sorryAx' /tmp/p02-audit.log; then exit 1; fi
@@ -67,5 +72,7 @@ jobs:
           set -euo pipefail
           grep -q 'def DiagonalFixedPointGap' lean/MCore/Real/P02DiagonalFrontier.lean
           echo "G2_0=NORMALIZATION_SOURCE"
-          echo "G2_1=OPEN_MATH"
+          echo "G2_1_LITERAL=CLOSED_BY_FALSIFICATION"
+          echo "G2_1_POINTWISE=OPEN_MATH"
+          echo "G2_2=WIRING_GREEN_IF_JOB_SUCCEEDS"
           echo "P02_FINAL=OPEN"
