@@ -346,23 +346,25 @@ theorem leaf_afterEnd_active_to_source
       (some false ::
         (List.replicate suffix.length (some false) ++ [none]))
       hpreRev
-  have hscan' :
-      parserMachine.run (pre.length + 1)
+  calc
+    parserMachine.run (pre.length + 1)
         (CanonicalSATParserLeafReturnProof.leafCheckConfig 14
           pre.reverse sourceLeft
           (some false ::
             (List.replicate suffix.length (some false) ++ [none]))) =
-        CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
-          sourceLeft
-          (pre.map some ++
-            (some false ::
-              (List.replicate suffix.length (some false) ++ [none])))) := by
-    simpa using hscan
-  rw [hscan']
-  exact congrArg
-    (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
-      (17 : Fin 25) sourceLeft)
-    hright
+      CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
+        sourceLeft
+        (pre.map some ++
+          (some false ::
+            (List.replicate suffix.length (some false) ++ [none]))) := by
+      simpa using hscan
+    _ =
+      CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 17
+        sourceLeft (log'.map some ++ [none]) := by
+      exact congrArg
+        (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+          (17 : Fin 25) sourceLeft)
+        hright
 
 /-- Same leaf pop path when no active slot remains. -/
 theorem leaf_afterEnd_inactive_to_source
@@ -408,23 +410,25 @@ theorem leaf_afterEnd_inactive_to_source
       (some false ::
         (List.replicate suffix.length (some false) ++ [none]))
       hpreRevAll
-  have hscan' :
-      parserMachine.run (pre.length + 1)
+  calc
+    parserMachine.run (pre.length + 1)
         (CanonicalSATParserLeafReturnProof.leafCheckConfig 14
           pre.reverse sourceLeft
           (some false ::
             (List.replicate suffix.length (some false) ++ [none]))) =
-        CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 16
-          sourceLeft
-          (pre.map some ++
-            (some false ::
-              (List.replicate suffix.length (some false) ++ [none])))) := by
-    simpa using hscan
-  rw [hscan']
-  exact congrArg
-    (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
-      (16 : Fin 25) sourceLeft)
-    hright
+      CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 16
+        sourceLeft
+        (pre.map some ++
+          (some false ::
+            (List.replicate suffix.length (some false) ++ [none]))) := by
+      simpa using hscan
+    _ =
+      CanonicalSATParserLeafReturnProof.leafSourceCheckConfig 16
+        sourceLeft (log'.map some ++ [none]) := by
+      exact congrArg
+        (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+          (16 : Fin 25) sourceLeft)
+        hright
 
 /-- A physical rightmost-slot pop changes only a bit, never the work-log
 length. -/
