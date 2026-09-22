@@ -115,6 +115,112 @@ theorem phaseBudget_positive
     (phaseRuntimeUnit_pos pad hpad log bits)
     (by omega)
 
+
+/-- One local runtime unit is always contained in the quadratic phase budget. -/
+theorem phaseRuntimeUnit_le_budget
+    (pad : Nat) (log : SlotLog) (bits : BitString) :
+    phaseRuntimeUnit pad log bits ≤ phaseRuntimeBudget pad log bits := by
+  unfold phaseRuntimeBudget
+  have h : 1 ≤ bits.length + 1 := by omega
+  have hm :=
+    Nat.mul_le_mul_left (phaseRuntimeUnit pad log bits) h
+  simpa using hm
+
+/-- Every exact head/work/return prefix used by a recursive parser phase fits
+inside one local runtime unit. -/
+theorem phasePrefixLinear_le_unit
+    (pad : Nat) (hpad : 0 < pad)
+    (head : Head) (tail : BitString) (log : SlotLog) :
+    CanonicalSATParserPhaseMacroProof.headWorkFuel
+        head tail.length log.length +
+      (log.length + tail.length + 2) ≤
+        phaseRuntimeUnit pad log (head.encode ++ tail) := by
+  unfold phaseRuntimeUnit phaseRuntimeScale
+  unfold CanonicalSATParserPhaseMacroProof.headWorkFuel
+  unfold CanonicalSATParserMacroProof.phaseWorkBound
+  simp only [List.length_append]
+  omega
+
+theorem phasePrefixTerminal_le_unit
+    (pad : Nat) (hpad : 0 < pad)
+    (head : Head) (tail : BitString) (log : SlotLog) :
+    CanonicalSATParserPhaseMacroProof.headWorkFuel
+        head tail.length log.length +
+      (log.length + 2) ≤
+        phaseRuntimeUnit pad log (head.encode ++ tail) := by
+  have h := phasePrefixLinear_le_unit pad hpad head tail log
+  omega
+
+theorem phasePrefixNot_le_unit
+    (pad : Nat) (hpad : 0 < pad)
+    (tail : BitString) (log : SlotLog) :
+    (Head.encode .not).length ≤
+      phaseRuntimeUnit pad log (Head.encode .not ++ tail) := by
+  unfold phaseRuntimeUnit phaseRuntimeScale
+  simp only [List.length_append]
+  omega
+
+theorem phaseRuntimeScale_same
+    (pad : Nat) (head : Head)
+    (tail : BitString) (log : SlotLog) :
+    phaseRuntimeScale
+        (pad + head.encode.length) log tail =
+      phaseRuntimeScale pad log (head.encode ++ tail) := by
+  unfold phaseRuntimeScale
+  simp only [List.length_append]
+  omega
+
+theorem phaseRuntimeScale_pop_same
+    (pad : Nat) (head : Head)
+    (tail : BitString) (log log' : SlotLog)
+    (hpop : popSlot log = some log') :
+    phaseRuntimeScale
+        (pad + head.encode.length) log' tail =
+      phaseRuntimeScale pad log (head.encode ++ tail) := by
+  have hlen := popSlot_length hpop
+  unfold phaseRuntimeScale
+  simp only [List.length_append]
+  rw [hlen]
+  omega
+
+theorem phaseRuntimeScale_push_succ
+    (pad : Nat) (head : Head)
+    (tail : BitString) (log : SlotLog) :
+    phaseRuntimeScale
+        (pad + head.encode.length) (pushSlot log) tail =
+      phaseRuntimeScale pad log (head.encode ++ tail) + 1 := by
+  unfold phaseRuntimeScale
+  simp [CanonicalSATSlotLog.pushSlot, List.length_append]
+  omega
+
+theorem parser_halts_after_exact_prefix
+    (parent child : Configuration (Fin 25) (Option Bool))
+    (prefixSteps childBudget : Nat)
+    (hprefix :
+      parserMachine.run prefixSteps parent = child)
+    (hchild :
+      parserMachine.HaltsWithin childBudget child) :
+    parserMachine.HaltsWithin (prefixSteps + childBudget) parent := by
+  unfold TM.HaltsWithin at hchild ⊢
+  rw [MachineRunLemmas.run_add, hprefix]
+  exact hchild
+
+theorem parser_halts_after_rightBlank_prefix
+    (parent child : Configuration (Fin 25) (Option Bool))
+    (prefixSteps childBudget : Nat)
+    (hprefix :
+      ConfigRightBlankEq
+        (parserMachine.run prefixSteps parent) child)
+    (hchild :
+      parserMachine.HaltsWithin childBudget child) :
+    parserMachine.HaltsWithin (prefixSteps + childBudget) parent := by
+  unfold TM.HaltsWithin at hchild ⊢
+  rw [MachineRunLemmas.run_add]
+  have hrun :=
+    parser_run_respects_right_blank childBudget hprefix
+  rw [hrun.1]
+  exact hchild
+
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
 
