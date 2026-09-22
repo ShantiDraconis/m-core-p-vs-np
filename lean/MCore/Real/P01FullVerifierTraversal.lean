@@ -72,9 +72,9 @@ theorem sourceEndScanner_run
       simpa using sourceEndScanner_finish left
   | cons b bs ih =>
       rw [List.length_cons]
-      rw [show bs.length + 1 + 1 = 1 + (bs.length + 1) by omega]
-      rw [MachineRunLemmas.run_add]
-      simp [sourceEndScanner, scanConfig, TM.run, sourceEndScanner_step_cons]
+      rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by rfl]
+      rw [TM.run, scanConfig_state, sourceEndScanner_not_halt0]
+      rw [sourceEndScanner_step_cons]
       rw [ih (some b :: left)]
       simp [List.reverse_cons, List.map_append, List.append_assoc]
 
