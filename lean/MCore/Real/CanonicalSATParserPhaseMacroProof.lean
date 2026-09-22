@@ -21,8 +21,8 @@ theorem input_head_to_pop_search
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        (Head.encode (.input i)).length +
-          ((tail.length + 1) + (log.length + 1))
+        ((Head.encode (.input i)).length +
+          ((tail.length + 1) + (log.length + 1)))
         (phaseConfig 4 pad (Head.encode (.input i) ++ tail) log) =
       afterEndMoveLeft 13
         (none :: tail.reverse.map some ++
@@ -42,8 +42,8 @@ theorem const_head_to_pop_search
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        (Head.encode (.const b)).length +
-          ((tail.length + 1) + (log.length + 1))
+        ((Head.encode (.const b)).length +
+          ((tail.length + 1) + (log.length + 1)))
         (phaseConfig 4 pad (Head.encode (.const b) ++ tail) log) =
       afterEndMoveLeft 13
         (none :: tail.reverse.map some ++
@@ -75,8 +75,8 @@ theorem and_head_to_return
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        (Head.encode .and).length +
-          ((tail.length + 1) + (log.length + 1))
+        ((Head.encode .and).length +
+          ((tail.length + 1) + (log.length + 1)))
         (phaseConfig 4 pad (Head.encode .and ++ tail) log) =
       afterEndMoveLeft 20
         (none :: tail.reverse.map some ++
@@ -95,8 +95,8 @@ theorem or_head_to_return
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        (Head.encode .or).length +
-          ((tail.length + 1) + (log.length + 1))
+        ((Head.encode .or).length +
+          ((tail.length + 1) + (log.length + 1)))
         (phaseConfig 4 pad (Head.encode .or ++ tail) log) =
       afterEndMoveLeft 20
         (none :: tail.reverse.map some ++
