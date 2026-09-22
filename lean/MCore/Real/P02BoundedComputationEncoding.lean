@@ -127,7 +127,7 @@ theorem symbolCode_lt_three (a : Option Bool) :
       cases b <;> decide
 
 theorem symbolCode_injective :
-    Function.Injective symbolCode := by
+    ∀ {a b : Option Bool}, symbolCode a = symbolCode b → a = b := by
   intro a b h
   cases a <;> cases b <;> simp [symbolCode] at h ⊢
   case some.some a b =>
