@@ -9,6 +9,7 @@ namespace P01FullVerifierPhysical
 open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalSATWitness
+open CanonicalSATVerifier
 open P01WitnessPreservingPrep
 open P01FullVerifierTraversal
 open P01FullVerifierStackSemantics
