@@ -241,3 +241,43 @@ Resume points:
 - G3: resume from validated `3f04da00...`, while keeping `26e721ab...` as the last dedicated frozen/certified DTM bridge checkpoint.
 
 No final proof is claimed by this recovery ledger.
+
+
+---
+
+## Missing certificates recovered after stop
+
+All GREEN subgates that had dedicated successful validation but lacked a dedicated freeze/certificate ref have now been promoted.
+
+### P01 state14/15 return scan
+- source SHA: `72aa7be339ddcde8ffd83527a3bf0b932879cd45`
+- frozen: `frozen/p01-leaf-state14-15-return-green-72aa7be3`
+- cert: `cert/p01-leaf-state14-15-return-72aa7be3-run35714475319`
+- cert tip: `8b6360e9f334e4a11084f6ddd833123975b02190`
+- certificate SHA256: `75a688b7fd150d803fa2c9b698970aa7206a3c3fd839fff940d9e9cae79da62b`
+
+### G3 normalized NTM two-way bridge
+- source SHA: `7707051580cd4e4685e30c8206cfdc060ae1b1ab`
+- frozen: `frozen/g3-normalized-ntm-two-way-green-77070515`
+- cert: `cert/g3-normalized-ntm-two-way-77070515-run35715054272`
+- cert tip: `0320de1f6993adcc5a06e5d3ba1da2963ed9aed5`
+- certificate SHA256: `6895a971bf3ca273817b1b8b8c8ff59036e6c613f093b28db6a2bc5c1e9172be`
+
+### G3 normalized four-way bridge
+- source SHA: `3f04da0076dc9cf7e244a62fa729d98f0a21e612`
+- frozen: `frozen/g3-normalized-four-way-green-3f04da00`
+- cert: `cert/g3-normalized-four-way-3f04da00-run35715387641`
+- cert tip: `0fda1584b6a2ed22610c6dbd7140f004423dbc30`
+- certificate SHA256: `9c93b698badd1eebc2ca0370f0df7f9d86a6dd38c8a052b4fdd84896cea8d284`
+
+### Remaining non-certifiable frontier
+
+- P01 HARD: OPEN.
+- P02 literal fixed-point countermodel: RED at `bb65456b7198d71c127d07e47de288a902654033`, run `35715538906`; skipped as requested.
+- G2.1 diagonal fixed-point existence: OPEN_MATH.
+- G2.2/G2.3: CONDITIONAL.
+- G3 source-fidelity/model-identification endpoint: OPEN_CONSTRUCTION.
+- FINAL_INTERNAL: BLOCKED.
+- FINAL_EXTERNAL: BLOCKED.
+
+No remaining `VALIDATED_UNFROZEN` subgate from the recovered stop set is left without a dedicated freeze/certificate ref.
