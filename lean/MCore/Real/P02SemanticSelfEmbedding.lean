@@ -34,7 +34,7 @@ def SemanticSelfEmbedder.toDiagonalFamily
       valid := S.valid M
       flips := S.flips M }
 
-def DiagonalFamily.toSemanticSelfEmbedder
+def diagonalFamilyToSemanticSelfEmbedder
     (D : DiagonalFamily) :
     SemanticSelfEmbedder where
   bits := fun M => (D.witness M).bits
@@ -47,7 +47,7 @@ theorem semantic_self_embedding_gap_iff_diagonal_fixed_point_gap :
   · rintro ⟨S⟩
     exact ⟨S.toDiagonalFamily⟩
   · rintro ⟨D⟩
-    exact ⟨D.toSemanticSelfEmbedder⟩
+    exact ⟨diagonalFamilyToSemanticSelfEmbedder D⟩
 
 theorem semantic_self_embedding_closes_p02
     (h : SemanticSelfEmbeddingGap) :
