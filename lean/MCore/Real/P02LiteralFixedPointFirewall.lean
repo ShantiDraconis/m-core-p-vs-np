@@ -38,7 +38,6 @@ theorem trueBits_sat :
   rw [show trueBits = encodeCircuit (.const true) by rfl]
   rw [encoded_sat_equivalence]
   simp [SATLanguage, evalCircuit]
-  exact ⟨fun _ => false, rfl⟩
 
 /-- Fail-proof for the naive literal fixed-point route.
 
