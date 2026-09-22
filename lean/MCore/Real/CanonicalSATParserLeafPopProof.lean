@@ -110,7 +110,6 @@ theorem leafPop_run_false_prefix
       rw [leafPop_step_false _ _ _ (by simp)]
       rw [ih (some false :: right)]
       rw [replicate_option_false_rotate k right]
-      rfl
 
 theorem all_false_eq_replicate
     (xs : List Bool)
