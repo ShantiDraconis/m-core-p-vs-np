@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - final-proof-p01-construction
+      - attack/t1d-physical-verifier-20260922
   workflow_dispatch:
 
 permissions:
@@ -25,9 +26,12 @@ jobs:
             lean/MCore/Real/P01FullVerifierTraversal.lean
             lean/MCore/Real/P01FullVerifierStackSemantics.lean
             lean/MCore/Real/P01FullVerifierMachine.lean
+            lean/MCore/Real/P01FullVerifierPhysical.lean
+            lean/MCore/Real/P01FullVerifierPhysicalControl.lean
+            lean/MCore/Real/P01FullVerifierPhysicalMoves.lean
           )
           test -f "${files[0]}"
           test -f "${files[1]}"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
-          lake build MCore.Real.P01FullVerifierTraversal MCore.Real.P01FullVerifierStackSemantics MCore.Real.P01FullVerifierMachine
+          lake build MCore.Real.P01FullVerifierTraversal MCore.Real.P01FullVerifierStackSemantics MCore.Real.P01FullVerifierMachine MCore.Real.P01FullVerifierPhysical MCore.Real.P01FullVerifierPhysicalControl MCore.Real.P01FullVerifierPhysicalMoves
