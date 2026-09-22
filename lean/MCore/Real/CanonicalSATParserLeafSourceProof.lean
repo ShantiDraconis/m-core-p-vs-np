@@ -107,17 +107,28 @@ theorem leaf17_roundtrip_to_phase
       phaseConfig 4 pad (rest.reverse ++ [last]) log := by
   rw [show rest.length + 2 = 1 + (rest.length + 1) by omega]
   rw [MachineRunLemmas.run_add]
-  rw [show parserMachine.run 1
-      (leafSourceCheckConfig 17
-        (some last ::
-          (rest.map some ++ List.replicate pad (none : Option Bool)))
-        (log.map some)) =
+  have hhalt :
+      parserMachine.halting
+        (leafSourceCheckConfig 17
+          (some last ::
+            (rest.map some ++ List.replicate pad (none : Option Bool)))
+          (log.map some)).state = false := by
+    rw [leafSourceCheckConfig_state]
+    decide
+  have hrun1 :
+      parserMachine.run 1
+        (leafSourceCheckConfig 17
+          (some last ::
+            (rest.map some ++ List.replicate pad (none : Option Bool)))
+          (log.map some)) =
       parserMachine.step
         (leafSourceCheckConfig 17
           (some last ::
             (rest.map some ++ List.replicate pad (none : Option Bool)))
-          (log.map some)) by
-        simp [TM.run, parserMachine]]
+          (log.map some)) := by
+    rw [TM.run]
+    simp [hhalt]
+  rw [hrun1]
   rw [leaf17_step_to_rewind pad hpad last rest log]
   exact rewindUnread_run rest [last] pad hpad log
 
