@@ -1,0 +1,35 @@
+name: ATK t1-d terminal integration
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Build certified integration inputs
+        run: |
+          lake build MCore.Real.P01IntegratedMachine
+          lake build MCore.Real.P01IntegratedPhaseSemantics
+          lake build MCore.Real.P01PhysicalRealizationAssembly
+          lake build MCore.Real.P01PolynomialBudgetAlgebra
+          lake build MCore.Real.P01ConstructionClose
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          for file in             lean/MCore/Real/P01IntegratedMachine.lean             lean/MCore/Real/P01IntegratedPhaseSemantics.lean             lean/MCore/Real/P01PhysicalRealizationAssembly.lean             lean/MCore/Real/P01PolynomialBudgetAlgebra.lean             lean/MCore/Real/P01ConstructionClose.lean
+          do
+            if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"; then exit 1; fi
+            if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"; then exit 1; fi
+          done
+      - name: Fail closed terminal
+        run: echo "T1_D_TERMINAL=P01MachineConstruction_REQUIRED"
