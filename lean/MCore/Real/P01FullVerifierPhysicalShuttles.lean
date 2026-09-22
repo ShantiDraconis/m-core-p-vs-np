@@ -72,13 +72,14 @@ theorem getD_prefix_separator_witness
       some witness[i] := by
   induction base with
   | nil =>
-      change (none :: witness.map some).getD (Nat.succ i) none =
-        some witness[i]
+      simp only [List.nil_append, List.length_nil, Nat.zero_add]
+      rw [show 1 + i = Nat.succ i by omega]
       simp only [List.getD_cons_succ]
       exact witness_map_getD witness i hi
   | cons x xs ih =>
-      change (x :: (xs ++ none :: witness.map some)).getD
-          (Nat.succ (xs.length + 1 + i)) none = some witness[i]
+      simp only [List.cons_append, List.length_cons]
+      rw [show Nat.succ xs.length + 1 + i =
+          Nat.succ (xs.length + 1 + i) by omega]
       simp only [List.getD_cons_succ]
       exact ih
 
