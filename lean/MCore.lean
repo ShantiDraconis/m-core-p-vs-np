@@ -58,3 +58,4 @@ import MCore.Real.CanonicalSATRecursiveParserPaths
 import MCore.Real.CanonicalSATRecursiveParserBoundaryProof
 import MCore.Real.CanonicalSATRecursiveParserBudget
 import MCore.Real.CanonicalSATRecursiveParserWorkScans
+import MCore.Real.P02CandidateNormalization
