@@ -71,7 +71,7 @@ theorem sourceRewind_separator_step
     (hhead : t.head = none) :
     sourceRewindMachine.step { state := scanLeft, tape := t } =
       { state := rewindHalt, tape := Tape.move none .right t } := by
-  subst hhead
+  rw [show t.head = none from hhead]
   simp [sourceRewindMachine, scanLeft, rewindHalt, enterSource,
     TM.step, Tape.write]
 
