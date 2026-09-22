@@ -1,0 +1,45 @@
+name: atk-p02-g21-g22
+
+on:
+  push:
+    branches:
+      - attack/g21-g22-only-20260922
+  pull_request:
+    branches:
+      - attack/p01-p02-final-clean-20260921
+
+jobs:
+  g21-g22:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Additive-source hygiene
+        run: |
+          set -euo pipefail
+          if grep -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' lean/MCore/Real/P02G21G22Attack.lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -n -E '^[[:space:]]*(@\\[[^]]*\\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02G21G22Attack.lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+
+      - name: Build G2.1/G2.2 attack module
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02G21G22Attack
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02G21G22Attack.lean 2>&1 | tee P02G21G22Attack.log
+          if grep -E 'sorryAx' P02G21G22Attack.log; then exit 1; fi
+
+      - name: Preserve frozen G2.0 boundary
+        run: |
+          set -euo pipefail
+          test ! -e lean/MCore/Real/P02CandidateNormalization.lean || true
+          echo "G2.0 is not edited by this lane"
