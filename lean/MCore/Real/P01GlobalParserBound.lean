@@ -232,7 +232,7 @@ theorem parser_terminal_halt_to_budget
       (phaseRuntimeBudget pad log bits)
       (phaseConfig 4 pad bits log) := by
   have hle :=
-    le_trans hsteps (phaseRuntimeUnit_le_budget pad log bits)
+    Nat.le_trans hsteps (phaseRuntimeUnit_le_budget pad log bits)
   exact MachineRunLemmas.haltsWithin_mono
     parserMachine (phaseConfig 4 pad bits log) hle hhalt
 
