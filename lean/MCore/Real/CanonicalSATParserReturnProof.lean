@@ -1,4 +1,5 @@
 import MCore.Real.CanonicalSATParserMacroProof
+import MCore.Real.CanonicalSATParserRewindProof
 
 namespace MCore
 namespace Real
@@ -8,6 +9,7 @@ open CanonicalFinalProof
 open CanonicalSATParserMachine
 open CanonicalSATParserWorkScanProof
 open CanonicalSATParserMacroProof
+open CanonicalSATParserRewindProof
 open CanonicalSATSlotLog
 open CanonicalSATSlotLogMachine
 
@@ -106,6 +108,66 @@ theorem binary_afterEnd_to_delimiter
 #print axioms MCore.Real.CanonicalSATParserReturnProof.binaryReturn_run
 #print axioms MCore.Real.CanonicalSATParserReturnProof.afterEndMoveLeft_binary_eq_return
 #print axioms MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_to_delimiter
+
+/-- After the old log has been scanned back to its delimiter, two parser steps
+cross that delimiter and enter state 22 with the unread suffix represented by
+the existing rewind invariant. -/
+theorem binary_delimiter_enters_rewind
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (last : Bool)
+    (rest : BitString)
+    (log : SlotLog) :
+    parserMachine.run 2
+        (binaryReturnConfig []
+          (some last :: rest.map some ++
+            List.replicate pad (none : Option Bool))
+          ((pushSlot log).map some)) =
+      rewindUnreadConfig rest [last] pad (pushSlot log) := by
+  cases rest with
+  | nil =>
+      cases pad with
+      | zero => omega
+      | succ p =>
+          simp [TM.run, binaryReturnConfig, parserMachine,
+            rewindUnreadConfig, Tape.write, Tape.move,
+            List.replicate_succ, pushSlot]
+  | cons b bs =>
+      simp [TM.run, binaryReturnConfig, parserMachine,
+        rewindUnreadConfig, Tape.write, Tape.move,
+        List.append_assoc, pushSlot]
+
+/-- Complete the binary post-head macro: append one active slot, return across
+the work log, cross the source delimiter, rewind the unread source, and re-enter
+TAG_0 with the unread bitstring restored. -/
+theorem binary_afterEnd_roundtrip
+    (pad : Nat)
+    (hpad : 0 < pad)
+    (last : Bool)
+    (rest : BitString)
+    (log : SlotLog) :
+    parserMachine.run
+        (log.length + 2 + (rest.length + 1))
+        (afterEndMoveLeft 20
+          (none :: some last :: rest.map some ++
+            List.replicate pad (none : Option Bool))
+          log (some true)) =
+      phaseConfig 4 pad
+        (rest.reverse ++ [last])
+        (pushSlot log) := by
+  rw [show log.length + 2 + (rest.length + 1) =
+      log.length + (2 + (rest.length + 1)) by omega]
+  rw [MachineRunLemmas.run_add]
+  rw [binary_afterEnd_to_delimiter
+    (some last :: rest.map some ++
+      List.replicate pad (none : Option Bool)) log]
+  rw [show 2 + (rest.length + 1) = 2 + (rest.length + 1) by rfl]
+  rw [MachineRunLemmas.run_add]
+  rw [binary_delimiter_enters_rewind pad hpad last rest log]
+  exact rewindUnread_run rest [last] pad hpad (pushSlot log)
+
+#print axioms MCore.Real.CanonicalSATParserReturnProof.binary_delimiter_enters_rewind
+#print axioms MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_roundtrip
 
 end CanonicalSATParserReturnProof
 end Real
