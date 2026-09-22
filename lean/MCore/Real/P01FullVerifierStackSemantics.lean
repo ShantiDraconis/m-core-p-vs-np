@@ -1,4 +1,5 @@
 import MCore.Real.Semantics
+import MCore.Real.CanonicalCircuitBits
 import MCore.Real.P01VerifierGateMachine
 
 namespace MCore
@@ -6,6 +7,7 @@ namespace Real
 namespace P01FullVerifierStackSemantics
 
 open CircuitK1
+open CanonicalCircuitBits
 
 /-- Finite instruction alphabet for bottom-up circuit evaluation.
 The input index is data decoded from tape; it is not a machine-control state. -/
@@ -102,9 +104,9 @@ theorem evalProgram_length (c : Circuit) :
       omega
 
 theorem evalProgram_length_le_encoding (c : Circuit) :
-    (evalProgram c).length ≤ CanonicalCircuitBits.encodeCircuit c |>.length := by
+    (evalProgram c).length ≤ (encodeCircuit c).length := by
   rw [evalProgram_length]
-  exact CanonicalCircuitBits.size_le_encodeCircuit_length c
+  exact size_le_encodeCircuit_length c
 
 #print axioms MCore.Real.P01FullVerifierStackSemantics.evalProgram_correct
 #print axioms MCore.Real.P01FullVerifierStackSemantics.evalProgram_length_le_encoding
