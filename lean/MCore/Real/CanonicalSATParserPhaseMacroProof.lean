@@ -15,20 +15,26 @@ open CanonicalSATParserWorkScanProof
 open CanonicalSATSlotLog
 open MachineRunLemmas
 
+/-- Composite fuel for one decoded head followed by the already-certified
+source/work-log macro. Keeping the sum behind a named definition avoids
+elaboration ambiguity while preserving the exact runtime decomposition. -/
+def headWorkFuel (head : Head) (tailLength logLength : Nat) : Nat :=
+  head.encode.length + phaseWorkBound tailLength logLength
+
 /-- INPUT head consumption followed by the certified leaf seek/work scan. -/
 theorem input_head_to_pop_search
     (pad i : Nat)
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        ((Head.encode (.input i)).length +
-          ((tail.length + 1) + (log.length + 1)))
+        headWorkFuel (.input i) tail.length log.length
         (phaseConfig 4 pad (Head.encode (.input i) ++ tail) log) =
       afterEndMoveLeft 13
         (none :: tail.reverse.map some ++
           List.replicate (pad + (Head.encode (.input i)).length)
             (none : Option Bool))
         log none := by
+  unfold headWorkFuel phaseWorkBound
   rw [MachineRunLemmas.run_add]
   rw [consumeHead_run]
   simpa [continuationState] using
@@ -42,14 +48,14 @@ theorem const_head_to_pop_search
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        ((Head.encode (.const b)).length +
-          ((tail.length + 1) + (log.length + 1)))
+        headWorkFuel (.const b) tail.length log.length
         (phaseConfig 4 pad (Head.encode (.const b) ++ tail) log) =
       afterEndMoveLeft 13
         (none :: tail.reverse.map some ++
           List.replicate (pad + (Head.encode (.const b)).length)
             (none : Option Bool))
         log none := by
+  unfold headWorkFuel phaseWorkBound
   rw [MachineRunLemmas.run_add]
   rw [consumeHead_run]
   simpa [continuationState] using
@@ -75,14 +81,14 @@ theorem and_head_to_return
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        ((Head.encode .and).length +
-          ((tail.length + 1) + (log.length + 1)))
+        headWorkFuel .and tail.length log.length
         (phaseConfig 4 pad (Head.encode .and ++ tail) log) =
       afterEndMoveLeft 20
         (none :: tail.reverse.map some ++
           List.replicate (pad + (Head.encode .and).length)
             (none : Option Bool))
         log (some true) := by
+  unfold headWorkFuel phaseWorkBound
   rw [MachineRunLemmas.run_add]
   rw [consumeHead_run]
   simpa [continuationState] using
@@ -95,14 +101,14 @@ theorem or_head_to_return
     (tail : BitString)
     (log : SlotLog) :
     parserMachine.run
-        ((Head.encode .or).length +
-          ((tail.length + 1) + (log.length + 1)))
+        headWorkFuel .or tail.length log.length
         (phaseConfig 4 pad (Head.encode .or ++ tail) log) =
       afterEndMoveLeft 20
         (none :: tail.reverse.map some ++
           List.replicate (pad + (Head.encode .or).length)
             (none : Option Bool))
         log (some true) := by
+  unfold headWorkFuel phaseWorkBound
   rw [MachineRunLemmas.run_add]
   rw [consumeHead_run]
   simpa [continuationState] using
