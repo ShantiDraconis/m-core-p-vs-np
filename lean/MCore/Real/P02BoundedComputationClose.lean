@@ -48,7 +48,8 @@ theorem stateVar_lt_headBase_valid
   have hlocal : s * n + q.val < (s + 1) * n := by
     calc
       s * n + q.val < s * n + n := Nat.add_lt_add_left hq _
-      _ = (s + 1) * n := by omega
+      _ = (s + 1) * n := by
+        simp [Nat.add_mul, Nat.add_comm]
   have hstep : (s + 1) * n ≤ (t + 1) * n := by
     exact Nat.mul_le_mul_right n (Nat.succ_le_succ hs)
   unfold stateVar headBase stateSlots
@@ -89,7 +90,8 @@ theorem leftVar_lt_rightBase_valid
   have hcell : s * r + i < (s + 1) * r := by
     calc
       s * r + i < s * r + r := Nat.add_lt_add_left hi _
-      _ = (s + 1) * r := by omega
+      _ = (s + 1) * r := by
+        simp [Nat.add_mul, Nat.add_comm]
   have htime : (s + 1) * r ≤ (t + 1) * r := by
     exact Nat.mul_le_mul_right r (Nat.succ_le_succ hs)
   have hslot : (s * r + i) * 3 + symbolCode a <
