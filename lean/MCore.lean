@@ -51,3 +51,10 @@ import MCore.Real.P01FullVerifierTraversal
 import MCore.Real.P01FullVerifierMachine
 import MCore.Real.P01IntegratedNTMFrontier
 import MCore.Real.P01ConstructionClose
+
+import MCore.Real.P01FullVerifierPhysical
+import MCore.Real.P01FullVerifierPhysicalControl
+import MCore.Real.P01FullVerifierPhysicalMoves
+import MCore.Real.P01FullVerifierPhysicalShuttles
+import MCore.Real.P01FullVerifierReadWitnessLocal
+import MCore.Real.P01FullVerifierEvalLocal
