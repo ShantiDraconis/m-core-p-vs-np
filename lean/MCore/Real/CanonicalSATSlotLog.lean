@@ -204,10 +204,10 @@ theorem popSlot_decompose_rightmost
               have hrep := activeSlots_zero_eq_replicate_false bs hzero
               refine ⟨[], bs.length, ?_, ?_⟩
               · rw [hrep]
-                rfl
+                simp only [List.length_replicate, List.nil_append]
               · subst log'
                 rw [hrep]
-                rfl
+                simp only [List.length_replicate, List.nil_append]
 
 /-- Pop succeeds exactly when there is at least one active slot. -/
 theorem popSlot_exists_iff_activeSlots_pos
