@@ -39,6 +39,11 @@ jobs:
           lake build MCore.Real.OpenMathCore.Functoriality
           lake build MCore.Real.OpenMathCore.Stability
           lake build MCore.Real.OpenMathUniversalSeparationLaw
+          lake build MCore.Real.OpenMathCore.SelfQuotation
+          lake build MCore.Real.OpenMathCore.BoundedUniversalSimulation
+          lake build MCore.Real.OpenMathCore.SATCircuitCompiler
+          lake build MCore.Real.OpenMathCore.SameInputClosure
+          lake build MCore.Real.OpenMathCore.TerminalArchitecture
 
       - name: Hygiene
         run: |
