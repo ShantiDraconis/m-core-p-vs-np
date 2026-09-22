@@ -1,5 +1,4 @@
-import MCore.Real.CanonicalSATParserLeafSourceProof
-import MCore.Real.CanonicalSATParserReturnProof
+import MCore.Real.CanonicalSATParserTerminalBranches
 
 namespace MCore
 namespace Real
@@ -10,9 +9,9 @@ open CanonicalSATParserMachine
 open CanonicalSATParserLeafReturnProof
 open CanonicalSATParserLeafSourceProof
 open CanonicalSATParserReturnProof
+open CanonicalSATParserTerminalBranches
 
-/-- If a leaf consumed the last active slot while unread source still remains,
-state 16 rejects in exactly one step. -/
+/-- Reuse the already-certified residual-source rejection theorem. -/
 theorem leaf16_nonempty_rejects
     (pad : Nat)
     (last : Bool)
@@ -20,24 +19,13 @@ theorem leaf16_nonempty_rejects
     (right : List (Option Bool)) :
     parserMachine.step
         (leafSourceCheckConfig 16
-          (some last :: (rest.map some ++
-            List.replicate pad (none : Option Bool)))
+          (some last ::
+            (rest.map some ++ List.replicate pad (none : Option Bool)))
           right) =
-      { state := (24 : Fin 25)
-        tape :=
-          Tape.move none .left
-            { left :=
-                rest.map some ++
-                  List.replicate pad (none : Option Bool)
-              head := some last
-              right := none :: right } } := by
-  cases rest <;>
-    simp [leafSourceCheckConfig, parserMachine, TM.step, Tape.write, Tape.move,
-      List.append_assoc]
+      leafResidualRejectConfig pad last rest right :=
+  leaf16_residual_rejects pad last rest right
 
-/-- State 21 rejects when a binary constructor has opened a new slot but the
-source is already exhausted.  This is the exact malformed-prefix terminal
-case needed by the global parser induction. -/
+/-- Reuse the already-certified exhausted-binary rejection theorem. -/
 theorem binary_check_exhausted_rejects
     (pad : Nat)
     (hpad : 0 < pad)
@@ -46,17 +34,8 @@ theorem binary_check_exhausted_rejects
         (binaryReturnConfig []
           (List.replicate pad (none : Option Bool))
           right) =
-      { state := (24 : Fin 25)
-        tape :=
-          Tape.move none .left
-            { left := List.replicate pad (none : Option Bool)
-              head := none
-              right := none :: right } } := by
-  cases pad with
-  | zero => omega
-  | succ p =>
-      simp [binaryReturnConfig, parserMachine, TM.run, TM.step,
-        Tape.write, Tape.move, List.replicate_succ]
+      leafRejectConfig pad right :=
+  binary_exhausted_rejects pad hpad right
 
 #print axioms MCore.Real.CanonicalSATParserTerminalCases.leaf16_nonempty_rejects
 #print axioms MCore.Real.CanonicalSATParserTerminalCases.binary_check_exhausted_rejects
