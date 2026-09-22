@@ -1,4 +1,3 @@
-import Mathlib
 import MCore.Real.CanonicalSATWitnessGuessNTM
 
 namespace MCore
@@ -22,7 +21,7 @@ theorem mem_runBranches_append
       simp only [NTM.runBranches, List.filter_append, List.flatMap_append]
       rw [ih]
       simp only [ih]
-      aesop
+      simpa [or_assoc, or_left_comm, or_comm]
 
 theorem runBranches_guess_cons_step
     (fuel : Nat)
