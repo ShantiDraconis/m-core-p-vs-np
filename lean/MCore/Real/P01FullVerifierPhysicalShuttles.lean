@@ -58,6 +58,18 @@ theorem witnessOffset_le_left_length
   unfold witnessOffset
   omega
 
+
+/-- Concrete witness targeting: after the exact left shuttle from source-end,
+the head contains witness[i].  This replaces any abstract head-position axiom. -/
+theorem moveToWitnessSeq_head_correct
+    (witness source : BitString) (i : Nat) (hi : i < witness.length) :
+    (execMoves none (moveToWitnessSeq source i)
+      (sourceEndTape witness source)).head = some witness[i] := by
+  unfold moveToWitnessSeq witnessOffset
+  rw [show source.length + 2 + i = (source.length + 1 + i) + 1 by omega]
+  rw [execMoves_moveLeftSeq_head_getD]
+  simp [sourceEndTape, List.getD_append, hi]
+
 /-- The complete witness round-trip has linear shuttle cost in source length
 plus the selected witness index. -/
 theorem witness_roundTrip_length
@@ -68,6 +80,7 @@ theorem witness_roundTrip_length
   omega
 
 #print axioms MCore.Real.P01FullVerifierPhysicalShuttles.witnessOffset_le_left_length
+#print axioms MCore.Real.P01FullVerifierPhysicalShuttles.moveToWitnessSeq_head_correct
 #print axioms MCore.Real.P01FullVerifierPhysicalShuttles.witness_roundTrip_length
 
 end P01FullVerifierPhysicalShuttles
