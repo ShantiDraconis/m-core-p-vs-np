@@ -33,7 +33,8 @@ theorem cookNTMOfInternal_successors_eq
     CookNTM.successors (cookNTMOfInternal C) config =
       C.machine.successors config := by
   unfold CookNTM.successors NTM.successors
-  simp [cookNTMOfInternal, cookNTMOfInternal_stepBranch_eq]
+  simp [cookNTMOfInternal, CookNTM.stepBranch,
+    NTM.stepBranch, C.blank_none]
 
 theorem cookNTMOfInternal_runBranches_eq
     (C : PolyNTMCandidate)
@@ -46,36 +47,7 @@ theorem cookNTMOfInternal_runBranches_eq
   | zero => rfl
   | succ fuel ih =>
       simp only [CookNTM.runBranches, NTM.runBranches]
-      change
-        CookNTM.runBranches (cookNTMOfInternal C) fuel
-          (configs.filter
-              (fun c =>
-                (cookNTMOfInternal C).accepting c.state ||
-                  (cookNTMOfInternal C).rejecting c.state) ++
-            (configs.filter
-                (fun c =>
-                  !((cookNTMOfInternal C).accepting c.state ||
-                    (cookNTMOfInternal C).rejecting c.state))).flatMap
-              (cookNTMOfInternal C).successors) =
-          C.machine.runBranches fuel
-            (configs.filter
-                (fun c =>
-                  C.machine.accepting c.state ||
-                    C.machine.rejecting c.state) ++
-              (configs.filter
-                  (fun c =>
-                    !(C.machine.accepting c.state ||
-                      C.machine.rejecting c.state))).flatMap
-                C.machine.successors)
-      simp only [cookNTMOfInternal]
-      have hsucc :
-          (fun c =>
-            CookNTM.successors (cookNTMOfInternal C) c) =
-          (fun c => C.machine.successors c) := by
-        funext c
-        exact cookNTMOfInternal_successors_eq C c
-      rw [hsucc]
-      exact ih _
+      simp [cookNTMOfInternal, cookNTMOfInternal_successors_eq, ih]
 
 def cookNTMCandidateOfInternal
     (C : PolyNTMCandidate) : CookPolyNTMCandidate :=
@@ -125,7 +97,7 @@ theorem cookNTMCandidateOfInternal_correctAt
   · exact
       (cookNTMOfInternal_acceptsWithin_iff C
         (C.timeBound x.length)
-        { state := C.machine.initial, tape := inputTape x }).2.trans hsem
+        { state := C.machine.initial, tape := inputTape x }).trans hsem
 
 def internalNTM_to_cook
     {L : BitLanguage}
@@ -174,30 +146,7 @@ theorem internalNTMOfCook_runBranches_eq
   | zero => rfl
   | succ fuel ih =>
       simp only [NTM.runBranches, CookNTM.runBranches]
-      change
-        (internalNTMOfCook M).runBranches fuel
-          (configs.filter
-              (fun c =>
-                M.accepting c.state || M.rejecting c.state) ++
-            (configs.filter
-              (fun c =>
-                !(M.accepting c.state || M.rejecting c.state))).flatMap
-              (internalNTMOfCook M).successors) =
-          CookNTM.runBranches M fuel
-            (configs.filter
-                (fun c =>
-                  M.accepting c.state || M.rejecting c.state) ++
-              (configs.filter
-                (fun c =>
-                  !(M.accepting c.state || M.rejecting c.state))).flatMap
-                M.successors)
-      have hsucc :
-          (fun c => (internalNTMOfCook M).successors c) =
-            (fun c => CookNTM.successors M c) := by
-        funext c
-        exact internalNTMOfCook_successors_eq M c
-      rw [hsucc]
-      exact ih _
+      simp [internalNTMOfCook, internalNTMOfCook_successors_eq, ih]
 
 def internalNTMCandidateOfCook
     (C : CookPolyNTMCandidate) : PolyNTMCandidate :=
@@ -249,7 +198,7 @@ theorem internalNTMCandidateOfCook_correctAt
   · exact
       (internalNTMOfCook_acceptsWithin_iff C.machine
         (C.timeBound x.length)
-        { state := C.machine.initial, tape := externalInputTape x }).2.trans hsem
+        { state := C.machine.initial, tape := externalInputTape x }).trans hsem
 
 def cookNTM_to_internal
     {L : BitLanguage}
