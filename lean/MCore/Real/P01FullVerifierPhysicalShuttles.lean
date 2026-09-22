@@ -48,6 +48,21 @@ theorem sourceEndTape_left_length (witness source : BitString) :
     (sourceEndTape witness source).left.length =
       source.length + 1 + witness.length := by
   simp [sourceEndTape]
+  omega
+
+theorem getD_append_right {α : Type}
+    (xs ys : List α) (i : Nat) (d : α) (h : xs.length ≤ i) :
+    (xs ++ ys).getD i d = ys.getD (i - xs.length) d := by
+  induction xs generalizing i with
+  | nil =>
+      simp
+  | cons x xs ih =>
+      cases i with
+      | zero =>
+          simp at h
+      | succ i =>
+          simp only [List.length_cons, Nat.succ_le_succ_iff] at h
+          simp [ih _ h]
 
 /-- A valid witness index is physically present before the left shuttle can
 run off the represented witness region. -/
@@ -68,7 +83,10 @@ theorem moveToWitnessSeq_head_correct
   unfold moveToWitnessSeq witnessOffset
   rw [show source.length + 2 + i = (source.length + 1 + i) + 1 by omega]
   rw [execMoves_moveLeftSeq_head_getD]
-  simp [sourceEndTape, List.getD_append, hi]
+  unfold sourceEndTape
+  rw [getD_append_right]
+  · simp [hi]
+  · simp
 
 /-- The complete witness round-trip has linear shuttle cost in source length
 plus the selected witness index. -/
