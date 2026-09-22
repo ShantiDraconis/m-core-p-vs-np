@@ -25,6 +25,7 @@ theorem paddedWitnessBits_length
     {φ : Circuit}
     (w : SATWitness φ) :
     (paddedWitnessBits w).length = (encodeCircuit φ).length := by
+  have hle := varBound_le_encoded_length φ
   simp [paddedWitnessBits, witnessBits_length]
   omega
 
@@ -37,8 +38,9 @@ theorem paddedWitnessBits_agree_below
       assignmentOfWitness φ w i := by
   have hiBits : i < (witnessBits w).length := by
     simpa [witnessBits_length] using hi
-  simp [assignmentOfBits, paddedWitnessBits, assignmentOfWitness,
-    witnessBits, hi, hiBits]
+  unfold assignmentOfBits paddedWitnessBits
+  rw [List.getElem?_append_left hiBits]
+  simp [assignmentOfWitness, witnessBits, hi, hiBits]
 
 /-- Padding the guessed witness out to source length is semantically inert. -/
 theorem paddedWitnessBits_preserves_eval
