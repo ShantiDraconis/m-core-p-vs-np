@@ -412,10 +412,11 @@ theorem rightVar_ne_leftVar_valid
 /-- Canonical satisfying assignment induced directly by the genuine bounded
 execution.  A variable is true exactly when it names the actually realized
 state/head/tape symbol at some valid tableau coordinate. -/
-def executionAssignment
+noncomputable def executionAssignment
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) : Assignment :=
-  fun n =>
-    decide (
+  fun n => by
+    classical
+    exact decide (
       (∃ s : Nat, s ≤ t ∧
         n = stateVar M t s
           (M.machine.run s (initialTMConfig M.machine x)).state) ∨
@@ -438,6 +439,7 @@ theorem executionAssignment_stateVar
     executionAssignment M x t (stateVar M t s q) =
       decide (q =
         (M.machine.run s (initialTMConfig M.machine x)).state) := by
+  classical
   let cfg :=
     M.machine.run s (initialTMConfig M.machine x)
   by_cases hq : q = cfg.state
@@ -491,6 +493,7 @@ theorem executionAssignment_headVar
     executionAssignment M x t (headVar M t s a) =
       decide (a =
         (M.machine.run s (initialTMConfig M.machine x)).tape.head) := by
+  classical
   let cfg := M.machine.run s (initialTMConfig M.machine x)
   by_cases ha : a = cfg.tape.head
   · subst a
@@ -543,6 +546,7 @@ theorem executionAssignment_leftVar
       decide (a =
         (M.machine.run s (initialTMConfig M.machine x)).tape.left.getD
           i M.machine.blank) := by
+  classical
   let cfg := M.machine.run s (initialTMConfig M.machine x)
   by_cases ha : a = cfg.tape.left.getD i M.machine.blank
   · subst a
@@ -595,6 +599,7 @@ theorem executionAssignment_rightVar
       decide (a =
         (M.machine.run s (initialTMConfig M.machine x)).tape.right.getD
           i M.machine.blank) := by
+  classical
   let cfg := M.machine.run s (initialTMConfig M.machine x)
   by_cases ha : a = cfg.tape.right.getD i M.machine.blank
   · subst a
