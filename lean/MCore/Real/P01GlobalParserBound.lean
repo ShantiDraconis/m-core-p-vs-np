@@ -418,7 +418,11 @@ theorem leaf_head_halts_budget
             CanonicalSATParserLeafSourceProof.leafAcceptConfig
               (pad + head.encode.length) right := by
         dsimp [steps, hs]
-        rw [MachineRunLemmas.run_add, hhead]
+        rw [MachineRunLemmas.run_add]
+        have hhead0 := hhead
+        simp only [List.length_nil, List.reverse_nil, List.map_nil,
+          List.nil_append] at hhead0
+        rw [hhead0]
         exact hleaf
       have hhalt :
           parserMachine.HaltsWithin steps
@@ -467,7 +471,11 @@ theorem leaf_head_halts_budget
             CanonicalSATParserLeafSourceProof.leafRejectConfig
               (pad + head.encode.length) right := by
         dsimp [steps, hs]
-        rw [MachineRunLemmas.run_add, hhead]
+        rw [MachineRunLemmas.run_add]
+        have hhead0 := hhead
+        simp only [List.length_nil, List.reverse_nil, List.map_nil,
+          List.nil_append] at hhead0
+        rw [hhead0]
         exact hleaf
       have hhalt :
           parserMachine.HaltsWithin steps
