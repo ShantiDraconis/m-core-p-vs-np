@@ -232,7 +232,11 @@ theorem leftVar_injective_valid
         u₁ * 3 + symbolCode a₁ =
           u₂ * 3 + symbolCode a₂ := by
       unfold leftVar at h
-      exact Nat.add_left_cancel h
+      have h' :
+          leftBase M x t + (u₁ * 3 + symbolCode a₁) =
+            leftBase M x t + (u₂ * 3 + symbolCode a₂) := by
+        simpa [u₁, u₂, Nat.add_assoc, r] using h
+      exact Nat.add_left_cancel h'
     have hu : u₁ = u₂ := by
       omega
     exact hu
@@ -266,7 +270,11 @@ theorem rightVar_injective_valid
         u₁ * 3 + symbolCode a₁ =
           u₂ * 3 + symbolCode a₂ := by
       unfold rightVar at h
-      exact Nat.add_left_cancel h
+      have h' :
+          rightBase M x t + (u₁ * 3 + symbolCode a₁) =
+            rightBase M x t + (u₂ * 3 + symbolCode a₂) := by
+        simpa [u₁, u₂, Nat.add_assoc, r] using h
+      exact Nat.add_left_cancel h'
     have hu : u₁ = u₂ := by
       omega
     exact hu
