@@ -1,0 +1,63 @@
+name: atk-targeted
+on:
+  push:
+    branches:
+      - 'atk/**'
+  workflow_dispatch:
+
+jobs:
+  targeted:
+    if: github.ref_name != 'atk/p02-universal-witness-chain'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Fail-closed source hygiene
+        run: |
+          set -euo pipefail
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -R -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' --include='*.lean' lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+
+      - name: Targeted branch build
+        run: |
+          set -euo pipefail
+          case "$GITHUB_REF_NAME" in
+            atk/p01-construction)
+              lake build \
+                MCore.Real.P01GlobalParserSimulation \
+                MCore.Real.P01ParserWitnessComposition \
+                MCore.Real.P01VerifierComposition \
+                MCore.Real.P01FullVerifierTraversal \
+                MCore.Real.P01FullVerifierStackSemantics \
+                MCore.Real.P01FullVerifierPhysical \
+                MCore.Real.P01FullVerifierPhysicalControl \
+                MCore.Real.P01FullVerifierPhysicalMoves \
+                MCore.Real.P01FullVerifierPhysicalShuttles \
+                MCore.Real.P01FullVerifierReadWitnessLocal \
+                MCore.Real.P01FullVerifierEvalLocal \
+                MCore.Real.P01IntegratedNTMFrontier \
+                MCore.Real.P01ConstructionClose
+              ;;
+            atk/p02-e2-math-totality-semantic)
+              lake build \
+                MCore.Real.P02SemanticSelfEmbedding \
+                MCore.Real.P02UniversalFailureAlgebra \
+                MCore.Real.P02SemanticMismatchAlgebra \
+                MCore.Real.P02FinalAttack \
+                MCore.Real.P02UniversalWitnessChain
+              ;;
+            *)
+              lake build MCore
+              ;;
+          esac
