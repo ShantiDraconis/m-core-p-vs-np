@@ -83,3 +83,5 @@ jobs:
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
           lake build MCore.Real.P01ConstructionClose
+          grep -nE '^[[:space:]]*def[[:space:]]+p01MachineConstruction[[:space:]]*:[[:space:]]*P01MachineConstruction[[:space:]]*:=' "$f"
+          grep -nE '^[[:space:]]*theorem[[:space:]]+p01_closed_no_hypothesis' "$f"
