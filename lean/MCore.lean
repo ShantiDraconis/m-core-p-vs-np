@@ -42,3 +42,5 @@ import MCore.Real.P02UniversalWitnessChain
 import MCore.Real.FinalExternalCertificate
 
 import MCore.Real.P02FinalAttack
+
+import MCore.Real.P02KleeneSelfReferenceBridge
