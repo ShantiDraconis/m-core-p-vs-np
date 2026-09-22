@@ -226,8 +226,16 @@ theorem leftVar_injective_valid
   have ha₂ := symbolCode_lt_three a₂
   have hslot :
       s₁ * r + i₁ = s₂ * r + i₂ := by
-    unfold leftVar at h
-    omega
+    let u₁ := s₁ * r + i₁
+    let u₂ := s₂ * r + i₂
+    have henc :
+        u₁ * 3 + symbolCode a₁ =
+          u₂ * 3 + symbolCode a₂ := by
+      unfold leftVar at h
+      exact Nat.add_left_cancel h
+    have hu : u₁ = u₂ := by
+      omega
+    exact hu
   have hsi :=
     tableauSlot_injective_valid r s₁ i₁ s₂ i₂ hr
       (by simpa [r] using hi₁) (by simpa [r] using hi₂) hslot
@@ -252,8 +260,16 @@ theorem rightVar_injective_valid
   have ha₂ := symbolCode_lt_three a₂
   have hslot :
       s₁ * r + i₁ = s₂ * r + i₂ := by
-    unfold rightVar at h
-    omega
+    let u₁ := s₁ * r + i₁
+    let u₂ := s₂ * r + i₂
+    have henc :
+        u₁ * 3 + symbolCode a₁ =
+          u₂ * 3 + symbolCode a₂ := by
+      unfold rightVar at h
+      exact Nat.add_left_cancel h
+    have hu : u₁ = u₂ := by
+      omega
+    exact hu
   have hsi :=
     tableauSlot_injective_valid r s₁ i₁ s₂ i₂ hr
       (by simpa [r] using hi₁) (by simpa [r] using hi₂) hslot
