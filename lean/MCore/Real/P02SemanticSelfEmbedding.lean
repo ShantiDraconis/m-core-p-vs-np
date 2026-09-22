@@ -1,4 +1,5 @@
 import MCore.Real.P02DiagonalFrontier
+import MCore.Real.P02LiteralFixedPointCountermodel
 
 namespace MCore
 namespace Real
@@ -68,7 +69,15 @@ theorem sat_in_p_refutes_semantic_self_embedding
   exact (semantic_self_embedding_implies_sat_not_in_p h) hP
 
 
+theorem literal_fixed_point_route_not_universal :
+    ¬ ∀ M : PolyDTMCandidate,
+        ∃ x : BitString,
+          P02ClockedDiagonalCompiler.semanticDiagonalBits M x = x := by
+  exact P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point
+
+
 #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_gap_iff_diagonal_fixed_point_gap
+#print axioms MCore.Real.P02SemanticSelfEmbedding.literal_fixed_point_route_not_universal
 #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_implies_sat_not_in_p
 #print axioms MCore.Real.P02SemanticSelfEmbedding.sat_in_p_refutes_semantic_self_embedding
 #print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_closes_p02
