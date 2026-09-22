@@ -79,8 +79,17 @@ theorem and_head_exhausted_rejects
         (pad + (Head.encode .and).length)
         ((pushSlot log).map some) := by
   rw [MachineRunLemmas.run_add]
-  rw [and_head_to_return]
-  simp only [List.reverse_nil, List.map_nil, List.nil_append]
+  have hHead :
+      parserMachine.run
+          (headWorkFuel Head.and 0 log.length)
+          (phaseConfig 4 pad (Head.encode .and) log) =
+        afterEndMoveLeft 20
+          (none :: List.replicate
+            (pad + (Head.encode .and).length)
+            (none : Option Bool))
+          log (some true) := by
+    simpa using (and_head_to_return pad [] log)
+  rw [hHead]
   rw [MachineRunLemmas.run_add]
   rw [binary_afterEnd_to_delimiter
     (List.replicate (pad + (Head.encode .and).length)
@@ -104,8 +113,17 @@ theorem or_head_exhausted_rejects
         (pad + (Head.encode .or).length)
         ((pushSlot log).map some) := by
   rw [MachineRunLemmas.run_add]
-  rw [or_head_to_return]
-  simp only [List.reverse_nil, List.map_nil, List.nil_append]
+  have hHead :
+      parserMachine.run
+          (headWorkFuel Head.or 0 log.length)
+          (phaseConfig 4 pad (Head.encode .or) log) =
+        afterEndMoveLeft 20
+          (none :: List.replicate
+            (pad + (Head.encode .or).length)
+            (none : Option Bool))
+          log (some true) := by
+    simpa using (or_head_to_return pad [] log)
+  rw [hHead]
   rw [MachineRunLemmas.run_add]
   rw [binary_afterEnd_to_delimiter
     (List.replicate (pad + (Head.encode .or).length)
