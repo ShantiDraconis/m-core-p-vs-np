@@ -34,13 +34,12 @@ theorem runBranches_guess_cons_step
         [ guessConfig (some false :: left) bs,
           guessConfig (some true :: left) bs ] := by
   rw [NTM.runBranches]
-  have hacc :
-      witnessGuessMachine.accepting (guessConfig left (b :: bs)).state = false := by
-    rfl
-  have hrej :
-      witnessGuessMachine.rejecting (guessConfig left (b :: bs)).state = false := by
-    rfl
-  simp [hacc, hrej, witnessGuess_successors_cons]
+  change witnessGuessMachine.runBranches fuel
+      (witnessGuessMachine.successors (guessConfig left (b :: bs))) =
+    witnessGuessMachine.runBranches fuel
+      [ guessConfig (some false :: left) bs,
+        guessConfig (some true :: left) bs ]
+  rw [witnessGuess_successors_cons]
 
 theorem witnessGuess_complete_from
     (left : List (Option Bool))
