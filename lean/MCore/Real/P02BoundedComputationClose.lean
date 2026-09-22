@@ -263,6 +263,138 @@ theorem halting_case_preserves_snapshot
         a hguard hcell
     rw [hf, hrightOld i hi a]
 
+
+theorem left_case_preserves_snapshot
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (qNext : Fin (M.stateCount + 1))
+    (write : Option Bool)
+    (hs : s < t)
+    (hhalt : M.machine.halting config.state = false)
+    (htrans :
+      M.machine.transition config.state config.tape.head =
+        (qNext, write, .left))
+    (hmatch : SnapshotMatches sigma M x t s config)
+    (hcase :
+      evalCNF sigma
+        (transitionCaseCNF M x t s config.state config.tape.head) = true) :
+    SnapshotMatches sigma M x t (s + 1) (M.machine.step config) := by
+  let guard : Clause :=
+    [neg (stateVar M t s config.state),
+     neg (headVar M t s config.tape.head)]
+  have hguard : evalClause sigma guard = false := by
+    simpa [guard] using
+      snapshot_transition_guard_false sigma M x t s config hmatch
+  have hleftCase :
+      evalCNF sigma
+        (leftMoveCaseCNF M x t s config.state config.tape.head qNext write) = true := by
+    simpa [transitionCaseCNF, hhalt, htrans] using hcase
+  have hstate :
+      evalCNF sigma
+        (setStateClauses guard M t (s + 1) qNext) = true := by
+    apply evalCNF_subset_true sigma _ _ hleftCase
+    intro cl hcl
+    simp [leftMoveCaseCNF, guard, hcl]
+  have hhead :
+      evalCNF sigma
+        (copySymbolClauses guard
+          (leftVar M x t s 0)
+          (headVar M t (s + 1))) = true := by
+    apply evalCNF_subset_true sigma _ _ hleftCase
+    intro cl hcl
+    simp [leftMoveCaseCNF, guard, hcl]
+  rcases hmatch with ⟨hstateOld, hheadOld, hleftOld, hrightOld⟩
+  unfold SnapshotMatches
+  constructor
+  · intro q
+    have hf :=
+      setStateClauses_forces sigma guard M t (s + 1) qNext q hguard hstate
+    simpa [TM.step, htrans, Tape.write, Tape.move] using hf
+  constructor
+  · intro a
+    have hf :=
+      copySymbolClauses_forces sigma guard
+        (leftVar M x t s 0) (headVar M t (s + 1))
+        a hguard hhead
+    rw [hf, hleftOld 0 (by unfold radius; omega) a]
+    simp [TM.step, htrans, Tape.write, Tape.move,
+      P02BoundedComputationTape.move_left_head_getD]
+  constructor
+  · intro i hi a
+    by_cases hlast : i = radius x t - 1
+    · subst i
+      have hblank :
+          (M.machine.step config).tape.left.getD (radius x t - 1)
+            M.machine.blank = M.machine.blank := by
+        simp [TM.step, htrans, Tape.write,
+          P02BoundedComputationTape.move_left_left_getD]
+        apply P02BoundedComputationTape.getD_eq_default_of_length_le
+        have hlen := P02BoundedComputationTape.move_left_length_le
+          M.machine.blank (config.tape.write write)
+        omega
+      have hset :
+          evalCNF sigma
+            (setLeftCell guard M x t (s + 1) (radius x t - 1)
+              M.machine.blank) = true := by
+        apply evalCNF_subset_true sigma _ _ hleftCase
+        intro cl hcl
+        simp [leftMoveCaseCNF, guard, hcl]
+      rw [hblank]
+      exact setSymbolClauses_forces sigma guard
+        (leftVar M x t (s + 1) (radius x t - 1))
+        M.machine.blank a hguard hset
+    · have his : i < radius x t - 1 := by omega
+      have hcopy :
+          evalCNF sigma
+            (copyLeftCell guard M x t s (i + 1) (s + 1) i) = true := by
+        apply evalCNF_subset_true sigma _ _ hleftCase
+        intro cl hcl
+        unfold leftMoveCaseCNF
+        simp only [List.mem_append, List.mem_flatMap, List.mem_range]
+        aesop
+      have hf :=
+        copySymbolClauses_forces sigma guard
+          (leftVar M x t s (i + 1))
+          (leftVar M x t (s + 1) i) a hguard hcopy
+      rw [hf, hleftOld (i + 1) (by omega) a]
+      simp [TM.step, htrans, Tape.write,
+        P02BoundedComputationTape.move_left_left_getD]
+  · intro i hi a
+    by_cases hz : i = 0
+    · subst i
+      have hset :
+          evalCNF sigma
+            (setRightCell guard M x t (s + 1) 0 write) = true := by
+        apply evalCNF_subset_true sigma _ _ hleftCase
+        intro cl hcl
+        simp [leftMoveCaseCNF, guard, hcl]
+      have hf :=
+        setSymbolClauses_forces sigma guard
+          (rightVar M x t (s + 1) 0) write a hguard hset
+      simpa [TM.step, htrans, Tape.write,
+        P02BoundedComputationTape.move_left_right_zero] using hf
+    · obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hz
+      have hj : j < radius x t - 1 := by omega
+      have hcopy :
+          evalCNF sigma
+            (copyRightCell guard M x t s j (s + 1) (j + 1)) = true := by
+        apply evalCNF_subset_true sigma _ _ hleftCase
+        intro cl hcl
+        unfold leftMoveCaseCNF
+        simp only [List.mem_append, List.mem_flatMap, List.mem_range]
+        aesop
+      have hf :=
+        copySymbolClauses_forces sigma guard
+          (rightVar M x t s j)
+          (rightVar M x t (s + 1) (j + 1))
+          a hguard hcopy
+      rw [hf, hrightOld j (by omega) a]
+      simp [TM.step, htrans, Tape.write,
+        P02BoundedComputationTape.move_left_right_succ]
+
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
     (sigma : Assignment)
@@ -330,6 +462,7 @@ def TableauCompletenessGap : Prop :=
 #print axioms MCore.Real.P02BoundedComputationClose.active_transition_case_true
 #print axioms MCore.Real.P02BoundedComputationClose.stay_case_preserves_snapshot
 #print axioms MCore.Real.P02BoundedComputationClose.halting_case_preserves_snapshot
+#print axioms MCore.Real.P02BoundedComputationClose.left_case_preserves_snapshot
 #print axioms MCore.Real.P02BoundedComputationClose.snapshots_all
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_sound
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_complete
