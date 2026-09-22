@@ -176,6 +176,93 @@ theorem stay_case_preserves_snapshot
     rw [hf, hrightOld i hi a]
     simp [TM.step, htrans, Tape.write, Tape.move]
 
+
+theorem halting_case_preserves_snapshot
+    (sigma : Assignment)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s : Nat)
+    (config : Configuration (Fin (M.stateCount + 1)) (Option Bool))
+    (hhalt : M.machine.halting config.state = true)
+    (hmatch : SnapshotMatches sigma M x t s config)
+    (hcase :
+      evalCNF sigma
+        (transitionCaseCNF M x t s config.state config.tape.head) = true) :
+    SnapshotMatches sigma M x t (s + 1) config := by
+  let guard : Clause :=
+    [neg (stateVar M t s config.state),
+     neg (headVar M t s config.tape.head)]
+  have hguard : evalClause sigma guard = false := by
+    simpa [guard] using
+      snapshot_transition_guard_false sigma M x t s config hmatch
+  have hhaltCNF :
+      evalCNF sigma
+        (haltingCaseCNF M x t s config.state config.tape.head) = true := by
+    simpa [transitionCaseCNF, hhalt] using hcase
+  have hstate :
+      evalCNF sigma
+        (setStateClauses guard M t (s + 1) config.state) = true := by
+    apply evalCNF_subset_true sigma _ _ hhaltCNF
+    intro cl hcl
+    simp [haltingCaseCNF, guard, hcl]
+  have hhead :
+      evalCNF sigma (copyHeadCell guard M t s (s + 1)) = true := by
+    apply evalCNF_subset_true sigma _ _ hhaltCNF
+    intro cl hcl
+    simp [haltingCaseCNF, guard, hcl]
+  have hleft :
+      evalCNF sigma (copyLeftAll guard M x t s) = true := by
+    apply evalCNF_subset_true sigma _ _ hhaltCNF
+    intro cl hcl
+    simp [haltingCaseCNF, guard, hcl]
+  have hright :
+      evalCNF sigma (copyRightAll guard M x t s) = true := by
+    apply evalCNF_subset_true sigma _ _ hhaltCNF
+    intro cl hcl
+    simp [haltingCaseCNF, guard, hcl]
+  rcases hmatch with ⟨hstateOld, hheadOld, hleftOld, hrightOld⟩
+  unfold SnapshotMatches
+  constructor
+  · intro q
+    exact setStateClauses_forces sigma guard M t (s + 1)
+      config.state q hguard hstate
+  constructor
+  · intro a
+    have hf :=
+      copySymbolClauses_forces sigma guard
+        (headVar M t s) (headVar M t (s + 1))
+        a hguard hhead
+    rw [hf, hheadOld a]
+  constructor
+  · intro i hi a
+    have hcell :
+        evalCNF sigma
+          (copyLeftCell guard M x t s i (s + 1) i) = true := by
+      apply evalCNF_subset_true sigma _ _ hleft
+      intro cl hcl
+      unfold copyLeftAll
+      simp only [List.mem_flatMap, List.mem_range]
+      exact ⟨i, hi, hcl⟩
+    have hf :=
+      copySymbolClauses_forces sigma guard
+        (leftVar M x t s i) (leftVar M x t (s + 1) i)
+        a hguard hcell
+    rw [hf, hleftOld i hi a]
+  · intro i hi a
+    have hcell :
+        evalCNF sigma
+          (copyRightCell guard M x t s i (s + 1) i) = true := by
+      apply evalCNF_subset_true sigma _ _ hright
+      intro cl hcl
+      unfold copyRightAll
+      simp only [List.mem_flatMap, List.mem_range]
+      exact ⟨i, hi, hcl⟩
+    have hf :=
+      copySymbolClauses_forces sigma guard
+        (rightVar M x t s i) (rightVar M x t (s + 1) i)
+        a hguard hcell
+    rw [hf, hrightOld i hi a]
+
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
     (sigma : Assignment)
@@ -242,6 +329,7 @@ def TableauCompletenessGap : Prop :=
 #print axioms MCore.Real.P02BoundedComputationClose.transitionCaseCNF_mem_transitionsCNF
 #print axioms MCore.Real.P02BoundedComputationClose.active_transition_case_true
 #print axioms MCore.Real.P02BoundedComputationClose.stay_case_preserves_snapshot
+#print axioms MCore.Real.P02BoundedComputationClose.halting_case_preserves_snapshot
 #print axioms MCore.Real.P02BoundedComputationClose.snapshots_all
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_sound
 #print axioms MCore.Real.P02BoundedComputationClose.tableau_complete
