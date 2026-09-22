@@ -117,7 +117,7 @@ theorem leaf17_roundtrip_to_phase
           (some last ::
             (rest.map some ++ List.replicate pad (none : Option Bool)))
           (log.map some)) by
-        simp [TM.run]]
+        simp [TM.run, parserMachine]]
   rw [leaf17_step_to_rewind pad hpad last rest log]
   exact rewindUnread_run rest [last] pad hpad log
 
