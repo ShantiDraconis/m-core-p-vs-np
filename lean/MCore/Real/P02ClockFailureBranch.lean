@@ -6,6 +6,7 @@ namespace P02ClockFailureBranch
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
+open CanonicalSATBoundary
 open P02UniversalFailureAlgebra
 
 theorem clock_failure_gives_g21_witness
