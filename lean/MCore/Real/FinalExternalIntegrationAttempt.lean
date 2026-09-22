@@ -22,7 +22,7 @@ def finalExternalGap
 Fail-closed issuance state. These values must remain unchanged while either
 exploratory endpoint definition still contains sorry.
 -/
-def FINAL_ROOT : Option FinalExternalGap := none
+def FINAL_ROOT : Option FinalExternalInputs := none
 def FINAL_EXTERNAL_ISSUED : Bool := false
 def FINAL_PROOF : Nat := 0
 
