@@ -961,9 +961,9 @@ theorem phaseSemantics_compose_exact
     (parentPad childPad : Nat)
     (parentLog childLog : SlotLog)
     (parentBits childBits : BitString)
-    (prefix : Nat)
+    (prefixSteps : Nat)
     (hprefix :
-      parserMachine.run prefix
+      parserMachine.run prefixSteps
           (phaseConfig 4 parentPad parentBits parentLog) =
         phaseConfig 4 childPad childBits childLog)
     (habstract :
@@ -975,13 +975,13 @@ theorem phaseSemantics_compose_exact
       PhaseSemantics childFuel childPad childLog childBits) :
     PhaseSemantics parentFuel parentPad parentLog parentBits := by
   rcases hchild with ⟨steps, hhalt, hcorrect⟩
-  refine ⟨prefix + steps, ?_, ?_⟩
+  refine ⟨prefixSteps + steps, ?_, ?_⟩
   · rw [MachineRunLemmas.run_add, hprefix]
     exact hhalt
   · rw [MachineRunLemmas.run_add, hprefix, habstract]
     exact hcorrect
 
-/-- Same composition when the concrete prefix reaches a tape-equivalent phase
+/-- Same composition when the concrete prefixSteps reaches a tape-equivalent phase
 modulo finitely many explicit far-right blanks.  State equality is enough for
 halting and acceptance, while the parser-step bisimulation carries it through
 the recursive suffix. -/
@@ -990,10 +990,10 @@ theorem phaseSemantics_compose_rightBlank
     (parentPad childPad : Nat)
     (parentLog childLog : SlotLog)
     (parentBits childBits : BitString)
-    (prefix : Nat)
+    (prefixSteps : Nat)
     (hprefix :
       ConfigRightBlankEq
-        (parserMachine.run prefix
+        (parserMachine.run prefixSteps
           (phaseConfig 4 parentPad parentBits parentLog))
         (phaseConfig 4 childPad childBits childLog))
     (habstract :
@@ -1009,12 +1009,12 @@ theorem phaseSemantics_compose_rightBlank
     parser_run_respects_right_blank steps hprefix
   have hstate :
       (parserMachine.run steps
-        (parserMachine.run prefix
+        (parserMachine.run prefixSteps
           (phaseConfig 4 parentPad parentBits parentLog))).state =
       (parserMachine.run steps
         (phaseConfig 4 childPad childBits childLog)).state :=
     hrun.1
-  refine ⟨prefix + steps, ?_, ?_⟩
+  refine ⟨prefixSteps + steps, ?_, ?_⟩
   · rw [MachineRunLemmas.run_add]
     rw [hstate]
     exact hhalt
