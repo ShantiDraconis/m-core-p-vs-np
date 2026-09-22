@@ -1097,6 +1097,127 @@ theorem phaseSemantics_parseHead_none
     (fuel + 1) pad log bits steps hstate
   simp [CanonicalSATParserGlobalSpec.logParseCore, hactive, hnone]
 
+
+
+/-- One successful INPUT head step, normalized to the canonical residual fuel. -/
+theorem logParseCore_input_step_stable
+    (bits rest : BitString)
+    (log log' : SlotLog)
+    (i : Nat)
+    (hactive : activeSlots log ≠ 0)
+    (hparse : parseHead bits = some (.input i, rest))
+    (hpop : popSlot log = some log') :
+    CanonicalSATParserGlobalSpec.logParseCore
+        (bits.length + 1) log bits =
+      CanonicalSATParserGlobalSpec.logParseCore
+        (rest.length + 1) log' rest := by
+  have hlt : rest.length < bits.length :=
+    parseHead_rest_length_lt hparse
+  have hstep :
+      CanonicalSATParserGlobalSpec.logParseCore
+          (bits.length + 1) log bits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          bits.length log' rest := by
+    simp [CanonicalSATParserGlobalSpec.logParseCore,
+      hactive, hparse, hpop]
+  exact hstep.trans
+    (logParseCore_fuel_stable rest log'
+      bits.length (rest.length + 1) (by omega) (by omega))
+
+/-- One successful CONST head step, normalized to the canonical residual fuel. -/
+theorem logParseCore_const_step_stable
+    (bits rest : BitString)
+    (log log' : SlotLog)
+    (b : Bool)
+    (hactive : activeSlots log ≠ 0)
+    (hparse : parseHead bits = some (.const b, rest))
+    (hpop : popSlot log = some log') :
+    CanonicalSATParserGlobalSpec.logParseCore
+        (bits.length + 1) log bits =
+      CanonicalSATParserGlobalSpec.logParseCore
+        (rest.length + 1) log' rest := by
+  have hlt : rest.length < bits.length :=
+    parseHead_rest_length_lt hparse
+  have hstep :
+      CanonicalSATParserGlobalSpec.logParseCore
+          (bits.length + 1) log bits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          bits.length log' rest := by
+    simp [CanonicalSATParserGlobalSpec.logParseCore,
+      hactive, hparse, hpop]
+  exact hstep.trans
+    (logParseCore_fuel_stable rest log'
+      bits.length (rest.length + 1) (by omega) (by omega))
+
+/-- One successful NOT head step, normalized to the canonical residual fuel. -/
+theorem logParseCore_not_step_stable
+    (bits rest : BitString)
+    (log : SlotLog)
+    (hactive : activeSlots log ≠ 0)
+    (hparse : parseHead bits = some (.not, rest)) :
+    CanonicalSATParserGlobalSpec.logParseCore
+        (bits.length + 1) log bits =
+      CanonicalSATParserGlobalSpec.logParseCore
+        (rest.length + 1) log rest := by
+  have hlt : rest.length < bits.length :=
+    parseHead_rest_length_lt hparse
+  have hstep :
+      CanonicalSATParserGlobalSpec.logParseCore
+          (bits.length + 1) log bits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          bits.length log rest := by
+    simp [CanonicalSATParserGlobalSpec.logParseCore,
+      hactive, hparse]
+  exact hstep.trans
+    (logParseCore_fuel_stable rest log
+      bits.length (rest.length + 1) (by omega) (by omega))
+
+/-- One successful AND head step, normalized to the canonical residual fuel. -/
+theorem logParseCore_and_step_stable
+    (bits rest : BitString)
+    (log : SlotLog)
+    (hactive : activeSlots log ≠ 0)
+    (hparse : parseHead bits = some (.and, rest)) :
+    CanonicalSATParserGlobalSpec.logParseCore
+        (bits.length + 1) log bits =
+      CanonicalSATParserGlobalSpec.logParseCore
+        (rest.length + 1) (pushSlot log) rest := by
+  have hlt : rest.length < bits.length :=
+    parseHead_rest_length_lt hparse
+  have hstep :
+      CanonicalSATParserGlobalSpec.logParseCore
+          (bits.length + 1) log bits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          bits.length (pushSlot log) rest := by
+    simp [CanonicalSATParserGlobalSpec.logParseCore,
+      hactive, hparse]
+  exact hstep.trans
+    (logParseCore_fuel_stable rest (pushSlot log)
+      bits.length (rest.length + 1) (by omega) (by omega))
+
+/-- One successful OR head step, normalized to the canonical residual fuel. -/
+theorem logParseCore_or_step_stable
+    (bits rest : BitString)
+    (log : SlotLog)
+    (hactive : activeSlots log ≠ 0)
+    (hparse : parseHead bits = some (.or, rest)) :
+    CanonicalSATParserGlobalSpec.logParseCore
+        (bits.length + 1) log bits =
+      CanonicalSATParserGlobalSpec.logParseCore
+        (rest.length + 1) (pushSlot log) rest := by
+  have hlt : rest.length < bits.length :=
+    parseHead_rest_length_lt hparse
+  have hstep :
+      CanonicalSATParserGlobalSpec.logParseCore
+          (bits.length + 1) log bits =
+        CanonicalSATParserGlobalSpec.logParseCore
+          bits.length (pushSlot log) rest := by
+    simp [CanonicalSATParserGlobalSpec.logParseCore,
+      hactive, hparse]
+  exact hstep.trans
+    (logParseCore_fuel_stable rest (pushSlot log)
+      bits.length (rest.length + 1) (by omega) (by omega))
+
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_reject_state
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_of_accept_state
 #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_parseHead_none
