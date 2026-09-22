@@ -258,6 +258,148 @@ theorem parseHead_rest_length_lt
       simp [Head.encode]
       omega
 
+theorem activeSlots_reverse
+    (log : SlotLog) :
+    activeSlots log.reverse = activeSlots log := by
+  induction log with
+  | nil => rfl
+  | cons b bs ih =>
+      rw [List.reverse_cons, activeSlots_append, ih]
+      cases b <;> simp [activeSlots]
+
+theorem rightBlankEq_append_none
+    (right : List (Option Bool)) :
+    RightBlankEq (right ++ [none]) right := by
+  exact ⟨right, 1, 0, by simp, by simp⟩
+
+/-- State-16/17 source checks differing only by one explicit far-right blank
+represent the same infinite blank tape. -/
+theorem leafSourceCheck_trailing_blank
+    (q : Fin 25)
+    (sourceLeft right : List (Option Bool)) :
+    ConfigRightBlankEq
+      (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+        q sourceLeft (right ++ [none]))
+      (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+        q sourceLeft right) := by
+  unfold CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+  cases sourceLeft with
+  | nil =>
+      exact ⟨rfl, rfl, rfl,
+        rightBlankEq_cons none (rightBlankEq_append_none right)⟩
+  | cons x xs =>
+      exact ⟨rfl, rfl, rfl,
+        rightBlankEq_cons none (rightBlankEq_append_none right)⟩
+
+private theorem map_some_false_suffix
+    (suffix : SlotLog)
+    (hall : ∀ b ∈ suffix, b = false) :
+    suffix.map some =
+      List.replicate suffix.length (some false) := by
+  have hs :=
+    CanonicalSATParserLeafPopProof.all_false_eq_replicate suffix hall
+  rw [hs]
+  simp
+
+/-- Complete the physical leaf pop and older-active-slot scan.  The exact
+output differs from the canonical source-check configuration only by the
+explicit far-right blank exposed by scanning to the end of the work region. -/
+theorem leaf_afterEnd_active_to_source
+    (sourceLeft : List (Option Bool))
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log')
+    (hactive : activeSlots log' ≠ 0) :
+    ∃ k : Nat,
+      parserMachine.run k
+        (CanonicalSATParserWorkScanProof.afterEndMoveLeft
+          13 (none :: sourceLeft) log none) =
+        CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+          17 sourceLeft (log'.map some ++ [none]) := by
+  rcases popSlot_decompose log log' hpop with
+    ⟨pre, suffix, hlog, hlog', hsuffix⟩
+  have hszero : activeSlots suffix = 0 :=
+    (activeSlots_eq_zero_iff_all_false suffix).mpr hsuffix
+  have hpre : activeSlots pre ≠ 0 := by
+    intro hz
+    apply hactive
+    rw [hlog', activeSlots_append]
+    simp [activeSlots, hz, hszero]
+  have hpreRev : activeSlots pre.reverse ≠ 0 := by
+    simpa [activeSlots_reverse] using hpre
+  have hsmap := map_some_false_suffix suffix hsuffix
+  have hright :
+      pre.map some ++
+          (some false ::
+            (List.replicate suffix.length (some false) ++ [none])) =
+        log'.map some ++ [none] := by
+    rw [hlog']
+    simp [List.map_append, hsmap, List.append_assoc]
+  refine ⟨(suffix.length + 1) + (pre.length + 1), ?_⟩
+  rw [MachineRunLemmas.run_add]
+  rw [hlog]
+  rw [CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+    pre suffix (none :: sourceLeft) hsuffix]
+  rw [CanonicalSATParserLeafReturnProof.leafAfterPop_eq_check]
+  rw [CanonicalSATParserLeafReturnProof.leaf14_active_run
+    pre.reverse sourceLeft
+    (some false ::
+      (List.replicate suffix.length (some false) ++ [none]))
+    hpreRev]
+  simp only [List.reverse_reverse]
+  exact congrArg
+    (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+      (17 : Fin 25) sourceLeft)
+    hright
+
+/-- Same leaf pop path when no active slot remains. -/
+theorem leaf_afterEnd_inactive_to_source
+    (sourceLeft : List (Option Bool))
+    (log log' : SlotLog)
+    (hpop : popSlot log = some log')
+    (hzero : activeSlots log' = 0) :
+    ∃ k : Nat,
+      parserMachine.run k
+        (CanonicalSATParserWorkScanProof.afterEndMoveLeft
+          13 (none :: sourceLeft) log none) =
+        CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+          16 sourceLeft (log'.map some ++ [none]) := by
+  rcases popSlot_decompose log log' hpop with
+    ⟨pre, suffix, hlog, hlog', hsuffix⟩
+  have hszero : activeSlots suffix = 0 :=
+    (activeSlots_eq_zero_iff_all_false suffix).mpr hsuffix
+  have hprezero : activeSlots pre = 0 := by
+    rw [hlog', activeSlots_append] at hzero
+    simpa [activeSlots, hszero] using hzero
+  have hpreall : ∀ b ∈ pre, b = false :=
+    (activeSlots_eq_zero_iff_all_false pre).mp hprezero
+  have hpreRevAll : ∀ b ∈ pre.reverse, b = false := by
+    intro b hb
+    exact hpreall b (by simpa using hb)
+  have hsmap := map_some_false_suffix suffix hsuffix
+  have hright :
+      pre.map some ++
+          (some false ::
+            (List.replicate suffix.length (some false) ++ [none])) =
+        log'.map some ++ [none] := by
+    rw [hlog']
+    simp [List.map_append, hsmap, List.append_assoc]
+  refine ⟨(suffix.length + 1) + (pre.length + 1), ?_⟩
+  rw [MachineRunLemmas.run_add]
+  rw [hlog]
+  rw [CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+    pre suffix (none :: sourceLeft) hsuffix]
+  rw [CanonicalSATParserLeafReturnProof.leafAfterPop_eq_check]
+  rw [CanonicalSATParserLeafReturnProof.leaf14_all_false_run
+    pre.reverse sourceLeft
+    (some false ::
+      (List.replicate suffix.length (some false) ++ [none]))
+    hpreRevAll]
+  simp only [List.reverse_reverse]
+  exact congrArg
+    (CanonicalSATParserLeafReturnProof.leafSourceCheckConfig
+      (16 : Fin 25) sourceLeft)
+    hright
+
 /-- A physical rightmost-slot pop changes only a bit, never the work-log
 length. -/
 theorem popSlot_length
