@@ -50,6 +50,7 @@ jobs:
             lean/MCore/Real/CanonicalSATParserMacroProof.lean
             lean/MCore/Real/CanonicalSATParserReturnProof.lean
             lean/MCore/Real/CanonicalSATParserLeafPopProof.lean
+            lean/MCore/Real/CanonicalSATParserLeafReturnProof.lean
             lean/MCore/Real/CanonicalSATParserInitProof.lean
             lean/MCore/Real/MachineRunLemmas.lean
             lean/MCore/Real/CanonicalSATSlotLogMachine.lean
@@ -71,7 +72,7 @@ jobs:
       - name: Build recovered P01 chain
         run: |
           set -euo pipefail
-          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.MachineRunLemmas MCore.Real.CanonicalSATParserInitProof MCore.Real.CanonicalSATParserHeadProof MCore.Real.CanonicalSATParserWorkScanProof MCore.Real.CanonicalSATParserRewindProof MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier
+          lake build MCore.Real.CanonicalCircuitBitsInverse MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATVarPayloadMachine MCore.Real.CanonicalSATTagConsumerMachine MCore.Real.CanonicalSATParserTapeLayout MCore.Real.CanonicalSATParserInitMachine MCore.Real.CanonicalSATSlotLog MCore.Real.CanonicalSATSlotLogMachine MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.MachineRunLemmas MCore.Real.CanonicalSATParserInitProof MCore.Real.CanonicalSATParserHeadProof MCore.Real.CanonicalSATParserWorkScanProof MCore.Real.CanonicalSATParserRewindProof MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01VerifiedRelation MCore.Real.P01ComponentFailProof MCore.Real.P01RecursiveFiniteControlFrontier MCore.Real.P02TerminalFrontier
 
       - name: Axiom audit canonical decoder inverse
         run: |
@@ -196,12 +197,17 @@ jobs:
           import MCore.Real.CanonicalSATParserMacroProof
           import MCore.Real.CanonicalSATParserReturnProof
           import MCore.Real.CanonicalSATParserLeafPopProof
+          import MCore.Real.CanonicalSATParserLeafReturnProof
           #print axioms MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search
           #print axioms MCore.Real.CanonicalSATParserMacroProof.binary_phase_to_return
           #print axioms MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_roundtrip
           #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leafPop_run_false_prefix
           #print axioms MCore.Real.CanonicalSATParserLeafPopProof.afterEndMoveLeft_leaf_eq_popScan
           #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+          #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leaf15_run
+          #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leaf14_all_false_run
+          #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leaf14_active_run
+          #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leafAfterPop_eq_check
           EOF
           lake env lean /tmp/P01MacroLeafAudit.lean 2>&1 | tee /tmp/p01-macro-leaf.log
           if grep -q 'sorryAx' /tmp/p01-macro-leaf.log; then exit 1; fi
