@@ -1,4 +1,4 @@
-import Mathlib.Tactic
+import Std.Tactic.Omega
 import MCore.Real.P02BoundedComputationSoundness
 
 namespace MCore
