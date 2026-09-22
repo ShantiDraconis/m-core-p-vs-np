@@ -1,0 +1,39 @@
+name: atk-p02-g3-model-match
+
+on:
+  push:
+    branches:
+      - attack/g3-model-match-only-20260922
+  pull_request:
+    branches:
+      - attack/p01-p02-final-clean-20260921
+
+jobs:
+  g3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Additive-source hygiene
+        run: |
+          set -euo pipefail
+          if grep -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' lean/MCore/Real/P02G3ExternalModel.lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -n -E '^[[:space:]]*(@\\[[^]]*\\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02G3ExternalModel.lean; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+
+      - name: Build G3 model-match module
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02G3ExternalModel
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02G3ExternalModel.lean 2>&1 | tee P02G3ExternalModel.log
+          if grep -E 'sorryAx' P02G3ExternalModel.log; then exit 1; fi
