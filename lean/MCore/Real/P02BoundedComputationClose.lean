@@ -1,4 +1,3 @@
-import Lean.Elab.Tactic.Omega
 import MCore.Real.P02BoundedComputationSoundness
 
 namespace MCore
@@ -323,20 +322,33 @@ theorem left_case_preserves_snapshot
       copySymbolClauses_forces sigma guard
         (leftVar M x t s 0) (headVar M t (s + 1))
         a hguard hhead
-    rw [hf, hleftOld 0 (by simp [radius]) a]
-    simp [TM.step, htrans, Tape.write, Tape.move,
-      P02BoundedComputationTape.move_left_head_getD]
+    have hmoveHead :
+        (M.machine.step config).tape.head =
+          config.tape.left.getD 0 M.machine.blank := by
+      simpa [TM.step, htrans, Tape.write] using
+        P02BoundedComputationTape.move_left_head_getD
+          M.machine.blank (config.tape.write write)
+    rw [hf, hleftOld 0 (by simp [radius]) a, hmoveHead]
   constructor
   · intro i hi a
     by_cases hlast : i = radius x t - 1
     · subst i
+      have hrpos : 0 < radius x t := by simp [radius]
+      have hrone : 1 ≤ radius x t := Nat.succ_le_iff.mp hrpos
+      have hidx : radius x t - 1 + 1 = radius x t :=
+        Nat.sub_add_cancel hrone
+      have hmoveLeft :
+          (M.machine.step config).tape.left.getD (radius x t - 1)
+            M.machine.blank =
+          config.tape.left.getD ((radius x t - 1) + 1)
+            M.machine.blank := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_left_left_getD
+            M.machine.blank (config.tape.write write) (radius x t - 1)
       have hblank :
           (M.machine.step config).tape.left.getD (radius x t - 1)
             M.machine.blank = M.machine.blank := by
-        simp [TM.step, htrans, Tape.write,
-          P02BoundedComputationTape.move_left_left_getD]
-        have hrpos : 0 < radius x t := by simp [radius]
-        convert hleftBoundary using 1 <;> omega
+        rw [hmoveLeft, hidx, hleftBoundary]
       have hset :
           evalCNF sigma
             (setLeftCell guard M x t (s + 1) (radius x t - 1)
@@ -359,11 +371,15 @@ theorem left_case_preserves_snapshot
         copySymbolClauses_forces sigma guard
           (leftVar M x t s (i + 1))
           (leftVar M x t (s + 1) i) a hguard hcopy
-      rw [hf, hleftOld (i + 1) (by
-        have hrpos : 0 < radius x t := by simp [radius]
-        omega) a]
-      simp [TM.step, htrans, Tape.write,
-        P02BoundedComputationTape.move_left_left_getD]
+      have hi1 : i + 1 < radius x t := by
+        exact Nat.succ_lt_of_lt his
+      have hmoveLeft :
+          (M.machine.step config).tape.left.getD i M.machine.blank =
+            config.tape.left.getD (i + 1) M.machine.blank := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_left_left_getD
+            M.machine.blank (config.tape.write write) i
+      rw [hf, hleftOld (i + 1) hi1 a, hmoveLeft]
   · intro i hi a
     by_cases hz : i = 0
     · subst i
@@ -380,8 +396,8 @@ theorem left_case_preserves_snapshot
         P02BoundedComputationTape.move_left_right_zero] using hf
     · obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hz
       have hj : j < radius x t - 1 := by
-        have hrpos : 0 < radius x t := by simp [radius]
-        omega
+        have hsucclt : j + 1 < radius x t := by simpa using hi
+        exact Nat.lt_sub_one_iff.mpr hsucclt
       have hcopy :
           evalCNF sigma
             (copyRightCell guard M x t s j (s + 1) (j + 1)) = true := by
@@ -393,11 +409,15 @@ theorem left_case_preserves_snapshot
           (rightVar M x t s j)
           (rightVar M x t (s + 1) (j + 1))
           a hguard hcopy
-      rw [hf, hrightOld j (by
-        have hrpos : 0 < radius x t := by simp [radius]
-        omega) a]
-      simp [TM.step, htrans, Tape.write,
-        P02BoundedComputationTape.move_left_right_succ]
+      have hjr : j < radius x t := Nat.lt_trans hj (Nat.sub_lt (by simp [radius]) (by decide))
+      have hmoveRight :
+          (M.machine.step config).tape.right.getD (j + 1)
+            M.machine.blank =
+          config.tape.right.getD j M.machine.blank := by
+        simpa [TM.step, htrans, Tape.write] using
+          P02BoundedComputationTape.move_left_right_succ
+            M.machine.blank (config.tape.write write) j
+      rw [hf, hrightOld j hjr a, hmoveRight]
 
 theorem snapshots_all
     (S : TransitionSoundnessCertificate)
