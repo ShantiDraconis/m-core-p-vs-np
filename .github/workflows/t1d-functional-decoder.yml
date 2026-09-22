@@ -1,0 +1,41 @@
+name: T1D Functional Decoder
+
+on:
+  push:
+    branches:
+      - attack/t1d-functional-decoder-close-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  decoder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01FullVerifierReverseDecoderGap.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+      - name: Build
+        run: lake build MCore.Real.P01FullVerifierReverseDecoderGap
+      - name: Axiom audit
+        run: |
+          cat >/tmp/DecoderAudit.lean <<'EOF'
+          import MCore.Real.P01FullVerifierReverseDecoderGap
+          #print axioms MCore.Real.P01FullVerifierReverseDecoderGap.reverse_decoder_gap_closed_functionally
+          EOF
+          lake env lean /tmp/DecoderAudit.lean 2>&1 | tee /tmp/decoder-audit.log
+          ! grep -q 'sorryAx' /tmp/decoder-audit.log
+      - name: Status
+        run: |
+          echo "REVERSE_DECODER_FUNCTIONAL=GREEN"
+          echo "PHYSICAL_TM_DECODER=NOT_CLAIMED"
