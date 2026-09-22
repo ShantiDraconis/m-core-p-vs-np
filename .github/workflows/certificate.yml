@@ -1,6 +1,12 @@
 name: certificate
-on: [push, pull_request]
-
+on:
+  push:
+    branches:
+      - main
+      - 'frozen/**'
+      - 'cert/**'
+      - 'atk/p02-universal-witness-chain'
+  pull_request:
 jobs:
   c12:
     runs-on: ubuntu-latest
