@@ -66,7 +66,7 @@ enough for the canonical encoding. -/
 theorem normalizedWitnessBits_le_encoding
     (phi : Circuit) (bits : BitString) :
     (normalizedWitnessBits phi bits).length <= (encodeCircuit phi).length := by
-  rw [normalizedWitnessBits_length]
+  rw [normalizedWitnessBits_length phi bits]
   exact varBound_le_encoded_length phi
 
 /-- Verification of the normalized dependent witness is the same Boolean
