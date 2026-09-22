@@ -74,12 +74,13 @@ theorem getD_prefix_separator_witness
   | nil =>
       simp only [List.nil_append, List.length_nil, Nat.zero_add]
       change (none :: witness.map some).getD (1 + i) none = some witness[i]
-      simpa [List.getD] using witness_map_getD witness i hi
+      simpa [Nat.add_comm, List.getD_cons_succ] using
+        witness_map_getD witness i hi
   | cons x xs ih =>
       simp only [List.cons_append, List.length_cons]
       change (x :: (xs ++ none :: witness.map some)).getD
         (Nat.succ xs.length + 1 + i) none = some witness[i]
-      simpa [List.getD, Nat.succ_eq_add_one, Nat.add_assoc,
+      simpa [List.getD_cons_succ, Nat.succ_eq_add_one, Nat.add_assoc,
         Nat.add_left_comm, Nat.add_comm] using ih
 
 /-- A valid witness index is physically present before the left shuttle can
