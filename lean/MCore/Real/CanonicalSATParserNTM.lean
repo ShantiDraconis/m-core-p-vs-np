@@ -45,12 +45,12 @@ theorem parserNTM_stepBranch_eq_parser_step
   unfold NTM.stepBranch TM.step
   rw [htr]
   change
-    { state := q
-      tape := Tape.move parserNTM.blank direction
-        (Tape.write config.tape symbol) } =
-    { state := q
-      tape := Tape.move parserMachine.blank direction
-        (Tape.write config.tape symbol) }
+    Configuration.mk q
+      (Tape.move parserNTM.blank direction
+        (Tape.write config.tape symbol)) =
+    Configuration.mk q
+      (Tape.move parserMachine.blank direction
+        (Tape.write config.tape symbol))
   rfl
 
 theorem parserNTM_successors_singleton
