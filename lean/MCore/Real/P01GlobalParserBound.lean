@@ -527,6 +527,95 @@ theorem leaf_head_halts_budget
         pad (pad + head.encode.length)
         log log' bits tail steps hlt hscale hprefBound hpref hchild'
 
+
+/-- Generic bounded binary phase. AND and OR differ only in their already
+certified concrete roundtrip theorem. -/
+theorem binary_head_halts_budget
+    (pad : Nat) (log : SlotLog)
+    (bits tail : BitString) (head : Head)
+    (hpad : 0 < pad)
+    (hlt : tail.length < bits.length)
+    (hshape : bits = head.encode ++ tail)
+    (hconsume : tail.length + 3 ≤ bits.length)
+    (hterminal :
+      tail = [] →
+      parserMachine.run
+          (CanonicalSATParserPhaseMacroProof.headWorkFuel
+              head 0 log.length +
+            (log.length + 2))
+          (phaseConfig 4 pad bits log) =
+        CanonicalSATParserLeafSourceProof.leafRejectConfig
+          (pad + head.encode.length)
+          ((pushSlot log).map some))
+    (hroundtrip :
+      tail ≠ [] →
+      parserMachine.run
+          (CanonicalSATParserPhaseMacroProof.headWorkFuel
+              head tail.length log.length +
+            (log.length + tail.length + 2))
+          (phaseConfig 4 pad bits log) =
+        phaseConfig 4
+          (pad + head.encode.length) tail (pushSlot log))
+    (hchild :
+      tail ≠ [] →
+      parserMachine.HaltsWithin
+        (phaseRuntimeBudget
+          (pad + head.encode.length) (pushSlot log) tail)
+        (phaseConfig 4
+          (pad + head.encode.length) tail (pushSlot log))) :
+    parserMachine.HaltsWithin
+      (phaseRuntimeBudget pad log bits)
+      (phaseConfig 4 pad bits log) := by
+  by_cases htail : tail = []
+  · let steps :=
+      CanonicalSATParserPhaseMacroProof.headWorkFuel
+          head 0 log.length +
+        (log.length + 2)
+    have hrun := hterminal htail
+    have hhalt :
+        parserMachine.HaltsWithin steps
+          (phaseConfig 4 pad bits log) := by
+      unfold TM.HaltsWithin
+      dsimp [steps]
+      rw [hrun]
+      exact parserMachine_halts_reject
+    have hprefBound0 :=
+      phasePrefixTerminal_le_unit pad hpad head [] log
+    have hprefBound :
+        steps ≤ phaseRuntimeUnit pad log bits := by
+      dsimp [steps]
+      rw [hshape, htail]
+      simpa using hprefBound0
+    exact parser_terminal_halt_to_budget
+      pad log bits steps hprefBound hhalt
+  · let steps :=
+      CanonicalSATParserPhaseMacroProof.headWorkFuel
+          head tail.length log.length +
+        (log.length + tail.length + 2)
+    have hpref := hroundtrip htail
+    have hchild' := hchild htail
+    have hscale :
+        phaseRuntimeScale
+            (pad + head.encode.length) (pushSlot log) tail =
+          phaseRuntimeScale pad log bits + 1 := by
+      rw [hshape]
+      exact phaseRuntimeScale_push_succ pad head tail log
+    have hchildScale :
+        tail.length + 1 ≤ phaseRuntimeScale pad log bits := by
+      unfold phaseRuntimeScale
+      omega
+    have hprefBound0 :=
+      phasePrefixLinear_le_unit pad hpad head tail log
+    have hprefBound :
+        steps ≤ phaseRuntimeUnit pad log bits := by
+      dsimp [steps]
+      rw [hshape]
+      simpa using hprefBound0
+    exact parser_compose_scale_succ_exact_to_budget
+      pad (pad + head.encode.length)
+      log (pushSlot log) bits tail steps
+      hscale hchildScale hconsume hprefBound hpref hchild'
+
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
 #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
 
