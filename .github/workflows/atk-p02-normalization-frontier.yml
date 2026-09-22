@@ -1,0 +1,59 @@
+name: ATK P02 normalization frontier
+
+on:
+  push:
+    branches:
+      - attack/p01-hard-realization-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p02-normalization-frontier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02CanonicalNormalization.lean
+            lean/MCore/Real/P02DiagonalFrontier.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02CanonicalNormalization MCore.Real.P02DiagonalFrontier
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/P02Audit.lean <<'EOF'
+          import MCore.Real.P02CanonicalNormalization
+          import MCore.Real.P02DiagonalFrontier
+          #print axioms MCore.Real.P02CanonicalNormalization.canonical_normalization
+          #print axioms MCore.Real.P02DiagonalFrontier.diagonal_witness_fails
+          #print axioms MCore.Real.P02DiagonalFrontier.diagonal_family_closes_p02
+          #print axioms MCore.Real.P02DiagonalFrontier.diagonal_fixed_point_gap_closes_p02
+          EOF
+          lake env lean /tmp/P02Audit.lean 2>&1 | tee /tmp/p02-audit.log
+          if grep -q 'sorryAx' /tmp/p02-audit.log; then exit 1; fi
+
+      - name: Preserve OPEN_MATH boundary
+        run: |
+          set -euo pipefail
+          grep -q 'def DiagonalFixedPointGap' lean/MCore/Real/P02DiagonalFrontier.lean
+          echo "G2_0=NORMALIZATION_SOURCE"
+          echo "G2_1=OPEN_MATH"
+          echo "P02_FINAL=OPEN"
