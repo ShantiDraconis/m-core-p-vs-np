@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - attack/t5-a2-semantic-self-embedding-20260922
+      - attack/t5-a2-universal-existence-20260922
   workflow_dispatch:
 
 permissions:
