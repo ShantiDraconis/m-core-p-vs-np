@@ -1,4 +1,5 @@
 import MCore.Real.P01VerifierGateMachine
+import MCore.Real.P01FullVerifierTraversal
 import MCore.Real.P01WitnessPreservingPrep
 import MCore.Real.P01VerifierComposition
 import MCore.Real.CanonicalCircuitBits
