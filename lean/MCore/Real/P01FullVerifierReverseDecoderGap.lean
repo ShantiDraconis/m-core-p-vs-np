@@ -35,7 +35,7 @@ theorem reverse_decoder_length_from_correct
 /-- Functional decoder obtained from the already-proved exact canonical inverse.
 This closes the present ReverseDecoderCertificate shape. It is deliberately
 not claimed to be a physical finite-control TM implementation. -/
-def functionalScanReverse (bits : BitString) : List EvalInstr :=
+def functionalScanReverse (bits : CanonicalFinalProof.BitString) : List EvalInstr :=
   match decodeCircuit bits with
   | some phi => evalProgram phi
   | none => []
