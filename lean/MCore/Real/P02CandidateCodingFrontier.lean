@@ -26,7 +26,7 @@ theorem encode_injective
   have hM := C.decode_encode M
   have hN := C.decode_encode N
   rw [h, hN] at hM
-  exact Option.some.inj hM
+  exact Option.some.inj hM.symm
 
 #print axioms MCore.Real.P02CandidateCodingFrontier.encode_injective
 
