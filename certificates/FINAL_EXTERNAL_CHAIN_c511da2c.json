@@ -1,0 +1,137 @@
+{
+  "schema": "mcore.final-external-chain.v1",
+  "date": "2026-09-23",
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "terminal_source": {
+    "sha": "c511da2c0e88bf858a698404e281914752f10e46",
+    "file": "lean/MCore/Real/P02CompilerTerminalPromotion.lean",
+    "frozen_ref": "frozen/p02-compiler-terminal-promotion-source-c511da2c",
+    "state": "SOURCE_FROZEN",
+    "ci": "BUILD_PENDING"
+  },
+  "chain": [
+    "UniformCompilerValueComputable",
+    "D3SemanticSelfReference",
+    "P02Target",
+    "PneqNP",
+    "FinalExternalInputs",
+    "FINAL_EXTERNAL"
+  ],
+  "open_terminal": "UniformCompilerValueComputable",
+  "final_external": "READY_CONDITIONAL",
+  "final_root": null,
+  "anchors": [
+    {
+      "role": "P01_PHYSICAL_REALIZATION",
+      "sha": "058f574bd2ad1349eb17717549ca5ad378666336",
+      "frozen": "frozen/p01-physical-realization-green-058f574b",
+      "cert": "cert/p01-physical-realization-058f574b-run35785607933",
+      "run": 35785607933
+    },
+    {
+      "role": "P01_PHASE_BRIDGE",
+      "sha": "bd067a3988d70b80d154b5c532dae92384100229",
+      "frozen": "frozen/t1-a-phase-bridge-green-bd067a39",
+      "cert": "cert/t1-a-phase-bridge-bd067a39-run35795773383",
+      "run": 35795773383
+    },
+    {
+      "role": "P01_POLY_BOUND",
+      "sha": "921170b335f31cfdf5b8fa120b7fd90907872990",
+      "frozen": "frozen/t1-c-poly-bound-green-921170b3",
+      "cert": "cert/t1-c-poly-bound-921170b3-run35791659492",
+      "run": 35791659492
+    },
+    {
+      "role": "P01_TERMINAL_CHECKPOINT",
+      "sha": "41f31f40a1c0e224a72f92d2b2140e0174396a16",
+      "frozen": "frozen/atk-41f31f40",
+      "cert": "cert/atk-41f31f40-run35886054258",
+      "run": 35886054258
+    },
+    {
+      "role": "G3_EXTERNAL_CONTRACT",
+      "sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+      "frozen": "frozen/g3-normalized-external-contract-green-f2cafea7",
+      "cert": "cert/g3-normalized-external-contract-f2cafea7-run35719428100",
+      "run": 35719428100
+    },
+    {
+      "role": "P02_KLEENE",
+      "sha": "5f8a0aa2c6ca41d77515e3bf97bd1fa53138679d",
+      "frozen": "frozen/p02-kleene-green-5f8a0aa2",
+      "cert": "cert/p02-kleene-5f8a0aa2-run35784099753",
+      "run": 35784099753
+    },
+    {
+      "role": "P02_E1",
+      "sha": "0f6bcd5243ee499dc3e182b81ea98459858b6883",
+      "frozen": "frozen/p02-e1-green-0f6bcd52",
+      "cert": "cert/p02-e1-0f6bcd52-run35785227242",
+      "run": 35785227242
+    },
+    {
+      "role": "P02_E2_AUDIT",
+      "sha": "b6b6821b337ae70ef958d461a44156d2345d3336",
+      "frozen": "frozen/p02-e2-audit-green-b6b6821b",
+      "cert": "cert/p02-e2-audit-b6b6821b-run35785134353",
+      "run": 35785134353
+    },
+    {
+      "role": "P02_E2_MATH_CHECKPOINT",
+      "sha": "8218207dd3258860cdb9859a99ab677c36880d23",
+      "frozen": "frozen/p02-e2-math-checkpoint-green-8218207d",
+      "cert": "cert/p02-e2-math-checkpoint-8218207d-run35788500754",
+      "run": 35788500754
+    },
+    {
+      "role": "SEMANTIC_MISMATCH",
+      "sha": "f3dc5354a6f8a652fbcda941b4f0a0e6213ddd30",
+      "frozen": "frozen/t5-c-semantic-mismatch-green-f3dc5354",
+      "cert": "cert/t5-c-semantic-mismatch-f3dc5354-run35791665694",
+      "run": 35791665694
+    },
+    {
+      "role": "CANDIDATE_CODING",
+      "sha": "a5635895dee4d7736778ce0104dfbe7016f6487a",
+      "frozen": "frozen/t5-d-candidate-coding-green-a5635895",
+      "cert": "cert/t5-d-candidate-coding-a5635895-run35795602565",
+      "run": 35795602565
+    },
+    {
+      "role": "DIAGONAL_COMPILER",
+      "sha": "8fff59efc44d1c8d5ee37190eca56ed9a5278d6f",
+      "frozen": "frozen/t5-e-diagonal-compiler-green-8fff59ef",
+      "cert": "cert/t5-e-diagonal-compiler-8fff59ef-run35791673222",
+      "run": 35791673222
+    },
+    {
+      "role": "P02_INTEGRATION",
+      "sha": "270282a55e18588dce3e7a8a9a72db2cda277d98",
+      "frozen": "frozen/p02-integration-green-270282a5",
+      "cert": "cert/p02-integration-270282a5-run35787562294",
+      "run": 35787562294
+    },
+    {
+      "role": "FINAL_EXTERNAL_INTEGRATION",
+      "sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+      "frozen": "frozen/final-external-integration-green-c102d9d4",
+      "cert": "cert/final-external-integration-c102d9d4-run35722252805",
+      "run": 35722252805
+    },
+    {
+      "role": "FINAL_EXTERNAL_TWO_GAP",
+      "sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+      "frozen": "frozen/final-external-two-gap-green-b406b806",
+      "cert": "cert/final-external-two-gap-b406b806-run35722743845",
+      "run": 35722743845
+    },
+    {
+      "role": "FINAL_FAIL_EXTERNAL",
+      "sha": "815dfb08e719b80e82cc35a5e01988064a0b3496",
+      "frozen": "frozen/final-fail-external-green-815dfb08",
+      "cert": "cert/final-fail-external-815dfb08-run35722796449",
+      "run": 35722796449
+    }
+  ]
+}
