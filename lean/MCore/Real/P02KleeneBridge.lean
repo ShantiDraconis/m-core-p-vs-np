@@ -32,7 +32,7 @@ structure CanonicalSATFixedPointRealizer
   flips_of_fixed :
     ∀ c,
       Nat.Partrec.Code.eval c = K.f c →
-      SATTarget (bitsOf c) ↔
+      SATBits circuitBitEncoding (bitsOf c) ↔
         ¬ AcceptsAtDeclaredBound M (bitsOf c)
 
 /-- Mathlib already proves the recursion-theoretic fixed point. -/
@@ -56,8 +56,7 @@ noncomputable def witnessFromKleene
     valid := R.valid c
     flips := by
       have hfixed : Nat.Partrec.Code.eval c = K.f c := hc
-      apply R.flips_of_fixed c
-      exact hfixed }
+      exact R.flips_of_fixed c hfixed }
 
 /-- Uniform bridge required to turn the recursion theorem into the P02
 DiagonalFamily. This does not assume G21Pointwise or P02Target. -/
