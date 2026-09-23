@@ -2,6 +2,7 @@ import MCore.C11.BranchingCost
 import MCore.Real.P02BoundedComputationEncoding
 import MCore.Real.CanonicalSATBoundary
 import MCore.Real.CanonicalCircuitBits
+import MCore.Real.P02TerminalFrontier
 
 namespace MCore
 namespace Real
@@ -164,7 +165,7 @@ structure HardCoreFamily where
   margin : Nat
   margin_pos : 0 < margin
   satisfiable :
-    ∀ n, CircuitK1.SATLanguage (cnfCircuit (core n))
+    ∀ n, SATLanguage (cnfCircuit (core n))
   deficit :
     ∀ n, DeficitAtLeast margin (core n)
   dominated_inherits :
@@ -183,7 +184,7 @@ structure SATReductionIntoFamily
     ∀ x,
       CanonicalSATBoundary.SATBits
           CanonicalCircuitBits.circuitBitEncoding x ↔
-        CircuitK1.SATLanguage (cnfCircuit (reduce x))
+        SATLanguage (cnfCircuit (reduce x))
 
 /-- Core-aware progress is intentionally separate from C10.RestrictionProgress.
 It cannot replace the original notion globally: doing so would make dominance
