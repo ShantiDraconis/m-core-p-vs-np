@@ -1,0 +1,32 @@
+name: P02 bounded lane
+
+on:
+  push:
+    branches:
+      - atk/p02-kleene-bridge-fix-20260923
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P02BoundedSemanticInput.lean
+          test -f "$f"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+          lake update
+          lake build MCore.Real.P02BoundedSemanticInput
