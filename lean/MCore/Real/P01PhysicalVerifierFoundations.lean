@@ -18,7 +18,7 @@ open P01FullVerifierPhysicalStackV2
 /-- Canonical circuit encoding is injective because the certified decoder is a
 left inverse.  No separate coding axiom is needed. -/
 theorem encodeCircuit_injective :
-    Function.Injective encodeCircuit := by
+    ∀ ⦃a b : CircuitK1.Circuit⦄, encodeCircuit a = encodeCircuit b → a = b := by
   intro a b h
   have hdec := congrArg decodeCircuit h
   simpa only [decodeCircuit_encode] using hdec
@@ -59,7 +59,7 @@ def alphabetDecode : Fin 3 → Option Bool
       cases b <;> rfl
 
 theorem alphabetCode_injective :
-    Function.Injective alphabetCode := by
+    ∀ ⦃a b : Option Bool⦄, alphabetCode a = alphabetCode b → a = b := by
   intro a b h
   have := congrArg alphabetDecode h
   simpa using this
