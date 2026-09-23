@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Data.Nat.Prime.Infinite
+import Mathlib.Tactic.NativeDecide
 import MCore.Research.Prime2FractionalHorizon
 
 namespace MCore
