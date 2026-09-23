@@ -108,3 +108,17 @@ The intended M-Core interpretation is that the remaining indeterminate forms
 are reduced to the first indeterminate constant `I₀`. That reduction is not
 yet a theorem in this HEAD and must be formalized separately before it can be
 used as an unconditional dependency.
+
+
+### Canonical symbolic indeterminate
+
+The M-Core symbolic indeterminate sector now has a canonical constructor
+`MIndeterminate.phi`. The first indeterminate constant is defined by
+`I₀ = phi`, with ASCII alias `I0`. This is the symbolic M-Core
+representation of the project's `0/0` indeterminate state.
+
+A separate `IndeterminateCodeRealization` structure is required to connect
+that symbol to a concrete `Nat.Partrec.Code` whose semantic evaluation is
+bottom. This keeps the symbolic constant distinct from Mathlib's computation
+semantics and prevents an unproved code realization from being silently
+assumed.
