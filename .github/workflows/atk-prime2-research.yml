@@ -19,6 +19,11 @@ jobs:
           build: false
           test: false
           lint: false
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
       - name: Build Prime2 research route
         run: |
           set -euo pipefail
