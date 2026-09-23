@@ -367,8 +367,8 @@ theorem active_left_case_true
       (copyRightCell guard M x t s i (s + 1) (i + 1))
       clause hc hcell
   unfold leftMoveCaseCNF
-  simp only [evalCNF_append_eq, hs, hh, hshiftLeft, hsetLeft,
-    hsetRight, hshiftRight, Bool.and_true, List.append_assoc]
+  simp [guard, evalCNF_append_eq, hs, hh, hshiftLeft, hsetLeft,
+    hsetRight, hshiftRight, List.append_assoc]
 
 theorem active_right_case_true
     (sigma : Assignment)
@@ -511,8 +511,8 @@ theorem active_right_case_true
     intro a
     rw [hright1 (radius x t - 1) hlast a, hstepRightLast]
   unfold rightMoveCaseCNF
-  simp only [evalCNF_append_eq, hs, hh, hsetLeft, hshiftLeft,
-    hshiftRight, hsetRight, Bool.and_true, List.append_assoc]
+  simp [guard, evalCNF_append_eq, hs, hh, hsetLeft, hshiftLeft,
+    hshiftRight, hsetRight, List.append_assoc]
 
 theorem active_transitionCase_true
     (M : PolyDTMCandidate)
