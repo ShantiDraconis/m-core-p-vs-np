@@ -56,6 +56,13 @@ jobs:
           lake build MCore.Real.P02CookLevinFieldClosed
           lake build MCore.Real.P02ExtensionalSameInputBridge
           lake build MCore.Real.P02TableauCompletenessClose
+          lake build MCore.Real.OpenMathCore.SelfQuotation
+          lake build MCore.Real.OpenMathCore.BoundedUniversalSimulation
+          lake build MCore.Real.OpenMathCore.SATCircuitCompiler
+          lake build MCore.Real.OpenMathCore.SameInputClosure
+          lake build MCore.Real.OpenMathCore.T5FBridge
+          lake build MCore.Real.OpenMathCore.TerminalArchitecture
+          lake build MCore.Real.SemanticSelfQuotation
           lake build MCore.Real.P02G21G22Attack
       - name: Fail-closed status
         run: |
