@@ -13,8 +13,13 @@ Unlike `(c.eval 0).Dom`, this is decidable because `evaln` is total. -/
 def DomFuel (fuel : Nat) (c : Nat.Partrec.Code) : Prop :=
   (Nat.Partrec.Code.evaln fuel c 0).isSome = true
 
-instance (fuel : Nat) (c : Nat.Partrec.Code) : Decidable (DomFuel fuel c) :=
-  inferInstance
+instance (fuel : Nat) (c : Nat.Partrec.Code) : Decidable (DomFuel fuel c) := by
+  unfold DomFuel
+  cases h : Nat.Partrec.Code.evaln fuel c 0 with
+  | none =>
+      exact isFalse (by simp [h])
+  | some v =>
+      exact isTrue (by simp [h])
 
 /-- Bounded semantic observation.  Failure within the chosen fuel is represented
 by the empty bitstring; no halting oracle is queried. -/
@@ -29,7 +34,11 @@ theorem evaln_zero_computable (fuel : Nat) :
     Primrec.pair
       (Primrec.pair (Primrec.const fuel) Primrec.id)
       (Primrec.const 0)
-  exact (Nat.Partrec.Code.primrec_evaln.comp hArgs).to_comp
+  have hEval :
+      Primrec (fun (a : (Nat × Nat.Partrec.Code) × Nat) =>
+        Nat.Partrec.Code.evaln a.1.1 a.1.2 a.2) :=
+    Nat.Partrec.Code.primrec_evaln
+  exact (hEval.comp hArgs).to_comp
 
 theorem decodeBitsNat_computable :
     Computable decodeBitsNat := by
