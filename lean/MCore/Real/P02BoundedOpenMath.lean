@@ -74,9 +74,9 @@ theorem producer_iff_pointwise :
 /--
 OPEN_MATH endpoint.
 
-Any future proof should inhabit this theorem without axioms/sorry/admit.
-Once inhabited, P02BoundedFinalBridge already promotes it to D3, P02 and the
-external certificate chain.
+This deprecated bounded endpoint is retained only for audit compatibility.
+Its producer is formally refuted by P02BoundedOpenMathFalsification and must
+not be promoted into the external certificate chain.
 -/
 def OPEN_MATH_BOUNDED_SAME_INPUT : Prop :=
   BoundedSameInputEquation
