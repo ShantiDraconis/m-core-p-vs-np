@@ -185,6 +185,23 @@ structure SATReductionIntoFamily
           CanonicalCircuitBits.circuitBitEncoding x ↔
         CircuitK1.SATLanguage (cnfCircuit (reduce x))
 
+/-- Exact dominance obligation needed by the guarded route: every restriction
+that makes progress on the padded output must also make progress on the core. -/
+def CoreProgressDominates
+    (payload core : CNF) : Prop :=
+  ∀ ρ : Restriction,
+    RestrictionProgress ρ (cnfCircuit (payload ++ core)) →
+      RestrictionProgress ρ (cnfCircuit core)
+
+theorem coreProgressDominates_to_coreDominated
+    {payload core : CNF}
+    (h : CoreProgressDominates payload core) :
+    ∀ ρ : Restriction,
+      RestrictionProgress ρ (cnfCircuit (payload ++ core)) →
+        CoreDominatedProgress ρ payload core := by
+  intro ρ hprog
+  exact ⟨hprog, h ρ hprog⟩
+
 /-- Reduction specialized to the hard-core construction.  Besides semantic
 correctness, it must expose that every progressing restriction relevant to the
 lower-bound argument is core-dominated. -/
@@ -194,10 +211,17 @@ structure SATReductionIntoCoreDominatedFamily
   payload : BitString → CNF
   reduce_eq :
     ∀ x, reduce x = payload x ++ H.core (parameter x)
+  progress_dominance :
+    ∀ x,
+      CoreProgressDominates (payload x) (H.core (parameter x))
   every_progress_core_dominated :
     ∀ x ρ,
       RestrictionProgress ρ (cnfCircuit (reduce x)) →
-      CoreDominatedProgress ρ (payload x) (H.core (parameter x))
+      CoreDominatedProgress ρ (payload x) (H.core (parameter x)) := by
+    intro x ρ hprog
+    rw [reduce_eq x] at hprog
+    exact coreProgressDominates_to_coreDominated
+      (progress_dominance x) ρ hprog
 
 /-- Explicit simulation obligation: a polynomial DTM for canonical SAT must
 induce a restriction-tree procedure on the hard family. The theorem carrying
@@ -231,6 +255,7 @@ theorem transfer_closes_p02
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.hardCNF_excludes_payoff
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.hardSubfamily_has_uniform_deficit
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.uniformPersistentDeficit_excludes_eventual_payoff
+#print axioms MCore.Real.P02RestrictionLowerBoundPattern.coreProgressDominates_to_coreDominated
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.transfer_closes_p02
 
 end P02RestrictionLowerBoundPattern
