@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.Tactic.Omega
 import MCore.P012.P012Core
 
 namespace MCore
