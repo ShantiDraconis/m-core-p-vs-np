@@ -1,0 +1,161 @@
+{
+  "schema": "mcore.pnp.certified-reuse.v1",
+  "recovered_at": "2026-09-23",
+  "rule": "Reuse GREEN/FROZEN/CERTIFIED checkpoints; do not promote terminal open mathematics without kernel proof.",
+  "P01_T1": [
+    {
+      "name": "P01 parser components",
+      "sha": "fc20887e",
+      "run": 35700922856,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P01 phase/global-slotlog",
+      "sha": "614f88fe",
+      "run": 35723570545,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P01 terminal branches",
+      "sha": "f9add608",
+      "run": 35722846538,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P01 global parser",
+      "sha": "fa928b11",
+      "run": 35745074597,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P01 physical realization",
+      "sha": "058f574b",
+      "run": 35785607933,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T1-A phase bridge",
+      "sha": "bd067a39",
+      "run": 35795773383,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T1-B physical realization",
+      "sha": "058f574b",
+      "run": 35785607933,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T1-C poly bound",
+      "sha": "921170b3",
+      "run": 35791659492,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P01 full checkpoint",
+      "sha": "fbd93747",
+      "run": 35788603616,
+      "state": "CERTIFIED"
+    }
+  ],
+  "P02_T5": [
+    {
+      "name": "T5-A1 bounded computation",
+      "sha": "fbd24d7d",
+      "run": 35770208857,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T5-A1 completeness",
+      "sha": "30707e68",
+      "run": 35775861028,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T5-A universal failure prefix",
+      "sha": "0c755ac3",
+      "run": 35785495169,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T5-B clock failure",
+      "sha": "7aedf7bd",
+      "run": 35791662702,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T5-C semantic mismatch",
+      "sha": "f3dc5354",
+      "run": 35791665694,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T5-D candidate coding",
+      "sha": "a5635895",
+      "run": 35795602565,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "T5-E diagonal compiler",
+      "sha": "8fff59ef",
+      "run": 35791673222,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 E1",
+      "sha": "0f6bcd52",
+      "run": 35785227242,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 E2 audit",
+      "sha": "b6b6821b",
+      "run": 35785134353,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 E2 math checkpoint",
+      "sha": "8218207d",
+      "run": 35788500754,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 G2.0 normalization",
+      "sha": "d72e53bc",
+      "run": 35707286302,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 G2.2 wiring",
+      "sha": "38db71b4",
+      "run": 35722282451,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 integration",
+      "sha": "270282a5",
+      "run": 35787562294,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 Kleene",
+      "sha": "5f8a0aa2",
+      "run": 35784099753,
+      "state": "CERTIFIED"
+    },
+    {
+      "name": "P02 semantic diagonal transformer",
+      "sha": "f29f5984",
+      "run": 35710913464,
+      "state": "CERTIFIED"
+    }
+  ],
+  "excluded": [
+    {
+      "sha": "17c04b62",
+      "run": 35721158651,
+      "state": "CLOSED_BY_FALSIFICATION",
+      "reason": "literal fixed-point route; do not reopen"
+    }
+  ]
+}
