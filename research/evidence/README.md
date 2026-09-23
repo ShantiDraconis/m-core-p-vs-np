@@ -81,3 +81,30 @@ Absent such a theorem, classification remains RESEARCH_ONLY.
 - transfer_status
 - proof_credit
 - notes
+
+
+## M-Core first indeterminate constant (conditional lane)
+
+The current conditional M-Core lane designates a first indeterminate constant
+`I₀`, intended to correspond to the project's `0/0` state and to the
+historical fingerprint `phi_11dd4ff2`. In the present repository HEAD there is
+no concrete Lean declaration named `phi_11dd4ff2`, so this identification is
+carried as explicit conditional data rather than asserted as an existing code.
+
+The semantic bottom state is represented by `c.eval 0 = ⊥ : Part Nat`. The
+bounded evaluator `c.evaln fuel 0 : Option Nat` is kept separate: if semantic
+evaluation is bottom, `evaln_sound` prevents any finite fuel from producing a
+value. Therefore the M-Core L'Hospital rule is not encoded as
+`⊥ -> eventually some v`; it is an explicit hypothesis package whose
+substantive field is the bounded diagonal witness producer required by P02.
+
+Current fail-closed status:
+
+- `MCORE_LHOSPITAL: ASSUMED / UNPROVED`
+- `FINAL_EXTERNAL: CONDITIONAL [MCoreLHospitalBound]`
+- `FINAL_PROOF: NOT_UNCONDITIONAL`
+
+The intended M-Core interpretation is that the remaining indeterminate forms
+are reduced to the first indeterminate constant `I₀`. That reduction is not
+yet a theorem in this HEAD and must be formalized separately before it can be
+used as an unconditional dependency.
