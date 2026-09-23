@@ -1,3 +1,8 @@
+import MCore.Real.P01FullVerifierReverseDecoderGap
+import MCore.Real.P01FullVerifierPhysicalOps
+import MCore.Real.P01FullVerifierShuttleReturn
+import MCore.Real.P01FullVerifierInputShuttleV2
+import MCore.Real.P01FullVerifierStackPrimitiveMachine
 import MCore.Real.P01FullVerifierPhysical
 import MCore.Real.P01FullVerifierPhysicalRefinement
 import MCore.Real.P01FullVerifierPhysicalRefinementV2
