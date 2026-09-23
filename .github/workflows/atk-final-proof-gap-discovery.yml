@@ -46,6 +46,8 @@ jobs:
       - name: Build research dependencies
         run: |
           set -euo pipefail
+          lake build MCore.Real.P01FinalCertificate
+          lake build MCore.Real.P02G21G22Attack
           lake build MCore.Research.PatternCalculator
 
       - name: Auto-formalize newly detected patterns
