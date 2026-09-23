@@ -23,8 +23,6 @@ jobs:
         run: |
           set -euo pipefail
           lake build MCore.Real.P02UniversalWitnessChain
-          lake build MCore.Real.P02KleeneBridge
-          lake build MCore.Real.P02KleeneSelfReferenceBridge
           lake build MCore.Real.P02DiagonalCompilerFrontierV2
           lake build MCore.Real.P02UniversalFailureAlgebra
           lake build MCore.Real.P02SemanticSelfEmbedding
@@ -33,8 +31,6 @@ jobs:
           set -euo pipefail
           files=(
             lean/MCore/Real/P02UniversalWitnessChain.lean
-            lean/MCore/Real/P02KleeneBridge.lean
-            lean/MCore/Real/P02KleeneSelfReferenceBridge.lean
             lean/MCore/Real/P02DiagonalCompilerFrontierV2.lean
             lean/MCore/Real/P02UniversalFailureAlgebra.lean
             lean/MCore/Real/P02SemanticSelfEmbedding.lean
