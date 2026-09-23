@@ -135,6 +135,31 @@ theorem uniformPersistentDeficit_excludes_eventual_payoff
       1 1 ρ (cnfCircuit f) hpay
   omega
 
+/-- Padding by a satisfiable hard core preserves SAT only if the two CNFs
+can be satisfied simultaneously.  Deficit inheritance is a separate obligation:
+a core with margin c does not automatically force an arbitrary conjunction to
+retain that margin for every progressing restriction. -/
+def PaddingDeficitInheritance
+    (core : Nat → CNF)
+    (c : Nat) : Prop :=
+  ∀ (n : Nat) (f : CNF),
+    DeficitAtLeast c (core n) →
+      DeficitAtLeast c (f ++ core n)
+
+/-- A usable hard-core family for SAT padding must provide both semantic
+satisfiability and quantitative inheritance.  These are intentionally separate
+from mere existence of the core. -/
+structure HardCoreFamily where
+  core : Nat → CNF
+  margin : Nat
+  margin_pos : 0 < margin
+  satisfiable :
+    ∀ n, CircuitK1.SATLanguage (cnfCircuit (core n))
+  deficit :
+    ∀ n, DeficitAtLeast margin (core n)
+  padding_inherits :
+    PaddingDeficitInheritance core margin
+
 /-- Polynomial SAT reduction into a parametrized family of canonical CNFs. -/
 structure SATReductionIntoFamily
     (Family : Nat → CNF → Prop) where
