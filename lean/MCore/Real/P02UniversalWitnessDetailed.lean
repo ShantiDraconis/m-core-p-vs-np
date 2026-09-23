@@ -64,7 +64,7 @@ theorem sameInputClosure_to_universalWitnessFamilyGap
     UniversalWitnessFamilyGap :=
   ⟨sameInputClosureToUniversalWitnessFamily h⟩
 
-/-- Bare G21 is intentionally not promoted back to UniversalWitnessFamilyGap:
+/- Bare G21 is intentionally not promoted back to UniversalWitnessFamilyGap:
 not-CorrectAt may arise from a clock failure and need not contain an explicit
 canonical semantic flip witness. -/
 
