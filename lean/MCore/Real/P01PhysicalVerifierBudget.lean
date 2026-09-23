@@ -17,9 +17,9 @@ def physicalVerifierTimeBound : TimeBound :=
 
 theorem physicalVerifierTimeBound_poly :
     PolynomialTimeBound physicalVerifierTimeBound := by
-  exact ⟨16, 3, by
-    intro n
-    rfl⟩
+  refine ⟨16, 3, ?_⟩
+  intro n
+  exact Nat.le_refl _
 
 /-- The semantic stack program has at most n instructions when n is the
 canonical circuit encoding length. -/
@@ -39,11 +39,13 @@ theorem accumulated_instruction_envelope
   have hmn1 : m ≤ n + 1 := Nat.le_trans hm (Nat.le_succ n)
   calc
     m * (4 * (n + 1) ^ 2)
-        = 4 * (m * (n + 1) ^ 2) := by omega
+        = 4 * (m * (n + 1) ^ 2) := by
+          simp [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
     _ ≤ 4 * ((n + 1) * (n + 1) ^ 2) := by
-      exact Nat.mul_le_mul_left 4 (Nat.mul_le_mul_right ((n + 1) ^ 2) hmn1)
+      exact Nat.mul_le_mul_left 4
+        (Nat.mul_le_mul_right ((n + 1) ^ 2) hmn1)
     _ = 4 * (n + 1) ^ 3 := by
-      ring
+      simp [pow_succ, Nat.mul_assoc]
 
 #print axioms MCore.Real.P01PhysicalVerifierBudget.physicalVerifierTimeBound_poly
 #print axioms MCore.Real.P01PhysicalVerifierBudget.evalProgram_steps_le_input_length
