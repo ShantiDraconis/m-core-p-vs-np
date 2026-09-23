@@ -1,0 +1,9 @@
+{
+  "name": "Q3KernelGapNumerator",
+  "kind": "nat_eq",
+  "lhs": 4,
+  "rhs": 4,
+  "claim": "For the q=3 Prime2 operational kernel, the symmetric reflection gap numerator is 4.",
+  "lane": "HORIZON_PRIME",
+  "source": "MCore.Research.PatternCalculator.q3_with_kernel_gap"
+}
