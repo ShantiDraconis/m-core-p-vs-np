@@ -33,6 +33,7 @@ jobs:
             lean/MCore/Real/P02ExactCompilerSemantics.lean
             lean/MCore/Real/P02EffectiveCompilerConstruction.lean
             lean/MCore/Real/P02CompilerTerminalPromotion.lean
+            lean/MCore/Real/P02SelfInputHaltingBarrier.lean
           )
           for f in "${files[@]}"; do test -f "$f"; done
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
@@ -46,4 +47,5 @@ jobs:
             MCore.Real.P02CompilerFrontierAudit \
             MCore.Real.P02ExactCompilerSemantics \
             MCore.Real.P02EffectiveCompilerConstruction \
-            MCore.Real.P02CompilerTerminalPromotion
+            MCore.Real.P02CompilerTerminalPromotion \
+            MCore.Real.P02SelfInputHaltingBarrier
