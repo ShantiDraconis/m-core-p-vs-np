@@ -1,0 +1,81 @@
+name: ATK reused lines crosswalk
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reused-lines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Build reused P01 modules
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01WitnessIndexedRead
+          lake build MCore.Real.P01WitnessIndexedReadMachine
+          lake build MCore.Real.P01WitnessIndexedReadProof
+
+      - name: Build reused P02 bounded-computation modules
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02BoundedComputationTape
+          lake build MCore.Real.P02BoundedComputationEncoding
+          lake build MCore.Real.P02BoundedComputationLogic
+          lake build MCore.Real.P02BoundedComputationSoundness
+          lake build MCore.Real.P02BoundedComputationClose
+
+      - name: Build reused Kleene and semantic modules
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02KleeneE1
+          lake build MCore.Real.P02KleeneBridgeAudit
+          lake build MCore.Real.P02SemanticMismatchAlgebra
+
+      - name: Build reused FinalExternal consumer
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalExternalLiveTwoProducer
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P01WitnessIndexedRead.lean
+            lean/MCore/Real/P01WitnessIndexedReadMachine.lean
+            lean/MCore/Real/P01WitnessIndexedReadProof.lean
+            lean/MCore/Real/P02BoundedComputationTape.lean
+            lean/MCore/Real/P02BoundedComputationEncoding.lean
+            lean/MCore/Real/P02BoundedComputationLogic.lean
+            lean/MCore/Real/P02BoundedComputationSoundness.lean
+            lean/MCore/Real/P02BoundedComputationClose.lean
+            lean/MCore/Real/P02KleeneE1.lean
+            lean/MCore/Real/P02KleeneBridgeAudit.lean
+            lean/MCore/Real/P02SemanticMismatchAlgebra.lean
+            lean/MCore/Real/FinalExternalLiveTwoProducer.lean
+          )
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+
+      - name: Scope
+        run: |
+          echo "REUSE_MODE=ADDITIVE_ONLY"
+          echo "EXISTING_FILES_OVERWRITTEN=0"
+          echo "FINAL_PROMOTION=FAIL_CLOSED"
