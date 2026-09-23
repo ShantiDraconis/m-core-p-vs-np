@@ -117,18 +117,18 @@ noncomputable theorem canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap
     fun M => Classical.choose (Classical.choose_spec (h M))
   exact ⟨{ compiler := compiler, realizer := realizer }⟩
 
+theorem D3KleeneSATBridgeGap_to_D3
+    (h : D3KleeneSATBridgeGap) :
+    D3SemanticSelfReference := by
+  rcases h with ⟨B⟩
+  exact kleene_sat_bridge_closes_D3 B
+
 /-- Consequently the minimal Kleene/SAT producer closes D3 directly. -/
 noncomputable theorem canonicalSATKleeneRealizerGap_to_D3
     (h : CanonicalSATKleeneRealizerGap) :
     D3SemanticSelfReference :=
   D3KleeneSATBridgeGap_to_D3
     (canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap h)
-
-theorem D3KleeneSATBridgeGap_to_D3
-    (h : D3KleeneSATBridgeGap) :
-    D3SemanticSelfReference := by
-  rcases h with ⟨B⟩
-  exact kleene_sat_bridge_closes_D3 B
 
 #print axioms kleene_fixed_point
 #print axioms witnessFromKleene
