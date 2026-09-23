@@ -54,6 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           lake build MCore.Real.P02BoundedComputationClose
+          lake build MCore.Real.P02TableauCompletenessActive
           lake build MCore.Real.P02KleeneBridge
           lake build MCore.Real.P02KleeneCookLevinBridge
           lake build MCore.Real.P02CookLevinFromBoundedExec
