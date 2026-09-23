@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Omega
 import MCore.P012.P012OddPrimeGap
 import MCore.P012.P012SignedOrientationInterpretation
 
