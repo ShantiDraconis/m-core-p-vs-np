@@ -102,10 +102,23 @@ theorem uniformExactCompilerSemantics_closes_P02
   exact diagonal_family_closes_p02
     (uniformExactCompilerSemantics_toDiagonalFamily h)
 
+
+/-- Audit endpoint: the exact compiler producer already contains the terminal
+lower-bound content.  Once the existing P01 SAT-in-NP producer is supplied,
+this object closes the internal P-vs-NP separation directly. -/
+theorem uniformExactCompilerSemantics_closes_internal
+    (hP01 : CanonicalSATBoundary.SATInNPGap circuitBitEncoding)
+    (h : UniformExactCompilerSemantics) :
+    PneqNP := by
+  exact P02TerminalFrontier.p01_p02_close_internal_separation
+    hP01
+    (uniformExactCompilerSemantics_closes_P02 h)
+
 #print axioms MCore.Real.P02ExactCompilerSemantics.compilerSemantics_implies_zeroTotal
 #print axioms MCore.Real.P02ExactCompilerSemantics.compilerSemantics_closes_definedness
 #print axioms MCore.Real.P02ExactCompilerSemantics.compilerSemantics_toDiagonalWitness
 #print axioms MCore.Real.P02ExactCompilerSemantics.uniformExactCompilerSemantics_closes_P02
+#print axioms MCore.Real.P02ExactCompilerSemantics.uniformExactCompilerSemantics_closes_internal
 
 end P02ExactCompilerSemantics
 end Real
