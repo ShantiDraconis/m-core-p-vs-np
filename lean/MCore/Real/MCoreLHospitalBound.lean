@@ -26,6 +26,33 @@ def IndeterminateConstants : Type :=
   { c : Nat.Partrec.Code // DivergesAtZero c }
 
 /--
+M-Core designation of its first indeterminate constant.  The concrete code
+identifier `phi_11dd4ff2` is not yet defined in this HEAD, so the designation
+is carried explicitly as data instead of inventing a code.
+-/
+structure FirstIndeterminateConstantData where
+  code : Nat.Partrec.Code
+  diverges : DivergesAtZero code
+
+def FirstIndeterminateConstantData.asIndeterminate
+    (I : FirstIndeterminateConstantData) : IndeterminateConstants :=
+  ⟨I.code, I.diverges⟩
+
+/--
+A conditional M-Core package may name a distinguished first indeterminate
+constant.  The intended external name is I₀ / phi_11dd4ff2; this file does not
+assert that a repository code with that name already exists.
+-/
+def firstIndeterminateConstant
+    (I : FirstIndeterminateConstantData) : IndeterminateConstants :=
+  I.asIndeterminate
+
+theorem first_is_semantic_bottom
+    (I : FirstIndeterminateConstantData) :
+    (firstIndeterminateConstant I).val.eval 0 = (⊥ : Part Nat) := by
+  exact I.diverges
+
+/--
 Single explicit M-Core hypothesis used by the conditional lane.
 
 Repository-level meaning: the M-Core L'Hospital rule supplies the exact
@@ -36,8 +63,35 @@ which contradicts `evaln_sound`.
 
 This proposition is the one unresolved assumption of this conditional module.
 -/
+/--
+Abstract bounded-limit predicate used only to record the M-Core interpretation
+of the distinguished indeterminate constant.  It is deliberately separate
+from Mathlib's `Part` semantics: no theorem here states that bottom becomes a
+finite `evaln` value.
+-/
+def MCoreLHospitalLimit
+    (I : FirstIndeterminateConstantData)
+    (lim : Nat) : Prop :=
+  True
+
+/--
+Single explicit M-Core hypothesis used by the conditional lane.
+
+It packages both pieces of the current M-Core convention:
+1. a designated first indeterminate constant I₀;
+2. the exact P02 witness producer required by the repository.
+
+The second field is the mathematically substantive assumption that keeps the
+final result conditional until independently proved.
+-/
+structure MCoreLHospitalWitness where
+  first : FirstIndeterminateConstantData
+  limit_index : Nat
+  limit_rule : MCoreLHospitalLimit first limit_index
+  p02_witness : UniversalWitnessExists
+
 def MCoreLHospitalBound : Prop :=
-  UniversalWitnessExists
+  Nonempty MCoreLHospitalWitness
 
 /--
 Temporary explicit assumption.  Any theorem depending on this axiom remains
@@ -49,7 +103,8 @@ axiom MCORE_LHOSPITAL_AXIOM : MCoreLHospitalBound
 theorem P02Target_conditional
     (h : MCoreLHospitalBound) :
     P02TerminalFrontier.P02Target := by
-  exact universal_witness_closes_p02 h
+  rcases h with ⟨H⟩
+  exact universal_witness_closes_p02 H.p02_witness
 
 /--
 Conditional external-input producer.  P01 is still supplied through the
