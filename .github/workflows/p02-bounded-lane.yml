@@ -32,4 +32,9 @@ jobs:
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
           lake update
-          lake build MCore.Real.P02BoundedSemanticInput MCore.Real.P02BoundedDomain
+          lake build \
+            MCore.Real.P02BoundedSemanticInput \
+            MCore.Real.P02BoundedDomain \
+            MCore.Real.PhysicalMachineCore \
+            MCore.Real.P02KleeneBridge \
+            MCore.Real.P02TableauCompletenessClose
