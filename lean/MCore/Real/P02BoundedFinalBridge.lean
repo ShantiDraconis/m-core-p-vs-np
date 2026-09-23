@@ -14,6 +14,7 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalSATBoundary
 open P02DiagonalFrontier
+open P02G21G22Attack
 open P02BoundedSemanticInput
 open P02CookLevinFromBoundedExec
 open P02TableauCompletenessClose
