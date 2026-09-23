@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.Tactic.NormNum
 import MCore.P012.P012Core
 
 namespace MCore
