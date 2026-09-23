@@ -6,8 +6,18 @@ namespace P012
 def OddPrimeNumerator (z : Int) : Prop :=
   PrimeNumerator z ∧ z.natAbs ≠ 2
 
+instance instDecidableOddPrimeNumerator (z : Int) :
+    Decidable (OddPrimeNumerator z) := by
+  unfold OddPrimeNumerator
+  infer_instance
+
 def OddPrimeThirdState (s : ThirdState) : Prop :=
   OddPrimeNumerator s.numerator
+
+instance instDecidableOddPrimeThirdState (s : ThirdState) :
+    Decidable (OddPrimeThirdState s) := by
+  unfold OddPrimeThirdState
+  infer_instance
 
 theorem five_is_odd_prime_numerator :
     OddPrimeNumerator 5 := by decide
@@ -20,6 +30,11 @@ theorem two_not_odd_prime_numerator :
 
 def PureOddPrimeThirdState (s : ThirdState) : Prop :=
   OddPrimeThirdState s ∧ s.numerator.natAbs ≠ 3
+
+instance instDecidablePureOddPrimeThirdState (s : ThirdState) :
+    Decidable (PureOddPrimeThirdState s) := by
+  unfold PureOddPrimeThirdState
+  infer_instance
 
 theorem negFive_pure :
     PureOddPrimeThirdState ⟨-5⟩ := by decide
