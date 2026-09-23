@@ -29,6 +29,7 @@ jobs:
             lean/MCore/Real/P02BoundedDomain.lean
             lean/MCore/Real/P02BoundedFinalBridge.lean
             lean/MCore/Real/P02BoundedOpenMath.lean
+            lean/MCore/Real/P02BoundedOpenMathFalsification.lean
           )
           for f in "${files[@]}"; do test -f "$f"; done
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
@@ -43,5 +44,6 @@ jobs:
             MCore.Real.P01FinalCertificate \
             MCore.Real.FinalExternalCertificate \
             MCore.Real.P02BoundedFinalBridge \
-            MCore.Real.P02BoundedOpenMath
+            MCore.Real.P02BoundedOpenMath \
+            MCore.Real.P02BoundedOpenMathFalsification
 
