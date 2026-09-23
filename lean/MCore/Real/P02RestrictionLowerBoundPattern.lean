@@ -1,5 +1,5 @@
 import MCore.C11.BranchingCost
-import MCore.C12.Families
+import MCore.Real.P02BoundedComputationEncoding
 import MCore.Real.CanonicalSATBoundary
 import MCore.Real.CanonicalCircuitBits
 
@@ -8,13 +8,13 @@ namespace Real
 namespace P02RestrictionLowerBoundPattern
 
 open C9 C10 C11 CircuitK1
+open P02BoundedComputationEncoding
 
-/-- Exact amortized structural drop used by C11. -/
+/-- Exact amortized structural drop used by C11, evaluated on the canonical
+Circuit view of a CNF. -/
 def amortizedDrop (α β : Nat) (ρ : Restriction) (t : FormulaTree) : Nat :=
   Potential α β t - Potential α β (D ρ t)
 
-/-- C11 PaysOff is exactly the regime where the number of fixed branching bits
-is strictly smaller than the certified potential drop. -/
 theorem paysOff_implies_costBits_lt_amortizedDrop
     (α β : Nat) (ρ : Restriction) (t : FormulaTree)
     (h : PaysOff α β ρ t) :
@@ -22,9 +22,6 @@ theorem paysOff_implies_costBits_lt_amortizedDrop
   unfold PaysOff amortizedDrop at *
   omega
 
-/-- Separation-oriented local pattern: every progressing restriction fails to
-amortize its branching bits. This is intentionally the opposite orientation
-from C11 PaysOff. -/
 def PersistentBranchingDeficit
     (α β : Nat) (t : FormulaTree) : Prop :=
   ∀ ρ : Restriction,
@@ -42,70 +39,108 @@ theorem persistentBranchingDeficit_excludes_payoff
   have hle := h ρ hprog
   omega
 
-/-- Quantitative family-level deficit with a uniform positive margin after n0. -/
-def PersistentBranchingDeficitFamily
-    (α β : Nat) (f : Nat → FormulaTree) : Prop :=
+/-- Canonical CNF variable bound: one plus the largest variable identifier. -/
+def clauseVarBound (c : Clause) : Nat :=
+  c.foldl (fun acc l => max acc (l.var + 1)) 0
+
+def cnfVarBound (f : CNF) : Nat :=
+  f.foldl (fun acc c => max acc (clauseVarBound c)) 0
+
+/-- General bounded CNF family over the repository's canonical CNF type.
+This is useful as an ambient family, but is not claimed to satisfy a persistent
+deficit universally. -/
+def GeneralCNFFamily
+    (clauseBound : Nat → Nat) (n : Nat) (f : CNF) : Prop :=
+  cnfVarBound f ≤ n ∧ f.length ≤ clauseBound n
+
+/-- A hard subfamily is a predicate on the canonical CNF type, refined by the
+same explicit size envelope used by the reduction. -/
+def HardCNFSubfamily
+    (IsHardCNF : CNF → Prop)
+    (clauseBound : Nat → Nat)
+    (n : Nat) (f : CNF) : Prop :=
+  IsHardCNF f ∧ GeneralCNFFamily clauseBound n f
+
+/-- Uniform positive deficit on every progressing restriction of every member
+of a parametrized canonical-CNF family. -/
+def UniformPersistentDeficit
+    (Family : Nat → CNF → Prop) : Prop :=
   ∃ (c n0 : Nat), 0 < c ∧
     ∀ n : Nat, n0 ≤ n →
-      ∀ ρ : Restriction,
-        RestrictionProgress ρ (f n) →
-          amortizedDrop α β ρ (f n) ≤ costBits ρ (f n) ∧
-          c ≤ costBits ρ (f n) - amortizedDrop α β ρ (f n)
+      ∀ f : CNF, Family n f →
+        ∀ ρ : Restriction,
+          RestrictionProgress ρ (cnfCircuit f) →
+            amortizedDrop 1 1 ρ (cnfCircuit f) ≤
+              costBits ρ (cnfCircuit f) ∧
+            c ≤ costBits ρ (cnfCircuit f) -
+              amortizedDrop 1 1 ρ (cnfCircuit f)
 
-theorem persistentFamily_excludes_eventual_payoff
-    {α β : Nat} {f : Nat → FormulaTree}
-    (h : PersistentBranchingDeficitFamily α β f) :
+abbrev PersistentBranchingDeficitFamily :=
+  UniformPersistentDeficit
+
+theorem uniformPersistentDeficit_excludes_eventual_payoff
+    {Family : Nat → CNF → Prop}
+    (h : UniformPersistentDeficit Family) :
     ∃ n0 : Nat, ∀ n : Nat, n0 ≤ n →
-      ∀ ρ : Restriction,
-        RestrictionProgress ρ (f n) →
-          ¬ PaysOff α β ρ (f n) := by
+      ∀ f : CNF, Family n f →
+        ∀ ρ : Restriction,
+          RestrictionProgress ρ (cnfCircuit f) →
+            ¬ PaysOff 1 1 ρ (cnfCircuit f) := by
   rcases h with ⟨c, n0, hc, h⟩
   refine ⟨n0, ?_⟩
-  intro n hn ρ hprog hpay
-  have hdef := (h n hn ρ hprog).1
+  intro n hn f hf ρ hprog hpay
+  have hdef := (h n hn f hf ρ hprog).1
   have hlt :=
-    paysOff_implies_costBits_lt_amortizedDrop α β ρ (f n) hpay
+    paysOff_implies_costBits_lt_amortizedDrop
+      1 1 ρ (cnfCircuit f) hpay
   omega
 
-/-- A family suitable for a SAT lower-bound transfer must contain a polynomial
-reduction image of arbitrary canonical SAT inputs. Merely generating one
-formula per n (as the current C12 experiments do) is not enough. -/
+/-- Polynomial SAT reduction into a parametrized family of canonical CNFs. -/
 structure SATReductionIntoFamily
-    (Family : FormulaTree → Prop) where
-  reduce : BitString → FormulaTree
-  sizeBound : Nat → Nat
-  size_poly : CanonicalFinalProof.PolynomialTimeBound sizeBound
-  size_le : ∀ x, CircuitK1.size (reduce x) ≤ sizeBound x.length
-  lands : ∀ x, Family (reduce x)
+    (Family : Nat → CNF → Prop) where
+  reduce : BitString → CNF
+  parameter : BitString → Nat
+  parameterBound : Nat → Nat
+  parameter_poly : CanonicalFinalProof.PolynomialTimeBound parameterBound
+  parameter_le : ∀ x, parameter x ≤ parameterBound x.length
+  lands : ∀ x, Family (parameter x) (reduce x)
   correct :
     ∀ x,
-      CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding x ↔
-        CircuitK1.SATLanguage (reduce x)
+      CanonicalSATBoundary.SATBits
+          CanonicalCircuitBits.circuitBitEncoding x ↔
+        CircuitK1.SATLanguage (cnfCircuit (reduce x))
 
-/-- What restriction lower bounds actually control is a restricted
-decision-tree/branching model. To reach P02 one needs a genuine simulation
-theorem from every hardened polynomial DTM deciding SAT to that branching
-model. This field is intentionally explicit rather than hidden in OPEN_BRIDGE. -/
+/-- Explicit simulation obligation: a polynomial DTM for canonical SAT must
+induce a restriction-tree procedure on the hard family. The theorem carrying
+the exponential lower bound belongs here; it is not inferred from C11 alone. -/
 structure DTMToRestrictionTreeAdapter
-    (Family : FormulaTree → Prop) where
-  contradicts_poly_decider :
-    (∃ R : SATReductionIntoFamily Family,
-      True) →
-    PersistentBranchingDeficitFamily 1 1
-      (fun n => C12.randomKCNF n (2 * n + 1) 3 0) →
+    (Family : Nat → CNF → Prop) where
+  deficit_excludes_poly_sat :
+    Nonempty (SATReductionIntoFamily Family) →
+    UniformPersistentDeficit Family →
     ¬ CanonicalFinalProof.InP
-      (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding)
+      (CanonicalSATBoundary.SATBits
+        CanonicalCircuitBits.circuitBitEncoding)
 
-/-- Honest Lane-4 transfer target. The two mathematical producers are explicit:
-a SAT reduction into the hard family and a DTM-to-restriction-tree simulation. -/
 def RestrictionLowerBoundTransfer
-    (Family : FormulaTree → Prop) : Prop :=
+    (Family : Nat → CNF → Prop) : Prop :=
   Nonempty (SATReductionIntoFamily Family) ∧
-  Nonempty (DTMToRestrictionTreeAdapter Family)
+  Nonempty (DTMToRestrictionTreeAdapter Family) ∧
+  UniformPersistentDeficit Family
+
+theorem transfer_closes_p02
+    {Family : Nat → CNF → Prop}
+    (h : RestrictionLowerBoundTransfer Family) :
+    P02TerminalFrontier.P02Target := by
+  rcases h with ⟨hRed, hAdapter, hDeficit⟩
+  rcases hAdapter with ⟨A⟩
+  exact P02TerminalFrontier.p02_target_iff_sat_not_in_p.mpr
+    (A.deficit_excludes_poly_sat hRed hDeficit)
 
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.paysOff_implies_costBits_lt_amortizedDrop
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.persistentBranchingDeficit_excludes_payoff
-#print axioms MCore.Real.P02RestrictionLowerBoundPattern.persistentFamily_excludes_eventual_payoff
+#print axioms MCore.Real.P02RestrictionLowerBoundPattern.uniformPersistentDeficit_excludes_eventual_payoff
+#print axioms MCore.Real.P02RestrictionLowerBoundPattern.transfer_closes_p02
 
 end P02RestrictionLowerBoundPattern
 end Real
