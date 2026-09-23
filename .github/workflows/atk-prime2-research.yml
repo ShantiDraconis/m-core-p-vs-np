@@ -25,6 +25,8 @@ jobs:
           lake build MCore.Research.Prime2ConservativeTransfer
           lake build MCore.Research.Prime2FractionalHorizon
           lake build MCore.Research.PatternCalculator
+          lake build MCore.Real.P01FinalCertificate
+          lake build MCore.Real.P02G21G22Attack
       - name: Hygiene
         run: |
           set -euo pipefail
