@@ -60,7 +60,7 @@ def lean_source(c, pid, attempt_proof):
     ns = slug(c.get("name", f"Pattern_{pid}"))
     prop = proposition(c)
     lines = [
-        "import Mathlib",
+        "import Mathlib.Tactic.NativeDecide",
         "import MCore.Research.PatternCalculator",
         "import MCore.Real.P01FinalCertificate",
         "import MCore.Real.FinalProofEvidencePromotion",
