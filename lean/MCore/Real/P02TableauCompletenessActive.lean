@@ -152,65 +152,120 @@ theorem inactive_transitionCase_true
     · simp only [transitionCaseCNF, dif_pos hhalt] at hclause
       unfold haltingCaseCNF at hclause
       simp only [List.mem_append] at hclause
-      rcases hclause with hs | hrest
-      · exact mem_setStateClauses_has_prefix guard M t (s + 1) q clause hs
-      · rcases hrest with hh | hrest
-        · exact mem_copyHeadCell_has_prefix guard M t s (s + 1) clause hh
-        · rcases hrest with hl | hr
-          · exact mem_copyLeftAll_has_prefix guard M x t s clause hl
-          · exact mem_copyRightAll_has_prefix guard M x t s clause hr
+      rcases hclause with hABC | hD
+      · rcases hABC with hAB | hC
+        · rcases hAB with hA | hB
+          · simpa [guard] using
+              (mem_setStateClauses_has_prefix
+                [neg (stateVar M t s q), neg (headVar M t s a)]
+                M t (s + 1) q clause hA)
+          · simpa [guard] using
+              (mem_copyHeadCell_has_prefix
+                [neg (stateVar M t s q), neg (headVar M t s a)]
+                M t s (s + 1) clause hB)
+        · simpa [guard] using
+            (mem_copyLeftAll_has_prefix
+              [neg (stateVar M t s q), neg (headVar M t s a)]
+              M x t s clause hC)
+      · simpa [guard] using
+          (mem_copyRightAll_has_prefix
+            [neg (stateVar M t s q), neg (headVar M t s a)]
+            M x t s clause hD)
     · rcases htrans : M.machine.transition q a with ⟨qNext, write, dir⟩
       cases dir with
       | stay =>
           simp only [transitionCaseCNF, dif_neg hhalt, htrans] at hclause
           unfold stayCaseCNF at hclause
           simp only [List.mem_append] at hclause
-          rcases hclause with hs | hrest
-          · exact mem_setStateClauses_has_prefix guard M t (s + 1) qNext clause hs
-          · rcases hrest with hh | hrest
-            · exact mem_setSymbolClauses_has_prefix guard
-                (headVar M t (s + 1)) write clause hh
-            · rcases hrest with hl | hr
-              · exact mem_copyLeftAll_has_prefix guard M x t s clause hl
-              · exact mem_copyRightAll_has_prefix guard M x t s clause hr
+          rcases hclause with hABC | hD
+          · rcases hABC with hAB | hC
+            · rcases hAB with hA | hB
+              · simpa [guard] using
+                  (mem_setStateClauses_has_prefix
+                    [neg (stateVar M t s q), neg (headVar M t s a)]
+                    M t (s + 1) qNext clause hA)
+              · simpa [guard] using
+                  (mem_setSymbolClauses_has_prefix
+                    [neg (stateVar M t s q), neg (headVar M t s a)]
+                    (headVar M t (s + 1)) write clause hB)
+            · simpa [guard] using
+                (mem_copyLeftAll_has_prefix
+                  [neg (stateVar M t s q), neg (headVar M t s a)]
+                  M x t s clause hC)
+          · simpa [guard] using
+              (mem_copyRightAll_has_prefix
+                [neg (stateVar M t s q), neg (headVar M t s a)]
+                M x t s clause hD)
       | left =>
           simp only [transitionCaseCNF, dif_neg hhalt, htrans] at hclause
           unfold leftMoveCaseCNF at hclause
           simp only [List.mem_append] at hclause
-          rcases hclause with hs | hrest
-          · exact mem_setStateClauses_has_prefix guard M t (s + 1) qNext clause hs
-          · rcases hrest with hh | hrest
-            · exact mem_copySymbolClauses_has_prefix guard
-                (leftVar M x t s 0) (headVar M t (s + 1)) clause hh
-            · rcases hrest with hshiftL | hrest
-              · rcases List.mem_flatMap.mp hshiftL with ⟨i, _, hi⟩
-                exact mem_copyLeftCell_has_prefix guard M x t s (i + 1) (s + 1) i clause hi
-              · rcases hrest with hblankL | hrest
-                · exact mem_setLeftCell_has_prefix guard M x t (s + 1)
-                    (radius x t - 1) M.machine.blank clause hblankL
-                · rcases hrest with hwriteR | hshiftR
-                  · exact mem_setRightCell_has_prefix guard M x t (s + 1) 0 write clause hwriteR
-                  · rcases List.mem_flatMap.mp hshiftR with ⟨i, _, hi⟩
-                    exact mem_copyRightCell_has_prefix guard M x t s i (s + 1) (i + 1) clause hi
+          rcases hclause with hABCDE | hF
+          · rcases hABCDE with hABCD | hE
+            · rcases hABCD with hABC | hD
+              · rcases hABC with hAB | hC
+                · rcases hAB with hA | hB
+                  · simpa [guard] using
+                      (mem_setStateClauses_has_prefix
+                        [neg (stateVar M t s q), neg (headVar M t s a)]
+                        M t (s + 1) qNext clause hA)
+                  · simpa [guard] using
+                      (mem_copySymbolClauses_has_prefix
+                        [neg (stateVar M t s q), neg (headVar M t s a)]
+                        (leftVar M x t s 0) (headVar M t (s + 1)) clause hB)
+                · rcases List.mem_flatMap.mp hC with ⟨i, _, hi⟩
+                  simpa [guard] using
+                    (mem_copyLeftCell_has_prefix
+                      [neg (stateVar M t s q), neg (headVar M t s a)]
+                      M x t s (i + 1) (s + 1) i clause hi)
+              · simpa [guard] using
+                  (mem_setLeftCell_has_prefix
+                    [neg (stateVar M t s q), neg (headVar M t s a)]
+                    M x t (s + 1) (radius x t - 1) M.machine.blank clause hD)
+            · simpa [guard] using
+                (mem_setRightCell_has_prefix
+                  [neg (stateVar M t s q), neg (headVar M t s a)]
+                  M x t (s + 1) 0 write clause hE)
+          · rcases List.mem_flatMap.mp hF with ⟨i, _, hi⟩
+            simpa [guard] using
+              (mem_copyRightCell_has_prefix
+                [neg (stateVar M t s q), neg (headVar M t s a)]
+                M x t s i (s + 1) (i + 1) clause hi)
       | right =>
           simp only [transitionCaseCNF, dif_neg hhalt, htrans] at hclause
           unfold rightMoveCaseCNF at hclause
           simp only [List.mem_append] at hclause
-          rcases hclause with hs | hrest
-          · exact mem_setStateClauses_has_prefix guard M t (s + 1) qNext clause hs
-          · rcases hrest with hh | hrest
-            · exact mem_copySymbolClauses_has_prefix guard
-                (rightVar M x t s 0) (headVar M t (s + 1)) clause hh
-            · rcases hrest with hwriteL | hrest
-              · exact mem_setLeftCell_has_prefix guard M x t (s + 1) 0 write clause hwriteL
-              · rcases hrest with hshiftL | hrest
-                · rcases List.mem_flatMap.mp hshiftL with ⟨i, _, hi⟩
-                  exact mem_copyLeftCell_has_prefix guard M x t s i (s + 1) (i + 1) clause hi
-                · rcases hrest with hshiftR | hblankR
-                  · rcases List.mem_flatMap.mp hshiftR with ⟨i, _, hi⟩
-                    exact mem_copyRightCell_has_prefix guard M x t s (i + 1) (s + 1) i clause hi
-                  · exact mem_setRightCell_has_prefix guard M x t (s + 1)
-                      (radius x t - 1) M.machine.blank clause hblankR
+          rcases hclause with hABCDE | hF
+          · rcases hABCDE with hABCD | hE
+            · rcases hABCD with hABC | hD
+              · rcases hABC with hAB | hC
+                · rcases hAB with hA | hB
+                  · simpa [guard] using
+                      (mem_setStateClauses_has_prefix
+                        [neg (stateVar M t s q), neg (headVar M t s a)]
+                        M t (s + 1) qNext clause hA)
+                  · simpa [guard] using
+                      (mem_copySymbolClauses_has_prefix
+                        [neg (stateVar M t s q), neg (headVar M t s a)]
+                        (rightVar M x t s 0) (headVar M t (s + 1)) clause hB)
+                · simpa [guard] using
+                    (mem_setLeftCell_has_prefix
+                      [neg (stateVar M t s q), neg (headVar M t s a)]
+                      M x t (s + 1) 0 write clause hC)
+              · rcases List.mem_flatMap.mp hD with ⟨i, _, hi⟩
+                simpa [guard] using
+                  (mem_copyLeftCell_has_prefix
+                    [neg (stateVar M t s q), neg (headVar M t s a)]
+                    M x t s i (s + 1) (i + 1) clause hi)
+            · rcases List.mem_flatMap.mp hE with ⟨i, _, hi⟩
+              simpa [guard] using
+                (mem_copyRightCell_has_prefix
+                  [neg (stateVar M t s q), neg (headVar M t s a)]
+                  M x t s (i + 1) (s + 1) i clause hi)
+          · simpa [guard] using
+              (mem_setRightCell_has_prefix
+                [neg (stateVar M t s q), neg (headVar M t s a)]
+                M x t (s + 1) (radius x t - 1) M.machine.blank clause hF)
   rcases hprefix with ⟨suffix, rfl⟩
   exact evalClause_append_true_of_guard_true sigma guard suffix hguard
 
