@@ -1,0 +1,8 @@
+{
+  "name": "Gap_G21Pointwise",
+  "kind": "raw_lean_prop",
+  "prop": "MCore.Real.P02G21G22Attack.G21Pointwise",
+  "claim": "Exact FINAL_PROOF gap candidate: G21Pointwise",
+  "lane": "G21_SEMANTIC",
+  "source": "research/evidence/generated/final-gap-report.json"
+}
