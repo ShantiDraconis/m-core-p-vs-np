@@ -115,11 +115,6 @@ def ReducedProducer.toProducer
         P02ClockedDiagonalCompiler.semanticDiagonalBits M (R.selfInput M c)
     exact R.same_input_of_fixed M c hfixed
 
-theorem ReducedProducer.toP02Target
-    (R : ReducedProducer) :
-    P02TerminalFrontier.P02Target :=
-  R.toProducer.toP02Target
-
 def Producer.toUniformBridge
     (P : Producer) :
     UniformCookLevinSameInputBridge where
@@ -148,6 +143,12 @@ theorem Producer.toP02Target
     (P : Producer) :
     P02TerminalFrontier.P02Target :=
   uniformCookLevinBridge_closes_P02 P.toUniformBridge
+
+
+theorem ReducedProducer.toP02Target
+    (R : ReducedProducer) :
+    P02TerminalFrontier.P02Target :=
+  R.toProducer.toP02Target
 
 /-
 No independent blocker remains after Producer:
