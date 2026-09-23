@@ -16,6 +16,11 @@ jobs:
           build: false
           test: false
           lint: false
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
       - name: Build certified integration inputs
         run: |
           lake build MCore.Real.P01IntegratedMachine
