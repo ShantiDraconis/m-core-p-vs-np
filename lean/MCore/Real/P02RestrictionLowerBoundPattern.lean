@@ -135,20 +135,30 @@ theorem uniformPersistentDeficit_excludes_eventual_payoff
       1 1 ρ (cnfCircuit f) hpay
   omega
 
-/-- Padding by a satisfiable hard core preserves SAT only if the two CNFs
-can be satisfied simultaneously.  Deficit inheritance is a separate obligation:
-a core with margin c does not automatically force an arbitrary conjunction to
-retain that margin for every progressing restriction. -/
-def PaddingDeficitInheritance
+/-- A restriction is core-dominated when it gives progress on the padded
+formula and independently gives progress on the hard core.  This excludes the
+vacuous empty-core counterexample and records the exact guard needed by the
+inheritance theorem. -/
+def CoreDominatedProgress
+    (ρ : Restriction)
+    (f core : CNF) : Prop :=
+  RestrictionProgress ρ (cnfCircuit (f ++ core)) ∧
+  RestrictionProgress ρ (cnfCircuit core)
+
+/-- Guarded deficit inheritance.  Unlike raw append inheritance, this only
+claims inheritance for restrictions whose progress is witnessed on the core. -/
+def CoreDominatedDeficitInheritance
     (core : Nat → CNF)
     (c : Nat) : Prop :=
-  ∀ (n : Nat) (f : CNF),
+  ∀ (n : Nat) (f : CNF) (ρ : Restriction),
     DeficitAtLeast c (core n) →
-      DeficitAtLeast c (f ++ core n)
+    CoreDominatedProgress ρ f (core n) →
+      amortizedDrop 1 1 ρ (cnfCircuit (f ++ core n)) ≤
+        costBits ρ (cnfCircuit (f ++ core n)) ∧
+      c ≤ costBits ρ (cnfCircuit (f ++ core n)) -
+        amortizedDrop 1 1 ρ (cnfCircuit (f ++ core n))
 
-/-- A usable hard-core family for SAT padding must provide both semantic
-satisfiability and quantitative inheritance.  These are intentionally separate
-from mere existence of the core. -/
+/-- A usable hard-core family for the guarded padding route. -/
 structure HardCoreFamily where
   core : Nat → CNF
   margin : Nat
@@ -157,8 +167,8 @@ structure HardCoreFamily where
     ∀ n, CircuitK1.SATLanguage (cnfCircuit (core n))
   deficit :
     ∀ n, DeficitAtLeast margin (core n)
-  padding_inherits :
-    PaddingDeficitInheritance core margin
+  dominated_inherits :
+    CoreDominatedDeficitInheritance core margin
 
 /-- Polynomial SAT reduction into a parametrized family of canonical CNFs. -/
 structure SATReductionIntoFamily
@@ -174,6 +184,20 @@ structure SATReductionIntoFamily
       CanonicalSATBoundary.SATBits
           CanonicalCircuitBits.circuitBitEncoding x ↔
         CircuitK1.SATLanguage (cnfCircuit (reduce x))
+
+/-- Reduction specialized to the hard-core construction.  Besides semantic
+correctness, it must expose that every progressing restriction relevant to the
+lower-bound argument is core-dominated. -/
+structure SATReductionIntoCoreDominatedFamily
+    (H : HardCoreFamily)
+    (Family : Nat → CNF → Prop) extends SATReductionIntoFamily Family where
+  payload : BitString → CNF
+  reduce_eq :
+    ∀ x, reduce x = payload x ++ H.core (parameter x)
+  every_progress_core_dominated :
+    ∀ x ρ,
+      RestrictionProgress ρ (cnfCircuit (reduce x)) →
+      CoreDominatedProgress ρ (payload x) (H.core (parameter x))
 
 /-- Explicit simulation obligation: a polynomial DTM for canonical SAT must
 induce a restriction-tree procedure on the hard family. The theorem carrying
