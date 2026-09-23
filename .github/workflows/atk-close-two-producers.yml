@@ -35,6 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           lake build MCore.Real.P01FullVerifierPhysical
+          lake build MCore.Real.PhysicalMachineCore
           lake build MCore.Real.P01PhysicalRealizationAssembly
           lake build MCore.Real.P01FinalCertificate
           lake build MCore.Real.P01ConstructionGapClosure
@@ -58,6 +59,7 @@ jobs:
           set -euo pipefail
           targets=(
             lean/MCore/Real/P01FullVerifierPhysical.lean
+            lean/MCore/Real/PhysicalMachineCore.lean
             lean/MCore/Real/P01PhysicalRealizationAssembly.lean
             lean/MCore/Real/P01FinalCertificate.lean
             lean/MCore/Real/P01ConstructionGapClosure.lean
