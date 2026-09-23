@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.Data.Nat.Prime.Basic
 import MCore.Research.Prime2ConservativeTransfer
 
 namespace MCore
