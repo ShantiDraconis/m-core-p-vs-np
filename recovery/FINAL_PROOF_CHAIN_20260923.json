@@ -1,0 +1,106 @@
+{
+  "schema": "mcore.pnp.final-proof-recovery-chain.v1",
+  "branch": "recovery/final-proof-all-reuse-20260923",
+  "objective": "FINAL_PROOF[P_VS_NP]",
+  "policy": "reuse certified/frozen artifacts; fail closed at uninhabited terminal producers",
+  "chain": [
+    {
+      "stage": "P01_PREFIX",
+      "state": "GREEN_FROZEN_CERTIFIED",
+      "anchors": [
+        "fc20887e",
+        "614f88fe",
+        "f9add608",
+        "fa928b11",
+        "058f574b",
+        "bd067a39",
+        "921170b3",
+        "fbd93747"
+      ]
+    },
+    {
+      "stage": "P01_TERMINAL",
+      "state": "OPEN_IMPLEMENTATION",
+      "required": [
+        "P01MachineConstruction",
+        "P01ConstructionGap"
+      ],
+      "consumer": "construction_closes_p01"
+    },
+    {
+      "stage": "P02_PREFIX",
+      "state": "GREEN_FROZEN_CERTIFIED",
+      "anchors": [
+        "fbd24d7d",
+        "30707e68",
+        "0c755ac3",
+        "7aedf7bd",
+        "f3dc5354",
+        "a5635895",
+        "8fff59ef",
+        "0f6bcd52",
+        "b6b6821b",
+        "8218207d",
+        "d72e53bc",
+        "38db71b4",
+        "270282a5",
+        "5f8a0aa2",
+        "f29f5984"
+      ]
+    },
+    {
+      "stage": "P02_TERMINAL",
+      "state": "OPEN_MATH",
+      "required": [
+        "G21Pointwise"
+      ],
+      "equivalents": [
+        "P02Target",
+        "¬ InP SATTarget"
+      ],
+      "consumer": "g21_pointwise_iff_p02_target"
+    },
+    {
+      "stage": "G3",
+      "state": "GREEN_FROZEN_CERTIFIED",
+      "consumer": "cookNormalizedExternalContract"
+    },
+    {
+      "stage": "FINAL_EXTERNAL_TWO_GAP",
+      "state": "GREEN_FROZEN_CERTIFIED_REDUCTION",
+      "sha": "b406b806",
+      "run": 35722743845,
+      "theorem": "final_external_two_gap_closes"
+    },
+    {
+      "stage": "FINAL_EXTERNAL_INTEGRATION",
+      "state": "GREEN_FROZEN_CERTIFIED",
+      "sha": "c102d9d4",
+      "run": 35722252805,
+      "theorem": "final_external_certificate"
+    },
+    {
+      "stage": "FINAL_ENDPOINT",
+      "state": "BLOCKED_BY_TWO_TERMINALS",
+      "requires": [
+        "P01ConstructionGap",
+        "G21Pointwise"
+      ],
+      "produces": [
+        "FinalExternalGap",
+        "OfficialPneqNP",
+        "FINAL_ROOT",
+        "FINAL_PROOF[P_VS_NP]"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "sha": "17c04b62",
+      "state": "CLOSED_BY_FALSIFICATION",
+      "route": "G2.1 literal fixed-point"
+    }
+  ],
+  "exact_terminal_gap": "P01ConstructionGap ∧ G21Pointwise",
+  "final_proof_credit": 0
+}
