@@ -28,6 +28,11 @@ jobs:
           test: false
           lint: false
 
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
       - name: Snapshot certificate corpus
         run: |
           set -euo pipefail
