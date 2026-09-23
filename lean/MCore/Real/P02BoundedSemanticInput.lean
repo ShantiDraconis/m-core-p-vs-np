@@ -11,15 +11,18 @@ open P02BitStringNatCoding
 /-- Bounded halting domain at the distinguished input 0.
 Unlike `(c.eval 0).Dom`, this is decidable because `evaln` is total. -/
 def DomFuel (fuel : Nat) (c : Nat.Partrec.Code) : Prop :=
-  (Nat.Partrec.Code.evaln fuel c 0).isSome = true
+  ∃ v : Nat, Nat.Partrec.Code.evaln fuel c 0 = some v
 
 instance (fuel : Nat) (c : Nat.Partrec.Code) : Decidable (DomFuel fuel c) := by
   unfold DomFuel
   cases h : Nat.Partrec.Code.evaln fuel c 0 with
   | none =>
-      exact isFalse (by simp [h])
+      exact isFalse (by
+        intro hex
+        rcases hex with ⟨v, hv⟩
+        simp [h] at hv)
   | some v =>
-      exact isTrue (by simp [h])
+      exact isTrue ⟨v, h⟩
 
 /-- Bounded semantic observation.  Failure within the chosen fuel is represented
 by the empty bitstring; no halting oracle is queried. -/
@@ -37,7 +40,7 @@ theorem evaln_zero_computable (fuel : Nat) :
   have hEval :
       Primrec (fun (a : (Nat × Nat.Partrec.Code) × Nat) =>
         Nat.Partrec.Code.evaln a.1.1 a.1.2 a.2) :=
-    Nat.Partrec.Code.primrec_evaln
+    Nat.Partrec.Code.evaln_prim
   exact (hEval.comp hArgs).to_comp
 
 theorem decodeBitsNat_computable :
