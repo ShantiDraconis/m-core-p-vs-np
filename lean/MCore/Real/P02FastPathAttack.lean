@@ -33,6 +33,26 @@ theorem totalCandidateSemanticFailure_closes_P02
   totality_or_semantic_closes_p02
     (totalCandidateSemanticFailure_to_normalized h)
 
+theorem p02Target_to_totalCandidateSemanticFailure
+    (h : P02TerminalFrontier.P02Target) :
+    TotalCandidateSemanticFailure := by
+  have hG21 : P02G21G22Attack.G21Pointwise :=
+    P02G21G22Attack.g21_pointwise_iff_p02_target.mpr h
+  intro M hTotal
+  rcases hG21 M with ⟨x, hx⟩
+  have hsplit :=
+    (not_correctAt_iff_clock_or_semantic_mismatch M x).mp hx
+  rcases hsplit with hclock | hmismatch
+  · exact False.elim (hclock (hTotal x))
+  · exact ⟨x, hmismatch⟩
+
+theorem totalCandidateSemanticFailure_iff_P02Target :
+    TotalCandidateSemanticFailure ↔
+      P02TerminalFrontier.P02Target := by
+  constructor
+  · exact totalCandidateSemanticFailure_closes_P02
+  · exact p02Target_to_totalCandidateSemanticFailure
+
 /-- The semantic-stability lane is a sufficient but stronger producer for the
 new minimal target. -/
 theorem semanticStability_to_totalCandidateSemanticFailure
@@ -54,6 +74,8 @@ def OPEN_MATH_P02_FAST : Prop :=
 
 #print axioms MCore.Real.P02FastPathAttack.totalCandidateSemanticFailure_to_normalized
 #print axioms MCore.Real.P02FastPathAttack.totalCandidateSemanticFailure_closes_P02
+#print axioms MCore.Real.P02FastPathAttack.p02Target_to_totalCandidateSemanticFailure
+#print axioms MCore.Real.P02FastPathAttack.totalCandidateSemanticFailure_iff_P02Target
 #print axioms MCore.Real.P02FastPathAttack.semanticStability_to_totalCandidateSemanticFailure
 
 end P02FastPathAttack
