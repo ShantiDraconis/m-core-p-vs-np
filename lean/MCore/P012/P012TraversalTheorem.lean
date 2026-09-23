@@ -13,7 +13,9 @@ def toOneDisplacementNumerator (p q : Nat) : Int :=
 theorem toOneDisplacementNumerator_eq
     (p q : Nat) :
     toOneDisplacementNumerator p q = Int.ofNat (p + q) := by
-  simp [toOneDisplacementNumerator, Int.ofNat_add, sub_eq_add_neg, add_comm]
+  unfold toOneDisplacementNumerator
+  rw [Int.ofNat_add]
+  omega
 
 /-- Opposite traversal p/q -> -q/q = -1 has displacement -(p+q)/q. -/
 def toNegOneDisplacementNumerator (p q : Nat) : Int :=
@@ -22,8 +24,9 @@ def toNegOneDisplacementNumerator (p q : Nat) : Int :=
 theorem toNegOneDisplacementNumerator_eq
     (p q : Nat) :
     toNegOneDisplacementNumerator p q = -(Int.ofNat (p + q)) := by
-  simp [toNegOneDisplacementNumerator, Int.ofNat_add, sub_eq_add_neg,
-    add_comm, add_left_comm, add_assoc]
+  unfold toNegOneDisplacementNumerator
+  rw [Int.ofNat_add]
+  omega
 
 /-- Specialized q=3 facts recover the original 5/3 and -5/3 displacements. -/
 theorem negTwoThirds_to_one_numerator :
