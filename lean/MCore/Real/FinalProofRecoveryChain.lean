@@ -3,6 +3,7 @@ import MCore.Real.P02G21G22Attack
 import MCore.Real.FinalExternalTwoGap
 import MCore.Real.FinalExternalCertificate
 import MCore.Real.P012FailClosed
+import MCore.Real.TerminalGapP012
 
 namespace MCore
 namespace Real
@@ -36,6 +37,14 @@ theorem terminal_delta_iff_final_external_two_gap :
 theorem terminal_delta_iff_p012_rigid_core :
     TerminalDelta ↔ P012FailClosed.RigidCore := by
   rfl
+
+theorem terminal_delta_iff_terminal_gap_p012 :
+    TerminalDelta ↔
+      (P01FinalCertificate.P01ConstructionGap ∧
+       P02G21G22Attack.G21Pointwise) := by
+  rfl
+
+#print axioms MCore.Real.FinalProofRecoveryChain.terminal_delta_iff_terminal_gap_p012
 
 #print axioms MCore.Real.FinalProofRecoveryChain.terminal_delta_iff_p012_rigid_core
 
