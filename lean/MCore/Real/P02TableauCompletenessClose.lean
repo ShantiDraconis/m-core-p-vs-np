@@ -24,17 +24,21 @@ theorem copySymbolClauses_satisfied_of_assignment_eq
   unfold copySymbolClauses at hclause
   rcases List.mem_flatMap.mp hclause with ⟨a, _, ha⟩
   simp only [List.mem_cons, List.mem_singleton] at ha
-  rcases ha with rfl | rfl
-  · rw [evalClause_append]
+  rcases ha with hfirst | hrest
+  · subst clause
+    rw [evalClause_append]
     have hv := hvals a
     cases hold : sigma (oldVar a) <;>
       cases hnew : sigma (newVar a) <;>
       simp_all [evalClause, evalLiteral, neg, pos]
-  · rw [evalClause_append]
-    have hv := hvals a
-    cases hold : sigma (oldVar a) <;>
-      cases hnew : sigma (newVar a) <;>
-      simp_all [evalClause, evalLiteral, neg, pos]
+  · rcases hrest with hsecond | himpossible
+    · subst clause
+      rw [evalClause_append]
+      have hv := hvals a
+      cases hold : sigma (oldVar a) <;>
+        cases hnew : sigma (newVar a) <;>
+        simp_all [evalClause, evalLiteral, neg, pos]
+    · simp at himpossible
 
 theorem copyLeftAll_satisfied
     (sigma : Assignment)
@@ -138,7 +142,7 @@ theorem active_halting_case_true
     intro i hi a
     rw [hright0 i hi a, hright1 i hi a]
   unfold haltingCaseCNF
-  simpa [guard] using
+  simpa [guard, List.append_assoc] using
     evalCNF_append_true sigma
       (setStateClauses guard M t (s + 1) config.state)
       (copyHeadCell guard M t s (s + 1) ++
@@ -207,7 +211,7 @@ theorem active_stay_case_true
     intro i hi a
     rw [hright0 i hi a, hright1 i hi a, hstepRight]
   unfold stayCaseCNF
-  simpa [guard] using
+  simpa [guard, List.append_assoc] using
     evalCNF_append_true sigma
       (setStateClauses guard M t (s + 1) qNext)
       (setSymbolClauses guard (headVar M t (s + 1)) write ++
@@ -363,7 +367,7 @@ theorem active_left_case_true
       (copyRightCell guard M x t s i (s + 1) (i + 1))
       clause hc hcell
   unfold leftMoveCaseCNF
-  simpa [guard] using
+  simpa [guard, List.append_assoc] using
     evalCNF_append_true sigma
       (setStateClauses guard M t (s + 1) qNext)
       (copySymbolClauses guard
@@ -552,7 +556,7 @@ theorem active_right_case_true
     intro a
     rw [hright1 (radius x t - 1) hlast a, hstepRightLast]
   unfold rightMoveCaseCNF
-  simpa [guard] using
+  simpa [guard, List.append_assoc] using
     evalCNF_append_true sigma
       (setStateClauses guard M t (s + 1) qNext)
       (copySymbolClauses guard
