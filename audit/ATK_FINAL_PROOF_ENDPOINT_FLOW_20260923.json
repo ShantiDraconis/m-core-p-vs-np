@@ -1,0 +1,115 @@
+{
+  "schema": "atk.final-proof.endpoint-flow.v1",
+  "updated_from_head": "573dbd65f0c049bcd649a573ea93b3fa2a58543f",
+  "audit_commit": "28cb6b65d2f4211e55b8735af67c9522004e544e",
+  "certified_checkpoints": [
+    {
+      "sha": "19c7c5ea93d627d8db48fbdac870360b17e4d151",
+      "state": "GREEN_FROZEN_CERTIFIED",
+      "runs": [
+        35851683381,
+        35851686239,
+        35851690967,
+        35851700184
+      ]
+    },
+    {
+      "sha": "3f3afb71708e597ba269b92ba7fc942428512ab6",
+      "state": "GREEN_CERTIFIED",
+      "runs": [
+        35851714159
+      ]
+    },
+    {
+      "sha": "c4627e6a313a4bbcf331c8e05864c37889369867",
+      "state": "GREEN_CERTIFIED",
+      "runs": [
+        35851730333
+      ]
+    },
+    {
+      "sha": "8922bdb4bbdbb0c84e4565eea9ee8c3f2e138dd3",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853038311
+      ]
+    },
+    {
+      "sha": "3f537cb940552a117da50031def44cf66222d41f",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853041938
+      ]
+    },
+    {
+      "sha": "2650177c73798ec1db7675d099799e3ad6952173",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853046993
+      ]
+    },
+    {
+      "sha": "4b2eed73b8e731e9800cdc4d5e66828ba03d789d",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35851659981
+      ]
+    }
+  ],
+  "endpoints": {
+    "p01": [
+      "P01_parser_macro",
+      "P01_leaf_pop",
+      "P01_parser_leaf_operational",
+      "T1_A_GlobalParserSimulation",
+      "T1_B_ParserWitnessComposition",
+      "T1_C_VerifierComposition",
+      "T1_D_terminal_integration",
+      "P01MachineConstruction",
+      "P01ConstructionGap",
+      "SATInNPGap"
+    ],
+    "p02": [
+      "EffectiveDiagonalCompiler",
+      "kleene_fixed_point",
+      "CanonicalSATFixedPointRealizer.bitsOf",
+      "CanonicalSATFixedPointRealizer.valid",
+      "CanonicalSATFixedPointRealizer.flips_of_fixed",
+      "DiagonalCounterexampleWitness",
+      "DiagonalFamily",
+      "UniversalWitnessExists",
+      "G21Pointwise",
+      "P02Target",
+      "not_InP_SATTarget"
+    ],
+    "g3": [
+      "G3_source_provenance",
+      "G3_simulation_model_encoding",
+      "G3ExternalContract"
+    ],
+    "final": [
+      "P01ConstructionGap",
+      "P02Target",
+      "G3ExternalContract",
+      "FinalExternalInputs",
+      "FinalExternalCertificate",
+      "FINAL_EXTERNAL",
+      "FINAL_ROOT",
+      "FINAL_PROOF"
+    ]
+  },
+  "blocked": {
+    "T1_D_terminal_integration": "RED",
+    "flips_of_fixed": "OPEN_MATH",
+    "FINAL_PROOF_gap_discovery": "RED"
+  },
+  "forbidden": [
+    "SemanticFixedPointExistence"
+  ],
+  "invariants": [
+    "no promotion from RED or OPEN_MATH",
+    "nucleusTag has no SAT or CorrectAt semantics",
+    "literal fixed-point route remains closed by falsification",
+    "FINAL_ROOT remains null until exact terminal producers are kernel-valid"
+  ]
+}
