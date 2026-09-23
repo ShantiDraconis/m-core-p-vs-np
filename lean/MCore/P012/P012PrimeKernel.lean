@@ -45,10 +45,12 @@ def ExpandsFromKernel (a b : ThirdState) : Prop :=
   Int.natAbs a.numerator ≤ Int.natAbs b.numerator
 
 theorem compress_neg7_to_neg2 :
-    CompressesTowardKernel ⟨-7⟩ ⟨-2⟩ := by decide
+    CompressesTowardKernel ⟨-7⟩ ⟨-2⟩ := by
+  norm_num [CompressesTowardKernel]
 
 theorem expand_2_to_7 :
-    ExpandsFromKernel ⟨2⟩ ⟨7⟩ := by decide
+    ExpandsFromKernel ⟨2⟩ ⟨7⟩ := by
+  norm_num [ExpandsFromKernel]
 
 theorem kernel_reflection_displacement :
     displacementNumerator ⟨-2⟩ ⟨2⟩ = 4 := by decide
