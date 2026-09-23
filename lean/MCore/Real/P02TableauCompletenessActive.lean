@@ -68,9 +68,13 @@ theorem mem_copySymbolClauses_has_prefix
   unfold copySymbolClauses at h
   rcases List.mem_flatMap.mp h with ⟨a, _, ha⟩
   simp only [List.mem_cons, List.mem_singleton] at ha
-  rcases ha with rfl | rfl
-  · exact ⟨[neg (oldVar a), pos (newVar a)], rfl⟩
-  · exact ⟨[pos (oldVar a), neg (newVar a)], rfl⟩
+  rcases ha with hfirst | hrest
+  · subst clause
+    exact ⟨[neg (oldVar a), pos (newVar a)], rfl⟩
+  · rcases hrest with hsecond | himpossible
+    · subst clause
+      exact ⟨[pos (oldVar a), neg (newVar a)], rfl⟩
+    · simp at himpossible
 
 theorem mem_copyLeftAll_has_prefix
     (guard : Clause) (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
