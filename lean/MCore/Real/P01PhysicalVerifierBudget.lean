@@ -45,7 +45,7 @@ theorem accumulated_instruction_envelope
       exact Nat.mul_le_mul_left 4
         (Nat.mul_le_mul_right ((n + 1) ^ 2) hmn1)
     _ = 4 * (n + 1) ^ 3 := by
-      simp [pow_succ, Nat.mul_assoc]
+      simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
 
 #print axioms MCore.Real.P01PhysicalVerifierBudget.physicalVerifierTimeBound_poly
 #print axioms MCore.Real.P01PhysicalVerifierBudget.evalProgram_steps_le_input_length
