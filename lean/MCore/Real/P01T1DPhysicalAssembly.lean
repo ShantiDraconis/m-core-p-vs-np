@@ -14,6 +14,8 @@ open CanonicalSATWitness
 open P01FullVerifierPhysical
 open P01FullVerifierReverseDecoderGap
 
+/-- Functional decoding is closed; the remaining object is a fixed finite-control
+TM realizing the same verifier semantics on the physical verifier tape. -/
 structure PhysicalAssemblyCertificate where
   realization : PhysicalVerifierRealization
 
@@ -25,6 +27,7 @@ theorem physicalAssembly_closes_verifier
   rcases h with ⟨A⟩
   exact physical_realization_closes_full_verifier A.realization
 
+/-- This theorem records that no separate functional decoder hypothesis remains. -/
 theorem functional_decoder_available :
     ReverseDecoderGap :=
   reverse_decoder_gap_closed_functionally
