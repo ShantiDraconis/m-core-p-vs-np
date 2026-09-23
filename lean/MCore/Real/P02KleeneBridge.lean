@@ -54,7 +54,9 @@ noncomputable def witnessFromKleene
   let hc := Classical.choose_spec (kleene_fixed_point K)
   { bits := R.bitsOf c
     valid := R.valid c
-    flips := R.flips_of_fixed c hc }
+    flips := by
+      apply R.flips_of_fixed c
+      exact hc }
 
 /-- Uniform bridge required to turn the recursion theorem into the P02
 DiagonalFamily. This does not assume G21Pointwise or P02Target. -/
