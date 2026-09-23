@@ -1,4 +1,5 @@
 import MCore.Real.P01WitnessIndexedReadMachine
+import MCore.Real.MachineRunLemmas
 
 namespace MCore
 namespace Real
@@ -76,19 +77,40 @@ theorem witnessSeek_run_state
   induction pad generalizing right with
   | zero =>
       cases b <;>
-        simp [TM.run.eq_def, witnessSeekConfig, witnessIndexedReadMachine,
+        simp [TM.run, witnessSeekConfig, witnessIndexedReadMachine,
           TM.step, Tape.write, Tape.move]
   | succ pad ih =>
+      let cfg := witnessSeekConfig (Nat.succ pad) b tail right
       have hs :
-          witnessIndexedReadMachine.step
-              (witnessSeekConfig (Nat.succ pad) b tail right) =
+          witnessIndexedReadMachine.step cfg =
             witnessSeekConfig pad b tail (none :: right) := by
-        simpa [Nat.succ_eq_add_one] using
+        simpa [cfg, Nat.succ_eq_add_one] using
           witnessSeek_step_succ pad b tail right
-      simp only [Nat.succ_eq_add_one]
-      rw [show pad + 1 + 2 = (pad + 2) + 1 by omega]
-      simp [TM.run.eq_def, witnessSeekConfig_state,
-        witnessIndexedReadMachine_not_halt3, hs, ih]
+      have hrun1 :
+          witnessIndexedReadMachine.run 1 cfg =
+            witnessSeekConfig pad b tail (none :: right) := by
+        simp [TM.run, cfg, witnessIndexedReadMachine_not_halt3, hs]
+      have hadd :=
+        MachineRunLemmas.run_add witnessIndexedReadMachine
+          1 (pad + 2) cfg
+      have htotal :
+          witnessIndexedReadMachine.run (Nat.succ pad + 2) cfg =
+            witnessIndexedReadMachine.run (pad + 2)
+              (witnessSeekConfig pad b tail (none :: right)) := by
+        calc
+          witnessIndexedReadMachine.run (Nat.succ pad + 2) cfg =
+              witnessIndexedReadMachine.run (1 + (pad + 2)) cfg := by
+                congr 1
+                omega
+          _ = witnessIndexedReadMachine.run (pad + 2)
+                (witnessIndexedReadMachine.run 1 cfg) := hadd
+          _ = witnessIndexedReadMachine.run (pad + 2)
+                (witnessSeekConfig pad b tail (none :: right)) := by rw [hrun1]
+      change
+        (witnessIndexedReadMachine.run (Nat.succ pad + 2) cfg).state =
+          (if b then (4 : Fin 6) else (5 : Fin 6))
+      rw [htotal]
+      exact ih (none :: right)
 
 theorem witnessSeek_run_halts
     (pad : Nat) (b : Bool) (tail : BitString)
