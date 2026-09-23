@@ -6,6 +6,7 @@ namespace P01FinalProofProducer
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
+open CanonicalSATBoundary
 open P01FinalCertificate
 open P01ConstructionClose
 
