@@ -1,4 +1,4 @@
-import MCore.Real.CanonicalSATVerifier
+import MCore.Real.CanonicalSATWitness
 
 namespace MCore
 namespace Real
@@ -6,85 +6,69 @@ namespace P01WitnessBoundNormalization
 
 open CircuitK1
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open CanonicalSATWitness
-open CanonicalSATVerifier
 
-/-- Interpret an arbitrary finite bitstring as a total Boolean assignment,
-padding with false after the end. -/
+/-- Assignment read directly from a Boolean tape prefix. -/
 def assignmentOfBits (bits : BitString) : Assignment :=
   fun i => bits.getD i false
 
-/-- Canonical finite witness obtained from an arbitrary guessed bitstring.
-Only indices strictly below varBound are retained by the dependent type. -/
-def witnessOfBits (phi : Circuit) (bits : BitString) : SATWitness phi :=
-  fun i => bits.getD i.val false
+/-- Extend the exact canonical witness to the encoded-source length.
+The extension is inert padding only; the canonical witness prefix is unchanged. -/
+def paddedWitnessBits
+    {φ : Circuit}
+    (w : SATWitness φ) : BitString :=
+  witnessBits w ++
+    List.replicate ((encodeCircuit φ).length - varBound φ) false
 
-/-- Inside the canonical variable bound, the dependent witness and the raw
-bitstring assignment agree exactly. -/
-theorem assignmentOfWitness_witnessOfBits_agrees
-    (phi : Circuit) (bits : BitString) :
-    forall i, i < varBound phi ->
-      assignmentOfWitness phi (witnessOfBits phi bits) i =
-        assignmentOfBits bits i := by
-  intro i hi
-  simp [assignmentOfWitness, witnessOfBits, assignmentOfBits, hi]
+theorem paddedWitnessBits_length
+    {φ : Circuit}
+    (w : SATWitness φ) :
+    (paddedWitnessBits w).length = (encodeCircuit φ).length := by
+  have hle := varBound_le_encoded_length φ
+  simp [paddedWitnessBits, witnessBits_length]
+  omega
 
-/-- Normalizing an arbitrary bitstring to SATWitness does not change circuit
-evaluation relative to the raw bitstring assignment. Bits outside varBound are
-therefore semantically inert. -/
-theorem evalCircuit_witnessOfBits_eq
-    (phi : Circuit) (bits : BitString) :
-    evalCircuit (assignmentOfWitness phi (witnessOfBits phi bits)) phi =
-      evalCircuit (assignmentOfBits bits) phi := by
+theorem paddedWitnessBits_agree_below
+    {φ : Circuit}
+    (w : SATWitness φ)
+    (i : Nat)
+    (hi : i < varBound φ) :
+    assignmentOfBits (paddedWitnessBits w) i =
+      assignmentOfWitness φ w i := by
+  have hiBits : i < (witnessBits w).length := by
+    simpa [witnessBits_length] using hi
+  simp [assignmentOfBits, paddedWitnessBits, List.getD,
+    List.getElem?_append_left, assignmentOfWitness,
+    witnessBits, hi, hiBits]
+
+/-- Padding the guessed witness out to source length is semantically inert. -/
+theorem paddedWitnessBits_preserves_eval
+    {φ : Circuit}
+    (w : SATWitness φ) :
+    evalCircuit (assignmentOfBits (paddedWitnessBits w)) φ =
+      evalCircuit (assignmentOfWitness φ w) φ := by
   apply evalCircuit_eq_of_agree_below
-  exact assignmentOfWitness_witnessOfBits_agrees phi bits
-
-/-- Two guessed bitstrings that agree below varBound induce identical circuit
-semantics, regardless of any excess suffix. -/
-theorem excess_bits_ignored
-    (phi : Circuit) (a b : BitString)
-    (hAgree : forall i, i < varBound phi ->
-      a.getD i false = b.getD i false) :
-    evalCircuit (assignmentOfBits a) phi =
-      evalCircuit (assignmentOfBits b) phi := by
-  apply evalCircuit_eq_of_agree_below
   intro i hi
-  exact hAgree i hi
+  exact paddedWitnessBits_agree_below w i hi
 
-/-- The normalized representation always has exactly the canonical witness
-length, independent of how many excess bits the preparation phase guessed. -/
-def normalizedWitnessBits (phi : Circuit) (bits : BitString) : BitString :=
-  witnessBits (witnessOfBits phi bits)
+/-- The concrete guesser may guess one bit per encoded-source bit; every exact
+canonical SAT witness therefore has a source-length extension accepted by the
+same circuit semantics. -/
+theorem canonical_witness_has_source_length_extension
+    {φ : Circuit}
+    (w : SATWitness φ) :
+    ∃ bits : BitString,
+      bits.length = (encodeCircuit φ).length ∧
+      evalCircuit (assignmentOfBits bits) φ =
+        evalCircuit (assignmentOfWitness φ w) φ := by
+  exact ⟨paddedWitnessBits w, paddedWitnessBits_length w,
+    paddedWitnessBits_preserves_eval w⟩
 
-theorem normalizedWitnessBits_length
-    (phi : Circuit) (bits : BitString) :
-    (normalizedWitnessBits phi bits).length = varBound phi := by
-  simp [normalizedWitnessBits, witnessBits_length]
-
-/-- The canonical witness extracted from a source-length guess is always short
-enough for the canonical encoding. -/
-theorem normalizedWitnessBits_le_encoding
-    (phi : Circuit) (bits : BitString) :
-    (normalizedWitnessBits phi bits).length <= (encodeCircuit phi).length := by
-  rw [normalizedWitnessBits_length phi bits]
-  exact varBound_le_encoded_length phi
-
-/-- Verification of the normalized dependent witness is the same Boolean
-circuit evaluation as reading the original guessed bitstring below varBound,
-apart from the independent CNF well-formedness guard. -/
-theorem verifyWitness_normalized
-    (phi : Circuit) (bits : BitString) :
-    verifyWitness phi (witnessOfBits phi bits) =
-      Bool.and (isCNFBool phi) (evalCircuit (assignmentOfBits bits) phi) := by
-  unfold verifyWitness
-  rw [evalCircuit_witnessOfBits_eq]
-
-#print axioms MCore.Real.P01WitnessBoundNormalization.assignmentOfWitness_witnessOfBits_agrees
-#print axioms MCore.Real.P01WitnessBoundNormalization.evalCircuit_witnessOfBits_eq
-#print axioms MCore.Real.P01WitnessBoundNormalization.excess_bits_ignored
-#print axioms MCore.Real.P01WitnessBoundNormalization.normalizedWitnessBits_length
-#print axioms MCore.Real.P01WitnessBoundNormalization.normalizedWitnessBits_le_encoding
-#print axioms MCore.Real.P01WitnessBoundNormalization.verifyWitness_normalized
+#print axioms MCore.Real.P01WitnessBoundNormalization.paddedWitnessBits_length
+#print axioms MCore.Real.P01WitnessBoundNormalization.paddedWitnessBits_agree_below
+#print axioms MCore.Real.P01WitnessBoundNormalization.paddedWitnessBits_preserves_eval
+#print axioms MCore.Real.P01WitnessBoundNormalization.canonical_witness_has_source_length_extension
 
 end P01WitnessBoundNormalization
 end Real
