@@ -27,6 +27,7 @@ jobs:
           files=(
             lean/MCore/Real/P02BoundedSemanticInput.lean
             lean/MCore/Real/P02BoundedDomain.lean
+            lean/MCore/Real/P02BoundedFinalBridge.lean
           )
           for f in "${files[@]}"; do test -f "$f"; done
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
@@ -37,4 +38,7 @@ jobs:
             MCore.Real.P02BoundedDomain \
             MCore.Real.PhysicalMachineCore \
             MCore.Real.P02KleeneBridge \
-            MCore.Real.P02TableauCompletenessClose
+            MCore.Real.P02TableauCompletenessClose \
+            MCore.Real.P01FinalCertificate \
+            MCore.Real.FinalExternalCertificate \
+            MCore.Real.P02BoundedFinalBridge
