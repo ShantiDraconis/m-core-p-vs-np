@@ -31,3 +31,22 @@ import MCore.C12.Families
 import MCore.Frontier.K3Gaps
 import MCore.AttackDAG.K3AlgebraAttacks
 import MCore.Audit
+import MCore.BackwardAudit.MaterialOrientationKernel
+
+import MCore.Real.P01VerifiedRelation
+import MCore.Real.P01ComponentFailProof
+import MCore.Real.CanonicalSATFrameMachineV2
+
+import MCore.Real.P01RecursiveFiniteControlFrontier
+import MCore.Real.CanonicalCircuitBitsInverse
+import MCore.Real.CanonicalSATSlotParserSpec
+import MCore.Real.CanonicalSATVarPayloadMachine
+import MCore.Real.CanonicalSATTagConsumerMachine
+import MCore.Real.CanonicalSATParserTapeLayout
+import MCore.Real.CanonicalSATParserInitMachine
+import MCore.Real.CanonicalSATSlotLog
+import MCore.Real.CanonicalSATSlotLogMachine
+import MCore.Real.P02TerminalFrontier
+import MCore.Real.CanonicalSATRecursiveParserSimulation
+
+import MCore.Real.MachineRunLemmas
