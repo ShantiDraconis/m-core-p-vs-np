@@ -62,6 +62,8 @@ def lean_source(c, pid, attempt_proof):
     lines = [
         "import Mathlib",
         "import MCore.Research.PatternCalculator",
+        "import MCore.Real.P01FinalCertificate",
+        "import MCore.Real.FinalProofEvidencePromotion",
         "",
         "namespace MCore",
         "namespace Research",
