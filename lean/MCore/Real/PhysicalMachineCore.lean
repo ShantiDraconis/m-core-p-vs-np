@@ -18,6 +18,7 @@ open P01FullVerifierPhysicalControl
 open P01FullVerifierPhysicalStackV2
 open P01FullVerifierPhysicalRefinementV2
 open P01FullVerifierInputShuttleV2
+open P01FullVerifierPhysicalMoves
 open P01PhysicalVerifierUniformCosts
 open P01PhysicalRealizationAssembly
 
