@@ -106,7 +106,7 @@ theorem input_head_refines
     (stack : List Bool)
     (padding i : Nat)
     (hi : i < witness.length) :
-    (execMoves none
+    (execMoves (none : Option Bool)
       (moveLeftSeq (stackWitnessOffset stack source i))
       (physicalStackV2Tape witness source stack padding)).head =
       some witness[i] := by
