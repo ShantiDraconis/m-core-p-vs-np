@@ -35,6 +35,11 @@ theorem two_to_negThree_displacement :
 def UnitThirdStep (a b : ThirdState) : Prop :=
   b.numerator = a.numerator + 1
 
+instance instDecidableUnitThirdStep (a b : ThirdState) :
+    Decidable (UnitThirdStep a b) := by
+  unfold UnitThirdStep
+  infer_instance
+
 theorem step_neg2_neg1 : UnitThirdStep negTwoThirds negOneThird := by decide
 theorem step_neg1_zero : UnitThirdStep negOneThird zeroThird := by decide
 theorem step_zero_one : UnitThirdStep zeroThird oneThird := by decide
