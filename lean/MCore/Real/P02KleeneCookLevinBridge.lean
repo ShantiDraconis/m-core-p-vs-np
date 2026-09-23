@@ -116,7 +116,7 @@ theorem uniformCookLevinBridge_closes_P02
     P02TerminalFrontier.P02Target :=
   kleene_sat_bridge_closes_P02 B.toD3KleeneSATBridge
 
-/--
+/-
 Fail-closed status:
 - canonical encoding/validity: CLOSED here;
 - Kleene fixed-point theorem: imported GREEN;
