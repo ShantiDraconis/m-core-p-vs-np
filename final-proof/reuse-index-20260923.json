@@ -25,6 +25,14 @@
   },
   "reuse": [
     {
+      "area": "P02 tableau completeness closure source",
+      "sha": "8e31a49b9be2fd9950e65d5c401ceba3a177a765",
+      "branch": "atk/p02-tableau-completeness-close-20260923",
+      "run": "35864564941",
+      "state": "SOURCE_CLOSED_BUILD_PENDING",
+      "note": "constructs executionAssignment transitions including halting/stay/left/right and TableauCompletenessCertificate; CI runner ended before executing steps, so not GREEN"
+    },
+    {
       "area": "P01 parser components",
       "sha": "fc20887e",
       "certificate": "cert/p01-parser-components-fc20887e-run35700922856",
@@ -309,7 +317,7 @@
   "effective_flow": [
     "reuse certified P01 parser + physical + polynomial components",
     "inhabit P01MachineConstruction -> p01_closed_no_hypothesis -> P01ConstructionGap",
-    "reuse 30707e68 tableau-completeness work where it satisfies the active TableauCompletenessCertificate interface",
+    "8e31a49b source constructs active TableauCompletenessCertificate from executionAssignment; promote only after kernel GREEN",
     "reuse Kleene/E1/E2/T5 algebra/coding/compiler components toward UniformSameInputTransport",
     "TableauCompletenessCertificate + UniformSameInputTransport -> flips_of_fixed -> G21Pointwise -> P02Target",
     "P01ConstructionGap + G21Pointwise -> FinalExternalTwoGap",
@@ -317,8 +325,8 @@
     "then FINAL_ROOT -> FINAL_PROOF only when all real terminal and release gates are closed"
   ],
   "still_open": [
+    "kernel verification of P02 tableau completeness closure source 8e31a49b",
     "P01MachineConstruction",
-    "compatibility/inhabitance of active TableauCompletenessCertificate from certified 30707e68 source",
     "UniformSameInputTransport",
     "G21Pointwise",
     "P02Target",
