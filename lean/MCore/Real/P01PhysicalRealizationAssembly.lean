@@ -1,3 +1,7 @@
+import MCore.Real.P01WitnessGuessExecution
+import MCore.Real.P01WitnessBoundNormalization
+import MCore.Real.P01T1DPhysicalAssembly
+import MCore.Real.P01T1DGlobalPhysical
 import MCore.Real.P01FullVerifierReverseDecoderGap
 import MCore.Real.P01FullVerifierPhysicalOps
 import MCore.Real.P01FullVerifierShuttleReturn
