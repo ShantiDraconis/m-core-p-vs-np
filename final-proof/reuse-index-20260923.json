@@ -1,0 +1,328 @@
+{
+  "schema": "elyon.final-proof-reuse.v1",
+  "generated_on": "2026-09-23",
+  "base_head": "dbe21c4ddfb1f6d90931756652eb513de19164f2",
+  "policy": "fail-closed: certified/frozen artifacts may be reused; falsified routes remain closed; OPEN_MATH is never promoted by provenance alone",
+  "active_terminal_reduction": {
+    "P01": [
+      "P01MachineConstruction",
+      "p01_closed_no_hypothesis",
+      "P01ConstructionGap"
+    ],
+    "P02": [
+      "TableauCompletenessCertificate",
+      "UniformSameInputTransport",
+      "flips_of_fixed",
+      "G21Pointwise",
+      "P02Target"
+    ],
+    "final": [
+      "FinalExternalLiveTwoProducer",
+      "FinalExternalCertificate",
+      "FINAL_ROOT",
+      "FINAL_PROOF"
+    ]
+  },
+  "reuse": [
+    {
+      "area": "P01 parser components",
+      "sha": "fc20887e",
+      "certificate": "cert/p01-parser-components-fc20887e-run35700922856",
+      "run": "35700922856",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 integrated parser/leaf",
+      "sha": "3690ab05",
+      "certificate": "cert/p01-integrated-parser-leaf-chain-3690ab05-run35722427864",
+      "run": "35722427864",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 leaf source return",
+      "sha": "2221f431",
+      "certificate": "cert/p01-leaf-source-return-2221f431-run35722490794",
+      "run": "35722490794",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 terminal branches",
+      "sha": "f9add608",
+      "certificate": "cert/p01-terminal-branches-f9add608-run35722846538",
+      "run": "35722846538",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 phase/global-slotlog",
+      "sha": "614f88fe",
+      "certificate": "cert/p01-phase-macros-614f88fe-run35723570545",
+      "run": "35723570545",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 global parser",
+      "sha": "fa928b11",
+      "certificate": "cert/p01-t1a-global-parser-fa928b11-run35745074597",
+      "run": "35745074597",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 physical realization",
+      "sha": "058f574b",
+      "certificate": "cert/p01-physical-realization-058f574b-run35785607933",
+      "run": "35785607933",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 physical moves",
+      "sha": "e82c0dfc",
+      "certificate": "cert/p01-physical-moves-e82c0dfc-run35833209966",
+      "run": "35833209966",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 physical refinement",
+      "sha": "e2d30558",
+      "certificate": "cert/p01-physical-refinement-e2d30558-run35833213528",
+      "run": "35833213528",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P01 eval local",
+      "sha": "85ee5341",
+      "certificate": "cert/p01-eval-local-85ee5341-run35833206203",
+      "run": "35833206203",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T1 phase bridge",
+      "sha": "bd067a39",
+      "certificate": "cert/t1-a-phase-bridge-bd067a39-run35795773383",
+      "run": "35795773383",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T1 physical realization",
+      "sha": "058f574b",
+      "certificate": "cert/t1-b-physical-realization-058f574b-run35785607933",
+      "run": "35785607933",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T1 polynomial bound",
+      "sha": "921170b3",
+      "certificate": "cert/t1-c-poly-bound-921170b3-run35791659492",
+      "run": "35791659492",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T5 bounded computation",
+      "sha": "fbd24d7d",
+      "certificate": "cert/t5-a1-bounded-computation-fbd24d7d-run35770208857",
+      "run": "35770208857",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T5 tableau completeness",
+      "sha": "30707e68",
+      "certificate": "cert/t5-a1-completeness-30707e68-run35775861028",
+      "run": "35775861028",
+      "state": "GREEN_FROZEN_CERTIFIED_REUSE_SOURCE"
+    },
+    {
+      "area": "T5 universal failure algebra",
+      "sha": "0c755ac3",
+      "certificate": "cert/t5-a-universal-failure-0c755ac3-run35785495169",
+      "run": "35785495169",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T5 clock failure",
+      "sha": "7aedf7bd",
+      "certificate": "cert/t5-b-clock-failure-7aedf7bd-run35791662702",
+      "run": "35791662702",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T5 semantic mismatch",
+      "sha": "f3dc5354",
+      "certificate": "cert/t5-c-semantic-mismatch-f3dc5354-run35791665694",
+      "run": "35791665694",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T5 candidate coding",
+      "sha": "a5635895",
+      "certificate": "cert/t5-d-candidate-coding-a5635895-run35795602565",
+      "run": "35795602565",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "T5 diagonal compiler",
+      "sha": "8fff59ef",
+      "certificate": "cert/t5-e-diagonal-compiler-8fff59ef-run35791673222",
+      "run": "35791673222",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P02 Kleene bridge",
+      "sha": "5f8a0aa2",
+      "certificate": "cert/p02-kleene-5f8a0aa2-run35784099753",
+      "run": "35784099753",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P02 E1",
+      "sha": "0f6bcd52",
+      "certificate": "cert/p02-e1-0f6bcd52-run35785227242",
+      "run": "35785227242",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P02 E2 audit",
+      "sha": "b6b6821b",
+      "certificate": "cert/p02-e2-audit-b6b6821b-run35785134353",
+      "run": "35785134353",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "P02 E2 math checkpoint",
+      "sha": "8218207d",
+      "certificate": "cert/p02-e2-math-checkpoint-8218207d-run35788500754",
+      "run": "35788500754",
+      "state": "GREEN_FROZEN_CERTIFIED_CHECKPOINT"
+    },
+    {
+      "area": "P02 integration",
+      "sha": "270282a5",
+      "certificate": "cert/p02-integration-270282a5-run35787562294",
+      "run": "35787562294",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "G2.0 normalization",
+      "sha": "d72e53bc",
+      "certificate": "cert/p02-g2-0-normalization-d72e53bc-run35707286302",
+      "run": "35707286302",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "G2.2 wiring",
+      "sha": "38db71b4",
+      "certificate": "cert/p02-g2-2-wiring-38db71b4-run35722282451",
+      "run": "35722282451",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "G3 normalized four-way",
+      "sha": "3f04da00",
+      "certificate": "cert/g3-normalized-four-way-3f04da00-run35715387641",
+      "run": "35715387641",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "G3 normalized external contract",
+      "sha": "f2cafea7",
+      "certificate": "cert/g3-normalized-external-contract-f2cafea7-run35719428075",
+      "run": "35719428075",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "FinalExternal integration",
+      "sha": "c102d9d4",
+      "certificate": "cert/final-external-integration-c102d9d4-run35722252805",
+      "run": "35722252805",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "FinalExternal two-gap",
+      "sha": "b406b806",
+      "certificate": "cert/final-external-two-gap-b406b806-run35722743845",
+      "run": "35722743845",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "FinalExternal certificate recovery",
+      "sha": "af2464ac",
+      "certificate": "cert/final-external-certificate-recovery-af2464ac-run35829886265",
+      "run": "35829886265",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "FinalExternal two-gap recovery",
+      "sha": "064edaba",
+      "certificate": "cert/final-external-two-gap-recovery-064edaba-run35829905302",
+      "run": "35829905302",
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "area": "Final proof chain manifest",
+      "sha": "d25d6183",
+      "certificate": "cert/final-proof-chain-manifest-d25d6183-run35829956811",
+      "run": "35829956811",
+      "state": "GREEN_FROZEN_CERTIFIED_INFRA"
+    },
+    {
+      "area": "Final proof recovery chain",
+      "sha": "a21d747c",
+      "certificate": "cert/final-proof-recovery-chain-a21d747c-run35829962758",
+      "run": "35829962758",
+      "state": "GREEN_FROZEN_CERTIFIED_INFRA"
+    },
+    {
+      "area": "P012 final adaptation",
+      "sha": "632ef640",
+      "certificate": "cert/p012-final-adaptation-632ef640-run35841119149",
+      "run": "35841119149",
+      "state": "GREEN_FROZEN_CERTIFIED_SYMBOLIC_NO_TERMINAL_CREDIT"
+    },
+    {
+      "area": "P012 final chain link",
+      "sha": "a89cca57",
+      "certificate": "cert/p012-final-chain-link-a89cca57-run35840144763",
+      "run": "35840144763",
+      "state": "GREEN_FROZEN_CERTIFIED_SYMBOLIC_NO_TERMINAL_CREDIT"
+    },
+    {
+      "area": "P012 terminal foundation",
+      "sha": "728609cd",
+      "certificate": "cert/p012-terminal-foundation-728609cd-run35840121783",
+      "run": "35840121783",
+      "state": "GREEN_FROZEN_CERTIFIED_SYMBOLIC_NO_TERMINAL_CREDIT"
+    },
+    {
+      "area": "P012 lemma suite",
+      "sha": "54b42c0e",
+      "certificate": "cert/p012-full-lemma-suite-54b42c0e-run35841388703",
+      "run": "35841388703",
+      "state": "GREEN_FROZEN_CERTIFIED_SYMBOLIC_REAL_BRIDGES_REQUIRE_ENDPOINTS"
+    }
+  ],
+  "permanently_closed": [
+    {
+      "route": "G2.1 literal fixed point",
+      "sha": "17c04b62",
+      "certificate": "cert/p02-g2-1-literal-fixed-point-falsified-17c04b62-run35721158651",
+      "state": "CLOSED_BY_FALSIFICATION"
+    }
+  ],
+  "effective_flow": [
+    "reuse certified P01 parser + physical + polynomial components",
+    "inhabit P01MachineConstruction -> p01_closed_no_hypothesis -> P01ConstructionGap",
+    "reuse 30707e68 tableau-completeness work where it satisfies the active TableauCompletenessCertificate interface",
+    "reuse Kleene/E1/E2/T5 algebra/coding/compiler components toward UniformSameInputTransport",
+    "TableauCompletenessCertificate + UniformSameInputTransport -> flips_of_fixed -> G21Pointwise -> P02Target",
+    "P01ConstructionGap + G21Pointwise -> FinalExternalTwoGap",
+    "reuse FinalExternal integration/recovery certificates -> FinalExternalCertificate",
+    "then FINAL_ROOT -> FINAL_PROOF only when all real terminal and release gates are closed"
+  ],
+  "still_open": [
+    "P01MachineConstruction",
+    "compatibility/inhabitance of active TableauCompletenessCertificate from certified 30707e68 source",
+    "UniformSameInputTransport",
+    "G21Pointwise",
+    "P02Target",
+    "FINAL_ROOT",
+    "FINAL_PROOF"
+  ]
+}
