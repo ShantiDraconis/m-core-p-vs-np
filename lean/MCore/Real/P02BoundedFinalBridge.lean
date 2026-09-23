@@ -55,15 +55,19 @@ def BoundedSameInputWitness.toDiagonalWitness
     valid := ?_
     flips := ?_
   }
-  · exact ⟨rejectCircuit M y, by simp [x]⟩
+  · exact ⟨rejectCircuit M y, by
+      simpa [x] using
+        (decodeCircuit_encode (rejectCircuit M y))⟩
   · have hCL :=
       rejectCircuit_cook_levin_correct
         boundedExecCorrectness_closed M y
-    simpa [x, hxy] using hCL
+    change SATTarget x ↔ ¬ AcceptsAtDeclaredBound M x
+    rw [← hxy]
+    exact hCL
 
 /-- The uniform bounded same-input producer is sufficient for the exact D3
 semantic self-reference object. -/
-noncomputable theorem uniformBoundedSameInput_to_D3
+theorem uniformBoundedSameInput_to_D3
     (h : UniformBoundedSameInputProducer) :
     D3SemanticSelfReference := by
   classical
