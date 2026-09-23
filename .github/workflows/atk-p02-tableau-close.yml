@@ -1,0 +1,35 @@
+name: ATK P02 tableau close
+
+on:
+  push:
+    branches:
+      - atk/p02-tableau-completeness-close-20260923
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02TableauCompletenessClose
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          file="lean/MCore/Real/P02TableauCompletenessClose.lean"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$file"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$file"
