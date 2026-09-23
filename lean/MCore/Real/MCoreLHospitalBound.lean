@@ -17,6 +17,56 @@ open CookNormalizedG3Contract
 open FinalExternalCertificate
 
 /--
+Canonical symbolic indeterminate sector of M-Core.
+
+These constructors are M-Core values, not ordinary naturals/reals and not
+Mathlib's partial-computation bottom.  The first canonical element is I₀,
+written here as `phi`.
+-/
+inductive MIndeterminate where
+  | phi
+  | infDivInf
+  | zeroMulInf
+  | infSubInf
+  | zeroPowZero
+  | onePowInf
+  | infPowZero
+  deriving DecidableEq, Repr
+
+/-- The first M-Core indeterminate constant: I₀ = φ = 0/0 symbolically. -/
+def I₀ : MIndeterminate :=
+  .phi
+
+/-- ASCII alias for tooling and filenames. -/
+def I0 : MIndeterminate :=
+  I₀
+
+/-- Canonical symbolic phi of the M-Core indeterminate sector. -/
+def phi : MIndeterminate :=
+  I₀
+
+@[simp] theorem phi_eq_I0 : phi = I0 := by
+  rfl
+
+@[simp] theorem I0_eq_first_indeterminate : I0 = MIndeterminate.phi := by
+  rfl
+
+/--
+Optional bridge from a symbolic M-Core indeterminate to a partial-recursive
+code.  This is deliberately data, not a theorem: a concrete code realizing
+the symbol must be supplied and audited separately.
+-/
+structure IndeterminateCodeRealization where
+  symbol : MIndeterminate
+  code : Nat.Partrec.Code
+  diverges : DivergesAtZero code
+
+/-- A realization of φ is a code-level representative of the first
+indeterminate constant. -/
+def PhiCodeRealization : Type :=
+  { R : IndeterminateCodeRealization // R.symbol = phi }
+
+/--
 M-Core indeterminate constants are codes whose semantic evaluation at the
 distinguished input is bottom.  This definition is descriptive only: it does
 not make semantic divergence decidable and does not assert that bottom later
