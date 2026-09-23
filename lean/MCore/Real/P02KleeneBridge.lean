@@ -17,7 +17,7 @@ open P02FinalAttack
 Mathlib's partial-recursive code universe. -/
 structure EffectiveDiagonalCompiler (M : PolyDTMCandidate) where
   f : Nat.Partrec.Code → ℕ →. ℕ
-  partrec : Nat.Partrec₂ f
+  partrec : Partrec₂ f
 
 /-- Canonical-SAT realization of a Kleene fixed point.
 
@@ -45,16 +45,16 @@ theorem kleene_fixed_point
 
 /-- A computable diagonal compiler plus a canonical-SAT realizer yields one
 actual diagonal witness against M. No literal string fixed point is used. -/
-def witnessFromKleene
+noncomputable def witnessFromKleene
     (M : PolyDTMCandidate)
     (K : EffectiveDiagonalCompiler M)
     (R : CanonicalSATFixedPointRealizer M K) :
-    DiagonalCounterexampleWitness M := by
-  rcases kleene_fixed_point K with ⟨c, hc⟩
-  exact
-    { bits := R.bitsOf c
-      valid := R.valid c
-      flips := R.flips_of_fixed c hc }
+    DiagonalCounterexampleWitness M :=
+  let c := Classical.choose (kleene_fixed_point K)
+  let hc := Classical.choose_spec (kleene_fixed_point K)
+  { bits := R.bitsOf c
+    valid := R.valid c
+    flips := R.flips_of_fixed c hc }
 
 /-- Uniform bridge required to turn the recursion theorem into the P02
 DiagonalFamily. This does not assume G21Pointwise or P02Target. -/
@@ -66,7 +66,7 @@ structure D3KleeneSATBridge where
 
 /-- The recursion theorem discharges the self-reference step once the two
 explicit bridges above are supplied. -/
-def D3KleeneSATBridge.toDiagonalFamily
+noncomputable def D3KleeneSATBridge.toDiagonalFamily
     (B : D3KleeneSATBridge) :
     DiagonalFamily :=
   { witness := fun M =>
