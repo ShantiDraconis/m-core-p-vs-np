@@ -1,0 +1,42 @@
+{
+  "certificate_type": "PROGRESS_SNAPSHOT_PROVENANCE",
+  "scope": "P01+G21+Prime2+PatternCalculator+GapDiscovery",
+  "frozen_source_sha": "19c7c5ea93d627d8db48fbdac870360b17e4d151",
+  "certificate_run": 35851229508,
+  "certificate_run_conclusion": "SUCCESS",
+  "mathematical_status": "NOT_FINAL_PROOF_CERTIFIED",
+  "p01_status": "RED_BUILD_OR_OPEN_IMPLEMENTATION",
+  "g21_status": "RED_BUILD_OR_OPEN_MATH",
+  "note": "This certificate preserves and attests the progress snapshot and its provenance only. It does not certify P01ConstructionGap, G21Pointwise, FINAL_ROOT, or FINAL_PROOF.",
+  "included_progress_shas": [
+    "a9ad1301872b2235a62017b8618b8017a28066cb",
+    "52bb07538b63e39731243a2b16e0c19aecdb16c4",
+    "9d920f0e6d089ea2061f1b74fd1c712976022562",
+    "5d80be1228ab200370b0509ae32d540d58ff5db3",
+    "d64166eb1cd1ff92efe1445b729717d2f71bb7e7",
+    "44a2d9ee89116ce851fac7d0c607e7e758b695cf",
+    "5f0888809a3f902a8361456c32f962fbea6acad0",
+    "8a643219d606177722addc37b21eddcb703b9082",
+    "022c0c69291aef603253df9fcdb82a2b37b7543f",
+    "0117ef6a90cd556d80a136ca31e59275999cb01c",
+    "7758a4197aad9c07a3dd17e8f0161d6d274cb52b",
+    "f23189e78448be233b5ee58e1cf911a4914c549e",
+    "279ad483a526bbeb6c5c2475813ba973a1912423",
+    "2327f27cec52a4cbfa7dcfe2527e43735d13ee30",
+    "2d22e9442fe32fa24c16ac2bd9f13f9806fd6959",
+    "dfc72d2e6cb3d0e90b4dcbcac15f20a728ac0f9e",
+    "eb660968f115c93f0c40c35d633efd302992b0af",
+    "ddba1cbec39ed434d594ebdd235d86fc9f54016c",
+    "fb166216728e8b5a66697cc1084008ed3369b592",
+    "483dc89aef6fb4a96e85631b95d90192aa754ae2",
+    "3585fa9569f001c2f89ac893651f6a40f18d2a8f",
+    "fe3f1d94b82fded1493f036e9e915f3c09de044a",
+    "39174c7482610afa63edccdba7b8b78c1bf35c26",
+    "19c7c5ea93d627d8db48fbdac870360b17e4d151"
+  ],
+  "blocker_summary": [
+    "P01 remains blocked by implementation/build integration issues beyond preserved checkpoint.",
+    "G21 remains mathematically open; latest mechanical blockers moved from P02UniversalFailureAlgebra to later boundary files.",
+    "Prime2/PatternCalculator research remains non-promoting unless exact transfer/coverage is kernel-checked."
+  ]
+}
