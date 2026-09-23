@@ -1,0 +1,32 @@
+{
+  "schema": "mcore.pnp.canonical-recovery-index.v1",
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "branch": "recovery/final-proof-all-reuse-20260923",
+  "terminal_aggregator": "lean/MCore/Real/FinalProofRecoveryChain.lean",
+  "manifests": [
+    "recovery/FINAL_PROOF_CHAIN_20260923.json",
+    "recovery/CERTIFIED_SHA_REUSE_20260923.json",
+    "recovery/CANONICAL_RECOVERY_LANE.md"
+  ],
+  "terminal_delta": [
+    "P01ConstructionGap",
+    "G21Pointwise"
+  ],
+  "final_chain": [
+    "FinalExternalTwoGap",
+    "FinalExternalGap",
+    "FinalExternalCertificate",
+    "OfficialPneqNP",
+    "FINAL_ROOT",
+    "FINAL_PROOF[P_VS_NP]"
+  ],
+  "historical_repos_are_import_only": [
+    "ShantiDraconis/millennium-p-vs-np-I",
+    "ShantiDraconis/millennium-p-vs-np-classical",
+    "ShantiDraconis/M-Core"
+  ],
+  "closed_routes": [
+    "G2.1 literal fixed-point"
+  ],
+  "status": "FAIL_CLOSED"
+}
