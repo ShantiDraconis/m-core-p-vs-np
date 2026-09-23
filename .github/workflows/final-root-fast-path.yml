@@ -1,0 +1,77 @@
+name: FINAL ROOT fast path
+
+on:
+  push:
+    branches:
+      - atk/p02-kleene-bridge-fix-20260923
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-fast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build P01 physical fast path
+        run: |
+          set -euo pipefail
+          lake build \
+            MCore.Real.P01FullVerifierPhysicalRefinement \
+            MCore.Real.P01FullVerifierPhysicalRefinementV2 \
+            MCore.Real.P01FullVerifierStackPrimitiveMachine \
+            MCore.Real.P01PhysicalVerifierUniformCosts \
+            MCore.Real.P01PhysicalRealizationAssembly \
+            MCore.Real.P01FastPathAttack
+      - name: P01 hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P01FullVerifierPhysicalRefinement.lean
+            lean/MCore/Real/P01FullVerifierPhysicalRefinementV2.lean
+            lean/MCore/Real/P01FullVerifierStackPrimitiveMachine.lean
+            lean/MCore/Real/P01PhysicalVerifierUniformCosts.lean
+            lean/MCore/Real/P01PhysicalRealizationAssembly.lean
+            lean/MCore/Real/P01FastPathAttack.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+
+  p02-fast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build P02 semantic lane
+        run: |
+          set -euo pipefail
+          lake build \
+            MCore.Real.P02SemanticStabilityLane \
+            MCore.Real.P02BoundedOpenMathFalsification
+      - name: P02 hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02SemanticStabilityLane.lean
+            lean/MCore/Real/P02BoundedOpenMathFalsification.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
