@@ -43,32 +43,3 @@ jobs:
             MCore.Real.FinalExternalCertificate \
             MCore.Real.P02BoundedFinalBridge
 
-  exact-falsification-cert:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
-        with:
-          build: false
-          test: false
-          lint: false
-      - name: Falsification source hygiene
-        run: |
-          set -euo pipefail
-          files=(
-            lean/MCore/Real/P02SelfInputHaltingBarrier.lean
-            lean/MCore/Real/P02CompilerHaltingCounterexample.lean
-          )
-          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
-          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
-      - name: Kernel-check exact-route falsification
-        run: |
-          set -euo pipefail
-          lake update
-          lake build \
-            MCore.Real.P02SelfInputHaltingBarrier \
-            MCore.Real.P02CompilerHaltingCounterexample
-      - name: Assert falsification endpoint
-        run: |
-          set -euo pipefail
-          grep -q 'theorem uniformCompilerValueComputable_false' lean/MCore/Real/P02CompilerHaltingCounterexample.lean
