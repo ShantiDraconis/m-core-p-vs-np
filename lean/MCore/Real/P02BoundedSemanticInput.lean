@@ -22,7 +22,7 @@ instance (fuel : Nat) (c : Nat.Partrec.Code) : Decidable (DomFuel fuel c) := by
         rcases hex with ⟨v, hv⟩
         simp [h] at hv)
   | some v =>
-      exact isTrue ⟨v, h⟩
+      exact isTrue ⟨v, rfl⟩
 
 /-- Bounded semantic observation.  Failure within the chosen fuel is represented
 by the empty bitstring; no halting oracle is queried. -/
