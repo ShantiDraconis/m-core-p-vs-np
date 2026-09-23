@@ -14,7 +14,8 @@ def DomSize (n : Nat) : Set Circuit :=
 
 instance (n : Nat) : DecidablePred (fun phi : Circuit => phi ∈ DomSize n) := by
   intro phi
-  exact inferInstance
+  change Decidable (CircuitK1.size phi ≤ n)
+  infer_instance
 
 @[simp] theorem mem_DomSize_iff
     (n : Nat) (phi : Circuit) :
@@ -27,7 +28,7 @@ theorem mem_own_DomSize (phi : Circuit) :
 
 /-- A code is bounded semantically by fuel exactly when evaln returns some
 result at input zero.  This predicate is decidable without a halting oracle. -/
-theorem DomFuel_decidable
+def DomFuel_decidable
     (fuel : Nat) :
     DecidablePred (DomFuel fuel) := by
   intro c
@@ -40,14 +41,17 @@ theorem DomFuel_mono
     {c : Nat.Partrec.Code}
     (h : DomFuel fuel₁ c) :
     DomFuel fuel₂ c := by
-  unfold DomFuel at h ⊢
-  rcases Option.isSome_iff_exists.mp h with ⟨v, hv⟩
-  apply Option.isSome_iff_exists.mpr
+  rcases h with ⟨v, hv⟩
   refine ⟨v, ?_⟩
-  exact Nat.Partrec.Code.evaln_mono hFuel hv
+  have hmem : v ∈ Nat.Partrec.Code.evaln fuel₁ c 0 := by
+    rw [hv]
+    simp
+  have hmem' :
+      v ∈ Nat.Partrec.Code.evaln fuel₂ c 0 :=
+    P02BoundedSemanticInput.evaln_value_mono hFuel hmem
+  simpa using hmem'
 
 #print axioms MCore.Real.P02BoundedDomain.mem_own_DomSize
-#print axioms MCore.Real.P02BoundedDomain.DomFuel_decidable
 #print axioms MCore.Real.P02BoundedDomain.DomFuel_mono
 
 end P02BoundedDomain
