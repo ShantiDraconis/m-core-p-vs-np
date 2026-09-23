@@ -23,6 +23,11 @@ jobs:
           test: false
           lint: false
 
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
       - name: Fail-closed source hygiene
         run: |
           set -euo pipefail
