@@ -122,3 +122,27 @@ that symbol to a concrete `Nat.Partrec.Code` whose semantic evaluation is
 bottom. This keeps the symbolic constant distinct from Mathlib's computation
 semantics and prevents an unproved code realization from being silently
 assumed.
+
+
+### Provenance and lane disposition
+
+Author: **Shanti Draconis**  
+ORCID: **0009-0006-6874-3910**
+
+Historical workflow references:
+- `P02-EXACT-COMPILER` run `35907803395`: GitHub conclusion `failure`.
+- `P02-BOUNDED-LANE` run `35907803222`: GitHub conclusion `failure`.
+
+M-Core project classification:
+- exact compiler route: `FALSIFIED_BY_DESIGN`
+- intended historical label: `REFUTED_BY_PROOF @ 11dd4ff2 (I₀)`
+- kernel status of that label in this HEAD: `NOT_KERNEL_MATERIALIZED_IN_THIS_HEAD`
+- bounded lane historical run `35907803222`: **not GREEN evidence**
+
+The final external lane remains:
+`FINAL_EXTERNAL: CONDITIONAL [MCoreLHospitalBound]`
+`FINAL_PROOF: NOT_UNCONDITIONAL`
+
+This separation is intentional: workflow failure metadata is not promoted to
+a Lean theorem of `False` unless the corresponding theorem is present and
+kernel-checks successfully.
