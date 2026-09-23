@@ -55,8 +55,7 @@ noncomputable def witnessFromKleene
   { bits := R.bitsOf c
     valid := R.valid c
     flips := by
-      have hflip := R.flips_of_fixed c
-      exact hflip hc }
+      exact R.flips_of_fixed c hc }
 
 /-- Uniform bridge required to turn the recursion theorem into the P02
 DiagonalFamily. This does not assume G21Pointwise or P02Target. -/
