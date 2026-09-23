@@ -60,7 +60,6 @@ def lean_source(c, pid, attempt_proof):
     ns = slug(c.get("name", f"Pattern_{pid}"))
     prop = proposition(c)
     lines = [
-        "import Mathlib.Tactic.NativeDecide",
         "import MCore.Research.PatternCalculator",
         "import MCore.Real.P01FinalCertificate",
         "import MCore.Real.FinalProofEvidencePromotion",
@@ -76,7 +75,7 @@ def lean_source(c, pid, attempt_proof):
     if attempt_proof:
         lines += [
             f"theorem {ns}_verified : {ns}_statement := by",
-            "  native_decide",
+            "  decide",
             "",
             f"#print axioms MCore.Research.Generated.{ns}_verified",
         ]
