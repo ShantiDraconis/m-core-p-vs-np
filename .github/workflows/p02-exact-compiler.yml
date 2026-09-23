@@ -1,0 +1,37 @@
+name: P02 exact compiler
+
+on:
+  push:
+    branches:
+      - atk/p02-kleene-bridge-fix-20260923
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p02-exact-compiler:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02NormalizedCodingReduction.lean
+            lean/MCore/Real/P02BitStringNatCoding.lean
+            lean/MCore/Real/P02CodeSemanticInput.lean
+            lean/MCore/Real/P02KleeneDefinednessFrontier.lean
+            lean/MCore/Real/P02CompilerFrontierAudit.lean
+            lean/MCore/Real/P02ExactCompilerSemantics.lean
+            lean/MCore/Real/P02EffectiveCompilerConstruction.lean
+            lean/MCore/Real/P02CompilerTerminalPromotion.lean
+          )
+          for f in "${files[@]}"; do test -f "$f"; done
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+          lake build             MCore.Real.P02NormalizedCodingReduction             MCore.Real.P02BitStringNatCoding             MCore.Real.P02CodeSemanticInput             MCore.Real.P02KleeneDefinednessFrontier             MCore.Real.P02CompilerFrontierAudit             MCore.Real.P02ExactCompilerSemantics             MCore.Real.P02EffectiveCompilerConstruction             MCore.Real.P02CompilerTerminalPromotion
