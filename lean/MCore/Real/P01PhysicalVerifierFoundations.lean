@@ -21,7 +21,9 @@ theorem encodeCircuit_injective :
     ∀ ⦃a b : CircuitK1.Circuit⦄, encodeCircuit a = encodeCircuit b → a = b := by
   intro a b h
   have hdec := congrArg decodeCircuit h
-  simpa only [decodeCircuit_encode] using hdec
+  have hsome : some a = some b := by
+    simpa only [decodeCircuit_encode] using hdec
+  exact Option.some.inj hsome
 
 /-- The verifier witness never exceeds the canonical encoded-input length.
 This is the exact bound needed by the physical witness shuttle. -/
