@@ -1,0 +1,37 @@
+import Mathlib
+import MCore.P012.P012Core
+
+namespace MCore
+namespace P012
+
+structure PerelmanW where
+  W : Nat → Nat
+  mono : ∀ t, W t ≤ W (t + 1)
+
+def W_SAT : PerelmanW where
+  W := fun t => t * t + 100
+  mono := by
+    intro t
+    omega
+
+theorem L23_W_mono (t : Nat) :
+    W_SAT.W t ≤ W_SAT.W (t + 1) := by
+  exact W_SAT.mono t
+
+/-- Quantitative rigidity belongs only to this metamodel.  It is not interpreted
+as a probability that P=NP or P≠NP. -/
+def rigidityNumerator (good total : Nat) : Nat :=
+  if total = 0 then 0 else good
+
+def rigidityPerfect (n : Nat) : Prop :=
+  rigidityNumerator n n = n
+
+theorem rigidityPerfect_self (n : Nat) :
+    rigidityPerfect n := by
+  unfold rigidityPerfect rigidityNumerator
+  by_cases h : n = 0
+  · simp [h]
+  · simp [h]
+
+end P012
+end MCore
