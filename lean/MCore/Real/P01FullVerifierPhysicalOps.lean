@@ -8,6 +8,7 @@ namespace P01FullVerifierPhysicalOps
 open CanonicalFinalProof
 open P01FullVerifierPhysicalStackV2
 open P01FullVerifierStackPrimitiveMachine
+open P01FullVerifierStackSemantics
 
 /-- Push a constant bit using the real one-step stack primitive. -/
 theorem const_run_real
@@ -33,7 +34,10 @@ theorem neg_pop_exposes_false
     negResultBit final.state = some true /\
       PhysicalStackRepV2 final.tape witness source stack := by
   have h := pop_run_two_false witness source stack padding
-  simpa [negResultBit] using h
+  rcases h with ⟨hstate, hrep⟩
+  constructor
+  · simp [negResultBit, hstate, haltPopFalse, haltPopTrue]
+  · exact hrep
 
 theorem neg_pop_exposes_true
     (witness source : BitString) (stack : List Bool) (padding : Nat) :
@@ -42,7 +46,10 @@ theorem neg_pop_exposes_true
     negResultBit final.state = some false /\
       PhysicalStackRepV2 final.tape witness source stack := by
   have h := pop_run_two_true witness source stack padding
-  simpa [negResultBit] using h
+  rcases h with ⟨hstate, hrep⟩
+  constructor
+  · simp [negResultBit, hstate, haltPopFalse, haltPopTrue]
+  · exact hrep
 
 /-- Semantic target for physical AND after consuming r then l. -/
 theorem and_semantic_target
