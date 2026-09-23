@@ -17,7 +17,8 @@ def markHalting (c : Nat.Partrec.Code) : Nat.Partrec.Code :=
 theorem markHalting_computable :
     Computable markHalting := by
   exact
-    (Nat.Partrec.Code.primrec₂_comp.comp
+    (Primrec₂.comp
+      Nat.Partrec.Code.primrec₂_comp
       (Primrec.const (Nat.Partrec.Code.const haltMarkerNat))
       Primrec.id).to_comp
 
@@ -77,7 +78,7 @@ theorem selfInput_not_computable :
   have hPred :
       ComputablePred (fun c : Nat.Partrec.Code =>
         selfInput (markHalting c) = [true]) :=
-    hEqDec.computablePred
+    Computable.computablePred hEqDec
   have hHalting :
       ComputablePred (fun c : Nat.Partrec.Code =>
         (c.eval 0).Dom) :=
