@@ -1,5 +1,3 @@
-import Mathlib.Data.Nat.Prime.Infinite
-import Mathlib.Tactic.NativeDecide
 import MCore.Research.Prime2FractionalHorizon
 
 namespace MCore
@@ -7,8 +5,8 @@ namespace Research
 namespace PatternCalculator
 
 open Prime2
+open MCore.P012
 
-/-- Research classification only.  None of these labels is a proof producer. -/
 inductive ResearchLine where
   | prime2
   | horizonPrime
@@ -44,26 +42,24 @@ structure PrimeHorizonResult where
   lines : List ResearchLine
   deriving Repr
 
-/-- Small deterministic primality search used only by the research calculator. -/
-def firstPrimeFrom (n : Nat) : Nat :=
-  Nat.find (Nat.exists_infinite_primes n)
+def firstPrimeFromAux (n fuel : Nat) : Option Nat :=
+  match fuel with
+  | 0 => none
+  | fuel + 1 =>
+      if decide (PrimeNat n) then some n
+      else firstPrimeFromAux (n + 1) fuel
 
-theorem firstPrimeFrom_prime (n : Nat) :
-    Nat.Prime (firstPrimeFrom n) := by
-  exact (Nat.find_spec (Nat.exists_infinite_primes n)).1
+def firstPrimeFrom (n : Nat) : Option Nat :=
+  firstPrimeFromAux n 4096
 
-theorem firstPrimeFrom_ge (n : Nat) :
-    n ≤ firstPrimeFrom n := by
-  exact (Nat.find_spec (Nat.exists_infinite_primes n)).2
-
-/-- First admissible positive prime numerator for a fixed denominator under the
-current research exclusions.  The diagonal exclusion removes p=q. -/
-def firstAdmissibleNumerator (I : PrimeHorizonInput) : Nat :=
+def firstAdmissibleNumerator (I : PrimeHorizonInput) : Option Nat :=
   let start := if I.excludeTwo then 3 else 2
-  let p := firstPrimeFrom start
-  if I.excludeDiagonal && p = I.denominator then
-    firstPrimeFrom (p + 1)
-  else p
+  match firstPrimeFrom start with
+  | none => none
+  | some p =>
+      if I.excludeDiagonal && p = I.denominator then
+        firstPrimeFrom (p + 1)
+      else some p
 
 def horizonLines (I : PrimeHorizonInput) : List ResearchLine :=
   let base := [ResearchLine.horizonPrime, .prime2]
@@ -74,51 +70,39 @@ def horizonLines (I : PrimeHorizonInput) : List ResearchLine :=
 def calculatePrimeHorizon (I : PrimeHorizonInput) : PrimeHorizonResult :=
   let p := firstAdmissibleNumerator I
   { denominator := I.denominator
-    denominatorPrime := decide (Nat.Prime I.denominator)
+    denominatorPrime := decide (PrimeNat I.denominator)
     twoAvailable := !I.excludeTwo
     diagonalExcluded := I.excludeDiagonal
     decimalRepeatingCandidate :=
-      decide (Nat.Prime I.denominator ∧ I.denominator ≠ 2 ∧ I.denominator ≠ 5)
+      decide (PrimeNat I.denominator ∧ I.denominator ≠ 2 ∧ I.denominator ≠ 5)
     kernelNumerator := if I.excludeTwo then none else some 2
-    centralBoundaryNumerator := some p
-    centralGapNumerator := some (2 * p)
+    centralBoundaryNumerator := p
+    centralGapNumerator := p.map (fun n => 2 * n)
     lines := horizonLines I }
 
-/-- q=3 with 2 available: the operational kernel is ±2/3 and the central
-reflection displacement has numerator 4. -/
 def q3WithKernel : PrimeHorizonResult :=
   calculatePrimeHorizon
     { denominator := 3, excludeTwo := false, excludeDiagonal := true }
 
-/-- q=3 with 2 excluded and p=q excluded: first admissible numerator is 5,
-hence the symmetric central gap has numerator 10. -/
 def q3OddPure : PrimeHorizonResult :=
   calculatePrimeHorizon
     { denominator := 3, excludeTwo := true, excludeDiagonal := true }
 
 theorem q3_with_kernel_numerator :
-    q3WithKernel.kernelNumerator = some 2 := by
-  native_decide
+    q3WithKernel.kernelNumerator = some 2 := by decide
 
 theorem q3_with_kernel_boundary :
-    q3WithKernel.centralBoundaryNumerator = some 2 := by
-  native_decide
+    q3WithKernel.centralBoundaryNumerator = some 2 := by decide
 
 theorem q3_with_kernel_gap :
-    q3WithKernel.centralGapNumerator = some 4 := by
-  native_decide
+    q3WithKernel.centralGapNumerator = some 4 := by decide
 
 theorem q3_odd_pure_boundary :
-    q3OddPure.centralBoundaryNumerator = some 5 := by
-  native_decide
+    q3OddPure.centralBoundaryNumerator = some 5 := by decide
 
 theorem q3_odd_pure_gap :
-    q3OddPure.centralGapNumerator = some 10 := by
-  native_decide
+    q3OddPure.centralGapNumerator = some 10 := by decide
 
-/-- A counterexample witness discovered by any heuristic may only enter the
-standard semantic lane through its raw BitString.  The tag is recorded for
-analysis but ignored by CorrectAt. -/
 structure TaggedWitnessObservation where
   raw : Real.CanonicalFinalProof.BitString
   tag : Option Nucleus
@@ -143,7 +127,6 @@ theorem tag_irrelevant_to_correctAt
       M.raw.CorrectAt Real.P02G21G22Attack.SATTarget W.raw := by
   rfl
 
-/-- Suggested research lines are metadata only. -/
 def linesForWitness (W : TaggedWitnessObservation) : List ResearchLine :=
   [W.sourceLine, .g21WitnessMap, .encodingInvariant]
 
