@@ -1,0 +1,19 @@
+import MCore.Real.CanonicalSATFrameMachineV2
+import MCore.Real.P01RecursiveFiniteControlFrontier
+
+open MCore.Real
+open MCore.Real.CanonicalSATFrameMachineV2
+open MCore.Real.P01RecursiveFiniteControlFrontier
+
+#check frameCommandMachine
+#check frameCommandMachine_certificate
+#check RecursiveFiniteControlParserCertificate
+#check RecursiveFiniteControlParserClosed
+#check P01Target
+
+#print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_push
+#print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_pop
+#print axioms MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_certificate
+#print axioms MCore.Real.P01RecursiveFiniteControlFrontier.frame_machine_has_canonical_machine_type
+#print axioms MCore.Real.P01RecursiveFiniteControlFrontier.frame_protocol_source_closed
+#print axioms MCore.Real.P01RecursiveFiniteControlFrontier.p01_promotion_requires_canonical_closure
