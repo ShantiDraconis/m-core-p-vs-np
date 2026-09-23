@@ -1,0 +1,47 @@
+name: ATK t5 terminal bridges
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Build terminal bridge routes
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02UniversalWitnessChain
+          lake build MCore.Real.P02KleeneBridge
+          lake build MCore.Real.P02KleeneSelfReferenceBridge
+          lake build MCore.Real.P02DiagonalCompilerFrontierV2
+          lake build MCore.Real.P02UniversalFailureAlgebra
+          lake build MCore.Real.P02SemanticSelfEmbedding
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02UniversalWitnessChain.lean
+            lean/MCore/Real/P02KleeneBridge.lean
+            lean/MCore/Real/P02KleeneSelfReferenceBridge.lean
+            lean/MCore/Real/P02DiagonalCompilerFrontierV2.lean
+            lean/MCore/Real/P02UniversalFailureAlgebra.lean
+            lean/MCore/Real/P02SemanticSelfEmbedding.lean
+          )
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+      - name: Fail-closed terminal
+        run: |
+          echo "T5_TERMINAL=G21Pointwise_REQUIRED"
+          echo "NO_ENDPOINT_PROMOTION=1"
