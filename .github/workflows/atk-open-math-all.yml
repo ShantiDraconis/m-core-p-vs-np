@@ -1,0 +1,125 @@
+name: ATK OPEN_MATH all
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p02-open-math:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build bounded computation
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02BoundedComputationTape
+          lake build MCore.Real.P02BoundedComputationEncoding
+          lake build MCore.Real.P02BoundedComputationLogic
+          lake build MCore.Real.P02BoundedComputationSoundness
+          lake build MCore.Real.P02BoundedComputationClose
+      - name: Build Kleene infrastructure
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02KleeneBridge
+          lake build MCore.Real.P02KleeneE1
+          lake build MCore.Real.P02KleeneBridgeAudit
+          lake build MCore.Real.P02KleeneCookLevinBridge
+      - name: Build same-input and residual bridge
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02SameInputClosure
+          lake build MCore.Real.P02SelfCodeExistence
+          lake build MCore.Real.P02ResidualSameInputBridge
+      - name: Build semantic and terminal chain
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02SemanticMismatchAlgebra
+          lake build MCore.Real.P02SemanticSelfEmbedding
+          lake build MCore.Real.P02UniversalWitnessDetailed
+          lake build MCore.Real.P02G21ExpandedTree
+          lake build MCore.Real.P02G21G22Attack
+          lake build MCore.Real.P02TerminalFrontier
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02KleeneBridge.lean
+            lean/MCore/Real/P02KleeneCookLevinBridge.lean
+            lean/MCore/Real/P02ResidualSameInputBridge.lean
+            lean/MCore/Real/P02SameInputClosure.lean
+            lean/MCore/Real/P02SelfCodeExistence.lean
+            lean/MCore/Real/P02SemanticSelfEmbedding.lean
+            lean/MCore/Real/P02G21ExpandedTree.lean
+          )
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+      - name: Open-math status
+        run: |
+          echo "OPEN_MATH_1=cook_levin_correct"
+          echo "OPEN_MATH_2=same_input_of_fixed"
+          echo "DERIVED_OPEN=flips_of_fixed"
+          echo "TARGET=G21Pointwise+P02Target"
+
+  p01-terminal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build P01 terminal path
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01WitnessIndexedRead
+          lake build MCore.Real.P01WitnessIndexedReadMachine
+          lake build MCore.Real.P01WitnessIndexedReadProof
+          lake build MCore.Real.P01FullVerifierPhysical
+          lake build MCore.Real.P01ConstructionClose
+          lake build MCore.Real.P01FinalCertificate
+      - name: P01 status
+        run: |
+          echo "TARGET=P01ConstructionGap"
+
+  final-external:
+    runs-on: ubuntu-latest
+    needs: [p02-open-math, p01-terminal]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build final external path
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalExternalLiveTwoProducer
+          lake build MCore.Real.FinalExternalConsolidatedFlow
+          lake build MCore.Real.FinalExternalCertificate
+      - name: Final status
+        run: |
+          echo "FINAL_ROOT=NULL_UNTIL_EXACT_PRODUCERS"
