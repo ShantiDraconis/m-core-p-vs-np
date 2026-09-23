@@ -95,11 +95,10 @@ theorem exact_implies_compilerValueComputable
     funext c
     apply (Part.eq_some_iff).2
     simpa [CompilerSemantics, compilerValue] using hSem c
-  have hTot :
-      Partrec (fun c : Nat.Partrec.Code =>
-        Part.some (compilerValue M c)) := by
-    simpa [hEq] using hAtZero
-  exact hTot
+  rw [hEq] at hAtZero
+  change Partrec (fun c : Nat.Partrec.Code =>
+    Part.some (compilerValue M c))
+  exact hAtZero
 
 theorem uniformExact_iff_compilerValueComputable :
     UniformExactCompilerSemantics ↔ UniformCompilerValueComputable := by
