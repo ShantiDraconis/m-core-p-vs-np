@@ -12,7 +12,10 @@ def W_SAT : PerelmanW where
   W := fun t => t * t + 100
   mono := by
     intro t
-    omega
+    have hstep : t ≤ t + 1 := by omega
+    have hmul : t * t ≤ (t + 1) * (t + 1) :=
+      Nat.mul_le_mul hstep hstep
+    exact Nat.add_le_add_right hmul 100
 
 theorem L23_W_mono (t : Nat) :
     W_SAT.W t ≤ W_SAT.W (t + 1) := by
