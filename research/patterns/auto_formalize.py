@@ -59,10 +59,14 @@ def safe_autoprove(c):
 def lean_source(c, pid, attempt_proof):
     ns = slug(c.get("name", f"Pattern_{pid}"))
     prop = proposition(c)
-    lines = [
-        "import MCore.Research.PatternCalculator",
-        "import MCore.Real.P01FinalCertificate",
-        "import MCore.Real.FinalProofEvidencePromotion",
+    imports = ["import MCore.Research.PatternCalculator"]
+    if c["kind"] == "raw_lean_prop":
+        raw = str(c.get("prop", ""))
+        if "P01FinalCertificate" in raw or "P01ConstructionGap" in raw:
+            imports.append("import MCore.Real.P01FinalCertificate")
+        if "P02G21G22Attack" in raw or "G21Pointwise" in raw:
+            imports.append("import MCore.Real.P02G21G22Attack")
+    lines = imports + [
         "",
         "namespace MCore",
         "namespace Research",
