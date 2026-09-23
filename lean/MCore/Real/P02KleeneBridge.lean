@@ -89,9 +89,40 @@ theorem kleene_sat_bridge_closes_P02
     P02TerminalFrontier.P02Target :=
   D3_to_P02Target (kleene_sat_bridge_closes_D3 B)
 
+/-- The smallest remaining mathematical producer after importing Kleene's
+recursion theorem: for every polynomial DTM candidate, supply an effective
+diagonal compiler together with a canonical-SAT realization of its Kleene
+fixed point. -/
+def CanonicalSATKleeneRealizerGap : Prop :=
+  ∀ M : PolyDTMCandidate,
+    ∃ K : EffectiveDiagonalCompiler M,
+      Nonempty (CanonicalSATFixedPointRealizer M K)
+
 /-- The exact remaining construction target after importing Kleene's theorem. -/
 def D3KleeneSATBridgeGap : Prop :=
   Nonempty D3KleeneSATBridge
+
+/-- The pointwise compiler/realizer producer is sufficient to assemble the
+uniform D3 bridge. This theorem adds no mathematical hypothesis beyond the
+explicit remaining producer. -/
+noncomputable theorem canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap
+    (h : CanonicalSATKleeneRealizerGap) :
+    D3KleeneSATBridgeGap := by
+  classical
+  let compiler : ∀ M : PolyDTMCandidate, EffectiveDiagonalCompiler M :=
+    fun M => Classical.choose (h M)
+  let realizer :
+      ∀ M : PolyDTMCandidate,
+        CanonicalSATFixedPointRealizer M (compiler M) :=
+    fun M => Classical.choose (Classical.choose_spec (h M))
+  exact ⟨{ compiler := compiler, realizer := realizer }⟩
+
+/-- Consequently the minimal Kleene/SAT producer closes D3 directly. -/
+noncomputable theorem canonicalSATKleeneRealizerGap_to_D3
+    (h : CanonicalSATKleeneRealizerGap) :
+    D3SemanticSelfReference :=
+  D3KleeneSATBridgeGap_to_D3
+    (canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap h)
 
 theorem D3KleeneSATBridgeGap_to_D3
     (h : D3KleeneSATBridgeGap) :
@@ -104,6 +135,8 @@ theorem D3KleeneSATBridgeGap_to_D3
 #print axioms kleene_sat_bridge_closes_D3
 #print axioms kleene_sat_bridge_closes_G21
 #print axioms kleene_sat_bridge_closes_P02
+#print axioms canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap
+#print axioms canonicalSATKleeneRealizerGap_to_D3
 
 end P02KleeneBridge
 end Real
