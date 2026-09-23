@@ -55,7 +55,8 @@ noncomputable def witnessFromKleene
   { bits := R.bitsOf c
     valid := R.valid c
     flips := by
-      exact (R.flips_of_fixed c) hc }
+      have hfixed : Nat.Partrec.Code.eval c = K.f c := hc
+      simpa only [] using (R.flips_of_fixed c hfixed) }
 
 /-- Uniform bridge required to turn the recursion theorem into the P02
 DiagonalFamily. This does not assume G21Pointwise or P02Target. -/
