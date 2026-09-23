@@ -53,6 +53,35 @@ def KleeneDefinednessGap
     (K : EffectiveDiagonalCompiler M) : Prop :=
   Nonempty (DefinedKleeneFixedPoint M K)
 
+
+/-- Sufficient engineering condition for definedness: the diagonal compiler is
+defined at the distinguished output coordinate 0 for every source code. -/
+def CompilerZeroTotal
+    {M : PolyDTMCandidate}
+    (K : EffectiveDiagonalCompiler M) : Prop :=
+  ∀ c : Nat.Partrec.Code, (K.f c 0).Dom
+
+/-- If the compiler is total at zero, Mathlib's Kleene fixed point can be
+promoted to a defined fixed point without deciding halting. -/
+noncomputable theorem compilerZeroTotal_closes_definedness
+    {M : PolyDTMCandidate}
+    (K : EffectiveDiagonalCompiler M)
+    (hTotal : CompilerZeroTotal K) :
+    KleeneDefinednessGap M K := by
+  let c := Classical.choose (kleene_fixed_point K)
+  have hfixed : Nat.Partrec.Code.eval c = K.f c :=
+    Classical.choose_spec (kleene_fixed_point K)
+  have h0 : Nat.Partrec.Code.eval c 0 = K.f c 0 :=
+    congrFun hfixed 0
+  have hdomRight : (K.f c 0).Dom := hTotal c
+  have hdomLeft : (Nat.Partrec.Code.eval c 0).Dom := by
+    simpa [h0] using hdomRight
+  exact ⟨{
+    code := c
+    fixed := hfixed
+    defined_zero := hdomLeft
+  }⟩
+
 /-- Once a defined fixed point is available, extensional equality can be used
 without any halting decision. -/
 theorem fixedPoint_zero_eq
@@ -76,6 +105,7 @@ partial fixed point to a SAT witness.
 
 #print axioms MCore.Real.P02KleeneDefinednessFrontier.selfInput_eq_decode_fixedPointValue
 #print axioms MCore.Real.P02KleeneDefinednessFrontier.fixedPoint_zero_eq
+#print axioms MCore.Real.P02KleeneDefinednessFrontier.compilerZeroTotal_closes_definedness
 
 end P02KleeneDefinednessFrontier
 end Real
