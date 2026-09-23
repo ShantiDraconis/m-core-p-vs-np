@@ -13,7 +13,10 @@ higher-order machine data and a polynomial proof, so a faithful finite code
 must be constructed explicitly rather than assumed. -/
 structure CandidateCodingInterface where
   encodeCandidate : PolyDTMCandidate → BitString
-  faithful : Function.Injective encodeCandidate
+  faithful :
+    ∀ {M₁ M₂ : PolyDTMCandidate},
+      encodeCandidate M₁ = encodeCandidate M₂ →
+      M₁ = M₂
 
 def CandidateCodingGap : Prop :=
   Nonempty CandidateCodingInterface
