@@ -11,7 +11,7 @@ open P02BitStringNatCoding
 /-- Bounded halting domain at the distinguished input 0.
 Unlike `(c.eval 0).Dom`, this is decidable because `evaln` is total. -/
 def DomFuel (fuel : Nat) (c : Nat.Partrec.Code) : Prop :=
-  (Nat.Partrec.Code.evaln fuel c 0).isSome
+  (Nat.Partrec.Code.evaln fuel c 0).isSome = true
 
 instance (fuel : Nat) (c : Nat.Partrec.Code) : Decidable (DomFuel fuel c) :=
   inferInstance
@@ -25,11 +25,11 @@ theorem evaln_zero_computable (fuel : Nat) :
     Computable (fun c : Nat.Partrec.Code =>
       Nat.Partrec.Code.evaln fuel c 0) := by
   have hArgs :
-      Computable (fun c : Nat.Partrec.Code => ((fuel, c), 0)) :=
-    Computable.pair
-      (Computable.pair (Computable.const fuel) Computable.id)
-      (Computable.const 0)
-  exact Nat.Partrec.Code.primrec_evaln.to_comp.comp hArgs
+      Primrec (fun c : Nat.Partrec.Code => ((fuel, c), 0)) :=
+    Primrec.pair
+      (Primrec.pair (Primrec.const fuel) Primrec.id)
+      (Primrec.const 0)
+  exact (Nat.Partrec.Code.primrec_evaln.comp hArgs).to_comp
 
 theorem decodeBitsNat_computable :
     Computable decodeBitsNat := by
