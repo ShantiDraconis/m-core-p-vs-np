@@ -2,6 +2,7 @@ import MCore.Real.P01FullVerifierPhysical
 import MCore.Real.P01FullVerifierPhysicalRefinement
 import MCore.Real.P01FullVerifierPhysicalRefinementV2
 import MCore.Real.P01FullVerifierPhysicalStackV2
+import MCore.Real.P01PhysicalVerifierBudget
 
 namespace MCore
 namespace Real
