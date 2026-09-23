@@ -1,0 +1,87 @@
+name: ATK terminal focus
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-construction-gap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: P01 terminal chain
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01WitnessGuessExecution
+          lake build MCore.Real.P01WitnessBoundNormalization
+          lake build MCore.Real.P01FullVerifierPhysicalControl
+          lake build MCore.Real.P01FullVerifierPhysicalRefinement
+          lake build MCore.Real.P01IntegratedMachine
+          lake build MCore.Real.P01ConstructionClose
+          lake build MCore.Real.P01FinalCertificate
+      - name: Status
+        run: |
+          echo "TARGET=P01ConstructionGap"
+
+  p02-cook-levin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: P02 bounded execution and Cook-Levin
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02BoundedComputationClose
+          lake build MCore.Real.P02KleeneBridge
+          lake build MCore.Real.P02KleeneCookLevinBridge
+          lake build MCore.Real.P02CookLevinFromBoundedExec
+      - name: Status
+        run: |
+          echo "TARGET_1=TableauCompletenessCertificate"
+          echo "TARGET_2=same_input_of_fixed"
+
+  p02-terminal:
+    runs-on: ubuntu-latest
+    needs: [p02-cook-levin]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: P02 terminal promotion
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02SameInputClosure
+          lake build MCore.Real.P02SemanticSelfEmbeddingClose
+          lake build MCore.Real.P02G21G22Attack
+      - name: Status
+        run: |
+          echo "TARGET=flips_of_fixed->G21Pointwise->P02Target"
