@@ -113,8 +113,8 @@ theorem finalTwoGap_right_not_closed
 /-- Numeric closure does not manufacture P-vs-NP proofs.
 Actual terminal inhabitants are still required explicitly. -/
 def rigid_state_with_real_producers
-    (hP01 : P012FailClosed.P01ConstructionGap)
-    (hG21 : P012FailClosed.G21Pointwise) :
+    (hP01 : P01FinalCertificate.P01ConstructionGap)
+    (hG21 : P02G21G22Attack.G21Pointwise) :
     P012FailClosed.RigidCore :=
   ⟨hP01, hG21⟩
 
