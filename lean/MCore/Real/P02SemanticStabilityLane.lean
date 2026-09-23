@@ -78,11 +78,14 @@ def witnessOfSemanticStability
 theorem uniformSemanticStability_to_D3
     (h : UniformSemanticStabilityProducer) :
     D3SemanticSelfReference := by
+  classical
   refine ⟨{
-    witness := fun M => ?_
+    witness := fun M =>
+      let hx := h M
+      let x : BitString := Classical.choose hx
+      let hStable : SemanticStabilityAt M x := Classical.choose_spec hx
+      witnessOfSemanticStability M x hStable
   }⟩
-  rcases h M with ⟨x, hStable⟩
-  exact witnessOfSemanticStability M x hStable
 
 theorem uniformSemanticStability_closes_P02
     (h : UniformSemanticStabilityProducer) :
