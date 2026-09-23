@@ -61,6 +61,37 @@ def HardCNFSubfamily
     (n : Nat) (f : CNF) : Prop :=
   IsHardCNF f ∧ GeneralCNFFamily clauseBound n f
 
+/-- A single canonical CNF has a uniform local branching deficit of at least c. -/
+def DeficitAtLeast (c : Nat) (f : CNF) : Prop :=
+  ∀ ρ : Restriction,
+    RestrictionProgress ρ (cnfCircuit f) →
+      amortizedDrop 1 1 ρ (cnfCircuit f) ≤
+        costBits ρ (cnfCircuit f) ∧
+      c ≤ costBits ρ (cnfCircuit f) -
+        amortizedDrop 1 1 ρ (cnfCircuit f)
+
+/-- Hard canonical-CNF subfamily.  The hardness predicate is not a new syntax:
+it is a semantic/quantitative filter on the repository's existing CNF type. -/
+def HardCNFSubfamilyWithMargin
+    (c : Nat)
+    (clauseBound : Nat → Nat)
+    (n : Nat) (f : CNF) : Prop :=
+  GeneralCNFFamily clauseBound n f ∧ DeficitAtLeast c f
+
+theorem hardCNF_excludes_payoff
+    {c : Nat} {f : CNF}
+    (hc : 0 < c)
+    (h : DeficitAtLeast c f) :
+    ∀ ρ : Restriction,
+      RestrictionProgress ρ (cnfCircuit f) →
+        ¬ PaysOff 1 1 ρ (cnfCircuit f) := by
+  intro ρ hprog hpay
+  have hdef := (h ρ hprog).1
+  have hlt :=
+    paysOff_implies_costBits_lt_amortizedDrop
+      1 1 ρ (cnfCircuit f) hpay
+  omega
+
 /-- Uniform positive deficit on every progressing restriction of every member
 of a parametrized canonical-CNF family. -/
 def UniformPersistentDeficit
@@ -77,6 +108,15 @@ def UniformPersistentDeficit
 
 abbrev PersistentBranchingDeficitFamily :=
   UniformPersistentDeficit
+
+theorem hardSubfamily_has_uniform_deficit
+    {c : Nat} (hc : 0 < c)
+    (clauseBound : Nat → Nat) :
+    UniformPersistentDeficit
+      (HardCNFSubfamilyWithMargin c clauseBound) := by
+  refine ⟨c, 0, hc, ?_⟩
+  intro n hn f hf ρ hprog
+  exact hf.2 ρ hprog
 
 theorem uniformPersistentDeficit_excludes_eventual_payoff
     {Family : Nat → CNF → Prop}
@@ -139,6 +179,8 @@ theorem transfer_closes_p02
 
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.paysOff_implies_costBits_lt_amortizedDrop
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.persistentBranchingDeficit_excludes_payoff
+#print axioms MCore.Real.P02RestrictionLowerBoundPattern.hardCNF_excludes_payoff
+#print axioms MCore.Real.P02RestrictionLowerBoundPattern.hardSubfamily_has_uniform_deficit
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.uniformPersistentDeficit_excludes_eventual_payoff
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.transfer_closes_p02
 
