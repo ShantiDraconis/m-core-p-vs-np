@@ -97,6 +97,29 @@ structure Producer where
   same_input_of_fixed :
     ∀ M : PolyDTMCandidate, SameInputOfFixed (carrier M)
 
+
+/-- The reduced producer is enough to construct the full producer: the
+Cook-Levin field is discharged by the certified clocked diagonal compiler. -/
+def ReducedProducer.toProducer
+    (R : ReducedProducer) : Producer where
+  compiler := R.compiler
+  carrier := fun M =>
+    clockedCarrier M (R.compiler M) (R.selfInput M)
+  cook_levin_correct := fun M =>
+    clockedCarrier_cook_levin_correct
+      M (R.compiler M) (R.selfInput M)
+  same_input_of_fixed := by
+    intro M c hfixed
+    change
+      R.selfInput M c =
+        P02ClockedDiagonalCompiler.semanticDiagonalBits M (R.selfInput M c)
+    exact R.same_input_of_fixed M c hfixed
+
+theorem ReducedProducer.toP02Target
+    (R : ReducedProducer) :
+    P02TerminalFrontier.P02Target :=
+  R.toProducer.toP02Target
+
 def Producer.toUniformBridge
     (P : Producer) :
     UniformCookLevinSameInputBridge where
