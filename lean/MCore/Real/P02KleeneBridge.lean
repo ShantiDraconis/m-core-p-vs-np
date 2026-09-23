@@ -109,13 +109,12 @@ theorem canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap
     (h : CanonicalSATKleeneRealizerGap) :
     D3KleeneSATBridgeGap := by
   classical
-  let compiler : ∀ M : PolyDTMCandidate, EffectiveDiagonalCompiler M :=
-    fun M => Classical.choose (h M)
-  let realizer :
-      ∀ M : PolyDTMCandidate,
-        CanonicalSATFixedPointRealizer M (compiler M) :=
-    fun M => Classical.choose (Classical.choose_spec (h M))
-  exact ⟨{ compiler := compiler, realizer := realizer }⟩
+  refine ⟨{
+    compiler := fun M => Classical.choose (h M)
+    realizer := ?_
+  }⟩
+  intro M
+  exact Classical.choice (Classical.choose_spec (h M))
 
 theorem D3KleeneSATBridgeGap_to_D3
     (h : D3KleeneSATBridgeGap) :
