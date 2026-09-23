@@ -54,7 +54,7 @@ theorem universalWitnessFamilyGap_to_p02
 
 /-- Same-input closure is strong enough to construct the candidate-indexed
 semantic witness family. -/
-def sameInputClosureToUniversalWitnessFamily
+noncomputable def sameInputClosureToUniversalWitnessFamily
     (h : SameInputClosure) :
     UniversalWitnessFamily where
   witness := fun M => sameInputWitnessToDiagonal M (h M)
