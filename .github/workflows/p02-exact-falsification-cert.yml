@@ -1,0 +1,43 @@
+name: P02 exact falsification certificate
+
+on:
+  push:
+    branches:
+      - atk/p02-kleene-bridge-fix-20260923
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  falsification-cert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Source hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02SelfInputHaltingBarrier.lean
+            lean/MCore/Real/P02CompilerHaltingCounterexample.lean
+          )
+          for f in "${files[@]}"; do test -f "$f"; done
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+      - name: Build falsification theorem
+        run: |
+          set -euo pipefail
+          lake update
+          lake build \
+            MCore.Real.P02SelfInputHaltingBarrier \
+            MCore.Real.P02CompilerHaltingCounterexample
+      - name: Assert theorem endpoints
+        run: |
+          set -euo pipefail
+          grep -q 'theorem selfInput_not_computable' lean/MCore/Real/P02SelfInputHaltingBarrier.lean
+          grep -q 'theorem uniformCompilerValueComputable_false' lean/MCore/Real/P02CompilerHaltingCounterexample.lean
