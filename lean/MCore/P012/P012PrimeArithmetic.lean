@@ -14,6 +14,10 @@ n is at least 2 and has no divisor d with 2 ≤ d < n. -/
 def PrimeNat (n : Nat) : Prop :=
   2 ≤ n ∧ primeCheck n = true
 
+instance instDecidablePrimeNat (n : Nat) : Decidable (PrimeNat n) := by
+  unfold PrimeNat
+  infer_instance
+
 theorem primeNat_two_le {n : Nat} (h : PrimeNat n) : 2 ≤ n :=
   h.1
 
