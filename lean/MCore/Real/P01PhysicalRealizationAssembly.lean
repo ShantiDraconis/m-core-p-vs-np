@@ -1,3 +1,4 @@
+import MCore.Real.P01PhysicalVerifierUniformCosts
 import MCore.Real.P01WitnessGuessExecution
 import MCore.Real.P01WitnessBoundNormalization
 import MCore.Real.P01T1DPhysicalAssembly
