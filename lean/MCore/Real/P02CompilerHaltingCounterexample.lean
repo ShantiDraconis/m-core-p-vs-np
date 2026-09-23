@@ -1,4 +1,4 @@
-import Mathlib.Tactic.NativeDecide
+import Mathlib.Tactic
 import MCore.Real.P02EffectiveCompilerConstruction
 import MCore.Real.P02SelfInputHaltingBarrier
 
@@ -41,7 +41,7 @@ def barrierOutTrue : Nat :=
 
 theorem barrier_outputs_ne :
     barrierOutEmpty ≠ barrierOutTrue := by
-  native_decide
+  decide
 
 theorem selfInput_markHalting_eq_empty_of_not_dom
     (c : Nat.Partrec.Code)
