@@ -7,6 +7,7 @@ import MCore.Real.P02BoundedComputationClose
 import MCore.Real.P02SemanticMismatchAlgebra
 import MCore.Real.FinalExternalLiveTwoProducer
 import MCore.Real.FinalExternalCertificate
+import MCore.Real.MCoreLHospitalBound
 
 namespace MCore
 namespace Real
@@ -17,6 +18,7 @@ open P01FinalCertificate
 open P02G21G22Attack
 open P02KleeneBridge
 open P02KleeneCookLevinBridge
+open MCoreLHospitalBound
 
 /--
 Exact producer package required by the consolidated route.
@@ -49,6 +51,26 @@ repository's existing certificate/producer modules.
 def ConsolidatedExternalGap : Prop :=
   Nonempty ConsolidatedExternalInputs
 
+
+/--
+Conditional consolidated producer through the explicit M-Core L'Hospital
+hypothesis.  This does not alter the unconditional consolidated route.
+-/
+theorem consolidated_external_gap_conditional_lhospital
+    (hLH : MCoreLHospitalBound)
+    (hP01 : P01ConstructionGap) :
+    FinalExternalCertificate.FinalExternalGap := by
+  exact FinalExternalGap_conditional hLH hP01
+
+/--
+Axiom-backed audit endpoint.  Its dependency on MCORE_LHOSPITAL_AXIOM remains
+visible under #print axioms and therefore carries no unconditional proof credit.
+-/
+theorem consolidated_external_gap_assumed_lhospital
+    (hP01 : P01ConstructionGap) :
+    FinalExternalCertificate.FinalExternalGap := by
+  exact FinalExternalGap_assumed hP01
+
 /-
 Current required producers:
 1. P01ConstructionGap
@@ -68,6 +90,8 @@ OPEN terminal obligations remain outside this wiring layer.
 
 #print axioms MCore.Real.FinalExternalConsolidatedFlow.p01_from_consolidated
 #print axioms MCore.Real.FinalExternalConsolidatedFlow.p02_from_consolidated
+#print axioms MCore.Real.FinalExternalConsolidatedFlow.consolidated_external_gap_conditional_lhospital
+#print axioms MCore.Real.FinalExternalConsolidatedFlow.consolidated_external_gap_assumed_lhospital
 
 end FinalExternalConsolidatedFlow
 end Real
