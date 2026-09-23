@@ -62,8 +62,8 @@ def BoundedSameInputWitness.toDiagonalWitness
       simpa only [x] using
         (rejectCircuit_cook_levin_correct
           boundedExecCorrectness_closed M y)
-    exact hCL.trans (by
-      simpa only [hxy])
+    rw [hxy] at hCL
+    simpa [SATTarget] using hCL
 
 /-- The uniform bounded same-input producer is sufficient for the exact D3
 semantic self-reference object. -/
