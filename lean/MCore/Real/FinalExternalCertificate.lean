@@ -6,6 +6,17 @@ namespace MCore
 namespace Real
 namespace FinalExternalCertificate
 
+/-
+M-Core conditional note.
+
+The optional MCoreLHospitalBound lane designates a first indeterminate
+constant I₀ (historically referred to as phi_11dd4ff2 / 0/0) and supplies the
+P02 witness producer only under an explicit assumption.  This module's
+unconditional certificate definitions are unchanged.  Any certificate routed
+through MCoreLHospitalBound must remain marked CONDITIONAL until that hypothesis
+is discharged without axioms.
+-/
+
 open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalSATBoundary
