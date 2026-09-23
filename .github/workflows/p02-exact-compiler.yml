@@ -37,4 +37,13 @@ jobs:
           for f in "${files[@]}"; do test -f "$f"; done
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
-          lake build             MCore.Real.P02NormalizedCodingReduction             MCore.Real.P02BitStringNatCoding             MCore.Real.P02CodeSemanticInput             MCore.Real.P02KleeneDefinednessFrontier             MCore.Real.P02CompilerFrontierAudit             MCore.Real.P02ExactCompilerSemantics             MCore.Real.P02EffectiveCompilerConstruction             MCore.Real.P02CompilerTerminalPromotion
+          lake update
+          lake build \
+            MCore.Real.P02NormalizedCodingReduction \
+            MCore.Real.P02BitStringNatCoding \
+            MCore.Real.P02CodeSemanticInput \
+            MCore.Real.P02KleeneDefinednessFrontier \
+            MCore.Real.P02CompilerFrontierAudit \
+            MCore.Real.P02ExactCompilerSemantics \
+            MCore.Real.P02EffectiveCompilerConstruction \
+            MCore.Real.P02CompilerTerminalPromotion
