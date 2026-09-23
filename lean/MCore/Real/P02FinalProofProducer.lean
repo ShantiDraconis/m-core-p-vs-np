@@ -6,6 +6,9 @@ namespace P02FinalProofProducer
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
+open CanonicalSATBoundary
+open P02DiagonalFrontier
+open P02G21G22Attack
 open P02KleeneBridge
 open P02KleeneCookLevinBridge
 
