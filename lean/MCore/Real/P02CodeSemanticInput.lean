@@ -11,8 +11,9 @@ open P02BitStringNatCoding
 bitstring.  We observe the program at the distinguished input 0.  If the
 program is undefined there, the canonical default is the empty bitstring. -/
 noncomputable def selfInput (c : Nat.Partrec.Code) :
-    CanonicalFinalProof.BitString :=
-  if h : (c.eval 0).Dom then
+    CanonicalFinalProof.BitString := by
+  classical
+  exact if h : (c.eval 0).Dom then
     decodeBitsNatD ((c.eval 0).get h)
   else
     []
@@ -23,6 +24,7 @@ theorem selfInput_ext
     (hEval : a.eval = b.eval) :
     selfInput a = selfInput b := by
   have h0 : a.eval 0 = b.eval 0 := congrFun hEval 0
+  classical
   unfold selfInput
   rw [h0]
 
@@ -33,6 +35,7 @@ theorem selfInput_of_mem_encode
     (x : CanonicalFinalProof.BitString)
     (hmem : encodeBitsNat x ∈ c.eval 0) :
     selfInput c = x := by
+  classical
   unfold selfInput
   have hdom : (c.eval 0).Dom := (Part.dom_iff_mem).2 ⟨encodeBitsNat x, hmem⟩
   rw [dif_pos hdom]
