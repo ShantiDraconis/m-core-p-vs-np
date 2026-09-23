@@ -58,7 +58,7 @@ theorem strictGrowth_refutes_producer
 theorem encodeCircuit_length_pos
     (c : CircuitK1.Circuit) :
     0 < (encodeCircuit c).length := by
-  cases c <;> simp [encodeCircuit, encodeNat]
+  cases c <;> simp [encodeCircuit]
 
 /-- The CNF circuit encoding contains at least one unit of syntax per clause. -/
 theorem cnfCircuit_encode_length_ge_clause_count
