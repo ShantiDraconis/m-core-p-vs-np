@@ -57,10 +57,12 @@ jobs:
           lake build MCore.Real.P02KleeneBridge
           lake build MCore.Real.P02KleeneCookLevinBridge
           lake build MCore.Real.P02CookLevinFromBoundedExec
+          lake build MCore.Real.P02TerminalReduction
       - name: Status
         run: |
           echo "TARGET_1=TableauCompletenessCertificate"
-          echo "TARGET_2=same_input_of_fixed"
+          echo "TARGET_2=UniformSameInputTransport"
+          echo "COOK_LEVIN=DERIVED_AFTER_TARGET_1"
 
   p02-terminal:
     runs-on: ubuntu-latest
@@ -82,6 +84,7 @@ jobs:
           lake build MCore.Real.P02SameInputClosure
           lake build MCore.Real.P02SemanticSelfEmbeddingClose
           lake build MCore.Real.P02G21G22Attack
+          lake build MCore.Real.P02TerminalReduction
       - name: Status
         run: |
           echo "TARGET=flips_of_fixed->G21Pointwise->P02Target"
