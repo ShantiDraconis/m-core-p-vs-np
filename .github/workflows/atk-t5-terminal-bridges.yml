@@ -30,6 +30,7 @@ jobs:
           lake build MCore.Real.P02SameInputClosure
           lake build MCore.Real.P02UniversalWitnessDetailed
           lake build MCore.Real.P02G21ExpandedTree
+          lake build MCore.Real.P02KleeneCookLevinBridge
           lake build MCore.Real.FinalProofEvidencePromotion
       - name: Hygiene
         run: |
@@ -43,6 +44,7 @@ jobs:
             lean/MCore/Real/P02SameInputClosure.lean
             lean/MCore/Real/P02UniversalWitnessDetailed.lean
             lean/MCore/Real/P02G21ExpandedTree.lean
+            lean/MCore/Real/P02KleeneCookLevinBridge.lean
             lean/MCore/Real/FinalProofEvidencePromotion.lean
           )
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
