@@ -24,9 +24,12 @@ jobs:
           lint: false
       - run: |
           set -euo pipefail
-          f=lean/MCore/Real/P02BoundedSemanticInput.lean
-          test -f "$f"
-          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
-          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+          files=(
+            lean/MCore/Real/P02BoundedSemanticInput.lean
+            lean/MCore/Real/P02BoundedDomain.lean
+          )
+          for f in "${files[@]}"; do test -f "$f"; done
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
           lake update
-          lake build MCore.Real.P02BoundedSemanticInput
+          lake build MCore.Real.P02BoundedSemanticInput MCore.Real.P02BoundedDomain
