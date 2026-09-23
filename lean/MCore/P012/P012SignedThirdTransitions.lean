@@ -1,12 +1,8 @@
-import Mathlib.Tactic.NormNum
 import MCore.P012.P012Core
 
 namespace MCore
 namespace P012
 
-/-- A rational state with fixed denominator 3, represented by its signed
-numerator.  This avoids quotient-normalization issues while preserving the
-exact arithmetic relevant to the transition -2/3 -> 3/3. -/
 structure ThirdState where
   numerator : Int
   deriving DecidableEq, Repr
@@ -21,43 +17,30 @@ def twoThirds : ThirdState := ⟨2⟩
 def threeThirds : ThirdState := ⟨3⟩
 def negThreeThirds : ThirdState := ⟨-3⟩
 
-/-- Displacement in numerator units; divide by 3 externally to recover the
-rational displacement. -/
 def displacementNumerator (a b : ThirdState) : Int :=
   b.numerator - a.numerator
 
 theorem negTwo_to_three_displacement :
     displacementNumerator negTwoThirds threeThirds = 5 := by
-  norm_num [displacementNumerator, negTwoThirds, threeThirds]
+  decide
 
 theorem two_to_three_displacement :
     displacementNumerator twoThirds threeThirds = 1 := by
-  norm_num [displacementNumerator, twoThirds, threeThirds]
+  decide
 
 theorem two_to_negThree_displacement :
     displacementNumerator twoThirds negThreeThirds = -5 := by
-  norm_num [displacementNumerator, twoThirds, negThreeThirds]
+  decide
 
-/-- Unit motion means exactly one numerator step, i.e. 1/3 in rational value. -/
 def UnitThirdStep (a b : ThirdState) : Prop :=
   b.numerator = a.numerator + 1
 
-theorem step_neg2_neg1 : UnitThirdStep negTwoThirds negOneThird := by
-  norm_num [UnitThirdStep, negTwoThirds, negOneThird]
+theorem step_neg2_neg1 : UnitThirdStep negTwoThirds negOneThird := by decide
+theorem step_neg1_zero : UnitThirdStep negOneThird zeroThird := by decide
+theorem step_zero_one : UnitThirdStep zeroThird oneThird := by decide
+theorem step_one_two : UnitThirdStep oneThird twoThirds := by decide
+theorem step_two_three : UnitThirdStep twoThirds threeThirds := by decide
 
-theorem step_neg1_zero : UnitThirdStep negOneThird zeroThird := by
-  norm_num [UnitThirdStep, negOneThird, zeroThird]
-
-theorem step_zero_one : UnitThirdStep zeroThird oneThird := by
-  norm_num [UnitThirdStep, zeroThird, oneThird]
-
-theorem step_one_two : UnitThirdStep oneThird twoThirds := by
-  norm_num [UnitThirdStep, oneThird, twoThirds]
-
-theorem step_two_three : UnitThirdStep twoThirds threeThirds := by
-  norm_num [UnitThirdStep, twoThirds, threeThirds]
-
-/-- The complete discrete path crossing zero. -/
 def fullCrossingPath : List ThirdState :=
   [negTwoThirds, negOneThird, zeroThird, oneThird, twoThirds, threeThirds]
 
@@ -65,7 +48,6 @@ theorem fullCrossingPath_length :
     fullCrossingPath.length = 6 := by
   decide
 
-/-- Orientation relative to zero. -/
 inductive Orientation where
   | negative
   | neutral
@@ -78,34 +60,25 @@ def orientation (s : ThirdState) : Orientation :=
   else .positive
 
 theorem orientation_negTwo :
-    orientation negTwoThirds = .negative := by
-  norm_num [orientation, negTwoThirds]
+    orientation negTwoThirds = .negative := by decide
 
 theorem orientation_zero :
-    orientation zeroThird = .neutral := by
-  norm_num [orientation, zeroThird]
+    orientation zeroThird = .neutral := by decide
 
 theorem orientation_three :
-    orientation threeThirds = .positive := by
-  norm_num [orientation, threeThirds]
+    orientation threeThirds = .positive := by decide
 
 theorem orientation_two :
-    orientation twoThirds = .positive := by
-  norm_num [orientation, twoThirds]
+    orientation twoThirds = .positive := by decide
 
 theorem orientation_negThree :
-    orientation negThreeThirds = .negative := by
-  norm_num [orientation, negThreeThirds]
+    orientation negThreeThirds = .negative := by decide
 
-/-- The transition -2/3 -> 3/3 crosses orientation classes. -/
 theorem negTwo_to_three_changes_orientation :
-    orientation negTwoThirds ≠ orientation threeThirds := by
-  simp [orientation_negTwo, orientation_three]
+    orientation negTwoThirds ≠ orientation threeThirds := by decide
 
-/-- The opposite transition 2/3 -> -3/3 also changes orientation classes. -/
 theorem two_to_negThree_changes_orientation :
-    orientation twoThirds ≠ orientation negThreeThirds := by
-  simp [orientation_two, orientation_negThree]
+    orientation twoThirds ≠ orientation negThreeThirds := by decide
 
 #print axioms MCore.P012.negTwo_to_three_displacement
 #print axioms MCore.P012.negTwo_to_three_changes_orientation
