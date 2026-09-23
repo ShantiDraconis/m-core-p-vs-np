@@ -34,11 +34,26 @@ jobs:
       - name: Collect research evidence
         run: |
           python3 research/evidence/collect_run_evidence.py
+      - name: Auto-formalize discovered patterns
+        run: |
+          set -euo pipefail
+          python3 research/patterns/auto_formalize.py
+          if find lean/MCore/Research/Generated -name '*.lean' -print -quit | grep -q .; then
+            ! grep -RInE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' lean/MCore/Research/Generated
+            ! grep -RInE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Research/Generated
+            while IFS= read -r file; do
+              lake env lean "$file"
+            done < <(find lean/MCore/Research/Generated -name '*.lean' -type f | sort)
+          fi
       - name: Upload research evidence
         uses: actions/upload-artifact@v4
         with:
           name: final-proof-research-evidence-${{ github.run_id }}
-          path: research/evidence/generated/run-evidence.json
+          path: |
+            research/evidence/generated/run-evidence.json
+            research/patterns/registry.json
+            research/patterns/open/
+            lean/MCore/Research/Generated/
       - name: Fail-closed boundary
         run: |
           echo "PRIME2_ROUTE=RESEARCH_ONLY"
