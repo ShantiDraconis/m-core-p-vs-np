@@ -46,11 +46,11 @@ def ExpandsFromKernel (a b : ThirdState) : Prop :=
 
 theorem compress_neg7_to_neg2 :
     CompressesTowardKernel ⟨-7⟩ ⟨-2⟩ := by
-  norm_num [CompressesTowardKernel]
+  constructor <;> decide
 
 theorem expand_2_to_7 :
     ExpandsFromKernel ⟨2⟩ ⟨7⟩ := by
-  norm_num [ExpandsFromKernel]
+  constructor <;> decide
 
 theorem kernel_reflection_displacement :
     displacementNumerator ⟨-2⟩ ⟨2⟩ = 4 := by decide
