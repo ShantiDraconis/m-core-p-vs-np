@@ -55,6 +55,7 @@ jobs:
           lake build MCore.Real.P02KleeneCookLevinBridge
           lake build MCore.Real.P02CookLevinFieldClosed
           lake build MCore.Real.P02ExtensionalSameInputBridge
+          lake build MCore.Real.P02TableauCompletenessClose
           lake build MCore.Real.P02G21G22Attack
       - name: Fail-closed status
         run: |
