@@ -163,3 +163,80 @@ The minimal blockers that disconnect the graph from `FINAL_PROOF` are:
 3. `FINAL_PROOF gap discovery` — RED CI/audit gate.
 
 Everything downstream remains READY_CONDITIONAL until these exact blockers are discharged.
+
+
+## Additional GREEN/CERTIFIED checkpoints incorporated
+
+The following successful checkpoints are now part of the canonical audit lineage. They certify only their observed workflow scope and do not independently inhabit P01ConstructionGap, G21Pointwise, P02Target, or FINAL_PROOF.
+
+- `573dbd65f0c049bcd649a573ea93b3fa2a58543f` — certificate SUCCESS, run `35853271430`; T5 terminal GREEN `35853271391`; Prime2 GREEN `35853271422`.
+- `28cb6b65d2f4211e55b8735af67c9522004e544e` — certificate SUCCESS, run `35853464533`; T5 terminal GREEN `35853464335`; Prime2 GREEN `35853464355`.
+- `09c93d9b68e2c8220c9cb7c040a563504a0a2edf` — certificate SUCCESS, run `35853487432`; T5 terminal GREEN `35853487440`; Prime2 GREEN `35853487511`.
+- `ffd8aee08c01cf6199d55a67fd1d0c3c6cffd094` — certificate SUCCESS, run `35853878497`; T5 terminal GREEN `35853878242`; Prime2 GREEN `35853878328`.
+- `fe57be0eb52bffb84d7073ef990d797e9b9c0e97` — certificate SUCCESS, run `35853881958`; T5 terminal GREEN `35853881993`; Prime2 GREEN `35853881919`.
+- `c9b010fcd5dbe3285f56ee1726a1726971c4a4da` — certificate SUCCESS, run `35854085685`; T5 terminal GREEN `35854085580`; Prime2 GREEN `35854085514`.
+- `5e795201d300b77ea523b09c8f90c725d3375cd1` — certificate SUCCESS, run `35854090247`; FINAL_PROOF gap-discovery GREEN `35854090231`; T5 terminal GREEN `35854090143`; Prime2 GREEN `35854090063`.
+- `721ef1d413e92ce75be048ea4481a7a47ade6b4f` — certificate SUCCESS, run `35855492221`; FINAL_PROOF gap-discovery GREEN `35855492164`.
+- `6011dbfce0adcd868f1b14e26ddaff31f956b196` — certificate SUCCESS, run `35855496946`; FINAL_PROOF gap-discovery GREEN `35855496915`; Prime2 GREEN `35855496968`.
+- `e0a97189404f277b05308278bd665d41d944728d` — certificate SUCCESS, run `35854368529`; T5 terminal GREEN `35854368597`; FINAL_PROOF gap-discovery GREEN `35854368530`.
+- `116a42e98e8ecfd629d40032d389bc80a29a9856` — certificate SUCCESS, run `35854372638`; FINAL_PROOF gap-discovery GREEN `35854372808`.
+
+## Canonical full flow to FINAL_PROOF
+
+### P01 producer line
+`parser macro`
+→ `leaf-pop`
+→ `parser/leaf operational chain`
+→ `T1-A GlobalParserSimulation`
+→ `T1-B ParserWitnessComposition`
+→ `T1-C VerifierComposition`
+→ `T1-D terminal integration`
+→ `P01MachineConstruction`
+→ `P01ConstructionGap`
+→ `SATInNPGap circuitBitEncoding`.
+
+### P02 producer line
+`EffectiveDiagonalCompiler`
+→ `Kleene fixed point eval c = K.f c`
+→ `CookLevinSameInputData.circuitOf/selfInput`
+→ `cook_levin_correct`
++ `same_input_of_fixed`
+→ `flips_of_fixed`
+→ `CanonicalSATFixedPointRealizer`
+→ `DiagonalCounterexampleWitness`
+→ `DiagonalFamily`
+→ `UniversalWitnessExists`
+→ `G21Pointwise`
+→ `P02Target`
+→ `¬ InP SATTarget`.
+
+### Residual-orientation research insertion
+`ResidualRotationAlgebra`
+→ `ResidualSameInputInvariant`
+→ `same_input_of_fixed`
+→ the canonical P02 producer line above.
+
+This route is RESEARCH_ONLY until it constructs the existing same-input theorem from repository code/execution/circuit data without oracle fields.
+
+### G3 line
+`source provenance`
+→ `official model / encoding normalization`
+→ `DTM/NTM/four-way simulation bridges`
+→ `external contract`
+→ `G3ExternalContract`.
+
+### Final merge
+`P01ConstructionGap`
++ `P02Target / G21Pointwise`
++ `G3ExternalContract`
+→ `FinalExternalInputs`
+→ `FinalExternalCertificate`
+→ `FINAL_EXTERNAL`
+→ `FINAL_ROOT`
+→ `FINAL_PROOF`.
+
+### Current promotion cut
+- P01 exact producer requires T1-D to become GREEN.
+- P02 exact producer requires kernel-valid `cook_levin_correct` and `same_input_of_fixed` (hence `flips_of_fixed`).
+- FINAL_PROOF audit workflow being GREEN certifies the audit machinery, not the missing mathematical producers.
+- FINAL_ROOT remains null until the exact P01 and P02 producers and required G3 contract are simultaneously available.
