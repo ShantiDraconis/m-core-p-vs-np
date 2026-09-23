@@ -9,6 +9,9 @@ namespace FinalProofCleanLane
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
+open CanonicalSATBoundary
+open FailProofAllGaps
+open OfficialModel
 open P01FinalProofProducer
 open P02FinalProofProducer
 open CookNormalizedG3Contract
@@ -36,7 +39,7 @@ def LiveTwoProducers.toFinalExternalInputs
 
 theorem LiveTwoProducers.toOfficialPneqNP
     (D : LiveTwoProducers) :
-    OfficialModel.OfficialPneqNP
+    OfficialPneqNP
       cookNormalizedSelection.model.P
       cookNormalizedSelection.model.NP :=
   final_external_certificate D.toFinalExternalInputs
