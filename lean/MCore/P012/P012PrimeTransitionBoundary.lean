@@ -7,6 +7,11 @@ namespace P012
 def PrimeNumerator (z : Int) : Prop :=
   PrimeNat z.natAbs
 
+instance instDecidablePrimeNumerator (z : Int) :
+    Decidable (PrimeNumerator z) := by
+  unfold PrimeNumerator
+  infer_instance
+
 theorem primeNumerator_negTwo :
     PrimeNumerator (-2) := by decide
 
@@ -28,6 +33,11 @@ theorem not_primeNumerator_one :
 def PrimeThirdState (s : ThirdState) : Prop :=
   PrimeNumerator s.numerator
 
+instance instDecidablePrimeThirdState (s : ThirdState) :
+    Decidable (PrimeThirdState s) := by
+  unfold PrimeThirdState
+  infer_instance
+
 theorem negTwoThirds_prime :
     PrimeThirdState negTwoThirds := by decide
 
@@ -48,6 +58,11 @@ theorem oneThird_not_prime :
 
 def PrimeUnitThirdStep (a b : ThirdState) : Prop :=
   PrimeThirdState a ∧ PrimeThirdState b ∧ UnitThirdStep a b
+
+instance instDecidablePrimeUnitThirdStep (a b : ThirdState) :
+    Decidable (PrimeUnitThirdStep a b) := by
+  unfold PrimeUnitThirdStep
+  infer_instance
 
 theorem no_prime_unit_step_neg2_neg1 :
     ¬ PrimeUnitThirdStep negTwoThirds negOneThird := by
