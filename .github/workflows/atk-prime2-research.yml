@@ -24,12 +24,21 @@ jobs:
           set -euo pipefail
           lake build MCore.Research.Prime2ConservativeTransfer
           lake build MCore.Research.Prime2FractionalHorizon
+          lake build MCore.Research.PatternCalculator
       - name: Hygiene
         run: |
           set -euo pipefail
-          files=(lean/MCore/Research/Prime2ConservativeTransfer.lean lean/MCore/Research/Prime2FractionalHorizon.lean)
+          files=(lean/MCore/Research/Prime2ConservativeTransfer.lean lean/MCore/Research/Prime2FractionalHorizon.lean lean/MCore/Research/PatternCalculator.lean)
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+      - name: Collect research evidence
+        run: |
+          python3 research/evidence/collect_run_evidence.py
+      - name: Upload research evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-proof-research-evidence-${{ github.run_id }}
+          path: research/evidence/generated/run-evidence.json
       - name: Fail-closed boundary
         run: |
           echo "PRIME2_ROUTE=RESEARCH_ONLY"
