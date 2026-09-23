@@ -1,3 +1,4 @@
+import Lean.Elab.Tactic.Omega
 import MCore.P012.P012Core
 
 namespace MCore
@@ -8,10 +9,10 @@ structure PerelmanW where
   mono : ∀ t, W t ≤ W (t + 1)
 
 def W_SAT : PerelmanW where
-  W := fun t => t + 100
+  W := fun t => t * t + 100
   mono := by
     intro t
-    exact Nat.le_add_right t 1 |> Nat.add_le_add_right 100
+    omega
 
 theorem L23_W_mono (t : Nat) :
     W_SAT.W t ≤ W_SAT.W (t + 1) := by
