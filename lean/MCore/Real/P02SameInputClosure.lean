@@ -40,18 +40,18 @@ theorem sameInputClosure_iff_selfCodeExistence :
     SameInputClosure ↔ SelfCodeExistence := Iff.rfl
 
 /-- A same-input witness packages directly into the hardened diagonal witness. -/
-def sameInputWitnessToDiagonal
+noncomputable def sameInputWitnessToDiagonal
     (M : PolyDTMCandidate)
     (h : SameInputWitness M) :
-    DiagonalCounterexampleWitness M := by
-  rcases h with ⟨x, hvalid, hflip⟩
-  exact
-    { bits := x
-      valid := hvalid
-      flips := hflip }
+    DiagonalCounterexampleWitness M :=
+  let x : BitString := Classical.choose h
+  let hs := Classical.choose_spec h
+  { bits := x
+    valid := hs.1
+    flips := hs.2 }
 
 /-- Same-input closure gives a full semantic self-embedder. -/
-def sameInputClosureToSemanticSelfEmbedder
+noncomputable def sameInputClosureToSemanticSelfEmbedder
     (h : SameInputClosure) :
     SemanticSelfEmbedder where
   bits := fun M => Classical.choose (h M)
