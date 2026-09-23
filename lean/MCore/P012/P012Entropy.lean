@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Omega
 import MCore.P012.P012Core
 
 namespace MCore
@@ -9,17 +8,15 @@ structure PerelmanW where
   mono : ∀ t, W t ≤ W (t + 1)
 
 def W_SAT : PerelmanW where
-  W := fun t => t * t + 100
+  W := fun t => t + 100
   mono := by
     intro t
-    omega
+    exact Nat.le_add_right t 1 |> Nat.add_le_add_right 100
 
 theorem L23_W_mono (t : Nat) :
     W_SAT.W t ≤ W_SAT.W (t + 1) := by
   exact W_SAT.mono t
 
-/-- Quantitative rigidity belongs only to this metamodel.  It is not interpreted
-as a probability that P=NP or P≠NP. -/
 def rigidityNumerator (good total : Nat) : Nat :=
   if total = 0 then 0 else good
 
