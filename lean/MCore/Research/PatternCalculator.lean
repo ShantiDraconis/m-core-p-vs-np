@@ -88,6 +88,18 @@ def q3OddPure : PrimeHorizonResult :=
   calculatePrimeHorizon
     { denominator := 3, excludeTwo := true, excludeDiagonal := true }
 
+/-- Generic research probe with the even kernel available. -/
+def qWithKernel (q : Nat) : PrimeHorizonResult :=
+  calculatePrimeHorizon
+    { denominator := q, excludeTwo := false, excludeDiagonal := true }
+
+def q5WithKernel : PrimeHorizonResult := qWithKernel 5
+def q7WithKernel : PrimeHorizonResult := qWithKernel 7
+def q11WithKernel : PrimeHorizonResult := qWithKernel 11
+
+/-- Denominators requested for the automatic finite research sweep. -/
+def kernelSweepDenominators : List Nat := [3, 5, 7, 11]
+
 theorem q3_with_kernel_numerator :
     q3WithKernel.kernelNumerator = some 2 := by decide
 
@@ -103,6 +115,33 @@ theorem q3_odd_pure_boundary :
 theorem q3_odd_pure_gap :
     q3OddPure.centralGapNumerator = some 10 := by decide
 
+theorem q5_with_kernel_numerator :
+    q5WithKernel.kernelNumerator = some 2 := by decide
+
+theorem q7_with_kernel_numerator :
+    q7WithKernel.kernelNumerator = some 2 := by decide
+
+theorem q11_with_kernel_numerator :
+    q11WithKernel.kernelNumerator = some 2 := by decide
+
+theorem q5_with_kernel_boundary :
+    q5WithKernel.centralBoundaryNumerator = some 2 := by decide
+
+theorem q7_with_kernel_boundary :
+    q7WithKernel.centralBoundaryNumerator = some 2 := by decide
+
+theorem q11_with_kernel_boundary :
+    q11WithKernel.centralBoundaryNumerator = some 2 := by decide
+
+theorem q5_with_kernel_gap :
+    q5WithKernel.centralGapNumerator = some 4 := by decide
+
+theorem q7_with_kernel_gap :
+    q7WithKernel.centralGapNumerator = some 4 := by decide
+
+theorem q11_with_kernel_gap :
+    q11WithKernel.centralGapNumerator = some 4 := by decide
+
 structure TaggedWitnessObservation where
   raw : Real.CanonicalFinalProof.BitString
   tag : Option Nucleus
@@ -113,6 +152,30 @@ structure TaggedWitnessObservation where
 def TaggedWitnessObservation.toPrime2Input
     (W : TaggedWitnessObservation) : Prime2BitString :=
   { raw := W.raw, nucleusTag := W.tag }
+
+/-- Heuristic bitsOf candidate wrapper.  The denominator/kernel are metadata;
+the candidate presented to SAT and CorrectAt is exactly raw. -/
+def bitsOfCandidate
+    (q : Nat)
+    (raw : Real.CanonicalFinalProof.BitString) :
+    TaggedWitnessObservation :=
+  { raw := raw
+    tag := some { shell := 2, denominator := q }
+    sourceLine := .prime2
+    strength := .finitePattern }
+
+/-- Generate one research-only bitsOf candidate per requested denominator.
+No semantic-failure claim is attached to the generated observations. -/
+def bitsOfCandidateSweep
+    (rawFor : Nat → Real.CanonicalFinalProof.BitString) :
+    List TaggedWitnessObservation :=
+  kernelSweepDenominators.map (fun q => bitsOfCandidate q (rawFor q))
+
+theorem bitsOfCandidate_raw
+    (q : Nat)
+    (raw : Real.CanonicalFinalProof.BitString) :
+    (bitsOfCandidate q raw).raw = raw := by
+  rfl
 
 theorem tag_irrelevant_to_sat
     (W : TaggedWitnessObservation) :
@@ -127,11 +190,31 @@ theorem tag_irrelevant_to_correctAt
       M.raw.CorrectAt Real.P02G21G22Attack.SATTarget W.raw := by
   rfl
 
+theorem bitsOfCandidate_sat_preserved
+    (q : Nat)
+    (raw : Real.CanonicalFinalProof.BitString) :
+    Prime2SAT (bitsOfCandidate q raw).toPrime2Input ↔
+      Real.P02G21G22Attack.SATTarget raw := by
+  rfl
+
+theorem bitsOfCandidate_correctAt_preserved
+    (M : Prime2Candidate)
+    (q : Nat)
+    (raw : Real.CanonicalFinalProof.BitString) :
+    Prime2CorrectAt M (bitsOfCandidate q raw).toPrime2Input ↔
+      M.raw.CorrectAt Real.P02G21G22Attack.SATTarget raw := by
+  rfl
+
 def linesForWitness (W : TaggedWitnessObservation) : List ResearchLine :=
   [W.sourceLine, .g21WitnessMap, .encodingInvariant]
 
 #print axioms MCore.Research.PatternCalculator.q3_with_kernel_gap
 #print axioms MCore.Research.PatternCalculator.q3_odd_pure_gap
+#print axioms MCore.Research.PatternCalculator.q5_with_kernel_gap
+#print axioms MCore.Research.PatternCalculator.q7_with_kernel_gap
+#print axioms MCore.Research.PatternCalculator.q11_with_kernel_gap
+#print axioms MCore.Research.PatternCalculator.bitsOfCandidate_sat_preserved
+#print axioms MCore.Research.PatternCalculator.bitsOfCandidate_correctAt_preserved
 #print axioms MCore.Research.PatternCalculator.tag_irrelevant_to_sat
 #print axioms MCore.Research.PatternCalculator.tag_irrelevant_to_correctAt
 
