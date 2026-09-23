@@ -26,6 +26,11 @@ theorem pure_prime_quotient_coprime
 def PrimeDecimalHorizon (q : Nat) : Prop :=
   PrimeNat q ∧ q ≠ 2 ∧ q ≠ 5
 
+instance instDecidablePrimeDecimalHorizon (q : Nat) :
+    Decidable (PrimeDecimalHorizon q) := by
+  unfold PrimeDecimalHorizon
+  infer_instance
+
 theorem prime_decimal_horizon_not_two
     {q : Nat} (h : PrimeDecimalHorizon q) :
     q ≠ 2 :=
