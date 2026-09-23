@@ -56,7 +56,7 @@ noncomputable def witnessFromKleene
     valid := R.valid c
     flips := by
       have hfixed : Nat.Partrec.Code.eval c = K.f c := hc
-      simpa only [] using (R.flips_of_fixed c hfixed) }
+      exact R.flips_of_fixed c hfixed }
 
 /-- Uniform bridge required to turn the recursion theorem into the P02
 DiagonalFamily. This does not assume G21Pointwise or P02Target. -/
@@ -105,7 +105,7 @@ def D3KleeneSATBridgeGap : Prop :=
 /-- The pointwise compiler/realizer producer is sufficient to assemble the
 uniform D3 bridge. This theorem adds no mathematical hypothesis beyond the
 explicit remaining producer. -/
-noncomputable theorem canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap
+theorem canonicalSATKleeneRealizerGap_to_D3KleeneSATBridgeGap
     (h : CanonicalSATKleeneRealizerGap) :
     D3KleeneSATBridgeGap := by
   classical
@@ -124,7 +124,7 @@ theorem D3KleeneSATBridgeGap_to_D3
   exact kleene_sat_bridge_closes_D3 B
 
 /-- Consequently the minimal Kleene/SAT producer closes D3 directly. -/
-noncomputable theorem canonicalSATKleeneRealizerGap_to_D3
+theorem canonicalSATKleeneRealizerGap_to_D3
     (h : CanonicalSATKleeneRealizerGap) :
     D3SemanticSelfReference :=
   D3KleeneSATBridgeGap_to_D3
