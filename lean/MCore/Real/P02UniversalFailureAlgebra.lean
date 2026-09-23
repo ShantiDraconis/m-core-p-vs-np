@@ -189,7 +189,12 @@ theorem self_embed_witness_gives_semanticMismatch
     exact ⟨hacc, hflip.mpr hacc⟩
 
 theorem pointwise_self_embedding_implies_normalized_failure
-    (h : PointwiseSemanticSelfEmbedding) :
+    (h :
+      ∀ M : PolyDTMCandidate,
+        ∃ x : BitString,
+          CanonicalSATValid x ∧
+          (SATBits circuitBitEncoding x ↔
+            ¬ AcceptsAtDeclaredBound M x)) :
     TotalityOrSemanticCounterexample := by
   intro M
   right
