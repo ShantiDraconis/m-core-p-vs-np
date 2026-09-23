@@ -39,7 +39,15 @@ def proposition(c):
     if kind == "not_divides":
         return f'¬ ({int(c["a"])} ∣ {int(c["b"])})'
     if kind == "raw_lean_prop":
-        return c["prop"]
+        prop = str(c["prop"]).strip()
+        forbidden = [
+            "\n", "\r", "axiom", "constant", "constants", "sorry", "admit",
+            "unsafe", "import", "namespace", "theorem", "lemma", "def ", "#"
+        ]
+        low = prop.lower()
+        if any(tok in low for tok in forbidden):
+            raise ValueError("unsafe raw_lean_prop")
+        return prop
     raise ValueError(f"unsupported kind: {kind}")
 
 def safe_autoprove(c):
