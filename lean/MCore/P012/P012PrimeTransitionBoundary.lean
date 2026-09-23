@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Tactic.NormNum
 import MCore.P012.P012SignedThirdTransitions
 
 namespace MCore
