@@ -39,12 +39,13 @@ def diagonalWitnessOfSelfCode
     flips := hflip }
 
 /-- A genuine SelfCodeExistence proof yields the exact diagonal family. -/
-def diagonalFamilyOfSelfCode
+noncomputable def diagonalFamilyOfSelfCode
     (h : SelfCodeExistence) :
     DiagonalFamily where
-  witness := fun M => by
-    rcases h M with ⟨x, hvalid, hflip⟩
-    exact diagonalWitnessOfSelfCode M x hvalid hflip
+  witness := fun M =>
+    let x : BitString := Classical.choose (h M)
+    let hs := Classical.choose_spec (h M)
+    diagonalWitnessOfSelfCode M x hs.1 hs.2
 
 /-- Promotion only: this theorem does not manufacture self-code existence. -/
 theorem self_code_existence_closes_p02
