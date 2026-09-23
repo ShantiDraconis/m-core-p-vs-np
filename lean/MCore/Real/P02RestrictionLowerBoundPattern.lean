@@ -185,6 +185,32 @@ structure SATReductionIntoFamily
           CanonicalCircuitBits.circuitBitEncoding x ↔
         CircuitK1.SATLanguage (cnfCircuit (reduce x))
 
+/-- Core-aware progress is intentionally separate from C10.RestrictionProgress.
+It cannot replace the original notion globally: doing so would make dominance
+true by definition without showing that all algorithmically relevant progress
+is still covered. -/
+def CoreAwareProgress
+    (ρ : Restriction)
+    (payload core : CNF) : Prop :=
+  RestrictionProgress ρ (cnfCircuit (payload ++ core)) ∧
+  RestrictionProgress ρ (cnfCircuit core)
+
+/-- Coverage obligation preventing a vacuous core-aware lower-bound argument:
+every ordinary progressing restriction produced by the reduction must be
+certified as core-aware. -/
+def CoreAwareProgressCoverage
+    (payload core : CNF) : Prop :=
+  ∀ ρ : Restriction,
+    RestrictionProgress ρ (cnfCircuit (payload ++ core)) →
+      CoreAwareProgress ρ payload core
+
+theorem coreAwareCoverage_implies_coreProgressDominates
+    {payload core : CNF}
+    (h : CoreAwareProgressCoverage payload core) :
+    CoreProgressDominates payload core := by
+  intro ρ hprog
+  exact (h ρ hprog).2
+
 /-- Exact dominance obligation needed by the guarded route: every restriction
 that makes progress on the padded output must also make progress on the core. -/
 def CoreProgressDominates
@@ -211,9 +237,15 @@ structure SATReductionIntoCoreDominatedFamily
   payload : BitString → CNF
   reduce_eq :
     ∀ x, reduce x = payload x ++ H.core (parameter x)
+  progress_coverage :
+    ∀ x,
+      CoreAwareProgressCoverage (payload x) (H.core (parameter x))
   progress_dominance :
     ∀ x,
-      CoreProgressDominates (payload x) (H.core (parameter x))
+      CoreProgressDominates (payload x) (H.core (parameter x)) := by
+    intro x
+    exact coreAwareCoverage_implies_coreProgressDominates
+      (progress_coverage x)
   every_progress_core_dominated :
     ∀ x ρ,
       RestrictionProgress ρ (cnfCircuit (reduce x)) →
@@ -255,6 +287,7 @@ theorem transfer_closes_p02
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.hardCNF_excludes_payoff
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.hardSubfamily_has_uniform_deficit
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.uniformPersistentDeficit_excludes_eventual_payoff
+#print axioms MCore.Real.P02RestrictionLowerBoundPattern.coreAwareCoverage_implies_coreProgressDominates
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.coreProgressDominates_to_coreDominated
 #print axioms MCore.Real.P02RestrictionLowerBoundPattern.transfer_closes_p02
 
