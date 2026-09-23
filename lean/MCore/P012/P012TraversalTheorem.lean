@@ -1,3 +1,4 @@
+import Mathlib.Data.Int.Basic
 import Lean.Elab.Tactic.Omega
 import MCore.P012.P012OddPrimeGap
 import MCore.P012.P012SignedOrientationInterpretation
@@ -13,9 +14,7 @@ def toOneDisplacementNumerator (p q : Nat) : Int :=
 theorem toOneDisplacementNumerator_eq
     (p q : Nat) :
     toOneDisplacementNumerator p q = Int.ofNat (p + q) := by
-  unfold toOneDisplacementNumerator
-  rw [Int.ofNat_add]
-  omega
+  simp [toOneDisplacementNumerator, Int.ofNat_add, Nat.add_comm]
 
 /-- Opposite traversal p/q -> -q/q = -1 has displacement -(p+q)/q. -/
 def toNegOneDisplacementNumerator (p q : Nat) : Int :=
@@ -24,9 +23,7 @@ def toNegOneDisplacementNumerator (p q : Nat) : Int :=
 theorem toNegOneDisplacementNumerator_eq
     (p q : Nat) :
     toNegOneDisplacementNumerator p q = -(Int.ofNat (p + q)) := by
-  unfold toNegOneDisplacementNumerator
-  rw [Int.ofNat_add]
-  omega
+  simp [toNegOneDisplacementNumerator, Int.ofNat_add, Nat.add_comm]
 
 /-- Specialized q=3 facts recover the original 5/3 and -5/3 displacements. -/
 theorem negTwoThirds_to_one_numerator :
