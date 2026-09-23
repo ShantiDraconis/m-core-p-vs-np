@@ -1,4 +1,7 @@
 import MCore.C11.BranchingCost
+import MCore.C12.Families
+import MCore.Real.CanonicalSATBoundary
+import MCore.Real.CanonicalCircuitBits
 
 namespace MCore
 namespace Real
