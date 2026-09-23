@@ -1,5 +1,4 @@
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Omega
+import Lean.Elab.Tactic.Omega
 import MCore.P012.P012OddPrimeGap
 import MCore.P012.P012SignedOrientationInterpretation
 
@@ -14,7 +13,7 @@ def toOneDisplacementNumerator (p q : Nat) : Int :=
 theorem toOneDisplacementNumerator_eq
     (p q : Nat) :
     toOneDisplacementNumerator p q = Int.ofNat (p + q) := by
-  simp [toOneDisplacementNumerator, Nat.cast_add]
+  omega
 
 /-- Opposite traversal p/q -> -q/q = -1 has displacement -(p+q)/q. -/
 def toNegOneDisplacementNumerator (p q : Nat) : Int :=
@@ -23,17 +22,16 @@ def toNegOneDisplacementNumerator (p q : Nat) : Int :=
 theorem toNegOneDisplacementNumerator_eq
     (p q : Nat) :
     toNegOneDisplacementNumerator p q = -(Int.ofNat (p + q)) := by
-  simp [toNegOneDisplacementNumerator, Nat.cast_add]
   omega
 
 /-- Specialized q=3 facts recover the original 5/3 and -5/3 displacements. -/
 theorem negTwoThirds_to_one_numerator :
     toOneDisplacementNumerator 2 3 = 5 := by
-  norm_num [toOneDisplacementNumerator]
+  decide
 
 theorem twoThirds_to_negOne_numerator :
     toNegOneDisplacementNumerator 2 3 = -5 := by
-  norm_num [toNegOneDisplacementNumerator]
+  decide
 
 /-- Closed-prime traversal is modeled as compression to the least-prime shell,
 reflection across the operational kernel, then expansion. It is not a unit path
