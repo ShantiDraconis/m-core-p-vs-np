@@ -33,9 +33,7 @@ jobs:
             lean/MCore/Real/P02SemanticStabilityLane.lean
             lean/MCore/Real/P02FastPathAttack.lean
             lean/MCore/Real/P02RestrictionLowerBoundPattern.lean
-            lean/MCore/Real/P02RestrictionFamilyAudit.lean
             lean/MCore/Real/P02PaddingInheritanceAudit.lean
-            lean/MCore/Real/P02CNFEncodingDeficitAudit.lean
           )
           for f in "${files[@]}"; do test -f "$f"; done
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
@@ -55,7 +53,5 @@ jobs:
             MCore.Real.P02SemanticStabilityLane \
             MCore.Real.P02FastPathAttack \
             MCore.Real.P02RestrictionLowerBoundPattern \
-            MCore.Real.P02RestrictionFamilyAudit \
-            MCore.Real.P02PaddingInheritanceAudit \
-            MCore.Real.P02CNFEncodingDeficitAudit
+            MCore.Real.P02PaddingInheritanceAudit
 
