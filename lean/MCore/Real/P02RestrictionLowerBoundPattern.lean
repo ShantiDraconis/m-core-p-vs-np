@@ -249,14 +249,14 @@ structure HardCoreFamily where
 /-- Polynomial SAT reduction into a parametrized family of canonical CNFs. -/
 structure SATReductionIntoFamily
     (Family : Nat → CNF → Prop) where
-  reduce : BitString → CNF
-  parameter : BitString → Nat
+  reduce : CanonicalFinalProof.BitString → CNF
+  parameter : CanonicalFinalProof.BitString → Nat
   parameterBound : Nat → Nat
   parameter_poly : CanonicalFinalProof.PolynomialTimeBound parameterBound
-  parameter_le : ∀ x : BitString, parameter x ≤ parameterBound x.length
-  lands : ∀ x : BitString, Family (parameter x) (reduce x)
+  parameter_le : ∀ x : CanonicalFinalProof.BitString, parameter x ≤ parameterBound (List.length x)
+  lands : ∀ x : CanonicalFinalProof.BitString, Family (parameter x) (reduce x)
   correct :
-    ∀ x : BitString,
+    ∀ x : CanonicalFinalProof.BitString,
       CanonicalSATBoundary.SATBits
           CanonicalCircuitBits.circuitBitEncoding x ↔
         SATLanguage (cnfCircuit (reduce x))
@@ -318,6 +318,19 @@ def coverageCore (payload : CNF) : CNF :=
   ((cnfVarList payload).enum.flatMap
     (fun vi => coverageClauses base vi.1 vi.2))
 
+theorem evalCNF_append
+    (σ : Assignment) (a b : CNF) :
+    evalCNF σ (a ++ b) = (evalCNF σ a && evalCNF σ b) := by
+  induction a with
+  | nil => rfl
+  | cons c cs ih =>
+      simp [evalCNF, ih, Bool.and_assoc]
+
+theorem coverageClauses_allTrue
+    (base i v : Nat) :
+    evalCNF (fun _ => true) (coverageClauses base i v) = true := by
+  simp [coverageClauses, evalCNF, evalClause, evalLiteral]
+
 /-- The coverage core is satisfiable by the all-true assignment. -/
 theorem coverageCore_sat (payload : CNF) :
     SATLanguage (cnfCircuit (coverageCore payload)) := by
@@ -328,7 +341,9 @@ theorem coverageCore_sat (payload : CNF) :
   induction xs with
   | nil => rfl
   | cons vi xs ih =>
-      simp [coverageClauses, evalCNF, evalClause, evalLiteral, ih]
+      simp only [List.flatMap_cons]
+      rw [evalCNF_append]
+      simp [coverageClauses_allTrue, ih]
 
 /-- Nonempty whenever the payload has at least one syntactic CNF variable. -/
 theorem coverageCore_nonempty
@@ -357,20 +372,20 @@ lower-bound argument is core-dominated. -/
 structure SATReductionIntoCoreDominatedFamily
     (H : HardCoreFamily)
     (Family : Nat → CNF → Prop) extends SATReductionIntoFamily Family where
-  payload : BitString → CNF
+  payload : CanonicalFinalProof.BitString → CNF
   reduce_eq :
-    ∀ x, reduce x = payload x ++ H.core (parameter x)
+    ∀ x : CanonicalFinalProof.BitString, reduce x = payload x ++ H.core (parameter x)
   progress_coverage :
-    ∀ x,
+    ∀ x : CanonicalFinalProof.BitString,
       CoreAwareProgressCoverage (payload x) (H.core (parameter x))
   progress_dominance :
-    ∀ x,
+    ∀ x : CanonicalFinalProof.BitString,
       CoreProgressDominates (payload x) (H.core (parameter x)) := by
     intro x
     exact coreAwareCoverage_implies_coreProgressDominates
       (progress_coverage x)
   every_progress_core_dominated :
-    ∀ x ρ,
+    ∀ (x : CanonicalFinalProof.BitString) (ρ : Restriction),
       RestrictionProgress ρ (cnfCircuit (reduce x)) →
       CoreDominatedProgress ρ (payload x) (H.core (parameter x)) := by
     intro x ρ hprog
