@@ -1,3 +1,4 @@
+import Mathlib.Tactic
 import MCore.Real.P02RestrictionLowerBoundPattern
 
 namespace MCore
@@ -14,24 +15,24 @@ def oneClauseCore : CNF := [[pos 0]]
 theorem free_progress_oneClauseCore :
     RestrictionProgress leavesZeroFree (cnfCircuit oneClauseCore) := by
   constructor
-  · simp [oneClauseCore, cnfCircuit, clauseCircuit, literalCircuit,
+  · simp [oneClauseCore, cnfCircuit, clauseCircuit, literalCircuit, pos,
       D, vars, freeVarList, restrictedSimplified, restrict, simplify]
   · right
-    simp [oneClauseCore, cnfCircuit, clauseCircuit, literalCircuit,
+    simp [oneClauseCore, cnfCircuit, clauseCircuit, literalCircuit, pos,
       D, delta, mu, CircuitC3.potential, restrictedSimplified,
-      restrict, simplify, CircuitK1.size, CircuitK1.depth]
+      restrict, simplify, CircuitK1.size, CircuitK1.depth, CircuitK1.μ]
 
 theorem free_cost_zero_oneClauseCore :
     costBits leavesZeroFree (cnfCircuit oneClauseCore) = 0 := by
   simp [costBits, fixedVarsCount, fixedVarList, oneClauseCore,
-    cnfCircuit, clauseCircuit, literalCircuit, leavesZeroFree]
+    cnfCircuit, clauseCircuit, literalCircuit, pos, leavesZeroFree]
 
 theorem free_amortizedDrop_pos_oneClauseCore :
     0 < amortizedDrop 1 1 leavesZeroFree (cnfCircuit oneClauseCore) := by
   simp [amortizedDrop, Potential, oneClauseCore, cnfCircuit, clauseCircuit,
-    literalCircuit, D, vars, freeVarList, stateRank, recurrenceRank, mu,
+    literalCircuit, pos, D, vars, freeVarList, stateRank, CircuitC8.recurrenceRank, mu,
     CircuitC3.potential, restrictedSimplified, restrict, simplify,
-    CircuitK1.size, CircuitK1.depth]
+    CircuitK1.size, CircuitK1.depth, CircuitK1.μ]
 
 theorem oneClauseCore_not_deficit (c : Nat) :
     ¬ DeficitAtLeast c oneClauseCore := by
