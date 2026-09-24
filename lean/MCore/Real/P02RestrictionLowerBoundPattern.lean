@@ -19,19 +19,24 @@ theorem simplify_idempotent (t : Circuit) :
   | const b => rfl
   | not t ih =>
       simp only [CircuitC2.simplify]
-      cases h : CircuitC2.simplify t <;> simp_all [CircuitC2.simplify]
+      cases h : CircuitC2.simplify t with
+      | input i => simp_all [CircuitC2.simplify]
+      | const b => cases b <;> simp_all [CircuitC2.simplify]
+      | not d => simp_all [CircuitC2.simplify]
+      | and a b => simp_all [CircuitC2.simplify]
+      | or a b => simp_all [CircuitC2.simplify]
   | and a b iha ihb =>
       simp only [CircuitC2.simplify]
       cases ha : CircuitC2.simplify a <;>
       cases hb : CircuitC2.simplify b <;>
-      try { cases ‹Bool› } <;>
-      simp_all [CircuitC2.simplify]
+        simp_all [CircuitC2.simplify] <;>
+        split <;> simp_all [CircuitC2.simplify]
   | or a b iha ihb =>
       simp only [CircuitC2.simplify]
       cases ha : CircuitC2.simplify a <;>
       cases hb : CircuitC2.simplify b <;>
-      try { cases ‹Bool› } <;>
-      simp_all [CircuitC2.simplify]
+        simp_all [CircuitC2.simplify] <;>
+        split <;> simp_all [CircuitC2.simplify]
 
 /-- Restricting by the everywhere-free restriction is syntactic identity. -/
 theorem restrict_leavesZeroFree (t : Circuit) :
