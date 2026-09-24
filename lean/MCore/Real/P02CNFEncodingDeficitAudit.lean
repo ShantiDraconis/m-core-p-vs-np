@@ -14,23 +14,18 @@ def oneClauseCore : CNF := [[pos 0]]
 
 theorem free_progress_oneClauseCore :
     RestrictionProgress leavesZeroFree (cnfCircuit oneClauseCore) := by
-  norm_num [RestrictionProgress, oneClauseCore, cnfCircuit, clauseCircuit,
-    literalCircuit, pos, leavesZeroFree, D, vars, freeVarList,
-    restrictedSimplified, restrict, simplify, delta, C9.mu,
-    CircuitC3.potential, CircuitK1.size, CircuitK1.depth, CircuitK1.μ]
+  change 1 ≤ 1 ∧ (1 < 1 ∨ 0 < 6)
+  decide
 
 theorem free_cost_zero_oneClauseCore :
     costBits leavesZeroFree (cnfCircuit oneClauseCore) = 0 := by
-  norm_num [costBits, fixedVarsCount, fixedVarList, oneClauseCore,
-    cnfCircuit, clauseCircuit, literalCircuit, pos, leavesZeroFree]
+  change 0 = 0
+  rfl
 
 theorem free_amortizedDrop_pos_oneClauseCore :
     0 < amortizedDrop 1 1 leavesZeroFree (cnfCircuit oneClauseCore) := by
-  norm_num [amortizedDrop, Potential, oneClauseCore, cnfCircuit, clauseCircuit,
-    literalCircuit, pos, D, vars, freeVarList, stateRank,
-    CircuitC8.recurrenceRank, C9.mu, CircuitC3.potential,
-    restrictedSimplified, restrict, simplify, leavesZeroFree,
-    CircuitK1.size, CircuitK1.depth, CircuitK1.μ]
+  change 0 < 12
+  decide
 
 theorem oneClauseCore_not_deficit (c : Nat) :
     ¬ DeficitAtLeast c oneClauseCore := by
