@@ -80,7 +80,8 @@ theorem witnessSeek_run_state
           TM.step, Tape.write, Tape.move]
   | succ pad ih =>
       rw [show Nat.succ pad + 2 = 1 + (pad + 2) by omega]
-      rw [TM.run.eq_def, witnessSeekConfig_state, witnessIndexedReadMachine_not_halt3]
+      simp only [TM.run.eq_def, witnessSeekConfig_state,
+        witnessIndexedReadMachine_not_halt3, Bool.false_eq_true, if_false]
       have hs :
           witnessIndexedReadMachine.step
               (witnessSeekConfig (Nat.succ pad) b tail right) =
