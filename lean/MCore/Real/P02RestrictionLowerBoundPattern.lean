@@ -329,7 +329,18 @@ theorem evalCNF_append
 theorem coverageClauses_allTrue
     (base i v : Nat) :
     evalCNF (fun _ => true) (coverageClauses base i v) = true := by
-  simp [coverageClauses, evalCNF, evalClause, evalLiteral]
+  simp [coverageClauses, evalCNF, evalClause, evalLiteral, pos, neg]
+
+theorem coverageList_allTrue
+    (base : Nat) (xs : List (Nat × Nat)) :
+    evalCNF (fun _ => true)
+      (xs.flatMap (fun vi => coverageClauses base vi.1 vi.2)) = true := by
+  induction xs with
+  | nil => rfl
+  | cons vi xs ih =>
+      simp only [List.flatMap_cons]
+      rw [evalCNF_append]
+      simp [coverageClauses_allTrue, ih]
 
 /-- The coverage core is satisfiable by the all-true assignment. -/
 theorem coverageCore_sat (payload : CNF) :
@@ -337,13 +348,7 @@ theorem coverageCore_sat (payload : CNF) :
   rw [satLanguage_cnfCircuit_iff]
   refine ⟨fun _ => true, ?_⟩
   unfold coverageCore
-  generalize hxs : (cnfVarList payload).enum = xs
-  induction xs with
-  | nil => rfl
-  | cons vi xs ih =>
-      simp only [List.flatMap_cons]
-      rw [evalCNF_append]
-      simp [coverageClauses_allTrue, ih]
+  exact coverageList_allTrue (cnfVarBound payload) (cnfVarList payload).enum
 
 /-- Nonempty whenever the payload has at least one syntactic CNF variable. -/
 theorem coverageCore_nonempty
