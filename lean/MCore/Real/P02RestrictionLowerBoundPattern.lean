@@ -24,11 +24,13 @@ theorem simplify_idempotent (t : Circuit) :
       simp only [CircuitC2.simplify]
       cases ha : CircuitC2.simplify a <;>
       cases hb : CircuitC2.simplify b <;>
+      try { cases ‹Bool› } <;>
       simp_all [CircuitC2.simplify]
   | or a b iha ihb =>
       simp only [CircuitC2.simplify]
       cases ha : CircuitC2.simplify a <;>
       cases hb : CircuitC2.simplify b <;>
+      try { cases ‹Bool› } <;>
       simp_all [CircuitC2.simplify]
 
 /-- Restricting by the everywhere-free restriction is syntactic identity. -/
@@ -246,10 +248,10 @@ structure SATReductionIntoFamily
   parameter : BitString → Nat
   parameterBound : Nat → Nat
   parameter_poly : CanonicalFinalProof.PolynomialTimeBound parameterBound
-  parameter_le : ∀ x, parameter x ≤ parameterBound (List.length x)
-  lands : ∀ x, Family (parameter x) (reduce x)
+  parameter_le : ∀ x : BitString, parameter x ≤ parameterBound x.length
+  lands : ∀ x : BitString, Family (parameter x) (reduce x)
   correct :
-    ∀ x,
+    ∀ x : BitString,
       CanonicalSATBoundary.SATBits
           CanonicalCircuitBits.circuitBitEncoding x ↔
         SATLanguage (cnfCircuit (reduce x))
@@ -317,7 +319,11 @@ theorem coverageCore_sat (payload : CNF) :
   rw [satLanguage_cnfCircuit_iff]
   refine ⟨fun _ => true, ?_⟩
   unfold coverageCore
-  simp [evalCNF, evalClause, evalLiteral, coverageClauses]
+  generalize hxs : (cnfVarList payload).enum = xs
+  induction xs with
+  | nil => rfl
+  | cons vi xs ih =>
+      simp [coverageClauses, evalCNF, evalClause, evalLiteral, ih]
 
 /-- Nonempty whenever the payload has at least one syntactic CNF variable. -/
 theorem coverageCore_nonempty
