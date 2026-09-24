@@ -228,18 +228,20 @@ theorem coreProgressDominates_to_coreDominated
 def cnfVarList (f : CNF) : List Nat :=
   (f.flatMap fun clause => clause.map Literal.var).eraseDups
 
-/-- Positive coverage gadget for a payload variable v.  The auxiliary variable
-is chosen above the payload variable bound. -/
-def coverageClause (base i v : Nat) : Clause :=
-  [pos v, pos (base + i)]
+/-- Symmetric coupling gadget for a payload variable v.  Two fresh auxiliaries
+ensure that either Boolean value of v extends to a satisfying assignment:
+(v ∨ a_v) ∧ (¬v ∨ b_v). -/
+def coverageClauses (base i v : Nat) : CNF :=
+  [ [pos v, pos (base + 2 * i)]
+  , [neg v, pos (base + 2 * i + 1)] ]
 
-/-- Coverage core: every payload variable occurs in at least one core clause.
-This layer is designed only to force syntactic contact; it is not yet the
-quantitative hard-deficit core. -/
+/-- Total-variable coverage core: every payload variable occurs in both
+polarities, coupled to fresh auxiliaries.  This layer is semantic/coverage
+infrastructure only; no deficit claim is attached here. -/
 def coverageCore (payload : CNF) : CNF :=
   let base := cnfVarBound payload
-  (cnfVarList payload).zipWithIndex.map
-    (fun vi => coverageClause base vi.2 vi.1)
+  ((cnfVarList payload).zipWithIndex.flatMap
+    (fun vi => coverageClauses base vi.2 vi.1))
 
 /-- The coverage core is satisfiable by the all-true assignment. -/
 theorem coverageCore_sat (payload : CNF) :
@@ -247,7 +249,7 @@ theorem coverageCore_sat (payload : CNF) :
   rw [satLanguage_cnfCircuit_iff]
   refine ⟨fun _ => true, ?_⟩
   unfold coverageCore
-  simp [evalCNF, evalClause, evalLiteral, coverageClause]
+  simp [evalCNF, evalClause, evalLiteral, coverageClauses]
 
 /-- Nonempty whenever the payload has at least one syntactic CNF variable. -/
 theorem coverageCore_nonempty
@@ -255,10 +257,20 @@ theorem coverageCore_nonempty
     (h : cnfVarList payload ≠ []) :
     coverageCore payload ≠ [] := by
   unfold coverageCore
-  intro hz
-  have hm : (cnfVarList payload).zipWithIndex = [] := by
-    simpa using hz
-  simpa using hm
+  cases hv : (cnfVarList payload).zipWithIndex with
+  | nil =>
+      have : cnfVarList payload = [] := by
+        simpa using hv
+      exact (h this).elim
+  | cons x xs =>
+      simp [coverageClauses]
+
+/-- Exact remaining coverage obligation for the total-variable gadget.
+Because C10 progress also observes simplification, membership of every payload
+variable in the core is necessary but not by itself used as a proof here. -/
+def TotalVariableCoverageObligation (payload : CNF) : Prop :=
+  CoreAwareProgressCoverage payload (coverageCore payload)
+
 
 /-- Reduction specialized to the hard-core construction.  Besides semantic
 correctness, it must expose that every progressing restriction relevant to the
