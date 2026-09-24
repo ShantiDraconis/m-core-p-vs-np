@@ -1,0 +1,53 @@
+name: Global immutable no-loop guard
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  no-loop-route:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce immutable no-loop rule
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f lean/MCore/Real/GlobalProhibition.lean
+
+          # Data-only policy file itself is excluded from the symbol scan.
+          # Evidence/source modules are allowed to define the audited notions;
+          # what is forbidden is a new bypass bridge or synthetic final root.
+          mapfile -t files < <(
+            find lean/MCore/Real -type f -name '*.lean'               ! -path 'lean/MCore/Real/GlobalProhibition.lean'               -print
+          )
+
+          prohibited='MCore\.Real\.DeficitBridge|DeficitBridge|ImmutableNoLoopRule|NoLoopRule|noLoopBridgeImmutable|restrictionProgressNorm_to_raw|cnfCircuitNorm_to_circuit|final_root_from_45bf2597|finalExternalGapImm|externalCertificateImm'
+
+          if grep -nE "$prohibited" "${files[@]}"; then
+            echo "PROHIBITED_NO_LOOP_ROUTE_DETECTED"
+            exit 1
+          fi
+
+          # Fail closed on unsound escape hatches in external-certificate modules.
+          mapfile -t external_files < <(
+            find lean/MCore/Real -type f \(               -name '*FinalExternal*.lean' -o               -name '*ExternalCertificate*.lean' -o               -name '*Producer*.lean'             \) -print
+          )
+
+          if (("${#external_files[@]}" > 0)); then
+            if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${external_files[@]}"; then
+              echo "UNSOUND_PLACEHOLDER_IN_EXTERNAL_PATH"
+              exit 1
+            fi
+            if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${external_files[@]}"; then
+              echo "NEW_AXIOM_OR_CONSTANT_IN_EXTERNAL_PATH"
+              exit 1
+            fi
+          fi
+
+          echo "GLOBAL_NO_LOOP_RULE_GREEN"
