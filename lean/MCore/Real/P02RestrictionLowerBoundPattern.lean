@@ -186,19 +186,22 @@ structure SATReductionIntoFamily
           CanonicalCircuitBits.circuitBitEncoding x ↔
         SATLanguage (cnfCircuit (reduce x))
 
+/-- Exact dominance obligation needed by the guarded route: every restriction
+that makes progress on the padded output must also make progress on the core. -/
+def CoreProgressDominates
+    (payload core : CNF) : Prop :=
+  ∀ ρ : Restriction,
+    RestrictionProgress ρ (cnfCircuit (payload ++ core)) →
+      RestrictionProgress ρ (cnfCircuit core)
+
 /-- Core-aware progress is intentionally separate from C10.RestrictionProgress.
-It cannot replace the original notion globally: doing so would make dominance
-true by definition without showing that all algorithmically relevant progress
-is still covered. -/
+It cannot replace the original notion globally. -/
 def CoreAwareProgress
     (ρ : Restriction)
     (payload core : CNF) : Prop :=
   RestrictionProgress ρ (cnfCircuit (payload ++ core)) ∧
   RestrictionProgress ρ (cnfCircuit core)
 
-/-- Coverage obligation preventing a vacuous core-aware lower-bound argument:
-every ordinary progressing restriction produced by the reduction must be
-certified as core-aware. -/
 def CoreAwareProgressCoverage
     (payload core : CNF) : Prop :=
   ∀ ρ : Restriction,
@@ -212,14 +215,6 @@ theorem coreAwareCoverage_implies_coreProgressDominates
   intro ρ hprog
   exact (h ρ hprog).2
 
-/-- Exact dominance obligation needed by the guarded route: every restriction
-that makes progress on the padded output must also make progress on the core. -/
-def CoreProgressDominates
-    (payload core : CNF) : Prop :=
-  ∀ ρ : Restriction,
-    RestrictionProgress ρ (cnfCircuit (payload ++ core)) →
-      RestrictionProgress ρ (cnfCircuit core)
-
 theorem coreProgressDominates_to_coreDominated
     {payload core : CNF}
     (h : CoreProgressDominates payload core) :
@@ -228,6 +223,42 @@ theorem coreProgressDominates_to_coreDominated
         CoreDominatedProgress ρ payload core := by
   intro ρ hprog
   exact ⟨hprog, h ρ hprog⟩
+
+/-- Variables occurring in the canonical CNF payload. -/
+def cnfVarList (f : CNF) : List Nat :=
+  (f.flatMap fun clause => clause.map Literal.var).eraseDups
+
+/-- Positive coverage gadget for a payload variable v.  The auxiliary variable
+is chosen above the payload variable bound. -/
+def coverageClause (base i v : Nat) : Clause :=
+  [pos v, pos (base + i)]
+
+/-- Coverage core: every payload variable occurs in at least one core clause.
+This layer is designed only to force syntactic contact; it is not yet the
+quantitative hard-deficit core. -/
+def coverageCore (payload : CNF) : CNF :=
+  let base := cnfVarBound payload
+  (cnfVarList payload).zipWithIndex.map
+    (fun vi => coverageClause base vi.2 vi.1)
+
+/-- The coverage core is satisfiable by the all-true assignment. -/
+theorem coverageCore_sat (payload : CNF) :
+    SATLanguage (cnfCircuit (coverageCore payload)) := by
+  rw [satLanguage_cnfCircuit_iff]
+  refine ⟨fun _ => true, ?_⟩
+  unfold coverageCore
+  simp [evalCNF, evalClause, evalLiteral, coverageClause]
+
+/-- Nonempty whenever the payload has at least one syntactic CNF variable. -/
+theorem coverageCore_nonempty
+    (payload : CNF)
+    (h : cnfVarList payload ≠ []) :
+    coverageCore payload ≠ [] := by
+  unfold coverageCore
+  intro hz
+  have hm : (cnfVarList payload).zipWithIndex = [] := by
+    simpa using hz
+  simpa using hm
 
 /-- Reduction specialized to the hard-core construction.  Besides semantic
 correctness, it must expose that every progressing restriction relevant to the
