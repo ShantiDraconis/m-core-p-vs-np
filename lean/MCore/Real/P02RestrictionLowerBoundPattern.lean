@@ -11,6 +11,43 @@ namespace P02RestrictionLowerBoundPattern
 open C9 C10 C11 CircuitK1
 open P02BoundedComputationEncoding
 
+/-- Normalized Boolean constructors used only by the P02 Lane-4 CNF bridge. -/
+def smartAnd : Circuit → Circuit → Circuit
+  | .const true, y => y
+  | x, .const true => x
+  | .const false, _ => .const false
+  | _, .const false => .const false
+  | x, y => .and x y
+
+def smartOr : Circuit → Circuit → Circuit
+  | .const false, y => y
+  | x, .const false => x
+  | .const true, _ => .const true
+  | _, .const true => .const true
+  | x, y => .or x y
+
+def clauseCircuitNorm : Clause → Circuit
+  | [] => .const false
+  | [l] => literalCircuit l
+  | l :: ls => smartOr (literalCircuit l) (clauseCircuitNorm ls)
+
+def cnfCircuitNorm : CNF → Circuit
+  | [] => .const true
+  | [clause] => clauseCircuitNorm clause
+  | clause :: rest => smartAnd (clauseCircuitNorm clause) (cnfCircuitNorm rest)
+
+/-- Local Lane-4 normalized dynamics: the initial formula is simplified before
+the restriction is applied, so representation-only simplification cannot count
+as progress. -/
+def DNorm (ρ : Restriction) (t : FormulaTree) : FormulaTree :=
+  simplify (restrict ρ (simplify t))
+
+def RestrictionProgressNorm (ρ : Restriction) (t : FormulaTree) : Prop :=
+  DNorm ρ t ≠ simplify t
+
+def amortizedDropNorm (ρ : Restriction) (t : FormulaTree) : Nat :=
+  CircuitK1.size (simplify t) - CircuitK1.size (DNorm ρ t)
+
 /-- Exact amortized structural drop used by C11, evaluated on the canonical
 Circuit view of a CNF. -/
 def amortizedDrop (α β : Nat) (ρ : Restriction) (t : FormulaTree) : Nat :=
@@ -70,6 +107,16 @@ def DeficitAtLeast (c : Nat) (f : CNF) : Prop :=
         costBits ρ (cnfCircuit f) ∧
       c ≤ costBits ρ (cnfCircuit f) -
         amortizedDrop 1 1 ρ (cnfCircuit f)
+
+/-- Representation-invariant Lane-4 deficit: only restriction-induced
+progress after normalization is counted. -/
+def DeficitAtLeastNorm (c : Nat) (f : CNF) : Prop :=
+  ∀ ρ : Restriction,
+    RestrictionProgressNorm ρ (cnfCircuitNorm f) →
+      amortizedDropNorm ρ (cnfCircuitNorm f) ≤
+        costBits ρ (cnfCircuitNorm f) ∧
+      c ≤ costBits ρ (cnfCircuitNorm f) -
+        amortizedDropNorm ρ (cnfCircuitNorm f)
 
 /-- Hard canonical-CNF subfamily.  The hardness predicate is not a new syntax:
 it is a semantic/quantitative filter on the repository's existing CNF type. -/
