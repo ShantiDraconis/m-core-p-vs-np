@@ -11,30 +11,39 @@ namespace P02RestrictionLowerBoundPattern
 open C9 C10 C11 CircuitK1 CircuitC2
 open P02BoundedComputationEncoding
 
-/-- Normalized Boolean constructors used only by the P02 Lane-4 CNF bridge. -/
-def smartAnd : Circuit → Circuit → Circuit
-  | .const true, y => y
-  | x, .const true => x
-  | .const false, _ => .const false
-  | _, .const false => .const false
-  | x, y => .and x y
+/-- Idempotence of the repository simplifier. -/
+theorem simplify_idempotent (t : Circuit) :
+    CircuitC2.simplify (CircuitC2.simplify t) = CircuitC2.simplify t := by
+  induction t with
+  | input i => rfl
+  | const b => rfl
+  | not t ih =>
+      simp only [CircuitC2.simplify]
+      cases h : CircuitC2.simplify t <;> simp_all [CircuitC2.simplify]
+  | and a b iha ihb =>
+      simp only [CircuitC2.simplify]
+      cases ha : CircuitC2.simplify a <;>
+      cases hb : CircuitC2.simplify b <;>
+      simp_all [CircuitC2.simplify]
+  | or a b iha ihb =>
+      simp only [CircuitC2.simplify]
+      cases ha : CircuitC2.simplify a <;>
+      cases hb : CircuitC2.simplify b <;>
+      simp_all [CircuitC2.simplify]
 
-def smartOr : Circuit → Circuit → Circuit
-  | .const false, y => y
-  | x, .const false => x
-  | .const true, _ => .const true
-  | _, .const true => .const true
-  | x, y => .or x y
+/-- Restricting by the everywhere-free restriction is syntactic identity. -/
+theorem restrict_leavesZeroFree (t : Circuit) :
+    restrict leavesZeroFree t = t := by
+  induction t with
+  | input i => simp [restrict, leavesZeroFree]
+  | const b => rfl
+  | not t ih => simp [restrict, ih]
+  | and a b iha ihb => simp [restrict, iha, ihb]
+  | or a b iha ihb => simp [restrict, iha, ihb]
 
-def clauseCircuitNorm : Clause → Circuit
-  | [] => .const false
-  | [l] => literalCircuit l
-  | l :: ls => smartOr (literalCircuit l) (clauseCircuitNorm ls)
-
-def cnfCircuitNorm : CNF → Circuit
-  | [] => .const true
-  | [clause] => clauseCircuitNorm clause
-  | clause :: rest => smartAnd (clauseCircuitNorm clause) (cnfCircuitNorm rest)
+/-- Canonical normalized CNF bridge: normalize exactly once at the boundary. -/
+def cnfCircuitNorm (f : CNF) : Circuit :=
+  CircuitC2.simplify (cnfCircuit f)
 
 /-- Local Lane-4 normalized dynamics: the initial formula is simplified before
 the restriction is applied, so representation-only simplification cannot count
@@ -120,36 +129,15 @@ def DeficitAtLeastNorm (c : Nat) (f : CNF) : Prop :=
 
 theorem simplify_cnfCircuitNorm_idem (f : CNF) :
     CircuitC2.simplify (cnfCircuitNorm f) = cnfCircuitNorm f := by
-  induction f with
-  | nil => rfl
-  | cons c cs ih =>
-      cases cs with
-      | nil =>
-          cases c with
-          | nil => rfl
-          | cons l ls =>
-              cases ls with
-              | nil =>
-                  cases l with
-                  | mk v p =>
-                      cases p <;> rfl
-              | cons l2 ls2 =>
-                  simp [cnfCircuitNorm, clauseCircuitNorm, smartOr, smartAnd, simplify]
-      | cons c2 cs2 =>
-          simp [cnfCircuitNorm, smartAnd, ih, simplify]
+  unfold cnfCircuitNorm
+  exact simplify_idempotent _
 
 theorem leavesZeroFree_no_progress_norm (f : CNF) :
     ¬ RestrictionProgressNorm leavesZeroFree (cnfCircuitNorm f) := by
-  intro h
-  apply h
-  unfold RestrictionProgressNorm DNorm
-  rw [simplify_cnfCircuitNorm_idem]
-  induction cnfCircuitNorm f with
-  | input i => rfl
-  | const b => rfl
-  | not t ih => simp [restrict, simplify, ih, leavesZeroFree]
-  | and a b iha ihb => simp [restrict, simplify, iha, ihb, leavesZeroFree]
-  | or a b iha ihb => simp [restrict, simplify, iha, ihb, leavesZeroFree]
+  unfold RestrictionProgressNorm DNorm cnfCircuitNorm
+  rw [simplify_idempotent]
+  rw [restrict_leavesZeroFree]
+  exact fun h => h (simplify_idempotent _)
 
 /-- Hard canonical-CNF subfamily.  The hardness predicate is not a new syntax:
 it is a semantic/quantitative filter on the repository's existing CNF type. -/
@@ -258,7 +246,7 @@ structure SATReductionIntoFamily
   parameter : BitString → Nat
   parameterBound : Nat → Nat
   parameter_poly : CanonicalFinalProof.PolynomialTimeBound parameterBound
-  parameter_le : ∀ x, parameter x ≤ parameterBound x.length
+  parameter_le : ∀ x, parameter x ≤ parameterBound (List.length x)
   lands : ∀ x, Family (parameter x) (reduce x)
   correct :
     ∀ x,
