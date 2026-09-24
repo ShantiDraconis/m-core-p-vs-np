@@ -118,6 +118,39 @@ def DeficitAtLeastNorm (c : Nat) (f : CNF) : Prop :=
       c ≤ costBits ρ (cnfCircuitNorm f) -
         amortizedDropNorm ρ (cnfCircuitNorm f)
 
+theorem simplify_cnfCircuitNorm_idem (f : CNF) :
+    simplify (cnfCircuitNorm f) = cnfCircuitNorm f := by
+  induction f with
+  | nil => rfl
+  | cons c cs ih =>
+      cases cs with
+      | nil =>
+          cases c with
+          | nil => rfl
+          | cons l ls =>
+              cases ls with
+              | nil =>
+                  cases l with
+                  | mk v p =>
+                      cases p <;> rfl
+              | cons l2 ls2 =>
+                  simp [cnfCircuitNorm, clauseCircuitNorm, smartOr, smartAnd, simplify]
+      | cons c2 cs2 =>
+          simp [cnfCircuitNorm, smartAnd, ih, simplify]
+
+theorem leavesZeroFree_no_progress_norm (f : CNF) :
+    ¬ RestrictionProgressNorm leavesZeroFree (cnfCircuitNorm f) := by
+  intro h
+  apply h
+  unfold RestrictionProgressNorm DNorm
+  rw [simplify_cnfCircuitNorm_idem]
+  induction cnfCircuitNorm f with
+  | input i => rfl
+  | const b => rfl
+  | not t ih => simp [restrict, simplify, ih, leavesZeroFree]
+  | and a b iha ihb => simp [restrict, simplify, iha, ihb, leavesZeroFree]
+  | or a b iha ihb => simp [restrict, simplify, iha, ihb, leavesZeroFree]
+
 /-- Hard canonical-CNF subfamily.  The hardness predicate is not a new syntax:
 it is a semantic/quantitative filter on the repository's existing CNF type. -/
 def HardCNFSubfamilyWithMargin
