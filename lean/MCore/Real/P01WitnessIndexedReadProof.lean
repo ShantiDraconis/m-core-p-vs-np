@@ -75,9 +75,13 @@ theorem witnessSeek_run_state
       (if b then (4 : Fin 6) else (5 : Fin 6)) := by
   induction pad generalizing right with
   | zero =>
-      cases b <;>
-        simp [TM.run.eq_def, witnessSeekConfig, witnessIndexedReadMachine,
-          TM.step, Tape.write, Tape.move]
+      rw [show 0 + 2 = 1 + 1 by omega]
+      simp only [TM.run.eq_def, witnessSeekConfig_state,
+        witnessIndexedReadMachine_not_halt3, Bool.false_eq_true, if_false]
+      rw [witnessSeek_step_zero]
+      simp only [TM.run.eq_def, witnessIndexedReadMachine_not_halt3,
+        Bool.false_eq_true, if_false]
+      exact witnessSeek_classify b tail (none :: right)
   | succ pad ih =>
       rw [show Nat.succ pad + 2 = 1 + (pad + 2) by omega]
       simp only [TM.run.eq_def, witnessSeekConfig_state,
