@@ -1,0 +1,36 @@
+name: P02 Lane4 audit gate
+
+on:
+  push:
+    branches:
+      - atk/p02-kleene-bridge-fix-20260923
+    paths:
+      - 'lean/MCore/Real/P02RestrictionFamilyAudit.lean'
+      - 'lean/MCore/Real/P02CNFEncodingDeficitAudit.lean'
+      - '.github/workflows/p02-lane4-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02RestrictionFamilyAudit.lean
+            lean/MCore/Real/P02CNFEncodingDeficitAudit.lean
+          )
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+          lake build \
+            MCore.Real.P02RestrictionFamilyAudit \
+            MCore.Real.P02CNFEncodingDeficitAudit

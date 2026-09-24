@@ -1,0 +1,71 @@
+name: ATK terminal core only
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build exact P01 terminal dependencies
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01GlobalParserSimulation
+          lake build MCore.Real.P01WitnessGuessExecution
+          lake build MCore.Real.P01WitnessBoundNormalization
+          lake build MCore.Real.P01FullVerifierPhysicalControl
+          lake build MCore.Real.P01FullVerifierPhysicalRefinement
+          lake build MCore.Real.P01IntegratedMachine
+          lake build MCore.Real.P01FinalCertificate
+          lake build MCore.Real.P01ConstructionClose
+
+  p02-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build exact P02 terminal reduction
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02KleeneBridge
+          lake build MCore.Real.P02KleeneCookLevinBridge
+          lake build MCore.Real.P02CookLevinFieldClosed
+          lake build MCore.Real.P02ExtensionalSameInputBridge
+          lake build MCore.Real.P02TableauCompletenessClose
+          lake build MCore.Real.OpenMathCore.SelfQuotation
+          lake build MCore.Real.OpenMathCore.BoundedUniversalSimulation
+          lake build MCore.Real.OpenMathCore.SATCircuitCompiler
+          lake build MCore.Real.OpenMathCore.SameInputClosure
+          lake build MCore.Real.OpenMathCore.T5FBridge
+          lake build MCore.Real.OpenMathCore.TerminalArchitecture
+          lake build MCore.Real.SemanticSelfQuotation
+          lake build MCore.Real.P02G21G22Attack
+      - name: Fail-closed status
+        run: |
+          echo "COOK_LEVIN_ISOLATED_FIELD=CLOSED_SOURCE"
+          echo "OPEN_MATH_CORE=UniformExtensionalSameInputCompiler"
+          echo "TARGET=P02Target"

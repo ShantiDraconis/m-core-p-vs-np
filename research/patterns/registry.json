@@ -1,0 +1,42 @@
+[
+  {
+    "claim": "Exact FINAL_PROOF gap candidate: G21Pointwise",
+    "kind": "raw_lean_prop",
+    "lean_file": "lean/MCore/Research/Generated/Gap_G21Pointwise_ff7aeb6eb3604363.lean",
+    "name": "Gap_G21Pointwise",
+    "pattern_id": "ff7aeb6eb3604363",
+    "proof_credit": 0,
+    "source": "research/patterns/discovered/gap_G21Pointwise.json",
+    "status": "OPEN_MATH"
+  },
+  {
+    "claim": "Exact FINAL_PROOF gap candidate: P01ConstructionGap",
+    "kind": "raw_lean_prop",
+    "lean_file": "lean/MCore/Research/Generated/Gap_P01ConstructionGap_3a474894a46db5d8.lean",
+    "name": "Gap_P01ConstructionGap",
+    "pattern_id": "3a474894a46db5d8",
+    "proof_credit": 0,
+    "source": "research/patterns/discovered/gap_P01ConstructionGap.json",
+    "status": "OPEN_MATH"
+  },
+  {
+    "claim": "For the q=3 Prime2 operational kernel, the symmetric reflection gap numerator is 4.",
+    "kind": "nat_eq",
+    "lean_file": "lean/MCore/Research/Generated/Q3KernelGapNumerator_d749a3f05a6ef0bc.lean",
+    "name": "Q3KernelGapNumerator",
+    "pattern_id": "d749a3f05a6ef0bc",
+    "proof_credit": 0,
+    "source": "research/patterns/discovered/q3_kernel_gap.json",
+    "status": "OPEN_MATH"
+  },
+  {
+    "claim": "For q=3 with 2 and the diagonal excluded, the symmetric central gap numerator is 10.",
+    "kind": "nat_eq",
+    "lean_file": "lean/MCore/Research/Generated/Q3OddPureGapNumerator_77621c6a6be7ce43.lean",
+    "name": "Q3OddPureGapNumerator",
+    "pattern_id": "77621c6a6be7ce43",
+    "proof_credit": 0,
+    "source": "research/patterns/discovered/q3_odd_pure_gap.json",
+    "status": "OPEN_MATH"
+  }
+]

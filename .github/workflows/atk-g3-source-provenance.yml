@@ -1,0 +1,81 @@
+name: ATK G3 source provenance
+
+on:
+  push:
+    branches:
+      - attack/p01-hard-realization-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g3-source-provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/OfficialCookSource.lean
+            lean/MCore/Real/CookNormalizedMachineModel.lean
+            lean/MCore/Real/CookNormalizedDTMBridge.lean
+            lean/MCore/Real/CookNormalizedNTMBridge.lean
+            lean/MCore/Real/CookNormalizedG3Bridge.lean
+            lean/MCore/Real/CookNormalizedG3Contract.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+
+      - name: Build source record
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.OfficialCookSource MCore.Real.CookNormalizedMachineModel MCore.Real.CookNormalizedDTMBridge MCore.Real.CookNormalizedNTMBridge MCore.Real.CookNormalizedG3Bridge MCore.Real.CookNormalizedG3Contract
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/G3SourceAudit.lean <<'EOF'
+          import MCore.Real.OfficialCookSource
+          import MCore.Real.CookNormalizedMachineModel
+          import MCore.Real.CookNormalizedDTMBridge
+          import MCore.Real.CookNormalizedNTMBridge
+          import MCore.Real.CookNormalizedG3Bridge
+          import MCore.Real.CookNormalizedG3Contract
+          #print axioms MCore.Real.OfficialCookSource.cookCMISource_is_populated
+          #print axioms MCore.Real.CookNormalizedMachineModel.cookNormalizedModel_P
+          #print axioms MCore.Real.CookNormalizedMachineModel.cookNormalizedModel_NP
+          #print axioms MCore.Real.CookNormalizedDTMBridge.internalDTM_to_cook
+          #print axioms MCore.Real.CookNormalizedDTMBridge.cookDTM_to_internal
+          #print axioms MCore.Real.CookNormalizedNTMBridge.internalNTM_to_cook
+          #print axioms MCore.Real.CookNormalizedNTMBridge.cookNTM_to_internal
+          #print axioms MCore.Real.CookNormalizedG3Bridge.cookNormalized_p_match
+          #print axioms MCore.Real.CookNormalizedG3Bridge.cookNormalized_np_match
+          #print axioms MCore.Real.CookNormalizedG3Bridge.cookNormalizedBridge_closed
+          #print axioms MCore.Real.CookNormalizedG3Contract.cook_normalized_g3_contract_closed
+          #print axioms MCore.Real.CookNormalizedG3Contract.cook_normalized_contract_p_match
+          #print axioms MCore.Real.CookNormalizedG3Contract.cook_normalized_contract_np_match
+          EOF
+          lake env lean /tmp/G3SourceAudit.lean 2>&1 | tee /tmp/g3-source.log
+          if grep -q 'sorryAx' /tmp/g3-source.log; then exit 1; fi
+
+      - name: Preserve model-match boundary
+        run: |
+          set -euo pipefail
+          echo "G3_SOURCE_PROVENANCE=GREEN_IF_JOB_SUCCEEDS"
+          echo "G3_EXTERNAL_MODEL=NORMALIZED_SOURCE"
+          echo "G3_SOURCE_FIDELITY=OPEN"
+          echo "G3_DTM_TWO_WAY=GREEN_IF_JOB_SUCCEEDS"
+          echo "G3_NTM_TWO_WAY=GREEN_IF_JOB_SUCCEEDS"
+          echo "G3_NORMALIZED_MODEL_MATCH=GREEN_IF_JOB_SUCCEEDS"
+          echo "G3_NORMALIZED_CONTRACT=GREEN_IF_JOB_SUCCEEDS"
+          echo "G3_SOURCE_FIDELITY=OPEN"
+          echo "G3_MODEL_MATCH=OPEN_SOURCE_FIDELITY"

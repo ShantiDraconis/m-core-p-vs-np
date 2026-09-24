@@ -1,0 +1,8 @@
+{
+  "name": "Gap_P01ConstructionGap",
+  "kind": "raw_lean_prop",
+  "prop": "MCore.Real.P01FinalCertificate.P01ConstructionGap",
+  "claim": "Exact FINAL_PROOF gap candidate: P01ConstructionGap",
+  "lane": "P01_PHYSICAL",
+  "source": "research/evidence/generated/final-gap-report.json"
+}
