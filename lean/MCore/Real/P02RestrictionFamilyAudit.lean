@@ -18,7 +18,7 @@ theorem reducibleExample_paysOff :
   simp [PaysOff, Potential, costBits, fixedVarsCount, fixedVarList,
     C9.stateRank, CircuitC8.recurrenceRank, C9.vars, C9.freeVarList,
     C9.mu, C9.D, CircuitC3.potential, CircuitC2.restrictedSimplified,
-    CircuitK1.restrict, CircuitC2.simplify, CircuitK1.reducibleExample,
+    CircuitK1.restrict, CircuitC2.simplify, CircuitC2.reducibleExample,
     CircuitK1.fixesZeroTrue, CircuitK1.size, CircuitK1.depth]
 
 theorem reducibleExample_progress :
