@@ -8,7 +8,7 @@ namespace MCore
 namespace Real
 namespace P02RestrictionLowerBoundPattern
 
-open C9 C10 C11 CircuitK1
+open C9 C10 C11 CircuitK1 CircuitC2
 open P02BoundedComputationEncoding
 
 /-- Normalized Boolean constructors used only by the P02 Lane-4 CNF bridge. -/
@@ -40,13 +40,13 @@ def cnfCircuitNorm : CNF → Circuit
 the restriction is applied, so representation-only simplification cannot count
 as progress. -/
 def DNorm (ρ : Restriction) (t : FormulaTree) : FormulaTree :=
-  simplify (restrict ρ (simplify t))
+  CircuitC2.simplify (restrict ρ (CircuitC2.simplify t))
 
 def RestrictionProgressNorm (ρ : Restriction) (t : FormulaTree) : Prop :=
-  DNorm ρ t ≠ simplify t
+  DNorm ρ t ≠ CircuitC2.simplify t
 
 def amortizedDropNorm (ρ : Restriction) (t : FormulaTree) : Nat :=
-  CircuitK1.size (simplify t) - CircuitK1.size (DNorm ρ t)
+  CircuitK1.size (CircuitC2.simplify t) - CircuitK1.size (DNorm ρ t)
 
 /-- Exact amortized structural drop used by C11, evaluated on the canonical
 Circuit view of a CNF. -/
@@ -119,7 +119,7 @@ def DeficitAtLeastNorm (c : Nat) (f : CNF) : Prop :=
         amortizedDropNorm ρ (cnfCircuitNorm f)
 
 theorem simplify_cnfCircuitNorm_idem (f : CNF) :
-    simplify (cnfCircuitNorm f) = cnfCircuitNorm f := by
+    CircuitC2.simplify (cnfCircuitNorm f) = cnfCircuitNorm f := by
   induction f with
   | nil => rfl
   | cons c cs ih =>
@@ -320,8 +320,8 @@ polarities, coupled to fresh auxiliaries.  This layer is semantic/coverage
 infrastructure only; no deficit claim is attached here. -/
 def coverageCore (payload : CNF) : CNF :=
   let base := cnfVarBound payload
-  ((cnfVarList payload).zipWithIndex.flatMap
-    (fun vi => coverageClauses base vi.2 vi.1))
+  ((cnfVarList payload).enum.flatMap
+    (fun vi => coverageClauses base vi.1 vi.2))
 
 /-- The coverage core is satisfiable by the all-true assignment. -/
 theorem coverageCore_sat (payload : CNF) :
@@ -337,7 +337,7 @@ theorem coverageCore_nonempty
     (h : cnfVarList payload ≠ []) :
     coverageCore payload ≠ [] := by
   unfold coverageCore
-  cases hv : (cnfVarList payload).zipWithIndex with
+  cases hv : (cnfVarList payload).enum with
   | nil =>
       have : cnfVarList payload = [] := by
         simpa using hv
