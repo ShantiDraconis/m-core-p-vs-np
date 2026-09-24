@@ -16,11 +16,8 @@ theorem reducibleExample_isCNF :
 
 theorem reducibleExample_paysOff :
     PaysOff 1 1 fixesZeroTrue reducibleExample := by
-  norm_num [PaysOff, Potential, costBits, fixedVarsCount, fixedVarList,
-    C9.stateRank, CircuitC8.recurrenceRank, C9.vars, C9.freeVarList,
-    C9.mu, C9.D, CircuitC3.potential, CircuitC2.restrictedSimplified,
-    CircuitK1.restrict, CircuitC2.simplify, CircuitC2.reducibleExample,
-    CircuitK1.fixesZeroTrue, CircuitK1.size, CircuitK1.depth, CircuitK1.μ]
+  change 5 < 16
+  decide
 
 theorem reducibleExample_progress :
     RestrictionProgress fixesZeroTrue reducibleExample :=
