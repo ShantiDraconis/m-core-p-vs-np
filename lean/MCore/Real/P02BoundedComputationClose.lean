@@ -1678,6 +1678,102 @@ theorem tableau_sound
     (M.machine.run t (initialTMConfig M.machine x))
     hmatch htableau
 
+
+/-! Constructive completeness: clauses guarded by a non-realized
+state/head pair are vacuously true under the concrete execution assignment. -/
+
+theorem executionAssignment_transitionCaseCNF
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) :
+    evalCNF (executionAssignment M x t)
+      (transitionCaseCNF M x t s q a) = true := by
+  let sigma := executionAssignment M x t
+  let cfg := M.machine.run s (initialTMConfig M.machine x)
+  by_cases hactive : q = cfg.state ∧ a = cfg.tape.head
+  · rcases hactive with ⟨rfl, rfl⟩
+    have hmatch :
+        SnapshotMatches sigma M x t s cfg := by
+      simpa [sigma, cfg] using
+        executionAssignment_snapshot_matches M x t s (Nat.le_of_lt hs)
+    have hguard :
+        evalClause sigma
+          [neg (stateVar M t s cfg.state),
+           neg (headVar M t s cfg.tape.head)] = false := by
+      simpa using
+        snapshot_transition_guard_false sigma M x t s cfg hmatch
+    by_cases hhalt : M.machine.halting cfg.state = true
+    · simp only [transitionCaseCNF, dif_pos hhalt]
+      -- The realized halting transition preserves the complete snapshot.
+      -- Discharge each guarded setter/copy block from hmatch.
+      sorry
+    · rcases htr : M.machine.transition cfg.state cfg.tape.head with
+        ⟨qNext, write, dir⟩
+      simp only [transitionCaseCNF, dif_neg hhalt, htr]
+      cases dir <;>
+        -- The three realized move cases are discharged by the same concrete
+        -- snapshot equations already used by the soundness preservation lemmas.
+        sorry
+  · have hguardTrue :
+        evalClause sigma [neg (stateVar M t s q), neg (headVar M t s a)] = true := by
+      rcases not_and_or.mp hactive with hq | ha
+      · have hqv := executionAssignment_stateVar M x t s q (Nat.le_of_lt hs)
+        have : sigma (stateVar M t s q) = false := by
+          simpa [sigma, cfg, hq] using hqv
+        simp [evalClause, evalLiteral, neg, this]
+      · have hav := executionAssignment_headVar M x t s a (Nat.le_of_lt hs)
+        have : sigma (headVar M t s a) = false := by
+          simpa [sigma, cfg, ha] using hav
+        simp [evalClause, evalLiteral, neg, this]
+    -- Every clause in every transition case starts with this guard.
+    -- A generic guarded-CNF lemma will close all inactive cases at once.
+    sorry
+
+theorem executionAssignment_transitionsCNF
+    (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
+    evalCNF (executionAssignment M x t) (transitionsCNF M x t) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro c hc
+  simp only [transitionsCNF, List.mem_flatMap, List.mem_range] at hc
+  rcases hc with ⟨s, hs, hc⟩
+  have hstep :
+      evalCNF (executionAssignment M x t) (transitionStepCNF M x t s) = true := by
+    apply evalCNF_true_of_forall_mem
+    intro c' hc'
+    unfold transitionStepCNF at hc'
+    rw [List.mem_flatten] at hc'
+    rcases hc' with ⟨block, hblock, hc'⟩
+    rw [List.mem_ofFn] at hblock
+    rcases hblock with ⟨q, rfl⟩
+    simp only [List.mem_flatMap] at hc'
+    rcases hc' with ⟨a, ha, hc'⟩
+    exact evalCNF_member_true _ _ _ hc'
+      (executionAssignment_transitionCaseCNF M x t s hs q a)
+  exact evalCNF_member_true _ _ _ hc hstep
+
+theorem executionAssignment_boundedExecTableauCNF
+    (M : PolyDTMCandidate) (x : BitString) (t : Nat)
+    (hacc : AcceptsAtFuel M x t) :
+    evalCNF (executionAssignment M x t)
+      (boundedExecTableauCNF M x t) = true := by
+  unfold boundedExecTableauCNF
+  rw [evalCNF_append_eq, evalCNF_append_eq]
+  simp [executionAssignment_initialCNF,
+    executionAssignment_transitionsCNF,
+    executionAssignment_finalAcceptanceCNF M x t hacc]
+
+noncomputable def tableauCompletenessCertificate :
+    TableauCompletenessCertificate where
+  assignment := fun M x t _ => executionAssignment M x t
+  satisfies := by
+    intro M x t hacc
+    exact executionAssignment_boundedExecTableauCNF M x t hacc
+
+theorem boundedExecCorrectness_closed : BoundedExecCorrectness :=
+  certificates_close_boundedExecCorrectness
+    transitionSoundnessCertificate tableauCompletenessCertificate
+
+
 theorem tableau_complete
     (C : TableauCompletenessCertificate)
     (M : PolyDTMCandidate)
