@@ -1679,8 +1679,104 @@ theorem tableau_sound
     hmatch htableau
 
 
-/-! Constructive completeness: clauses guarded by a non-realized
-state/head pair are vacuously true under the concrete execution assignment. -/
+/-! Constructive completeness helpers.  The inactive transition cases are
+vacuous because every generated clause carries the state/head guard. -/
+
+theorem evalCNF_true_of_guard_true
+    (sigma : Assignment) (guard : Clause) (hguard : evalClause sigma guard = true)
+    (cnf : CNF)
+    (hshape : ∀ c ∈ cnf, ∃ tail : Clause, c = guard ++ tail) :
+    evalCNF sigma cnf = true := by
+  apply evalCNF_true_of_forall_mem
+  intro c hc
+  rcases hshape c hc with ⟨tail, rfl⟩
+  rw [evalClause_append]
+  simp [hguard]
+
+theorem setStateClauses_guard_true
+    (sigma : Assignment) (guard : Clause) (hguard : evalClause sigma guard = true)
+    (M : PolyDTMCandidate) (t s : Nat) (q : Fin (M.stateCount + 1)) :
+    evalCNF sigma (setStateClauses guard M t s q) = true := by
+  apply evalCNF_true_of_guard_true sigma guard hguard
+  intro c hc
+  unfold setStateClauses at hc
+  rcases List.mem_ofFn.mp hc with ⟨q', rfl⟩
+  exact ⟨[litFor (stateVar M t s q') (decide (q' = q))], rfl⟩
+
+theorem setSymbolClauses_guard_true
+    (sigma : Assignment) (guard : Clause) (hguard : evalClause sigma guard = true)
+    (varAt : Option Bool → Nat) (target : Option Bool) :
+    evalCNF sigma (setSymbolClauses guard varAt target) = true := by
+  apply evalCNF_true_of_guard_true sigma guard hguard
+  intro c hc
+  unfold setSymbolClauses at hc
+  rw [List.mem_map] at hc
+  rcases hc with ⟨a, _, rfl⟩
+  exact ⟨[litFor (varAt a) (decide (a = target))], rfl⟩
+
+theorem copySymbolClauses_guard_true
+    (sigma : Assignment) (guard : Clause) (hguard : evalClause sigma guard = true)
+    (oldVar newVar : Option Bool → Nat) :
+    evalCNF sigma (copySymbolClauses guard oldVar newVar) = true := by
+  apply evalCNF_true_of_guard_true sigma guard hguard
+  intro c hc
+  unfold copySymbolClauses at hc
+  simp only [List.mem_flatMap] at hc
+  rcases hc with ⟨a, _, hc⟩
+  simp only [List.mem_cons, List.mem_singleton] at hc
+  rcases hc with rfl | rfl
+  · exact ⟨[neg (oldVar a), pos (newVar a)], rfl⟩
+  · exact ⟨[pos (oldVar a), neg (newVar a)], rfl⟩
+
+theorem transitionCaseCNF_guard_true
+    (sigma : Assignment)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hguard :
+      evalClause sigma [neg (stateVar M t s q), neg (headVar M t s a)] = true) :
+    evalCNF sigma (transitionCaseCNF M x t s q a) = true := by
+  let guard : Clause := [neg (stateVar M t s q), neg (headVar M t s a)]
+  have hg : evalClause sigma guard = true := by simpa [guard] using hguard
+  have hstate : ∀ q' : Fin (M.stateCount + 1),
+      evalCNF sigma (setStateClauses guard M t (s + 1) q') = true :=
+    fun q' => setStateClauses_guard_true sigma guard hg M t (s + 1) q'
+  have hset : ∀ (v : Option Bool → Nat) (b : Option Bool),
+      evalCNF sigma (setSymbolClauses guard v b) = true :=
+    fun v b => setSymbolClauses_guard_true sigma guard hg v b
+  have hcopy : ∀ (v w : Option Bool → Nat),
+      evalCNF sigma (copySymbolClauses guard v w) = true :=
+    fun v w => copySymbolClauses_guard_true sigma guard hg v w
+  -- All four transition constructors are finite append/flatMap compositions
+  -- of the three guarded primitives above.
+  simp only [transitionCaseCNF]
+  split
+  · simp only [haltingCaseCNF]
+    rw [evalCNF_append_eq, evalCNF_append_eq, evalCNF_append_eq]
+    simp only [copyHeadCell, copyLeftAll, copyRightAll]
+    constructor
+    · exact hstate q
+    · constructor
+      · exact hcopy (headVar M t s) (headVar M t (s + 1))
+      · constructor <;>
+        apply evalCNF_true_of_forall_mem <;>
+        intro c hc <;>
+        simp only [List.mem_flatMap, List.mem_range] at hc <;>
+        rcases hc with ⟨i, hi, hc⟩ <;>
+        exact evalCNF_member_true _ _ _ hc
+          (hcopy _ _)
+  · rcases htr : M.machine.transition q a with ⟨qNext, write, dir⟩
+    simp only [htr]
+    cases dir <;>
+      simp only [stayCaseCNF, leftMoveCaseCNF, rightMoveCaseCNF]
+    · rw [evalCNF_append_eq, evalCNF_append_eq, evalCNF_append_eq]
+      simp only [copyLeftAll, copyRightAll]
+      simp [hstate, hset, hcopy, evalCNF_true_of_forall_mem]
+    · simp [evalCNF_append_eq, hstate, hset, hcopy,
+        evalCNF_true_of_forall_mem, copyLeftCell, copyRightCell,
+        setLeftCell, setRightCell]
+    · simp [evalCNF_append_eq, hstate, hset, hcopy,
+        evalCNF_true_of_forall_mem, copyLeftCell, copyRightCell,
+        setLeftCell, setRightCell]
 
 theorem executionAssignment_transitionCaseCNF
     (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
@@ -1692,42 +1788,22 @@ theorem executionAssignment_transitionCaseCNF
   let cfg := M.machine.run s (initialTMConfig M.machine x)
   by_cases hactive : q = cfg.state ∧ a = cfg.tape.head
   · rcases hactive with ⟨rfl, rfl⟩
-    have hmatch :
-        SnapshotMatches sigma M x t s cfg := by
-      simpa [sigma, cfg] using
-        executionAssignment_snapshot_matches M x t s (Nat.le_of_lt hs)
-    have hguard :
-        evalClause sigma
-          [neg (stateVar M t s cfg.state),
-           neg (headVar M t s cfg.tape.head)] = false := by
-      simpa using
-        snapshot_transition_guard_false sigma M x t s cfg hmatch
-    by_cases hhalt : M.machine.halting cfg.state = true
-    · simp only [transitionCaseCNF, dif_pos hhalt]
-      -- The realized halting transition preserves the complete snapshot.
-      -- Discharge each guarded setter/copy block from hmatch.
-      sorry
-    · rcases htr : M.machine.transition cfg.state cfg.tape.head with
-        ⟨qNext, write, dir⟩
-      simp only [transitionCaseCNF, dif_neg hhalt, htr]
-      cases dir <;>
-        -- The three realized move cases are discharged by the same concrete
-        -- snapshot equations already used by the soundness preservation lemmas.
-        sorry
-  · have hguardTrue :
+    -- For the realized pair, prove the concrete generated case directly from
+    -- the execution snapshots.  This is the sole remaining local completeness
+    -- obligation after inactive cases are discharged generically.
+    sorry
+  · have hguard :
         evalClause sigma [neg (stateVar M t s q), neg (headVar M t s a)] = true := by
       rcases not_and_or.mp hactive with hq | ha
       · have hqv := executionAssignment_stateVar M x t s q (Nat.le_of_lt hs)
-        have : sigma (stateVar M t s q) = false := by
+        have hv : sigma (stateVar M t s q) = false := by
           simpa [sigma, cfg, hq] using hqv
-        simp [evalClause, evalLiteral, neg, this]
+        simp [evalClause, evalLiteral, neg, hv]
       · have hav := executionAssignment_headVar M x t s a (Nat.le_of_lt hs)
-        have : sigma (headVar M t s a) = false := by
+        have hv : sigma (headVar M t s a) = false := by
           simpa [sigma, cfg, ha] using hav
-        simp [evalClause, evalLiteral, neg, this]
-    -- Every clause in every transition case starts with this guard.
-    -- A generic guarded-CNF lemma will close all inactive cases at once.
-    sorry
+        simp [evalClause, evalLiteral, neg, hv]
+    exact transitionCaseCNF_guard_true sigma M x t s q a hguard
 
 theorem executionAssignment_transitionsCNF
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
@@ -1736,20 +1812,15 @@ theorem executionAssignment_transitionsCNF
   intro c hc
   simp only [transitionsCNF, List.mem_flatMap, List.mem_range] at hc
   rcases hc with ⟨s, hs, hc⟩
-  have hstep :
-      evalCNF (executionAssignment M x t) (transitionStepCNF M x t s) = true := by
-    apply evalCNF_true_of_forall_mem
-    intro c' hc'
-    unfold transitionStepCNF at hc'
-    rw [List.mem_flatten] at hc'
-    rcases hc' with ⟨block, hblock, hc'⟩
-    rw [List.mem_ofFn] at hblock
-    rcases hblock with ⟨q, rfl⟩
-    simp only [List.mem_flatMap] at hc'
-    rcases hc' with ⟨a, ha, hc'⟩
-    exact evalCNF_member_true _ _ _ hc'
-      (executionAssignment_transitionCaseCNF M x t s hs q a)
-  exact evalCNF_member_true _ _ _ hc hstep
+  unfold transitionStepCNF at hc
+  rw [List.mem_flatten] at hc
+  rcases hc with ⟨block, hblock, hc⟩
+  rw [List.mem_ofFn] at hblock
+  rcases hblock with ⟨q, rfl⟩
+  simp only [List.mem_flatMap] at hc
+  rcases hc with ⟨a, _, hc⟩
+  exact evalCNF_member_true _ _ _ hc
+    (executionAssignment_transitionCaseCNF M x t s hs q a)
 
 theorem executionAssignment_boundedExecTableauCNF
     (M : PolyDTMCandidate) (x : BitString) (t : Nat)
@@ -1773,6 +1844,8 @@ theorem boundedExecCorrectness_closed : BoundedExecCorrectness :=
   certificates_close_boundedExecCorrectness
     transitionSoundnessCertificate tableauCompletenessCertificate
 
+#print axioms MCore.Real.P02BoundedComputationClose.tableauCompletenessCertificate
+#print axioms MCore.Real.P02BoundedComputationClose.boundedExecCorrectness_closed
 
 theorem tableau_complete
     (C : TableauCompletenessCertificate)
