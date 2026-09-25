@@ -1,0 +1,44 @@
+name: ATK Meta Formalizer v1
+
+on:
+  push:
+    branches:
+      - "atk/meta-formalizer-v1"
+  workflow_dispatch:
+
+jobs:
+  meta:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve dependencies
+        run: lake update
+      - name: Auto-formalize discovered patterns
+        run: python3 research/patterns/auto_formalize.py
+      - name: Build claim/evidence/frontier graph
+        run: python3 scripts/meta_formalizer.py
+      - name: Build formal promotion linker
+        run: lake build MCore.Research.MetaFormalizationLinker
+      - name: Axiom audit
+        run: |
+          cat > /tmp/meta_audit.lean <<'EOF'
+          import MCore.Research.MetaFormalizationLinker
+          #print axioms MCore.Research.MetaFormalizationLinker.exact_external_promotion
+          EOF
+          lake env lean /tmp/meta_audit.lean | tee /tmp/meta_axioms.txt
+          if grep -q "sorryAx" /tmp/meta_axioms.txt; then exit 1; fi
+      - name: Hygiene
+        run: |
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' lean/MCore/Research/MetaFormalizationLinker.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Research/MetaFormalizationLinker.lean
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atk-meta-formalizer-v1
+          path: |
+            research/meta/claim-evidence-graph.json
+            research/meta/frontier-summary.txt
