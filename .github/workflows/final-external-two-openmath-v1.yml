@@ -1,0 +1,30 @@
+name: ATK Final External Two OpenMath v1
+
+on:
+  push:
+    branches:
+      - "atk/final-external-two-openmath-v1"
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Build exact terminal boundary
+        run: lake build MCore.Real.FinalExternalTwoOpenMath
+      - name: Axiom audit
+        run: |
+          cat > /tmp/audit.lean <<'EOF'
+          import MCore.Real.FinalExternalTwoOpenMath
+          #print axioms MCore.Real.FinalExternalTwoOpenMath.two_open_math_closes_external
+          #print axioms MCore.Real.FinalExternalTwoOpenMath.final_open_math_boundary_closes
+          EOF
+          lake env lean /tmp/audit.lean | tee /tmp/axioms.txt
+          if grep -q "sorryAx" /tmp/axioms.txt; then exit 1; fi
+      - name: Reject placeholders in terminal file
+        run: |
+          if grep -nE '\b(sorry|admit|sorryAx)\b' lean/MCore/Real/FinalExternalTwoOpenMath.lean; then
+            exit 1
+          fi
