@@ -49,3 +49,14 @@ NEXT: A1 kernel build/hygiene/axioms.
 THEN: A2 exact Kleene-to-canonical-SAT same-input producer.
 THEN: D3/P02 promotion (existing source only).
 THEN: P01/G3 validation and terminal external composition (existing source only).
+
+
+## ATK reuse invariant
+Before creating or reproving any theorem, lemma, certificate, adapter, workflow, or artifact:
+1. search the active source, repository history, advanced/frozen branches, and existing certified interfaces;
+2. if an equivalent stronger or directly reusable object exists, reference/import/compose it instead of rebuilding it;
+3. create new source only for the smallest genuinely missing obligation;
+4. never fork a second proof lane merely to rename or restate an existing result;
+5. preserve provenance to the reused theorem/SHA/certificate.
+
+This invariant is part of the canonical ATK fast-path discipline.
