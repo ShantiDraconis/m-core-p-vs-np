@@ -6,7 +6,6 @@ namespace MCore
 namespace Real
 namespace FinalExternalTwoOpenMath
 
-open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalSATBoundary
 open P01FinalCertificate
@@ -18,7 +17,8 @@ No proxy endpoint is stored: the P02 field is the concrete failure generator
 consumed by FinalExternalInputs itself. -/
 structure TwoOpenMathInputs where
   p01 : P01MachineConstruction
-  p02 : FailureGenerator (SATBits circuitBitEncoding)
+  p02 : FailProofAllGaps.FailureGenerator
+    (CanonicalSATBoundary.SATBits circuitBitEncoding)
 
 def TwoOpenMathInputs.toFinalExternalInputs
     (I : TwoOpenMathInputs) :
@@ -29,7 +29,7 @@ def TwoOpenMathInputs.toFinalExternalInputs
 
 theorem two_open_math_closes_external
     (I : TwoOpenMathInputs) :
-    OfficialPneqNP
+    FailProofAllGaps.OfficialPneqNP
       cookNormalizedSelection.model.P
       cookNormalizedSelection.model.NP := by
   exact final_external_certificate I.toFinalExternalInputs
@@ -39,7 +39,7 @@ def FinalOpenMathBoundary : Prop :=
 
 theorem final_open_math_boundary_closes
     (h : FinalOpenMathBoundary) :
-    OfficialPneqNP
+    FailProofAllGaps.OfficialPneqNP
       cookNormalizedSelection.model.P
       cookNormalizedSelection.model.NP := by
   rcases h with ⟨I⟩
