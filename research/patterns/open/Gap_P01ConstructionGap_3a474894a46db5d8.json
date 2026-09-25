@@ -1,0 +1,11 @@
+{
+  "claim": "Exact FINAL_PROOF gap candidate: P01ConstructionGap",
+  "kind": "raw_lean_prop",
+  "lean_file": "lean/MCore/Research/Generated/Gap_P01ConstructionGap_3a474894a46db5d8.lean",
+  "name": "Gap_P01ConstructionGap",
+  "pattern_id": "3a474894a46db5d8",
+  "proof_attempt_log_tail": null,
+  "proof_credit": 0,
+  "source": "research/patterns/discovered/gap_P01ConstructionGap.json",
+  "status": "OPEN_MATH"
+}

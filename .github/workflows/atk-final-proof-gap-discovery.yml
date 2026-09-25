@@ -1,0 +1,120 @@
+name: ATK FINAL_PROOF gap discovery
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+    paths-ignore:
+      - 'lean/MCore/Research/Generated/**'
+      - 'research/patterns/open/**'
+      - 'research/patterns/registry.json'
+      - 'research/patterns/discovered/gap_*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  discover-compare-formalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Snapshot certificate corpus
+        run: |
+          set -euo pipefail
+          python3 research/evidence/snapshot_certificates.py
+
+      - name: Compare all certificates and audit records
+        run: |
+          set -euo pipefail
+          python3 research/evidence/compare_certificate_corpus.py
+
+      - name: Synthesize exact FINAL_PROOF gaps
+        run: |
+          set -euo pipefail
+          python3 research/evidence/synthesize_final_gaps.py
+
+      - name: Build research dependencies
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01FinalCertificate
+          lake build MCore.Real.P02G21G22Attack
+          lake build MCore.Real.FinalProofEvidencePromotion
+          lake build MCore.Research.PatternCalculator
+
+      - name: Auto-formalize newly detected patterns
+        run: |
+          set -euo pipefail
+          python3 research/patterns/auto_formalize.py
+
+      - name: Kernel-check gap ledger
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Research/FinalProofGapLedger.lean
+
+      - name: Kernel-check every generated formalization
+        run: |
+          set -euo pipefail
+          if find lean/MCore/Research/Generated -name '*.lean' -type f -print -quit | grep -q .; then
+            while IFS= read -r file; do
+              lake env lean "$file"
+            done < <(find lean/MCore/Research/Generated -name '*.lean' -type f | sort)
+          fi
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          targets=(
+            lean/MCore/Research/FinalProofGapLedger.lean
+            lean/MCore/Research/Generated
+          )
+          ! grep -RInE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${targets[@]}"
+          ! grep -RInE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${targets[@]}"
+
+      - name: Archive run-specific comparison evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-proof-gap-discovery-${{ github.run_id }}
+          path: |
+            research/evidence/generated/certificate-snapshot.json
+            research/evidence/generated/certificate-corpus-comparison.json
+            research/evidence/generated/final-gap-report.json
+            research/patterns/registry.json
+            research/patterns/open/
+            lean/MCore/Research/Generated/
+
+      - name: Persist stable discoveries and Lean formalizations
+        run: |
+          set -euo pipefail
+          git config user.name "atk-research-bot"
+          git config user.email "atk-research-bot@users.noreply.github.com"
+          git add             research/patterns/discovered/gap_*.json             research/patterns/registry.json             research/patterns/open             lean/MCore/Research/Generated || true
+          if git diff --cached --quiet; then
+            echo "NO_NEW_STABLE_DISCOVERY"
+          else
+            git commit -m "research(auto): persist discovered FINAL_PROOF gaps and Lean formalizations"
+            git push origin HEAD:atk/t1-d-terminal-construction-20260922
+          fi
+
+      - name: Fail-closed status
+        run: |
+          echo "COMPARATOR=ACTIVE"
+          echo "AUTO_FORMALIZER=ACTIVE"
+          echo "GAP_LEDGER=EXACT_P01_PLUS_G21"
+          echo "NO_SORRY=ENFORCED"
+          echo "DETECTED_GAP_IS_NOT_PROOF=ENFORCED"
+          echo "FINAL_PROMOTION_REQUIRES=KERNEL_CHECKED_EXACT_PRODUCER"

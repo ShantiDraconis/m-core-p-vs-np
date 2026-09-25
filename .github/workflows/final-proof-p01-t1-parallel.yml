@@ -1,0 +1,88 @@
+name: FINAL_PROOF P01 T1 parallel
+
+on:
+  push:
+    branches:
+      - final-proof-p01-construction
+      - attack/t1d-physical-verifier-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  t1a:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P01GlobalParserSimulation.lean
+            lean/MCore/Real/P01GlobalParserRuntime.lean
+            lean/MCore/Real/P01GlobalParserBound.lean
+          )
+          test -f "${files[0]}"
+          test -f "${files[1]}"
+          test -f "${files[2]}"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+          lake build MCore.Real.P01GlobalParserSimulation MCore.Real.P01GlobalParserRuntime MCore.Real.P01GlobalParserBound
+
+  t1b:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01ParserWitnessComposition.lean
+          test -f "$f"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+          lake build MCore.Real.P01ParserWitnessComposition
+
+  t1c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01VerifierComposition.lean
+          test -f "$f"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+          lake build MCore.Real.P01VerifierComposition
+
+  t1d:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01ConstructionClose.lean
+          test -f "$f"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+          lake build MCore.Real.P01ConstructionClose MCore.Real.P01FullVerifierMachine MCore.Real.P01FullVerifierPhysical
+          grep -nE '^[[:space:]]*def[[:space:]]+p01MachineConstruction[[:space:]]*:[[:space:]]*P01MachineConstruction[[:space:]]*:=' "$f"
+          grep -nE '^[[:space:]]*theorem[[:space:]]+p01_closed_no_hypothesis' "$f"

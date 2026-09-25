@@ -1,0 +1,11 @@
+{
+  "claim": "For the q=3 Prime2 operational kernel, the symmetric reflection gap numerator is 4.",
+  "kind": "nat_eq",
+  "lean_file": "lean/MCore/Research/Generated/Q3KernelGapNumerator_d749a3f05a6ef0bc.lean",
+  "name": "Q3KernelGapNumerator",
+  "pattern_id": "d749a3f05a6ef0bc",
+  "proof_attempt_log_tail": "/home/runner/work/m-core-p-vs-np/m-core-p-vs-np/lean/MCore/Research/Generated/Q3KernelGapNumerator_d749a3f05a6ef0bc.lean:11:2: error: failed to synthesize\n  Decidable Q3KernelGapNumerator_statement\n\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.\n'MCore.Research.Generated.Q3KernelGapNumerator_verified' depends on axioms: [sorryAx]\n",
+  "proof_credit": 0,
+  "source": "research/patterns/discovered/q3_kernel_gap.json",
+  "status": "OPEN_MATH"
+}

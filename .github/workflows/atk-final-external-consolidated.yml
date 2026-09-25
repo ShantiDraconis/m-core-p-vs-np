@@ -1,0 +1,64 @@
+name: ATK FINAL_EXTERNAL consolidated
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  consolidated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Build reused prerequisite lines
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01WitnessIndexedRead
+          lake build MCore.Real.P01WitnessIndexedReadMachine
+          lake build MCore.Real.P01WitnessIndexedReadProof
+          lake build MCore.Real.P02BoundedComputationClose
+          lake build MCore.Real.P02KleeneE1
+          lake build MCore.Real.P02KleeneBridgeAudit
+          lake build MCore.Real.P02SemanticMismatchAlgebra
+          lake build MCore.Real.FinalExternalLiveTwoProducer
+
+      - name: Build consolidated external flow
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalExternalConsolidatedFlow
+          lake build MCore.Real.FinalExternalCertificate
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/FinalExternalConsolidatedFlow.lean
+            lean/MCore/Real/FinalExternalLiveTwoProducer.lean
+            lean/MCore/Real/P02KleeneCookLevinBridge.lean
+            lean/MCore/Real/P02ResidualSameInputBridge.lean
+          )
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+
+      - name: Fail-closed external status
+        run: |
+          echo "EXTERNAL_FLOW=CONSOLIDATED"
+          echo "REQUIRES=P01ConstructionGap+P02Target+G3ExternalContract"
+          echo "P02_OPEN_MATH=cook_levin_correct+same_input_of_fixed"
+          echo "FINAL_ROOT=NULL_UNTIL_EXACT_PRODUCERS"

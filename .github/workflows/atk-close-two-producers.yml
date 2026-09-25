@@ -1,0 +1,74 @@
+name: ATK close two producers
+# rerun marker d6675e40
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  close-two-producers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Clean build cache
+        run: |
+          set -euo pipefail
+          lake clean
+
+      - name: P01 terminal producer
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01FullVerifierPhysical
+          lake build MCore.Real.PhysicalMachineCore
+          lake build MCore.Real.P01PhysicalRealizationAssembly
+          lake build MCore.Real.P01FinalCertificate
+          lake build MCore.Real.P01ConstructionGapClosure
+
+      - name: P02 terminal producer
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02TableauCompletenessActive
+          lake build MCore.Real.P02BoundedComputationClose
+          lake build MCore.Real.P02CookLevinSameInputClosure
+          lake build MCore.Real.P02ResidualSameInputBridge
+
+      - name: FINAL_EXTERNAL chain
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalExternalLiveTwoProducer
+          lake build MCore.Real.FinalExternalCertificate
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          targets=(
+            lean/MCore/Real/P01FullVerifierPhysical.lean
+            lean/MCore/Real/PhysicalMachineCore.lean
+            lean/MCore/Real/P01PhysicalRealizationAssembly.lean
+            lean/MCore/Real/P01FinalCertificate.lean
+            lean/MCore/Real/P01ConstructionGapClosure.lean
+            lean/MCore/Real/P02TableauCompletenessActive.lean
+            lean/MCore/Real/P02BoundedComputationClose.lean
+            lean/MCore/Real/P02CookLevinSameInputClosure.lean
+            lean/MCore/Real/P02ResidualSameInputBridge.lean
+            lean/MCore/Real/FinalExternalLiveTwoProducer.lean
+            lean/MCore/Real/FinalExternalCertificate.lean
+          )
+          ! grep -RInE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${targets[@]}"
+          ! grep -RInE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${targets[@]}"

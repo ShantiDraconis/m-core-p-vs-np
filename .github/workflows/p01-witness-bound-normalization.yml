@@ -1,0 +1,38 @@
+name: P01 Witness Bound Normalization
+
+on:
+  push:
+    branches:
+      - attack/p01-witness-bound-normalization-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  witness-bound:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01WitnessBoundNormalization.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+      - name: Build
+        run: lake build MCore.Real.P01WitnessBoundNormalization
+      - name: Axiom audit
+        run: |
+          cat >/tmp/P01WitnessBoundAudit.lean <<'EOF'
+          import MCore.Real.P01WitnessBoundNormalization
+          #print axioms MCore.Real.P01WitnessBoundNormalization.excess_bits_ignored
+          #print axioms MCore.Real.P01WitnessBoundNormalization.verifyWitness_normalized
+          EOF
+          lake env lean /tmp/P01WitnessBoundAudit.lean 2>&1 | tee /tmp/audit.log
+          ! grep -q 'sorryAx' /tmp/audit.log

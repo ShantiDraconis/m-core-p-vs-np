@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ATK Certificate Snapshot",
+  "type": "object",
+  "required": ["schema","repository","sha","files","producer_observations"],
+  "properties": {
+    "schema": {"const":"atk.certificate-snapshot.v1"},
+    "repository": {"type":["string","null"]},
+    "sha": {"type":["string","null"]},
+    "run_id": {"type":["integer","null"]},
+    "generated_at": {"type":"string"},
+    "files": {
+      "type":"array",
+      "items":{
+        "type":"object",
+        "required":["path","sha256","size"],
+        "properties":{
+          "path":{"type":"string"},
+          "sha256":{"type":"string"},
+          "size":{"type":"integer","minimum":0}
+        },
+        "additionalProperties":false
+      }
+    },
+    "producer_observations":{
+      "type":"object",
+      "additionalProperties":{
+        "type":"object",
+        "required":["symbol","source_hits","evidence_state"],
+        "properties":{
+          "symbol":{"type":"string"},
+          "source_hits":{"type":"array","items":{"type":"string"}},
+          "evidence_state":{"enum":["NO_EVIDENCE","SOURCE_PRESENT","THEOREM_PRESENT","CERTIFICATE_REFERENCE"]}
+        }
+      }
+    }
+  }
+}
