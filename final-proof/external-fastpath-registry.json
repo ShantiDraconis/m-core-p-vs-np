@@ -1,0 +1,143 @@
+{
+  "schema": "elyon.external-fastpath.v1",
+  "target": "FinalExternalCertificate",
+  "policy": {
+    "fail_closed": true,
+    "falsified_routes_reopen": false,
+    "open_math_promotable_by_metadata": false,
+    "require_kernel_green_for_theorem_promotion": true,
+    "require_axiom_audit": true
+  },
+  "claims": {
+    "P01_COMPONENTS": {
+      "state": "CERTIFIED",
+      "evidence": [
+        {
+          "area": "global_parser",
+          "sha": "fa928b11",
+          "run": 35745074597
+        },
+        {
+          "area": "physical_realization_components",
+          "sha": "058f574b",
+          "run": 35785607933
+        },
+        {
+          "area": "physical_moves",
+          "sha": "e82c0dfc",
+          "run": 35833209966
+        },
+        {
+          "area": "physical_refinement",
+          "sha": "e2d30558",
+          "run": 35833213528
+        },
+        {
+          "area": "poly_bound",
+          "sha": "921170b3",
+          "run": 35791659492
+        }
+      ],
+      "deps": []
+    },
+    "P01_MACHINE_CONSTRUCTION": {
+      "state": "OPEN_MATH",
+      "exact_type": "MCore.Real.P01FinalCertificate.P01MachineConstruction",
+      "deps": [
+        "P01_COMPONENTS"
+      ],
+      "consumer": "construction_closes_p01"
+    },
+    "P02_REUSE_INFRA": {
+      "state": "CERTIFIED",
+      "evidence": [
+        {
+          "area": "bounded_computation",
+          "sha": "fbd24d7d",
+          "run": 35770208857
+        },
+        {
+          "area": "tableau_completeness",
+          "sha": "30707e68",
+          "run": 35775861028
+        },
+        {
+          "area": "universal_failure_algebra",
+          "sha": "0c755ac3",
+          "run": 35785495169
+        },
+        {
+          "area": "clock_failure",
+          "sha": "7aedf7bd",
+          "run": 35791662702
+        },
+        {
+          "area": "semantic_mismatch",
+          "sha": "f3dc5354",
+          "run": 35791665694
+        },
+        {
+          "area": "candidate_coding",
+          "sha": "a5635895",
+          "run": 35795602565
+        },
+        {
+          "area": "diagonal_compiler",
+          "sha": "8fff59ef",
+          "run": 35791673222
+        }
+      ],
+      "deps": []
+    },
+    "P02_FAILURE_GENERATOR": {
+      "state": "OPEN_MATH",
+      "exact_type": "FailureGenerator (SATBits circuitBitEncoding)",
+      "deps": [
+        "P02_REUSE_INFRA"
+      ],
+      "note": "literal fixed-point route remains CLOSED_BY_FALSIFICATION"
+    },
+    "G3_EXTERNAL_CONTRACT": {
+      "state": "CERTIFIED",
+      "exact_term": "cookNormalizedExternalContract",
+      "evidence": [
+        {
+          "area": "normalized_four_way",
+          "sha": "3f04da00",
+          "run": 35715387641
+        },
+        {
+          "area": "external_contract",
+          "sha": "f2cafea7",
+          "run": 35719428075
+        }
+      ],
+      "deps": []
+    },
+    "FINAL_EXTERNAL_COMPOSITION": {
+      "state": "BUILD_PENDING",
+      "exact_theorem": "MCore.Real.FinalExternalTwoOpenMath.two_open_math_closes_external",
+      "deps": [
+        "P01_MACHINE_CONSTRUCTION",
+        "P02_FAILURE_GENERATOR",
+        "G3_EXTERNAL_CONTRACT"
+      ],
+      "source_sha": "2c2258dc31677fef2eecc96ab40a6db8c52aed04",
+      "workflow_run": 36187716847
+    },
+    "FinalExternalCertificate": {
+      "state": "BLOCKED",
+      "deps": [
+        "FINAL_EXTERNAL_COMPOSITION"
+      ]
+    }
+  },
+  "permanently_closed": [
+    {
+      "route": "G2.1 literal fixed point",
+      "state": "CLOSED_BY_FALSIFICATION",
+      "sha": "17c04b62",
+      "run": 35721158651
+    }
+  ]
+}
