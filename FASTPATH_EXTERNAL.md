@@ -32,3 +32,20 @@ A1 has one explicit local `sorry` in the newly constructed active transition-cas
 A2 remains OPEN_MATH: code/fixed-point semantics must be transported to the exact canonical SAT same-input witness without assuming the lower-bound conclusion.
 
 The terminal wiring after a genuine D3 producer already exists; do not rebuild it.
+
+
+## Execution discipline
+- Search/reuse before construction.
+- Work only on the first unresolved producer in the canonical chain; downstream wiring remains untouched until its dependency is kernel-valid.
+- A failed build repairs the same lane; it does not spawn a new mathematical route.
+- A falsified statement is immutable and cannot be reintroduced under a renamed wrapper.
+- Freeze only after source contains zero forbidden placeholders and the target builds.
+- Certify only after target `#print axioms`, dependency/hygiene audit, and semantic-scope audit.
+- External issuance is terminal: it consumes only the certified P01, D3/P02 and G3 producers and never substitutes metadata/audit GREEN for proof.
+
+## Queue
+ACTIVE: A1 realized transition-case completeness.
+NEXT: A1 kernel build/hygiene/axioms.
+THEN: A2 exact Kleene-to-canonical-SAT same-input producer.
+THEN: D3/P02 promotion (existing source only).
+THEN: P01/G3 validation and terminal external composition (existing source only).
