@@ -1,5 +1,4 @@
 import MCore.Real.P01FinalCertificate
-import MCore.Real.P02SemanticSelfEmbeddingClose
 import MCore.Real.CookNormalizedG3Contract
 import MCore.Real.FinalExternalCertificate
 
@@ -7,26 +6,25 @@ namespace MCore
 namespace Real
 namespace FinalExternalTwoOpenMath
 
+open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalSATBoundary
 open P01FinalCertificate
-open P02SemanticSelfEmbeddingClose
 open CookNormalizedG3Contract
 open FinalExternalCertificate
 
-/-- Exact terminal mathematical payload after all reusable infrastructure is closed. -/
+/-- Exact terminal mathematical payload after all reusable infrastructure is closed.
+No proxy endpoint is stored: the P02 field is the concrete failure generator
+consumed by FinalExternalInputs itself. -/
 structure TwoOpenMathInputs where
   p01 : P01MachineConstruction
-  p02 : UniversalWitnessExists
+  p02 : FailureGenerator (SATBits circuitBitEncoding)
 
 def TwoOpenMathInputs.toFinalExternalInputs
     (I : TwoOpenMathInputs) :
     FinalExternalInputs where
   g1 := construction_closes_p01 ⟨I.p01⟩
-  g2 := by
-    have hP02 := universal_witness_closes_p02 I.p02
-    rcases hP02 with ⟨G⟩
-    exact G
+  g2 := I.p02
   g3 := cookNormalizedExternalContract
 
 theorem two_open_math_closes_external
