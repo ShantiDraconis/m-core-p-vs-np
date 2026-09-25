@@ -1,0 +1,31 @@
+name: ATK External Fastpath Orchestrator v1
+
+on:
+  push:
+    branches:
+      - "atk/final-external-two-openmath-v1"
+  workflow_dispatch:
+
+jobs:
+  resolve:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve minimal external frontier
+        run: python3 scripts/external_fastpath_orchestrator.py
+      - name: Enforce exact two-gap frontier
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open("evidence/external_fastpath_summary.json"))
+          allowed={"P01_MACHINE_CONSTRUCTION","P02_FAILURE_GENERATOR"}
+          got=set(d["minimal_frontier"])
+          assert got <= allowed, (got, allowed)
+          assert d["frontier_count"] <= 2
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: external-fastpath-orchestrator-v1
+          path: |
+            final-proof/external-fastpath-registry.json
+            evidence/external_fastpath_summary.json
