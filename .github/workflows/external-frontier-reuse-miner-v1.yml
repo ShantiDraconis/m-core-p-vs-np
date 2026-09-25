@@ -1,0 +1,26 @@
+name: ATK External Frontier Reuse Miner v1
+
+on:
+  push:
+    branches:
+      - "atk/external-frontier-reuse-miner-v1"
+  workflow_dispatch:
+
+jobs:
+  mine:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch all historical branches
+        run: git fetch origin --prune '+refs/heads/*:refs/remotes/origin/*'
+      - name: Mine exact declarations and reusable aliases
+        run: python3 scripts/external_frontier_reuse_miner.py
+      - name: Upload frontier evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-frontier-reuse-v1
+          path: |
+            evidence/external_frontier_reuse.json
+            evidence/external_frontier_reuse_summary.txt
