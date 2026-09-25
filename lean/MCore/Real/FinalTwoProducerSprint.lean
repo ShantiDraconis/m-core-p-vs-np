@@ -61,7 +61,7 @@ structure FinalTwoProducerInputs where
   p01 : P01MachineConstruction
   p02law : TotalCandidateSeparationLaw
 
-def FinalTwoProducerInputs.toExternalInputs
+noncomputable def FinalTwoProducerInputs.toExternalInputs
     (I : FinalTwoProducerInputs) :
     FinalExternalInputs where
   g1 := construction_closes_p01 ⟨I.p01⟩
