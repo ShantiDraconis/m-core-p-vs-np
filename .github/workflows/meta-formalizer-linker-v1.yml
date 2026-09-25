@@ -1,0 +1,39 @@
+name: ATK Meta Formalizer Linker v1
+
+on:
+  push:
+    branches:
+      - "atk/meta-formalizer-linker-v1"
+  workflow_dispatch:
+
+jobs:
+  link:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Link patterns evidence and exact claims
+        run: python3 scripts/meta_formalizer_linker.py
+      - name: Fail closed registry checks
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open("evidence/meta_formalizer_linker.json"))
+          assert d["fail_closed"] is True
+          assert d["falsified_routes_reopen"] is False
+          assert d["frontier_count"] == 2
+          assert not d["validation_errors"]
+          assert all(x["state"]=="OPEN_MATH" for x in d["exact_frontier"])
+          PY
+      - name: Build exact current Lean boundaries
+        run: |
+          lake update
+          lake build MCore.Real.P01TerminalDelta
+          lake build MCore.Real.FinalTwoProducerSprint
+      - name: Axiom and placeholder firewall
+        run: |
+          ! grep -R -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)'             lean/MCore/Real/P01TerminalDelta.lean             lean/MCore/Real/FinalTwoProducerSprint.lean
+          ! grep -R -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]'             lean/MCore/Real/P01TerminalDelta.lean             lean/MCore/Real/FinalTwoProducerSprint.lean
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atk-meta-formalizer-linker-v1
+          path: evidence/meta_formalizer_linker.json
