@@ -12,6 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Pin Lean dependencies
+        run: lake update
       - name: Build exact terminal boundary
         run: lake build MCore.Real.FinalExternalTwoOpenMath
       - name: Axiom audit
