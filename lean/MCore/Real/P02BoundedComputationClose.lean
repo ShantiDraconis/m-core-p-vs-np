@@ -835,6 +835,24 @@ theorem setSymbolClauses_satisfied_of_assignment
       (varAt a) (decide (a = target))).2 (hvals a)
   simp [evalClause, hlit]
 
+theorem copySymbolClauses_satisfied_of_assignment
+    (sigma : Assignment)
+    (guard : Clause)
+    (oldVar newVar : Option Bool → Nat)
+    (hvals : ∀ a : Option Bool, sigma (oldVar a) = sigma (newVar a)) :
+    evalCNF sigma (copySymbolClauses guard oldVar newVar) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro clause hclause
+  unfold copySymbolClauses at hclause
+  simp only [List.mem_flatMap] at hclause
+  rcases hclause with ⟨a, _, hclause⟩
+  simp only [List.mem_cons, List.mem_singleton] at hclause
+  rcases hclause with rfl | rfl
+  · rw [evalClause_append]
+    simp [evalClause, evalLiteral, neg, pos, hvals a]
+  · rw [evalClause_append]
+    simp [evalClause, evalLiteral, neg, pos, hvals a]
+
 theorem evalCNF_append_eq
     (sigma : Assignment) (a b : CNF) :
     evalCNF sigma (a ++ b) =
