@@ -1,0 +1,35 @@
+name: ATK Final Two Producer Sprint v1
+
+on:
+  push:
+    branches:
+      - "atk/final-two-producer-sprint-v1"
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve dependencies
+        run: lake update
+      - name: Build direct two-producer bridge
+        run: lake build MCore.Real.FinalTwoProducerSprint
+      - name: Axiom audit
+        run: |
+          cat > /tmp/audit.lean <<'EOF'
+          import MCore.Real.FinalTwoProducerSprint
+          #print axioms MCore.Real.FinalTwoProducerSprint.failureGeneratorOfSeparationLaw
+          #print axioms MCore.Real.FinalTwoProducerSprint.final_two_producers_close_external
+          EOF
+          lake env lean /tmp/audit.lean | tee /tmp/axioms.txt
+          if grep -q "sorryAx" /tmp/axioms.txt; then exit 1; fi
+      - name: Placeholder audit
+        run: |
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' lean/MCore/Real/FinalTwoProducerSprint.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/FinalTwoProducerSprint.lean
