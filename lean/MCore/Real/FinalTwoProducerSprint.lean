@@ -15,8 +15,8 @@ open P02UniversalFailureAlgebra
 open CookNormalizedG3Contract
 open FinalExternalCertificate
 
-/-- Minimal terminal P02 payload. This is definitionally the useful part of the
-historical OpenMathCore separation-law layer, copied here to remove a stale import. -/
+/-- Minimal exact P02 mathematical producer: for every candidate whose declared
+clock is total, give one semantic mismatch. No auxiliary behavior layer needed. -/
 structure TotalCandidateSeparationLaw where
   witness : PolyDTMCandidate → BitString
   separates :
