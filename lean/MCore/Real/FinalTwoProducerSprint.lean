@@ -1,4 +1,4 @@
-import MCore.Real.OpenMathCore.Behavior
+import MCore.Real.P02UniversalFailureAlgebra
 import MCore.Real.P01FinalCertificate
 import MCore.Real.CookNormalizedG3Contract
 import MCore.Real.FinalExternalCertificate
@@ -12,9 +12,15 @@ open CanonicalCircuitBits
 open CanonicalSATBoundary
 open P01FinalCertificate
 open P02UniversalFailureAlgebra
-open OpenMathCore
 open CookNormalizedG3Contract
 open FinalExternalCertificate
+
+/-- Minimal terminal P02 payload. This is definitionally the useful part of the
+historical OpenMathCore separation-law layer, copied here to remove a stale import. -/
+structure TotalCandidateSeparationLaw where
+  witness : PolyDTMCandidate → BitString
+  separates :
+    ∀ M, DeclaredClockTotal M → SemanticMismatch M (witness M)
 
 /-- Reuse the already-proved clock/semantic dichotomy to obtain one concrete
 counterexample for every deterministic polynomial-time candidate. -/
