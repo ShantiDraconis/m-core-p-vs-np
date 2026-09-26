@@ -1,0 +1,39 @@
+{
+  "schema": "atk.open-math-obligations.v1",
+  "policy": "fail_closed",
+  "closed_by_falsification": [
+    {
+      "id": "PNP_G21_LITERAL",
+      "class": "F_FORMULATION",
+      "status": "CLOSED_BY_FALSIFICATION",
+      "theorem": "MCore.Real.G21NegativeFinalCertificate.G21_literal_fixed_point_falsified",
+      "replacement": "Semantic Self-Embedding / G21 semantic route"
+    }
+  ],
+  "open_math": [
+    {
+      "id": "P01_MACHINE_CONSTRUCTION",
+      "target": "P01MachineConstruction + p01_closed_no_hypothesis",
+      "minimal_obligation": "compose the real parser -> witness-preserving machine -> physical full verifier and prove halts_global, time_poly, blank_none"
+    },
+    {
+      "id": "G21_SEMANTIC_SELF_EMBEDDING",
+      "target": "UniversalWitnessExists / G21Pointwise / P02Target",
+      "minimal_obligation": "for every PolyDTMCandidate construct a semantically valid witness where CorrectAt fails, with encoding/decoding and universal-simulation correspondence proved"
+    },
+    {
+      "id": "FINAL_EXTERNAL_INTEGRATION",
+      "target": "FinalExternalLiveTwoProducer -> FinalExternalCertificate -> FINAL_ROOT -> FINAL_PROOF",
+      "minimal_obligation": "consume only kernel-GREEN P01 and P02/G21 producers plus required external model/provenance fields; no preparatory-root substitution"
+    }
+  ],
+  "non_promotable_evidence": [
+    "finite experiments",
+    "circuit samples",
+    "heuristic blow-up",
+    "clock domination",
+    "empirical evidence",
+    "symbolic-only analogies",
+    "referenced-only endpoint names"
+  ]
+}
