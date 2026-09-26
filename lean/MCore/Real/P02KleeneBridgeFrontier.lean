@@ -34,6 +34,27 @@ def CandidateCodingBridge.toSemanticSelfEmbedder
   valid := B.valid
   flips := B.flips
 
+
+/-- The current bridge's numeric `code` field is not consumed by the
+semantic transport.  Consequently its gap is propositionally equivalent to
+the already-existing semantic self-embedding gap.  This prevents treating
+mere machine numbering as an additional mathematical blocker. -/
+def SemanticSelfEmbedder.toCandidateCodingBridge
+    (S : SemanticSelfEmbedder) :
+    CandidateCodingBridge where
+  code := fun _ => 0
+  selfBits := S.bits
+  valid := S.valid
+  flips := S.flips
+
+theorem candidate_coding_bridge_gap_iff_semantic_self_embedding_gap :
+    CandidateCodingBridgeGap ↔ SemanticSelfEmbeddingGap := by
+  constructor
+  · rintro ⟨B⟩
+    exact ⟨B.toSemanticSelfEmbedder⟩
+  · rintro ⟨S⟩
+    exact ⟨S.toCandidateCodingBridge⟩
+
 theorem candidate_coding_bridge_closes_semantic_self_embedding
     (h : CandidateCodingBridgeGap) :
     SemanticSelfEmbeddingGap := by
@@ -46,6 +67,7 @@ theorem candidate_coding_bridge_closes_p02
   exact semantic_self_embedding_closes_p02
     (candidate_coding_bridge_closes_semantic_self_embedding h)
 
+#print axioms MCore.Real.P02KleeneBridgeFrontier.candidate_coding_bridge_gap_iff_semantic_self_embedding_gap
 #print axioms MCore.Real.P02KleeneBridgeFrontier.candidate_coding_bridge_closes_semantic_self_embedding
 #print axioms MCore.Real.P02KleeneBridgeFrontier.candidate_coding_bridge_closes_p02
 
