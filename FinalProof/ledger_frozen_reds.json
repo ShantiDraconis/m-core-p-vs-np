@@ -1,0 +1,19 @@
+{
+  "schema": "finalproof.local-frozen-reds.v1",
+  "project": "P_vs_NP",
+  "entries": [
+    {
+      "id": "P01-T1A",
+      "source_sha": "c00eae7cc9fa3bbebcca7528484a045ec108003c",
+      "branch": "frozen/final-proof-p01-t1a-red-c00eae7c",
+      "clean_successor_sha": "fa8892427fb54a666ba21edf634283209c2d4455",
+      "do_not_repair": true
+    },
+    {
+      "id": "G21-LITERAL-FIXED-POINT",
+      "source_sha": "0c423c3062d2bce8278c313a0dcf820a7084bb2d",
+      "status": "CLOSED_BY_FALSIFICATION",
+      "do_not_repair": true
+    }
+  ]
+}
