@@ -63,24 +63,57 @@ theorem dispatcher_run_stack_one_of_not_halt
     (h : stackPrimitiveMachine.halting c.state = false) :
     physicalDispatcherMachine.run 1 (embedStackConfig c) =
       embedStackConfig (stackPrimitiveMachine.run 1 c) := by
+  have hacc : stackState c.state ≠ acceptState := by
+    intro he
+    have hv := congrArg (fun q : DispatcherState => q.val) he
+    simp [stackState, acceptState] at hv
+    omega
+  have hrej : stackState c.state ≠ rejectState := by
+    intro he
+    have hv := congrArg (fun q : DispatcherState => q.val) he
+    simp [stackState, rejectState] at hv
+    omega
   rw [TM.run, TM.run]
-  simp [physicalDispatcherMachine, embedStackConfig, h, dispatcher_step_stack]
+  simp [physicalDispatcherMachine, embedStackConfig, hacc, hrej, h,
+    dispatcher_step_stack]
 
 theorem dispatcher_run_witness_one_of_not_halt
     (c : Configuration (Fin 6) (Option Bool))
     (h : witnessIndexedReadMachine.halting c.state = false) :
     physicalDispatcherMachine.run 1 (embedWitnessConfig c) =
       embedWitnessConfig (witnessIndexedReadMachine.run 1 c) := by
+  have hacc : witnessReadState c.state ≠ acceptState := by
+    intro he
+    have hv := congrArg (fun q : DispatcherState => q.val) he
+    simp [witnessReadState, acceptState] at hv
+    omega
+  have hrej : witnessReadState c.state ≠ rejectState := by
+    intro he
+    have hv := congrArg (fun q : DispatcherState => q.val) he
+    simp [witnessReadState, rejectState] at hv
+    omega
   rw [TM.run, TM.run]
-  simp [physicalDispatcherMachine, embedWitnessConfig, h, dispatcher_step_witness]
+  simp [physicalDispatcherMachine, embedWitnessConfig, hacc, hrej, h,
+    dispatcher_step_witness]
 
 theorem dispatcher_run_rewind_one_of_not_halt
     (c : Configuration (Fin 3) (Option Bool))
     (h : sourceRewindMachine.halting c.state = false) :
     physicalDispatcherMachine.run 1 (embedRewindConfig c) =
       embedRewindConfig (sourceRewindMachine.run 1 c) := by
+  have hacc : rewindState c.state ≠ acceptState := by
+    intro he
+    have hv := congrArg (fun q : DispatcherState => q.val) he
+    simp [rewindState, acceptState] at hv
+    omega
+  have hrej : rewindState c.state ≠ rejectState := by
+    intro he
+    have hv := congrArg (fun q : DispatcherState => q.val) he
+    simp [rewindState, rejectState] at hv
+    omega
   rw [TM.run, TM.run]
-  simp [physicalDispatcherMachine, embedRewindConfig, h, dispatcher_step_rewind]
+  simp [physicalDispatcherMachine, embedRewindConfig, hacc, hrej, h,
+    dispatcher_step_rewind]
 
 #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_stack
 #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_witness
