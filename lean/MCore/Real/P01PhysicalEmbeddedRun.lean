@@ -73,9 +73,11 @@ theorem dispatcher_run_stack_one_of_not_halt
     have hv := congrArg (fun q : DispatcherState => q.val) he
     simp [stackState, rejectState] at hv
     omega
+  have hglob :
+      physicalDispatcherMachine.halting (stackState c.state) = false := by
+    simp [physicalDispatcherMachine, hacc, hrej]
   rw [TM.run, TM.run]
-  simp [physicalDispatcherMachine, embedStackConfig, hacc, hrej, h,
-    dispatcher_step_stack]
+  simp [hglob, h, dispatcher_step_stack]
 
 theorem dispatcher_run_witness_one_of_not_halt
     (c : Configuration (Fin 6) (Option Bool))
@@ -92,9 +94,11 @@ theorem dispatcher_run_witness_one_of_not_halt
     have hv := congrArg (fun q : DispatcherState => q.val) he
     simp [witnessReadState, rejectState] at hv
     omega
+  have hglob :
+      physicalDispatcherMachine.halting (witnessReadState c.state) = false := by
+    simp [physicalDispatcherMachine, hacc, hrej]
   rw [TM.run, TM.run]
-  simp [physicalDispatcherMachine, embedWitnessConfig, hacc, hrej, h,
-    dispatcher_step_witness]
+  simp [hglob, h, dispatcher_step_witness]
 
 theorem dispatcher_run_rewind_one_of_not_halt
     (c : Configuration (Fin 3) (Option Bool))
@@ -111,9 +115,11 @@ theorem dispatcher_run_rewind_one_of_not_halt
     have hv := congrArg (fun q : DispatcherState => q.val) he
     simp [rewindState, rejectState] at hv
     omega
+  have hglob :
+      physicalDispatcherMachine.halting (rewindState c.state) = false := by
+    simp [physicalDispatcherMachine, hacc, hrej]
   rw [TM.run, TM.run]
-  simp [physicalDispatcherMachine, embedRewindConfig, hacc, hrej, h,
-    dispatcher_step_rewind]
+  simp [hglob, h, dispatcher_step_rewind]
 
 #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_stack
 #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_witness
