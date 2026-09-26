@@ -1,0 +1,55 @@
+name: ATK Meta Formalizer Decomposer v2
+
+on:
+  push:
+    branches:
+      - "atk/meta-formalizer-decomposer-v2"
+  workflow_dispatch:
+
+jobs:
+  decompose:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Generate bounded frontier decomposition
+        run: python3 scripts/frontier_decomposer_v2.py
+      - name: Validate cut and taxonomy
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open("evidence/frontier_decomposition_v2.json"))
+          assert d["policy"]["frontier_first"]
+          assert d["policy"]["producer_only_reduces_frontier"]
+          assert d["P02"]["root"]["state"]=="OPEN_MATH_DEFINITION"
+          assert d["P02"]["minimal_frontier"]==["P02.selfInput"]
+          assert d["frontier_count"] >= 2
+          assert d["linker_acceptance_fixture"]["accepts_when_producer_inhabited"]
+          PY
+      - name: Build synthetic acceptance fixture
+        run: lake build MCore.Research.MetaFormalizerAcceptanceFixture
+      - name: Build current exact P01 boundary
+        run: lake build MCore.Real.P01TerminalDelta
+      - name: Axiom audit fixture and P01 boundary
+        run: |
+          cat > /tmp/audit.lean <<'EOF'
+          import MCore.Research.MetaFormalizerAcceptanceFixture
+          import MCore.Real.P01TerminalDelta
+          #print axioms MCore.Research.MetaFormalizerAcceptanceFixture.fixture
+          #print axioms MCore.Research.MetaFormalizerAcceptanceFixture.fixture_inhabited
+          #print axioms MCore.Real.P01TerminalDelta.p01_terminal_gap_closes
+          EOF
+          lake env lean /tmp/audit.lean | tee /tmp/axioms.txt
+          if grep -q "sorryAx" /tmp/axioms.txt; then exit 1; fi
+      - name: Placeholder firewall
+        run: |
+          ! grep -R -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)'             lean/MCore/Research/MetaFormalizerAcceptanceFixture.lean             lean/MCore/Real/P01TerminalDelta.lean
+          ! grep -R -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]'             lean/MCore/Research/MetaFormalizerAcceptanceFixture.lean             lean/MCore/Real/P01TerminalDelta.lean
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atk-frontier-decomposition-v2
+          path: evidence/frontier_decomposition_v2.json
