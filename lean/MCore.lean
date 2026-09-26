@@ -79,3 +79,4 @@ import MCore.Real.P01PhysicalDispatcherBridge
 import MCore.Real.P01PhysicalDispatcherAudit
 import MCore.Real.P01PhysicalOperationControl
 import MCore.Real.P01PhysicalRoutingAdapter
+import MCore.Real.P01PhysicalEmbeddedRun
