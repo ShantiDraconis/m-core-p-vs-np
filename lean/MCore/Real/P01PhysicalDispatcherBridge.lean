@@ -22,21 +22,42 @@ theorem stack_transition_lift
     physicalDispatcherMachine.transition (stackState q) s =
       let t := stackPrimitiveMachine.transition q s
       (stackState t.1, t.2.1, t.2.2) := by
-  simp [physicalDispatcherMachine, stackState, asStack, liftStack]
+  have hq : q.val < 8 := q.isLt
+  have h0 : ¬ (8 + q.val < 8) := by omega
+  have h1 : 8 ≤ 8 + q.val := by omega
+  have h2 : 8 + q.val < 16 := by omega
+  simp [physicalDispatcherMachine, stackState, asStack, liftStack,
+    h0, h1, h2]
 
 theorem witness_transition_lift
     (q : Fin 6) (s : Option Bool) :
     physicalDispatcherMachine.transition (witnessReadState q) s =
       let t := witnessIndexedReadMachine.transition q s
       (witnessReadState t.1, t.2.1, t.2.2) := by
-  simp [physicalDispatcherMachine, witnessReadState, asWitness, liftWitness]
+  have hq : q.val < 6 := q.isLt
+  have h0 : ¬ (16 + q.val < 8) := by omega
+  have h1 : 8 ≤ 16 + q.val := by omega
+  have h2 : ¬ (16 + q.val < 16) := by omega
+  have h3 : 16 ≤ 16 + q.val := by omega
+  have h4 : 16 + q.val < 22 := by omega
+  simp [physicalDispatcherMachine, witnessReadState, asWitness, liftWitness,
+    h0, h1, h2, h3, h4]
 
 theorem rewind_transition_lift
     (q : Fin 3) (s : Option Bool) :
     physicalDispatcherMachine.transition (rewindState q) s =
       let t := sourceRewindMachine.transition q s
       (rewindState t.1, t.2.1, t.2.2) := by
-  simp [physicalDispatcherMachine, rewindState, asRewind, liftRewind]
+  have hq : q.val < 3 := q.isLt
+  have h0 : ¬ (22 + q.val < 8) := by omega
+  have h1 : 8 ≤ 22 + q.val := by omega
+  have h2 : ¬ (22 + q.val < 16) := by omega
+  have h3 : 16 ≤ 22 + q.val := by omega
+  have h4 : ¬ (22 + q.val < 22) := by omega
+  have h5 : 22 ≤ 22 + q.val := by omega
+  have h6 : 22 + q.val < 25 := by omega
+  simp [physicalDispatcherMachine, rewindState, asRewind, liftRewind,
+    h0, h1, h2, h3, h4, h5, h6]
 
 theorem dispatcher_accept_halts :
     physicalDispatcherMachine.halting acceptState = true := by
