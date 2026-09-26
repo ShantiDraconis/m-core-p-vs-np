@@ -52,6 +52,22 @@ theorem unconditional_claim_gap_iff :
   · rintro ⟨⟨P01⟩, ⟨P02⟩⟩
     exact ⟨{ p01_execution := P01, p02_bridge := P02 }⟩
 
+/-- Minimal normative form: the coding wrapper contributes no extra mathematics.
+The unconditional claim is exactly P01 terminal execution plus semantic
+self-embedding on the P02 side. -/
+theorem unconditional_claim_gap_iff_minimal :
+    UnconditionalClaimGap ↔
+      P01TerminalGap ∧ P02SemanticSelfEmbedding.SemanticSelfEmbeddingGap := by
+  rw [unconditional_claim_gap_iff]
+  constructor
+  · rintro ⟨hP01, hBridge⟩
+    exact ⟨hP01,
+      (P02KleeneBridgeFrontier.candidate_coding_bridge_gap_iff_semantic_self_embedding_gap).mp hBridge⟩
+  · rintro ⟨hP01, hSemantic⟩
+    exact ⟨hP01,
+      (P02KleeneBridgeFrontier.candidate_coding_bridge_gap_iff_semantic_self_embedding_gap).mpr hSemantic⟩
+
+#print axioms MCore.Real.PNPUnconditionalClaim.unconditional_claim_gap_iff_minimal
 #print axioms MCore.Real.PNPUnconditionalClaim.unconditional_certificate_closes_pneqnp
 #print axioms MCore.Real.PNPUnconditionalClaim.unconditional_claim_gap_closes
 #print axioms MCore.Real.PNPUnconditionalClaim.unconditional_claim_gap_iff
