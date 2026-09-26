@@ -1,96 +1,64 @@
 import MCore.Signature
-import MCore.Real.CanonicalFinalProof
-import MCore.Real.CanonicalCircuitBits
 
 namespace MCore
 namespace SharedSignature
 
-open Real
-open Real.CanonicalFinalProof
-open Real.CanonicalCircuitBits
+structure MultiStateSignatureShape where
+  Phase : Type
+  related : Phase → Phase → Prop
+  marked : Phase → Prop
 
-/-- A single natural-number signature that is realized by at least two
-distinct states inside every problem in the indexed family. -/
-structure MultiStateSignature (Problem : Type) where
-  code : Nat
-  State : Problem → Type
-  observable : (p : Problem) → State p → Nat
-  multi_realized :
-    ∀ p : Problem,
-      ∃ a b : State p,
-        a ≠ b ∧
-        observable p a = code ∧
-        observable p b = code
+structure ProblemManifestation
+    (Problem : Type)
+    (shape : MultiStateSignatureShape)
+    (p : Problem) where
+  Value : Type
+  State : Type
+  value : Value
+  observable : State → Value
+  phase : State → shape.Phase
+  realizes :
+    ∃ a b : State,
+      a ≠ b ∧
+      observable a = value ∧
+      observable b = value ∧
+      shape.related (phase a) (phase b)
 
-/-- The exact universal existence claim suggested by the shared-signature
-program. No inhabitant is asserted here. -/
-def UniversalMultiStateSignature (Problem : Type) : Prop :=
-  Nonempty (MultiStateSignature Problem)
+structure SharedMultiStateSignature (Problem : Type) where
+  shape : MultiStateSignatureShape
+  manifestation : ∀ p : Problem, ProblemManifestation Problem shape p
 
-/-- Any inhabitant exposes one common numerical signature realized by
-multiple distinct states in every problem. -/
-theorem common_signature_of_multistate
+def UniversalSharedMultiStateSignature (Problem : Type) : Prop :=
+  Nonempty (SharedMultiStateSignature Problem)
+
+theorem shared_shape_problem_specific_manifestations
     {Problem : Type}
-    (S : MultiStateSignature Problem) :
-    ∃ σ : Nat,
+    (S : SharedMultiStateSignature Problem) :
+    ∃ shape : MultiStateSignatureShape,
       ∀ p : Problem,
-        ∃ a b : S.State p,
-          a ≠ b ∧
-          S.observable p a = σ ∧
-          S.observable p b = σ := by
-  refine ⟨S.code, ?_⟩
+        Nonempty (ProblemManifestation Problem shape p) := by
+  refine ⟨S.shape, ?_⟩
   intro p
-  exact S.multi_realized p
+  exact ⟨S.manifestation p⟩
 
-/-- Existential form of the same theorem. -/
-theorem universal_multistate_signature_iff
+theorem universal_shared_signature_iff
     {Problem : Type} :
-    UniversalMultiStateSignature Problem ↔
-      ∃ (State : Problem → Type)
-        (observable : (p : Problem) → State p → Nat)
-        (σ : Nat),
+    UniversalSharedMultiStateSignature Problem ↔
+      ∃ shape : MultiStateSignatureShape,
         ∀ p : Problem,
-          ∃ a b : State p,
-            a ≠ b ∧
-            observable p a = σ ∧
-            observable p b = σ := by
+          Nonempty (ProblemManifestation Problem shape p) := by
   constructor
   · rintro ⟨S⟩
-    exact ⟨S.State, S.observable, S.code, S.multi_realized⟩
-  · rintro ⟨State, observable, σ, h⟩
-    exact ⟨{
-      code := σ
-      State := State
-      observable := observable
-      multi_realized := h
+    exact shared_shape_problem_specific_manifestations S
+  · rintro ⟨shape, h⟩
+    classical
+    refine ⟨{
+      shape := shape
+      manifestation := fun p => Classical.choice (h p)
     }⟩
 
-/-- Adapter required before a shared numerical signature may be promoted to
-the canonical P-vs-NP lower-bound endpoint.  The adapter is intentionally a
-separate object: the signature alone does not imply a complexity lower bound. -/
-structure PNPSignatureAdapter
-    {Problem : Type}
-    (S : MultiStateSignature Problem) where
-  signatureObstruction : Nat → Prop
-  code_obstructs : signatureObstruction S.code
-  obstruction_to_failure :
-    signatureObstruction S.code →
-      UniversalFailure
-        (Real.CanonicalSATBoundary.SATBits circuitBitEncoding)
-
-/-- A certified adapter promotes the shared signature to the exact PNP
-OPEN_MATH producer. -/
-theorem multistate_signature_with_adapter_closes_pnp_frontier
-    {Problem : Type}
-    (S : MultiStateSignature Problem)
-    (A : PNPSignatureAdapter S) :
-    UniversalFailure
-      (Real.CanonicalSATBoundary.SATBits circuitBitEncoding) :=
-  A.obstruction_to_failure A.code_obstructs
-
-#print axioms MCore.SharedSignature.common_signature_of_multistate
-#print axioms MCore.SharedSignature.universal_multistate_signature_iff
-#print axioms MCore.SharedSignature.multistate_signature_with_adapter_closes_pnp_frontier
+#print axioms MCore.SharedSignature.shared_shape_problem_specific_manifestations
+#print axioms MCore.SharedSignature.universal_shared_signature_iff
 
 end SharedSignature
 end MCore
