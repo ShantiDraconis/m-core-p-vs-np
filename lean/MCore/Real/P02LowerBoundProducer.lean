@@ -73,7 +73,7 @@ theorem producer_gap_closes_internal_separation
       fail_generator := (Classical.choice (producer_gap_closes_sat_fail h)) }
 
 /-- No producer is postulated here.  The theorem records the exact remaining
-mathematical payload without adding axioms or sorry terms. -/
+mathematical payload without adding unproved proof terms. -/
 theorem producer_gap_iff_sat_fail :
     LowerBoundProducerGap ↔ SATFailGap circuitBitEncoding := by
   constructor
