@@ -1,0 +1,84 @@
+name: atk-pnp-green-freeze-cert
+
+on:
+  push:
+    branches:
+      - atk/pnp-green-freeze-cert-20260926
+  pull_request:
+
+jobs:
+  certify-green:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Source hygiene
+        run: |
+          set -euo pipefail
+          if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean'             lean/MCore/Real/P02UniversalFailureAlgebra.lean             lean/MCore/Real/P02UniversalWitnessChain.lean             lean/MCore/Real/P02SemanticSelfEmbedding.lean             lean/MCore/Real/P02KleeneSelfReferenceBridge.lean             lean/MCore/Real/P02KleeneE1.lean             lean/MCore/Real/P02LiteralFixedPointCountermodel.lean             audit/PNP_GREEN_FREEZE_CERT_20260926.lean; then
+            exit 1
+          else
+            rc=$?
+            [ "$rc" -eq 1 ] || exit "$rc"
+          fi
+
+      - name: Build GREEN modules
+        run: |
+          set -euo pipefail
+          lake build             MCore.Real.P02UniversalFailureAlgebra             MCore.Real.P02UniversalWitnessChain             MCore.Real.P02SemanticSelfEmbedding             MCore.Real.P02KleeneSelfReferenceBridge             MCore.Real.P02KleeneE1             MCore.Real.P02LiteralFixedPointCountermodel
+
+      - name: Kernel audit
+        run: |
+          set -euo pipefail
+          lake env lean audit/PNP_GREEN_FREEZE_CERT_20260926.lean 2>&1 | tee audit/PNP_GREEN_FREEZE_CERT_20260926.log
+          if grep -q 'sorryAx' audit/PNP_GREEN_FREEZE_CERT_20260926.log; then
+            exit 1
+          fi
+
+      - name: Fail-closed normative audit
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          p = "audit/PNP_GREEN_FREEZE_CERT_20260926.json"
+          d = json.load(open(p))
+          n = d["normative_state"]
+          assert n["HABITANT"] == "NONE"
+          assert n["OPEN_MATH_CORE"] == "UniversalFailure SATBits"
+          assert n["MATERIAL_PRODUCER_GAPS"] == 1
+          assert n["PNP_CLAIMS"] == 0
+          assert "PneqNP" in d["not_certified_as_proved"]
+          assert "UniversalFailure SATBits" in d["not_certified_as_proved"]
+          print("GREEN/FROZEN/CERTIFIED_SCOPE_OK")
+          print("OPEN_MATH_CORE_PRESERVED")
+          print("NO_ENDPOINT_PROMOTION")
+          PY
+
+      - name: Emit certificate digest
+        run: |
+          set -euo pipefail
+          sha256sum             audit/PNP_GREEN_FREEZE_CERT_20260926.lean             audit/PNP_GREEN_FREEZE_CERT_20260926.json             > audit/PNP_GREEN_FREEZE_CERT_20260926.SHA256SUMS
+          cat audit/PNP_GREEN_FREEZE_CERT_20260926.SHA256SUMS
+
+      - name: Upload certificate evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pnp-green-freeze-cert-20260926
+          path: |
+            audit/PNP_GREEN_FREEZE_CERT_20260926.lean
+            audit/PNP_GREEN_FREEZE_CERT_20260926.json
+            audit/PNP_GREEN_FREEZE_CERT_20260926.log
+            audit/PNP_GREEN_FREEZE_CERT_20260926.SHA256SUMS
+          if-no-files-found: error
