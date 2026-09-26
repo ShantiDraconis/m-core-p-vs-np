@@ -56,7 +56,8 @@ jobs:
             MCore.Real.P01PhysicalVerifierBudget \
             MCore.Real.P01PhysicalVerifierUniformCosts \
             MCore.Real.PhysicalMachineCore \
-            MCore.Real.P01PhysicalRealizationAssembly
+            MCore.Real.P01PhysicalRealizationAssembly \
+            MCore.Real.P01IntegratedExecutionAudit
 
       - name: Axiom audit active frontier
         run: |
