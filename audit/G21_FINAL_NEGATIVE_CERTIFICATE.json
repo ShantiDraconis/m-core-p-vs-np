@@ -1,0 +1,45 @@
+{
+  "schema": "mcore.pnp.g21-final-negative.v1",
+  "id": "PNP_G21",
+  "gap": "F_FORMULATION",
+  "operator": "F_FORMULATION",
+  "singleton_weight": "1/8",
+  "singleton_percent": 12.5,
+  "theorem": "MCore.Real.P02G21FinalNegative.G21_literal_fixed_point_falsified",
+  "concrete_source_theorem": "MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point",
+  "state": "SOURCE_READY",
+  "formulation_state": "CLOSED_BY_FALSIFICATION",
+  "h_pending": [],
+  "source_provenance": {
+    "source_sha": "17c04b62d03946aab4573894833f087ade25bc33",
+    "frozen_branch": "frozen/p02-g2-1-literal-fixed-point-falsified-17c04b62",
+    "certification_run": 35721158651,
+    "certification_branch": "cert/p02-g2-1-literal-fixed-point-falsified-17c04b62-run35721158651",
+    "certification_commit": "3b2fb5e392c7006830d8730578dead24b30d75b6",
+    "countermodel_sha": "9d6dd9575a61782c70137abff348356f805bc654",
+    "countermodel_run": 35721311898,
+    "countermodel_cert_commit": "cb1e30ec759f6ccb6f9f813693164fb945a287cb"
+  },
+  "replacement": {
+    "name": "Semantic Self-Embedding / G21 semantic route",
+    "state": "OPEN_MATH",
+    "reopened_literal_route": false
+  },
+  "exact_scope": {
+    "proves": "the investigated universal literal two-constant fixed-point formulation is false",
+    "does_not_prove": [
+      "G2.1 universal semantic lower bound",
+      "SAT notin P",
+      "P != NP",
+      "closure of P01MachineConstruction"
+    ]
+  },
+  "current_gate": {
+    "run_id": null,
+    "head_sha": null,
+    "kernel_checked": false,
+    "proof_escape_scan": false
+  },
+  "final_proof_negative": true,
+  "global_final_proof": false
+}
