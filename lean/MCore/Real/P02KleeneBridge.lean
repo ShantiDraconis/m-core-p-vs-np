@@ -32,8 +32,8 @@ structure CanonicalSATFixedPointRealizer
   flips_of_fixed :
     ∀ c,
       Nat.Partrec.Code.eval c = K.f c →
-      SATTarget (bitsOf c) ↔
-        ¬ AcceptsAtDeclaredBound M (bitsOf c)
+        (SATTarget (bitsOf c) ↔
+          ¬ AcceptsAtDeclaredBound M (bitsOf c))
 
 /-- Mathlib already proves the recursion-theoretic fixed point. -/
 theorem kleene_fixed_point
