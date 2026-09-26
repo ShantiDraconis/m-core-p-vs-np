@@ -1,0 +1,94 @@
+import MCore.Real.P01PhysicalDispatcherBridge
+import MCore.Real.MachineRunLemmas
+
+namespace MCore
+namespace Real
+namespace P01PhysicalEmbeddedRun
+
+open P01PhysicalDispatcher
+open P01PhysicalDispatcherBridge
+open P01FullVerifierStackPrimitiveMachine
+open P01WitnessIndexedReadMachine
+open P01FullVerifierSourceRewind
+
+def embedStackConfig
+    (c : Configuration (Fin 8) (Option Bool)) :
+    Configuration DispatcherState (Option Bool) :=
+  { state := stackState c.state, tape := c.tape }
+
+def embedWitnessConfig
+    (c : Configuration (Fin 6) (Option Bool)) :
+    Configuration DispatcherState (Option Bool) :=
+  { state := witnessReadState c.state, tape := c.tape }
+
+def embedRewindConfig
+    (c : Configuration (Fin 3) (Option Bool)) :
+    Configuration DispatcherState (Option Bool) :=
+  { state := rewindState c.state, tape := c.tape }
+
+theorem dispatcher_step_stack
+    (c : Configuration (Fin 8) (Option Bool)) :
+    physicalDispatcherMachine.step (embedStackConfig c) =
+      embedStackConfig (stackPrimitiveMachine.step c) := by
+  cases c with
+  | mk q tape =>
+      cases tape with
+      | mk left head right =>
+          simp [embedStackConfig, TM.step, stack_transition_lift, Tape.write]
+
+theorem dispatcher_step_witness
+    (c : Configuration (Fin 6) (Option Bool)) :
+    physicalDispatcherMachine.step (embedWitnessConfig c) =
+      embedWitnessConfig (witnessIndexedReadMachine.step c) := by
+  cases c with
+  | mk q tape =>
+      cases tape with
+      | mk left head right =>
+          simp [embedWitnessConfig, TM.step, witness_transition_lift, Tape.write]
+
+theorem dispatcher_step_rewind
+    (c : Configuration (Fin 3) (Option Bool)) :
+    physicalDispatcherMachine.step (embedRewindConfig c) =
+      embedRewindConfig (sourceRewindMachine.step c) := by
+  cases c with
+  | mk q tape =>
+      cases tape with
+      | mk left head right =>
+          simp [embedRewindConfig, TM.step, rewind_transition_lift, Tape.write]
+
+/-- One-step embedding is exact while the local submachine has not halted.
+This is the compositional kernel needed for later multi-step run proofs. -/
+theorem dispatcher_run_stack_one_of_not_halt
+    (c : Configuration (Fin 8) (Option Bool))
+    (h : stackPrimitiveMachine.halting c.state = false) :
+    physicalDispatcherMachine.run 1 (embedStackConfig c) =
+      embedStackConfig (stackPrimitiveMachine.run 1 c) := by
+  rw [TM.run, TM.run]
+  simp [physicalDispatcherMachine, embedStackConfig, h, dispatcher_step_stack]
+
+theorem dispatcher_run_witness_one_of_not_halt
+    (c : Configuration (Fin 6) (Option Bool))
+    (h : witnessIndexedReadMachine.halting c.state = false) :
+    physicalDispatcherMachine.run 1 (embedWitnessConfig c) =
+      embedWitnessConfig (witnessIndexedReadMachine.run 1 c) := by
+  rw [TM.run, TM.run]
+  simp [physicalDispatcherMachine, embedWitnessConfig, h, dispatcher_step_witness]
+
+theorem dispatcher_run_rewind_one_of_not_halt
+    (c : Configuration (Fin 3) (Option Bool))
+    (h : sourceRewindMachine.halting c.state = false) :
+    physicalDispatcherMachine.run 1 (embedRewindConfig c) =
+      embedRewindConfig (sourceRewindMachine.run 1 c) := by
+  rw [TM.run, TM.run]
+  simp [physicalDispatcherMachine, embedRewindConfig, h, dispatcher_step_rewind]
+
+#print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_stack
+#print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_witness
+#print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_rewind
+#print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_run_stack_one_of_not_halt
+#print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_run_witness_one_of_not_halt
+#print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_run_rewind_one_of_not_halt
+
+end P01PhysicalEmbeddedRun
+end Real
+end MCore
