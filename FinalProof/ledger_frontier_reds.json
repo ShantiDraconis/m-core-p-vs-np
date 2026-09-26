@@ -1,0 +1,25 @@
+{
+  "schema": "finalproof.local-frontier-reds.v1",
+  "project": "P_vs_NP",
+  "records": [
+    {
+      "id": "PNP-P01-CONSTRUCTION",
+      "A": "certified parser/construction prefix",
+      "T": "physical verifier / P01MachineConstruction composition",
+      "P": [
+        "P01MachineConstruction",
+        "p01_closed_no_hypothesis"
+      ],
+      "B": "P01 terminal construction closure",
+      "status": "OPEN_BRIDGE"
+    },
+    {
+      "id": "PNP-G21-LITERAL-FIXED-POINT",
+      "A": "literal fixed-point formulation",
+      "T": "literal fixed-point route",
+      "P": "required preserved condition",
+      "B": "literal G21 endpoint",
+      "status": "CLOSED_BY_FALSIFICATION"
+    }
+  ]
+}
