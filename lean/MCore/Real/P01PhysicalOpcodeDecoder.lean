@@ -91,50 +91,42 @@ def opcodeConfig (a b c : Bool) : Configuration OpcodeState (Option Bool) :=
 theorem decode_input_tag :
     (opcodeDecoderMachine.run 3 (opcodeConfig false false false)).state =
       inputHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw0, saw00,
-    inputHalt, rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 theorem decode_const_false_tag :
     (opcodeDecoderMachine.run 3 (opcodeConfig false false true)).state =
       constFalseHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw0, saw00,
-    constFalseHalt, rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 theorem decode_const_true_tag :
     (opcodeDecoderMachine.run 3 (opcodeConfig false true false)).state =
       constTrueHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw0, saw01,
-    constTrueHalt, rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 theorem decode_neg_tag :
     (opcodeDecoderMachine.run 3 (opcodeConfig false true true)).state =
       negHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw0, saw01,
-    negHalt, rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 theorem decode_and_tag :
     (opcodeDecoderMachine.run 3 (opcodeConfig true false false)).state =
       andHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw1, saw10,
-    andHalt, rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 theorem decode_or_tag :
     (opcodeDecoderMachine.run 3 (opcodeConfig true false true)).state =
       orHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw1, saw10,
-    orHalt, rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 theorem decode_invalid_110 :
     (opcodeDecoderMachine.run 2 (opcodeConfig true true false)).state =
       rejectHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw1,
-    rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 theorem decode_invalid_111 :
     (opcodeDecoderMachine.run 2 (opcodeConfig true true true)).state =
       rejectHalt := by
-  simp [opcodeDecoderMachine, opcodeConfig, tagTape, start, saw1,
-    rejectHalt, TM.run, TM.step, Tape.write, Tape.move]
+  decide
 
 #print axioms MCore.Real.P01PhysicalOpcodeDecoder.decode_input_tag
 #print axioms MCore.Real.P01PhysicalOpcodeDecoder.decode_const_false_tag
