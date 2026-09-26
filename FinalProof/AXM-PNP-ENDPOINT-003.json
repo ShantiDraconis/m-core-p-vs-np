@@ -34,5 +34,11 @@
       "route": "literal_fixed_point_G2.1",
       "status": "CLOSED_BY_FALSIFICATION"
     }
-  ]
+  ],
+  "proof_target": {
+    "path": "FinalProof/EndpointProofTarget.lean",
+    "requirements_structure": "PNP003Requirements",
+    "closure_theorem": "pnp003_closes_from_requirements",
+    "status": "UNINHABITED"
+  }
 }
