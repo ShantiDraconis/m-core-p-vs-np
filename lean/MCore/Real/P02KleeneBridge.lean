@@ -45,18 +45,16 @@ theorem kleene_fixed_point
 
 /-- A computable diagonal compiler plus a canonical-SAT realizer yields one
 actual diagonal witness against M. No literal string fixed point is used. -/
-noncomputable def witnessFromKleene
+def witnessFromKleene
     (M : PolyDTMCandidate)
     (K : EffectiveDiagonalCompiler M)
     (R : CanonicalSATFixedPointRealizer M K) :
-    DiagonalCounterexampleWitness M :=
-  let c := Classical.choose (kleene_fixed_point K)
-  let hc := Classical.choose_spec (kleene_fixed_point K)
-  { bits := R.bitsOf c
-    valid := R.valid c
-    flips := by
-      have hfixed : Nat.Partrec.Code.eval c = K.f c := hc
-      exact R.flips_of_fixed c hfixed }
+    DiagonalCounterexampleWitness M := by
+  rcases kleene_fixed_point K with ⟨c, hc⟩
+  exact
+    { bits := R.bitsOf c
+      valid := R.valid c
+      flips := R.flips_of_fixed c hc }
 
 /-- Uniform bridge required to turn the recursion theorem into the P02
 DiagonalFamily. This does not assume G21Pointwise or P02Target. -/
