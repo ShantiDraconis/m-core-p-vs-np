@@ -125,13 +125,13 @@ theorem physicalDispatcherMachine_fixed_type :
   ⟨physicalDispatcherMachine⟩
 
 theorem controlState_injective :
-    Function.Injective controlState := by
+    ∀ ⦃a b : Fin 8⦄, controlState a = controlState b → a = b := by
   intro a b h
   apply Fin.ext
   exact congrArg (fun z : DispatcherState => z.val) h
 
 theorem stackState_injective :
-    Function.Injective stackState := by
+    ∀ ⦃a b : Fin 8⦄, stackState a = stackState b → a = b := by
   intro a b h
   apply Fin.ext
   have hv := congrArg (fun z : DispatcherState => z.val) h
@@ -139,7 +139,7 @@ theorem stackState_injective :
   omega
 
 theorem witnessReadState_injective :
-    Function.Injective witnessReadState := by
+    ∀ ⦃a b : Fin 6⦄, witnessReadState a = witnessReadState b → a = b := by
   intro a b h
   apply Fin.ext
   have hv := congrArg (fun z : DispatcherState => z.val) h
@@ -147,7 +147,7 @@ theorem witnessReadState_injective :
   omega
 
 theorem rewindState_injective :
-    Function.Injective rewindState := by
+    ∀ ⦃a b : Fin 3⦄, rewindState a = rewindState b → a = b := by
   intro a b h
   apply Fin.ext
   have hv := congrArg (fun z : DispatcherState => z.val) h
