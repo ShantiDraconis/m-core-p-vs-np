@@ -39,7 +39,7 @@ def CandidateCodingBridge.toSemanticSelfEmbedder
 semantic transport.  Consequently its gap is propositionally equivalent to
 the already-existing semantic self-embedding gap.  This prevents treating
 mere machine numbering as an additional mathematical blocker. -/
-def SemanticSelfEmbedder.toCandidateCodingBridge
+def semanticSelfEmbedderToCandidateCodingBridge
     (S : SemanticSelfEmbedder) :
     CandidateCodingBridge where
   code := fun _ => 0
@@ -53,7 +53,7 @@ theorem candidate_coding_bridge_gap_iff_semantic_self_embedding_gap :
   · rintro ⟨B⟩
     exact ⟨B.toSemanticSelfEmbedder⟩
   · rintro ⟨S⟩
-    exact ⟨S.toCandidateCodingBridge⟩
+    exact ⟨semanticSelfEmbedderToCandidateCodingBridge S⟩
 
 theorem candidate_coding_bridge_closes_semantic_self_embedding
     (h : CandidateCodingBridgeGap) :
