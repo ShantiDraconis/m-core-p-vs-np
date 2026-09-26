@@ -22,7 +22,7 @@ structure CandidateCodingBridge where
   flips :
     forall M : PolyDTMCandidate,
       SATBits circuitBitEncoding (selfBits M) <->
-        not (P02DiagonalFrontier.AcceptsAtDeclaredBound M (selfBits M))
+        ¬ P02DiagonalFrontier.AcceptsAtDeclaredBound M (selfBits M)
 
 def CandidateCodingBridgeGap : Prop :=
   Nonempty CandidateCodingBridge
