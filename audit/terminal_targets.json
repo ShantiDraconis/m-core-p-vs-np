@@ -1,0 +1,11 @@
+{
+  "schema": "atk.terminal-targets.v1",
+  "targets": [
+    {"id":"G21_LITERAL_NEGATIVE","lean_target":"MCore.Real.G21NegativeFinalCertificate","theorems":["MCore.Real.G21NegativeFinalCertificate.G21_literal_fixed_point_falsified","MCore.Real.G21NegativeFinalCertificate.G21_literal_fixed_point_claim_contradiction"],"class":"F_FORMULATION"},
+    {"id":"P02_LITERAL_COUNTERMODEL","lean_target":"MCore.Real.P02LiteralFixedPointCountermodel","theorems":["MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point"],"class":"F_FORMULATION"},
+    {"id":"P02_LITERAL_FIREWALL","lean_target":"MCore.Real.P02LiteralFixedPointFirewall","theorems":["MCore.Real.P02LiteralFixedPointFirewall.no_literal_fixed_point_if_constants_correct"],"class":"F_FORMULATION"},
+    {"id":"P02_DIAGONAL_FRONTIER","lean_target":"MCore.Real.P02DiagonalFrontier","theorems":["MCore.Real.P02DiagonalFrontier.diagonal_fixed_point_gap_closes_p02"],"class":"OPEN_MATH_BRIDGE"},
+    {"id":"P02_TERMINAL_FRONTIER","lean_target":"MCore.Real.P02TerminalFrontier","theorems":["MCore.Real.P02TerminalFrontier.p02_target_iff_sat_not_in_p","MCore.Real.P02TerminalFrontier.p01_p02_close_internal_separation"],"class":"TERMINAL_WIRING"},
+    {"id":"FINAL_EXTERNAL","lean_target":"MCore.Real.FinalExternalCertificate","theorems":[],"class":"FINAL_EXTERNAL"}
+  ]
+}
