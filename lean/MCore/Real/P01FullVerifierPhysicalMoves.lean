@@ -148,14 +148,19 @@ theorem execMoves_left_right_restore {Symbol : Type}
                 ih (Tape.mk xs x (head :: right)) htail
               simp only [moveLeftSeq, moveRightSeq, List.replicate_succ,
                 execMoves]
-              change
-                execMoves blank (List.replicate n Direction.right)
-                  (Tape.move blank .right
+              have hstep :
+                  Tape.move blank .right
                     (execMoves blank (List.replicate n Direction.left)
-                      (Tape.mk xs x (head :: right)))) =
-                  Tape.mk (x :: xs) head right
-              rw [hih]
-              rfl
+                      (Tape.mk xs x (head :: right))) =
+                    Tape.mk (x :: xs) head right := by
+                rw [show
+                  execMoves blank (List.replicate n Direction.left)
+                    (Tape.mk xs x (head :: right)) =
+                  execMoves blank (moveLeftSeq n)
+                    (Tape.mk xs x (head :: right)) by rfl]
+                have := congrArg (Tape.move blank .right) hih
+                simpa [moveRightSeq] using this
+              exact hstep
 
 /-- Every shuttle used by the verifier is built solely from legal TM moves. -/
 def LegalMoveSeq (ds : List Direction) : Prop :=
