@@ -6,6 +6,11 @@ on:
       - atk/egc-hardening-v1-20260926
     paths:
       - 'lean/MCore/Hardening/**'
+      - 'lean/MCore/Real/P01FinalCertificate.lean'
+      - 'lean/MCore/Real/P02SemanticSelfEmbedding*.lean'
+      - 'audit/ATL_GRAPH.json'
+      - 'audit/atl_graph.schema.json'
+      - 'scripts/atl_*.py'
       - '.github/workflows/atk-egc-hardening.yml'
   workflow_dispatch:
 
