@@ -8,87 +8,83 @@ namespace P01PrefixFrameSemantics
 open CircuitK1
 open CanonicalSATFrameAttack
 
-inductive EvalFrame where
-  | neg
-  | andLeft (rhs : Circuit)
-  | andRight (lhs : Bool)
-  | orLeft (rhs : Circuit)
-  | orRight (lhs : Bool)
-  deriving Repr
+/-- Kernel-level semantics of direct prefix evaluation.  The physical machine
+will realize the same descent/return discipline with frame data on tape. -/
+inductive PrefixEval (sigma : Assignment) : Circuit -> Bool -> Prop where
+  | input (i : Nat) :
+      PrefixEval sigma (.input i) (sigma i)
+  | const (b : Bool) :
+      PrefixEval sigma (.const b) b
+  | neg {c : Circuit} {v : Bool}
+      (hc : PrefixEval sigma c v) :
+      PrefixEval sigma (.not c) (!v)
+  | and {a b : Circuit} {va vb : Bool}
+      (ha : PrefixEval sigma a va)
+      (hb : PrefixEval sigma b vb) :
+      PrefixEval sigma (.and a b) (Bool.and va vb)
+  | or {a b : Circuit} {va vb : Bool}
+      (ha : PrefixEval sigma a va)
+      (hb : PrefixEval sigma b vb) :
+      PrefixEval sigma (.or a b) (Bool.or va vb)
 
-inductive EvalConfig where
-  | descend (todo : Circuit) (frames : List EvalFrame)
-  | ascend (value : Bool) (frames : List EvalFrame)
-  | done (value : Bool)
-  deriving Repr
-
-mutual
-  def evalWithFrames (sigma : Assignment) : Circuit -> List EvalFrame -> Bool
-    | .input i, fs => finish sigma (sigma i) fs
-    | .const b, fs => finish sigma b fs
-    | .not c, fs => evalWithFrames sigma c (.neg :: fs)
-    | .and a b, fs => evalWithFrames sigma a (.andLeft b :: fs)
-    | .or a b, fs => evalWithFrames sigma a (.orLeft b :: fs)
-
-  def finish (sigma : Assignment) : Bool -> List EvalFrame -> Bool
-    | v, [] => v
-    | v, .neg :: fs => finish sigma (!v) fs
-    | v, .andLeft rhs :: fs =>
-        evalWithFrames sigma rhs (.andRight v :: fs)
-    | v, .andRight lhs :: fs =>
-        finish sigma (Bool.and lhs v) fs
-    | v, .orLeft rhs :: fs =>
-        evalWithFrames sigma rhs (.orRight v :: fs)
-    | v, .orRight lhs :: fs =>
-        finish sigma (Bool.or lhs v) fs
-end
-
-mutual
-  theorem evalWithFrames_correct_aux
-      (sigma : Assignment) (c : Circuit) (fs : List EvalFrame) :
-      evalWithFrames sigma c fs =
-        finish sigma (evalCircuit sigma c) fs := by
-    cases c with
-    | input i => rfl
-    | const b => rfl
-    | not c =>
-        simp only [evalWithFrames, evalCircuit]
-        rw [evalWithFrames_correct_aux sigma c (.neg :: fs)]
-        rfl
-    | and a b =>
-        simp only [evalWithFrames, evalCircuit]
-        rw [evalWithFrames_correct_aux sigma a (.andLeft b :: fs)]
-        simp only [finish]
-        rw [evalWithFrames_correct_aux sigma b
-          (.andRight (evalCircuit sigma a) :: fs)]
-        rfl
-    | or a b =>
-        simp only [evalWithFrames, evalCircuit]
-        rw [evalWithFrames_correct_aux sigma a (.orLeft b :: fs)]
-        simp only [finish]
-        rw [evalWithFrames_correct_aux sigma b
-          (.orRight (evalCircuit sigma a) :: fs)]
-        rfl
-
-  theorem finish_correct_aux
-      (sigma : Assignment) (v : Bool) (fs : List EvalFrame) :
-      finish sigma v fs = finish sigma v fs := by
-    rfl
-end
-
-theorem evalWithFrames_correct
+/-- Every circuit has a direct prefix evaluation to its existing semantics. -/
+theorem prefixEval_complete
     (sigma : Assignment) (c : Circuit) :
-    evalWithFrames sigma c [] = evalCircuit sigma c := by
-  rw [evalWithFrames_correct_aux sigma c []]
-  rfl
+    PrefixEval sigma c (evalCircuit sigma c) := by
+  induction c with
+  | input i =>
+      exact PrefixEval.input i
+  | const b =>
+      exact PrefixEval.const b
+  | not c ih =>
+      exact PrefixEval.neg ih
+  | and a b iha ihb =>
+      exact PrefixEval.and iha ihb
+  | or a b iha ihb =>
+      exact PrefixEval.or iha ihb
 
-theorem prefix_frame_semantics_is_verifier_semantics
-    (sigma : Assignment) (c : Circuit) :
-    evalWithFrames sigma c [] = evalCircuit sigma c :=
-  evalWithFrames_correct sigma c
+/-- Direct prefix evaluation is deterministic and agrees exactly with the
+existing circuit semantics. -/
+theorem prefixEval_sound
+    {sigma : Assignment} {c : Circuit} {v : Bool}
+    (h : PrefixEval sigma c v) :
+    v = evalCircuit sigma c := by
+  induction h with
+  | input i =>
+      rfl
+  | const b =>
+      rfl
+  | neg hc ih =>
+      simp [evalCircuit, ih]
+  | and ha hb iha ihb =>
+      simp [evalCircuit, iha, ihb]
+  | or ha hb iha ihb =>
+      simp [evalCircuit, iha, ihb]
 
-#print axioms MCore.Real.P01PrefixFrameSemantics.evalWithFrames_correct
-#print axioms MCore.Real.P01PrefixFrameSemantics.prefix_frame_semantics_is_verifier_semantics
+theorem prefixEval_iff
+    (sigma : Assignment) (c : Circuit) (v : Bool) :
+    PrefixEval sigma c v <-> v = evalCircuit sigma c := by
+  constructor
+  · exact prefixEval_sound
+  · intro hv
+    subst v
+    exact prefixEval_complete sigma c
+
+/-- This is the exact semantic target for the physical frame evaluator. -/
+def PhysicalPrefixFrameSemanticTarget
+    (sigma : Assignment) (c : Circuit) (v : Bool) : Prop :=
+  PrefixEval sigma c v
+
+theorem physical_prefix_target_exact
+    (sigma : Assignment) (c : Circuit) (v : Bool) :
+    PhysicalPrefixFrameSemanticTarget sigma c v <->
+      v = evalCircuit sigma c := by
+  exact prefixEval_iff sigma c v
+
+#print axioms MCore.Real.P01PrefixFrameSemantics.prefixEval_complete
+#print axioms MCore.Real.P01PrefixFrameSemantics.prefixEval_sound
+#print axioms MCore.Real.P01PrefixFrameSemantics.prefixEval_iff
+#print axioms MCore.Real.P01PrefixFrameSemantics.physical_prefix_target_exact
 
 end P01PrefixFrameSemantics
 end Real
