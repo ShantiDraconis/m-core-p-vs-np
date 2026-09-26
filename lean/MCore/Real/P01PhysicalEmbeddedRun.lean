@@ -80,11 +80,13 @@ theorem dispatcher_run_stack_one_of_not_halt
       stackPrimitiveMachine.run 1 c = stackPrimitiveMachine.step c := by
     rw [TM.run]
     simp [h]
+    rfl
   calc
     physicalDispatcherMachine.run 1 (embedStackConfig c)
         = physicalDispatcherMachine.step (embedStackConfig c) := by
             rw [TM.run]
             simp [embedStackConfig, hglob]
+            rfl
     _ = embedStackConfig (stackPrimitiveMachine.step c) :=
       dispatcher_step_stack c
     _ = embedStackConfig (stackPrimitiveMachine.run 1 c) := by
@@ -112,11 +114,13 @@ theorem dispatcher_run_witness_one_of_not_halt
       witnessIndexedReadMachine.run 1 c = witnessIndexedReadMachine.step c := by
     rw [TM.run]
     simp [h]
+    rfl
   calc
     physicalDispatcherMachine.run 1 (embedWitnessConfig c)
         = physicalDispatcherMachine.step (embedWitnessConfig c) := by
             rw [TM.run]
             simp [embedWitnessConfig, hglob]
+            rfl
     _ = embedWitnessConfig (witnessIndexedReadMachine.step c) :=
       dispatcher_step_witness c
     _ = embedWitnessConfig (witnessIndexedReadMachine.run 1 c) := by
@@ -144,11 +148,13 @@ theorem dispatcher_run_rewind_one_of_not_halt
       sourceRewindMachine.run 1 c = sourceRewindMachine.step c := by
     rw [TM.run]
     simp [h]
+    rfl
   calc
     physicalDispatcherMachine.run 1 (embedRewindConfig c)
         = physicalDispatcherMachine.step (embedRewindConfig c) := by
             rw [TM.run]
             simp [embedRewindConfig, hglob]
+            rfl
     _ = embedRewindConfig (sourceRewindMachine.step c) :=
       dispatcher_step_rewind c
     _ = embedRewindConfig (sourceRewindMachine.run 1 c) := by
