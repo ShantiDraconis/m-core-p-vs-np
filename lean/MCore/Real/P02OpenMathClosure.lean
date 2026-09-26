@@ -73,6 +73,72 @@ theorem positiveRight_produces_failure
     ProducesFailure A B left right (.positiveRight hna hb) := by
   exact ⟨right hb⟩
 
+
+/-- Materialize the canonical failure generator exactly for the two positive
+closures.  FALSE/FALSE is a legitimate closed-negative state and therefore
+returns no generator.  TRUE/TRUE has no ClosureResult constructor. -/
+def failureGeneratorOfClosure
+    {A B : Prop}
+    (left : A → FailureGenerator (SATBits circuitBitEncoding))
+    (right : B → FailureGenerator (SATBits circuitBitEncoding)) :
+    ClosureResult A B →
+      Option (FailureGenerator (SATBits circuitBitEncoding))
+  | .positiveLeft ha _ => some (left ha)
+  | .positiveRight _ hb => some (right hb)
+  | .negativeBoth _ _ => none
+
+@[simp] theorem failureGeneratorOfClosure_positiveLeft
+    {A B : Prop}
+    (left : A → FailureGenerator (SATBits circuitBitEncoding))
+    (right : B → FailureGenerator (SATBits circuitBitEncoding))
+    (ha : A) (hnb : ¬ B) :
+    failureGeneratorOfClosure left right (.positiveLeft ha hnb) =
+      some (left ha) := by
+  rfl
+
+@[simp] theorem failureGeneratorOfClosure_positiveRight
+    {A B : Prop}
+    (left : A → FailureGenerator (SATBits circuitBitEncoding))
+    (right : B → FailureGenerator (SATBits circuitBitEncoding))
+    (hna : ¬ A) (hb : B) :
+    failureGeneratorOfClosure left right (.positiveRight hna hb) =
+      some (right hb) := by
+  rfl
+
+@[simp] theorem failureGeneratorOfClosure_negativeBoth
+    {A B : Prop}
+    (left : A → FailureGenerator (SATBits circuitBitEncoding))
+    (right : B → FailureGenerator (SATBits circuitBitEncoding))
+    (hna : ¬ A) (hnb : ¬ B) :
+    failureGeneratorOfClosure left right (.negativeBoth hna hnb) = none := by
+  rfl
+
+/-- The final theorem is enabled exactly when the closure materializes a real
+FailureGenerator. -/
+theorem closure_generator_enables_pneqnp
+    {A B : Prop}
+    (left : A → FailureGenerator (SATBits circuitBitEncoding))
+    (right : B → FailureGenerator (SATBits circuitBitEncoding))
+    (hNP : SATInNPGap circuitBitEncoding)
+    (r : ClosureResult A B)
+    (G : FailureGenerator (SATBits circuitBitEncoding))
+    (hG : failureGeneratorOfClosure left right r = some G) :
+    PneqNP := by
+  exact sat_internal_closure_implies_p_ne_np
+    { encoding := circuitBitEncoding
+      sat_in_np := hNP
+      fail_generator := G }
+
+/-- FALSE/FALSE closes OPEN_MATH negatively but cannot enable the positive
+separation theorem through this closure. -/
+theorem negativeBoth_has_no_failureGenerator
+    {A B : Prop}
+    (left : A → FailureGenerator (SATBits circuitBitEncoding))
+    (right : B → FailureGenerator (SATBits circuitBitEncoding))
+    (hna : ¬ A) (hnb : ¬ B) :
+    ¬ ∃ G, failureGeneratorOfClosure left right (.negativeBoth hna hnb) = some G := by
+  simp [failureGeneratorOfClosure]
+
 /-- A positive closure enables the existing separation theorem. -/
 theorem closure_enables_pneqnp
     {A B : Prop}
@@ -113,6 +179,11 @@ theorem true_true_impossible
   hAdmissible ⟨ha, hb⟩
 
 #print axioms MCore.Real.P02OpenMathClosure.close_decided
+#print axioms MCore.Real.P02OpenMathClosure.failureGeneratorOfClosure_positiveLeft
+#print axioms MCore.Real.P02OpenMathClosure.failureGeneratorOfClosure_positiveRight
+#print axioms MCore.Real.P02OpenMathClosure.failureGeneratorOfClosure_negativeBoth
+#print axioms MCore.Real.P02OpenMathClosure.closure_generator_enables_pneqnp
+#print axioms MCore.Real.P02OpenMathClosure.negativeBoth_has_no_failureGenerator
 #print axioms MCore.Real.P02OpenMathClosure.closure_enables_pneqnp
 #print axioms MCore.Real.P02OpenMathClosure.false_false_is_closed_negative
 #print axioms MCore.Real.P02OpenMathClosure.true_true_impossible
