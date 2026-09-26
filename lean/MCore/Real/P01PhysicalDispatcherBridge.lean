@@ -23,7 +23,6 @@ theorem stack_transition_lift
       let t := stackPrimitiveMachine.transition q s
       (stackState t.1, t.2.1, t.2.2) := by
   simp [physicalDispatcherMachine, stackState, asStack, liftStack]
-  omega
 
 theorem witness_transition_lift
     (q : Fin 6) (s : Option Bool) :
@@ -31,7 +30,6 @@ theorem witness_transition_lift
       let t := witnessIndexedReadMachine.transition q s
       (witnessReadState t.1, t.2.1, t.2.2) := by
   simp [physicalDispatcherMachine, witnessReadState, asWitness, liftWitness]
-  omega
 
 theorem rewind_transition_lift
     (q : Fin 3) (s : Option Bool) :
@@ -39,7 +37,6 @@ theorem rewind_transition_lift
       let t := sourceRewindMachine.transition q s
       (rewindState t.1, t.2.1, t.2.2) := by
   simp [physicalDispatcherMachine, rewindState, asRewind, liftRewind]
-  omega
 
 theorem dispatcher_accept_halts :
     physicalDispatcherMachine.halting acceptState = true := by
