@@ -1,0 +1,80 @@
+{
+  "schema": "elyon.open-math-start-checkpoint.v1",
+  "problem": "P_vs_NP",
+  "certificate_type": "INFRASTRUCTURE_AND_FRONTIER_CHECKPOINT",
+  "base_sha": "b4c72f5528d1163533880beb19621c0ecaa10bb7",
+  "status": "CERTIFIED_CHECKPOINT",
+  "theorem_claimed": false,
+  "final_external_issued": false,
+  "producer_progress": {
+    "closed": 0,
+    "total": 2
+  },
+  "certified_components": [
+    {
+      "name": "Final two-producer conditional bridge",
+      "sha": "da233acadb185ab236a8fdcee153ab9245d798e3",
+      "run": 36199413616,
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "name": "P01 terminal delta",
+      "sha": "21117d0a836cfe7b241e6798c2de1fc960149fab",
+      "run": 36200361774,
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "name": "Meta formalizer linker v1",
+      "sha": "afe3b3e108ec3e4998757a419a7fba2faa72a77d",
+      "run": 36205387475,
+      "state": "GREEN_FROZEN_CERTIFIED"
+    },
+    {
+      "name": "Meta formalizer decomposer v2",
+      "sha": "b4c72f5528d1163533880beb19621c0ecaa10bb7",
+      "run": 36228130627,
+      "certificate_run": 36228130714,
+      "state": "GREEN"
+    },
+    {
+      "name": "P02 compiler-to-terminal reduction",
+      "sha": "c511da2c0e88bf858a698404e281914752f10e46",
+      "runs": [35901261874, 35902536365, 35902546971],
+      "state": "GREEN_CERTIFIED_REDUCTION_ONLY"
+    }
+  ],
+  "frontier": [
+    {
+      "area": "P01",
+      "id": "P01.machine",
+      "root": "MCore.Real.P01TerminalDelta.IntegratedExecutionCertificate",
+      "state": "CONCRETE_WITNESS_PENDING",
+      "proof_credit": 0
+    },
+    {
+      "area": "P02",
+      "id": "P02.selfInput",
+      "root": "MCore.Real.P02EffectiveCompilerConstruction.UniformCompilerValueComputable",
+      "state": "OPEN_MATH_DEFINITION",
+      "reason": "certified source defines selfInput as noncomputable via Part.Dom/get",
+      "proof_credit": 0
+    }
+  ],
+  "barriers": [
+    {
+      "route": "G2.1 literal fixed point",
+      "state": "CLOSED_BY_FALSIFICATION",
+      "sha": "17c04b62",
+      "run": 35721158651
+    }
+  ],
+  "promotion_policy": {
+    "metadata_is_not_proof": true,
+    "producer_only_reduces_frontier": true,
+    "kernel_green_required": true,
+    "axiom_audit_required": true,
+    "falsified_routes_reopen": false
+  },
+  "ready_for_open_math_attack": true,
+  "ready_for_external": false
+}
