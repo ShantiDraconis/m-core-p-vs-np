@@ -1,0 +1,1 @@
+{"schema":"atl.cost-history.v1","samples":[],"heuristic":{"default_cost_cycles":3.0,"default_failure_probability":0.5,"depth_discount":0.85}}
