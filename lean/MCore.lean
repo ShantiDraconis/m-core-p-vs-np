@@ -74,3 +74,4 @@ import MCore.Real.P01ParserWitnessHandoffAudit
 import MCore.Real.P01FullVerifierSourceRewind
 import MCore.Real.P01WitnessIndexedReadMachine
 import MCore.Real.P01WitnessIndexedReadProof
+import MCore.Real.P01PhysicalDispatcher
