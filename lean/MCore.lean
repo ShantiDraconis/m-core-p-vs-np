@@ -54,3 +54,13 @@ import MCore.Real.CanonicalSATParserWorkScanProof
 import MCore.Real.CanonicalSATParserRewindProof
 
 import MCore.Real.P01FullVerifierPhysicalOps
+
+import MCore.Real.P01FullVerifierInputShuttleV2
+import MCore.Real.P01FullVerifierPhysicalRefinementV2
+import MCore.Real.P01PhysicalVerifierFoundations
+import MCore.Real.P01PhysicalVerifierBudget
+import MCore.Real.P01PhysicalVerifierUniformCosts
+import MCore.Real.P01IntegratedMachine
+import MCore.Real.P01IntegratedPhaseSemantics
+import MCore.Real.P01PhysicalRealizationAssembly
+import MCore.Real.PhysicalMachineCore
