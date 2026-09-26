@@ -1,0 +1,110 @@
+name: ATK P01 parser macro
+
+on:
+  push:
+    branches:
+      - attack/p01-hard-realization-20260922
+      - attack/p01-binary-head-clean-20260922
+      - final-proof-p01-construction
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-parser-macro:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/CanonicalSATParserMacroProof.lean
+            lean/MCore/Real/CanonicalSATParserReturnProof.lean
+            lean/MCore/Real/CanonicalSATParserLeafPopProof.lean
+            lean/MCore/Real/CanonicalSATParserLeafReturnProof.lean
+            lean/MCore/Real/CanonicalSATParserLeafSourceProof.lean
+            lean/MCore/Real/CanonicalSATParserTerminalBranches.lean
+            lean/MCore/Real/CanonicalSATParserPhaseMacroProof.lean
+            lean/MCore/Real/CanonicalSATParserGlobalSpec.lean
+            lean/MCore/Real/CanonicalSATParserBinaryHeadProof.lean
+            lean/MCore/Real/P01GlobalParserSimulation.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+
+      - name: Build parser macro
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalSATParserMacroProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATParserPhaseMacroProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserLeafSourceProof MCore.Real.CanonicalSATParserGlobalSpec MCore.Real.CanonicalSATParserBinaryHeadProof MCore.Real.P01GlobalParserSimulation
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01ParserMacroAudit.lean <<'EOF'
+          import MCore.Real.CanonicalSATParserMacroProof
+          import MCore.Real.CanonicalSATParserReturnProof
+          import MCore.Real.CanonicalSATParserLeafPopProof
+          import MCore.Real.CanonicalSATParserLeafSourceProof
+          import MCore.Real.CanonicalSATParserTerminalBranches
+          import MCore.Real.CanonicalSATParserPhaseMacroProof
+          import MCore.Real.CanonicalSATParserLeafReturnProof
+          import MCore.Real.CanonicalSATParserLeafSourceProof
+          import MCore.Real.CanonicalSATParserGlobalSpec
+          import MCore.Real.CanonicalSATParserBinaryHeadProof
+          import MCore.Real.P01GlobalParserSimulation
+          #print axioms MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search
+          #print axioms MCore.Real.CanonicalSATParserMacroProof.binary_phase_to_return
+          #print axioms MCore.Real.CanonicalSATParserMacroProof.phaseWorkBound_linear
+          #print axioms MCore.Real.CanonicalSATParserReturnProof.binaryReturn_run
+          #print axioms MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_to_delimiter
+          #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leafPop_run_false_prefix
+          #print axioms MCore.Real.CanonicalSATParserLeafPopProof.leaf_pop_decomposed
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf16_exhausted_accepts
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_exhausted_rejects
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_step_to_rewind
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
+          #print axioms MCore.Real.CanonicalSATParserTerminalBranches.leaf16_residual_rejects
+          #print axioms MCore.Real.CanonicalSATParserTerminalBranches.binary_exhausted_rejects
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.input_head_to_pop_search
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.const_head_to_pop_search
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.not_head_roundtrip
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.and_head_to_return
+          #print axioms MCore.Real.CanonicalSATParserPhaseMacroProof.or_head_to_return
+          #print axioms MCore.Real.CanonicalSATParserLeafReturnProof.leaf14_active_run
+          #print axioms MCore.Real.CanonicalSATParserLeafSourceProof.leaf17_roundtrip_to_phase
+          #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logParseCore_eq_slotParseCore
+          #print axioms MCore.Real.CanonicalSATParserGlobalSpec.logAccept_iff_slotAccept
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.and_head_roundtrip_nonempty
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.or_head_roundtrip_nonempty
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.and_head_exhausted_rejects
+          #print axioms MCore.Real.CanonicalSATParserBinaryHeadProof.or_head_exhausted_rejects
+          #print axioms MCore.Real.P01GlobalParserSimulation.parser_step_respects_right_blank
+          #print axioms MCore.Real.P01GlobalParserSimulation.parser_run_respects_right_blank
+          #print axioms MCore.Real.P01GlobalParserSimulation.parseHead_rest_length_lt
+          #print axioms MCore.Real.P01GlobalParserSimulation.popSlot_length
+          EOF
+          lake env lean /tmp/P01ParserMacroAudit.lean 2>&1 | tee /tmp/p01-parser-macro.log
+          if grep -q 'sorryAx' /tmp/p01-parser-macro.log; then exit 1; fi
+
+      - name: Preserve endpoint boundary
+        run: |
+          set -euo pipefail
+          echo "P01_PARSER_MACRO=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_LEAF_SOURCE_RETURN=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_TERMINAL_BRANCHES=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_PHASE_MACROS=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_BINARY_HEAD=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_GLOBAL_SIMULATION_SUPPORT=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_HARD=OPEN"

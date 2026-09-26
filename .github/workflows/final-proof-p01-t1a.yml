@@ -1,0 +1,76 @@
+name: FINAL_PROOF P01 T1A kernel
+
+on:
+  push:
+    branches:
+      - final-proof-p01-construction
+    paths:
+      - 'lean/MCore/Real/P01GlobalParserSimulation.lean'
+      - 'lean/MCore/Real/P01GlobalParserRuntime.lean'
+      - 'lean/MCore/Real/P01GlobalParserBound.lean'
+      - '.github/workflows/final-proof-p01-t1a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  t1a-kernel:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Source hygiene
+        run: |
+          set -euo pipefail
+          files=(lean/MCore/Real/P01GlobalParserSimulation.lean lean/MCore/Real/P01GlobalParserRuntime.lean lean/MCore/Real/P01GlobalParserBound.lean)
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+
+      - name: Build T1A
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01GlobalParserSimulation MCore.Real.P01GlobalParserRuntime MCore.Real.P01GlobalParserBound
+
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/T1A.lean <<'EOF'
+          import MCore.Real.P01GlobalParserSimulation
+          import MCore.Real.P01GlobalParserRuntime
+          import MCore.Real.P01GlobalParserBound
+          #print axioms MCore.Real.P01GlobalParserSimulation.parser_step_respects_right_blank
+          #print axioms MCore.Real.P01GlobalParserSimulation.parser_run_respects_right_blank
+          #print axioms MCore.Real.P01GlobalParserSimulation.parseHead_rest_length_lt
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_active_to_source
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_to_source
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_roundtrip_nonempty_active
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_exhausted_accepts
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_inactive_residual_rejects
+          #print axioms MCore.Real.P01GlobalParserSimulation.leaf_afterEnd_active_exhausted_rejects
+          #print axioms MCore.Real.P01GlobalParserSimulation.phaseSemantics_global
+          #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_active_to_source_exact
+          #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_inactive_to_source_exact
+          #print axioms MCore.Real.P01GlobalParserRuntime.leaf_afterEnd_roundtrip_nonempty_active_exact
+          #print axioms MCore.Real.P01GlobalParserBound.budget_compose_same_scale
+          #print axioms MCore.Real.P01GlobalParserBound.budget_compose_scale_succ
+          #print axioms MCore.Real.P01GlobalParserBound.phase_halts_budget_global
+          #print axioms MCore.Real.P01GlobalParserBound.phase_correct_at_budget
+          #print axioms MCore.Real.P01GlobalParserBound.parserProofBudget_le_parserTimeBound
+          #print axioms MCore.Real.P01GlobalParserBound.parser_halts_within_timeBound
+          #print axioms MCore.Real.P01GlobalParserBound.parser_realizes_slotAccept_at_timeBound
+          #print axioms MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate
+          EOF
+          lake env lean /tmp/T1A.lean 2>&1 | tee /tmp/t1a.log
+          if grep -q 'sorryAx' /tmp/t1a.log; then exit 1; fi
+
+      - name: Boundary
+        run: |
+          echo "T1A_GLOBAL_PARSER_PREFIX=GREEN"
+          echo "T1A_SLOT_PARSER_MACHINE_SIMULATION=GREEN_IF_JOB_SUCCEEDS"
+          echo "P01_CONSTRUCTION_GAP=OPEN"

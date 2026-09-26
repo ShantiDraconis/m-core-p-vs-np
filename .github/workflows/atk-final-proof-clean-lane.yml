@@ -1,0 +1,69 @@
+name: ATK FINAL_PROOF clean lane
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clean-lane:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Build P01 terminal interface only
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01FinalProofProducer
+
+      - name: Build P02 terminal interface only
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02FinalProofProducer
+
+      - name: Build existing G3 contract
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CookNormalizedG3Contract
+
+      - name: Build final clean lane
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalExternalCertificate
+          lake build MCore.Real.FinalProofCleanLane
+
+      - name: Hygiene critical files
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P01FinalProofProducer.lean
+            lean/MCore/Real/P02FinalProofProducer.lean
+            lean/MCore/Real/FinalProofCleanLane.lean
+          )
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"
+
+      - name: Critical path status
+        run: |
+          echo "CLEAN_LANE=KERNEL_GREEN_IF_THIS_JOB_SUCCEEDS"
+          echo "P01_BLOCKER=P01MachineConstruction"
+          echo "P02_BLOCKER_1=cook_levin_correct"
+          echo "P02_BLOCKER_2=same_input_of_fixed"
+          echo "P02_DERIVED=flips_of_fixed"
+          echo "G3=EXISTING_COOK_NORMALIZED_CONTRACT"
+          echo "FINAL_ROOT=NULL_UNTIL_LIVE_TWO_PRODUCERS"

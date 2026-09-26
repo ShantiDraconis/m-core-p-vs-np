@@ -1,0 +1,270 @@
+{
+  "schema": "atk.final-proof.endpoint-flow.v1",
+  "updated_from_head": "573dbd65f0c049bcd649a573ea93b3fa2a58543f",
+  "audit_commit": "28cb6b65d2f4211e55b8735af67c9522004e544e",
+  "certified_checkpoints": [
+    {
+      "sha": "19c7c5ea93d627d8db48fbdac870360b17e4d151",
+      "state": "GREEN_FROZEN_CERTIFIED",
+      "runs": [
+        35851683381,
+        35851686239,
+        35851690967,
+        35851700184
+      ]
+    },
+    {
+      "sha": "3f3afb71708e597ba269b92ba7fc942428512ab6",
+      "state": "GREEN_CERTIFIED",
+      "runs": [
+        35851714159
+      ]
+    },
+    {
+      "sha": "c4627e6a313a4bbcf331c8e05864c37889369867",
+      "state": "GREEN_CERTIFIED",
+      "runs": [
+        35851730333
+      ]
+    },
+    {
+      "sha": "8922bdb4bbdbb0c84e4565eea9ee8c3f2e138dd3",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853038311
+      ]
+    },
+    {
+      "sha": "3f537cb940552a117da50031def44cf66222d41f",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853041938
+      ]
+    },
+    {
+      "sha": "2650177c73798ec1db7675d099799e3ad6952173",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853046993
+      ]
+    },
+    {
+      "sha": "4b2eed73b8e731e9800cdc4d5e66828ba03d789d",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35851659981
+      ]
+    },
+    {
+      "sha": "573dbd65f0c049bcd649a573ea93b3fa2a58543f",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853271430,
+        35853271391,
+        35853271422
+      ]
+    },
+    {
+      "sha": "28cb6b65d2f4211e55b8735af67c9522004e544e",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853464533,
+        35853464335,
+        35853464355
+      ]
+    },
+    {
+      "sha": "09c93d9b68e2c8220c9cb7c040a563504a0a2edf",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853487432,
+        35853487440,
+        35853487511
+      ]
+    },
+    {
+      "sha": "ffd8aee08c01cf6199d55a67fd1d0c3c6cffd094",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853878497,
+        35853878242,
+        35853878328
+      ]
+    },
+    {
+      "sha": "fe57be0eb52bffb84d7073ef990d797e9b9c0e97",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35853881958,
+        35853881993,
+        35853881919
+      ]
+    },
+    {
+      "sha": "c9b010fcd5dbe3285f56ee1726a1726971c4a4da",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35854085685,
+        35854085580,
+        35854085514
+      ]
+    },
+    {
+      "sha": "5e795201d300b77ea523b09c8f90c725d3375cd1",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35854090247,
+        35854090231,
+        35854090143,
+        35854090063
+      ]
+    },
+    {
+      "sha": "721ef1d413e92ce75be048ea4481a7a47ade6b4f",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35855492221,
+        35855492164
+      ]
+    },
+    {
+      "sha": "6011dbfce0adcd868f1b14e26ddaff31f956b196",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35855496946,
+        35855496915,
+        35855496968
+      ]
+    },
+    {
+      "sha": "e0a97189404f277b05308278bd665d41d944728d",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35854368529,
+        35854368597,
+        35854368530
+      ]
+    },
+    {
+      "sha": "116a42e98e8ecfd629d40032d389bc80a29a9856",
+      "state": "CERTIFICATE_GREEN",
+      "runs": [
+        35854372638,
+        35854372808
+      ]
+    }
+  ],
+  "endpoints": {
+    "p01": [
+      "P01_parser_macro",
+      "P01_leaf_pop",
+      "P01_parser_leaf_operational",
+      "T1_A_GlobalParserSimulation",
+      "T1_B_ParserWitnessComposition",
+      "T1_C_VerifierComposition",
+      "T1_D_terminal_integration",
+      "P01MachineConstruction",
+      "P01ConstructionGap",
+      "SATInNPGap"
+    ],
+    "p02": [
+      "EffectiveDiagonalCompiler",
+      "kleene_fixed_point",
+      "CanonicalSATFixedPointRealizer.bitsOf",
+      "CanonicalSATFixedPointRealizer.valid",
+      "CanonicalSATFixedPointRealizer.flips_of_fixed",
+      "DiagonalCounterexampleWitness",
+      "DiagonalFamily",
+      "UniversalWitnessExists",
+      "G21Pointwise",
+      "P02Target",
+      "not_InP_SATTarget"
+    ],
+    "g3": [
+      "G3_source_provenance",
+      "G3_simulation_model_encoding",
+      "G3ExternalContract"
+    ],
+    "final": [
+      "P01ConstructionGap",
+      "P02Target",
+      "G3ExternalContract",
+      "FinalExternalInputs",
+      "FinalExternalCertificate",
+      "FINAL_EXTERNAL",
+      "FINAL_ROOT",
+      "FINAL_PROOF"
+    ]
+  },
+  "blocked": {
+    "T1_D_terminal_integration": "NOT_YET_GREEN_EXACT_PRODUCER",
+    "cook_levin_correct": "OPEN_MATH",
+    "same_input_of_fixed": "OPEN_MATH",
+    "flips_of_fixed": "OPEN_MATH",
+    "FINAL_ROOT": "NULL_UNTIL_EXACT_PRODUCERS"
+  },
+  "forbidden": [
+    "SemanticFixedPointExistence"
+  ],
+  "invariants": [
+    "no promotion from RED or OPEN_MATH",
+    "nucleusTag has no SAT or CorrectAt semantics",
+    "literal fixed-point route remains closed by falsification",
+    "FINAL_ROOT remains null until exact terminal producers are kernel-valid"
+  ],
+  "updated_at": "2026-09-23",
+  "canonical_flow": {
+    "p01": [
+      "P01_parser_macro",
+      "P01_leaf_pop",
+      "P01_parser_leaf_operational",
+      "T1_A_GlobalParserSimulation",
+      "T1_B_ParserWitnessComposition",
+      "T1_C_VerifierComposition",
+      "T1_D_terminal_integration",
+      "P01MachineConstruction",
+      "P01ConstructionGap",
+      "SATInNPGap"
+    ],
+    "p02": [
+      "EffectiveDiagonalCompiler",
+      "kleene_fixed_point",
+      "CookLevinSameInputData.circuitOf",
+      "CookLevinSameInputData.selfInput",
+      "cook_levin_correct",
+      "same_input_of_fixed",
+      "flips_of_fixed",
+      "CanonicalSATFixedPointRealizer",
+      "DiagonalCounterexampleWitness",
+      "DiagonalFamily",
+      "UniversalWitnessExists",
+      "G21Pointwise",
+      "P02Target",
+      "not_InP_SATTarget"
+    ],
+    "residual_research": [
+      "ResidualRotationAlgebra",
+      "ResidualSameInputInvariant",
+      "same_input_of_fixed"
+    ],
+    "g3": [
+      "G3_source_provenance",
+      "OfficialModel",
+      "EncodingNormalization",
+      "DTM_two_way",
+      "NTM_two_way",
+      "four_way_model_bridge",
+      "G3ExternalContract"
+    ],
+    "final": [
+      "P01ConstructionGap",
+      "P02Target",
+      "G3ExternalContract",
+      "FinalExternalInputs",
+      "FinalExternalCertificate",
+      "FINAL_EXTERNAL",
+      "FINAL_ROOT",
+      "FINAL_PROOF"
+    ]
+  }
+}

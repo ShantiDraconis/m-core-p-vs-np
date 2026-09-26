@@ -1,0 +1,11 @@
+{
+  "claim": "Exact FINAL_PROOF gap candidate: G21Pointwise",
+  "kind": "raw_lean_prop",
+  "lean_file": "lean/MCore/Research/Generated/Gap_G21Pointwise_ff7aeb6eb3604363.lean",
+  "name": "Gap_G21Pointwise",
+  "pattern_id": "ff7aeb6eb3604363",
+  "proof_attempt_log_tail": null,
+  "proof_credit": 0,
+  "source": "research/patterns/discovered/gap_G21Pointwise.json",
+  "status": "OPEN_MATH"
+}

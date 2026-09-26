@@ -8,6 +8,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
 
       - name: Resolve pinned dependencies
         run: |
@@ -40,7 +44,8 @@ jobs:
           lake build MCore.BackwardAudit.ClosedDiscriminant \
             MCore.BackwardAudit.StartToMiddle \
             MCore.BackwardAudit.FinalToMiddle \
-            MCore.BackwardAudit.OrientedWitnessBoundary
+            MCore.BackwardAudit.OrientedWitnessBoundary \
+            MCore.BackwardAudit.MaterialOrientationKernel
 
       - name: Build umbrella target
         run: lake build MCore
@@ -154,7 +159,9 @@ jobs:
 
           lake build MCore.BackwardAudit.ClosedDiscriminant \
             MCore.BackwardAudit.StartToMiddle \
-            MCore.BackwardAudit.FinalToMiddle
+            MCore.BackwardAudit.FinalToMiddle \
+            MCore.BackwardAudit.OrientedWitnessBoundary \
+            MCore.BackwardAudit.MaterialOrientationKernel
 
           lake env lean audit/FinalEndpoint.lean 2>&1 | tee audit/FinalEndpoint.log
           lake env lean audit/EndpointCompression.lean 2>&1 | tee audit/EndpointCompression.log
@@ -163,6 +170,7 @@ jobs:
           lake env lean lean/MCore/BackwardAudit/StartToMiddle.lean 2>&1 | tee audit/StartToMiddle.log
           lake env lean lean/MCore/BackwardAudit/FinalToMiddle.lean 2>&1 | tee audit/FinalToMiddle.log
           lake env lean lean/MCore/BackwardAudit/OrientedWitnessBoundary.lean 2>&1 | tee audit/OrientedWitnessBoundary.log
+          lake env lean lean/MCore/BackwardAudit/MaterialOrientationKernel.lean 2>&1 | tee audit/MaterialOrientationKernel.log
           lake env lean audit/repro_PNP.lean 2>&1 | tee audit/repro_PNP.log
 
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' audit lean/MCore/BackwardAudit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
@@ -171,6 +179,8 @@ jobs:
           grep -q "MCore.BackwardAudit.typeA_closes_equality" audit/OrientedWitnessBoundary.log
           grep -q "MCore.BackwardAudit.typeB_closes_separation" audit/OrientedWitnessBoundary.log
           grep -q "MCore.BackwardAudit.oriented_material_closes_terminal" audit/OrientedWitnessBoundary.log
+          grep -q "MCore.BackwardAudit.material_orientation_closes_terminal" audit/MaterialOrientationKernel.log
+          grep -q "MCore.BackwardAudit.material_orientation_still_open" audit/MaterialOrientationKernel.log
 
           python3 - <<'PY'
           from pathlib import Path

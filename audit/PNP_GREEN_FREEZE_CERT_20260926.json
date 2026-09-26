@@ -1,0 +1,56 @@
+{
+  "schema": "pnp.green-freeze-cert.v1",
+  "date": "2026-09-26",
+  "base_sha": "f0af6d3e63e900fffb921251e7961ac32b71edde",
+  "status": "CERTIFIED",
+  "normative_state": {
+    "HABITANT_TYPE": "GREEN_FROZEN",
+    "HABITANT": "NONE",
+    "OPEN_MATH_CORE": "UniversalFailure SATBits",
+    "MATERIAL_PRODUCER_GAPS": 1,
+    "FINAL_PROOF": "READY_CONDITIONAL",
+    "PNP_CLAIMS": 0
+  },
+  "green_frozen": [
+    "SAT in NP transport layer",
+    "CanonicalSATPNPHabitant -> PNP_Habitant",
+    "PNP_Habitant -> SeparationCertificate",
+    "SeparationCertificate -> PneqNP",
+    "not_correctAt_iff_clock_or_semantic_mismatch",
+    "G21Pointwise <-> TotalityOrSemanticCounterexample",
+    "UniversalWitnessExists <-> G21Pointwise",
+    "UniversalWitnessExists <-> P02Target",
+    "UniversalWitnessExists -> P02Target",
+    "DiagonalFamily -> UniversalWitnessExists",
+    "DiagonalFixedPointGap -> UniversalWitnessExists",
+    "SemanticSelfEmbeddingGap <-> DiagonalFixedPointGap",
+    "SemanticSelfEmbeddingGap -> P02Target",
+    "Kleene fixed_point wrapper",
+    "Kleene bridge conditional closure transport",
+    "E1Compiler_nonempty",
+    "no_universal_literal_fixed_point"
+  ],
+  "closed_negative": [
+    "literal universal fixed-point route"
+  ],
+  "not_certified_as_proved": [
+    "UniversalFailure SATBits",
+    "UniversalWitnessExists inhabitant",
+    "SemanticSelfEmbeddingGap inhabitant",
+    "CanonicalSATPNPHabitant inhabitant",
+    "PneqNP"
+  ],
+  "promotion_rule": "No endpoint promotion without a kernel-verified inhabitant of CanonicalSATPNPHabitant / UniversalFailure SATBits.",
+  "certification": {
+    "run_id": 36275980291,
+    "run_conclusion": "success",
+    "job_id": 108498697740,
+    "job_name": "certify-green",
+    "artifact_id": 10917467216,
+    "artifact_name": "pnp-green-freeze-cert-20260926",
+    "artifact_digest": "sha256:e06385675839936ac8498b7856d034fc41505bcb27059291544bcfd642d27607",
+    "certified_head_sha": "d1ca42da20ff054738551a61b1b25a4e0ed8d1db",
+    "scope": "GREEN/FROZEN components only",
+    "open_math_preserved": "UniversalFailure SATBits"
+  }
+}

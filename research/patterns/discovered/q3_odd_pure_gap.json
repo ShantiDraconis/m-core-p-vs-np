@@ -1,0 +1,9 @@
+{
+  "name": "Q3OddPureGapNumerator",
+  "kind": "nat_eq",
+  "lhs": 10,
+  "rhs": 10,
+  "claim": "For q=3 with 2 and the diagonal excluded, the symmetric central gap numerator is 10.",
+  "lane": "HORIZON_PRIME",
+  "source": "MCore.Research.PatternCalculator.q3_odd_pure_gap"
+}

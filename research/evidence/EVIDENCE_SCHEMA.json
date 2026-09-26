@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FINAL_PROOF Research Evidence Item",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "lane",
+    "status",
+    "claim",
+    "exact_scope",
+    "evidence_kind",
+    "transfer_status",
+    "proof_credit"
+  ],
+  "properties": {
+    "evidence_id": {"type":"string"},
+    "lane": {
+      "enum": [
+        "PRIME2",
+        "HORIZON_PRIME",
+        "G21_SEMANTIC",
+        "P01_PHYSICAL",
+        "COMPLEXITY_BOUNDS",
+        "ENCODING_INVARIANTS",
+        "NEGATIVE_RESULTS",
+        "GEOMETRIC_P012",
+        "CERTIFICATE_PROVENANCE",
+        "EXTERNAL_SOURCE"
+      ]
+    },
+    "status": {
+      "enum": ["OBSERVED","SUPPORTED","FALSIFIED","INCONCLUSIVE","GREEN_SOURCE","OPEN_MATH"]
+    },
+    "claim": {"type":"string"},
+    "exact_scope": {"type":"string"},
+    "source_repository": {"type":["string","null"]},
+    "source_sha": {"type":["string","null"]},
+    "source_path": {"type":["string","null"]},
+    "workflow_run": {"type":["integer","null"]},
+    "created_at": {"type":["string","null"]},
+    "evidence_kind": {
+      "enum": [
+        "KERNEL_THEOREM",
+        "CI_RUN",
+        "COMPUTATIONAL_PROBE",
+        "COUNTEREXAMPLE",
+        "BOUND",
+        "TRACE",
+        "MODEL_MATCH",
+        "NEGATIVE_RESULT",
+        "EXTERNAL_REFERENCE",
+        "CERTIFICATE_METADATA"
+      ]
+    },
+    "assumptions": {"type":"array","items":{"type":"string"}},
+    "observed_result": {"type":["string","null"]},
+    "counterexample_if_any": {"type":["string","null"]},
+    "transfer_target": {"type":["string","null"]},
+    "transfer_status": {
+      "enum": ["NONE","RESEARCH_ONLY","INTERFACE_ONLY","TRANSFER_PROVED","PROMOTED"]
+    },
+    "proof_credit": {"type":"integer","minimum":0,"maximum":1},
+    "notes": {"type":["string","null"]}
+  },
+  "additionalProperties": false
+}

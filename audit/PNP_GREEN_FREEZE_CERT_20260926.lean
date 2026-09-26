@@ -1,0 +1,72 @@
+import MCore.Real.P02UniversalFailureAlgebra
+import MCore.Real.P02UniversalWitnessChain
+import MCore.Real.P02SemanticSelfEmbedding
+import MCore.Real.P02KleeneSelfReferenceBridge
+import MCore.Real.P02KleeneE1
+import MCore.Real.P02LiteralFixedPointCountermodel
+
+namespace MCore
+namespace Real
+namespace PNPGreenFreezeCert20260926
+
+open CanonicalFinalProof
+open CanonicalCircuitBits
+open CanonicalSATBoundary
+open P02TerminalFrontier
+open P02G21G22Attack
+open P02UniversalFailureAlgebra
+open P02WitnessChain
+open P02SemanticSelfEmbedding
+open P02KleeneSelfReferenceBridge
+open P02KleeneE1
+open P02LiteralFixedPointCountermodel
+
+#check P02UniversalFailureAlgebra.not_correctAt_iff_clock_or_semantic_mismatch
+#check P02UniversalFailureAlgebra.g21_iff_totality_or_semantic_counterexample
+#check P02UniversalFailureAlgebra.self_embed_witness_gives_semanticMismatch
+#check P02UniversalFailureAlgebra.totality_or_semantic_closes_p02
+
+#check P02WitnessChain.universalWitnessExists_iff_p02Target
+#check P02WitnessChain.universalWitnessExists_iff_g21Pointwise
+#check P02WitnessChain.universalWitnessExists_to_p02Target
+#check P02WitnessChain.diagonalFamily_to_universalWitnessExists
+#check P02WitnessChain.diagonalFixedPointGap_to_universalWitnessExists
+#check P02WitnessChain.p01_universalWitness_closes_internal
+
+#check P02SemanticSelfEmbedding.semantic_self_embedding_gap_iff_diagonal_fixed_point_gap
+#check P02SemanticSelfEmbedding.literal_fixed_point_route_not_universal
+#check P02SemanticSelfEmbedding.semantic_self_embedding_closes_p02
+
+#check P02KleeneSelfReferenceBridge.kleene_fixed_point
+#check P02KleeneSelfReferenceBridge.kleene_bridge_closes_G21
+#check P02KleeneSelfReferenceBridge.kleene_bridge_closes_P02
+#check P02KleeneE1.E1Compiler_nonempty
+
+#check P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point
+
+#print axioms MCore.Real.P02UniversalFailureAlgebra.not_correctAt_iff_clock_or_semantic_mismatch
+#print axioms MCore.Real.P02UniversalFailureAlgebra.g21_iff_totality_or_semantic_counterexample
+#print axioms MCore.Real.P02UniversalFailureAlgebra.self_embed_witness_gives_semanticMismatch
+#print axioms MCore.Real.P02UniversalFailureAlgebra.totality_or_semantic_closes_p02
+
+#print axioms MCore.Real.P02WitnessChain.universalWitnessExists_iff_p02Target
+#print axioms MCore.Real.P02WitnessChain.universalWitnessExists_iff_g21Pointwise
+#print axioms MCore.Real.P02WitnessChain.universalWitnessExists_to_p02Target
+#print axioms MCore.Real.P02WitnessChain.diagonalFamily_to_universalWitnessExists
+#print axioms MCore.Real.P02WitnessChain.diagonalFixedPointGap_to_universalWitnessExists
+#print axioms MCore.Real.P02WitnessChain.p01_universalWitness_closes_internal
+
+#print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_gap_iff_diagonal_fixed_point_gap
+#print axioms MCore.Real.P02SemanticSelfEmbedding.literal_fixed_point_route_not_universal
+#print axioms MCore.Real.P02SemanticSelfEmbedding.semantic_self_embedding_closes_p02
+
+#print axioms MCore.Real.P02KleeneSelfReferenceBridge.kleene_fixed_point
+#print axioms MCore.Real.P02KleeneSelfReferenceBridge.kleene_bridge_closes_G21
+#print axioms MCore.Real.P02KleeneSelfReferenceBridge.kleene_bridge_closes_P02
+#print axioms MCore.Real.P02KleeneE1.E1Compiler_nonempty
+
+#print axioms MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point
+
+end PNPGreenFreezeCert20260926
+end Real
+end MCore

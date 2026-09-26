@@ -1,0 +1,68 @@
+name: ATK EGC Hardening Gate
+
+on:
+  push:
+    branches:
+      - atk/egc-hardening-v1-20260926
+    paths:
+      - 'lean/MCore/Hardening/**'
+      - 'lean/MCore/Real/P01FinalCertificate.lean'
+      - 'lean/MCore/Real/P02SemanticSelfEmbedding*.lean'
+      - 'lean/MCore/Real/P02KleeneBridge.lean'
+      - 'lean/MCore/Real/P02TableauCompletenessClose.lean'
+      - 'audit/ATL_GRAPH.json'
+      - 'audit/atl_graph.schema.json'
+      - 'scripts/atl_*.py'
+      - '.github/workflows/atk-egc-hardening.yml'
+  workflow_dispatch:
+
+jobs:
+  hardening-gate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - MCore.Hardening.Base
+          - MCore.Hardening.P01StatementFrozen
+          - MCore.Hardening.SSEStatementFrozen
+          - MCore.Hardening.SSEWitnessConstruction
+          - MCore.Hardening.AuditTheorem
+          - MCore.Hardening.ExternalGlobalCertificate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: lake update
+      - name: Build individual target
+        run: lake build ${{ matrix.target }}
+
+  axiom-audit:
+    runs-on: ubuntu-latest
+    needs: hardening-gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: lake update
+      - name: SSE closure axiom audit
+        run: |
+          cat >/tmp/HardeningAudit.lean <<'EOF'
+          import MCore.Hardening.SSEWitnessConstruction
+          #print axioms MCore.Hardening.SSEWitnessConstruction.construction_closes_p02
+          EOF
+          lake env lean /tmp/HardeningAudit.lean | tee /tmp/axioms.log
+          if grep -Eiq 'sorryAx|admit' /tmp/axioms.log; then
+            echo RED_UNSAFE_AXIOM
+            exit 1
+          fi
+
+# trigger: tableau-prefix-fix
