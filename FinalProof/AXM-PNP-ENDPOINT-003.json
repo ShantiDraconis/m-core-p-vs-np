@@ -16,5 +16,23 @@
     "dependency_closure audit GREEN"
   ],
   "closed_negative_subroute": "literal fixed-point G2.1 remains CLOSED_BY_FALSIFICATION",
-  "issuance_rule": "CLOSED only after the semantic route and P01 terminal obligations are kernel-checked end-to-end."
+  "issuance_rule": "CLOSED only after the semantic route and P01 terminal obligations are kernel-checked end-to-end.",
+  "dependencies": [
+    "4068a82118573fa7ae6a2457d940251e970ebe07"
+  ],
+  "core": [
+    "B"
+  ],
+  "surviving_route": [
+    "EndpointBridge(B)",
+    "semantic_self_embedding",
+    "pointwise_universal_obstruction",
+    "size_time_closure"
+  ],
+  "dead_routes": [
+    {
+      "route": "literal_fixed_point_G2.1",
+      "status": "CLOSED_BY_FALSIFICATION"
+    }
+  ]
 }
