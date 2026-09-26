@@ -8,6 +8,8 @@ on:
       - 'lean/MCore/Hardening/**'
       - 'lean/MCore/Real/P01FinalCertificate.lean'
       - 'lean/MCore/Real/P02SemanticSelfEmbedding*.lean'
+      - 'lean/MCore/Real/P02KleeneBridge.lean'
+      - 'lean/MCore/Real/P02TableauCompletenessClose.lean'
       - 'audit/ATL_GRAPH.json'
       - 'audit/atl_graph.schema.json'
       - 'scripts/atl_*.py'
