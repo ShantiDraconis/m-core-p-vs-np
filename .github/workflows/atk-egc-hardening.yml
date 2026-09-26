@@ -25,7 +25,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+          build: false
+          test: false
+          lint: false
       - name: Build individual target
+        working-directory: lean
         run: lake build ${{ matrix.target }}
 
   axiom-audit:
@@ -34,7 +40,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+          build: false
+          test: false
+          lint: false
       - name: SSE closure axiom audit
+        working-directory: lean
         run: |
           cat >/tmp/HardeningAudit.lean <<'EOF'
           import MCore.Hardening.SSEWitnessConstruction
