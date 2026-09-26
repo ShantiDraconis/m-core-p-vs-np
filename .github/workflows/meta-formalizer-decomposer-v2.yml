@@ -30,6 +30,8 @@ jobs:
           assert d["frontier_count"] >= 2
           assert d["linker_acceptance_fixture"]["accepts_when_producer_inhabited"]
           PY
+      - name: Resolve dependencies
+        run: lake update
       - name: Build synthetic acceptance fixture
         run: lake build MCore.Research.MetaFormalizerAcceptanceFixture
       - name: Build current exact P01 boundary
