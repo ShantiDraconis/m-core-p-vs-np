@@ -3,7 +3,7 @@ namespace FinalProof
 /-- P01 boundary theorem: the current target cannot close while its required
 construction obligation is absent. This is not a proof of P != NP. -/
 structure P01Frontier (A P B : Prop) where
-  prefix : A
+  prefixWitness : A
   missing : ¬ P
   targetRequires : B → P
 
