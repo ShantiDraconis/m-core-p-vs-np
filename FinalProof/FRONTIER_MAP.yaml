@@ -1,0 +1,37 @@
+schema: finalproof.frontier-map.v1
+project: P_vs_NP
+central_formalization: ShantiDraconis/axiomatic-millenium:AxiomaticMillenium/FrontierRED.lean
+finalproof_parts:
+  P01:
+    status: OPEN_BRIDGE
+    patterns: [U, B, R]
+    A: "certified parser/construction prefix"
+    T: "physical verifier and P01MachineConstruction composition"
+    P:
+      - P01MachineConstruction
+      - p01_closed_no_hypothesis
+    B: "P01 terminal construction closure"
+    frozen_red:
+      source_sha: c00eae7cc9fa3bbebcca7528484a045ec108003c
+      branch: frozen/final-proof-p01-t1a-red-c00eae7c
+      clean_successor_sha: fa8892427fb54a666ba21edf634283209c2d4455
+      permanent: true
+      do_not_repair: true
+  G21_literal_fixed_point:
+    status: CLOSED_BY_FALSIFICATION
+    pattern: F
+    source_sha: 0c423c3062d2bce8278c313a0dcf820a7084bb2d
+    A: "literal fixed-point formulation"
+    Aprime: "condition the literal route must preserve"
+    replacement_route: "Semantic Self-Embedding / G21 semantic route"
+    H_pending: []
+  G21_semantic:
+    status: OPEN_MATH
+    A: "semantic diagonal interface"
+    T: "pointwise universal obstruction"
+    P:
+      - semantic_self_embedding_witness
+      - pointwise_universal_obstruction
+      - size_time_closure
+    B: "semantic G21 producer"
+publication_rule: "Frozen RED evidence is immutable; a later GREEN lane does not erase it."
