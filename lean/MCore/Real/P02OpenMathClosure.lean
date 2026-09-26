@@ -26,7 +26,7 @@ inductive ClosureResult (A B : Prop) where
 /-- The forbidden state is exactly simultaneous truth. -/
 def Admissible (A B : Prop) : Prop := ¬ (A ∧ B)
 
-theorem close_decided
+def close_decided
     {A B : Prop}
     (a : Decided A)
     (b : Decided B)
@@ -98,7 +98,7 @@ theorem closure_enables_pneqnp
 
 /-- FALSE/FALSE closes the selected two-route search negatively. It does not
 assert P != NP and therefore cannot manufacture the final theorem. -/
-theorem false_false_is_closed_negative
+def false_false_is_closed_negative
     {A B : Prop}
     (hna : ¬ A) (hnb : ¬ B) :
     ClosureResult A B :=
