@@ -1,0 +1,41 @@
+{
+  "project": "P_vs_NP",
+  "parent": "AXM-CROSS-SIGNATURE-002",
+  "state": "PREPARATORY_BUILD_PENDING",
+  "signatures": {
+    "PNP_P01": [
+      "B",
+      "R",
+      "U"
+    ],
+    "PNP_G21": [
+      "B",
+      "F",
+      "U"
+    ]
+  },
+  "local_claims": [
+    {
+      "id": "PNP-P01-CONSTRUCTION",
+      "status": "OPEN_BRIDGE",
+      "needs_to_appear": [
+        "P01MachineConstruction",
+        "p01_closed_no_hypothesis"
+      ]
+    },
+    {
+      "id": "PNP-G21-LITERAL-FIXED-POINT",
+      "status": "CLOSED_BY_FALSIFICATION",
+      "replacement": "Semantic Self-Embedding / G21 semantic route"
+    },
+    {
+      "id": "PNP-G21-SEMANTIC",
+      "status": "OPEN_MATH",
+      "needs_to_appear": [
+        "semantic_self_embedding_witness",
+        "pointwise_universal_obstruction",
+        "size_time_closure"
+      ]
+    }
+  ]
+}
