@@ -27,13 +27,13 @@ inductive RejectedReason where
 
 /-- Closed declared base. Metadata only; mathematical force comes only from
 actual Lean declarations and their `#print axioms` output. -/
-def declaredBase : List Name :=
+def declaredBase : List Lean.Name :=
   [`propext, `Classical.choice, `Quot.sound]
 
 structure NodePolicyRecord where
   node : String
   policy : NodePolicy
-  allowedAxioms : List Name
+  allowedAxioms : List Lean.Name
   deriving Repr
 
 def p01Policy : NodePolicyRecord :=
