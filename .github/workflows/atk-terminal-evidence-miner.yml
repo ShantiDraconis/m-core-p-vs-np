@@ -1,0 +1,27 @@
+name: ATK Terminal Evidence Miner
+
+on:
+  push:
+    branches:
+      - formalize/g21-negative-final-certificate-20260926
+    paths:
+      - 'audit/terminal_targets.json'
+      - 'scripts/atk_terminal_evidence_miner.py'
+      - 'lean/MCore/Real/**'
+      - '.github/workflows/atk-terminal-evidence-miner.yml'
+  workflow_dispatch:
+
+jobs:
+  terminal-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Run all terminal targets individually
+        run: python3 scripts/atk_terminal_evidence_miner.py
+      - name: Upload per-target evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atk-terminal-evidence-${{ github.sha }}
+          path: audit/generated/
