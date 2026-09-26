@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ATL Canonical Graph",
+  "type": "object",
+  "required": ["schema_version","nodes","log"],
+  "properties": {
+    "schema_version": {"const":"atl.graph.v3"},
+    "nodes": {
+      "type":"array",
+      "items":{
+        "type":"object",
+        "required":["id","version","area","kind","formal_statement","source_files","theorem_names","repo","branch","commit"],
+        "properties":{
+          "id":{"type":"string"},
+          "version":{"type":"integer","minimum":1},
+          "superseded_by":{"type":["string","null"]},
+          "area":{"type":"string"},
+          "kind":{"type":"string"},
+          "formal_statement":{"type":"string"},
+          "semantic_statement":{"type":"string"},
+          "source_files":{"type":"array","items":{"type":"string"}},
+          "theorem_names":{"type":"array","items":{"type":"string"}},
+          "repo":{"type":"string"},
+          "branch":{"type":"string"},
+          "commit":{"type":"string"},
+          "declared_dependencies":{"type":"array","items":{"type":"string"}},
+          "declared_replacement_nodes":{"type":"array","items":{"type":"string"}},
+          "attackability":{"enum":["ATTACKABLE","RESEARCH","EXTERNAL","N/A"]},
+          "policy":{"enum":["constructive","classical_ok"]}
+        },
+        "additionalProperties":false
+      }
+    },
+    "log":{
+      "type":"array",
+      "items":{
+        "type":"object",
+        "required":["node_id","event","timestamp"],
+        "properties":{
+          "node_id":{"type":"string"},
+          "event":{"type":"string"},
+          "timestamp":{"type":"string"},
+          "evidence":{"type":"array","items":{"type":"string"}},
+          "open_math_reason":{"type":["string","null"]},
+          "provenance_state":{"type":["string","null"]},
+          "cost_cycles":{"type":["number","null"]},
+          "rejected_reason":{"type":["string","null"]}
+        },
+        "additionalProperties":false
+      }
+    }
+  },
+  "additionalProperties":false
+}
