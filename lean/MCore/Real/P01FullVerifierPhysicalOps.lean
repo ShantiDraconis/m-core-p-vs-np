@@ -44,6 +44,40 @@ theorem neg_pop_exposes_true
   have h := pop_run_two_true witness source stack padding
   simpa [negResultBit] using h
 
+
+
+/-- Real NEG macro for a false stack head: pop the head, then push true. -/
+theorem neg_run_real_false
+    (witness source : BitString) (stack : List Bool) (padding : Nat) :
+    let popped := stackPrimitiveMachine.run 2
+      (popConfig (physicalStackV2Tape witness source (false :: stack) padding))
+    PhysicalStackRepV2
+      (stackPrimitiveMachine.run 1
+        (pushConfig true popped.tape)).tape
+      witness source (true :: stack) := by
+  dsimp
+  have hpop := pop_run_two_false witness source stack padding
+  dsimp at hpop
+  rcases hpop.2 with ⟨padding', hp⟩
+  rw [hp]
+  exact push_run_one_rep witness source stack padding' true
+
+/-- Real NEG macro for a true stack head: pop the head, then push false. -/
+theorem neg_run_real_true
+    (witness source : BitString) (stack : List Bool) (padding : Nat) :
+    let popped := stackPrimitiveMachine.run 2
+      (popConfig (physicalStackV2Tape witness source (true :: stack) padding))
+    PhysicalStackRepV2
+      (stackPrimitiveMachine.run 1
+        (pushConfig false popped.tape)).tape
+      witness source (false :: stack) := by
+  dsimp
+  have hpop := pop_run_two_true witness source stack padding
+  dsimp at hpop
+  rcases hpop.2 with ⟨padding', hp⟩
+  rw [hp]
+  exact push_run_one_rep witness source stack padding' false
+
 /-- Semantic target for physical AND after consuming r then l. -/
 theorem and_semantic_target
     (sigma : Assignment) (l r : Bool) (stack : List Bool) :
@@ -73,6 +107,8 @@ theorem first_operand_pop
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.const_run_real
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.neg_pop_exposes_false
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.neg_pop_exposes_true
+#print axioms MCore.Real.P01FullVerifierPhysicalOps.neg_run_real_false
+#print axioms MCore.Real.P01FullVerifierPhysicalOps.neg_run_real_true
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.and_semantic_target
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.or_semantic_target
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.first_operand_pop
