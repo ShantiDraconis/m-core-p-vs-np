@@ -17,15 +17,24 @@ def UniversalWitnessExists : Prop :=
       (SATBits circuitBitEncoding x ↔
         ¬ AcceptsAtDeclaredBound M x)
 
-theorem universal_witness_iff_pointwise :
-    UniversalWitnessExists ↔ PointwiseSemanticSelfEmbedding := by
-  rfl
+/-- Universal witness existence is exactly the pointwise unpacking of the
+SemanticSelfEmbedder data. This construction uses only explicit witnesses
+supplied by h; it does not invoke the falsified literal fixed-point route. -/
+noncomputable def semanticSelfEmbedderOfUniversalWitness
+    (h : UniversalWitnessExists) :
+    SemanticSelfEmbedder where
+  bits := fun M => Classical.choose (h M)
+  valid := by
+    intro M
+    exact (Classical.choose_spec (h M)).1
+  flips := by
+    intro M
+    exact (Classical.choose_spec (h M)).2
 
 theorem universal_witness_builds_semantic_self_embedder
     (h : UniversalWitnessExists) :
     SemanticSelfEmbeddingGap := by
-  exact
-    (semantic_self_embedding_gap_iff_pointwise).mpr h
+  exact ⟨semanticSelfEmbedderOfUniversalWitness h⟩
 
 theorem universal_witness_closes_p02
     (h : UniversalWitnessExists) :
@@ -47,19 +56,17 @@ theorem diagonalSATConstruction_iff_universal_witness :
     exact ⟨D.bits M, D.valid M, D.flip M⟩
   · intro h
     classical
-    let bits : PolyDTMCandidate → BitString :=
-      fun M => Classical.choose (h M)
-    refine ⟨{
-      bits := bits
-      valid := ?_
-      flip := ?_
+    exact ⟨{
+      bits := fun M => Classical.choose (h M)
+      valid := by
+        intro M
+        exact (Classical.choose_spec (h M)).1
+      flip := by
+        intro M
+        exact (Classical.choose_spec (h M)).2
     }⟩
-    · intro M
-      exact (Classical.choose_spec (h M)).1
-    · intro M
-      exact (Classical.choose_spec (h M)).2
 
-#print axioms MCore.Real.P02SemanticSelfEmbeddingClose.universal_witness_iff_pointwise
+#print axioms MCore.Real.P02SemanticSelfEmbeddingClose.semanticSelfEmbedderOfUniversalWitness
 #print axioms MCore.Real.P02SemanticSelfEmbeddingClose.universal_witness_builds_semantic_self_embedder
 #print axioms MCore.Real.P02SemanticSelfEmbeddingClose.universal_witness_closes_p02
 #print axioms MCore.Real.P02SemanticSelfEmbeddingClose.diagonalSATConstruction_iff_universal_witness
