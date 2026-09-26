@@ -1,0 +1,23 @@
+{
+  "schema": "finalproof.local-scientific-reds.v1",
+  "project": "P_vs_NP",
+  "records": [
+    {
+      "producer": "PNP_G21",
+      "kind": "F_FORMULATION",
+      "frequency": "1/8",
+      "pct": 12.5,
+      "status": "CLOSED_BY_FALSIFICATION",
+      "needs_to_appear": []
+    },
+    {
+      "producer": "PNP_G21_SEMANTIC",
+      "status": "OPEN_MATH",
+      "needs_to_appear": [
+        "semantic_self_embedding_witness",
+        "pointwise_universal_obstruction",
+        "size_time_closure"
+      ]
+    }
+  ]
+}
