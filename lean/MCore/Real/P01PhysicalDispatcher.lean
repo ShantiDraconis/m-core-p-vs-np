@@ -42,37 +42,37 @@ def rewindState (q : Fin 3) : DispatcherState :=
 def acceptState : DispatcherState := ⟨25, by decide⟩
 def rejectState : DispatcherState := ⟨26, by decide⟩
 
-private def asControl (q : DispatcherState) (h : q.val < 8) : Fin 8 :=
+def asControl (q : DispatcherState) (h : q.val < 8) : Fin 8 :=
   ⟨q.val, h⟩
 
-private def asStack
+def asStack
     (q : DispatcherState) (hlo : 8 ≤ q.val) (hhi : q.val < 16) : Fin 8 :=
   ⟨q.val - 8, by omega⟩
 
-private def asWitness
+def asWitness
     (q : DispatcherState) (hlo : 16 ≤ q.val) (hhi : q.val < 22) : Fin 6 :=
   ⟨q.val - 16, by omega⟩
 
-private def asRewind
+def asRewind
     (q : DispatcherState) (hlo : 22 ≤ q.val) (hhi : q.val < 25) : Fin 3 :=
   ⟨q.val - 22, by omega⟩
 
-private def liftControl
+def liftControl
     (x : Fin 8 × Option Bool × Direction) :
     DispatcherState × Option Bool × Direction :=
   (controlState x.1, x.2.1, x.2.2)
 
-private def liftStack
+def liftStack
     (x : Fin 8 × Option Bool × Direction) :
     DispatcherState × Option Bool × Direction :=
   (stackState x.1, x.2.1, x.2.2)
 
-private def liftWitness
+def liftWitness
     (x : Fin 6 × Option Bool × Direction) :
     DispatcherState × Option Bool × Direction :=
   (witnessReadState x.1, x.2.1, x.2.2)
 
-private def liftRewind
+def liftRewind
     (x : Fin 3 × Option Bool × Direction) :
     DispatcherState × Option Bool × Direction :=
   (rewindState x.1, x.2.1, x.2.2)
