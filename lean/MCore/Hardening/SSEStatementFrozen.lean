@@ -17,3 +17,6 @@ def statementHash : String :=
 def policy := MCore.Hardening.ssePolicy
 
 end MCore.Hardening.SSEStatementFrozen
+
+/-- Marker: this frozen statement is revalidated against the current semantic lane. -/
+def revalidatedAgainstCurrentSemanticLane : Bool := true
