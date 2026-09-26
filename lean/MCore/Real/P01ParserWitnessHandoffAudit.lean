@@ -31,8 +31,12 @@ theorem leafAcceptConfig_ne_inputTape_cons
     (leafAcceptConfig pad right).tape ≠ inputTape (b :: bs) := by
   intro h
   have hh := congrArg (fun t : Tape (Option Bool) => t.head) h
-  rw [leafAcceptConfig_head_none pad hpad right] at hh
-  simp [inputTape] at hh
+  have hh' :
+      (leafAcceptConfig pad right).tape.head =
+        (inputTape (b :: bs)).head := by
+    simpa using hh
+  rw [leafAcceptConfig_head_none pad hpad right] at hh'
+  simp [inputTape] at hh'
 
 /-- Fail-closed architecture verdict: any direct handoff claiming that the
 accepting parser tape is already the original nonempty canonical source tape
