@@ -10,3 +10,4 @@ rev = "v4.19.0"
 [[lean_lib]]
 name = "P02KleeneAdapter"
 srcDir = "P02KleeneAdapter"
+roots = ["Probe"]
