@@ -1,0 +1,29 @@
+name: ATK P02 Kleene external probe
+
+on:
+  push:
+    branches:
+      - atk/p01-real-neg-macro
+    paths:
+      - 'external/p02-kleene-adapter/**'
+      - '.github/workflows/atk-p02-kleene-external.yml'
+  pull_request:
+    paths:
+      - 'external/p02-kleene-adapter/**'
+      - '.github/workflows/atk-p02-kleene-external.yml'
+
+jobs:
+  kleene-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Build isolated Kleene adapter
+        working-directory: external/p02-kleene-adapter
+        run: |
+          lake update
+          lake build P02KleeneAdapter

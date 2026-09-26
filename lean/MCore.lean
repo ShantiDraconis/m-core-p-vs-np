@@ -31,3 +31,54 @@ import MCore.C12.Families
 import MCore.Frontier.K3Gaps
 import MCore.AttackDAG.K3AlgebraAttacks
 import MCore.Audit
+import MCore.BackwardAudit.MaterialOrientationKernel
+
+import MCore.Real.P01VerifiedRelation
+import MCore.Real.P01ComponentFailProof
+import MCore.Real.CanonicalSATFrameMachineV2
+
+import MCore.Real.P01RecursiveFiniteControlFrontier
+import MCore.Real.CanonicalCircuitBitsInverse
+import MCore.Real.CanonicalSATSlotParserSpec
+import MCore.Real.CanonicalSATVarPayloadMachine
+import MCore.Real.CanonicalSATTagConsumerMachine
+import MCore.Real.CanonicalSATParserTapeLayout
+import MCore.Real.CanonicalSATParserInitMachine
+import MCore.Real.CanonicalSATSlotLog
+import MCore.Real.CanonicalSATSlotLogMachine
+import MCore.Real.P02TerminalFrontier
+import MCore.Real.CanonicalSATRecursiveParserSimulation
+
+import MCore.Real.MachineRunLemmas
+import MCore.Real.CanonicalSATParserWorkScanProof
+import MCore.Real.CanonicalSATParserRewindProof
+
+import MCore.Real.P01FullVerifierPhysicalOps
+
+import MCore.Real.P01FullVerifierInputShuttleV2
+import MCore.Real.P01FullVerifierPhysicalRefinementV2
+import MCore.Real.P01PhysicalVerifierFoundations
+import MCore.Real.P01PhysicalVerifierBudget
+import MCore.Real.P01PhysicalVerifierUniformCosts
+import MCore.Real.P01IntegratedMachine
+import MCore.Real.P01IntegratedPhaseSemantics
+import MCore.Real.P01PhysicalRealizationAssembly
+import MCore.Real.PhysicalMachineCore
+import MCore.Real.P01T1DPhysicalAssembly
+import MCore.Real.P01T1DGlobalPhysical
+import MCore.Real.P01FullVerifierShuttleReturn
+import MCore.Real.P01GlobalParserRuntime
+import MCore.Real.P01TerminalDelta
+import MCore.Real.P01IntegratedExecutionMachine
+import MCore.Real.P01ParserWitnessHandoffAudit
+import MCore.Real.P01FullVerifierSourceRewind
+import MCore.Real.P01WitnessIndexedReadMachine
+import MCore.Real.P01WitnessIndexedReadProof
+import MCore.Real.P01PhysicalDispatcher
+import MCore.Real.P01PhysicalDispatcherBridge
+import MCore.Real.P01PhysicalDispatcherAudit
+import MCore.Real.P01PhysicalOperationControl
+import MCore.Real.P01PhysicalRoutingAdapter
+import MCore.Real.P01PhysicalEmbeddedRun
+import MCore.Real.P01PhysicalEmbeddedRunMulti
+import MCore.Real.P01PhysicalOpcodeDecoder

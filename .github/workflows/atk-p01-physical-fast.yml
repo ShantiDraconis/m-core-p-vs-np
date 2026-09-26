@@ -1,0 +1,89 @@
+name: ATK P01 physical fast gate
+
+on:
+  push:
+    branches:
+      - atk/p01-real-neg-macro
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'lean/MCore/Real/P01Physical*.lean'
+      - 'lean/MCore/Real/P01FullVerifier*.lean'
+      - 'lean/MCore/Real/PhysicalMachineCore.lean'
+      - 'lean/MCore.lean'
+      - '.github/workflows/atk-p01-physical-fast.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p01-physical-fast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: P01 physical source hygiene
+        run: |
+          set -euo pipefail
+          files=$(find lean/MCore/Real -maxdepth 1 \( -name 'P01Physical*.lean' -o -name 'P01FullVerifier*.lean' -o -name 'PhysicalMachineCore.lean' \) -print)
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' $files; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -nE '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' $files; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+
+      - name: Build active physical chain
+        run: |
+          set -euo pipefail
+          lake build \
+            MCore.Real.P01FullVerifierStackSemantics \
+            MCore.Real.P01FullVerifierPhysicalStackV2 \
+            MCore.Real.P01FullVerifierStackPrimitiveMachine \
+            MCore.Real.P01FullVerifierPhysicalOps \
+            MCore.Real.P01PhysicalOpcodeDecoder \
+            MCore.Real.P01PhysicalOperationControl \
+            MCore.Real.P01PhysicalDispatcher \
+            MCore.Real.P01PhysicalDispatcherBridge \
+            MCore.Real.P01PhysicalRoutingAdapter \
+            MCore.Real.P01PhysicalEmbeddedRun \
+            MCore.Real.P01PhysicalEmbeddedRunMulti \
+            MCore.Real.P01PhysicalVerifierFoundations \
+            MCore.Real.P01PhysicalVerifierBudget \
+            MCore.Real.P01PhysicalVerifierUniformCosts \
+            MCore.Real.PhysicalMachineCore \
+            MCore.Real.P01PhysicalRealizationAssembly \
+            MCore.Real.P01IntegratedExecutionAudit
+
+      - name: Axiom audit active frontier
+        run: |
+          set -euo pipefail
+          cat >/tmp/P01PhysicalFrontierAudit.lean <<'EOF'
+          import MCore.Real.P01PhysicalDispatcherBridge
+          import MCore.Real.P01PhysicalEmbeddedRun
+          import MCore.Real.P01PhysicalEmbeddedRunMulti
+          import MCore.Real.P01PhysicalRoutingAdapter
+          #print axioms MCore.Real.P01PhysicalDispatcherBridge.stack_transition_lift
+          #print axioms MCore.Real.P01PhysicalDispatcherBridge.witness_transition_lift
+          #print axioms MCore.Real.P01PhysicalDispatcherBridge.rewind_transition_lift
+          #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_stack
+          #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_witness
+          #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_rewind
+          #print axioms MCore.Real.P01PhysicalEmbeddedRunMulti.dispatcher_run_stack_of_prefix_nonhalting
+          #print axioms MCore.Real.P01PhysicalEmbeddedRunMulti.dispatcher_run_witness_of_prefix_nonhalting
+          #print axioms MCore.Real.P01PhysicalEmbeddedRunMulti.dispatcher_run_rewind_of_prefix_nonhalting
+          EOF
+          lake env lean /tmp/P01PhysicalFrontierAudit.lean 2>&1 | tee /tmp/p01-physical-frontier.log
+          if grep -q 'sorryAx' /tmp/p01-physical-frontier.log; then exit 1; fi
+
+      - name: Preserve fail-closed endpoint
+        run: |
+          set -euo pipefail
+          grep -q 'structure PhysicalVerifierRealization' lean/MCore/Real/P01FullVerifierPhysical.lean
+          grep -q 'physical_eq_logical' lean/MCore/Real/P01FullVerifierPhysical.lean
+          echo 'P01_PHYSICAL_FAST_GATE=GREEN_IF_JOB_SUCCEEDS'
+          echo 'P01_TERMINAL_PROMOTION=NOT_IMPLIED'

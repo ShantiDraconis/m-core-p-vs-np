@@ -1,0 +1,35 @@
+name: T1D Witness Bound Normalization
+on:
+  push:
+    branches:
+      - attack/t1d-physical-verifier-20260922
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  witness-bound:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P01WitnessBoundNormalization.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
+      - name: Build
+        run: lake build MCore.Real.P01WitnessBoundNormalization
+      - name: Axiom audit
+        run: |
+          cat >/tmp/WitnessBoundAudit.lean <<'EOF'
+          import MCore.Real.P01WitnessBoundNormalization
+          #print axioms MCore.Real.P01WitnessBoundNormalization.paddedWitnessBits_preserves_eval
+          #print axioms MCore.Real.P01WitnessBoundNormalization.canonical_witness_has_source_length_extension
+          EOF
+          lake env lean /tmp/WitnessBoundAudit.lean 2>&1 | tee /tmp/audit.log
+          ! grep -q 'sorryAx' /tmp/audit.log
