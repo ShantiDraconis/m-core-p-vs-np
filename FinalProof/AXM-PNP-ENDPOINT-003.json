@@ -1,0 +1,44 @@
+{
+  "schema": "axiomatic.problem-endpoint-cert.v1",
+  "certificate_id": "AXM-PNP-ENDPOINT-003",
+  "project": "P_vs_NP",
+  "state": "PREPARATORY_BUILD_PENDING",
+  "final_root": null,
+  "parent_meta_certificate": "AXM-CROSS-SIGNATURE-002",
+  "local_anchor_commit": "656704b479b7d9356857c434354edda85e11e849",
+  "claim": "semantic G21 + P01 terminal endpoint",
+  "required_artifacts": [
+    "P01MachineConstruction",
+    "p01_closed_no_hypothesis",
+    "semantic_self_embedding_witness",
+    "pointwise_universal_obstruction",
+    "size_time_closure",
+    "dependency_closure audit GREEN"
+  ],
+  "closed_negative_subroute": "literal fixed-point G2.1 remains CLOSED_BY_FALSIFICATION",
+  "issuance_rule": "CLOSED only after the semantic route and P01 terminal obligations are kernel-checked end-to-end.",
+  "dependencies": [
+    "4068a82118573fa7ae6a2457d940251e970ebe07"
+  ],
+  "core": [
+    "B"
+  ],
+  "surviving_route": [
+    "EndpointBridge(B)",
+    "semantic_self_embedding",
+    "pointwise_universal_obstruction",
+    "size_time_closure"
+  ],
+  "dead_routes": [
+    {
+      "route": "literal_fixed_point_G2.1",
+      "status": "CLOSED_BY_FALSIFICATION"
+    }
+  ],
+  "proof_target": {
+    "path": "FinalProof/EndpointProofTarget.lean",
+    "requirements_structure": "PNP003Requirements",
+    "closure_theorem": "pnp003_closes_from_requirements",
+    "status": "UNINHABITED"
+  }
+}
