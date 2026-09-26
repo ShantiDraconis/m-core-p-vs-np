@@ -28,7 +28,7 @@ theorem stack_transition_lift
   have h2 : 8 + q.val < 16 := by omega
   have hq' : (⟨8 + q.val - 8, by omega⟩ : Fin 8) = q := by
     apply Fin.ext
-    omega
+    simp
   simp [physicalDispatcherMachine, stackState, asStack, liftStack,
     h0, h1, h2, hq']
 
@@ -45,7 +45,7 @@ theorem witness_transition_lift
   have h4 : 16 + q.val < 22 := by omega
   have hq' : (⟨16 + q.val - 16, by omega⟩ : Fin 6) = q := by
     apply Fin.ext
-    omega
+    simp
   simp [physicalDispatcherMachine, witnessReadState, asWitness, liftWitness,
     h0, h1, h2, h3, h4, hq']
 
@@ -64,7 +64,7 @@ theorem rewind_transition_lift
   have h6 : 22 + q.val < 25 := by omega
   have hq' : (⟨22 + q.val - 22, by omega⟩ : Fin 3) = q := by
     apply Fin.ext
-    omega
+    simp
   simp [physicalDispatcherMachine, rewindState, asRewind, liftRewind,
     h0, h1, h2, h3, h4, h5, h6, hq']
 
