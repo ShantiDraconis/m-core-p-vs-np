@@ -8,6 +8,7 @@ namespace P01FullVerifierPhysicalOps
 open CanonicalFinalProof
 open P01FullVerifierPhysicalStackV2
 open P01FullVerifierStackPrimitiveMachine
+open P01FullVerifierStackSemantics
 
 /-- Push a constant bit using the real one-step stack primitive. -/
 theorem const_run_real
@@ -41,8 +42,13 @@ theorem neg_pop_exposes_true
       (popConfig (physicalStackV2Tape witness source (true :: stack) padding))
     negResultBit final.state = some false /\
       PhysicalStackRepV2 final.tape witness source stack := by
+  dsimp
   have h := pop_run_two_true witness source stack padding
-  simpa [negResultBit] using h
+  dsimp at h
+  constructor
+  · rw [h.1]
+    simp [negResultBit, haltPopTrue, haltPopFalse]
+  · exact h.2
 
 
 
