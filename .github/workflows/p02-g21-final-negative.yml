@@ -1,0 +1,82 @@
+name: P02 G2.1 Final Negative
+
+on:
+  push:
+    branches:
+      - final-proof-p01-construction
+    paths:
+      - 'lean/MCore/Real/P02G21FinalNegative.lean'
+      - 'lean/MCore/Real/G21TransferCandidateEngine.lean'
+      - 'audit/G21_FINAL_NEGATIVE_CERTIFICATE.json'
+      - '.github/workflows/p02-g21-final-negative.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g21-final-negative:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Hygiene
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/P02G21FinalNegative.lean
+            lean/MCore/Real/G21TransferCandidateEngine.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+          if grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "${files[@]}"; then exit 1; fi
+          if grep -nE '(^|[^[:alnum:]_])partial([^[:alnum:]_]|$)' "${files[@]}"; then exit 1; fi
+
+      - name: Build final-negative theorem and transfer engine
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02G21FinalNegative MCore.Real.G21TransferCandidateEngine
+
+      - name: Kernel axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/G21FinalNegativeAudit.lean <<'EOF'
+          import MCore.Real.P02G21FinalNegative
+          import MCore.Real.G21TransferCandidateEngine
+          #print axioms MCore.Real.P02G21FinalNegative.G21_literal_fixed_point_falsified
+          #print axioms MCore.Real.P02G21FinalNegative.formulation_negative_control
+          #print axioms MCore.Real.P02G21FinalNegative.G21_literal_fixed_point_inconsistent
+          #print axioms MCore.Real.G21TransferCandidateEngine.no_transfer_without_hypothesis_compatibility
+          #print axioms MCore.Real.G21TransferCandidateEngine.no_transfer_without_operator
+          #print axioms MCore.Real.G21TransferCandidateEngine.no_transfer_from_distance_alone
+          EOF
+          lake env lean /tmp/G21FinalNegativeAudit.lean 2>&1 | tee /tmp/g21-final-negative.log
+          if grep -q 'sorryAx' /tmp/g21-final-negative.log; then exit 1; fi
+
+      - name: Scope lock
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          c=json.loads(Path("audit/G21_FINAL_NEGATIVE_CERTIFICATE.json").read_text())
+          assert c["formulation_state"] == "CLOSED_BY_FALSIFICATION"
+          assert c["h_pending"] == []
+          assert c["replacement"]["state"] == "OPEN_MATH"
+          assert c["replacement"]["reopened_literal_route"] is False
+          assert c["final_proof_negative"] is True
+          assert c["global_final_proof"] is False
+          assert "P != NP" in c["exact_scope"]["does_not_prove"]
+          print("G21_FINAL_NEGATIVE_SCOPE=GREEN")
+          PY
+
+      - name: Final marker
+        run: |
+          echo "PNP_G21_F_FORMULATION=GREEN_FROZEN_CERTIFIED_SOURCE"
+          echo "LITERAL_FIXED_POINT=CLOSED_BY_FALSIFICATION"
+          echo "SEMANTIC_SELF_EMBEDDING=OPEN_MATH"
+          echo "GLOBAL_P_VS_NP=NOT_CLAIMED"
