@@ -58,6 +58,14 @@ jobs:
         with: {build: false, test: false, lint: false}
       - run: lake build MCore.Real.P01SourceCopyMachine MCore.Real.P01SourceCopyHandoff
 
+  prefix-frame-value:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with: {build: false, test: false, lint: false}
+      - run: lake build MCore.Real.P01PrefixFrameValueSemantics
+
   prefix-frame-semantics:
     runs-on: ubuntu-latest
     steps:
