@@ -1,4 +1,4 @@
-import MCore.Real.CanonicalFinalProof
+import MCore.Real.CanonicalCircuitBits
 
 namespace MCore
 namespace Real
@@ -16,7 +16,7 @@ structure PNP_Habitant where
   mem_NP : InNP L
   lower_bound :
     forall M : PolyDTMCandidate,
-      exists x : BitString, not (M.CorrectAt L x)
+      exists x : BitString, ¬ M.CorrectAt L x
 
 /-- The inhabitant is exactly a separation certificate, with the target
 language made explicit as data. -/
