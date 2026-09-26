@@ -1,0 +1,50 @@
+name: ATK Open Math Start Checkpoint v1
+
+on:
+  push:
+    branches:
+      - "cert/open-math-start-checkpoint-v1"
+  workflow_dispatch:
+
+jobs:
+  checkpoint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Resolve dependencies
+        run: lake update
+      - name: Build checkpoint endpoint
+        run: lake build MCore.Research.OpenMathStartEndpoint
+      - name: Validate certificate
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open("certificates/OPEN_MATH_START_CHECKPOINT_V1.json"))
+          assert d["theorem_claimed"] is False
+          assert d["final_external_issued"] is False
+          assert d["producer_progress"] == {"closed":0,"total":2}
+          assert len(d["frontier"]) == 2
+          assert d["frontier"][0]["state"] == "CONCRETE_WITNESS_PENDING"
+          assert d["frontier"][1]["state"] == "OPEN_MATH_DEFINITION"
+          assert d["promotion_policy"]["metadata_is_not_proof"] is True
+          assert d["promotion_policy"]["falsified_routes_reopen"] is False
+          PY
+      - name: Axiom audit
+        run: |
+          cat > /tmp/audit.lean <<'EOF'
+          import MCore.Research.OpenMathStartEndpoint
+          #print axioms MCore.Research.OpenMathStartEndpoint.checkpoint_not_complete
+          #print axioms MCore.Research.OpenMathStartEndpoint.checkpoint_not_ready
+          #print axioms MCore.Research.OpenMathStartEndpoint.linker_fixture_inhabited
+          EOF
+          lake env lean /tmp/audit.lean | tee /tmp/axioms.txt
+          if grep -q "sorryAx" /tmp/axioms.txt; then exit 1; fi
+      - name: Placeholder firewall
+        run: |
+          ! grep -R -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)'             lean/MCore/Research/OpenMathStartEndpoint.lean
+          ! grep -R -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]'             lean/MCore/Research/OpenMathStartEndpoint.lean
