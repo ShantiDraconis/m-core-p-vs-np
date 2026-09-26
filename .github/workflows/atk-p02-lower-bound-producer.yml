@@ -19,4 +19,4 @@ jobs:
           build: false
           test: false
           lint: false
-      - run: lake build MCore.Real.P02SemanticSelfEmbedding MCore.Real.P02KleeneBridgeFrontier MCore.Real.P02LowerBoundProducer MCore.Real.P02OpenMathClosure MCore.Real.P02SupportBundle
+      - run: lake build MCore.Real.P02SemanticSelfEmbedding MCore.Real.P02KleeneBridgeFrontier MCore.Real.P02LowerBoundProducer MCore.Real.P02OpenMathClosure MCore.Real.P02SupportBundle MCore.Real.P02TheoremEnablement
