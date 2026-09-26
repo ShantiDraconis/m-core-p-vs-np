@@ -1,0 +1,59 @@
+name: ATK P01 physical shard gates
+
+on:
+  push:
+    branches:
+      - atk/p01-real-neg-macro
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dispatcher:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with: {build: false, test: false, lint: false}
+      - run: lake build MCore.Real.P01PhysicalDispatcher MCore.Real.P01PhysicalDispatcherBridge
+
+  embedded-one:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with: {build: false, test: false, lint: false}
+      - run: lake build MCore.Real.P01PhysicalEmbeddedRun
+
+  embedded-multi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with: {build: false, test: false, lint: false}
+      - run: lake build MCore.Real.P01PhysicalEmbeddedRunMulti
+
+  opcode-routing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with: {build: false, test: false, lint: false}
+      - run: lake build MCore.Real.P01PhysicalOpcodeDecoder MCore.Real.P01PhysicalOperationControl MCore.Real.P01PhysicalRoutingAdapter
+
+  budget-costs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with: {build: false, test: false, lint: false}
+      - run: lake build MCore.Real.P01PhysicalVerifierFoundations MCore.Real.P01PhysicalVerifierBudget MCore.Real.P01PhysicalVerifierUniformCosts
+
+  refinement-assembly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with: {build: false, test: false, lint: false}
+      - run: lake build MCore.Real.PhysicalMachineCore MCore.Real.P01PhysicalRealizationAssembly
