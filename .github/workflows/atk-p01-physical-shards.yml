@@ -57,3 +57,5 @@ jobs:
       - uses: leanprover/lean-action@v1
         with: {build: false, test: false, lint: false}
       - run: lake build MCore.Real.PhysicalMachineCore MCore.Real.P01PhysicalRealizationAssembly
+
+# trigger-version: 2
