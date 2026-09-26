@@ -109,59 +109,6 @@ theorem execMoves_moveLeftSeq_head_getD {Symbol : Type}
         simp [moveLeftSeq, List.replicate_succ, execMoves]
       rw [hstep, ih, move_left_left_getD]
 
-
-
-/-- One right move exactly undoes one left move whenever the original tape
-has a real cell on its left. -/
-theorem move_right_left_restore {Symbol : Type}
-    (blank : Symbol) (x : Symbol) (xs : List Symbol)
-    (head : Symbol) (right : List Symbol) :
-    Tape.move blank .right
-      (Tape.move blank .left (Tape.mk (x :: xs) head right)) =
-      Tape.mk (x :: xs) head right := by
-  simp [Tape.move]
-
-/-- A bounded block of right moves restores a preceding equally long block
-of left moves.  The bound prevents crossing the represented left edge. -/
-theorem execMoves_left_right_restore {Symbol : Type}
-    (blank : Symbol) (n : Nat) (t : Tape Symbol)
-    (hbound : n ≤ t.left.length) :
-    execMoves blank (moveRightSeq n)
-      (execMoves blank (moveLeftSeq n) t) = t := by
-  induction n generalizing t with
-  | zero =>
-      simp [moveLeftSeq, moveRightSeq, execMoves]
-  | succ n ih =>
-      cases t with
-      | mk left head right =>
-          cases left with
-          | nil =>
-              simp at hbound
-          | cons x xs =>
-              have htail : n ≤ xs.length := by
-                simpa using hbound
-              have hih :
-                  execMoves blank (moveRightSeq n)
-                    (execMoves blank (moveLeftSeq n)
-                      (Tape.mk xs x (head :: right))) =
-                    Tape.mk xs x (head :: right) :=
-                ih (Tape.mk xs x (head :: right)) htail
-              simp only [moveLeftSeq, moveRightSeq, List.replicate_succ,
-                execMoves]
-              have hstep :
-                  Tape.move blank .right
-                    (execMoves blank (List.replicate n Direction.left)
-                      (Tape.mk xs x (head :: right))) =
-                    Tape.mk (x :: xs) head right := by
-                rw [show
-                  execMoves blank (List.replicate n Direction.left)
-                    (Tape.mk xs x (head :: right)) =
-                  execMoves blank (moveLeftSeq n)
-                    (Tape.mk xs x (head :: right)) by rfl]
-                have := congrArg (Tape.move blank .right) hih
-                simpa [moveRightSeq] using this
-              exact hstep
-
 /-- Every shuttle used by the verifier is built solely from legal TM moves. -/
 def LegalMoveSeq (ds : List Direction) : Prop :=
   ∀ d ∈ ds, d = .left ∨ d = .right ∨ d = .stay
@@ -187,8 +134,6 @@ structure ShuttleCertificate
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveLeftSeq
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveRightSeq
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveLeftSeq_head_getD
-#print axioms MCore.Real.P01FullVerifierPhysicalMoves.move_right_left_restore
-#print axioms MCore.Real.P01FullVerifierPhysicalMoves.execMoves_left_right_restore
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.moveLeftSeq_legal
 #print axioms MCore.Real.P01FullVerifierPhysicalMoves.moveRightSeq_legal
 
