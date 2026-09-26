@@ -64,3 +64,8 @@ import MCore.Real.P01IntegratedMachine
 import MCore.Real.P01IntegratedPhaseSemantics
 import MCore.Real.P01PhysicalRealizationAssembly
 import MCore.Real.PhysicalMachineCore
+import MCore.Real.P01T1DPhysicalAssembly
+import MCore.Real.P01T1DGlobalPhysical
+import MCore.Real.P01FullVerifierShuttleReturn
+import MCore.Real.P01GlobalParserRuntime
+import MCore.Real.P01TerminalDelta
