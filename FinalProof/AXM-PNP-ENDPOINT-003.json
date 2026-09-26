@@ -1,0 +1,20 @@
+{
+  "schema": "axiomatic.problem-endpoint-cert.v1",
+  "certificate_id": "AXM-PNP-ENDPOINT-003",
+  "project": "P_vs_NP",
+  "state": "PREPARATORY_BUILD_PENDING",
+  "final_root": null,
+  "parent_meta_certificate": "AXM-CROSS-SIGNATURE-002",
+  "local_anchor_commit": "656704b479b7d9356857c434354edda85e11e849",
+  "claim": "semantic G21 + P01 terminal endpoint",
+  "required_artifacts": [
+    "P01MachineConstruction",
+    "p01_closed_no_hypothesis",
+    "semantic_self_embedding_witness",
+    "pointwise_universal_obstruction",
+    "size_time_closure",
+    "dependency_closure audit GREEN"
+  ],
+  "closed_negative_subroute": "literal fixed-point G2.1 remains CLOSED_BY_FALSIFICATION",
+  "issuance_rule": "CLOSED only after the semantic route and P01 terminal obligations are kernel-checked end-to-end."
+}
