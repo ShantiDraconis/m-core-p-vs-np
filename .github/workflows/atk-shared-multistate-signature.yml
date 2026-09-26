@@ -28,6 +28,7 @@ jobs:
       - name: Kernel compile
         run: |
           set -euo pipefail
+          lake build MCore.MultiStateSignature
           lake env lean lean/MCore/MultiStateSignature.lean 2>&1 | tee multistate-signature.log
           lake env lean audit/CrossProblemStructuralEvidence20260926.lean 2>&1 | tee cross-problem-structural-evidence.log
           if grep -q 'sorryAx' multistate-signature.log cross-problem-structural-evidence.log; then exit 1; fi
