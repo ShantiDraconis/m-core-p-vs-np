@@ -1,0 +1,22 @@
+name: ATK P02 lower-bound producer
+
+on:
+  push:
+    branches:
+      - atk/p01-real-neg-macro
+  pull_request:
+    paths:
+      - 'lean/MCore/Real/P02LowerBoundProducer.lean'
+      - '.github/workflows/atk-p02-lower-bound-producer.yml'
+
+jobs:
+  lower-bound-producer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - run: lake build MCore.Real.P02LowerBoundProducer
