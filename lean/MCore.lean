@@ -70,3 +70,4 @@ import MCore.Real.P01FullVerifierShuttleReturn
 import MCore.Real.P01GlobalParserRuntime
 import MCore.Real.P01TerminalDelta
 import MCore.Real.P01IntegratedExecutionMachine
+import MCore.Real.P01ParserWitnessHandoffAudit
