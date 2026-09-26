@@ -22,4 +22,15 @@ theorem pnp003_closes_from_requirements
     (h : r.closed) :
     r.closed := h
 
+theorem pnp003_assemble
+    (r : PNP003Requirements)
+    (h1 : r.P01MachineConstruction)
+    (h2 : r.p01_closed_no_hypothesis)
+    (h3 : r.semantic_self_embedding_witness)
+    (h4 : r.pointwise_universal_obstruction)
+    (h5 : r.size_time_closure) :
+    r.closed :=
+  ⟨h1, h2, h3, h4, h5⟩
+
+
 end FinalProof
