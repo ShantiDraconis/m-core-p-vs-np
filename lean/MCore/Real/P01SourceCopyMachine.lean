@@ -106,8 +106,11 @@ theorem sourceCopy_empty :
       (initialTMConfig sourceCopyMachine []) =
       { state := copyHalt,
         tape := { left := [none], head := none, right := [] } } := by
-  simp [sourceCopyMachine, nextCell, enterCopy, copyHalt,
-    TM.run, TM.step, initialTMConfig, inputTape, Tape.write, Tape.move]
+  simp [sourceCopyMachine, nextCell, seekDelimiterFalse, seekDelimiterTrue,
+    seekCopyEndFalse, seekCopyEndTrue, returnToDelimiterFalse,
+    returnToDelimiterTrue, returnToHoleFalse, returnToHoleTrue,
+    enterCopy, copyHalt, TM.run, TM.step, initialTMConfig, inputTape,
+    Tape.write, Tape.move]
 
 /-- The first step stores the current source bit in finite control and leaves
 a unique temporary blank hole at its original position. -/
@@ -118,8 +121,9 @@ theorem sourceCopy_first_false
       { state := seekDelimiterFalse,
         tape := Tape.move none .right
           ((inputTape (false :: bs)).write none) } := by
-  simp [sourceCopyMachine, nextCell, seekDelimiterFalse,
-    initialTMConfig, TM.step]
+  cases bs <;>
+    simp [sourceCopyMachine, nextCell, seekDelimiterFalse, seekDelimiterTrue,
+      enterCopy, initialTMConfig, inputTape, TM.step, Tape.write, Tape.move]
 
 theorem sourceCopy_first_true
     (bs : BitString) :
@@ -128,8 +132,9 @@ theorem sourceCopy_first_true
       { state := seekDelimiterTrue,
         tape := Tape.move none .right
           ((inputTape (true :: bs)).write none) } := by
-  simp [sourceCopyMachine, nextCell, seekDelimiterTrue,
-    initialTMConfig, TM.step]
+  cases bs <;>
+    simp [sourceCopyMachine, nextCell, seekDelimiterFalse, seekDelimiterTrue,
+      enterCopy, initialTMConfig, inputTape, TM.step, Tape.write, Tape.move]
 
 #print axioms MCore.Real.P01SourceCopyMachine.sourceCopyTimeBound_poly
 #print axioms MCore.Real.P01SourceCopyMachine.sourceCopy_empty
