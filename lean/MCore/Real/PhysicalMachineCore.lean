@@ -15,6 +15,7 @@ open CanonicalSATWitness
 open CanonicalSATVerifier
 open P01FullVerifierStackSemantics
 open P01FullVerifierPhysicalControl
+open P01FullVerifierPhysicalMoves
 open P01FullVerifierPhysicalStackV2
 open P01FullVerifierPhysicalRefinementV2
 open P01FullVerifierInputShuttleV2
