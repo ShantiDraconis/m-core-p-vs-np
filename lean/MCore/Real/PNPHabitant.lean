@@ -61,6 +61,40 @@ theorem pnp_habitant_gap_iff_separation_certificate :
   · rintro ⟨C⟩
     exact ⟨PNP_Habitant.ofSeparationCertificate C⟩
 
+/-- Canonical material inhabitant: freeze the witness language to the existing
+SAT bit-language.  This is the single normative target used by ATK. -/
+structure CanonicalSATPNPHabitant where
+  mem_NP : InNP (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding)
+  lower_bound :
+    UniversalFailure
+      (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding)
+
+def CanonicalSATPNPHabitant.toPNP_Habitant
+    (H : CanonicalSATPNPHabitant) :
+    PNP_Habitant where
+  L := CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding
+  mem_NP := H.mem_NP
+  lower_bound := H.lower_bound
+
+def CanonicalSATPNPHabitantGap : Prop :=
+  Nonempty CanonicalSATPNPHabitant
+
+theorem canonical_sat_habitant_gap_iff :
+    CanonicalSATPNPHabitantGap ↔
+      InNP (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding) ∧
+      UniversalFailure
+        (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding) := by
+  constructor
+  · rintro ⟨H⟩
+    exact ⟨H.mem_NP, H.lower_bound⟩
+  · rintro ⟨hNP, hFail⟩
+    exact ⟨{ mem_NP := hNP, lower_bound := hFail }⟩
+
+theorem canonical_sat_habitant_closes
+    (H : CanonicalSATPNPHabitant) :
+    PneqNP :=
+  p_ne_np_of_habitant H.toPNP_Habitant
+
 /-- The lower-bound field is the repository's canonical universal polynomial
 decision failure. -/
 theorem lower_bound_is_universal_failure
@@ -71,6 +105,8 @@ theorem lower_bound_is_universal_failure
 #print axioms MCore.Real.PNPHabitant.p_ne_np_of_habitant
 #print axioms MCore.Real.PNPHabitant.pnp_habitant_gap_closes
 #print axioms MCore.Real.PNPHabitant.pnp_habitant_gap_iff_separation_certificate
+#print axioms MCore.Real.PNPHabitant.canonical_sat_habitant_gap_iff
+#print axioms MCore.Real.PNPHabitant.canonical_sat_habitant_closes
 #print axioms MCore.Real.PNPHabitant.lower_bound_is_universal_failure
 
 end PNPHabitant
