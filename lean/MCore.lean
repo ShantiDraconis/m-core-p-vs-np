@@ -81,3 +81,4 @@ import MCore.Real.P01PhysicalOperationControl
 import MCore.Real.P01PhysicalRoutingAdapter
 import MCore.Real.P01PhysicalEmbeddedRun
 import MCore.Real.P01PhysicalEmbeddedRunMulti
+import MCore.Real.P01PhysicalOpcodeDecoder
