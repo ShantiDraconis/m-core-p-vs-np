@@ -69,3 +69,4 @@ import MCore.Real.P01T1DGlobalPhysical
 import MCore.Real.P01FullVerifierShuttleReturn
 import MCore.Real.P01GlobalParserRuntime
 import MCore.Real.P01TerminalDelta
+import MCore.Real.P01IntegratedExecutionMachine
