@@ -1,3 +1,4 @@
+import MCore.Real.CanonicalSATBoundary
 import MCore.Real.CanonicalCircuitBits
 
 namespace MCore
