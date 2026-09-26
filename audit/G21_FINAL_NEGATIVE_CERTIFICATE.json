@@ -7,7 +7,7 @@
   "singleton_percent": 12.5,
   "theorem": "MCore.Real.P02G21FinalNegative.G21_literal_fixed_point_falsified",
   "concrete_source_theorem": "MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point",
-  "state": "SOURCE_READY",
+  "state": "GREEN_FROZEN_CERTIFIED",
   "formulation_state": "CLOSED_BY_FALSIFICATION",
   "h_pending": [],
   "source_provenance": {
@@ -35,11 +35,17 @@
     ]
   },
   "current_gate": {
-    "run_id": null,
-    "head_sha": null,
-    "kernel_checked": false,
-    "proof_escape_scan": false
+    "run_id": 36204860440,
+    "head_sha": "4a95dd2f25d871f2a1487259274adf9729374c4a",
+    "kernel_checked": true,
+    "proof_escape_scan": true,
+    "axiom_audit": "GREEN",
+    "conclusion": "success"
   },
   "final_proof_negative": true,
-  "global_final_proof": false
+  "global_final_proof": false,
+  "freeze": {
+    "source_sha": "4a95dd2f25d871f2a1487259274adf9729374c4a",
+    "frozen_branch": "frozen/p02-g2-1-final-negative-4a95dd2f"
+  }
 }
