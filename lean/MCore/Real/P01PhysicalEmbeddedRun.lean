@@ -76,8 +76,19 @@ theorem dispatcher_run_stack_one_of_not_halt
   have hglob :
       physicalDispatcherMachine.halting (stackState c.state) = false := by
     simp [physicalDispatcherMachine, hacc, hrej]
-  rw [TM.run, TM.run]
-  simp [embedStackConfig, hglob, h, dispatcher_step_stack]
+  have hlocal :
+      stackPrimitiveMachine.run 1 c = stackPrimitiveMachine.step c := by
+    rw [TM.run]
+    simp [h]
+  calc
+    physicalDispatcherMachine.run 1 (embedStackConfig c)
+        = physicalDispatcherMachine.step (embedStackConfig c) := by
+            rw [TM.run]
+            simp [embedStackConfig, hglob]
+    _ = embedStackConfig (stackPrimitiveMachine.step c) :=
+      dispatcher_step_stack c
+    _ = embedStackConfig (stackPrimitiveMachine.run 1 c) := by
+      rw [hlocal]
 
 theorem dispatcher_run_witness_one_of_not_halt
     (c : Configuration (Fin 6) (Option Bool))
@@ -97,8 +108,19 @@ theorem dispatcher_run_witness_one_of_not_halt
   have hglob :
       physicalDispatcherMachine.halting (witnessReadState c.state) = false := by
     simp [physicalDispatcherMachine, hacc, hrej]
-  rw [TM.run, TM.run]
-  simp [embedWitnessConfig, hglob, h, dispatcher_step_witness]
+  have hlocal :
+      witnessIndexedReadMachine.run 1 c = witnessIndexedReadMachine.step c := by
+    rw [TM.run]
+    simp [h]
+  calc
+    physicalDispatcherMachine.run 1 (embedWitnessConfig c)
+        = physicalDispatcherMachine.step (embedWitnessConfig c) := by
+            rw [TM.run]
+            simp [embedWitnessConfig, hglob]
+    _ = embedWitnessConfig (witnessIndexedReadMachine.step c) :=
+      dispatcher_step_witness c
+    _ = embedWitnessConfig (witnessIndexedReadMachine.run 1 c) := by
+      rw [hlocal]
 
 theorem dispatcher_run_rewind_one_of_not_halt
     (c : Configuration (Fin 3) (Option Bool))
@@ -118,8 +140,19 @@ theorem dispatcher_run_rewind_one_of_not_halt
   have hglob :
       physicalDispatcherMachine.halting (rewindState c.state) = false := by
     simp [physicalDispatcherMachine, hacc, hrej]
-  rw [TM.run, TM.run]
-  simp [embedRewindConfig, hglob, h, dispatcher_step_rewind]
+  have hlocal :
+      sourceRewindMachine.run 1 c = sourceRewindMachine.step c := by
+    rw [TM.run]
+    simp [h]
+  calc
+    physicalDispatcherMachine.run 1 (embedRewindConfig c)
+        = physicalDispatcherMachine.step (embedRewindConfig c) := by
+            rw [TM.run]
+            simp [embedRewindConfig, hglob]
+    _ = embedRewindConfig (sourceRewindMachine.step c) :=
+      dispatcher_step_rewind c
+    _ = embedRewindConfig (sourceRewindMachine.run 1 c) := by
+      rw [hlocal]
 
 #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_stack
 #print axioms MCore.Real.P01PhysicalEmbeddedRun.dispatcher_step_witness
