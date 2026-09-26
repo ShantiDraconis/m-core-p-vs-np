@@ -84,6 +84,88 @@ theorem neg_run_real_true
   rw [hp]
   exact push_run_one_rep witness source stack padding' false
 
+
+
+/-- Real binary-gate macro: pop r, pop l, then push the Boolean result.
+    This is still a macro theorem over the certified stack primitive; global
+    single-TM composition is handled later. -/
+theorem binary_run_real
+    (witness source : BitString)
+    (l r : Bool) (stack : List Bool) (padding : Nat)
+    (op : Bool → Bool → Bool) :
+    let popR := stackPrimitiveMachine.run 2
+      (popConfig (physicalStackV2Tape witness source (r :: l :: stack) padding))
+    let popL := stackPrimitiveMachine.run 2
+      (popConfig popR.tape)
+    PhysicalStackRepV2
+      (stackPrimitiveMachine.run 1
+        (pushConfig (op l r) popL.tape)).tape
+      witness source (op l r :: stack) := by
+  dsimp
+  cases r <;> cases l
+  · have hr := pop_run_two_false witness source (false :: stack) padding
+    dsimp at hr
+    rcases hr.2 with ⟨p1, hp1⟩
+    rw [hp1]
+    have hl := pop_run_two_false witness source stack p1
+    dsimp at hl
+    rcases hl.2 with ⟨p2, hp2⟩
+    rw [hp2]
+    exact push_run_one_rep witness source stack p2 (op false false)
+  · have hr := pop_run_two_false witness source (true :: stack) padding
+    dsimp at hr
+    rcases hr.2 with ⟨p1, hp1⟩
+    rw [hp1]
+    have hl := pop_run_two_true witness source stack p1
+    dsimp at hl
+    rcases hl.2 with ⟨p2, hp2⟩
+    rw [hp2]
+    exact push_run_one_rep witness source stack p2 (op true false)
+  · have hr := pop_run_two_true witness source (false :: stack) padding
+    dsimp at hr
+    rcases hr.2 with ⟨p1, hp1⟩
+    rw [hp1]
+    have hl := pop_run_two_false witness source stack p1
+    dsimp at hl
+    rcases hl.2 with ⟨p2, hp2⟩
+    rw [hp2]
+    exact push_run_one_rep witness source stack p2 (op false true)
+  · have hr := pop_run_two_true witness source (true :: stack) padding
+    dsimp at hr
+    rcases hr.2 with ⟨p1, hp1⟩
+    rw [hp1]
+    have hl := pop_run_two_true witness source stack p1
+    dsimp at hl
+    rcases hl.2 with ⟨p2, hp2⟩
+    rw [hp2]
+    exact push_run_one_rep witness source stack p2 (op true true)
+
+/-- Real AND macro over the certified stack primitive. -/
+theorem and_run_real
+    (witness source : BitString)
+    (l r : Bool) (stack : List Bool) (padding : Nat) :
+    let popR := stackPrimitiveMachine.run 2
+      (popConfig (physicalStackV2Tape witness source (r :: l :: stack) padding))
+    let popL := stackPrimitiveMachine.run 2 (popConfig popR.tape)
+    PhysicalStackRepV2
+      (stackPrimitiveMachine.run 1
+        (pushConfig (Bool.and l r) popL.tape)).tape
+      witness source (Bool.and l r :: stack) := by
+  exact binary_run_real witness source l r stack padding Bool.and
+
+/-- Real OR macro over the certified stack primitive. -/
+theorem or_run_real
+    (witness source : BitString)
+    (l r : Bool) (stack : List Bool) (padding : Nat) :
+    let popR := stackPrimitiveMachine.run 2
+      (popConfig (physicalStackV2Tape witness source (r :: l :: stack) padding))
+    let popL := stackPrimitiveMachine.run 2 (popConfig popR.tape)
+    PhysicalStackRepV2
+      (stackPrimitiveMachine.run 1
+        (pushConfig (Bool.or l r) popL.tape)).tape
+      witness source (Bool.or l r :: stack) := by
+  exact binary_run_real witness source l r stack padding Bool.or
+
 /-- Semantic target for physical AND after consuming r then l. -/
 theorem and_semantic_target
     (sigma : Assignment) (l r : Bool) (stack : List Bool) :
@@ -115,6 +197,9 @@ theorem first_operand_pop
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.neg_pop_exposes_true
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.neg_run_real_false
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.neg_run_real_true
+#print axioms MCore.Real.P01FullVerifierPhysicalOps.binary_run_real
+#print axioms MCore.Real.P01FullVerifierPhysicalOps.and_run_real
+#print axioms MCore.Real.P01FullVerifierPhysicalOps.or_run_real
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.and_semantic_target
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.or_semantic_target
 #print axioms MCore.Real.P01FullVerifierPhysicalOps.first_operand_pop
