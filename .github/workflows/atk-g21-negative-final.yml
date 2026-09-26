@@ -1,0 +1,44 @@
+name: ATK G2.1 Negative Final Certificate
+
+on:
+  push:
+    branches:
+      - formalize/g21-negative-final-certificate-20260926
+    paths:
+      - 'lean/MCore/Real/G21NegativeFinalCertificate.lean'
+      - 'lean/MCore/Real/P02LiteralFixedPointCountermodel.lean'
+      - 'lean/MCore/Real/P02LiteralFixedPointFirewall.lean'
+      - '.github/workflows/atk-g21-negative-final.yml'
+  workflow_dispatch:
+
+jobs:
+  g21-negative-final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Build certified source countermodel
+        run: lake build MCore.Real.P02LiteralFixedPointCountermodel
+      - name: Build canonical G2.1 negative certificate
+        run: lake build MCore.Real.G21NegativeFinalCertificate
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/G21NegativeFinalAudit.lean <<'EOF'
+          import MCore.Real.G21NegativeFinalCertificate
+          #print axioms MCore.Real.G21NegativeFinalCertificate.G21_literal_fixed_point_falsified
+          #print axioms MCore.Real.G21NegativeFinalCertificate.G21_literal_fixed_point_claim_contradiction
+          EOF
+          lake env lean /tmp/G21NegativeFinalAudit.lean | tee /tmp/g21-axioms.txt
+          if grep -Eiq 'sorryAx|admit' /tmp/g21-axioms.txt; then
+            echo "RED: unsafe proof dependency"
+            exit 1
+          fi
+      - name: Source hygiene
+        run: |
+          set -euo pipefail
+          if grep -En '\b(sorry|admit)\b' lean/MCore/Real/G21NegativeFinalCertificate.lean; then
+            echo "RED: placeholder found"
+            exit 1
+          fi
+          echo "GREEN: source hygiene"
