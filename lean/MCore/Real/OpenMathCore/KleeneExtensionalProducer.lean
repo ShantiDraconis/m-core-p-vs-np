@@ -26,7 +26,7 @@ structure ExtensionalSameInputCompiler
       selfInput (compile c) = encodeCircuit (circuitOf c)
   cook_levin_correct :
     ∀ c : Nat.Partrec.Code,
-      SATBits circuitBitEncoding (encodeCircuit (circuitOf c)) ↔
+      SATBits CanonicalCircuitBits.circuitBitEncoding (encodeCircuit (circuitOf c)) ↔
         ¬ AcceptsAtDeclaredBound M (selfInput c)
 
 theorem extensional_fixed_point
@@ -55,7 +55,7 @@ theorem witnessOfExtensionalCompiler_valid
 theorem witnessOfExtensionalCompiler_flip
     (M : PolyDTMCandidate)
     (E : ExtensionalSameInputCompiler M) :
-    SATBits circuitBitEncoding (witnessOfExtensionalCompiler M E) ↔
+    SATBits CanonicalCircuitBits.circuitBitEncoding (witnessOfExtensionalCompiler M E) ↔
       ¬ AcceptsAtDeclaredBound M (witnessOfExtensionalCompiler M E) := by
   unfold witnessOfExtensionalCompiler
   let c := Classical.choose (extensional_fixed_point E)
@@ -84,7 +84,7 @@ noncomputable def UniformExtensionalSameInputCompiler.toSameInputClosure
 theorem uniform_extensional_compiler_gives_mismatch
     (U : UniformExtensionalSameInputCompiler)
     (M : PolyDTMCandidate) :
-    SemanticMismatch M (U.toSameInputClosure.witness M) :=
+    P02UniversalFailureAlgebra.SemanticMismatch M (U.toSameInputClosure.witness M) :=
   sameInputClosure_gives_mismatch U.toSameInputClosure M
 
 #print axioms MCore.Real.OpenMathCore.extensional_fixed_point
