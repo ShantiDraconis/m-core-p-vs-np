@@ -1,0 +1,17 @@
+{
+  "schema": "ATK_LEGACY_QUARANTINE_V1",
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "note": "Legacy files remain at existing paths to preserve imports. Their class is authoritative here until compatibility-preserving migration.",
+  "entries": [
+    {
+      "path": "lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean",
+      "class": "HYPOTHETICAL",
+      "proof_promotion_allowed": false
+    },
+    {
+      "path": "audit/ATK_K10_ABSTRACT_OBLIGATION_COUNTERAUDIT.lean",
+      "class": "COUNTERMODEL_AUDIT",
+      "proof_promotion_allowed": false
+    }
+  ]
+}
