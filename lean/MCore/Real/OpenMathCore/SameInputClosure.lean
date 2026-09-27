@@ -18,7 +18,7 @@ structure SameInputClosure where
     ∀ M, CanonicalSATValid (witness M)
   simulation_exact :
     ∀ M,
-      SATBits circuitBitEncoding (witness M) ↔
+      SATBits CanonicalCircuitBits.circuitBitEncoding (witness M) ↔
         ¬ AcceptsAtDeclaredBound M (witness M)
 
 def SameInputClosure.toDiagonalCompilerV2
@@ -30,7 +30,7 @@ def SameInputClosure.toDiagonalCompilerV2
 theorem sameInputClosure_gives_mismatch
     (S : SameInputClosure)
     (M : PolyDTMCandidate) :
-    SemanticMismatch M (S.witness M) := by
+    P02UniversalFailureAlgebra.SemanticMismatch M (S.witness M) := by
   exact diagonalCompilerV2_gives_semanticMismatch S.toDiagonalCompilerV2 M
 
 end MCore.Real.OpenMathCore
