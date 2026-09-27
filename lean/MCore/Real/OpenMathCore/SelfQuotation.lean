@@ -1,5 +1,6 @@
 import Mathlib
 import MCore.Real.P02CandidateCodingFrontier
+import MCore.Real.P02DiagonalFrontier
 import MCore.Real.CanonicalCircuitBitsInverse
 
 namespace MCore.Real.OpenMathCore
@@ -8,6 +9,7 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open CanonicalCircuitBitsInverse
 open P02CandidateCodingFrontier
+open P02DiagonalFrontier
 
 structure SelfDescription where
   coding : CandidateCodingInterface
