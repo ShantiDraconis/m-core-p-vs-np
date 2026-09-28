@@ -1,4 +1,3 @@
-import Mathlib
 import MCore.Real.P01WitnessIndexedReadProof
 import MCore.Real.MachineRunLemmas
 
@@ -194,7 +193,8 @@ theorem markerFuel_succ (pad n : Nat) :
     markerFuel pad (n + 1) =
       (2 * pad + 3) + markerFuel (pad + 2) n := by
   unfold markerFuel
-  ring
+  simp [pow_two, Nat.mul_add, Nat.add_mul]
+  omega
 
 theorem readFuel_zero :
     readFuel 0 = 3 := by
@@ -203,7 +203,8 @@ theorem readFuel_zero :
 theorem readFuel_succ (n : Nat) :
     readFuel (n + 1) = 5 + markerFuel 3 n := by
   unfold readFuel markerFuel
-  ring
+  simp [pow_two, Nat.mul_add, Nat.add_mul]
+  omega
 
 theorem marker_zero_run_state
     (pad : Nat) (b : Bool) (tail : BitString) :
@@ -317,8 +318,8 @@ theorem readFuel_le_timeBound
       witnessIndexedReadTimeBound
         (witness.length + (encodeNat n).length) := by
   simp [readFuel, witnessIndexedReadTimeBound,
-    CanonicalSATWitness.encodeNat_length]
-  nlinarith
+    CanonicalSATWitness.encodeNat_length, pow_two, Nat.mul_add, Nat.add_mul]
+  omega
 
 theorem witnessBits_getD
     {phi : CircuitK1.Circuit}
