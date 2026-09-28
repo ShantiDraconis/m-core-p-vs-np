@@ -74,6 +74,8 @@ theorem midpointMap_contraction :
       unfold midpointMap midpoint
       ring]
     rw [abs_div]
+    have htwo : |(2 : ℝ)| = 2 := by norm_num
+    rw [htwo]
     have hEq : |a - b| / (2 : ℝ) = (1 / 2 : ℝ) * |a - b| := by ring
     rw [hEq]
   · intro x hx
