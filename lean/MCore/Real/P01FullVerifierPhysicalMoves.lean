@@ -31,13 +31,27 @@ theorem moveRightSeq_length (n : Nat) :
 
 theorem moveLeftSeq_all_legal (n : Nat) :
     ∀ d ∈ moveLeftSeq n, d = .left := by
-  intro d hd
-  simpa [moveLeftSeq] using hd
+  induction n with
+  | zero =>
+      simp [moveLeftSeq]
+  | succ n ih =>
+      intro d hd
+      simp only [moveLeftSeq, List.replicate_succ, List.mem_cons] at hd
+      rcases hd with h | h
+      · exact h
+      · exact ih d h
 
 theorem moveRightSeq_all_legal (n : Nat) :
     ∀ d ∈ moveRightSeq n, d = .right := by
-  intro d hd
-  simpa [moveRightSeq] using hd
+  induction n with
+  | zero =>
+      simp [moveRightSeq]
+  | succ n ih =>
+      intro d hd
+      simp only [moveRightSeq, List.replicate_succ, List.mem_cons] at hd
+      rcases hd with h | h
+      · exact h
+      · exact ih d h
 
 def repeatMove {Symbol : Type}
     (blank : Symbol) (d : Direction) (n : Nat) (t : Tape Symbol) : Tape Symbol :=
