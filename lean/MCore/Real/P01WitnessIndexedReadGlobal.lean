@@ -139,10 +139,12 @@ theorem rightScan_run
       markerConfig (leftPad + rightPad + 1) tail n := by
   induction rightPad generalizing leftPad with
   | zero =>
+      have hsucc : leftPad + 1 = Nat.succ leftPad := by omega
+      rw [hsucc]
       cases n <;>
         simp [rightScanConfig, markerConfig, encodeNat,
           witnessIndexedReadMachine, TM.run, TM.step, Tape.write, Tape.move,
-          Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+          List.replicate_succ, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
   | succ rightPad ih =>
       rw [show Nat.succ rightPad + 1 = (rightPad + 1) + 1 by omega]
       rw [TM.run]
@@ -316,10 +318,16 @@ theorem readFuel_le_timeBound
     readFuel n ≤
       witnessIndexedReadTimeBound
         (witness.length + (encodeNat n).length) := by
-  simp [readFuel, witnessIndexedReadTimeBound,
-    CanonicalSATWitness.encodeNat_length, Nat.pow_two,
-    Nat.mul_add, Nat.add_mul, Nat.mul_assoc,
-    Nat.mul_comm, Nat.mul_left_comm] <;> omega
+  rw [CanonicalSATWitness.encodeNat_length]
+  unfold readFuel witnessIndexedReadTimeBound
+  have hbase :
+      2 * n ^ 2 + 5 * n + 3 ≤ 16 * (n + 2) ^ 2 := by
+    nlinarith
+  have harg : n + 2 ≤ witness.length + (n + 1) + 1 := by
+    omega
+  have hsq : (n + 2) ^ 2 ≤ (witness.length + (n + 1) + 1) ^ 2 := by
+    exact Nat.pow_le_pow_left harg 2
+  exact hbase.trans (Nat.mul_le_mul_left 16 hsq)
 
 theorem witnessBits_getD
     {phi : CircuitK1.Circuit}
@@ -327,7 +335,8 @@ theorem witnessBits_getD
     (witnessBits w).getD i false = w ⟨i, hi⟩ := by
   have hlen : i < (witnessBits w).length := by
     simpa [witnessBits_length] using hi
-  simp [witnessBits, List.getD, hlen]
+  rw [List.getD_eq_getElem _ _ hlen]
+  simp [witnessBits, List.get_ofFn]
 
 def witnessIndexedReadCertificate : WitnessIndexedReadCertificate where
   stateCount := 5
