@@ -1,4 +1,5 @@
 import Mathlib.Tactic.DeriveCountable
+import Mathlib.Basic.Countable.Basic
 import MCore.Real.P02FiniteClockCandidateModel
 
 namespace MCore
