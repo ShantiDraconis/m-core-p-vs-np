@@ -1,0 +1,68 @@
+{
+  "schema": "ATK_P01_MATERIAL_FRONTIER_V1",
+  "canonical_target": "Nonempty P01MachineConstruction",
+  "provenance": {
+    "parser": {
+      "status": "MATERIAL_GREEN_FROZEN_REUSE",
+      "branch": "frozen/p01-global-parser-simulation-prefix-green-eaf1a3af",
+      "theorem": "MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate",
+      "content": "no-hypothesis global Fin-25 parser simulation; polynomial halting and exact slotAccept semantics"
+    },
+    "witness_preserving_prep": {
+      "status": "PARTIAL_CONCRETE",
+      "branch": "attack/t1d-global-physical-20260922",
+      "object": "MCore.Real.P01WitnessPreservingPrep.witnessPreservingPrep",
+      "proved": [
+        "fixed Fin 12 NTM",
+        "blank_none",
+        "polynomial cubic time-bound function",
+        "local transition/branching lemmas",
+        "never rejects"
+      ],
+      "open": [
+        "global HaltsWithin theorem for every source",
+        "global reached-layout theorem preserving source and producing witness"
+      ]
+    },
+    "verifier": {
+      "status": "PARTIAL_CONCRETE",
+      "branch": "attack/t1d-global-physical-20260922",
+      "proved": [
+        "source-end scan",
+        "physical move sequences",
+        "witness shuttles",
+        "physicalWitnessRead_correct",
+        "local neg/and/or semantics",
+        "functional reverse decoder"
+      ],
+      "open": [
+        "Nonempty PhysicalVerifierRealization",
+        "single fixed finite-control TM with polynomial halting and physical_eq_logical for every circuit/witness"
+      ]
+    },
+    "integration": {
+      "status": "OPEN_MATERIAL",
+      "type": "MCore.Real.P01FinalCertificate.P01MachineConstruction",
+      "open": [
+        "single integrated NTM",
+        "blank_none",
+        "polynomial bound",
+        "total halting",
+        "accepts_iff SATBits circuitBitEncoding"
+      ]
+    }
+  },
+  "permanent_fences": [
+    "DecoderEvaluatorLocalCertificate: under-specified; nonterminal transition fields do not prove decode/eval semantics",
+    "legacy ParserMachineCertificate/WitnessGuessMachineCertificate/VerifierMachineCertificate: trivially inhabitable component shells",
+    "abstract LowerBoundWitness.not_in_p",
+    "alternate language/model substitution"
+  ],
+  "next_exact_attack": [
+    "prove witnessPreservingPrep global halting and reached-layout",
+    "construct PhysicalVerifierRealization from already-proved moves/shuttles/read/eval primitives",
+    "compose parser + witness prep + verifier into P01MachineConstruction"
+  ],
+  "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
+  "material_status": "OPEN_MATH"
+}
