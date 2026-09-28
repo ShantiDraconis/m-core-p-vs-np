@@ -6,6 +6,7 @@ import MCore.Real.OpenMathCore.SATCircuitCompiler
 import MCore.Real.OpenMathCore.SameInputClosure
 import MCore.Real.OpenMathCore.TerminalArchitecture
 import MCore.Real.P02CandidateCodingFrontier
+import MCore.Real.P02CandidateCodingCardinalityFirewall
 import MCore.Real.P02DiagonalCompilerFrontierV2
 import MCore.Real.P02ClockedDiagonalCompiler
 
