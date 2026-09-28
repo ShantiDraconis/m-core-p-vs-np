@@ -28,7 +28,7 @@ def constantIntegral (c : ℝ) : IntegralBehavior where
   f := fun _ => c
   integrable := by
     intro a b
-    simpa using (intervalIntegrable_const : IntervalIntegrable (fun _ : ℝ => c) volume a b)
+    exact intervalIntegrable_const
 
 structure EnergyBehavior where
   potential : ℝ → ℝ
