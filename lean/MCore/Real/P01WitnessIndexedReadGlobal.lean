@@ -1,3 +1,4 @@
+import Mathlib.Data.List.GetD
 import MCore.Real.P01WitnessIndexedReadProof
 import MCore.Real.MachineRunLemmas
 
@@ -322,7 +323,8 @@ theorem readFuel_le_timeBound
   unfold readFuel witnessIndexedReadTimeBound
   have hbase :
       2 * n ^ 2 + 5 * n + 3 ≤ 16 * (n + 2) ^ 2 := by
-    nlinarith
+    simp [Nat.pow_two, Nat.mul_add, Nat.add_mul]
+    omega
   have harg : n + 2 ≤ witness.length + (n + 1) + 1 := by
     omega
   have hsq : (n + 2) ^ 2 ≤ (witness.length + (n + 1) + 1) ^ 2 := by
