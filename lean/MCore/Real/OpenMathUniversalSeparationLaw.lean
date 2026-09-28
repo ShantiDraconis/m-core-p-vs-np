@@ -58,6 +58,7 @@ noncomputable def midpointMap (x : ℝ) : ℝ := (x + midpoint) / 2
 
 theorem midpointMap_sub_midpoint (x : ℝ) :
     midpointMap x - midpoint = (x - midpoint) / 2 := by
+  unfold midpointMap midpoint
   ring
 
 theorem midpointMap_contraction :
@@ -73,7 +74,8 @@ theorem midpointMap_contraction :
       unfold midpointMap midpoint
       ring]
     rw [abs_div]
-    norm_num
+    have hEq : |a - b| / (2 : ℝ) = (1 / 2 : ℝ) * |a - b| := by ring
+    rw [hEq]
   · intro x hx
     rcases hx with ⟨hx0, hx1⟩
     constructor
@@ -94,10 +96,8 @@ theorem midpointMap_repelPull :
   · norm_num [midpointMap, midpoint]
   · norm_num [midpointMap, midpoint]
   · intro x hx
-    rw [midpointMap_sub_midpoint, abs_div]
-    have hnum : 0 < |x - midpoint| := abs_pos.mpr (sub_ne_zero.mpr hx)
-    have hden : 0 < |(2 : ℝ)| := by norm_num
-    exact div_pos hnum hden
+    rw [midpointMap_sub_midpoint]
+    exact abs_pos.mpr (div_ne_zero (sub_ne_zero.mpr hx) (by norm_num))
   · intro x _
     rw [midpointMap_sub_midpoint]
     rw [abs_div]
@@ -106,7 +106,7 @@ theorem midpointMap_repelPull :
     rw [midpointMap_sub_midpoint, abs_div]
     have hpos : 0 < |x - midpoint| := abs_pos.mpr (sub_ne_zero.mpr hx)
     norm_num
-    linarith
+    simpa using (half_lt_self hpos)
 
 structure RatioTendsToOne (x y : ℕ → ℝ) : Prop where
   ratio_tends_one : Tendsto (fun n => y n / x n) atTop (𝓝 1)
@@ -158,8 +158,7 @@ noncomputable def UniversalSeparationLaw.toTerminalLaw
           []
       separates := ?_ }
   intro M hTotal
-  dsimp
-  rw [dif_pos hTotal]
+  simp only [dif_pos hTotal]
   exact Classical.choose_spec (L.separation M hTotal)
 
 
