@@ -50,6 +50,22 @@ jobs:
       - name: Build umbrella target
         run: lake build MCore
 
+      - name: Kleene terminal-facing axiom audit
+        run: |
+          set -euo pipefail
+          cat > KleeneTerminalAxiomAudit.lean <<'EOF'
+          import MCore.Real.OpenMathCore.KleeneExtensionalProducer
+          #print axioms MCore.Real.OpenMathCore.extensional_fixed_point
+          #print axioms MCore.Real.OpenMathCore.witnessOfExtensionalCompiler_valid
+          #print axioms MCore.Real.OpenMathCore.witnessOfExtensionalCompiler_flip
+          #print axioms MCore.Real.OpenMathCore.UniformExtensionalSameInputCompiler.toSameInputClosure
+          EOF
+          lake env lean KleeneTerminalAxiomAudit.lean 2>&1 | tee KleeneTerminalAxiomAudit.log
+          if grep -F 'sorryAx' KleeneTerminalAxiomAudit.log; then exit 1; fi
+          for n in             MCore.Real.OpenMathCore.extensional_fixed_point             MCore.Real.OpenMathCore.witnessOfExtensionalCompiler_valid             MCore.Real.OpenMathCore.witnessOfExtensionalCompiler_flip             MCore.Real.OpenMathCore.UniformExtensionalSameInputCompiler.toSameInputClosure; do
+            grep -F "'$n' depends on axioms: [propext," KleeneTerminalAxiomAudit.log
+          done
+
       - name: C12 semantic axiom audit
         run: |
           set -euo pipefail
