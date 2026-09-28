@@ -4,7 +4,7 @@
   "canonical_type": "InNP (SATBits circuitBitEncoding) ∧ UniversalFailure (SATBits circuitBitEncoding)",
   "canonical_type_status": "TYPED_CANONICAL_SAT_MODEL",
   "standard_object_binding": "COMPLETE_CANONICAL_BITSTRING_TM_NTM_MODEL",
-  "direct_probe": "probe/PNPMaterialExpectedFailure.lean",
+  "direct_probe": "probe/P01MachineConstructionExpectedFailure.lean + probe/PNPMaterialExpectedFailure.lean",
   "direct_probe_expected": "FAIL_UNTIL_CANONICAL_SAT_NP_AND_LOWER_BOUND_ARE_INHABITED",
   "adversarial_fences": [
     "LOWERBOUNDWITNESS_NOT_IN_P_FIELD",
@@ -24,11 +24,16 @@
     "PhysicalVerifierRealization target",
     "verified-relation machinery",
     "barrier audit",
-    "PhysicalVerifierRealization type from frozen/p01-physical-realization-green-058f574b is a concrete NP-side prerequisite but is not inhabited there"
+    "PhysicalVerifierRealization type from frozen/p01-physical-realization-green-058f574b is a concrete NP-side prerequisite but is not inhabited there",
+    "P01MachineConstruction exact integrated NTM type",
+    "P01MachineConstruction.correctAt",
+    "P01MachineConstruction.toRealization",
+    "construction_closes_p01"
   ],
   "next_material_producer": [
-    "construct InNP (SATBits circuitBitEncoding) using the existing canonical verifier/machine stack",
-    "construct UniversalFailure (SATBits circuitBitEncoding) for every PolyDTMCandidate",
+    "construct Nonempty P01MachineConstruction for the canonical SAT bit-language",
+    "this closes InNP (SATBits circuitBitEncoding) via construction_closes_p01",
+    "independently construct UniversalFailure (SATBits circuitBitEncoding)",
     "reuse target_failure_implies_p_ne_np"
   ],
   "red_incorporation_policy": {
