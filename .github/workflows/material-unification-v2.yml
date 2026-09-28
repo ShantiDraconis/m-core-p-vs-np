@@ -16,7 +16,7 @@ jobs:
           lint: false
       - run: lake update
       - run: lake exe cache get || true
-      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalFinalProof MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier MCore.Real.P01FinalCertificate
+      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalFinalProof MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier MCore.Real.P01FinalCertificate MCore.Real.CanonicalSATWitnessGuessNTM MCore.Real.P01WitnessGuessExecution
       - run: lake env lean lean/MCore/MinimalInhabitant.lean
       - run: lake env lean lean/MCore/BackwardAudit/MaterialProducerGate.lean
       - name: Expected P01 integrated-machine failure
