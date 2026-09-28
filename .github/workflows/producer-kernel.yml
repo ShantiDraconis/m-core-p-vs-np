@@ -22,7 +22,7 @@ jobs:
       - name: Resolve dependencies
         run: lake update
       - name: Build exact producer frontier
-        run: lake build MCore.Real.OpenMathCore.KleeneExtensionalProducer MCore.BackwardAudit.MaterialOrientationKernel MCore.Real.OpenMathCore.SATCircuitCompiler MCore.Real.SemanticSelfQuotation
+        run: lake build MCore.Real.OpenMathCore.SATCircuitCompiler MCore.Real.OpenMathCore.KleeneExtensionalProducer MCore.BackwardAudit.MaterialOrientationKernel MCore.Real.OpenMathCore.SATCircuitCompiler MCore.Real.SemanticSelfQuotation
       - name: Reject proof escapes in producer sources
         run: |
           set -euo pipefail
