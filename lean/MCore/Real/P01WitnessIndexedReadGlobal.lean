@@ -1,4 +1,3 @@
-import Mathlib.Data.List.GetD
 import MCore.Real.P01WitnessIndexedReadProof
 import MCore.Real.MachineRunLemmas
 
@@ -323,7 +322,8 @@ theorem readFuel_le_timeBound
   unfold readFuel witnessIndexedReadTimeBound
   have hbase :
       2 * n ^ 2 + 5 * n + 3 ≤ 16 * (n + 2) ^ 2 := by
-    simp [Nat.pow_two, Nat.mul_add, Nat.add_mul]
+    simp [Nat.pow_two, Nat.mul_add, Nat.add_mul,
+      Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
     omega
   have harg : n + 2 ≤ witness.length + (n + 1) + 1 := by
     omega
@@ -337,8 +337,8 @@ theorem witnessBits_getD
     (witnessBits w).getD i false = w ⟨i, hi⟩ := by
   have hlen : i < (witnessBits w).length := by
     simpa [witnessBits_length] using hi
-  rw [List.getD_eq_getElem _ _ hlen]
-  simp [witnessBits, List.get_ofFn]
+  rw [List.getD_eq_getElem?_getD]
+  simp [witnessBits, List.getElem?_ofFn, hi]
 
 def witnessIndexedReadCertificate : WitnessIndexedReadCertificate where
   stateCount := 5
