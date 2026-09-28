@@ -15,8 +15,25 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "construct MaterialOrientation: operational polynomial SAT certificate plus transfer, or genuine NP-not-P lower-bound witness",
+  "next": "construct both exact producers: P01ConstructionGap and G21Pointwise. Do not reopen G2.2 or literal fixed-point routes.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
-  "frozen_prefix_decrements_hard": false
+  "frozen_prefix_decrements_hard": false,
+  "direct_producer": {
+    "state": "GREEN_TYPED_OPEN_MATH",
+    "exactness": "EXACT_TWO_PRODUCER_CUT",
+    "target": "P01ConstructionGap ∧ G21Pointwise",
+    "source_repository": "ShantiDraconis/M-Core",
+    "source_files": [
+      "imports/pnp/b406b806/lean/MCore/Real/FinalExternalTwoGap.lean",
+      "imports/pnp/c102d9d4/lean/MCore/Real/P02G21G22Attack.lean"
+    ],
+    "equivalences": [
+      "G21Pointwise ↔ P02Target",
+      "G21Pointwise ↔ G22Contradiction",
+      "G22Contradiction ↔ ¬ InP SATTarget"
+    ],
+    "note": "G3 is already supplied by the normalized external contract; G2.2 is not an independent producer.",
+    "inhabitant_state": "OPEN_MATH"
+  }
 }
