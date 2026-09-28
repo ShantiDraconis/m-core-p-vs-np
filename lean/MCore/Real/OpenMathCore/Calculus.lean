@@ -26,7 +26,7 @@ def constantIntegral (c : ℝ) : IntegralBehavior where
   f := fun _ => c
   integrable := by
     intro a b
-    exact intervalIntegrable_const (μ := MeasureTheory.volume) (a := a) (b := b) (c := c)
+    simpa using (intervalIntegrable_const : IntervalIntegrable (fun _ : ℝ => c) volume a b)
 
 structure EnergyBehavior where
   potential : ℝ → ℝ
