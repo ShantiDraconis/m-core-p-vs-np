@@ -129,6 +129,9 @@ jobs:
           set -euo pipefail
           cp distribution.csv distribution.before.csv
           lake clean
+          # Restore the pinned Mathlib binary cache after cleaning project build artifacts.
+          # This keeps project reproduction clean without recompiling the entire external dependency graph.
+          lake exe cache get
           # c12_gen must be rebuilt first because deterministic data reproduction depends on it.
           timeout 30m lake build MCore.C12.Families c12_gen
           lake exe c12_gen > distribution.rebuilt.csv
