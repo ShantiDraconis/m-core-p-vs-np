@@ -1,11 +1,11 @@
 {
   "schema": "ATK_MATERIAL_UNIFICATION_V2",
   "problem": "P_VS_NP",
-  "canonical_type": "∃ L, NP L ∧ ¬ P L",
-  "canonical_type_status": "TYPED_ABSTRACT_INTERFACE_OFFICIAL_MODEL_UNBOUND",
-  "standard_object_binding": "TYPE_BINDING_RESIDUE: no kernel binding of ClassicalComplexityInterface.inP/inNP to the fixed official polynomial-time machine model",
-  "direct_probe": "BLOCKED_UNTIL_OFFICIAL_MODEL_BINDING",
-  "direct_probe_expected": "TYPE_BINDING_RESIDUE",
+  "canonical_type": "InNP (SATBits circuitBitEncoding) ∧ UniversalFailure (SATBits circuitBitEncoding)",
+  "canonical_type_status": "TYPED_CANONICAL_SAT_MODEL",
+  "standard_object_binding": "COMPLETE_CANONICAL_BITSTRING_TM_NTM_MODEL",
+  "direct_probe": "probe/PNPMaterialExpectedFailure.lean",
+  "direct_probe_expected": "FAIL_UNTIL_CANONICAL_SAT_NP_AND_LOWER_BOUND_ARE_INHABITED",
   "adversarial_fences": [
     "LOWERBOUNDWITNESS_NOT_IN_P_FIELD",
     "ENDPOINT_EQUIVALENT_HYPOTHESIS",
@@ -27,9 +27,9 @@
     "PhysicalVerifierRealization type from frozen/p01-physical-realization-green-058f574b is a concrete NP-side prerequisite but is not inhabited there"
   ],
   "next_material_producer": [
-    "bind ClassicalComplexityInterface to one fixed official deterministic/nondeterministic polynomial-time machine model",
-    "reuse canonical SAT witness/verifier machinery to establish the NP side in that same model",
-    "derive genuine ¬P SAT (or another concrete NP language) without a not_in_p field"
+    "construct InNP (SATBits circuitBitEncoding) using the existing canonical verifier/machine stack",
+    "construct UniversalFailure (SATBits circuitBitEncoding) for every PolyDTMCandidate",
+    "reuse target_failure_implies_p_ne_np"
   ],
   "red_incorporation_policy": {
     "RED_INFRA": "DISCARD_AFTER_FIX",
