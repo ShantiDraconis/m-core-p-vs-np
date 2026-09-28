@@ -60,6 +60,11 @@
         "MCore.Real.P01WitnessGuessExecution.witnessGuess_halts"
       ],
       "content": "fixed finite-control NTM; every source-length Boolean witness is reachable; every branch halts within source.length+1"
+    },
+    "source_rewind": {
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI_HEAD",
+      "theorem": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear",
+      "content": "real three-state TM halts from canonical source-end tape in source.length + 2"
     }
   },
   "permanent_fences": [
