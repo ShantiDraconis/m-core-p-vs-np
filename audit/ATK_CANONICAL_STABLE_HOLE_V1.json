@@ -1,0 +1,14 @@
+{
+  "schema": "ATK_CANONICAL_STABLE_HOLE_V1",
+  "problem": "P_VS_NP",
+  "type": "official-model binding + concrete NP language L + ¬ P L",
+  "standard_binding": "fixed official deterministic/nondeterministic polynomial-time machine model",
+  "forbidden_shortcuts": [
+    "LowerBoundWitness.not_in_p field",
+    "abstract ClassicalComplexityInterface as official model",
+    "finite experimental evidence",
+    "endpoint-equivalent separation witness"
+  ],
+  "exact_producer": "bind the official model; establish SAT in NP in that same model; derive genuine ¬P SAT without receiving the lower bound",
+  "material_status": "OPEN_MATH"
+}
