@@ -31,6 +31,24 @@ def rewindScanConfig
             head := some b
             right := right } }
 
+@[simp] theorem rewindScanConfig_state
+    (witness rev : BitString)
+    (right : List (Option Bool)) :
+    (rewindScanConfig witness rev right).state = scanLeft := by
+  cases rev <;> rfl
+
+/-- One scanning step consumes exactly the current reversed-source bit. -/
+theorem rewindScanConfig_step_cons
+    (witness : BitString)
+    (b : Bool) (bs : BitString)
+    (right : List (Option Bool)) :
+    sourceRewindMachine.step
+      (rewindScanConfig witness (b :: bs) right) =
+      rewindScanConfig witness bs (some b :: right) := by
+  cases bs <;>
+    simp [rewindScanConfig, sourceRewindMachine, TM.step,
+      scanLeft, enterSource, rewindHalt, Tape.write, Tape.move]
+
 /-- Scanning a finite reversed source reaches the witness/source separator and
 then performs the certified one-cell right step.  This is a genuine global
 execution theorem for the concrete three-state rewind TM. -/
@@ -46,16 +64,42 @@ theorem rewindScanConfig_run
             right := rev.reverse.map some ++ right } } := by
   induction rev generalizing right with
   | nil =>
-      simp [rewindScanConfig, TM.run, sourceRewindMachine,
-        scanLeft, rewindHalt, enterSource, Tape.write, Tape.move]
+      have hstep :=
+        sourceRewind_separator_step
+          ({ left := witness.map some
+             head := none
+             right := right } : Tape (Option Bool))
+          rfl
+      simpa [rewindScanConfig, TM.run, scanLeft_not_halted] using hstep
   | cons b bs ih =>
       rw [List.length_cons]
       rw [show bs.length + 1 + 1 = (bs.length + 1) + 1 by rfl]
-      rw [TM.run, scanLeft_not_halted]
-      change sourceRewindMachine.run (bs.length + 1)
-        (rewindScanConfig witness bs (some b :: right)) = _
+      rw [TM.run]
+      have hnot :
+          ¬ sourceRewindMachine.halting
+              (rewindScanConfig witness (b :: bs) right).state = true := by
+        simp [rewindScanConfig_state, scanLeft_not_halted]
+      rw [if_neg hnot]
+      rw [rewindScanConfig_step_cons]
       rw [ih]
       simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+/-- The first left move from a nonempty source-end layout is exactly the
+intermediate reversed-source configuration. -/
+theorem enterSource_step_eq_rewindScanConfig
+    (witness : BitString)
+    (b : Bool) (bs : BitString) :
+    ({ state := scanLeft
+       tape := Tape.move none .left (sourceEndTape witness (b :: bs)) } :
+      Configuration RewindState (Option Bool)) =
+      rewindScanConfig witness (b :: bs).reverse [none] := by
+  cases hrev : bs.reverse with
+  | nil =>
+      simp [sourceEndTape, rewindScanConfig, Tape.move,
+        List.reverse_cons, List.map_append, hrev]
+  | cons x xs =>
+      simp [sourceEndTape, rewindScanConfig, Tape.move,
+        List.reverse_cons, List.map_append, hrev, List.append_assoc]
 
 /-- For every nonempty canonical source, the concrete rewind TM returns from
 the source-end blank to exactly the witness-preserving prepared-tape layout.
@@ -71,14 +115,18 @@ theorem sourceRewind_run_prepared
         tape := preparedTape witness (b :: bs) } := by
   rw [show (b :: bs).length + 2 =
       ((b :: bs).reverse.length + 1) + 1 by simp]
-  rw [TM.run, enterSource_not_halted]
+  rw [TM.run]
+  have hnot :
+      ¬ sourceRewindMachine.halting enterSource = true := by
+    simp [enterSource_not_halted]
+  rw [if_neg hnot]
   rw [sourceRewind_enter_step]
-  change sourceRewindMachine.run ((b :: bs).reverse.length + 1)
-    (rewindScanConfig witness (b :: bs).reverse [none]) = _
+  rw [enterSource_step_eq_rewindScanConfig]
   rw [rewindScanConfig_run]
   simp [preparedTape, List.map_append, List.append_assoc, Tape.move]
 
-/-- The advertised linear rewind time bound dominates the exact run above. -/
+/-- The advertised linear rewind time bound is exact for the nonempty source
+run above. -/
 theorem sourceRewind_nonempty_halts
     (witness : BitString)
     (b : Bool)
@@ -91,7 +139,9 @@ theorem sourceRewind_nonempty_halts
   rw [sourceRewind_run_prepared]
   exact rewindHalt_halted
 
+#print axioms MCore.Real.P01SourceRewindGlobal.rewindScanConfig_step_cons
 #print axioms MCore.Real.P01SourceRewindGlobal.rewindScanConfig_run
+#print axioms MCore.Real.P01SourceRewindGlobal.enterSource_step_eq_rewindScanConfig
 #print axioms MCore.Real.P01SourceRewindGlobal.sourceRewind_run_prepared
 #print axioms MCore.Real.P01SourceRewindGlobal.sourceRewind_nonempty_halts
 
