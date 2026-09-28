@@ -133,11 +133,11 @@ jobs:
           # This keeps project reproduction clean without recompiling the entire external dependency graph.
           lake exe cache get
           # c12_gen must be rebuilt first because deterministic data reproduction depends on it.
-          timeout 30m lake build MCore.C12.Families c12_gen
+          timeout 45m lake build MCore.C12.Families c12_gen
           lake exe c12_gen > distribution.rebuilt.csv
           cmp distribution.before.csv distribution.rebuilt.csv
           # Single clean umbrella closure; no redundant target-by-target rebuild after this point.
-          timeout 55m lake build MCore
+          timeout 40m lake build MCore
           sha256sum distribution.rebuilt.csv
 
       - name: Upload distributions and audit data
