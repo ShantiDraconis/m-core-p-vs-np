@@ -3,7 +3,7 @@ name: T1D Source Rewind
 on:
   push:
     branches:
-      - attack/t1d-source-rewind-20260922
+      - atk/p01-source-rewind-global-20260928
   workflow_dispatch:
 
 permissions:
@@ -34,6 +34,10 @@ jobs:
           #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewindTimeBound_poly
           #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_enter_step
           #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_separator_step
+          #print axioms MCore.Real.P01FullVerifierSourceRewind.scanRev_run
+          #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_run
+          #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_run_prepared_nonempty
+          #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_nonempty
           EOF
           lake env lean /tmp/RewindAudit.lean 2>&1 | tee /tmp/rewind-audit.log
           ! grep -q 'sorryAx' /tmp/rewind-audit.log
