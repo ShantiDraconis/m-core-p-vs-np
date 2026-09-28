@@ -204,8 +204,7 @@ theorem readFuel_zero :
 theorem readFuel_succ (n : Nat) :
     readFuel (n + 1) = 5 + markerFuel 3 n := by
   unfold readFuel markerFuel
-  simp [pow_two, Nat.mul_add, Nat.add_mul]
-  omega
+  ring
 
 theorem marker_zero_run_state
     (pad : Nat) (b : Bool) (tail : BitString) :
