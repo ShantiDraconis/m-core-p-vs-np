@@ -19,3 +19,13 @@ jobs:
       - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary
       - run: lake env lean lean/MCore/MinimalInhabitant.lean
       - run: lake env lean lean/MCore/BackwardAudit/MaterialProducerGate.lean
+      - name: Expected canonical SAT material failure
+        run: |
+          if lake env lean probe/PNPMaterialExpectedFailure.lean > /tmp/pnp-material.log 2>&1; then
+            echo "UNEXPECTED_MATERIAL_PASS"
+            cat /tmp/pnp-material.log
+            exit 1
+          else
+            cat /tmp/pnp-material.log
+            echo "EXPECTED_FAIL_CONFIRMED"
+          fi
