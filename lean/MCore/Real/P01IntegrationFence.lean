@@ -31,7 +31,7 @@ theorem stateOnlyBridge_trivially_inhabited :
 canonical SAT machine closure.  Promotion still requires the actual machine
 realization. -/
 def MaterialIntegrationTarget : Prop :=
-  CanonicalSATMachineClosure
+  CanonicalSATNTMAttack.CanonicalSATMachineClosure
 
 #print axioms MCore.Real.P01IntegrationFence.stateOnlyBridge_trivially_inhabited
 
