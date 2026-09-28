@@ -16,7 +16,7 @@ jobs:
           lint: false
       - run: lake update
       - run: lake exe cache get || true
-      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary
+      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier
       - run: lake env lean lean/MCore/MinimalInhabitant.lean
       - run: lake env lean lean/MCore/BackwardAudit/MaterialProducerGate.lean
       - name: Expected canonical SAT material failure
