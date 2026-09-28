@@ -8,10 +8,11 @@
     "SeparationCertificate supplied as input",
     "alternate language/model substitution",
     "finite experimental evidence",
-    "universal-failure oracle"
+    "universal-failure oracle",
+    "state-only phase bridge without configuration/tape semantics"
   ],
   "exact_producer": "construct Nonempty P01MachineConstruction to discharge canonical SAT-in-NP, then independently prove UniversalFailure for the SAME SAT bit-language",
   "material_status": "OPEN_MATH",
-  "first_material_atom": "Nonempty MCore.Real.P01FinalCertificate.P01MachineConstruction",
+  "first_material_atom": "one fixed physical verifier TM with polynomial halting and exact verifyWitness semantics, then actual single-NTM phase transitions into P01MachineConstruction",
   "second_material_atom": "MCore.Real.CanonicalFinalProof.UniversalFailure (MCore.Real.CanonicalSATBoundary.SATBits MCore.Real.CanonicalCircuitBits.circuitBitEncoding)"
 }
