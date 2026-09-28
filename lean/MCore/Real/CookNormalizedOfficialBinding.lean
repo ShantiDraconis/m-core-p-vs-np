@@ -1,4 +1,5 @@
-import MCore.Real.CanonicalComplexityBridge
+import MCore.K9
+import MCore.Real.CanonicalPSubsetNP
 import MCore.Real.CookNormalizedDTMBridge
 import MCore.Real.CookNormalizedNTMBridge
 
@@ -7,14 +8,18 @@ namespace Real
 namespace CookNormalizedOfficialBinding
 
 open CanonicalFinalProof
-open CanonicalComplexityBridge
+open CanonicalPSubsetNP
 open CookNormalizedMachineModel
 open CookNormalizedDTMBridge
 open CookNormalizedNTMBridge
 open OfficialModel
 
-/-- Exact deterministic-class binding between the canonical internal model and
-the selected Cook-normalized external model. -/
+/-- Canonical internal P/NP predicates, packaged in the legacy interface. -/
+def canonicalInterface : ClassicalComplexityInterface BitLanguage :=
+  { inP := InP
+    inNP := InNP
+    p_subset_np := inP_subset_inNP }
+
 theorem canonical_inP_iff_cook_normalized_P
     (L : BitLanguage) :
     canonicalInterface.inP L ↔ cookNormalizedSelection.model.P L := by
@@ -24,8 +29,6 @@ theorem canonical_inP_iff_cook_normalized_P
   · rintro ⟨R⟩
     exact ⟨cookDTM_to_internal R⟩
 
-/-- Exact nondeterministic-class binding between the canonical internal model
-and the selected Cook-normalized external model. -/
 theorem canonical_inNP_iff_cook_normalized_NP
     (L : BitLanguage) :
     canonicalInterface.inNP L ↔ cookNormalizedSelection.model.NP L := by
@@ -35,9 +38,6 @@ theorem canonical_inNP_iff_cook_normalized_NP
   · rintro ⟨R⟩
     exact ⟨cookNTM_to_internal R⟩
 
-/-- The legacy classical interface is therefore bound, class-for-class, to one
-fixed external machine model carrying the pinned Cook/CMI provenance record.
-This theorem does not assert P != NP. -/
 theorem canonical_interface_bound_to_cook_normalized :
     (∀ L : BitLanguage,
       canonicalInterface.inP L ↔ cookNormalizedSelection.model.P L) ∧
