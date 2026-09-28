@@ -50,6 +50,16 @@
         "total halting",
         "accepts_iff SATBits circuitBitEncoding"
       ]
+    },
+    "witness_guess": {
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "source_branch": "atk/p01-terminal-sprint-v1",
+      "object": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessMachine",
+      "theorems": [
+        "MCore.Real.P01WitnessGuessExecution.witnessGuess_complete",
+        "MCore.Real.P01WitnessGuessExecution.witnessGuess_halts"
+      ],
+      "content": "fixed finite-control NTM; every source-length Boolean witness is reachable; every branch halts within source.length+1"
     }
   },
   "permanent_fences": [
@@ -59,9 +69,9 @@
     "alternate language/model substitution"
   ],
   "next_exact_attack": [
-    "prove witnessPreservingPrep global halting and reached-layout",
-    "construct PhysicalVerifierRealization from already-proved moves/shuttles/read/eval primitives",
-    "compose parser + witness prep + verifier into P01MachineConstruction"
+    "reuse global witnessGuessMachine execution as the certified nondeterministic guess phase",
+    "construct one fixed physical verifier TM from the already-proved physical primitives and polynomial budget",
+    "compose certified parser + guess phase + verifier into P01MachineConstruction"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
   "material_status": "OPEN_MATH"
