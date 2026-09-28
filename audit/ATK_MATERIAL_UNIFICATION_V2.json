@@ -1,0 +1,17 @@
+{
+  "schema": "ATK_MATERIAL_UNIFICATION_V2",
+  "problem": "P_VS_NP",
+  "canonical_type": "∃ L, NP L ∧ ¬ P L",
+  "canonical_type_status": "TYPED_ABSTRACT_INTERFACE",
+  "standard_object_binding": "PARTIAL_CANONICAL_SAT_LAYER_PRESENT",
+  "direct_probe": "material separation producer must derive ¬P for a concrete standard language",
+  "direct_probe_expected": "FAIL_UNTIL_INHABITED",
+  "adversarial_fences": [
+    "LOWERBOUNDWITNESS_NOT_IN_P_FIELD",
+    "ENDPOINT_EQUIVALENT_HYPOTHESIS",
+    "ARBITRARY_LANGUAGE_SEMANTICS"
+  ],
+  "dependency_closure": "REQUIRED",
+  "provenance": "REQUIRED",
+  "material_status": "OPEN_MATH"
+}
