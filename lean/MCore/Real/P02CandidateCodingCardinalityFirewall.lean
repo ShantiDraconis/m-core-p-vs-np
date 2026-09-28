@@ -36,8 +36,8 @@ theorem codingFirewallCandidate_injective :
   have hn := congrFun (congrArg PolyDTMCandidate.timeBound h) n
   cases hb : b n <;> cases hc : c n
   · rfl
-  · simp [codingFirewallTimeBound, hb, hc] at hn
-  · simp [codingFirewallTimeBound, hb, hc] at hn
+  · norm_num [codingFirewallTimeBound, hb, hc] at hn
+  · norm_num [codingFirewallTimeBound, hb, hc] at hn
   · rfl
 
 instance boolSequence_uncountable : Uncountable (Nat → Bool) := by
