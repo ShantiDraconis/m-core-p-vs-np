@@ -3,6 +3,8 @@ import MCore.Real.OpenMathCore.Arithmetic
 
 namespace MCore.Real.OpenMathCore
 
+open CanonicalFinalProof
+
 structure RealPotential where
   value : BitString → ℝ
   zero_value : value [] = 0
