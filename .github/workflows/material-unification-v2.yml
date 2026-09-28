@@ -16,9 +16,19 @@ jobs:
           lint: false
       - run: lake update
       - run: lake exe cache get || true
-      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalFinalProof MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier
+      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalFinalProof MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier MCore.Real.P01FinalCertificate
       - run: lake env lean lean/MCore/MinimalInhabitant.lean
       - run: lake env lean lean/MCore/BackwardAudit/MaterialProducerGate.lean
+      - name: Expected P01 integrated-machine failure
+        run: |
+          if lake env lean probe/P01MachineConstructionExpectedFailure.lean > /tmp/p01-material.log 2>&1; then
+            echo "UNEXPECTED_P01_CONSTRUCTION_PASS"
+            cat /tmp/p01-material.log
+            exit 1
+          else
+            cat /tmp/p01-material.log
+            echo "EXPECTED_P01_FAIL_CONFIRMED"
+          fi
       - name: Expected canonical SAT material failure
         run: |
           if lake env lean probe/PNPMaterialExpectedFailure.lean > /tmp/pnp-material.log 2>&1; then
