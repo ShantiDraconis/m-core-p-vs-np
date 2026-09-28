@@ -13,5 +13,27 @@
   ],
   "dependency_closure": "REQUIRED",
   "provenance": "REQUIRED",
-  "material_status": "OPEN_MATH"
+  "material_status": "OPEN_MATH",
+  "reuse_proved": [
+    "canonical circuit model",
+    "canonical SAT parser/frame/machine/semantics",
+    "CanonicalSATWitness",
+    "satLanguage_iff_exists_finite_witness",
+    "witness_bits_linear_bound",
+    "P01 operational prefix",
+    "PhysicalVerifierRealization target",
+    "verified-relation machinery",
+    "barrier audit"
+  ],
+  "next_material_producer": [
+    "bind one concrete standard language L",
+    "derive NP L from canonical verified machinery",
+    "derive ¬ P L independently without LowerBoundWitness.not_in_p"
+  ],
+  "red_incorporation_policy": {
+    "RED_INFRA": "DISCARD_AFTER_FIX",
+    "RED_FALSIFIED_ROUTE": "PERMANENT_FENCE",
+    "RED_CONCRETE_LEMMA": "REUSE_PROVED",
+    "RED_STABLE_HOLE_REFINEMENT": "REPLACE_WITH_SMALLER_CANONICAL_TARGET"
+  }
 }
