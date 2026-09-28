@@ -1,4 +1,4 @@
-import MCore.Real.P01ParserWitnessComposition
+import MCore.Real.P01VerifiedRelation
 import MCore.Real.CanonicalSATVerifier
 
 namespace MCore
