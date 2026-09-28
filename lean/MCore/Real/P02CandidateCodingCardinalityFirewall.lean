@@ -33,10 +33,14 @@ theorem codingFirewallCandidate_injective :
     Function.Injective codingFirewallCandidate := by
   intro b c h
   funext n
-  have hn := congrFun (congrArg PolyDTMCandidate.timeBound h) n
-  change codingFirewallTimeBound b n = codingFirewallTimeBound c n at hn
-  cases hb : b n <;> cases hc : c n <;>
-    simp_all [codingFirewallTimeBound]
+  have hn : codingFirewallTimeBound b n = codingFirewallTimeBound c n := by
+    simpa [codingFirewallCandidate] using
+      congrArg (fun M : PolyDTMCandidate => M.timeBound n) h
+  cases hb : b n <;> cases hc : c n
+  · rfl
+  · simp [codingFirewallTimeBound, hb, hc] at hn
+  · simp [codingFirewallTimeBound, hb, hc] at hn
+  · rfl
 
 instance boolSequence_uncountable : Uncountable (Nat → Bool) := by
   rw [uncountable_iff_forall_not_surjective]
