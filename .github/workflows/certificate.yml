@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   c12:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 95
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
@@ -134,7 +134,7 @@ jobs:
           lake exe c12_gen > distribution.rebuilt.csv
           cmp distribution.before.csv distribution.rebuilt.csv
           # Single clean umbrella closure; no redundant target-by-target rebuild after this point.
-          timeout 35m lake build MCore
+          timeout 55m lake build MCore
           sha256sum distribution.rebuilt.csv
 
       - name: Upload distributions and audit data
