@@ -1,14 +1,15 @@
 {
   "schema": "ATK_CANONICAL_STABLE_HOLE_V1",
   "problem": "P_VS_NP",
-  "type": "official-model binding + concrete NP language L + ¬ P L",
-  "standard_binding": "fixed official deterministic/nondeterministic polynomial-time machine model",
+  "type": "InNP (SATBits circuitBitEncoding) ∧ UniversalFailure (SATBits circuitBitEncoding)",
+  "standard_binding": "canonical BitLanguage + TM/NTM polynomial-time model + circuitBitEncoding",
   "forbidden_shortcuts": [
     "LowerBoundWitness.not_in_p field",
-    "abstract ClassicalComplexityInterface as official model",
+    "SeparationCertificate supplied as input",
+    "alternate language/model substitution",
     "finite experimental evidence",
-    "endpoint-equivalent separation witness"
+    "universal-failure oracle"
   ],
-  "exact_producer": "bind the official model; establish SAT in NP in that same model; derive genuine ¬P SAT without receiving the lower bound",
+  "exact_producer": "construct canonical SAT in NP in the fixed NTM model and independently prove UniversalFailure for the SAME SAT bit-language",
   "material_status": "OPEN_MATH"
 }
