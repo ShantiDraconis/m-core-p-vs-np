@@ -108,8 +108,31 @@
     "witness_indexed_read": {
       "status": "MATERIAL_GREEN",
       "theorem": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadGap_closed",
-      "certificate": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadCertificate",
-      "content": "fixed Fin-6 TM, polynomial time bound, global halting, exact indexed witness-bit correctness"
+      "machine": "witnessIndexedReadMachine",
+      "guarantees": [
+        "finite control",
+        "blank_none",
+        "polynomial time",
+        "halts",
+        "returns correct witness bit"
+      ]
+    },
+    "verifier_local": {
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "proved": [
+        "physical moves/shuttles",
+        "stack primitive machine push/pop",
+        "input witness shuttle",
+        "indexed witness reader global certificate",
+        "const/neg/and/or physical transformations",
+        "physical stack representation",
+        "polynomial per-instruction and total evaluation cost bounds"
+      ],
+      "open": [
+        "one fixed global verifier TM realizing variable-length physical sequences",
+        "global HaltsWithin for all circuit/witness pairs",
+        "physical_eq_logical for all circuit/witness pairs"
+      ]
     }
   },
   "permanent_fences": [
@@ -121,10 +144,10 @@
     "historical IntegratedPhaseBridgeCertificate/state-only bridge: trivially inhabitable; carries no tape/transition/halting/semantic content"
   ],
   "next_exact_attack": [
-    "construct one fixed global physical verifier TM using the already-closed indexed witness read + stack primitives + physical shuttles + local evaluator refinements",
-    "prove global HaltsWithin under the existing physicalVerifierTimeBound",
-    "prove physical_eq_logical for every canonical circuit/witness",
-    "integrate parser + witness guess + physical verifier into P01MachineConstruction"
+    "construct one fixed global verifier TM over Option Bool implementing the already-certified physical instruction layer",
+    "prove verifier HaltsWithin physicalVerifierTimeBound",
+    "prove physical_eq_logical",
+    "compose parser + witness guess + verifier into P01MachineConstruction"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
   "material_status": "OPEN_MATH",
