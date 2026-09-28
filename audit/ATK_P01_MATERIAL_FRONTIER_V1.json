@@ -66,12 +66,15 @@
     "DecoderEvaluatorLocalCertificate: under-specified; nonterminal transition fields do not prove decode/eval semantics",
     "legacy ParserMachineCertificate/WitnessGuessMachineCertificate/VerifierMachineCertificate: trivially inhabitable component shells",
     "abstract LowerBoundWitness.not_in_p",
-    "alternate language/model substitution"
+    "alternate language/model substitution",
+    "IntegratedPhaseBridgeCertificate: state-disjointness only; no tape/config transition or semantic preservation; not material integration"
   ],
   "next_exact_attack": [
-    "reuse global witnessGuessMachine execution as the certified nondeterministic guess phase",
-    "construct one fixed physical verifier TM from the already-proved physical primitives and polynomial budget",
-    "compose certified parser + guess phase + verifier into P01MachineConstruction"
+    "define one fixed finite-control verifier TM whose transition function realizes the already-proved stack/shuttle/input-read operations",
+    "prove global verifier HaltsWithin under the certified polynomial budget",
+    "prove verifier physical_eq_logical for every circuit/witness",
+    "define actual parser-to-witness and witness-to-verifier configuration transitions on one integrated NTM",
+    "prove the integrated NTM halts and accepts iff SATBits"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
   "material_status": "OPEN_MATH"
