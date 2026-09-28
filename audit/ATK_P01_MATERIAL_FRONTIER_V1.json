@@ -62,12 +62,17 @@
       "content": "fixed finite-control NTM; every source-length Boolean witness is reachable; every branch halts within source.length+1"
     },
     "source_rewind": {
-      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI_HEAD",
+      "status": "MATERIAL_GREEN_FROZEN_REUSE",
       "theorem": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear",
-      "content": "real three-state TM halts from canonical source-end tape in source.length + 2"
+      "content": "real three-state TM halts from canonical source-end tape in source.length + 2",
+      "validation": {
+        "sha": "fb85e50c94f9cec50cc08c6df1b235099ad14af7",
+        "run_id": 36494885240,
+        "conclusion": "SUCCESS"
+      }
     },
     "indexed_witness_read": {
-      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "status": "MATERIAL_GREEN_FROZEN_REUSE",
       "machine": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine",
       "theorems": [
         "MCore.Real.P01WitnessIndexedReadMachine.read_zero_false",
@@ -75,10 +80,15 @@
         "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_state",
         "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_halts"
       ],
-      "content": "fixed Fin-6 TM reads selected witness cell without storing i in finite control; arbitrary blank seek padding halts and classifies bit"
+      "content": "fixed Fin-6 TM reads selected witness cell without storing i in finite control; arbitrary blank seek padding halts and classifies bit",
+      "validation": {
+        "sha": "193721b2fdeb5a4881997c896827d962ca7ff930",
+        "run_id": 36495270517,
+        "conclusion": "SUCCESS"
+      }
     },
     "physical_verifier_local_layer": {
-      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "status": "MATERIAL_GREEN_FROZEN_REUSE",
       "proved": [
         "real stack push/pop TM executions",
         "exact physical const/neg/and/or tape transformations",
@@ -93,7 +103,12 @@
         "P01FullVerifierPhysicalRefinement.physical_execInstr_refines alone is representation transport, not a TM run theorem",
         "LocalPhysicalInstructionLayerClosed := True is bookkeeping only",
         "DecoderEvaluatorLocalCertificate is under-specified and remains a fence"
-      ]
+      ],
+      "validation": {
+        "sha": "bf23e4c39699623683f07b36fac2796406976bef",
+        "run_id": 36495751839,
+        "conclusion": "SUCCESS"
+      }
     }
   },
   "permanent_fences": [
@@ -109,5 +124,7 @@
     "use it in P01MachineConstruction together with the already-certified parser and witness guess phases"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
-  "material_status": "OPEN_MATH"
+  "material_status": "OPEN_MATH",
+  "current_stable_hole": "Nonempty MCore.Real.P01FullVerifierPhysical.PhysicalVerifierRealization",
+  "after_current_stable_hole": "compose parser + witness guess + physical verifier into P01MachineConstruction"
 }
