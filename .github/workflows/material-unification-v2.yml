@@ -16,7 +16,7 @@ jobs:
           lint: false
       - run: lake update
       - run: lake exe cache get || true
-      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalFinalProof MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier MCore.Real.P01FinalCertificate MCore.Real.CanonicalSATWitnessGuessNTM MCore.Real.P01WitnessGuessExecution
+      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalFinalProof MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier MCore.Real.P01FinalCertificate MCore.Real.CanonicalSATWitnessGuessNTM MCore.Real.P01WitnessGuessExecution MCore.Real.MachineRunLemmas MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01WitnessPreservingPrep MCore.Real.P01VerifierGateMachine MCore.Real.P01VerifierComposition MCore.Real.P01FullVerifierTraversal MCore.Real.P01FullVerifierStackSemantics MCore.Real.P01FullVerifierMachine MCore.Real.P01FullVerifierPhysical MCore.Real.P01FullVerifierPhysicalControl MCore.Real.P01FullVerifierPhysicalMoves MCore.Real.P01FullVerifierPhysicalShuttles MCore.Real.P01FullVerifierPhysicalStackV2 MCore.Real.P01FullVerifierStackPrimitiveMachine MCore.Real.P01FullVerifierInputShuttleV2 MCore.Real.P01FullVerifierSourceRewind
       - run: lake env lean lean/MCore/MinimalInhabitant.lean
       - run: lake env lean lean/MCore/BackwardAudit/MaterialProducerGate.lean
       - name: Expected P01 integrated-machine failure
