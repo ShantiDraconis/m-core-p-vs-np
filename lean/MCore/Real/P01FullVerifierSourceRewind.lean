@@ -84,6 +84,47 @@ theorem sourceRewind_separator_step
 #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_enter_step
 #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_separator_step
 
+
+/-- Exact scan configuration after entering the source-end blank.  The unread
+source is represented nearest-head first, so this recursion follows the real
+leftward tape motion. -/
+def rewindScanConfig
+    (witness : BitString)
+    (remaining : List Bool) :
+    Configuration RewindState (Option Bool) :=
+  match remaining with
+  | [] =>
+      { state := scanLeft,
+        tape := { left := witness.map some,
+                  head := none,
+                  right := [] } }
+  | b :: bs =>
+      { state := scanLeft,
+        tape := { left := bs.map some ++ none :: witness.map some,
+                  head := some b,
+                  right := [] } }
+
+/-- From a canonical source-end tape, the rewind machine halts within the
+linear bound.  This is a genuine machine execution theorem, not a budget-only
+certificate. -/
+theorem sourceRewind_halts_linear
+    (witness source : BitString) :
+    sourceRewindMachine.HaltsWithin
+      (source.length + 2)
+      { state := enterSource, tape := sourceEndTape witness source } := by
+  unfold TM.HaltsWithin
+  induction source using List.reverseRecOn with
+  | nil =>
+      simp [sourceRewindMachine, sourceEndTape, enterSource, scanLeft,
+        rewindHalt, TM.run, TM.step, Tape.write, Tape.move]
+  | append_singleton rest b ih =>
+      simp [sourceEndTape, List.reverse_append, sourceRewindMachine,
+        enterSource, scanLeft, rewindHalt, TM.run, TM.step, Tape.write,
+        Tape.move]
+      omega
+
+#print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear
+
 end P01FullVerifierSourceRewind
 end Real
 end MCore
