@@ -25,20 +25,23 @@
       ]
     },
     "verifier": {
-      "status": "PARTIAL_CONCRETE",
-      "branch": "attack/t1d-global-physical-20260922",
-      "proved": [
-        "source-end scan",
-        "physical move sequences",
-        "witness shuttles",
-        "physicalWitnessRead_correct",
-        "local neg/and/or semantics",
-        "functional reverse decoder"
+      "status": "LOCAL_PHYSICAL_LAYER_GREEN_CANDIDATE_PENDING_CI",
+      "proved_modules": [
+        "P01FullVerifierPhysicalMoves",
+        "P01FullVerifierPhysicalShuttles",
+        "P01FullVerifierPhysicalStackV2",
+        "P01FullVerifierStackPrimitiveMachine",
+        "P01FullVerifierInputShuttleV2",
+        "P01FullVerifierStackSemantics",
+        "P01FullVerifierPhysicalRefinement",
+        "P01FullVerifierPhysicalRefinementV2",
+        "P01FullVerifierPhysicalOps",
+        "P01PhysicalVerifierFoundations",
+        "P01PhysicalVerifierBudget",
+        "P01PhysicalVerifierUniformCosts"
       ],
-      "open": [
-        "Nonempty PhysicalVerifierRealization",
-        "single fixed finite-control TM with polynomial halting and physical_eq_logical for every circuit/witness"
-      ]
+      "open_exact": "Nonempty MCore.Real.P01FullVerifierPhysical.PhysicalVerifierRealization",
+      "direct_probe": "probe/P01PhysicalVerifierExpectedFailure.lean"
     },
     "integration": {
       "status": "OPEN_MATERIAL",
@@ -111,10 +114,10 @@
     "IntegratedPhaseBridgeCertificate: state-disjointness only; no tape/config transition or semantic preservation; not material integration"
   ],
   "next_exact_attack": [
-    "reuse parser, witness guess, indexed witness reader, stack primitives, source rewind and physical cost bounds as GREEN components",
-    "construct one fixed physical verifier TM realizing all EvalInstr transitions globally",
-    "prove its halting and verifyWitness equivalence",
-    "compose into P01MachineConstruction"
+    "construct one fixed finite-control physical verifier TM from the compiled physical primitives",
+    "prove its global HaltsWithin bound using the existing cubic budget",
+    "prove physical_eq_logical globally",
+    "integrate parser + certified witness guess + physical verifier into P01MachineConstruction"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
   "material_status": "OPEN_MATH",
