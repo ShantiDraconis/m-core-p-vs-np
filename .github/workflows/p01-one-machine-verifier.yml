@@ -1,0 +1,43 @@
+name: ATK P01 one-machine verifier
+
+on:
+  push:
+    branches:
+      - atk/next-pnp-one-machine-verifier-20260929
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve dependencies
+        run: lake update
+      - name: Build physical verifier kernel
+        run: |
+          lake build             MCore.Real.P01FullVerifierMachine             MCore.Real.P01FullVerifierPhysical             MCore.Real.P01FullVerifierPhysicalControl             MCore.Real.P01FullVerifierPhysicalMoves             MCore.Real.P01FullVerifierPhysicalOps             MCore.Real.P01FullVerifierPhysicalRefinement             MCore.Real.P01FullVerifierPhysicalRefinementV2             MCore.Real.P01FullVerifierPhysicalShuttles             MCore.Real.P01FullVerifierPhysicalStackV2             MCore.Real.P01FullVerifierSourceRewind             MCore.Real.P01FullVerifierStackPrimitiveMachine             MCore.Real.P01PhysicalVerifierBudget             MCore.Real.P01PhysicalVerifierFoundations             MCore.Real.P01PhysicalVerifierUniformCosts             MCore.Real.P01WitnessIndexedReadGlobal
+      - name: Exact frontier type
+        run: |
+          cat > P01OneMachineFrontier.lean <<'EOF'
+          import MCore.Real.P01FullVerifierPhysical
+          open MCore.Real
+          #check P01FullVerifierPhysical.PhysicalVerifierRealization
+          #check P01FullVerifierPhysical.PhysicalVerifierGap
+          EOF
+          lake env lean P01OneMachineFrontier.lean
+      - name: Reject proof escapes
+        run: |
+          set -euo pipefail
+          PAT='(:=[[:space:]]*sorry([^[:alnum:]_]|$)|by[[:space:]]+sorry([^[:alnum:]_]|$)|^[[:space:]]*sorry([^[:alnum:]_]|$)|(^|[^[:alnum:]_])admit([^[:alnum:]_]|$)|^[[:space:]]*(axiom|constant|constants)[[:space:]])'
+          if grep -nE "$PAT"             lean/MCore/Real/P01FullVerifierPhysical*.lean             lean/MCore/Real/P01PhysicalVerifier*.lean             lean/MCore/Real/P01WitnessIndexedReadGlobal.lean; then
+            echo "proof escape found"
+            exit 1
+          fi
