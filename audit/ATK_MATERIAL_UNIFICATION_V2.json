@@ -2,10 +2,10 @@
   "schema": "ATK_MATERIAL_UNIFICATION_V2",
   "problem": "P_VS_NP",
   "canonical_type": "∃ L, NP L ∧ ¬ P L",
-  "canonical_type_status": "TYPED_ABSTRACT_INTERFACE",
-  "standard_object_binding": "PARTIAL_CANONICAL_SAT_LAYER_PRESENT",
-  "direct_probe": "material separation producer must derive ¬P for a concrete standard language",
-  "direct_probe_expected": "FAIL_UNTIL_INHABITED",
+  "canonical_type_status": "TYPED_ABSTRACT_INTERFACE_OFFICIAL_MODEL_UNBOUND",
+  "standard_object_binding": "TYPE_BINDING_RESIDUE: no kernel binding of ClassicalComplexityInterface.inP/inNP to the fixed official polynomial-time machine model",
+  "direct_probe": "BLOCKED_UNTIL_OFFICIAL_MODEL_BINDING",
+  "direct_probe_expected": "TYPE_BINDING_RESIDUE",
   "adversarial_fences": [
     "LOWERBOUNDWITNESS_NOT_IN_P_FIELD",
     "ENDPOINT_EQUIVALENT_HYPOTHESIS",
@@ -23,12 +23,13 @@
     "P01 operational prefix",
     "PhysicalVerifierRealization target",
     "verified-relation machinery",
-    "barrier audit"
+    "barrier audit",
+    "PhysicalVerifierRealization type from frozen/p01-physical-realization-green-058f574b is a concrete NP-side prerequisite but is not inhabited there"
   ],
   "next_material_producer": [
-    "bind one concrete standard language L",
-    "derive NP L from canonical verified machinery",
-    "derive ¬ P L independently without LowerBoundWitness.not_in_p"
+    "bind ClassicalComplexityInterface to one fixed official deterministic/nondeterministic polynomial-time machine model",
+    "reuse canonical SAT witness/verifier machinery to establish the NP side in that same model",
+    "derive genuine ¬P SAT (or another concrete NP language) without a not_in_p field"
   ],
   "red_incorporation_policy": {
     "RED_INFRA": "DISCARD_AFTER_FIX",
