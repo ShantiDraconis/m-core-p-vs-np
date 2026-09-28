@@ -325,13 +325,19 @@ theorem readFuel_le_timeBound
   have hn_sq : n ^ 2 ≤ q := by
     unfold q
     exact Nat.pow_le_pow_left (by omega) 2
+  have hpos : 0 < n + 2 := by omega
+  have hmul : n + 2 ≤ (n + 2) * (n + 2) := by
+    exact Nat.le_mul_of_pos_right (n + 2) hpos
   have hn_q : n ≤ q := by
+    have hn : n ≤ n + 2 := by omega
     unfold q
-    exact Nat.le_trans (by omega)
-      (Nat.le_self_pow (n := 2) (by decide) (n + 2))
+    rw [Nat.pow_two]
+    exact Nat.le_trans hn hmul
   have h1_q : 1 ≤ q := by
+    have h1 : 1 ≤ n + 2 := by omega
     unfold q
-    exact Nat.one_le_pow 2 (n + 2) (by omega)
+    rw [Nat.pow_two]
+    exact Nat.le_trans h1 hmul
   have hbase :
       2 * n ^ 2 + 5 * n + 3 ≤ 16 * q := by
     have h2 := Nat.mul_le_mul_left 2 hn_sq
