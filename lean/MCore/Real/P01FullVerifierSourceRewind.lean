@@ -200,9 +200,9 @@ theorem sourceRewind_run_prepared_nonempty
     (witness : BitString) (b : Bool) (bs : BitString) :
     sourceRewindMachine.run ((b :: bs).length + 2)
       { state := enterSource, tape := sourceEndTape witness (b :: bs) } =
-      { state := rewindHalt, tape := preparedTape witness (b :: bs) } := by
+      { state := rewindHalt, tape := P01WitnessPreservingPrep.preparedTape witness (b :: bs) } := by
   rw [sourceRewind_run]
-  simp [preparedTape, Tape.move, List.map_append, List.append_assoc]
+  simp [P01WitnessPreservingPrep.preparedTape, Tape.move, List.map_append, List.append_assoc]
 
 theorem sourceRewind_halts_nonempty
     (witness : BitString) (b : Bool) (bs : BitString) :
