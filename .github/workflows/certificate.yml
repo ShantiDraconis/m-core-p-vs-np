@@ -40,6 +40,7 @@ jobs:
           lake build MCore.BackwardAudit.ClosedDiscriminant \
             MCore.BackwardAudit.StartToMiddle \
             MCore.BackwardAudit.FinalToMiddle \
+            MCore.BackwardAudit.OrientedWitnessBoundary \
             MCore.BackwardAudit.OrientedWitnessBoundary
 
       - name: Build umbrella target
