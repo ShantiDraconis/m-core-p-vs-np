@@ -1,3 +1,4 @@
+import Init.Data.Nat.Lemmas
 import MCore.Real.P01WitnessIndexedReadProof
 import MCore.Real.MachineRunLemmas
 
