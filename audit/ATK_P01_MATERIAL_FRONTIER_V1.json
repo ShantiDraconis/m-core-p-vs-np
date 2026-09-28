@@ -65,6 +65,17 @@
       "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI_HEAD",
       "theorem": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear",
       "content": "real three-state TM halts from canonical source-end tape in source.length + 2"
+    },
+    "indexed_witness_read": {
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "machine": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine",
+      "theorems": [
+        "MCore.Real.P01WitnessIndexedReadMachine.read_zero_false",
+        "MCore.Real.P01WitnessIndexedReadMachine.read_zero_true",
+        "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_state",
+        "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_halts"
+      ],
+      "content": "fixed Fin-6 TM reads selected witness cell without storing i in finite control; arbitrary blank seek padding halts and classifies bit"
     }
   },
   "permanent_fences": [
@@ -75,11 +86,9 @@
     "IntegratedPhaseBridgeCertificate: state-disjointness only; no tape/config transition or semantic preservation; not material integration"
   ],
   "next_exact_attack": [
-    "define one fixed finite-control verifier TM whose transition function realizes the already-proved stack/shuttle/input-read operations",
-    "prove global verifier HaltsWithin under the certified polynomial budget",
-    "prove verifier physical_eq_logical for every circuit/witness",
-    "define actual parser-to-witness and witness-to-verifier configuration transitions on one integrated NTM",
-    "prove the integrated NTM halts and accepts iff SATBits"
+    "complete full indexed-read certificate from unary index consumption plus witnessSeek_run_halts",
+    "construct one fixed physical verifier TM that composes indexed read with stack primitives and source rewind",
+    "compose certified parser + guess + verifier into P01MachineConstruction"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
   "material_status": "OPEN_MATH"
