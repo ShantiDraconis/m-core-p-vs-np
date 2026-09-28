@@ -12,7 +12,7 @@ structure IntegralBehavior where
   f : ℝ → ℝ
   integrable : ∀ a b : ℝ, IntervalIntegrable f volume a b
 
-def accumulated (I : IntegralBehavior) (a x : ℝ) : ℝ :=
+noncomputable def accumulated (I : IntegralBehavior) (a x : ℝ) : ℝ :=
   ∫ t in a..x, I.f t
 
 def affineDifferential (m c : ℝ) : DifferentialBehavior where
@@ -26,7 +26,7 @@ def constantIntegral (c : ℝ) : IntegralBehavior where
   f := fun _ => c
   integrable := by
     intro a b
-    exact intervalIntegrable_const
+    exact intervalIntegrable_const (μ := volume) (a := a) (b := b) (c := c)
 
 structure EnergyBehavior where
   potential : ℝ → ℝ
