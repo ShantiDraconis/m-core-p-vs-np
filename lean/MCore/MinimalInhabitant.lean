@@ -1,12 +1,26 @@
-import MCore.BackwardAudit.OrientedWitnessBoundary
+import MCore.Real.CanonicalCircuitBits
+import MCore.Real.CanonicalFinalProof
 
-namespace MCore.BackwardAudit
+namespace MCore
 
-/-- Single authoritative abstract shape. MATERIAL_GREEN additionally requires
-    binding P/NP/L to the repository's concrete standard complexity model. -/
-def MinimalSeparationInhabitant
-    {Language : Type}
-    (P NP : Language → Prop) : Prop :=
-  ∃ L : Language, NP L ∧ ¬ P L
+open Real
+open Real.CanonicalFinalProof
+open Real.CanonicalSATBoundary
+open Real.CanonicalCircuitBits
 
-end MCore.BackwardAudit
+/-- Canonical material P-vs-NP target on the fixed bitstring SAT encoding.
+The NP side and deterministic universal-failure side refer to the SAME language. -/
+def MinimalSeparationInhabitant : Prop :=
+  InNP (SATBits circuitBitEncoding) ∧
+  UniversalFailure (SATBits circuitBitEncoding)
+
+/-- Pure transport only: a genuine inhabitant of the canonical target closes
+the internal P≠NP statement. -/
+theorem minimalSeparationInhabitant_closes
+    (h : MinimalSeparationInhabitant) :
+    PneqNP :=
+  target_failure_implies_p_ne_np h.1 h.2
+
+#print axioms MCore.minimalSeparationInhabitant_closes
+
+end MCore
