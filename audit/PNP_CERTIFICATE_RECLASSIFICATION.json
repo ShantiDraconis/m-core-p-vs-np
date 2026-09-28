@@ -1,0 +1,23 @@
+{
+  "schema": "ATK_MATERIAL_RECLASSIFICATION_V1",
+  "problem": "P_VS_NP",
+  "frontier": "genuine complexity lower bound producing a concrete language in NP and not in P",
+  "endpoint_packaging_found": {
+    "type": "MCore.BackwardAudit.LowerBoundWitness",
+    "field": "not_in_p : ¬ P language",
+    "classification": "CONDITIONAL_WRAPPER"
+  },
+  "transports": [
+    "LowerBoundWitness.toSeparationWitness",
+    "typeB_closes_separation",
+    "oriented_material_closes_terminal"
+  ],
+  "stable_hole": "construct ¬ P L independently for a concrete standard language/model, with L ∈ NP",
+  "fences": [
+    "no not_in_p field may count as producer",
+    "no endpoint-equivalent hypothesis may count as producer",
+    "transport from LowerBoundWitness is GREEN_TRANSPORT only",
+    "only an independently derived lower bound can be MATERIAL_GREEN"
+  ],
+  "material_status": "OPEN_MATH"
+}
