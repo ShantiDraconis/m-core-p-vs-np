@@ -111,10 +111,11 @@ theorem eraseSeek_run
       rightScanConfig 1 (pad + extra) tail n := by
   induction pad generalizing extra with
   | zero =>
-      rw [show extra + 1 = Nat.succ extra by omega, List.replicate_succ]
+      simp only [Nat.zero_add]
       simp [eraseSeekConfig, rightScanConfig, witnessIndexedReadMachine,
-        TM.run, TM.step, Tape.write, Tape.move,
-        Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+        TM.run, TM.step, Tape.write]
+      rw [show extra + 1 = Nat.succ extra by omega, List.replicate_succ]
+      rfl
   | succ pad ih =>
       rw [show Nat.succ pad + 1 = (pad + 1) + 1 by omega]
       rw [TM.run]
@@ -144,7 +145,7 @@ theorem rightScan_run
         simp [rightScanConfig, markerConfig, encodeNat,
           witnessIndexedReadMachine, TM.run, TM.step, Tape.write, Tape.move,
           Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] <;>
-        rw [show leftPad + 1 = Nat.succ leftPad by omega, List.replicate_succ]
+        rfl
   | succ rightPad ih =>
       rw [show Nat.succ rightPad + 1 = (rightPad + 1) + 1 by omega]
       rw [TM.run]
@@ -193,7 +194,7 @@ theorem markerFuel_succ (pad n : Nat) :
     markerFuel pad (n + 1) =
       (2 * pad + 3) + markerFuel (pad + 2) n := by
   unfold markerFuel
-  simp [pow_two, Nat.mul_add, Nat.add_mul]
+  simp [Nat.pow_succ, Nat.mul_add, Nat.add_mul]
   omega
 
 theorem readFuel_zero :
@@ -318,7 +319,7 @@ theorem readFuel_le_timeBound
       witnessIndexedReadTimeBound
         (witness.length + (encodeNat n).length) := by
   simp [readFuel, witnessIndexedReadTimeBound,
-    CanonicalSATWitness.encodeNat_length, pow_two, Nat.mul_add, Nat.add_mul]
+    CanonicalSATWitness.encodeNat_length, Nat.pow_succ, Nat.mul_add, Nat.add_mul]
   omega
 
 theorem witnessBits_getD
