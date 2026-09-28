@@ -3,6 +3,8 @@ import MCore.Real.OpenMathCore.Topology
 
 namespace MCore.Real.OpenMathCore
 
+open MeasureTheory
+
 structure DifferentialBehavior where
   f : ℝ → ℝ
   df : ℝ → ℝ
