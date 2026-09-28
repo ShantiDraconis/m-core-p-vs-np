@@ -52,3 +52,7 @@ import MCore.Real.CanonicalSATRecursiveParserSimulation
 import MCore.Real.MachineRunLemmas
 import MCore.Real.CanonicalSATParserWorkScanProof
 import MCore.Real.CanonicalSATParserRewindProof
+
+import MCore.Real.P01WitnessGuessExecution
+import MCore.Real.P01FullVerifierStackPrimitiveMachine
+import MCore.Real.P01FullVerifierInputShuttleV2
