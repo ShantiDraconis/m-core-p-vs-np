@@ -52,9 +52,9 @@ structure RepelAndPull (F : ℝ → ℝ) (mid : ℝ) where
   strict_contraction_outside :
     ∀ x ∈ Set.Icc (0 : ℝ) 1, x ≠ mid → |F x - mid| < |x - mid|
 
-def midpoint : ℝ := 1 / 2
+noncomputable def midpoint : ℝ := 1 / 2
 
-def midpointMap (x : ℝ) : ℝ := (x + midpoint) / 2
+noncomputable def midpointMap (x : ℝ) : ℝ := (x + midpoint) / 2
 
 theorem midpointMap_sub_midpoint (x : ℝ) :
     midpointMap x - midpoint = (x - midpoint) / 2 := by
@@ -69,8 +69,9 @@ theorem midpointMap_contraction :
       maps_interval := ?_
       fixes_mid := ?_ }
   · intro a b
-    simp [midpointMap, midpoint]
-    rw [show (a + 1 / 2) / 2 - (b + 1 / 2) / 2 = (a - b) / 2 by ring]
+    rw [show midpointMap a - midpointMap b = (a - b) / 2 by
+      unfold midpointMap midpoint
+      ring]
     rw [abs_div]
     norm_num
   · intro x hx
@@ -93,16 +94,16 @@ theorem midpointMap_repelPull :
   · norm_num [midpointMap, midpoint]
   · norm_num [midpointMap, midpoint]
   · intro x hx
-    rw [midpointMap_sub_midpoint]
-    have hne : x - midpoint ≠ 0 := sub_ne_zero.mpr hx
-    positivity
+    rw [midpointMap_sub_midpoint, abs_div]
+    have hnum : 0 < |x - midpoint| := abs_pos.mpr (sub_ne_zero.mpr hx)
+    have hden : 0 < |(2 : ℝ)| := by norm_num
+    exact div_pos hnum hden
   · intro x _
     rw [midpointMap_sub_midpoint]
     rw [abs_div]
     norm_num
   · intro x _ hx
-    rw [midpointMap_sub_midpoint]
-    rw [abs_div]
+    rw [midpointMap_sub_midpoint, abs_div]
     have hpos : 0 < |x - midpoint| := abs_pos.mpr (sub_ne_zero.mpr hx)
     norm_num
     linarith
@@ -117,7 +118,8 @@ def ratioLaw : RatioTendsToOne ratioX ratioY where
   ratio_tends_one := by
     have hEq : (fun n : ℕ => ratioY n / ratioX n) = fun _ => (1 : ℝ) := by
       funext n
-      simp [ratioX, ratioY]
+      have hne : (n : ℝ) + 1 ≠ 0 := by positivity
+      simp [ratioX, ratioY, hne]
     rw [hEq]
     exact tendsto_const_nhds
 
@@ -146,16 +148,19 @@ def universalLaw_to_separation
   L.separation
 
 noncomputable def UniversalSeparationLaw.toTerminalLaw
-    (L : UniversalSeparationLaw) : TotalCandidateSeparationLaw where
-  witness := fun M =>
-    if h : DeclaredClockTotal M then
-      Classical.choose (L.separation M h)
-    else
-      []
-  separates := by
-    intro M hTotal
-    simp only [dif_pos hTotal]
-    exact Classical.choose_spec (L.separation M hTotal)
+    (L : UniversalSeparationLaw) : TotalCandidateSeparationLaw := by
+  classical
+  refine
+    { witness := fun M =>
+        if h : DeclaredClockTotal M then
+          Classical.choose (L.separation M h)
+        else
+          []
+      separates := ?_ }
+  intro M hTotal
+  dsimp
+  rw [dif_pos hTotal]
+  exact Classical.choose_spec (L.separation M hTotal)
 
 /-- Safe promotion: a law that actually carries the universal separation proof
 closes the existing fail-closed terminal gap. -/
