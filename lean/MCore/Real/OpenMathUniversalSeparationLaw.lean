@@ -162,6 +162,34 @@ noncomputable def UniversalSeparationLaw.toTerminalLaw
   rw [dif_pos hTotal]
   exact Classical.choose_spec (L.separation M hTotal)
 
+
+/-- Converse firewall: once T5F itself is supplied, every geometric/asymptotic
+    field of UniversalSeparationLaw is already constructible.  Hence the
+    structure is not a weaker producer; its only open mathematical content is
+    exactly T5FCore. -/
+noncomputable def universalLawOfT5F
+    (h : T5FCore) : UniversalSeparationLaw where
+  mid := midpoint
+  mid_mem := by norm_num [midpoint]
+  F := midpointMap
+  q := 1 / 2
+  contraction := midpointMap_contraction
+  repelPull := midpointMap_repelPull
+  begin_closed := closedBegin_isClosed
+  mid_closed := closedMid_isClosed midpoint
+  end_closed := closedEnd_isClosed
+  interval_closed := closedInterval_isClosed
+  ratio := ratioLaw
+  separation := h
+
+theorem universalLaw_iff_t5F :
+    Nonempty UniversalSeparationLaw ↔ T5FCore := by
+  constructor
+  · rintro ⟨L⟩
+    exact L.separation
+  · intro h
+    exact ⟨universalLawOfT5F h⟩
+
 /-- Safe promotion: a law that actually carries the universal separation proof
 closes the existing fail-closed terminal gap. -/
 theorem universalLaw_closes_t5F
@@ -190,6 +218,7 @@ theorem semanticDiagonal_fixedPoint_gives_mismatch
 #print axioms MCore.Real.OpenMathUniversalSeparationLaw.midpointMap_contraction
 #print axioms MCore.Real.OpenMathUniversalSeparationLaw.midpointMap_repelPull
 #print axioms MCore.Real.OpenMathUniversalSeparationLaw.ratioLaw
+#print axioms MCore.Real.OpenMathUniversalSeparationLaw.universalLaw_iff_t5F
 #print axioms MCore.Real.OpenMathUniversalSeparationLaw.universalLaw_closes_t5F
 #print axioms MCore.Real.OpenMathUniversalSeparationLaw.diagonalCompiler_closes_t5F
 
