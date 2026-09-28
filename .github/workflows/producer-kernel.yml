@@ -3,7 +3,7 @@ name: ATK PNP producer kernel
 on:
   push:
     branches:
-      - atk/producer-pnp-20260928
+      - atk/pnp-p01-parser-reuse-20260928
   workflow_dispatch:
 
 permissions:
@@ -22,12 +22,12 @@ jobs:
       - name: Resolve dependencies
         run: lake update
       - name: Build exact producer frontier
-        run: lake build MCore.Real.OpenMathCore.SATCircuitCompiler MCore.Real.OpenMathCore.KleeneExtensionalProducer MCore.BackwardAudit.MaterialOrientationKernel MCore.Real.OpenMathCore.SATCircuitCompiler MCore.Real.SemanticSelfQuotation
+        run: lake build MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.CanonicalSATSlotParserSpec MCore.Real.CanonicalSATParserMachine MCore.Real.CanonicalSATParserInitProof MCore.Real.CanonicalSATParserHeadProof MCore.Real.CanonicalSATParserWorkScanProof MCore.Real.CanonicalSATParserLeafPopProof MCore.Real.CanonicalSATParserLeafReturnProof MCore.Real.CanonicalSATParserRewindProof MCore.Real.CanonicalSATParserReturnProof MCore.Real.CanonicalSATParserPhaseMacroProof MCore.Real.CanonicalSATParserBinaryHeadProof MCore.Real.CanonicalSATParserTerminalBranches MCore.Real.CanonicalSATRecursiveParserSimulation MCore.Real.CanonicalSATParserNTM MCore.Real.CanonicalSATWitnessGuessNTM MCore.Real.P01VerifiedRelation MCore.Real.P01PolynomialBudgetAlgebra MCore.Real.P01FullVerifierEvalLocal MCore.Real.P01FinalCertificate
       - name: Reject proof escapes in producer sources
         run: |
           set -euo pipefail
           PAT='(:=[[:space:]]*sorry([^[:alnum:]_]|$)|by[[:space:]]+sorry([^[:alnum:]_]|$)|^[[:space:]]*sorry([^[:alnum:]_]|$)|(^|[^[:alnum:]_])admit([^[:alnum:]_]|$)|^[[:space:]]*(axiom|constant|constants)[[:space:]])'
-          if grep -nE "$PAT" "lean/MCore/Real/OpenMathCore/KleeneExtensionalProducer.lean" "lean/MCore/BackwardAudit/MaterialOrientationKernel.lean" "lean/MCore/Real/OpenMathCore/SATCircuitCompiler.lean" "lean/MCore/Real/SemanticSelfQuotation.lean"; then
+          if grep -nE "$PAT" "lean/MCore/Real/CanonicalSATFrameMachineV2.lean" "lean/MCore/Real/CanonicalSATParserMachine.lean" "lean/MCore/Real/CanonicalSATRecursiveParserSimulation.lean" "lean/MCore/Real/CanonicalSATParserNTM.lean" "lean/MCore/Real/CanonicalSATWitnessGuessNTM.lean" "lean/MCore/Real/P01VerifiedRelation.lean" "lean/MCore/Real/P01FinalCertificate.lean"; then
             echo "producer proof escape found"
             exit 1
           fi
