@@ -58,3 +58,5 @@ import MCore.Real.P01FullVerifierStackPrimitiveMachine
 import MCore.Real.P01FullVerifierInputShuttleV2
 
 import MCore.Real.P01SourceRewindGlobal
+
+import MCore.Real.P01FullVerifierShuttleRoundTripV2
