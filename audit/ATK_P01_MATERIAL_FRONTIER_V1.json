@@ -104,6 +104,12 @@
         "run_id": 36495751839,
         "conclusion": "SUCCESS"
       }
+    },
+    "witness_indexed_read": {
+      "status": "MATERIAL_GREEN",
+      "theorem": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadGap_closed",
+      "certificate": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadCertificate",
+      "content": "fixed Fin-6 TM, polynomial time bound, global halting, exact indexed witness-bit correctness"
     }
   },
   "permanent_fences": [
@@ -111,13 +117,14 @@
     "legacy ParserMachineCertificate/WitnessGuessMachineCertificate/VerifierMachineCertificate: trivially inhabitable component shells",
     "abstract LowerBoundWitness.not_in_p",
     "alternate language/model substitution",
-    "IntegratedPhaseBridgeCertificate: state-disjointness only; no tape/config transition or semantic preservation; not material integration"
+    "IntegratedPhaseBridgeCertificate: state-disjointness only; no tape/config transition or semantic preservation; not material integration",
+    "historical IntegratedPhaseBridgeCertificate/state-only bridge: trivially inhabitable; carries no tape/transition/halting/semantic content"
   ],
   "next_exact_attack": [
-    "construct one fixed finite-control physical verifier TM from the compiled physical primitives",
-    "prove its global HaltsWithin bound using the existing cubic budget",
-    "prove physical_eq_logical globally",
-    "integrate parser + certified witness guess + physical verifier into P01MachineConstruction"
+    "construct one fixed global physical verifier TM using the already-closed indexed witness read + stack primitives + physical shuttles + local evaluator refinements",
+    "prove global HaltsWithin under the existing physicalVerifierTimeBound",
+    "prove physical_eq_logical for every canonical circuit/witness",
+    "integrate parser + witness guess + physical verifier into P01MachineConstruction"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
   "material_status": "OPEN_MATH",
