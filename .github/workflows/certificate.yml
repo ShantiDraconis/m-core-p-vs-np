@@ -163,6 +163,7 @@ jobs:
           lake env lean lean/MCore/BackwardAudit/StartToMiddle.lean 2>&1 | tee audit/StartToMiddle.log
           lake env lean lean/MCore/BackwardAudit/FinalToMiddle.lean 2>&1 | tee audit/FinalToMiddle.log
           lake env lean lean/MCore/BackwardAudit/OrientedWitnessBoundary.lean 2>&1 | tee audit/OrientedWitnessBoundary.log
+          lake env lean audit/ATK_LOWER_BOUND_WITNESS_MODEL_BINDING_COUNTERAUDIT.lean 2>&1 | tee audit/LowerBoundWitnessModelBinding.log
           lake env lean audit/repro_PNP.lean 2>&1 | tee audit/repro_PNP.log
 
           if grep -R -n -E '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' --include='*.lean' audit lean/MCore/BackwardAudit; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
