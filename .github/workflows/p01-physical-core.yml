@@ -1,0 +1,59 @@
+name: P01 physical-core scoped
+
+on:
+  push:
+    branches:
+      - atk/t1-d-terminal-construction-20260922
+    paths:
+      - 'lean/MCore/Real/PhysicalMachineCore.lean'
+      - 'lean/MCore/Real/P01PhysicalRealizationAssembly.lean'
+      - 'lean/MCore/Real/P01FullVerifier**'
+      - 'lean/MCore/Real/P01PhysicalVerifier**'
+      - '.github/workflows/p01-physical-core.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  physical-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+
+      - name: Resolve pinned dependencies
+        run: lake update
+
+      - name: Kernel-check exact physical producer contract
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.PhysicalMachineCore
+          lake build MCore.Real.P01PhysicalRealizationAssembly
+          lake build MCore.Real.P01T1DPhysicalAssembly
+          lake build MCore.Real.P01T1DGlobalPhysical
+
+      - name: Reject proof escapes in scoped sources
+        run: |
+          set -euo pipefail
+          files=(
+            lean/MCore/Real/PhysicalMachineCore.lean
+            lean/MCore/Real/P01PhysicalRealizationAssembly.lean
+            lean/MCore/Real/P01T1DPhysicalAssembly.lean
+            lean/MCore/Real/P01T1DGlobalPhysical.lean
+          )
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "${files[@]}"; then
+            exit 1
+          fi
+          if grep -nE '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' "${files[@]}"; then
+            exit 1
+          fi
+
+      - name: Axiom audit exact transport
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/PhysicalMachineCore.lean 2>&1 | tee /tmp/p01-physical-core.log
+          if grep -F 'sorryAx' /tmp/p01-physical-core.log; then
+            exit 1
+          fi
