@@ -16,5 +16,6 @@ jobs:
           lint: false
       - run: lake update
       - run: lake exe cache get || true
+      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary
       - run: lake env lean lean/MCore/MinimalInhabitant.lean
       - run: lake env lean lean/MCore/BackwardAudit/MaterialProducerGate.lean
