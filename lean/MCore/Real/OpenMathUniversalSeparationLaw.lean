@@ -70,14 +70,17 @@ theorem midpointMap_contraction :
       maps_interval := ?_
       fixes_mid := ?_ }
   · intro a b
-    rw [show midpointMap a - midpointMap b = (a - b) / 2 by
-      unfold midpointMap midpoint
-      ring]
-    rw [abs_div]
-    have htwo : |(2 : ℝ)| = 2 := by norm_num
-    rw [htwo]
-    have hEq : |a - b| / (2 : ℝ) = (1 / 2 : ℝ) * |a - b| := by ring
-    rw [hEq]
+    calc
+      |midpointMap a - midpointMap b|
+          = |(a - b) / 2| := by
+              congr 1
+              unfold midpointMap midpoint
+              ring
+      _ = |a - b| / 2 := by
+            rw [abs_div]
+            norm_num
+      _ = (1 / 2 : ℝ) * |a - b| := by ring
+      _ ≤ (1 / 2 : ℝ) * |a - b| := le_rfl
   · intro x hx
     rcases hx with ⟨hx0, hx1⟩
     constructor
