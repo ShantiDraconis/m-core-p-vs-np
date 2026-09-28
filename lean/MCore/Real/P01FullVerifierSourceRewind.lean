@@ -1,4 +1,5 @@
 import MCore.Real.P01FullVerifierPhysicalShuttles
+import MCore.Real.MachineRunLemmas
 
 namespace MCore
 namespace Real
@@ -85,43 +86,96 @@ theorem sourceRewind_separator_step
 #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_separator_step
 
 
-/-- Exact scan configuration after entering the source-end blank.  The unread
-source is represented nearest-head first, so this recursion follows the real
-leftward tape motion. -/
+/-- Exact scan configuration for the unread reversed source. -/
 def rewindScanConfig
     (witness : BitString)
-    (remaining : List Bool) :
+    (remaining : BitString)
+    (right : List (Option Bool)) :
     Configuration RewindState (Option Bool) :=
   match remaining with
   | [] =>
       { state := scanLeft,
-        tape := { left := witness.map some,
-                  head := none,
-                  right := [] } }
+        tape := { left := witness.map some, head := none, right := right } }
   | b :: bs =>
       { state := scanLeft,
         tape := { left := bs.map some ++ none :: witness.map some,
                   head := some b,
-                  right := [] } }
+                  right := right } }
 
-/-- From a canonical source-end tape, the rewind machine halts within the
-linear bound.  This is a genuine machine execution theorem, not a budget-only
-certificate. -/
+@[simp] theorem rewindScanConfig_state
+    (witness remaining : BitString)
+    (right : List (Option Bool)) :
+    (rewindScanConfig witness remaining right).state = scanLeft := by
+  cases remaining <;> rfl
+
+theorem rewindScan_step_cons
+    (witness : BitString)
+    (b : Bool) (bs : BitString)
+    (right : List (Option Bool)) :
+    sourceRewindMachine.step
+      (rewindScanConfig witness (b :: bs) right) =
+    rewindScanConfig witness bs (some b :: right) := by
+  cases bs <;>
+    simp [rewindScanConfig, sourceRewindMachine, enterSource, scanLeft,
+      rewindHalt, TM.step, Tape.write, Tape.move, List.append_assoc]
+
+theorem rewind_scan_run
+    (witness remaining : BitString)
+    (right : List (Option Bool)) :
+    sourceRewindMachine.run remaining.length
+      (rewindScanConfig witness remaining right) =
+    rewindScanConfig witness []
+      (remaining.reverse.map some ++ right) := by
+  induction remaining generalizing right with
+  | nil =>
+      rfl
+  | cons b bs ih =>
+      rw [List.length_cons]
+      simp only [TM.run, rewindScanConfig_state, scanLeft_not_halted,
+        Bool.false_eq_true, if_false]
+      rw [rewindScan_step_cons]
+      rw [ih]
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+theorem sourceRewind_enter_to_scan
+    (witness source : BitString) :
+    sourceRewindMachine.step
+      { state := enterSource, tape := sourceEndTape witness source } =
+    rewindScanConfig witness source.reverse [none] := by
+  cases h : source.reverse with
+  | nil =>
+      simp [sourceEndTape, rewindScanConfig, sourceRewindMachine,
+        enterSource, scanLeft, TM.step, Tape.write, Tape.move, h]
+  | cons b bs =>
+      simp [sourceEndTape, rewindScanConfig, sourceRewindMachine,
+        enterSource, scanLeft, TM.step, Tape.write, Tape.move, h,
+        List.append_assoc]
+
+theorem sourceRewind_run_one_enter
+    (witness source : BitString) :
+    sourceRewindMachine.run 1
+      { state := enterSource, tape := sourceEndTape witness source } =
+    rewindScanConfig witness source.reverse [none] := by
+  rw [TM.run]
+  simp only [enterSource_not_halted, Bool.false_eq_true, if_false]
+  exact sourceRewind_enter_to_scan witness source
+
+/-- From a canonical source-end tape, the real rewind TM halts within the
+linear bound n+2. -/
 theorem sourceRewind_halts_linear
     (witness source : BitString) :
     sourceRewindMachine.HaltsWithin
       (source.length + 2)
       { state := enterSource, tape := sourceEndTape witness source } := by
   unfold TM.HaltsWithin
-  induction source using List.reverseRecOn with
-  | nil =>
-      simp [sourceRewindMachine, sourceEndTape, enterSource, scanLeft,
-        rewindHalt, TM.run, TM.step, Tape.write, Tape.move]
-  | append_singleton rest b ih =>
-      simp [sourceEndTape, List.reverse_append, sourceRewindMachine,
-        enterSource, scanLeft, rewindHalt, TM.run, TM.step, Tape.write,
-        Tape.move]
-      omega
+  rw [show source.length + 2 = 1 + (source.length + 1) by omega]
+  rw [MachineRunLemmas.run_add]
+  rw [sourceRewind_run_one_enter]
+  rw [show source.length + 1 = source.reverse.length + 1 by simp]
+  rw [MachineRunLemmas.run_add]
+  rw [rewind_scan_run]
+  simp [rewindScanConfig, sourceRewindMachine, enterSource, scanLeft,
+    rewindHalt, TM.run, TM.step, Tape.write, Tape.move]
 
 #print axioms MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear
 
