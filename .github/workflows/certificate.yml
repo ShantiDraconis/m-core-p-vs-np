@@ -155,7 +155,8 @@ jobs:
 
           lake build MCore.BackwardAudit.ClosedDiscriminant \
             MCore.BackwardAudit.StartToMiddle \
-            MCore.BackwardAudit.FinalToMiddle
+            MCore.BackwardAudit.FinalToMiddle \
+            MCore.BackwardAudit.OrientedWitnessBoundary
 
           lake env lean audit/FinalEndpoint.lean 2>&1 | tee audit/FinalEndpoint.log
           lake env lean audit/EndpointCompression.lean 2>&1 | tee audit/EndpointCompression.log
