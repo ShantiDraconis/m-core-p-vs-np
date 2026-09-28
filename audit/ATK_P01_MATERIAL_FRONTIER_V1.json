@@ -72,20 +72,12 @@
       }
     },
     "indexed_witness_read": {
-      "status": "MATERIAL_GREEN_FROZEN_REUSE",
-      "machine": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine",
-      "theorems": [
-        "MCore.Real.P01WitnessIndexedReadMachine.read_zero_false",
-        "MCore.Real.P01WitnessIndexedReadMachine.read_zero_true",
-        "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_state",
-        "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_halts"
-      ],
-      "content": "fixed Fin-6 TM reads selected witness cell without storing i in finite control; arbitrary blank seek padding halts and classifies bit",
-      "validation": {
-        "sha": "193721b2fdeb5a4881997c896827d962ca7ff930",
-        "run_id": 36495270517,
-        "conclusion": "SUCCESS"
-      }
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "source_branch": "atk/p01-indexed-read-global-20260928",
+      "object": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine",
+      "certificate": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadCertificate",
+      "closure": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadGap_closed",
+      "content": "fixed Fin 6 TM; polynomial quadratic bound; global halting and correctness for every valid witness index"
     },
     "physical_verifier_local_layer": {
       "status": "MATERIAL_GREEN_FROZEN_REUSE",
@@ -119,9 +111,10 @@
     "IntegratedPhaseBridgeCertificate: state-disjointness only; no tape/config transition or semantic preservation; not material integration"
   ],
   "next_exact_attack": [
-    "construct one fixed finite-control physical verifier TM whose transition runs implement the certified input/const/neg/and/or primitives",
-    "prove its total halting within physicalVerifierTimeBound and acceptance iff verifyWitness",
-    "use it in P01MachineConstruction together with the already-certified parser and witness guess phases"
+    "reuse parser, witness guess, indexed witness reader, stack primitives, source rewind and physical cost bounds as GREEN components",
+    "construct one fixed physical verifier TM realizing all EvalInstr transitions globally",
+    "prove its halting and verifyWitness equivalence",
+    "compose into P01MachineConstruction"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
   "material_status": "OPEN_MATH",
