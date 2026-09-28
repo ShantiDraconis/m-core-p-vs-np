@@ -320,16 +320,31 @@ theorem readFuel_le_timeBound
         (witness.length + (encodeNat n).length) := by
   rw [CanonicalSATWitness.encodeNat_length]
   unfold readFuel witnessIndexedReadTimeBound
+  let q : Nat := (n + 2) ^ 2
+  have hn_sq : n ^ 2 ≤ q := by
+    unfold q
+    exact Nat.pow_le_pow_left (by omega) 2
+  have hn_q : n ≤ q := by
+    unfold q
+    exact Nat.le_trans (by omega)
+      (Nat.le_self_pow (n := 2) (by decide) (n + 2))
+  have h1_q : 1 ≤ q := by
+    unfold q
+    exact Nat.one_le_pow 2 (n + 2) (by omega)
   have hbase :
-      2 * n ^ 2 + 5 * n + 3 ≤ 16 * (n + 2) ^ 2 := by
-    simp [Nat.pow_two, Nat.mul_add, Nat.add_mul,
-      Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
-    omega
+      2 * n ^ 2 + 5 * n + 3 ≤ 16 * q := by
+    have h2 := Nat.mul_le_mul_left 2 hn_sq
+    have h5 := Nat.mul_le_mul_left 5 hn_q
+    have h3 := Nat.mul_le_mul_left 3 h1_q
+    exact Nat.le_trans
+      (Nat.add_le_add (Nat.add_le_add h2 h5) h3)
+      (by omega)
   have harg : n + 2 ≤ witness.length + (n + 1) + 1 := by
     omega
-  have hsq : (n + 2) ^ 2 ≤ (witness.length + (n + 1) + 1) ^ 2 := by
+  have hsq : q ≤ (witness.length + (n + 1) + 1) ^ 2 := by
+    unfold q
     exact Nat.pow_le_pow_left harg 2
-  exact hbase.trans (Nat.mul_le_mul_left 16 hsq)
+  exact Nat.le_trans hbase (Nat.mul_le_mul_left 16 hsq)
 
 theorem witnessBits_getD
     {phi : CircuitK1.Circuit}
