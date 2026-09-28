@@ -34,15 +34,9 @@ theorem codingFirewallCandidate_injective :
   intro b c h
   funext n
   have hn := congrFun (congrArg PolyDTMCandidate.timeBound h) n
-  cases hb : b n <;> cases hc : c n
-  · rfl
-  · have h01 : (0 : Nat) = 1 := by
-      simpa [codingFirewallTimeBound, hb, hc] using hn
-    omega
-  · have h10 : (1 : Nat) = 0 := by
-      simpa [codingFirewallTimeBound, hb, hc] using hn
-    omega
-  · rfl
+  change codingFirewallTimeBound b n = codingFirewallTimeBound c n at hn
+  cases hb : b n <;> cases hc : c n <;>
+    simp_all [codingFirewallTimeBound]
 
 instance boolSequence_uncountable : Uncountable (Nat → Bool) := by
   rw [uncountable_iff_forall_not_surjective]
