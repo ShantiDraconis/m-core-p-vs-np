@@ -112,7 +112,7 @@ theorem eraseSeek_run
   induction pad generalizing extra with
   | zero =>
       simp [eraseSeekConfig, rightScanConfig, witnessIndexedReadMachine,
-        TM.run, TM.step, Tape.write, Tape.move,
+        TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
         Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
   | succ pad ih =>
       rw [show Nat.succ pad + 1 = (pad + 1) + 1 by omega]
@@ -190,8 +190,8 @@ theorem markerFuel_zero (pad : Nat) :
 theorem markerFuel_succ (pad n : Nat) :
     markerFuel pad (n + 1) =
       (2 * pad + 3) + markerFuel (pad + 2) n := by
-  unfold markerFuel
-  ring
+  simp [markerFuel, Nat.pow_two, Nat.mul_add, Nat.add_mul,
+    Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm] <;> omega
 
 theorem readFuel_zero :
     readFuel 0 = 3 := by
@@ -199,8 +199,8 @@ theorem readFuel_zero :
 
 theorem readFuel_succ (n : Nat) :
     readFuel (n + 1) = 5 + markerFuel 3 n := by
-  unfold readFuel markerFuel
-  ring
+  simp [readFuel, markerFuel, Nat.pow_two, Nat.mul_add, Nat.add_mul,
+    Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm] <;> omega
 
 theorem marker_zero_run_state
     (pad : Nat) (b : Bool) (tail : BitString) :
@@ -283,9 +283,11 @@ theorem indexedRead_run_state
       | nil =>
           simp at h
       | cons b tail =>
-          cases b <;>
-            simpa [readFuel] using
-              (if hval : b = false then read_zero_false tail else read_zero_true tail)
+          cases b with
+          | false =>
+              simpa [readFuel] using read_zero_false tail
+          | true =>
+              simpa [readFuel] using read_zero_true tail
   | succ n ih =>
       cases witness with
       | nil =>
@@ -315,8 +317,9 @@ theorem readFuel_le_timeBound
       witnessIndexedReadTimeBound
         (witness.length + (encodeNat n).length) := by
   simp [readFuel, witnessIndexedReadTimeBound,
-    CanonicalSATWitness.encodeNat_length]
-  nlinarith
+    CanonicalSATWitness.encodeNat_length, Nat.pow_two,
+    Nat.mul_add, Nat.add_mul, Nat.mul_assoc,
+    Nat.mul_comm, Nat.mul_left_comm] <;> omega
 
 theorem witnessBits_getD
     {phi : CircuitK1.Circuit}
@@ -324,8 +327,7 @@ theorem witnessBits_getD
     (witnessBits w).getD i false = w ⟨i, hi⟩ := by
   have hlen : i < (witnessBits w).length := by
     simpa [witnessBits_length] using hi
-  rw [List.getD_eq_getElem _ hlen]
-  simp [witnessBits]
+  simp [witnessBits, List.getD, hlen]
 
 def witnessIndexedReadCertificate : WitnessIndexedReadCertificate where
   stateCount := 5
