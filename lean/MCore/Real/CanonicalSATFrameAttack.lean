@@ -62,7 +62,7 @@ theorem decodeFrames_encodeFrames
   | nil => rfl
   | cons f fs ih =>
       cases f <;>
-        simp [encodeFrames, decodeFrames, decodeFrame, ih]
+        simp [encodeFrames, encodeFrame, decodeFrames, decodeFrame, ih]
 
 theorem encodeFrames_length
     (fs : List Frame) :
@@ -225,7 +225,7 @@ structure FrameTapeMachineCertificate where
     ∀ (f : Frame) (fs : List Frame),
       (machine.run
         (timeBound (popCommand (f :: fs)).length)
-        (initialTMConfig machine (popCommand (f :: fs))).tape =
+        (initialTMConfig machine (popCommand (f :: fs)))).tape =
       inputTape (encodeFrames fs)
 
 def FrameTapeOperationalGap : Prop :=
@@ -266,7 +266,7 @@ structure SemanticFrameTapeMachineCertificate where
         (encodeFrames fs)
         (machine.run
           (timeBound (popCommand (f :: fs)).length)
-          (initialTMConfig machine (popCommand (f :: fs))).tape
+          (initialTMConfig machine (popCommand (f :: fs)))).tape
 
 def SemanticFrameTapeOperationalGap : Prop :=
   Nonempty SemanticFrameTapeMachineCertificate
