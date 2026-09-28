@@ -1,3 +1,4 @@
+import Mathlib
 import MCore.Real.P01WitnessIndexedReadProof
 import MCore.Real.MachineRunLemmas
 
@@ -111,6 +112,7 @@ theorem eraseSeek_run
       rightScanConfig 1 (pad + extra) tail n := by
   induction pad generalizing extra with
   | zero =>
+      rw [show extra + 1 = Nat.succ extra by omega, List.replicate_succ]
       simp [eraseSeekConfig, rightScanConfig, witnessIndexedReadMachine,
         TM.run, TM.step, Tape.write, Tape.move,
         Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
@@ -142,7 +144,8 @@ theorem rightScan_run
       cases n <;>
         simp [rightScanConfig, markerConfig, encodeNat,
           witnessIndexedReadMachine, TM.run, TM.step, Tape.write, Tape.move,
-          Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+          Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] <;>
+        rw [show leftPad + 1 = Nat.succ leftPad by omega, List.replicate_succ]
   | succ rightPad ih =>
       rw [show Nat.succ rightPad + 1 = (rightPad + 1) + 1 by omega]
       rw [TM.run]
@@ -284,8 +287,7 @@ theorem indexedRead_run_state
           simp at h
       | cons b tail =>
           cases b <;>
-            simpa [readFuel] using
-              (if hval : b = false then read_zero_false tail else read_zero_true tail)
+            simp [readFuel, read_zero_false, read_zero_true]
   | succ n ih =>
       cases witness with
       | nil =>
@@ -324,8 +326,8 @@ theorem witnessBits_getD
     (witnessBits w).getD i false = w ⟨i, hi⟩ := by
   have hlen : i < (witnessBits w).length := by
     simpa [witnessBits_length] using hi
-  rw [List.getD_eq_getElem _ hlen]
-  simp [witnessBits]
+  rw [List.getD_eq_getElem?_getD]
+  simp [witnessBits, List.getElem?_ofFn, hi]
 
 def witnessIndexedReadCertificate : WitnessIndexedReadCertificate where
   stateCount := 5
