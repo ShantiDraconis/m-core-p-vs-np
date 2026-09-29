@@ -17,7 +17,7 @@ inductive NeedExprTag where
   | or
   | invalid110
   | invalid111
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 def decodeTagBits (b0 b1 b2 : Bool) : NeedExprTag :=
   match b0, b1, b2 with
@@ -36,7 +36,7 @@ inductive TagDecodeState where
   | bit2 (b0 b1 : Bool)
   | halt (tag : NeedExprTag)
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- Fixed finite-control 3-bit tag decoder.
 
