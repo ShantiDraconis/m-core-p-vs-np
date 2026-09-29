@@ -18,7 +18,7 @@ inductive EvalFrame where
   | andRight : Bool → EvalFrame
   | orLeft
   | orRight : Bool → EvalFrame
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- Explicit streaming evaluator state.  `value = none` means the next prefix
 expression must be consumed; `some v` means a value is returning through the
