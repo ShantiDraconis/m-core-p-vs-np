@@ -518,6 +518,97 @@ theorem inputNodeComposite_reaches_accepting
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_done
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_accepting
 
+
+/-- A completed lookahead phase reaches the preserving-reader entry in exactly
+one composite step. -/
+theorem look_handoff_reachable
+    (mode : InputReturnMode) (tape : Tape (Option Bool)) :
+    { state := .read mode preservingReadMachine.initial, tape := tape } ∈
+      inputNodeCompositeMachine.runBranches 1
+        [{ state := .look (.halt mode), tape := tape }] := by
+  have hact :
+      ¬ Halted inputNodeCompositeMachine
+        ({ state := .look (.halt mode), tape := tape } : CompositeConfig) := by
+    simp [Halted, inputNodeCompositeMachine]
+  have hsucc :
+      ({ state := .read mode preservingReadMachine.initial, tape := tape } :
+        CompositeConfig) ∈
+      inputNodeCompositeMachine.successors
+        { state := .look (.halt mode), tape := tape } := by
+    rw [look_handoff_successors mode tape]
+    simp
+  have h :=
+    mem_runBranches_succ_of_successor
+      inputNodeCompositeMachine 0
+      [({ state := .look (.halt mode), tape := tape } : CompositeConfig)]
+      ({ state := .look (.halt mode), tape := tape } : CompositeConfig)
+      ({ state := .read mode preservingReadMachine.initial, tape := tape } :
+        CompositeConfig)
+      (by simp [NTM.runBranches]) hact hsucc
+  simpa using h
+
+/-- A completed read reaches the mode-aware return entry in exactly one
+composite step. -/
+theorem read_handoff_reachable
+    (mode : InputReturnMode) (selected : Bool)
+    (tape : Tape (Option Bool)) :
+    { state := .ret mode selected (.start mode), tape := tape } ∈
+      inputNodeCompositeMachine.runBranches 1
+        [{ state := .read mode (.halt selected), tape := tape }] := by
+  have hact :
+      ¬ Halted inputNodeCompositeMachine
+        ({ state := .read mode (.halt selected), tape := tape } :
+          CompositeConfig) := by
+    simp [Halted, inputNodeCompositeMachine]
+  have hsucc :
+      ({ state := .ret mode selected (.start mode), tape := tape } :
+        CompositeConfig) ∈
+      inputNodeCompositeMachine.successors
+        { state := .read mode (.halt selected), tape := tape } := by
+    rw [read_handoff_successors mode selected tape]
+    simp
+  have h :=
+    mem_runBranches_succ_of_successor
+      inputNodeCompositeMachine 0
+      [({ state := .read mode (.halt selected), tape := tape } :
+        CompositeConfig)]
+      ({ state := .read mode (.halt selected), tape := tape } :
+        CompositeConfig)
+      ({ state := .ret mode selected (.start mode), tape := tape } :
+        CompositeConfig)
+      (by simp [NTM.runBranches]) hact hsucc
+  simpa using h
+
+/-- A completed return reaches the globally accepting input-node state in
+exactly one composite step. -/
+theorem return_handoff_reachable
+    (mode finalMode : InputReturnMode) (selected : Bool)
+    (tape : Tape (Option Bool)) :
+    { state := .done selected finalMode, tape := tape } ∈
+      inputNodeCompositeMachine.runBranches 1
+        [{ state := .ret mode selected (.halt finalMode), tape := tape }] := by
+  have hact :
+      ¬ Halted inputNodeCompositeMachine
+        ({ state := .ret mode selected (.halt finalMode), tape := tape } :
+          CompositeConfig) := by
+    simp [Halted, inputNodeCompositeMachine]
+  have hsucc :
+      ({ state := .done selected finalMode, tape := tape } : CompositeConfig) ∈
+      inputNodeCompositeMachine.successors
+        { state := .ret mode selected (.halt finalMode), tape := tape } := by
+    rw [return_handoff_successors mode finalMode selected tape]
+    simp
+  have h :=
+    mem_runBranches_succ_of_successor
+      inputNodeCompositeMachine 0
+      [({ state := .ret mode selected (.halt finalMode), tape := tape } :
+        CompositeConfig)]
+      ({ state := .ret mode selected (.halt finalMode), tape := tape } :
+        CompositeConfig)
+      ({ state := .done selected finalMode, tape := tape } : CompositeConfig)
+      (by simp [NTM.runBranches]) hact hsucc
+  simpa using h
+
 #print axioms MCore.Real.P01InputNodeCompositeRun.look_successors_active
 #print axioms MCore.Real.P01InputNodeCompositeRun.read_successors_active
 #print axioms MCore.Real.P01InputNodeCompositeRun.return_successors_active
