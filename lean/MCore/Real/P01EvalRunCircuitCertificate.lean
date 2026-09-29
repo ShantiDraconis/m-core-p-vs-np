@@ -105,7 +105,8 @@ theorem input_certificate
           (Option Bool))
   refine ⟨m, cfg, ?_, ?_⟩
   · simpa [cfg, encodeCircuit] using hrun
-  · rw [hvalue]
+  · change LoopOutcome witness (sigma i) tail frames cfg
+    rw [← hvalue]
     cases tail with
     | cons b bs =>
         refine ⟨consumedAfterInputIndex (consumed + 3) i, padding, ?_⟩
