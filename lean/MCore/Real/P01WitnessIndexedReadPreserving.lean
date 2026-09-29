@@ -422,6 +422,88 @@ theorem returnBlanks_over_blanks
       simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
         replicate_none_extend k left
 
+/-- Same moved-prefix layout as `preservingMovedTape`, but with the unread
+source supplied directly.  This removes unary-encoding case splits from the
+physical successor cycle. -/
+def movedBitsTape
+    (moved rest source : BitString) :
+    Tape (Option Bool) :=
+  match source with
+  | [] =>
+      { left := List.replicate moved.length none ++ moved.map some ++
+          (none :: rest.map some),
+        head := none,
+        right := [] }
+  | x :: xs =>
+      { left := List.replicate moved.length none ++ moved.map some ++
+          (none :: rest.map some),
+        head := some x,
+        right := xs.map some }
+
+def movedBitsConfig
+    (moved rest source : BitString) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .indexMoved,
+    tape := movedBitsTape moved rest source }
+
+theorem preservingMovedConfig_eq_bits
+    (moved rest : BitString) (n : Nat) (tail : BitString) :
+    preservingMovedConfig moved rest n tail =
+      movedBitsConfig moved rest (encodeNat n ++ tail) := by
+  cases n <;>
+    rfl
+
+/-- Once `seekMoved` is sitting on the first moved witness bit, one physical
+step enters the generic `scanMovedTape` view. -/
+theorem seekMoved_step_bit
+    (first b : Bool) (movedTail : BitString)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.step
+      { state := .seekMoved,
+        tape :=
+          { left := movedTail.map some ++ (none :: some b :: left),
+            head := some first,
+            right := right } } =
+      { state := .scanMoved,
+        tape := scanMovedTape movedTail b left (some first :: right) } := by
+  cases movedTail <;>
+    simp [scanMovedTape, preservingReadMachine,
+      TM.step, Tape.write, Tape.move]
+
+/-- The fixed capture/write pair shifts the selected witness bit into the
+temporary separator and starts the rightward return on an arbitrary stream. -/
+theorem capture_write_to_stream
+    (b : Bool) (left stream : List (Option Bool)) :
+    preservingReadMachine.run 2
+      { state := .capture,
+        tape := { left := left, head := some b, right := none :: stream } } =
+      { state := .returnMoved,
+        tape := rightStreamTape (some b :: none :: left) stream } := by
+  cases stream <;>
+    simp [rightStreamTape, preservingReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move]
+
+theorem returnMovedTape_eq_stream
+    (bits : BitString)
+    (left after : List (Option Bool)) :
+    returnMovedTape bits left after =
+      rightStreamTape left (bits.map some ++ (none :: after)) := by
+  cases bits <;>
+    rfl
+
+/-- A right stream containing one current blank plus `k` further blanks is
+exactly the canonical input expected by `returnBlanks_over_blanks`. -/
+theorem rightStreamTape_blank_block
+    (k : Nat)
+    (left source : List (Option Bool)) :
+    rightStreamTape left
+        (List.replicate k none ++ (none :: source)) =
+      { left := left,
+        head := none,
+        right := List.replicate k none ++ source } := by
+  cases k <;>
+    simp [rightStreamTape, List.replicate_succ]
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
@@ -491,6 +573,11 @@ theorem preservingRead_one_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnMoved_step_cons
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnMoved_over_bits
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnBlanks_over_blanks
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMovedConfig_eq_bits
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.seekMoved_step_bit
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.capture_write_to_stream
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnMovedTape_eq_stream
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.rightStreamTape_blank_block
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one
