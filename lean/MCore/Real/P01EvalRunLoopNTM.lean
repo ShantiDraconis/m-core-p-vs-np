@@ -104,10 +104,11 @@ def evalRunLoopMachine :
     | .reject => []
   accepting := fun q =>
     match q with
-    | .final _ => true
+    | .final true => true
     | _ => false
   rejecting := fun q =>
     match q with
+    | .final false => true
     | .reject => true
     | _ => false
 
@@ -115,7 +116,12 @@ def evalRunLoopMachine :
     evalRunLoopMachine.blank = none := rfl
 
 @[simp] theorem accepting_final (v : Bool) :
-    evalRunLoopMachine.accepting (.final v) = true := rfl
+    evalRunLoopMachine.accepting (.final v) = v := by
+  cases v <;> rfl
+
+@[simp] theorem rejecting_final (v : Bool) :
+    evalRunLoopMachine.rejecting (.final v) = !v := by
+  cases v <;> rfl
 
 @[simp] theorem rejecting_reject :
     evalRunLoopMachine.rejecting .reject = true := rfl
