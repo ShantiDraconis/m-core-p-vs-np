@@ -35,6 +35,18 @@ theorem moveBackToStackEndSeq_length
       sourceStartOffset stack source := by
   simp [moveBackToStackEndSeq, sourceStartOffset, moveRightSeq_length]
 
+/-- Reading at the exact length of a prefix lands on the first element of the
+suffix.  Kept local so the cursor proof depends only on the concrete List.getD
+semantics already used by the physical-move kernel. -/
+theorem getD_append_head
+    {α : Type} (prefix : List α) (x : α) (suffix : List α) (d : α) :
+    (prefix ++ x :: suffix).getD prefix.length d = x := by
+  induction prefix with
+  | nil =>
+      simp [List.getD_cons_zero]
+  | cons a prefix ih =>
+      simp [List.getD_cons_succ, ih]
+
 /-- On every nonempty canonical source, the exact left shuttle lands on the
 first source bit while preserving the represented tape contents. -/
 theorem moveToSourceStart_head_correct
@@ -48,36 +60,18 @@ theorem moveToSourceStart_head_correct
   rw [show stack.length + (b :: bs).length + 1 =
       (stack.length + bs.length + 1) + 1 by simp; omega]
   rw [execMoves_moveLeftSeq_head_getD]
-  simp only [physicalStackV2Tape]
-  have hstack :
-      (stack.map some).length ≤
+  simp only [physicalStackV2Tape, List.reverse_cons, List.map_append,
+    List.map_cons, List.map_nil]
+  have hlen :
+      (stack.map some ++ none :: bs.reverse.map some).length =
         stack.length + bs.length + 1 := by
     simp
     omega
-  have houter :
-      (stack.map some ++
-        none :: ((bs.map some).reverse ++
-          some b :: none :: witness.map some))
-          [stack.length + bs.length + 1]? =
-        (none :: ((bs.map some).reverse ++
-          some b :: none :: witness.map some))
-          [stack.length + bs.length + 1 - (stack.map some).length]? := by
-    exact List.getElem?_append_right hstack
-  rw [houter]
-  have hsub :
-      stack.length + bs.length + 1 - (stack.map some).length =
-        bs.length + 1 := by
-    simp
-  rw [hsub]
-  rw [List.getElem?_cons_succ]
-  have hinner :
-      (((bs.map some).reverse ++
-        some b :: none :: witness.map some)[bs.length]?) =
-        (some b :: none :: witness.map some)[0]? := by
-    apply List.getElem?_append_right
-    simp
-  rw [hinner]
-  simp
+  rw [← hlen]
+  simpa [List.append_assoc] using
+    (getD_append_head
+      (stack.map some ++ none :: bs.reverse.map some)
+      (some b) (none :: witness.map some) none)
 
 /-- The source cursor motion is legal in the same primitive-move sense used by
 all prior certified P01 shuttles. -/
