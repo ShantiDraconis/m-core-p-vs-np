@@ -102,9 +102,24 @@ theorem framePush_run_three_cursor_exact
     framePush_run_three_cursor
       witness unread frameStack consumed padding f
   dsimp at h
-  apply Configuration.ext
-  · exact h.1
-  · exact h.2
+  cases hrun :
+      framePushMachine.run 3
+        (framePushConfig f
+          (evalCursorStackEndTape
+            witness consumed unread frameStack padding)) with
+  | mk st tp =>
+      have hs : st = .halt := by
+        simpa [hrun] using h.1
+      have ht :
+          tp =
+            evalCursorStackEndTape
+              witness consumed unread
+              (encodeEvalFrame f ++ frameStack)
+              (((padding - 1) - 1) - 1) := by
+        simpa [hrun] using h.2
+      subst st
+      subst tp
+      simpa [hrun]
 
 #print axioms MCore.Real.P01EvalCursorFramePush.framePush_run_three_cursor_exact
 
