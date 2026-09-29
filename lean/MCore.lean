@@ -124,3 +124,5 @@ import MCore.Real.P01EvalRunCircuitCertificate
 import MCore.Real.P01CNFMode
 
 import MCore.Real.P01CheckedEvalRunLoopNTM
+
+import MCore.Real.P01VerifierEvalCompositeNTM
