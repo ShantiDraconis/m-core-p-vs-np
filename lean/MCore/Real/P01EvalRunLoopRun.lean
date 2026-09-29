@@ -8,6 +8,7 @@ namespace P01EvalRunLoopRun
 open CanonicalFinalProof
 open P01NTMRunLaws
 open P01EncodedStackEvaluator
+open P01EncodedFrameTape
 open P01EvalCursorMachine
 open P01EvalCursorRoundTrip
 open P01NeedExprTagDecode
