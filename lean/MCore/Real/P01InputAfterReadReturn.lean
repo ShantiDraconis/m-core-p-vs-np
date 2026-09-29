@@ -480,10 +480,12 @@ theorem return_frameStack
       rw [run_add]
       rw [frameReturn_run]
       rw [frameReturn_halt]
-      simp [evalCursorStackEndTape, left0, hrev,
+      have horig : b :: frameTail = fs.reverse ++ [f] := by
+        have hr := congrArg List.reverse hrev
+        simpa [List.reverse_cons, List.reverse_reverse] using hr
+      simp [evalCursorStackEndTape, left0, horig,
         List.reverse_reverse, List.map_reverse, List.map_append,
         List.append_assoc, List.replicate_succ]
-      omega
 
 /-- Final-value mode needs no cursor normalization. -/
 theorem return_done
