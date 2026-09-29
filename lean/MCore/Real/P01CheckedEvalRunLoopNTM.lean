@@ -35,8 +35,8 @@ inductive CheckedEvalRunState where
 Only left binary frames lead to a new right-hand expression. -/
 def modeAfterFrame (current : SyntaxMode) :
     P01EncodedStackEvaluator.EvalFrame → SyntaxMode
-  | P01EncodedStackEvaluator.EvalFrame.andLeft => .cnf
-  | P01EncodedStackEvaluator.EvalFrame.orLeft => .clause
+  | .andLeft => .cnf
+  | .orLeft => .clause
   | _ => current
 
 def inputCheckedEmbed
