@@ -59,7 +59,7 @@ theorem verifier_reaches_semantic_final
          tape := tape } : VerifierConfig) ∈
         verifierEvalMachine.runBranches m
           [{ state := verifierEvalMachine.initial,
-             tape := preparedTape (witnessBits w) (encodeCircuit phi) }] := by
+             tape := P01WitnessPreservingPrep.preparedTape (witnessBits w) (encodeCircuit phi) }] := by
   have hnonempty : encodeCircuit phi ≠ [] :=
     encodeCircuit_ne_nil phi
   cases hsrc : encodeCircuit phi with
@@ -71,7 +71,7 @@ theorem verifier_reaches_semantic_final
           (witnessBits w) b bs
 
       have hlen : varBound phi ≤ (witnessBits w).length := by
-        rw [witnessBits_length]
+        simpa [witnessBits_length]
 
       have hread :
           ∀ i, i < varBound phi →
@@ -118,7 +118,9 @@ theorem verifier_reaches_semantic_final
                  .final (evalCircuit (assignmentOfWitness phi w) phi),
                tape := tape } :
               Configuration EvalRunLoopState (Option Bool))
-            hEval
+            (by
+              simpa [evalRunLoopMachine,
+                P01EncodedFrameTape.encodeEvalFrames] using hEval)
         simpa [P01NTMRunLaws.liftConfig, evalStateEmbed] using h
 
       have hEntry' :
@@ -130,7 +132,7 @@ theorem verifier_reaches_semantic_final
           verifierEvalMachine.runBranches mEntry
             [{ state := verifierEvalMachine.initial,
                tape :=
-                 preparedTape (witnessBits w) (encodeCircuit phi) }] := by
+                 P01WitnessPreservingPrep.preparedTape (witnessBits w) (encodeCircuit phi) }] := by
         simpa [hsrc] using hEntry
 
       have hAll :=
@@ -138,7 +140,7 @@ theorem verifier_reaches_semantic_final
           mEntry mEval
           [{ state := verifierEvalMachine.initial,
              tape :=
-               preparedTape (witnessBits w) (encodeCircuit phi) }]
+               P01WitnessPreservingPrep.preparedTape (witnessBits w) (encodeCircuit phi) }]
           ({ state := .eval evalRunLoopMachine.initial,
              tape :=
                evalCursorStackEndTape
@@ -165,7 +167,7 @@ theorem verifier_reaches_accepting_iff_eval_true
          tape := tape } : VerifierConfig) ∈
         verifierEvalMachine.runBranches m
           [{ state := verifierEvalMachine.initial,
-             tape := preparedTape (witnessBits w) (encodeCircuit phi) }] ∧
+             tape := P01WitnessPreservingPrep.preparedTape (witnessBits w) (encodeCircuit phi) }] ∧
       (verifierEvalMachine.accepting
           (.eval (.final (evalCircuit (assignmentOfWitness phi w) phi))) =
             true ↔
@@ -173,9 +175,7 @@ theorem verifier_reaches_accepting_iff_eval_true
   obtain ⟨m, tape, hrun⟩ :=
     verifier_reaches_semantic_final phi w
   refine ⟨m, tape, hrun, ?_⟩
-  constructor <;> intro h
-  · exact h
-  · simp [verifierEvalMachine]
+  simp [verifierEvalMachine, evalRunLoopMachine]
 
 #print axioms MCore.Real.P01VerifierEvalCircuitRun.witnessBits_getD_eq_assignment
 #print axioms MCore.Real.P01VerifierEvalCircuitRun.eval_mem_lift
