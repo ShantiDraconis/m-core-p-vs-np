@@ -353,11 +353,38 @@ theorem lookahead_sourceTail
   dsimp [base, suffix]
   rw [show 2 * i + 4 = i + (1 + (1 + (i + 2))) by omega]
   rw [run_add]
-  rw [scanIndex_over_true i
-    (none :: (List.replicate consumed none ++ witness.map some))
-    (some false :: some b :: tail.map some ++ none ::
-      frameStack.reverse.map some ++ none ::
-        List.replicate padding none)]
+  have hscan :
+      inputIndexLookaheadMachine.run i
+        { state := .scanIndex,
+          tape :=
+            rightStreamTape
+              (none :: (List.replicate consumed none ++ witness.map some))
+              (List.replicate i (some true) ++
+                (some false :: some b ::
+                  (tail.map some ++
+                    (none ::
+                      (frameStack.reverse.map some ++
+                        (none :: List.replicate padding none)))))) } =
+        { state := .scanIndex,
+          tape :=
+            rightStreamTape
+              (List.replicate i (some true) ++
+                (none ::
+                  (List.replicate consumed none ++ witness.map some)))
+              (some false :: some b ::
+                (tail.map some ++
+                  (none ::
+                    (frameStack.reverse.map some ++
+                      (none :: List.replicate padding none))))) } := by
+    simpa [List.append_assoc] using
+      scanIndex_over_true i
+        (none :: (List.replicate consumed none ++ witness.map some))
+        (some false :: some b ::
+          (tail.map some ++
+            (none ::
+              (frameStack.reverse.map some ++
+                (none :: List.replicate padding none)))))
+  rw [hscan]
   rw [run_add]
   rw [scanIndex_false
     (List.replicate i (some true) ++
@@ -405,11 +432,36 @@ theorem lookahead_frameStack
     (some false :: none :: (b :: frameTail).reverse.map some ++
       none :: List.replicate padding none)]
   rw [run_add]
-  rw [scanIndex_false
-    (List.replicate i (some true) ++
-      (none :: (List.replicate consumed none ++ witness.map some)))
-    (none :: (b :: frameTail).reverse.map some ++
-      none :: List.replicate padding none)]
+  have hfalse :
+      inputIndexLookaheadMachine.run 1
+        { state := .scanIndex,
+          tape :=
+            rightStreamTape
+              (List.replicate i (some true) ++
+                (none ::
+                  (List.replicate consumed none ++ witness.map some)))
+              (some false ::
+                (none ::
+                  ((b :: frameTail).reverse.map some ++
+                    (none :: List.replicate padding none)))) } =
+        { state := .peekTail,
+          tape :=
+            rightStreamTape
+              (some false ::
+                (List.replicate i (some true) ++
+                  (none ::
+                    (List.replicate consumed none ++ witness.map some))))
+              (none ::
+                ((b :: frameTail).reverse.map some ++
+                  (none :: List.replicate padding none))) } := by
+    simpa [List.append_assoc] using
+      scanIndex_false
+        (List.replicate i (some true) ++
+          (none :: (List.replicate consumed none ++ witness.map some)))
+        (none ::
+          ((b :: frameTail).reverse.map some ++
+            (none :: List.replicate padding none)))
+  rw [hfalse]
   rw [run_add]
   rw [classify_frameStack_after_false
     (List.replicate i (some true) ++
@@ -437,13 +489,32 @@ theorem lookahead_done
   rw [evalCursorReadTape_index_stream_nil]
   rw [encodeNat_eq_replicate_true]
   simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil, List.append_assoc, List.singleton_append,
+    List.map_nil, List.reverse_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
-  rw [scanIndex_over_true i
-    (none :: (List.replicate consumed none ++ witness.map some))
-    (some false :: none :: none :: List.replicate padding none)]
+  have hscan :
+      inputIndexLookaheadMachine.run i
+        { state := .scanIndex,
+          tape :=
+            rightStreamTape
+              (none :: (List.replicate consumed none ++ witness.map some))
+              (List.replicate i (some true) ++
+                (some false :: none :: none ::
+                  List.replicate padding none)) } =
+        { state := .scanIndex,
+          tape :=
+            rightStreamTape
+              (List.replicate i (some true) ++
+                (none ::
+                  (List.replicate consumed none ++ witness.map some)))
+              (some false :: none :: none ::
+                List.replicate padding none) } := by
+    simpa [List.append_assoc] using
+      scanIndex_over_true i
+        (none :: (List.replicate consumed none ++ witness.map some))
+        (some false :: none :: none :: List.replicate padding none)
+  rw [hscan]
   rw [run_add]
   rw [scanIndex_false
     (List.replicate i (some true) ++
