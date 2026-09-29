@@ -331,6 +331,365 @@ theorem preservingReadGap_start_successor
         preservingReadGap_start_true b true witnessTail
           (encodeNat n ++ tail) gap
 
+
+/-- One complete successor cycle with an arbitrary pre-existing physical gap. -/
+theorem preservingMovedGap_cycle
+    (first b next : Bool)
+    (movedTail witnessTail sourceTail : BitString)
+    (gap : Nat) :
+    preservingReadMachine.run
+      (2 * gap + 4 * movedTail.length + 10)
+      (movedGapBitsConfig gap
+        (first :: movedTail) (b :: witnessTail)
+        (true :: next :: sourceTail)) =
+      movedGapBitsConfig gap
+        ((first :: movedTail) ++ [b]) witnessTail
+        (next :: sourceTail) := by
+  let m : Nat := movedTail.length
+  let k : Nat := gap + m
+  let moved : BitString := first :: movedTail
+  let witnessSuffix : List (Option Bool) := witnessTail.map some
+  let src : List (Option Bool) := some next :: sourceTail.map some
+  let after : List (Option Bool) :=
+    List.replicate k none ++ (none :: src)
+  let stream : List (Option Bool) :=
+    moved.reverse.map some ++ (none :: after)
+  let restoredLeft : List (Option Bool) :=
+    none :: (moved.map some ++ (some b :: none :: witnessSuffix))
+
+  let C0 : Configuration PreservingReadState (Option Bool) :=
+    movedGapBitsConfig gap moved (b :: witnessTail)
+      (true :: next :: sourceTail)
+  let C1 : Configuration PreservingReadState (Option Bool) :=
+    { state := .seekMoved,
+      tape :=
+        { left :=
+            List.replicate k none ++
+              (some first ::
+                (movedTail.map some ++
+                  (none :: some b :: witnessSuffix))),
+          head := none,
+          right := none :: src } }
+  let C2 : Configuration PreservingReadState (Option Bool) :=
+    { state := .seekMoved,
+      tape :=
+        { left :=
+            movedTail.map some ++ (none :: some b :: witnessSuffix),
+          head := some first,
+          right := List.replicate (k + 1) none ++ (none :: src) } }
+  let C3 : Configuration PreservingReadState (Option Bool) :=
+    { state := .scanMoved,
+      tape :=
+        scanMovedTape movedTail b witnessSuffix
+          (some first ::
+            (List.replicate (k + 1) none ++ (none :: src))) }
+  let C4 : Configuration PreservingReadState (Option Bool) :=
+    { state := .capture,
+      tape :=
+        { left := witnessSuffix,
+          head := some b,
+          right := none :: stream } }
+  let C5 : Configuration PreservingReadState (Option Bool) :=
+    { state := .returnMoved,
+      tape :=
+        returnMovedTape moved.reverse
+          (some b :: none :: witnessSuffix) after }
+  let C6 : Configuration PreservingReadState (Option Bool) :=
+    { state := .returnBlanks,
+      tape := rightStreamTape restoredLeft after }
+  let C6e : Configuration PreservingReadState (Option Bool) :=
+    { state := .returnBlanks,
+      tape :=
+        { left := restoredLeft,
+          head := none,
+          right := List.replicate k none ++ src } }
+  let C7e : Configuration PreservingReadState (Option Bool) :=
+    { state := .indexMoved,
+      tape :=
+        { left := List.replicate (k + 1) none ++ restoredLeft,
+          head := some next,
+          right := sourceTail.map some } }
+  let C7 : Configuration PreservingReadState (Option Bool) :=
+    movedGapBitsConfig gap (moved ++ [b]) witnessTail
+      (next :: sourceTail)
+
+  have h01 : preservingReadMachine.run 1 C0 = C1 := by
+    dsimp [C0, C1, moved, m, k, witnessSuffix, src,
+      movedGapBitsConfig, movedGapBitsTape]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+    omega
+
+  have h12 : preservingReadMachine.run (k + 1) C1 = C2 := by
+    dsimp [C1, C2]
+    simpa using
+      seekMoved_over_blanks k first
+        (movedTail.map some ++ (none :: some b :: witnessSuffix))
+        (none :: src)
+
+  have h23 : preservingReadMachine.run 1 C2 = C3 := by
+    dsimp [C2, C3]
+    simpa [TM.run] using
+      seekMoved_step_bit first b movedTail witnessSuffix
+        (List.replicate (k + 1) none ++ (none :: src))
+
+  have h34 : preservingReadMachine.run (m + 1) C3 = C4 := by
+    dsimp [C3, C4, stream, moved, after, src, m, k]
+    simpa [List.reverse_cons, List.map_append,
+      List.replicate_succ, List.append_assoc] using
+      scanMoved_over_bits movedTail b witnessSuffix
+        (some first ::
+          (List.replicate (gap + movedTail.length + 1) none ++
+            (none :: (some next :: sourceTail.map some))))
+
+  have h45 : preservingReadMachine.run 2 C4 = C5 := by
+    dsimp [C4, C5, stream]
+    simpa [returnMovedTape_eq_stream] using
+      capture_write_to_stream b witnessSuffix
+        (moved.reverse.map some ++ (none :: after))
+
+  have h56 : preservingReadMachine.run (m + 2) C5 = C6 := by
+    dsimp [C5, C6, restoredLeft, moved]
+    simpa [moved, m] using
+      returnMoved_over_bits moved.reverse
+        (some b :: none :: witnessSuffix) after
+
+  have h6eq : C6 = C6e := by
+    dsimp [C6, C6e, after]
+    exact congrArg
+      (fun t : Tape (Option Bool) =>
+        ({ state := .returnBlanks, tape := t } :
+          Configuration PreservingReadState (Option Bool)))
+      (rightStreamTape_blank_block k restoredLeft src)
+
+  have h67 : preservingReadMachine.run (k + 2) C6e = C7e := by
+    dsimp [C6e, C7e, src]
+    simpa using
+      returnBlanks_over_blanks k next restoredLeft (sourceTail.map some)
+
+  have h7eq : C7e = C7 := by
+    dsimp [C7e, C7, movedGapBitsConfig, movedGapBitsTape,
+      restoredLeft, moved, m, k, src]
+    simp [List.replicate_succ, List.map_append, List.append_assoc]
+    omega
+
+  have h56e : preservingReadMachine.run (m + 2) C5 = C6e := by
+    rw [h56, h6eq]
+
+  have h67t : preservingReadMachine.run (k + 2) C6e = C7 := by
+    rw [h67, h7eq]
+
+  have h02 :
+      preservingReadMachine.run (1 + (k + 1)) C0 = C2 := by
+    rw [run_add, h01, h12]
+  have h03 :
+      preservingReadMachine.run ((1 + (k + 1)) + 1) C0 = C3 := by
+    rw [run_add, h02, h23]
+  have h04 :
+      preservingReadMachine.run (((1 + (k + 1)) + 1) + (m + 1)) C0 = C4 := by
+    rw [run_add, h03, h34]
+  have h05 :
+      preservingReadMachine.run
+        ((((1 + (k + 1)) + 1) + (m + 1)) + 2) C0 = C5 := by
+    rw [run_add, h04, h45]
+  have h06 :
+      preservingReadMachine.run
+        (((((1 + (k + 1)) + 1) + (m + 1)) + 2) + (m + 2)) C0 = C6e := by
+    rw [run_add, h05, h56e]
+  have h07 :
+      preservingReadMachine.run
+        ((((((1 + (k + 1)) + 1) + (m + 1)) + 2) + (m + 2)) + (k + 2)) C0 =
+        C7 := by
+    rw [run_add, h06, h67t]
+
+  have hFuel :
+      2 * gap + 4 * movedTail.length + 10 =
+        ((((((1 + (k + 1)) + 1) + (m + 1)) + 2) + (m + 2)) + (k + 2)) := by
+    dsimp [m, k]
+    omega
+  rw [hFuel]
+  simpa [C0, C7, moved] using h07
+
+/-- Gap-aware terminal false case after a nonempty prefix has been moved. -/
+def preservingMovedGapFinalizeFuel (gap : Nat) (moved : BitString) : Nat :=
+  gap + 5 * moved.length + 6
+
+theorem movedGapBits_false_finalize
+    (first selected : Bool)
+    (movedTail rest sourceTail : BitString)
+    (gap : Nat) :
+    preservingReadMachine.run
+      (preservingMovedGapFinalizeFuel gap (first :: movedTail))
+      (movedGapBitsConfig gap
+        (first :: movedTail) (selected :: rest)
+        (false :: sourceTail)) =
+      { state := .halt selected,
+        tape :=
+          { left := ((first :: movedTail) ++ (selected :: rest)).map some,
+            head := none,
+            right :=
+              List.replicate
+                (gap + (first :: movedTail).length + 1) none ++
+                sourceTail.map some } } := by
+  let m : Nat := movedTail.length
+  let k : Nat := gap + m
+  let moved : BitString := first :: movedTail
+  let witnessSuffix : List (Option Bool) := rest.map some
+  let src : List (Option Bool) := sourceTail.map some
+  let after : List (Option Bool) :=
+    List.replicate (k + 1) none ++ (none :: src)
+
+  let C0 : Configuration PreservingReadState (Option Bool) :=
+    movedGapBitsConfig gap moved (selected :: rest)
+      (false :: sourceTail)
+  let C1 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalSeekMoved,
+      tape :=
+        { left :=
+            List.replicate k none ++
+              (some first ::
+                (movedTail.map some ++
+                  (none :: some selected :: witnessSuffix))),
+          head := none,
+          right := none :: src } }
+  let C2 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalSeekMoved,
+      tape :=
+        { left :=
+            movedTail.map some ++ (none :: some selected :: witnessSuffix),
+          head := some first,
+          right := List.replicate (k + 1) none ++ (none :: src) } }
+  let C3 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalScanMoved,
+      tape :=
+        scanMovedTape movedTail selected witnessSuffix
+          (some first ::
+            (List.replicate (k + 1) none ++ (none :: src))) }
+  let C4 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalReadMoved,
+      tape :=
+        { left := witnessSuffix,
+          head := some selected,
+          right :=
+            none :: (moved.reverse.map some ++ after) } }
+  let C5 : Configuration PreservingReadState (Option Bool) :=
+    restoreMovedConfig selected (some selected :: witnessSuffix)
+      moved.reverse after
+  let restoredWitness : List (Option Bool) :=
+    moved.map some ++ (some selected :: witnessSuffix)
+  let C6 : Configuration PreservingReadState (Option Bool) :=
+    restoreMovedConfig selected restoredWitness [] after
+  let C7 : Configuration PreservingReadState (Option Bool) :=
+    { state := .halt selected,
+      tape :=
+        { left := restoredWitness,
+          head := none,
+          right := List.replicate (k + 2) none ++ src } }
+
+  have h01 : preservingReadMachine.run 1 C0 = C1 := by
+    dsimp [C0, C1, moved, m, k, witnessSuffix, src,
+      movedGapBitsConfig, movedGapBitsTape]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+    omega
+
+  have h12 : preservingReadMachine.run (k + 1) C1 = C2 := by
+    dsimp [C1, C2]
+    simpa using
+      finalSeekMoved_over_blanks k first
+        (movedTail.map some ++ (none :: some selected :: witnessSuffix))
+        (none :: src)
+
+  have h23 : preservingReadMachine.run 1 C2 = C3 := by
+    dsimp [C2, C3]
+    simpa [TM.run] using
+      finalSeekMoved_step_bit first selected movedTail witnessSuffix
+        (List.replicate (k + 1) none ++ (none :: src))
+
+  have h34 : preservingReadMachine.run (m + 1) C3 = C4 := by
+    dsimp [C3, C4, moved, after, src, m, k]
+    simpa [List.reverse_cons, List.map_append, List.append_assoc] using
+      finalScanMoved_over_bits movedTail selected witnessSuffix
+        (some first ::
+          (List.replicate (gap + movedTail.length + 1) none ++
+            (none :: sourceTail.map some)))
+
+  have h45 : preservingReadMachine.run 1 C4 = C5 := by
+    dsimp [C4, C5, moved, after, src, witnessSuffix, restoreMovedConfig]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.reverse_cons, List.map_append,
+      List.append_assoc]
+
+  have h56 :
+      preservingReadMachine.run (3 * moved.length) C5 = C6 := by
+    dsimp [C5, C6, restoredWitness]
+    simpa [moved] using
+      restoreMoved_over_bits selected moved.reverse
+        (some selected :: witnessSuffix) after
+
+  have h67 : preservingReadMachine.run 3 C6 = C7 := by
+    dsimp [C6, C7, restoreMovedConfig, restoredWitness,
+      after, src, moved, m, k]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.replicate_succ,
+      List.map_append, List.append_assoc]
+
+  have h02 :
+      preservingReadMachine.run (1 + (k + 1)) C0 = C2 := by
+    rw [run_add, h01, h12]
+  have h03 :
+      preservingReadMachine.run ((1 + (k + 1)) + 1) C0 = C3 := by
+    rw [run_add, h02, h23]
+  have h04 :
+      preservingReadMachine.run (((1 + (k + 1)) + 1) + (m + 1)) C0 = C4 := by
+    rw [run_add, h03, h34]
+  have h05 :
+      preservingReadMachine.run
+        ((((1 + (k + 1)) + 1) + (m + 1)) + 1) C0 = C5 := by
+    rw [run_add, h04, h45]
+  have h06 :
+      preservingReadMachine.run
+        (((((1 + (k + 1)) + 1) + (m + 1)) + 1) +
+          (3 * moved.length)) C0 = C6 := by
+    rw [run_add, h05, h56]
+  have h07 :
+      preservingReadMachine.run
+        ((((((1 + (k + 1)) + 1) + (m + 1)) + 1) +
+          (3 * moved.length)) + 3) C0 = C7 := by
+    rw [run_add, h06, h67]
+
+  have hFuel :
+      preservingMovedGapFinalizeFuel gap moved =
+        ((((((1 + (k + 1)) + 1) + (m + 1)) + 1) +
+          (3 * moved.length)) + 3) := by
+    dsimp [preservingMovedGapFinalizeFuel, moved, m, k]
+    omega
+  rw [show preservingMovedGapFinalizeFuel gap (first :: movedTail) =
+      preservingMovedGapFinalizeFuel gap moved by rfl]
+  rw [hFuel]
+  simpa [C0, C7, moved, restoredWitness, src, m, k,
+    List.map_append, List.append_assoc] using h07
+
+/-- Unary-index form of one gap-aware successor cycle. -/
+theorem preservingMovedGap_cycle_index
+    (first next : Bool) (movedTail rest tail : BitString)
+    (gap n : Nat) :
+    preservingReadMachine.run
+      (2 * gap + 4 * movedTail.length + 10)
+      (preservingMovedGapConfig gap
+        (first :: movedTail) (next :: rest) (n + 1) tail) =
+      preservingMovedGapConfig gap
+        ((first :: movedTail) ++ [next]) rest n tail := by
+  cases n with
+  | zero =>
+      simpa [preservingMovedGapConfig, encodeNat, List.append_assoc] using
+        preservingMovedGap_cycle first next false movedTail rest tail gap
+  | succ n =>
+      simpa [preservingMovedGapConfig, encodeNat, List.append_assoc] using
+        preservingMovedGap_cycle first next true movedTail rest
+          (encodeNat n ++ tail) gap
+
+
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_zero
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_start_successor
 
