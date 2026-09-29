@@ -99,21 +99,21 @@ theorem seq_successors_left_active
         (fun d => ({ state := Sum.inl d.state, tape := d.tape } :
           Configuration (Sum StateA StateB) Symbol)) := by
   simp [seq, NTM.successors, NTM.stepBranch, hacc, hrej]
-  rfl
 
 /-- Inside phase B, the sequential machine reproduces B's successor list with
 only the control state injected into the right summand. -/
 theorem seq_successors_right
     {StateA StateB Symbol : Type}
     (A : NTM StateA Symbol) (B : NTM StateB Symbol)
+    (hblank : A.blank = B.blank)
     (c : Configuration StateB Symbol) :
     (seq A B).successors
       { state := Sum.inr c.state, tape := c.tape } =
       (B.successors c).map
         (fun d => ({ state := Sum.inr d.state, tape := d.tape } :
           Configuration (Sum StateA StateB) Symbol)) := by
+  subst hblank
   simp [seq, NTM.successors, NTM.stepBranch]
-  rfl
 
 /-- The handoff itself preserves the complete physical tape exactly. -/
 theorem handoff_preserves_tape
