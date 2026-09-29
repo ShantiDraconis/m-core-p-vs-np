@@ -319,13 +319,17 @@ def returnFrameConfig
     Configuration ConsumeState (Option Bool) :=
   match remainingRev with
   | [] =>
-      { state := returnFrames,
-        tape := { left := left, head := none,
-          right := List.replicate padding none } }
+      { state := returnFrames
+        tape :=
+          { left := left
+            head := none
+            right := List.replicate padding none } }
   | b :: bs =>
-      { state := returnFrames,
-        tape := { left := left, head := some b,
-          right := bs.map some ++ none :: List.replicate padding none } }
+      { state := returnFrames
+        tape :=
+          { left := left
+            head := some b
+            right := bs.map some ++ none :: List.replicate padding none } }
 
 @[simp] theorem returnFrameConfig_state
     (left : List (Option Bool)) (remainingRev : BitString) (padding : Nat) :
@@ -370,9 +374,11 @@ theorem returnFrames_run
 theorem returnFrames_halt
     (left : List (Option Bool)) (padding : Nat) :
     consumeOneMachine.run 1 (returnFrameConfig left [] padding) =
-      { state := halt,
-        tape := { left := left, head := none,
-          right := List.replicate padding none } } := by
+      { state := halt
+        tape :=
+          { left := left
+            head := none
+            right := List.replicate padding none } } := by
   simp [returnFrameConfig, consumeOneMachine, seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject, halt,
     TM.run, TM.step, Tape.write, Tape.move]
 
