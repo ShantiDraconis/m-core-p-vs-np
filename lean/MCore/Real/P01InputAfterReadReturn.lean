@@ -288,9 +288,10 @@ theorem seekSourceConfig_run
         tail frameStack padding := by
   induction k generalizing left with
   | zero =>
-      simp [seekSourceConfig, sourceReturnConfig,
-        inputAfterReadReturnMachine, TM.run, TM.step,
-        Tape.write, Tape.move, List.map_reverse, List.append_assoc]
+      cases tail <;>
+        simp [seekSourceConfig, sourceReturnConfig,
+          inputAfterReadReturnMachine, TM.run, TM.step,
+          Tape.write, Tape.move, List.map_reverse, List.append_assoc]
   | succ k ih =>
       rw [show Nat.succ k + 1 = 1 + (k + 1) by omega]
       rw [run_add]
@@ -305,7 +306,10 @@ theorem seekSourceConfig_run
       rw [hstep]
       rw [ih (none :: left)]
       have hr := replicate_none_succ_right k left
-      rw [hr]
+      exact congrArg
+        (fun l : List (Option Bool) =>
+          sourceReturnConfig (some b :: l) tail frameStack padding)
+        hr
 
 /-- Canonical seek-frame configuration with exactly `k` blanks before the
 first physical frame bit. -/
@@ -361,7 +365,10 @@ theorem seekFramesConfig_run
       rw [hstep]
       rw [ih (none :: left)]
       have hr := replicate_none_succ_right k left
-      rw [hr]
+      exact congrArg
+        (fun l : List (Option Bool) =>
+          frameReturnConfig (some b :: l) bs padding)
+        hr
 
 /-- Main nonempty-source return theorem. -/
 theorem return_sourceTail
@@ -449,11 +456,19 @@ theorem return_frameStack
                 afterIndexedReadTape witness consumed
                   [] (b :: frameTail) padding } =
             seekFramesConfig (consumed + 1) f fs left0 padding := by
-        cases consumed <;>
-          simp [afterIndexedReadTape, seekFramesConfig,
-            inputAfterReadReturnMachine, left0, hrev,
-            TM.run, TM.step, Tape.write, Tape.move,
-            List.map_reverse, List.replicate_succ, List.append_assoc]
+        cases consumed with
+        | zero =>
+            simp [afterIndexedReadTape, seekFramesConfig,
+              inputAfterReadReturnMachine, left0, hrev,
+              TM.run, TM.step, Tape.write, Tape.move,
+              List.map_reverse, List.replicate_succ, List.append_assoc]
+        | succ n =>
+            simp [afterIndexedReadTape, seekFramesConfig,
+              inputAfterReadReturnMachine, left0, hrev,
+              TM.run, TM.step, Tape.write, Tape.move,
+              List.map_reverse, List.replicate_succ, List.append_assoc]
+            exact replicate_none_succ_right n
+              (some f :: (fs.map some ++ none :: List.replicate padding none))
 
       rw [show consumed + (b :: frameTail).length + 3 =
           1 + ((consumed + 2) + (fs.length + 1)) by
