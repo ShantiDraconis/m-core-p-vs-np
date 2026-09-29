@@ -16,7 +16,7 @@ inductive InputReturnMode where
   | sourceTail
   | frameStack
   | done
-  deriving DecidableEq, Repr
+  deriving DecidableEq, Repr, Fintype
 
 inductive InputReturnClassifyState where
   | start
@@ -25,7 +25,7 @@ inductive InputReturnClassifyState where
   | backSeparator : InputReturnMode → InputReturnClassifyState
   | halt : InputReturnMode → InputReturnClassifyState
   | reject
-  deriving DecidableEq, Repr
+  deriving DecidableEq, Repr, Fintype
 
 /-- Fixed finite-control lookahead executed while the head is on the false
 terminator of `encodeNat i`.
