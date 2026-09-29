@@ -65,6 +65,9 @@ def inputIndexLookaheadMachine :
 @[simp] theorem inputIndexLookaheadMachine_halt (mode : InputReturnMode) :
     inputIndexLookaheadMachine.halting (.halt mode) = true := rfl
 
+@[simp] theorem inputIndexLookaheadMachine_initial :
+    inputIndexLookaheadMachine.initial = .scanIndex := rfl
+
 /-- Unary encoding as an explicit block of true markers followed by false. -/
 theorem encodeNat_eq_replicate_true (i : Nat) :
     encodeNat i = List.replicate i true ++ [false] := by
@@ -160,16 +163,17 @@ theorem scanIndex_over_true
             { state := .scanIndex,
               tape :=
                 rightStreamTape left
-                  (List.replicate (k + 1) (some true) ++ stream) } =
+                  (List.replicate (1 + k) (some true) ++ stream) } =
             { state := .scanIndex,
               tape :=
                 rightStreamTape (some true :: left)
                   (List.replicate k (some true) ++ stream) } := by
-        rw [show List.replicate (k + 1) (some true) =
+        rw [show List.replicate (1 + k) (some true) =
             some true :: List.replicate k (some true) by
           simp [List.replicate_succ]]
-        simp [rightStreamTape, inputIndexLookaheadMachine,
-          TM.run, TM.step, Tape.write, Tape.move]
+        cases hrest : List.replicate k (some true) ++ stream <;>
+          simp [rightStreamTape, inputIndexLookaheadMachine,
+            TM.run, TM.step, Tape.write, Tape.move, hrest]
       rw [hstep]
       rw [ih (some true :: left)]
       apply congrArg
@@ -215,7 +219,7 @@ theorem rewind_segment
         TM.run, TM.step, Tape.write, Tape.move]
   | cons b bs ih =>
       rw [show (b :: bs).length + 2 =
-          1 + (bs.length + 2) by simp]
+          1 + (bs.length + 2) by omega]
       rw [run_add]
       have hstep :
           inputIndexLookaheadMachine.run 1
@@ -345,7 +349,8 @@ theorem lookahead_sourceTail
   rw [evalCursorReadTape_index_stream_normalized]
   rw [encodeNat_eq_replicate_true]
   simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil, List.singleton_append]
+    List.map_nil, List.append_assoc, List.singleton_append,
+    inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 4 = i + (1 + (1 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
@@ -382,7 +387,8 @@ theorem lookahead_frameStack
   rw [evalCursorReadTape_index_stream_nil]
   rw [encodeNat_eq_replicate_true]
   simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil, List.singleton_append]
+    List.map_nil, List.append_assoc, List.singleton_append,
+    inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
@@ -418,7 +424,8 @@ theorem lookahead_done
   rw [evalCursorReadTape_index_stream_nil]
   rw [encodeNat_eq_replicate_true]
   simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil, List.singleton_append]
+    List.map_nil, List.append_assoc, List.singleton_append,
+    inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
