@@ -480,7 +480,17 @@ theorem neg_certificate
 theorem encodeCircuit_ne_nil
     (circuit : Circuit) :
     encodeCircuit circuit ≠ [] := by
-  cases circuit <;> simp [encodeCircuit]
+  cases circuit with
+  | input i =>
+      simp [encodeCircuit]
+  | const b =>
+      cases b <;> simp [encodeCircuit]
+  | not c =>
+      simp [encodeCircuit]
+  | and a b =>
+      simp [encodeCircuit]
+  | or a b =>
+      simp [encodeCircuit]
 
 /-- Structural producer for conjunction. The physical loop evaluates the left
 child under an andLeft frame, converts that frame to andRight carrying the
