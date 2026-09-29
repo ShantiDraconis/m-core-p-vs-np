@@ -227,6 +227,100 @@ theorem frameReturn_halt
   simp [frameReturnConfig, cursorReturnMachine, TM.run, TM.step,
     Tape.write, Tape.move]
 
+/-- Return from the first unread source cell to the stack-end cursor without
+consuming any source bit.
+
+This is the canonical return used after the three tag bits have already been
+erased by the physical tag decoder. -/
+theorem cursorReturn_preserve_run
+    (witness : BitString)
+    (consumed : Nat)
+    (remaining frameStack : BitString)
+    (padding : Nat) :
+    cursorReturnMachine.run
+      (remaining.length + frameStack.length + 2)
+      { state := .scanUnread,
+        tape :=
+          evalCursorReadTape witness consumed
+            remaining frameStack padding } =
+      { state := .halt,
+        tape :=
+          evalCursorStackEndTape witness consumed
+            remaining frameStack padding } := by
+  let base : List (Option Bool) :=
+    List.replicate consumed none ++ none :: witness.map some
+  let c0 : Configuration CursorReturnState (Option Bool) :=
+    unreadReturnConfig base remaining frameStack padding
+  let c1 : Configuration CursorReturnState (Option Bool) :=
+    unreadReturnConfig
+      (remaining.reverse.map some ++ base)
+      [] frameStack padding
+  let c2 : Configuration CursorReturnState (Option Bool) :=
+    frameReturnConfig
+      (none :: remaining.reverse.map some ++ base)
+      frameStack.reverse padding
+  let c3 : Configuration CursorReturnState (Option Bool) :=
+    frameReturnConfig
+      (frameStack.map some ++
+        none :: remaining.reverse.map some ++ base)
+      [] padding
+  let c4 : Configuration CursorReturnState (Option Bool) :=
+    { state := .halt,
+      tape := evalCursorStackEndTape witness consumed
+        remaining frameStack padding }
+
+  have hstart :
+      ({ state := .scanUnread,
+         tape :=
+           evalCursorReadTape witness consumed
+             remaining frameStack padding } :
+        Configuration CursorReturnState (Option Bool)) = c0 := by
+    cases remaining <;>
+      simp [c0, base, unreadReturnConfig, evalCursorReadTape,
+        List.append_assoc]
+
+  have h01 :
+      cursorReturnMachine.run remaining.length c0 = c1 := by
+    dsimp [c0, c1]
+    exact unreadReturn_run base remaining frameStack padding
+
+  have h12 :
+      cursorReturnMachine.run 1 c1 = c2 := by
+    dsimp [c1, c2]
+    exact sourceSeparator_to_frames
+      (remaining.reverse.map some ++ base) frameStack padding
+
+  have h23 :
+      cursorReturnMachine.run frameStack.length c2 = c3 := by
+    dsimp [c2, c3]
+    have h :=
+      frameReturn_run
+        (none :: remaining.reverse.map some ++ base)
+        frameStack.reverse padding
+    simpa using h
+
+  have h34 :
+      cursorReturnMachine.run 1 c3 = c4 := by
+    dsimp [c3, c4, base]
+    have h :=
+      frameReturn_halt
+        (frameStack.map some ++
+          none :: remaining.reverse.map some ++
+            List.replicate consumed none ++
+              none :: witness.map some)
+        padding
+    simpa [evalCursorStackEndTape, List.append_assoc] using h
+
+  rw [hstart]
+  rw [show remaining.length + frameStack.length + 2 =
+      remaining.length + (1 + (frameStack.length + 1)) by omega]
+  rw [run_add, h01]
+  rw [run_add, h12]
+  rw [run_add, h23]
+  exact h34
+
+#print axioms MCore.Real.P01EvalCursorRoundTrip.cursorReturn_preserve_run
+
 /-- Main return theorem.  Together with `cursorSeek_run`, this gives the
 physical round-trip needed by the streaming evaluator: after consuming exactly
 one source bit, the fixed return machine restores the stack-end representation
