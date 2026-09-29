@@ -60,8 +60,8 @@ def preservingReadMachine : TM PreservingReadState (Option Bool) where
         | none => (.reject, none, .stay)
     | .advanceSep =>
         match symbol with
-        | none => (.capture, none, .left)
-        | some b => (.reject, some b, .stay)
+        | none => (.advanceSep, none, .left)
+        | some b => (.writeMoved b, none, .right)
     | .seekMoved =>
         match symbol with
         | none => (.seekMoved, none, .left)
@@ -88,8 +88,8 @@ def preservingReadMachine : TM PreservingReadState (Option Bool) where
         | some b => (.indexMoved, some b, .stay)
     | .finalSepNoMoved =>
         match symbol with
-        | none => (.finalReadNoMoved, none, .left)
-        | some b => (.reject, some b, .stay)
+        | none => (.finalSepNoMoved, none, .left)
+        | some b => (.restoreHalt b, some b, .right)
     | .finalReadNoMoved =>
         match symbol with
         | some b => (.restoreHalt b, some b, .right)
