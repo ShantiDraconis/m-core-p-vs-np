@@ -122,10 +122,29 @@ theorem input_certificate
               inputNodeFinalMode, inputAfterReadTarget]
         | cons f fs =>
             refine ⟨consumedAfterInputIndex (consumed + 3) i, padding, ?_⟩
-            cases f <;>
-              simp [LoopOutcome, cfg, inputLoopConfig, inputLoopEmbed,
-                inputNodeFinalMode, inputAfterReadTarget,
-                encodeEvalFrames, encodeEvalFrame]
+            cases f with
+            | neg =>
+                simp [LoopOutcome, cfg, inputLoopConfig, inputLoopEmbed,
+                  inputNodeFinalMode, inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | andLeft =>
+                simp [LoopOutcome, cfg, inputLoopConfig, inputLoopEmbed,
+                  inputNodeFinalMode, inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | andRight b =>
+                cases b <;>
+                  simp [LoopOutcome, cfg, inputLoopConfig, inputLoopEmbed,
+                    inputNodeFinalMode, inputAfterReadTarget,
+                    encodeEvalFrames, encodeEvalFrame]
+            | orLeft =>
+                simp [LoopOutcome, cfg, inputLoopConfig, inputLoopEmbed,
+                  inputNodeFinalMode, inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | orRight b =>
+                cases b <;>
+                  simp [LoopOutcome, cfg, inputLoopConfig, inputLoopEmbed,
+                    inputNodeFinalMode, inputAfterReadTarget,
+                    encodeEvalFrames, encodeEvalFrame]
 
 /-- Constant-false nodes inhabit the global circuit-run certificate. -/
 theorem constFalse_certificate
