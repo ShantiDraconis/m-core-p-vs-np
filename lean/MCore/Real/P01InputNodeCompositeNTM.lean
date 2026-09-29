@@ -151,6 +151,30 @@ theorem return_transition_active
   cases q <;>
     simp [inputAfterReadReturnMachine, inputNodeCompositeMachine] at h ⊢
 
+/-- Every configuration of the fused input-node NTM has at most one
+successor.  This is the structural determinism fact needed to turn existential
+accepting reachability into universal `HaltsWithin`. -/
+theorem inputNodeComposite_successors_length_le_one
+    (c : Configuration InputNodeCompositeState (Option Bool)) :
+    (inputNodeCompositeMachine.successors c).length ≤ 1 := by
+  unfold NTM.successors
+  cases c.state with
+  | look q =>
+      cases q <;>
+        simp [inputNodeCompositeMachine, NTM.stepBranch]
+  | read mode q =>
+      cases q <;>
+        simp [inputNodeCompositeMachine, NTM.stepBranch]
+  | ret mode selected q =>
+      cases q <;>
+        simp [inputNodeCompositeMachine, NTM.stepBranch]
+  | done selected mode =>
+      simp [inputNodeCompositeMachine, NTM.stepBranch]
+  | reject =>
+      simp [inputNodeCompositeMachine, NTM.stepBranch]
+
+#print axioms MCore.Real.P01InputNodeCompositeNTM.inputNodeComposite_successors_length_le_one
+
 #print axioms MCore.Real.P01InputNodeCompositeNTM.look_handoff_successors
 #print axioms MCore.Real.P01InputNodeCompositeNTM.read_handoff_successors
 #print axioms MCore.Real.P01InputNodeCompositeNTM.return_handoff_successors
