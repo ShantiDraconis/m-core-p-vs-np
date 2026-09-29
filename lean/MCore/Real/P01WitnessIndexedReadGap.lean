@@ -414,11 +414,16 @@ theorem preservingMovedGap_cycle
       (next :: sourceTail)
 
   have h01 : preservingReadMachine.run 1 C0 = C1 := by
+    have hcount : gap + moved.length = k + 1 := by
+      dsimp [moved, k, m]
+      simp
+      omega
     dsimp [C0, C1, moved, m, k, witnessSuffix, src,
       movedGapBitsConfig, movedGapBitsTape]
+    rw [show gap + (List.length movedTail + 1) =
+        (gap + List.length movedTail) + 1 by omega]
     simp [preservingReadMachine, TM.run, TM.step,
       Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
-    omega
 
   have h12 : preservingReadMachine.run (k + 1) C1 = C2 := by
     dsimp [C1, C2]
@@ -468,10 +473,15 @@ theorem preservingMovedGap_cycle
       returnBlanks_over_blanks k next restoredLeft (sourceTail.map some)
 
   have h7eq : C7e = C7 := by
+    have hcount :
+        gap + ((first :: movedTail) ++ [b]).length =
+          (gap + movedTail.length) + 2 := by
+      simp
+      omega
     dsimp [C7e, C7, movedGapBitsConfig, movedGapBitsTape,
       restoredLeft, moved, m, k, src]
+    rw [hcount]
     simp [List.replicate_succ, List.map_append, List.append_assoc]
-    omega
 
   have h56e : preservingReadMachine.run (m + 2) C5 = C6e := by
     rw [h56, h6eq]
@@ -589,9 +599,10 @@ theorem movedGapBits_false_finalize
   have h01 : preservingReadMachine.run 1 C0 = C1 := by
     dsimp [C0, C1, moved, m, k, witnessSuffix, src,
       movedGapBitsConfig, movedGapBitsTape]
+    rw [show gap + (List.length movedTail + 1) =
+        (gap + List.length movedTail) + 1 by omega]
     simp [preservingReadMachine, TM.run, TM.step,
       Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
-    omega
 
   have h12 : preservingReadMachine.run (k + 1) C1 = C2 := by
     dsimp [C1, C2]
@@ -630,6 +641,8 @@ theorem movedGapBits_false_finalize
   have h67 : preservingReadMachine.run 3 C6 = C7 := by
     dsimp [C6, C7, restoreMovedConfig, restoredWitness,
       after, src, moved, m, k]
+    rw [replicate_none_cons
+      (gap + movedTail.length) (sourceTail.map some)]
     simp [preservingReadMachine, TM.run, TM.step,
       Tape.write, Tape.move, List.replicate_succ,
       List.map_append, List.append_assoc]
