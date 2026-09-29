@@ -265,6 +265,60 @@ theorem const_certificate
 
 
 
+
+
+/-- Normalize an already-computed physical value into the circuit certificate's
+external outcome. If external source/frames remain, zero additional steps are
+needed; if both are empty, the existing haveValue loop closes to final. -/
+theorem have_reaches_outcome
+    (witness : BitString)
+    (value : Bool)
+    (tail : BitString)
+    (frames : List EvalFrame)
+    (consumed padding : Nat) :
+    ∃ m cfg,
+      cfg ∈
+        evalRunLoopMachine.runBranches m
+          [{ state := .have (.start value),
+             tape :=
+               evalCursorStackEndTape witness consumed tail
+                 (encodeEvalFrames frames) padding }] ∧
+      LoopOutcome witness value tail frames cfg := by
+  cases tail with
+  | cons b bs =>
+      let cHave : LoopConfig :=
+        { state := .have (.start value),
+          tape :=
+            evalCursorStackEndTape witness consumed (b :: bs)
+              (encodeEvalFrames frames) padding }
+      refine ⟨0, cHave, ?_, ?_⟩
+      · simp [NTM.runBranches, cHave]
+      · exact ⟨consumed, padding, rfl⟩
+  | nil =>
+      cases frames with
+      | cons f fs =>
+          let cHave : LoopConfig :=
+            { state := .have (.start value),
+              tape :=
+                evalCursorStackEndTape witness consumed []
+                  (encodeEvalFrames (f :: fs)) padding }
+          refine ⟨0, cHave, ?_, ?_⟩
+          · simp [NTM.runBranches, cHave]
+          · exact ⟨consumed, padding, rfl⟩
+      | nil =>
+          obtain ⟨m, hm, hrun⟩ :=
+            emptyFrames_loop_reaches_final
+              witness [] consumed padding value
+          let cFinal : LoopConfig :=
+            { state := .final value,
+              tape :=
+                evalCursorStackEndTape witness consumed [] [] padding }
+          refine ⟨m, cFinal, ?_, ?_⟩
+          · simpa [cFinal] using hrun
+          · exact ⟨cFinal.tape, rfl⟩
+
+#print axioms MCore.Real.P01EvalRunCircuitCertificate.have_reaches_outcome
+
 /-- Structural producer for negation: execute the physical 011 tag, recurse on
 the child under a neg continuation frame, then discharge that frame with the
 already-certified physical haveValue loop. -/
