@@ -111,22 +111,68 @@ theorem step_successors
     evalRunCompositeMachine, evalStepCompositeMachine,
     Tape.write, Tape.move, List.map_map, Function.comp_def]
 
-/-- A completed value with no continuation frame is a physical final result.
-The two lookahead moves restore the exact original stack-end tape. -/
+private theorem one_step_of_successor
+    (a b : Configuration EvalRunCompositeState (Option Bool))
+    (ha : ¬ Halted evalRunCompositeMachine a)
+    (hs : b ∈ evalRunCompositeMachine.successors a) :
+    b ∈ evalRunCompositeMachine.runBranches 1 [a] := by
+  have h :=
+    P01NTMRunLaws.mem_runBranches_succ_of_successor
+      evalRunCompositeMachine 0 [a] a b
+      (by simp [NTM.runBranches]) ha hs
+  simpa using h
+
+/-- A completed value with no continuation frame reaches a physical final
+result in two controller steps.  The original stack-end tape is restored. -/
 theorem value_empty_frames_run_two
     (witness unread : BitString)
     (consumed padding : Nat)
     (v : Bool) :
+    ({ state := .final v,
+       tape :=
+         evalCursorStackEndTape witness consumed unread [] padding } :
+      Configuration EvalRunCompositeState (Option Bool)) ∈
     evalRunCompositeMachine.runBranches 2
       [{ state := .valueStart v,
          tape :=
-           evalCursorStackEndTape witness consumed unread [] padding }] =
-      [{ state := .final v,
-         tape :=
            evalCursorStackEndTape witness consumed unread [] padding }] := by
-  cases v <;>
-    simp [NTM.runBranches, evalRunCompositeMachine,
-      evalCursorStackEndTape, Tape.write, Tape.move]
+  let t0 :=
+    evalCursorStackEndTape witness consumed unread [] padding
+  let t1 := Tape.move none .left t0
+  let c0 : Configuration EvalRunCompositeState (Option Bool) :=
+    { state := .valueStart v, tape := t0 }
+  let c1 : Configuration EvalRunCompositeState (Option Bool) :=
+    { state := .valuePeek v, tape := t1 }
+  let c2 : Configuration EvalRunCompositeState (Option Bool) :=
+    { state := .final v, tape := t0 }
+
+  have h01succ :
+      c1 ∈ evalRunCompositeMachine.successors c0 := by
+    dsimp [c0, c1, t1, t0]
+    simp [NTM.successors, NTM.stepBranch,
+      evalRunCompositeMachine, evalCursorStackEndTape,
+      Tape.write, Tape.move]
+  have h01 :
+      c1 ∈ evalRunCompositeMachine.runBranches 1 [c0] :=
+    one_step_of_successor c0 c1
+      (by simp [Halted, c0, evalRunCompositeMachine]) h01succ
+
+  have h12succ :
+      c2 ∈ evalRunCompositeMachine.successors c1 := by
+    dsimp [c1, c2, t1, t0]
+    simp [NTM.successors, NTM.stepBranch,
+      evalRunCompositeMachine, evalCursorStackEndTape,
+      Tape.write, Tape.move]
+  have h12 :
+      c2 ∈ evalRunCompositeMachine.runBranches 1 [c1] :=
+    one_step_of_successor c1 c2
+      (by simp [Halted, c1, evalRunCompositeMachine]) h12succ
+
+  have h :=
+    P01NTMRunLaws.mem_runBranches_trans evalRunCompositeMachine
+      1 1 [c0] c1 c2 h01 h12
+  dsimp [c0, c2, t0] at h ⊢
+  simpa using h
 
 /-- A completed value with a nonempty continuation stack is restored to the
 canonical stack-end tape and re-enters the haveValue arm after three fixed
@@ -135,18 +181,70 @@ theorem value_nonempty_frames_run_three
     (witness unread frameTail : BitString)
     (consumed padding : Nat)
     (v b : Bool) :
+    ({ state := .step (.have (.start v)),
+       tape :=
+         evalCursorStackEndTape witness consumed unread
+           (b :: frameTail) padding } :
+      Configuration EvalRunCompositeState (Option Bool)) ∈
     evalRunCompositeMachine.runBranches 3
       [{ state := .valueStart v,
          tape :=
            evalCursorStackEndTape witness consumed unread
-             (b :: frameTail) padding }] =
-      [{ state := .step (.have (.start v)),
-         tape :=
-           evalCursorStackEndTape witness consumed unread
              (b :: frameTail) padding }] := by
-  cases v <;> cases b <;>
-    simp [NTM.runBranches, evalRunCompositeMachine,
-      evalCursorStackEndTape, Tape.write, Tape.move]
+  let t0 :=
+    evalCursorStackEndTape witness consumed unread
+      (b :: frameTail) padding
+  let t1 := Tape.move none .left t0
+  let c0 : Configuration EvalRunCompositeState (Option Bool) :=
+    { state := .valueStart v, tape := t0 }
+  let c1 : Configuration EvalRunCompositeState (Option Bool) :=
+    { state := .valuePeek v, tape := t1 }
+  let c2 : Configuration EvalRunCompositeState (Option Bool) :=
+    { state := .valueReturn v, tape := t0 }
+  let c3 : Configuration EvalRunCompositeState (Option Bool) :=
+    { state := .step (.have (.start v)), tape := t0 }
+
+  have h01succ :
+      c1 ∈ evalRunCompositeMachine.successors c0 := by
+    dsimp [c0, c1, t1, t0]
+    simp [NTM.successors, NTM.stepBranch,
+      evalRunCompositeMachine, evalCursorStackEndTape,
+      Tape.write, Tape.move]
+  have h01 :
+      c1 ∈ evalRunCompositeMachine.runBranches 1 [c0] :=
+    one_step_of_successor c0 c1
+      (by simp [Halted, c0, evalRunCompositeMachine]) h01succ
+
+  have h12succ :
+      c2 ∈ evalRunCompositeMachine.successors c1 := by
+    dsimp [c1, c2, t1, t0]
+    simp [NTM.successors, NTM.stepBranch,
+      evalRunCompositeMachine, evalCursorStackEndTape,
+      Tape.write, Tape.move]
+  have h12 :
+      c2 ∈ evalRunCompositeMachine.runBranches 1 [c1] :=
+    one_step_of_successor c1 c2
+      (by simp [Halted, c1, evalRunCompositeMachine]) h12succ
+
+  have h23succ :
+      c3 ∈ evalRunCompositeMachine.successors c2 := by
+    dsimp [c2, c3, t0]
+    simp [NTM.successors, NTM.stepBranch,
+      evalRunCompositeMachine, evalCursorStackEndTape,
+      Tape.write, Tape.move]
+  have h23 :
+      c3 ∈ evalRunCompositeMachine.runBranches 1 [c2] :=
+    one_step_of_successor c2 c3
+      (by simp [Halted, c2, evalRunCompositeMachine]) h23succ
+
+  have h02 :=
+    P01NTMRunLaws.mem_runBranches_trans evalRunCompositeMachine
+      1 1 [c0] c1 c2 h01 h12
+  have h03 :=
+    P01NTMRunLaws.mem_runBranches_trans evalRunCompositeMachine
+      2 1 [c0] c2 c3 h02 h23
+  dsimp [c0, c3, t0] at h03 ⊢
+  simpa using h03
 
 /-- Every encoded evaluator frame is physically nonempty, so the previous
 dispatcher theorem applies directly to semantic frame stacks. -/
@@ -154,20 +252,46 @@ theorem value_encoded_frame_run_three
     (witness unread frameStack : BitString)
     (consumed padding : Nat)
     (v : Bool) (frame : EvalFrame) :
+    ({ state := .step (.have (.start v)),
+       tape :=
+         evalCursorStackEndTape witness consumed unread
+           (encodeEvalFrame frame ++ frameStack) padding } :
+      Configuration EvalRunCompositeState (Option Bool)) ∈
     evalRunCompositeMachine.runBranches 3
       [{ state := .valueStart v,
          tape :=
            evalCursorStackEndTape witness consumed unread
-             (encodeEvalFrame frame ++ frameStack) padding }] =
-      [{ state := .step (.have (.start v)),
-         tape :=
-           evalCursorStackEndTape witness consumed unread
              (encodeEvalFrame frame ++ frameStack) padding }] := by
-  rw [encodeEvalFrame_eq_bits]
-  exact value_nonempty_frames_run_three
-    witness unread
-      ((frameBit1 frame :: frameBit2 frame :: []) ++ frameStack)
-      consumed padding v (frameBit0 frame)
+  cases frame with
+  | neg =>
+      simpa [encodeEvalFrame] using
+        value_nonempty_frames_run_three
+          witness unread ([false, false] ++ frameStack)
+          consumed padding v false
+  | andLeft =>
+      simpa [encodeEvalFrame] using
+        value_nonempty_frames_run_three
+          witness unread ([false, true] ++ frameStack)
+          consumed padding v false
+  | andRight b =>
+      cases b <;>
+        simpa [encodeEvalFrame] using
+          value_nonempty_frames_run_three
+            witness unread
+              ((if b then [true, true] else [true, false]) ++ frameStack)
+            consumed padding v false
+  | orLeft =>
+      simpa [encodeEvalFrame] using
+        value_nonempty_frames_run_three
+          witness unread ([false, false] ++ frameStack)
+          consumed padding v true
+  | orRight b =>
+      cases b <;>
+        simpa [encodeEvalFrame] using
+          value_nonempty_frames_run_three
+            witness unread
+              ((if b then [true, false] else [false, true]) ++ frameStack)
+            consumed padding v true
 
 #print axioms MCore.Real.P01EvalRunCompositeNTM.step_successors
 #print axioms MCore.Real.P01EvalRunCompositeNTM.value_empty_frames_run_two
