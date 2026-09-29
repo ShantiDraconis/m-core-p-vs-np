@@ -201,7 +201,6 @@ theorem preservingReadGap_zero
 
   have h01 : preservingReadMachine.run 1 C0 = C1 := by
     dsimp [C0, C1, preservingReadGapTape, gapReadBitsTape]
-    simp only [List.map_cons]
     rw [replicate_none_cons gap (some b :: witnessTail.map some)]
     simp [preservingReadMachine, encodeNat, TM.run, TM.step,
       Tape.write, Tape.move, List.append_assoc]
@@ -266,7 +265,6 @@ theorem preservingReadGap_start_true
 
   have h01 : preservingReadMachine.run 1 C0 = C1 := by
     dsimp [C0, C1, gapReadBitsTape, src]
-    simp only [List.map_cons]
     rw [replicate_none_cons gap (some b :: witnessTail.map some)]
     simp [preservingReadMachine, TM.run, TM.step,
       Tape.write, Tape.move, List.append_assoc]
