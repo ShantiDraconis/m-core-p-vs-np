@@ -22,7 +22,7 @@ inductive EvalRunLoopState where
   | have : HaveValueCompositeState → EvalRunLoopState
   | final : Bool → EvalRunLoopState
   | reject
-  deriving DecidableEq, Repr
+  deriving DecidableEq, Repr, Fintype
 
 /-- Terminal-aware embedding of the indexed-input submachine. -/
 def inputLoopEmbed : InputNodeCompositeState → EvalRunLoopState
