@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: refine frozen evalStep globally on the physical tape; frame push/pop/read are GREEN_FROZEN. Then prove global verifier correctness/halting and compose P01. P02: construct G21Pointwise. Do not reopen semantic evaluator, frame coding, stack primitives, parser, guesser, indexed-read, G2.2, or fixed-point routes.",
+  "next": "P01: construct the physical source-cursor ↔ stack-end invariant/shuttle, then refine input/const/source consumption, lift to global evalRun halting/correctness, and compose one P01MachineConstruction. P02: construct G21Pointwise. Do not reopen frame coding/push/pop/read, semantic evaluator, parser, guesser, indexed-read, G2.2, or fixed-point routes.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -132,10 +132,26 @@
           "run": 36540846559,
           "certificate": "CERTIFICATES/P01_FRAME_POP_READ_GREEN_7f6597a1.md",
           "content": "one fixed TM decodes/removes one three-bit EvalFrame in four physical steps, preserving canonical V2 layout and rejecting 111"
+        },
+        "evalstep_frame_refinement": {
+          "state": "GREEN_FROZEN_PHYSICAL_REFINEMENT",
+          "branch": "frozen/p01-evalstep-frame-refinement-green-8e3abccc",
+          "sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+          "run": 36542400193,
+          "certificate": "CERTIFICATES/P01_EVALSTEP_FRAME_REFINEMENT_GREEN_8e3abccc.md",
+          "proved": [
+            "frame push refinement",
+            "frame pop/read refinement",
+            "NOT/AND/OR tag frame effects",
+            "NOT return",
+            "AND-left/OR-left pop→push continuation replacement",
+            "AND-right/OR-right return"
+          ]
         }
       },
       "exact_remaining": [
-        "refine every frozen evalStep transition to the canonical Option Bool physical tape using the certified frame push/pop/read, witness-read, stack and movement primitives",
+        "construct one physical source-cursor ↔ stack-end invariant/shuttle preserving the unread source tail and certified frame-stack layout",
+        "refine input/constant/tag source consumption against that cursor, reusing indexed witness-read",
         "prove global physical verifier halting/correctness against frozen evalRun semantics",
         "compose parser + witnessGuessMachine + physical verifier into one P01MachineConstruction"
       ],
