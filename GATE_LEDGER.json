@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "construct both exact producers: P01ConstructionGap and G21Pointwise. Do not reopen G2.2 or literal fixed-point routes.",
+  "next": "P01: construct the one fixed physical verifier TM (global run/halting/correctness), then compose certified parser + witnessGuessMachine + verifier into P01MachineConstruction; P02: construct G21Pointwise. Do not reopen parser, witness-guess, indexed-read, G2.2, or literal fixed-point routes.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -34,6 +34,65 @@
       "G22Contradiction ↔ ¬ InP SATTarget"
     ],
     "note": "G3 is already supplied by the normalized external contract; G2.2 is not an independent producer.",
-    "inhabitant_state": "OPEN_MATH"
+    "inhabitant_state": "OPEN_MATH",
+    "p01_internal_frontier": {
+      "state": "GREEN_SUBGATES_OPEN_TERMINAL",
+      "exact_target": "Nonempty P01MachineConstruction",
+      "terminal_structure_fields": [
+        "one fixed NTM over Option Bool",
+        "blank_none",
+        "polynomial time bound",
+        "total HaltsWithin on every BitString",
+        "AcceptsWithin ↔ SATBits circuitBitEncoding"
+      ],
+      "certified_reuse": {
+        "parser": {
+          "state": "GREEN_FROZEN_REUSE",
+          "theorem": "slot_parser_machine_simulation_certificate"
+        },
+        "witness_guess": {
+          "state": "GREEN",
+          "branch": "atk/next-pnp-physical-verifier-20260929",
+          "sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+          "run": 36499549795,
+          "theorems": [
+            "witnessGuess_complete",
+            "witnessGuess_halts"
+          ]
+        },
+        "indexed_witness_read": {
+          "state": "GREEN",
+          "branch": "atk/next-p01-integrated-machine-20260929",
+          "sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+          "runs": [
+            36497448606,
+            36497644415
+          ],
+          "theorem": "witnessIndexedReadGap_closed"
+        },
+        "one_machine_verifier_kernel": {
+          "state": "GREEN_FRONTIER",
+          "branch": "atk/next-pnp-one-machine-verifier-20260929",
+          "sha": "3532d7af492eb2dfe50eb287d58abfa3b2dbb449",
+          "run": 36500623426,
+          "proved": [
+            "fixed stack primitive TM push/pop",
+            "source rewind / input shuttle infrastructure",
+            "indexed witness read",
+            "local physical const/neg/and/or refinements",
+            "uniform polynomial cost envelopes"
+          ]
+        }
+      },
+      "exact_remaining": [
+        "construct one fixed physical verifier TM realizing the entire evalProgram loop with global polynomial halting and physical_eq_logical",
+        "compose parser + witnessGuessMachine + physical verifier into one P01MachineConstruction"
+      ],
+      "rejected_substitutes": [
+        "IntegratedPhaseBridgeCertificate state-disjointness",
+        "DecoderEvaluatorLocalCertificate nonterminal-control shell",
+        "component shells without one-machine global execution theorem"
+      ]
+    }
   }
 }
