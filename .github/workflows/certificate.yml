@@ -168,6 +168,30 @@ jobs:
           lake env lean CanonicalCircuitBitsAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalCircuitBits-axioms.log
           if grep -E 'sorryAx' audit/PNP-CanonicalCircuitBits-axioms.log; then exit 1; fi
 
+      - name: Build P01 evalStep physical refinement
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01EvalStepFrameRefinement 2>&1 | tee audit/P01-EvalStepFrameRefinement-targeted.log
+
+      - name: Axiom audit P01 evalStep physical refinement
+        run: |
+          set -euo pipefail
+          cat > P01EvalStepFrameRefinementAudit.lean <<'EOF'
+          import MCore.Real.P01EvalStepFrameRefinement
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.push_refines_frame_cons
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.pop_refines_frame_tail
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_not_tag_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_and_tag_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_or_tag_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_neg_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_andLeft_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_orLeft_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_andRight_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_orRight_return_refined
+          EOF
+          lake env lean P01EvalStepFrameRefinementAudit.lean 2>&1 | tee audit/P01-EvalStepFrameRefinement-axioms.log
+          if grep -E 'sorryAx' audit/P01-EvalStepFrameRefinement-axioms.log; then exit 1; fi
+
       - name: Reproduce C12 semantic-proxy counterexample
         run: |
           set -euo pipefail
