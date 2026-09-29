@@ -40,7 +40,7 @@ inductive PreservingReadState where
   | restoreHalt : Bool → PreservingReadState
   | halt : Bool → PreservingReadState
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- The preserving reader.  It uses only the canonical tape alphabet
 `Option Bool`: no extra marker symbol is introduced. -/
