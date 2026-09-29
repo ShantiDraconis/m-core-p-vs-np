@@ -71,3 +71,5 @@ import MCore.Real.P01PhysicalConsumeOneMachine
 import MCore.Real.P01InputReturnMode
 
 import MCore.Real.P01InputAfterReadReturn
+
+import MCore.Real.P01InputIndexLookahead
