@@ -91,6 +91,50 @@ theorem evalCursorReadTape_index_stream
     simp [evalCursorReadTape, rightStreamTape, encodeNat,
       List.map_append, List.append_assoc]
 
+/-- A replicated block commutes with one more identical symbol. -/
+theorem replicate_same_cons
+    {α : Type} (a : α) (k : Nat) (tail : List α) :
+    List.replicate k a ++ (a :: tail) =
+      List.replicate (k + 1) a ++ tail := by
+  induction k with
+  | zero =>
+      rfl
+  | succ k ih =>
+      simp only [List.replicate_succ, List.cons_append]
+      congr 1
+
+/-- Normalized cursor view: the witness/source separator is the first physical
+blank on the left, while the already-consumed blanks are retained behind it. -/
+theorem evalCursorReadTape_index_stream_normalized
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat) :
+    evalCursorReadTape witness consumed
+        (encodeNat i ++ tail) frameStack padding =
+      rightStreamTape
+        (none :: (List.replicate consumed none ++ witness.map some))
+        ((encodeNat i).map some ++
+          tail.map some ++ none :: frameStack.reverse.map some ++
+            none :: List.replicate padding none) := by
+  rw [evalCursorReadTape_index_stream]
+  congr 2
+  exact P01WitnessIndexedReadPreserving.replicate_none_cons
+    consumed (witness.map some)
+
+/-- Empty-tail specialization of the normalized cursor view. -/
+theorem evalCursorReadTape_index_stream_nil
+    (witness frameStack : BitString)
+    (consumed padding i : Nat) :
+    evalCursorReadTape witness consumed
+        (encodeNat i) frameStack padding =
+      rightStreamTape
+        (none :: (List.replicate consumed none ++ witness.map some))
+        ((encodeNat i).map some ++
+          none :: frameStack.reverse.map some ++
+            none :: List.replicate padding none) := by
+  simpa using
+    evalCursorReadTape_index_stream_normalized
+      witness ([] : BitString) frameStack consumed padding i
+
 /-- Scan a homogeneous block of true unary markers without modifying it. -/
 theorem scanIndex_over_true
     (k : Nat)
@@ -109,25 +153,32 @@ theorem scanIndex_over_true
   | zero =>
       rfl
   | succ k ih =>
-      rw [show Nat.succ k = 1 + k by omega]
+      rw [show k + 1 = 1 + k by omega]
       rw [run_add]
       have hstep :
           inputIndexLookaheadMachine.run 1
             { state := .scanIndex,
               tape :=
                 rightStreamTape left
-                  (List.replicate (Nat.succ k) (some true) ++ stream) } =
+                  (List.replicate (k + 1) (some true) ++ stream) } =
             { state := .scanIndex,
               tape :=
                 rightStreamTape (some true :: left)
                   (List.replicate k (some true) ++ stream) } := by
+        rw [show List.replicate (k + 1) (some true) =
+            some true :: List.replicate k (some true) by
+          simp [List.replicate_succ]]
         simp [rightStreamTape, inputIndexLookaheadMachine,
-          TM.run, TM.step, Tape.write, Tape.move,
-          List.replicate_succ, List.append_assoc]
+          TM.run, TM.step, Tape.write, Tape.move]
       rw [hstep]
       rw [ih (some true :: left)]
-      congr 2
-      simp [List.replicate_succ, List.append_assoc]
+      apply congrArg
+        (fun l : List (Option Bool) =>
+          ({ state := .scanIndex,
+             tape := rightStreamTape l stream } :
+            Configuration InputIndexLookaheadState (Option Bool)))
+      symm
+      exact replicate_same_cons (some true) k left
 
 /-- One false terminator step enters the finite structural classifier. -/
 theorem scanIndex_false
@@ -137,12 +188,58 @@ theorem scanIndex_false
         tape := rightStreamTape left (some false :: stream) } =
       { state := .peekTail,
         tape := rightStreamTape (some false :: left) stream } := by
-  simp [rightStreamTape, inputIndexLookaheadMachine,
-    TM.run, TM.step, Tape.write, Tape.move]
+  cases stream <;>
+    simp [rightStreamTape, inputIndexLookaheadMachine,
+      TM.run, TM.step, Tape.write, Tape.move]
 
 /-- Generic rewind: starting on the false terminator with a finite Boolean
 prefix physically to its left, return to the first symbol of that prefix and
 leave the complete segment unchanged. -/
+theorem rewind_segment
+    (mode : InputReturnMode)
+    (bits : BitString) (current : Bool)
+    (base right : List (Option Bool)) :
+    inputIndexLookaheadMachine.run (bits.length + 2)
+      { state := .rewind mode,
+        tape :=
+          { left := bits.map some ++ (none :: base),
+            head := some current,
+            right := right } } =
+      { state := .halt mode,
+        tape :=
+          rightStreamTape (none :: base)
+            (bits.reverse.map some ++ (some current :: right)) } := by
+  induction bits generalizing current right with
+  | nil =>
+      simp [inputIndexLookaheadMachine, rightStreamTape,
+        TM.run, TM.step, Tape.write, Tape.move]
+  | cons b bs ih =>
+      rw [show (b :: bs).length + 2 =
+          1 + (bs.length + 2) by simp]
+      rw [run_add]
+      have hstep :
+          inputIndexLookaheadMachine.run 1
+            { state := .rewind mode,
+              tape :=
+                { left := (b :: bs).map some ++ (none :: base),
+                  head := some current,
+                  right := right } } =
+            { state := .rewind mode,
+              tape :=
+                { left := bs.map some ++ (none :: base),
+                  head := some b,
+                  right := some current :: right } } := by
+        simp [inputIndexLookaheadMachine, TM.run, TM.step,
+          Tape.write, Tape.move]
+      rw [hstep]
+      rw [ih b (some current :: right)]
+      apply congrArg
+        (fun stream : List (Option Bool) =>
+          ({ state := .halt mode,
+             tape := rightStreamTape (none :: base) stream } :
+            Configuration InputIndexLookaheadState (Option Bool)))
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
 theorem rewind_index_segment
     (mode : InputReturnMode)
     (bits : BitString)
@@ -157,91 +254,30 @@ theorem rewind_index_segment
         tape :=
           rightStreamTape (none :: base)
             (bits.reverse.map some ++ (some false :: right)) } := by
-  induction bits generalizing right with
-  | nil =>
-      simp [inputIndexLookaheadMachine, rightStreamTape,
-        TM.run, TM.step, Tape.write, Tape.move]
-  | cons b bs ih =>
-      rw [show (b :: bs).length + 2 = 1 + (bs.length + 2) by simp]
-      rw [run_add]
-      have hstep :
-          inputIndexLookaheadMachine.run 1
-            { state := .rewind mode,
-              tape :=
-                { left := (b :: bs).map some ++ (none :: base),
-                  head := some false,
-                  right := right } } =
-            { state := .rewind mode,
-              tape :=
-                { left := bs.map some ++ (none :: base),
-                  head := some b,
-                  right := some false :: right } } := by
-        simp [inputIndexLookaheadMachine, TM.run, TM.step,
-          Tape.write, Tape.move]
-      rw [hstep]
-      -- Reuse the induction hypothesis with the current bit as the new
-      -- terminator symbol by one explicit rewind step.
-      rw [show bs.length + 2 = 1 + (bs.length + 1) by omega]
-      rw [run_add]
-      have hb :
-          inputIndexLookaheadMachine.run 1
-            { state := .rewind mode,
-              tape :=
-                { left := bs.map some ++ (none :: base),
-                  head := some b,
-                  right := some false :: right } } =
-            match bs with
-            | [] =>
-                { state := .rewind mode,
-                  tape :=
-                    { left := none :: base,
-                      head := none,
-                      right := some b :: some false :: right } }
-            | x :: xs =>
-                { state := .rewind mode,
-                  tape :=
-                    { left := xs.map some ++ (none :: base),
-                      head := some x,
-                      right := some b :: some false :: right } } := by
-        cases bs <;> cases b <;>
-          simp [inputIndexLookaheadMachine, TM.run, TM.step,
-            Tape.write, Tape.move]
-      rw [hb]
-      cases bs with
-      | nil =>
-          simp [inputIndexLookaheadMachine, rightStreamTape,
-            TM.run, TM.step, Tape.write, Tape.move]
-      | cons x xs =>
-          -- At this point the remaining rewind is the same finite scan over
-          -- `xs`; direct simplification on the already named stream closes
-          -- the homogeneous unary use below.
-          simp [inputIndexLookaheadMachine, rightStreamTape,
-            TM.run, TM.step, Tape.write, Tape.move,
-            List.reverse_cons, List.map_append, List.append_assoc]
+  exact rewind_segment mode bits false base right
 
 /-- Exact source-tail classifier path after the unary false terminator. -/
 theorem classify_sourceTail_after_false
-    (left : List (Option Bool))
+    (indexLeft : List (Option Bool))
     (b : Bool) (tail frameStack : BitString)
     (padding : Nat) :
     inputIndexLookaheadMachine.run 1
       { state := .peekTail,
         tape :=
-          rightStreamTape left
+          rightStreamTape (some false :: indexLeft)
             (some b :: tail.map some ++ none ::
               frameStack.reverse.map some ++ none ::
                 List.replicate padding none) } =
       { state := .rewind .sourceTail,
         tape :=
-          { left := match left with | [] => [] | _ :: xs => xs,
-            head := match left with | [] => none | x :: _ => x,
+          { left := indexLeft,
+            head := some false,
             right :=
               some b :: tail.map some ++ none ::
                 frameStack.reverse.map some ++ none ::
                   List.replicate padding none } } := by
-  cases left <;>
-    simp [rightStreamTape, inputIndexLookaheadMachine,
-      TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
+  simp [rightStreamTape, inputIndexLookaheadMachine,
+    TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
 
 /-- Exact three-step path for an empty source tail and nonempty frame stack. -/
 theorem classify_frameStack_after_false
