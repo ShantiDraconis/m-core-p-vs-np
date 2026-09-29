@@ -180,6 +180,25 @@ theorem preservingRead_zero_value
   rw [preservingRead_zero]
 
 
+/-- Exact successor checkpoint.  Unary index 1 consumes its true marker
+and false terminator, reads the second witness bit, and restores the entire
+witness exactly.  The two consumed source symbols remain as blanks immediately
+to the right of the canonical witness/source separator. -/
+theorem preservingRead_one
+    (b0 b1 : Bool) (witnessTail tail : BitString) :
+    preservingReadMachine.run 17
+      { state := preservingReadMachine.initial,
+        tape := preservingReadTape (b0 :: b1 :: witnessTail) 1 tail } =
+      { state := .halt b1,
+        tape :=
+          { left := (b0 :: b1 :: witnessTail).map some,
+            head := none,
+            right := none :: none :: tail.map some } } := by
+  set_option maxHeartbeats 2000000 in
+    cases b0 <;> cases b1 <;>
+      simp [preservingReadMachine, preservingReadTape, encodeNat,
+        TM.run, TM.step, Tape.write, Tape.move]
+
 /-- First successor checkpoint.  For unary index 1 the machine must move one
 witness cell across the temporary separator, read the second witness bit, then
 restore the moved cell before halting.  Extra fuel is inert after halting. -/
@@ -197,6 +216,7 @@ theorem preservingRead_one_value
 
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one_value
 
 end P01WitnessIndexedReadPreserving
