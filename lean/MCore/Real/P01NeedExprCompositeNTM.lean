@@ -123,11 +123,13 @@ def needExprCompositeMachine :
     | .reject => []
   accepting := fun q =>
     match q with
+    | .input (.done _ _) => true
     | .doneValue _ => true
     | .doneNeed => true
     | _ => false
   rejecting := fun q =>
     match q with
+    | .input .reject => true
     | .reject => true
     | _ => false
 
@@ -137,6 +139,14 @@ def needExprCompositeMachine :
 
 @[simp] theorem needExprCompositeMachine_blank :
     needExprCompositeMachine.blank = none := rfl
+
+@[simp] theorem needExprCompositeMachine_accepting_input_done
+    (selected : Bool) (mode : P01InputReturnMode.InputReturnMode) :
+    needExprCompositeMachine.accepting
+      (.input (.done selected mode)) = true := rfl
+
+@[simp] theorem needExprCompositeMachine_rejecting_input_reject :
+    needExprCompositeMachine.rejecting (.input .reject) = true := rfl
 
 @[simp] theorem needExprCompositeMachine_accepting_value (b : Bool) :
     needExprCompositeMachine.accepting (.doneValue b) = true := rfl
