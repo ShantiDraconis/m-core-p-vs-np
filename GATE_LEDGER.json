@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: lift the now-GREEN cursor/source/frame physical primitives to one global verifier execution theorem, then compose parser+witness+verifier into P01MachineConstruction. G21Pointwise remains independently OPEN_MATH.",
+  "next": "P01: construct a fixed preserving unary-index witness reader for the sole remaining local evalStep input case; then lift the complete one-step refinement to global evalRun and compose parser+witness+verifier. G21Pointwise remains independently OPEN_MATH.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -210,10 +210,26 @@
           ],
           "theorem": "framePop_run_six",
           "content": "six-step physical frame-pop decodes exact EvalFrame and fails closed on empty/truncated stack"
+        },
+        "five_tag_cursor_refinement": {
+          "state": "GREEN_FROZEN_PHYSICAL_REFINEMENT",
+          "branch": "frozen/p01-five-tag-cursor-refinement-green-6707aa0e",
+          "sha": "6707aa0e65781e9d5674414bbf6c930443531bba",
+          "run": 36552792426,
+          "certificate": "CERTIFICATES/P01_FIVE_TAG_CURSOR_REFINEMENT_GREEN_6707aa0e.md",
+          "theorems": [
+            "evalStep_const_false_cursor_refined",
+            "evalStep_const_true_cursor_refined",
+            "evalStep_not_tag_cursor_refined",
+            "evalStep_and_tag_cursor_refined",
+            "evalStep_or_tag_cursor_refined"
+          ],
+          "content": "all five finite three-bit eval tags consume source physically; NOT/AND/OR also push the exact continuation frame"
         }
       },
       "exact_remaining": [
-        "lift the certified physical evalStep/cursor/frame primitives to one global physical verifier run theorem against frozen evalRun semantics",
+        "construct fixed-control preserving unary indexed witness read for input tag 000; existing destructive reader is insufficient for repeated variable queries",
+        "lift complete physical evalStep refinement to one global physical verifier run theorem against frozen evalRun semantics",
         "construct one fixed finite-control NTM composing parser + witness phase + physical verifier",
         "prove global HaltsWithin under one polynomial timeBound",
         "prove AcceptsWithin iff SATBits circuitBitEncoding for every bitstring"
@@ -239,7 +255,8 @@
       "deterministic parser/verifier TM phases embed into NTM with full run/halting/acceptance preservation",
       "physical eval cursor seek/return roundtrip",
       "physical one/three-bit source consumption preserving witness/frame layout",
-      "cursor-aware frame push and V2 frame pop"
+      "cursor-aware frame push and V2 frame pop",
+      "physical cursor refinement of all five finite three-bit tags: constants, NOT, AND, OR"
     ],
     "not_counted_as_closure": [
       "state-only phase bridges",
@@ -247,6 +264,7 @@
       "branch frozen/p01-exact-integrated-producer-green-661e43e4 because it still contains P01MachineConstructionExpectedFailure.lean"
     ],
     "exact_remaining": [
+      "close the sole remaining local evalStep input-node case with a preserving unary-index witness reader",
       "prove one global physical verifier execution theorem refining frozen evalRun",
       "construct one fixed finite-control NTM composing parser + witness phase + verifier",
       "prove global HaltsWithin under one polynomial timeBound",
