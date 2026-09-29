@@ -6,6 +6,7 @@ namespace Real
 namespace P01WitnessIndexedReadPreserving
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open CanonicalSATWitness
 open P01WitnessIndexedRead
 open MachineRunLemmas
@@ -182,6 +183,7 @@ theorem preservingRead_zero_value
 /-- First successor checkpoint.  For unary index 1 the machine must move one
 witness cell across the temporary separator, read the second witness bit, then
 restore the moved cell before halting.  Extra fuel is inert after halting. -/
+set_option maxHeartbeats 2000000 in
 theorem preservingRead_one_value
     (b0 b1 : Bool) (witnessTail tail : BitString) :
     (preservingReadMachine.run 32
