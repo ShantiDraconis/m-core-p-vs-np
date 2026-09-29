@@ -983,15 +983,16 @@ theorem or_reaches_done
 /-- Uniform majorant for the full physical 000 input route. -/
 def inputTagCompositeFuel
     (consumed i : Nat) (tail frameStack : BitString) : Nat :=
-  (frameStack.length + ((encodeNat i ++ tail).length + 3) + 3) +
+  (frameStack.length +
+      (false :: false :: false :: (encodeNat i ++ tail)).length + 3) +
     1 + 3 + 1 +
     inputNodeCompositeFuel (consumed + 3) i tail frameStack
 
 /-- Complete physical `000` route in the same fused `needExpr` NTM.
 
-The first phase physically seeks and erases the 000 tag.  The remainder is the
-already-certified indexed-input primitive, transported into the global machine
-by `inputSimulation`; no reader or return theorem is reproved here. -/
+Only the common seek/decode prefix is proved here.  Once the 000 tag has been
+erased, the already-certified input primitive is invoked through
+`inputNode_reaches_doneValue_from_read`. -/
 theorem input_reaches_done
     (witness tail frameStack : BitString)
     (consumed padding i : Nat)
@@ -1008,17 +1009,15 @@ theorem input_reaches_done
                evalCursorStackEndTape witness consumed
                  (false :: false :: false :: (encodeNat i ++ tail))
                  frameStack padding }] := by
-  let rest := encodeNat i ++ tail
-  let nSeek := frameStack.length + (rest.length + 3) + 3
+  let source := false :: false :: false :: (encodeNat i ++ tail)
+  let nSeek := frameStack.length + source.length + 3
   let t0 :=
-    evalCursorStackEndTape witness consumed
-      (false :: false :: false :: rest) frameStack padding
+    evalCursorStackEndTape witness consumed source frameStack padding
   let tRead :=
-    evalCursorReadTape witness consumed
-      (false :: false :: false :: rest) frameStack padding
+    evalCursorReadTape witness consumed source frameStack padding
   let tAfterTag :=
     evalCursorReadTape witness (consumed + 3)
-      rest frameStack padding
+      (encodeNat i ++ tail) frameStack padding
 
   let cSeek0 : Configuration CursorSeekState (Option Bool) :=
     { state := cursorSeekMachine.initial, tape := t0 }
@@ -1028,14 +1027,15 @@ theorem input_reaches_done
     { state := tagDecodeMachine.initial, tape := tRead }
   let cDecH : Configuration TagDecodeState (Option Bool) :=
     { state := .halt .input, tape := tAfterTag }
+  let cInput0 : NeedExprConfig :=
+    { state := .input inputNodeCompositeMachine.initial, tape := tAfterTag }
 
   have hSeekExact :
       cursorSeekMachine.run nSeek cSeek0 = cSeekH := by
-    dsimp [nSeek, cSeek0, cSeekH, t0, tRead, rest]
-    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
-      cursorSeek_run witness consumed
-        (false :: false :: false :: (encodeNat i ++ tail))
-        frameStack padding
+    dsimp [nSeek, cSeek0, cSeekH, t0, tRead, source]
+    exact cursorSeek_run witness consumed
+      (false :: false :: false :: (encodeNat i ++ tail))
+      frameStack padding
 
   obtain ⟨mS, hmS, hS⟩ := seek_run_reachable nSeek cSeek0
   have hS' :
@@ -1064,10 +1064,11 @@ theorem input_reaches_done
 
   have hDecExact :
       tagDecodeMachine.run 3 cDec0 = cDecH := by
-    dsimp [cDec0, cDecH, tRead, tAfterTag, rest]
+    dsimp [cDec0, cDecH, tRead, tAfterTag, source]
     simpa [decodeTagBits] using
       tagDecode_run_three witness (encodeNat i ++ tail)
         frameStack consumed padding false false false
+
   obtain ⟨mD, hmD, hD⟩ := decode_run_reachable 3 cDec0
   have hD' :
       decodeConfig cDecH ∈
@@ -1080,69 +1081,52 @@ theorem input_reaches_done
       (decodeConfig cDec0) (decodeConfig cDecH)
       hToDec hD'
 
-  let cInput0 : Configuration InputNodeCompositeState (Option Bool) :=
-    { state := inputNodeCompositeMachine.initial, tape := tAfterTag }
-
   have hInputHandSucc :
-      P01NTMRunLaws.liftConfig inputStateEmbed cInput0 ∈
+      cInput0 ∈
         needExprCompositeMachine.successors (decodeConfig cDecH) := by
-    dsimp [decodeConfig, cDecH, cInput0, tAfterTag, rest,
-      P01NTMRunLaws.liftConfig, inputStateEmbed]
-    rw [input_tag_handoff_successors]
-    simp [inputNodeCompositeMachine]
-
+    dsimp [cInput0, decodeConfig, cDecH]
+    rw [input_tag_handoff_successors tAfterTag]
+    simp
   have hInputHand :
-      P01NTMRunLaws.liftConfig inputStateEmbed cInput0 ∈
+      cInput0 ∈
         needExprCompositeMachine.runBranches 1 [decodeConfig cDecH] :=
     one_step_of_successor
-      (decodeConfig cDecH)
-      (P01NTMRunLaws.liftConfig inputStateEmbed cInput0)
+      (decodeConfig cDecH) cInput0
       (decodeConfig_not_halted cDecH) hInputHandSucc
-
   have hToInput :=
     mem_runBranches_trans needExprCompositeMachine
       ((mS + 1) + mD) 1 [seekConfig cSeek0]
-      (decodeConfig cDecH)
-      (P01NTMRunLaws.liftConfig inputStateEmbed cInput0)
+      (decodeConfig cDecH) cInput0
       hThroughDec hInputHand
 
   obtain ⟨mI, hmI, hI⟩ :=
-    inputNodeComposite_reaches_done
+    inputNode_reaches_doneValue_from_read
       witness tail frameStack (consumed + 3) padding i hi
 
-  let cInputDone : Configuration InputNodeCompositeState (Option Bool) :=
-    { state :=
-        .done (witness.getD i false)
-          (inputNodeFinalMode tail frameStack),
-      tape :=
-        (inputAfterReadTarget witness
-          (consumedAfterInputIndex (consumed + 3) i)
-          tail frameStack padding).tape }
-
-  have hILift :
-      P01NTMRunLaws.liftConfig inputStateEmbed cInputDone ∈
-        needExprCompositeMachine.runBranches mI
-          [P01NTMRunLaws.liftConfig inputStateEmbed cInput0] := by
-    apply
-      (P01NTMRunLaws.mem_runBranches_map
-        inputNodeCompositeMachine needExprCompositeMachine
-        inputStateEmbed inputSimulation mI cInput0
-        (P01NTMRunLaws.liftConfig inputStateEmbed cInputDone)).2
-    refine ⟨cInputDone, ?_, rfl⟩
-    simpa [cInput0, cInputDone, tAfterTag, rest] using hI
+  have hI' :
+      ({ state := .doneValue (witness.getD i false),
+         tape :=
+           (inputAfterReadTarget witness
+             (consumedAfterInputIndex (consumed + 3) i)
+             tail frameStack padding).tape } : NeedExprConfig) ∈
+        needExprCompositeMachine.runBranches mI [cInput0] := by
+    simpa [cInput0, tAfterTag] using hI
 
   have hAll :=
     mem_runBranches_trans needExprCompositeMachine
       (((mS + 1) + mD) + 1) mI [seekConfig cSeek0]
-      (P01NTMRunLaws.liftConfig inputStateEmbed cInput0)
-      (P01NTMRunLaws.liftConfig inputStateEmbed cInputDone)
-      hToInput hILift
+      cInput0
+      ({ state := .doneValue (witness.getD i false),
+         tape :=
+           (inputAfterReadTarget witness
+             (consumedAfterInputIndex (consumed + 3) i)
+             tail frameStack padding).tape } : NeedExprConfig)
+      hToInput hI'
 
   refine ⟨(((mS + 1) + mD) + 1) + mI, ?_, ?_⟩
-  · dsimp [inputTagCompositeFuel, nSeek, rest] at *
+  · dsimp [inputTagCompositeFuel, nSeek, source] at *
     omega
-  · dsimp [cInputDone, cSeek0, t0, P01NTMRunLaws.liftConfig,
-      inputStateEmbed] at hAll ⊢
+  · dsimp [cSeek0, t0, source] at hAll ⊢
     simpa [seekConfig, needExprCompositeMachine] using hAll
 
 #print axioms MCore.Real.P01NeedExprCompositeRun.input_reaches_done
