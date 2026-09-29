@@ -491,6 +491,18 @@ theorem returnMovedTape_eq_stream
   cases bits <;>
     rfl
 
+/-- A blank commutes through a replicated blank block because every element
+of the block is the same canonical blank symbol. -/
+theorem replicate_none_cons
+    (k : Nat) (source : List (Option Bool)) :
+    List.replicate k none ++ (none :: source) =
+      none :: (List.replicate k none ++ source) := by
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+      simpa [List.replicate_succ] using
+        congrArg (fun xs : List (Option Bool) => none :: xs) ih
+
 /-- A right stream containing one current blank plus `k` further blanks is
 exactly the canonical input expected by `returnBlanks_over_blanks`. -/
 theorem rightStreamTape_blank_block
@@ -501,8 +513,8 @@ theorem rightStreamTape_blank_block
       { left := left,
         head := none,
         right := List.replicate k none ++ source } := by
-  cases k <;>
-    simp [rightStreamTape, List.replicate_succ]
+  rw [replicate_none_cons]
+  rfl
 
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
@@ -577,6 +589,7 @@ theorem preservingRead_one_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.seekMoved_step_bit
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.capture_write_to_stream
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnMovedTape_eq_stream
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.replicate_none_cons
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.rightStreamTape_blank_block
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
