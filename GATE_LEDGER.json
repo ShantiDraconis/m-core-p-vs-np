@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: build the single integrated NTM by wiring the certified parser NTM, witness-prep/guess phase, and physical verifier using the frozen TM→NTM transport; then prove one global polynomial bound and AcceptsWithin↔SATBits. G21Pointwise remains untouched.",
+  "next": "P01: lift the now-GREEN cursor/source/frame physical primitives to one global verifier execution theorem, then compose parser+witness+verifier into P01MachineConstruction. G21Pointwise remains independently OPEN_MATH.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -164,13 +164,59 @@
             "tmAsNTM_acceptsWithin_iff"
           ],
           "content": "deterministic TM phases embed as singleton-branch NTMs with full run, halting, and acceptance preservation"
+        },
+        "eval_cursor_roundtrip": {
+          "state": "GREEN_FROZEN_PHYSICAL_REDUCTION",
+          "branch": "atk/p01-eval-cursor-roundtrip-20260929",
+          "sha": "1054b6bac5962d81f5c33a2b87d68f21b00d5ce0",
+          "runs": [
+            36544552231,
+            36544552207
+          ],
+          "content": "fixed cursor seek+return roundtrip preserves witness/frame data and advances consumed cursor physically"
+        },
+        "source_to_stack": {
+          "state": "GREEN_PHYSICAL_REFINEMENT",
+          "branch": "atk/next-p01-source-consumption-20260929",
+          "sha": "adb6db8d1943778655f63d651ed93f23f425ed47",
+          "runs": [
+            36545146201,
+            36545146259
+          ],
+          "content": "source-to-stack tape refinement and cursor return kernel are GREEN"
+        },
+        "tag_input_consumption": {
+          "state": "GREEN_PHYSICAL_REFINEMENT",
+          "branch": "atk/next-p01-tag-input-consumption-20260929",
+          "sha": "4eb4051ff330368627a3f30f2e080a00bd96f37d",
+          "runs": [
+            36547475406,
+            36547475211
+          ],
+          "theorems": [
+            "consumeOneTape_correct",
+            "consumeThreeTape_correct"
+          ],
+          "content": "fixed cursor macros consume exactly one or three unread source bits while preserving witness and frame stack"
+        },
+        "frame_pop_v2": {
+          "state": "GREEN_PHYSICAL_SUBROUTINE",
+          "branch": "atk/next-p01-integrated-machine-v2-20260929",
+          "sha": "8c40d7fa129d045810123886ed6c0bb96e034300",
+          "runs": [
+            36548367025,
+            36548367093,
+            36548367026
+          ],
+          "theorem": "framePop_run_six",
+          "content": "six-step physical frame-pop decodes exact EvalFrame and fails closed on empty/truncated stack"
         }
       },
       "exact_remaining": [
-        "construct one physical source-cursor ↔ stack-end invariant/shuttle preserving the unread source tail and certified frame-stack layout",
-        "refine input/constant/tag source consumption against that cursor, reusing indexed witness-read",
-        "prove global physical verifier halting/correctness against frozen evalRun semantics",
-        "compose parser + witnessGuessMachine + physical verifier into one P01MachineConstruction"
+        "lift the certified physical evalStep/cursor/frame primitives to one global physical verifier run theorem against frozen evalRun semantics",
+        "construct one fixed finite-control NTM composing parser + witness phase + physical verifier",
+        "prove global HaltsWithin under one polynomial timeBound",
+        "prove AcceptsWithin iff SATBits circuitBitEncoding for every bitstring"
       ],
       "rejected_substitutes": [
         "IntegratedPhaseBridgeCertificate state-disjointness",
@@ -190,7 +236,10 @@
       "fixed-control indexed witness reader with polynomial halting/correctness",
       "fixed-control eval-frame push/pop machines",
       "polynomial physical-verifier budget",
-      "deterministic parser/verifier TM phases embed into NTM with full run/halting/acceptance preservation"
+      "deterministic parser/verifier TM phases embed into NTM with full run/halting/acceptance preservation",
+      "physical eval cursor seek/return roundtrip",
+      "physical one/three-bit source consumption preserving witness/frame layout",
+      "cursor-aware frame push and V2 frame pop"
     ],
     "not_counted_as_closure": [
       "state-only phase bridges",
@@ -198,7 +247,8 @@
       "branch frozen/p01-exact-integrated-producer-green-661e43e4 because it still contains P01MachineConstructionExpectedFailure.lean"
     ],
     "exact_remaining": [
-      "construct one fixed finite-control NTM composing the certified phases",
+      "prove one global physical verifier execution theorem refining frozen evalRun",
+      "construct one fixed finite-control NTM composing parser + witness phase + verifier",
       "prove global HaltsWithin under one polynomial timeBound",
       "prove AcceptsWithin iff SATBits circuitBitEncoding for every bitstring"
     ],
