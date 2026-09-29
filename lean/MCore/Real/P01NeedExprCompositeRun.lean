@@ -35,13 +35,13 @@ def retValueConfig
   { state := .retValue value c.state, tape := c.tape }
 
 def retPushConfig
-    (frame : EvalFrame)
+    (frame : P01EncodedStackEvaluator.EvalFrame)
     (c : Configuration CursorReturnState (Option Bool)) :
     NeedExprConfig :=
   { state := .retPush frame c.state, tape := c.tape }
 
 def pushConfig
-    (frame : EvalFrame)
+    (frame : P01EncodedStackEvaluator.EvalFrame)
     (c : Configuration FramePushState (Option Bool)) :
     NeedExprConfig :=
   { state := .push frame c.state, tape := c.tape }
@@ -63,13 +63,13 @@ def pushConfig
   simp [Halted, retValueConfig, needExprCompositeMachine]
 
 @[simp] theorem retPushConfig_not_halted
-    (frame : EvalFrame)
+    (frame : P01EncodedStackEvaluator.EvalFrame)
     (c : Configuration CursorReturnState (Option Bool)) :
     ¬ Halted needExprCompositeMachine (retPushConfig frame c) := by
   simp [Halted, retPushConfig, needExprCompositeMachine]
 
 @[simp] theorem pushConfig_not_halted
-    (frame : EvalFrame)
+    (frame : P01EncodedStackEvaluator.EvalFrame)
     (c : Configuration FramePushState (Option Bool)) :
     ¬ Halted needExprCompositeMachine (pushConfig frame c) := by
   simp [Halted, pushConfig, needExprCompositeMachine]
@@ -109,19 +109,20 @@ theorem retValue_successors_active
       NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
 theorem retPush_successors_active
-    (frame : EvalFrame)
+    (frame : P01EncodedStackEvaluator.EvalFrame)
     (c : Configuration CursorReturnState (Option Bool))
     (h : cursorReturnMachine.halting c.state = false) :
     needExprCompositeMachine.successors (retPushConfig frame c) =
       [retPushConfig frame (cursorReturnMachine.step c)] := by
   unfold NTM.successors
   simp only [retPushConfig]
-  cases c.state <;>
-    simp [needExprCompositeMachine, cursorReturnMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move] at h ⊢
+  rw [retPush_transition_active frame c.state c.tape.head h]
+  simp [retPushConfig, NTM.stepBranch, TM.step,
+    needExprCompositeMachine, cursorReturnMachine,
+    Tape.write, Tape.move]
 
 theorem push_successors_active
-    (frame : EvalFrame)
+    (frame : P01EncodedStackEvaluator.EvalFrame)
     (c : Configuration FramePushState (Option Bool))
     (h : framePushMachine.halting c.state = false) :
     needExprCompositeMachine.successors (pushConfig frame c) =
@@ -221,7 +222,7 @@ theorem retValue_run_reachable
     (retValue_successors_active value) n c
 
 theorem retPush_run_reachable
-    (frame : EvalFrame) (n : Nat)
+    (frame : P01EncodedStackEvaluator.EvalFrame) (n : Nat)
     (c : Configuration CursorReturnState (Option Bool)) :
     ∃ m ≤ n,
       retPushConfig frame (cursorReturnMachine.run n c) ∈
@@ -232,7 +233,7 @@ theorem retPush_run_reachable
     (retPush_successors_active frame) n c
 
 theorem push_run_reachable
-    (frame : EvalFrame) (n : Nat)
+    (frame : P01EncodedStackEvaluator.EvalFrame) (n : Nat)
     (c : Configuration FramePushState (Option Bool)) :
     ∃ m ≤ n,
       pushConfig frame (framePushMachine.run n c) ∈
