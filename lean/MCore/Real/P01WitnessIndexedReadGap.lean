@@ -825,9 +825,62 @@ theorem preservingReadGap_forall_value
       .halt (witness.getD i false) := by
   rw [preservingReadGap_forall i witness tail gap h]
 
+
+/-- Quadratic envelope for the gap-aware moved-prefix fuel. -/
+theorem preservingMovedGapFuel_le (gap m n : Nat) :
+    preservingMovedGapFuel gap m n ≤
+      (2 * gap + 4 * (m + n) + 6) * n +
+        gap + 5 * (m + n) + 6 := by
+  induction n generalizing m with
+  | zero =>
+      simp [preservingMovedGapFuel]
+  | succ n ih =>
+      simp only [preservingMovedGapFuel]
+      have h := ih (m + 1)
+      rw [show m + 1 + n = m + (n + 1) by omega] at h
+      have hcost :
+          2 * gap + 4 * m + 6 ≤
+            2 * gap + 4 * (m + (n + 1)) + 6 := by
+        omega
+      have hstep :
+          (2 * gap + 4 * (m + (n + 1)) + 6) * n +
+              gap + 5 * (m + (n + 1)) + 6 +
+              (2 * gap + 4 * m + 6) ≤
+            (2 * gap + 4 * (m + (n + 1)) + 6) * (n + 1) +
+              gap + 5 * (m + (n + 1)) + 6 := by
+        rw [Nat.mul_succ]
+        omega
+      omega
+
+/-- Explicit quadratic envelope for a complete preserving read with an
+arbitrary physical cursor gap. -/
+theorem preservingReadGapFuel_le (gap i : Nat) :
+    preservingReadGapFuel gap i ≤
+      (2 * gap + 4 * (i + 1) + 6) * i +
+        3 * gap + 5 * (i + 1) + 12 := by
+  cases i with
+  | zero =>
+      simp [preservingReadGapFuel]
+      omega
+  | succ n =>
+      simp only [preservingReadGapFuel]
+      have h := preservingMovedGapFuel_le gap 1 n
+      have hcoef :
+          2 * gap + 4 * (1 + n) + 6 ≤
+            2 * gap + 4 * ((n + 1) + 1) + 6 := by
+        omega
+      have hmul :
+          (2 * gap + 4 * (1 + n) + 6) * n ≤
+            (2 * gap + 4 * ((n + 1) + 1) + 6) * n := by
+        exact Nat.mul_le_mul_right n hcoef
+      rw [Nat.mul_succ]
+      omega
+
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingMovedGap_forall
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_forall
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_forall_value
+#print axioms MCore.Real.P01WitnessIndexedReadGap.preservingMovedGapFuel_le
+#print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGapFuel_le
 
 
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_zero
