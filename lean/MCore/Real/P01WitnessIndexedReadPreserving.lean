@@ -1087,11 +1087,8 @@ theorem preservingMoved_forall
             List.append_assoc]
           omega
 
-/-- One generic preserving successor cycle.  Starting with a nonempty moved
-prefix, a nonempty untouched witness suffix, and a leading unary true marker,
-the machine consumes that marker, shifts exactly the next witness bit across
-the temporary separator, restores the already-moved prefix, and returns to the
-same invariant with one additional moved witness bit. -/
+/-- Compatibility name for the already-kernelized generic preserving cycle.
+No second proof is maintained here. -/
 theorem preservingMoved_true_cycle
     (first b next : Bool)
     (movedTail restTail sourceTail : BitString) :
@@ -1100,105 +1097,7 @@ theorem preservingMoved_true_cycle
         (true :: next :: sourceTail)) =
       movedBitsConfig ((first :: movedTail) ++ [b]) restTail
         (next :: sourceTail) := by
-  let k := movedTail.length
-  have hstart :
-      preservingReadMachine.run 1
-        (movedBitsConfig (first :: movedTail) (b :: restTail)
-          (true :: next :: sourceTail)) =
-        { state := .seekMoved,
-          tape :=
-            { left := List.replicate k none ++
-                (some first :: movedTail.map some ++
-                  (none :: some b :: restTail.map some)),
-              head := none,
-              right := none :: some next :: sourceTail.map some } } := by
-    simp [movedBitsConfig, movedBitsTape, preservingReadMachine,
-      TM.run, TM.step, Tape.write, Tape.move, k, List.replicate_succ,
-      List.append_assoc]
-  rw [show 4 * movedTail.length + 10 =
-      1 + ((k + 1) + (1 + ((movedTail.length + 1) +
-        (2 + (((first :: movedTail).reverse.length + 1) +
-          (k + 2)))))) by
-      simp [k]
-      omega]
-  rw [run_add, hstart]
-  rw [run_add]
-  rw [seekMoved_over_blanks k first
-    (movedTail.map some ++ (none :: some b :: restTail.map some))
-    (none :: some next :: sourceTail.map some)]
-  rw [run_add]
-  rw [show
-      preservingReadMachine.run 1
-        { state := .seekMoved,
-          tape :=
-            { left := movedTail.map some ++
-                (none :: some b :: restTail.map some),
-              head := some first,
-              right := List.replicate (k + 1) none ++
-                (none :: some next :: sourceTail.map some) } } =
-        { state := .scanMoved,
-          tape := scanMovedTape movedTail b (restTail.map some)
-            (some first :: List.replicate (k + 1) none ++
-              (none :: some next :: sourceTail.map some)) } by
-      rw [TM.run]
-      simp only [show preservingReadMachine.halting (.seekMoved) = false by rfl,
-        Bool.false_eq_true, if_false]
-      exact seekMoved_step_bit first b movedTail (restTail.map some)
-        (List.replicate (k + 1) none ++
-          (none :: some next :: sourceTail.map some))]
-  rw [run_add]
-  rw [scanMoved_over_bits movedTail b (restTail.map some)
-    (some first :: List.replicate (k + 1) none ++
-      (none :: some next :: sourceTail.map some))]
-  rw [run_add]
-  rw [capture_write_to_stream b (restTail.map some)
-    (movedTail.reverse.map some ++
-      (some first :: List.replicate (k + 1) none ++
-        (none :: some next :: sourceTail.map some)))]
-  have hstream :
-      movedTail.reverse.map some ++
-          (some first :: List.replicate (k + 1) none ++
-            (none :: some next :: sourceTail.map some)) =
-        (first :: movedTail).reverse.map some ++
-          (none :: (List.replicate (k + 1) none ++
-            (some next :: sourceTail.map some))) := by
-    simp [List.reverse_cons, List.map_append, List.append_assoc,
-      replicate_none_cons]
-  rw [show
-      rightStreamTape (some b :: none :: restTail.map some)
-        (movedTail.reverse.map some ++
-          (some first :: List.replicate (k + 1) none ++
-            (none :: some next :: sourceTail.map some))) =
-      returnMovedTape (first :: movedTail).reverse
-        (some b :: none :: restTail.map some)
-        (List.replicate (k + 1) none ++
-          (some next :: sourceTail.map some)) by
-      rw [returnMovedTape_eq_stream, hstream]]
-  rw [run_add]
-  rw [returnMoved_over_bits (first :: movedTail).reverse
-    (some b :: none :: restTail.map some)
-    (List.replicate (k + 1) none ++
-      (some next :: sourceTail.map some))]
-  have hafter :
-      rightStreamTape
-          (none :: (((first :: movedTail).reverse).reverse.map some ++
-            (some b :: none :: restTail.map some)))
-          (List.replicate (k + 1) none ++
-            (some next :: sourceTail.map some)) =
-        { left := none :: (first :: movedTail).map some ++
-            (some b :: none :: restTail.map some),
-          head := none,
-          right := List.replicate k none ++
-            (some next :: sourceTail.map some) } := by
-    simp [rightStreamTape, k, List.replicate_succ,
-      List.append_assoc]
-  rw [hafter]
-  rw [returnBlanks_over_blanks k next
-    (none :: (first :: movedTail).map some ++
-      (some b :: none :: restTail.map some))
-    (sourceTail.map some)]
-  simp [movedBitsConfig, movedBitsTape, k, List.map_append,
-    List.replicate_succ, List.append_assoc]
+  exact preservingMoved_cycle first b next movedTail restTail sourceTail
 
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMoved_true_cycle
 
