@@ -335,7 +335,7 @@ theorem constTag_loop_reaches_have
         evalRunLoopMachine.successors
           (retValueLoopConfig value cRetH) := by
     dsimp [cHave, retValueLoopConfig, cRetH]
-    simp [evalRunLoopMachine, needExprCompositeMachine,
+    simp [needLoopEmbed, evalRunLoopMachine, needExprCompositeMachine,
       NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
   have hFinal :
       cHave ∈
