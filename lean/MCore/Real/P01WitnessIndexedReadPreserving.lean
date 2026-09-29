@@ -201,7 +201,6 @@ theorem replicate_none_extend
   | succ k ih =>
       simp only [Nat.succ_add, List.replicate_succ, List.cons_append]
       congr 1
-      exact ih
 
 /-- `seekMoved` crosses a finite block of blanks and stops on the first
 moved witness bit.  This is the first generic traversal lemma needed by the
@@ -226,10 +225,22 @@ theorem seekMoved_over_blanks
   | succ k ih =>
       rw [show Nat.succ k + 1 = (k + 1) + 1 by omega]
       rw [TM.run]
-      simp only [preservingReadMachine]
-      simp [TM.step, Tape.write, Tape.move, List.replicate_succ]
+      simp only [show preservingReadMachine.halting (.seekMoved) = false by rfl,
+        Bool.false_eq_true, if_false]
+      change preservingReadMachine.run (k + 1)
+        { state := .seekMoved,
+          tape :=
+            { left := List.replicate k none ++ (some b :: left),
+              head := none,
+              right := none :: right } } =
+        { state := .seekMoved,
+          tape :=
+            { left := left,
+              head := some b,
+              right := List.replicate (Nat.succ k + 1) none ++ right } }
       rw [ih (none :: right)]
-      rw [replicate_none_extend]
+      congr 1
+      exact replicate_none_extend k right
 
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
