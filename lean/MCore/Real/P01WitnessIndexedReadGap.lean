@@ -811,10 +811,9 @@ theorem preservingReadGap_forall
             b witnessTail tail gap n]
           have hm :=
             preservingMovedGap_forall b [] witnessTail tail gap n htail
-          rw [hm]
-          simp [List.getD_cons_succ, List.map_append,
-            List.append_assoc]
-          omega
+          simpa [List.getD_cons_succ, List.map_append,
+            List.append_assoc, Nat.add_assoc, Nat.add_left_comm,
+            Nat.add_comm] using hm
 
 theorem preservingReadGap_forall_value
     (i : Nat) (witness tail : BitString)
