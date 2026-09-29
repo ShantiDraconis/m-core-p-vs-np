@@ -36,11 +36,11 @@ theorem moveBackToStackEndSeq_length
   simp [moveBackToStackEndSeq, sourceStartOffset, moveRightSeq_length]
 
 theorem getD_append_head
-    {α : Type} (prefix : List α) (x d : α) (tail : List α) :
-    (prefix ++ x :: tail).getD prefix.length d = x := by
-  induction prefix with
+    {α : Type} (pre : List α) (x d : α) (tail : List α) :
+    (pre ++ x :: tail).getD pre.length d = x := by
+  induction pre with
   | nil => simp
-  | cons a prefix ih =>
+  | cons a pre ih =>
       simpa [List.getD_cons_succ] using ih
 
 /-- On every nonempty canonical source, the exact left shuttle lands on the
