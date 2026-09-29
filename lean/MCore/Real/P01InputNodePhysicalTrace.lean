@@ -7,6 +7,7 @@ namespace Real
 namespace P01InputNodePhysicalTrace
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01EvalCursorMachine
 open P01WitnessIndexedReadPreserving
 open P01WitnessIndexedReadGap
