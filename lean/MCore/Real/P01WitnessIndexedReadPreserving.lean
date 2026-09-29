@@ -239,8 +239,13 @@ theorem seekMoved_over_blanks
               head := some b,
               right := List.replicate (Nat.succ k + 1) none ++ right } }
       rw [ih (none :: right)]
-      congr 1
-      exact replicate_none_extend k right
+      apply congrArg
+        (fun r : List (Option Bool) =>
+          ({ state := .seekMoved,
+             tape := { left := left, head := some b, right := r } } :
+            Configuration PreservingReadState (Option Bool)))
+      simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
+        replicate_none_extend k right
 
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
