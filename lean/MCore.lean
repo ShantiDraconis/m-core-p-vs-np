@@ -92,3 +92,5 @@ import MCore.Real.P01TagDecodeCompositeNTM
 import MCore.Real.P01NeedExprCompositeNTM
 
 import MCore.Real.P01TagDecodeCompositeRun
+
+import MCore.Real.P01NeedExprCompositeRun
