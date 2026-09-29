@@ -10,6 +10,7 @@ open P01NTMRunLaws
 open P01EvalCursorMachine
 open P01EvalCursorRoundTrip
 open P01EvalFramePushMachine
+open P01EncodedStackEvaluator
 open P01NeedExprTagDecode
 open P01InputNodeCompositeNTM
 open P01NeedExprCompositeNTM
@@ -80,9 +81,9 @@ theorem seek_successors_active
       [seekConfig (cursorSeekMachine.step c)] := by
   unfold NTM.successors
   simp only [seekConfig]
-  cases c.state <;>
+  cases c.state <;> cases hs : c.tape.head <;>
     simp [needExprCompositeMachine, cursorSeekMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move] at h ⊢
+      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
 theorem decode_successors_active
     (c : Configuration TagDecodeState (Option Bool))
@@ -91,9 +92,9 @@ theorem decode_successors_active
       [decodeConfig (tagDecodeMachine.step c)] := by
   unfold NTM.successors
   simp only [decodeConfig]
-  cases c.state <;>
+  cases c.state <;> cases hs : c.tape.head <;>
     simp [needExprCompositeMachine, tagDecodeMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move] at h ⊢
+      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
 theorem retValue_successors_active
     (value : Bool)
@@ -103,9 +104,9 @@ theorem retValue_successors_active
       [retValueConfig value (cursorReturnMachine.step c)] := by
   unfold NTM.successors
   simp only [retValueConfig]
-  cases c.state <;>
+  cases c.state <;> cases hs : c.tape.head <;>
     simp [needExprCompositeMachine, cursorReturnMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move] at h ⊢
+      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
 theorem retPush_successors_active
     (frame : EvalFrame)
@@ -127,9 +128,9 @@ theorem push_successors_active
       [pushConfig frame (framePushMachine.step c)] := by
   unfold NTM.successors
   simp only [pushConfig]
-  cases c.state <;>
+  cases c.state <;> cases hs : c.tape.head <;>
     simp [needExprCompositeMachine, framePushMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move] at h ⊢
+      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
 /-- Generic deterministic phase reachability, specialized by an injection and
 a one-step successor theorem. -/
@@ -152,7 +153,8 @@ private theorem tm_phase_run_reachable
   | zero =>
       intro c
       refine ⟨0, by omega, ?_⟩
-      simp [NTM.runBranches]
+      change embed c ∈ [embed c]
+      simp
   | succ n ih =>
       intro c
       cases hhalt : M.halting c.state with
