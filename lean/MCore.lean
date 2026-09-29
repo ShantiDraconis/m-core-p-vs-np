@@ -53,3 +53,5 @@ import MCore.Real.P01NTMSeqRun
 import MCore.Real.P01GuessedWitnessRelation
 
 import MCore.Real.P01IntegratedAssembly
+
+import MCore.Real.P01WitnessPrepGlobal
