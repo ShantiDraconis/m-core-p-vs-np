@@ -89,33 +89,57 @@ theorem execMoves_append
   | cons d ds ih =>
       simp [execMoves, ih]
 
-/-- One primitive left move followed by one primitive right move restores the
-exact local tape. -/
-@[simp] theorem tape_left_right_cancel
-    (t : Tape (Option Bool)) :
-    Tape.move none .right (Tape.move none .left t) = t := by
-  cases t <;> simp [Tape.move]
+/-- Repeated right moves can be exposed at the end of the list. -/
+theorem moveRightSeq_succ_last (n : Nat) :
+    moveRightSeq (Nat.succ n) =
+      moveRightSeq n ++ [.right] := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp [moveRightSeq, List.replicate_succ, ih]
 
-/-- Any finite left shuttle followed by the same number of right moves restores
-the exact tape, independent of its contents. -/
+/-- Exact cancellation on the local tape representation requires that the left
+shuttle never runs past the represented left list.  This is the truthful
+version of the round-trip law for the project's explicit-blank tape model. -/
 theorem execMoves_left_right_cancel
-    (n : Nat) (t : Tape (Option Bool)) :
+    (n : Nat) (t : Tape (Option Bool))
+    (hbound : n ≤ t.left.length) :
     execMoves none (moveLeftSeq n ++ moveRightSeq n) t = t := by
   induction n generalizing t with
   | zero =>
       rfl
   | succ n ih =>
-      have hseq :
-          moveLeftSeq (Nat.succ n) ++ moveRightSeq (Nat.succ n) =
-            [.left] ++
-              (moveLeftSeq n ++ moveRightSeq n) ++
-              [.right] := by
-        simp [moveLeftSeq, moveRightSeq, List.replicate_succ,
-          List.replicate_succ', List.append_assoc]
-      rw [hseq]
-      rw [execMoves_append]
-      rw [execMoves_append]
-      simp [execMoves, ih]
+      rcases t with ⟨left, head, right⟩
+      cases left with
+      | nil =>
+          simp at hbound
+      | cons next rest =>
+          have hn : n ≤ rest.length := by
+            simp at hbound
+            omega
+          rw [show moveLeftSeq (Nat.succ n) =
+              .left :: moveLeftSeq n by rfl]
+          rw [moveRightSeq_succ_last]
+          simp only [List.cons_append, execMoves]
+          change
+            execMoves none
+              (moveLeftSeq n ++ (moveRightSeq n ++ [.right]))
+              { left := rest, head := next, right := head :: right } =
+            { left := next :: rest, head := head, right := right }
+          rw [← List.append_assoc]
+          rw [execMoves_append]
+          rw [ih _ hn]
+          rfl
+
+/-- The canonical V2 layout always contains enough represented cells to reach
+the first source position without crossing the left boundary. -/
+theorem sourceStartOffset_le_left_length
+    (witness source : BitString)
+    (stack : List Bool) (padding : Nat) :
+    sourceStartOffset stack source ≤
+      (physicalStackV2Tape witness source stack padding).left.length := by
+  simp [sourceStartOffset, physicalStackV2Tape]
+  omega
 
 /-- The complete P01 source-cursor shuttle is exactly reversible: after visiting
 the first source bit and returning by the matching right shuttle, witness,
@@ -132,6 +156,7 @@ theorem source_cursor_roundTrip_tape
   exact execMoves_left_right_cancel
     (sourceStartOffset stack source)
     (physicalStackV2Tape witness source stack padding)
+    (sourceStartOffset_le_left_length witness source stack padding)
 
 
 /-- The return shuttle has exactly the same cost envelope. -/
