@@ -6,10 +6,12 @@ namespace Real
 namespace P01EvalStepSemanticRefinement
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01EncodedStackEvaluator
 open P01EncodedFrameTape
 open P01EvalCursorMachine
 open P01NeedExprCompositeNTM
+open P01InputNodeRoundTrip
 open P01NeedExprCompositeRun
 open P01HaveValueCompositeNTM
 open P01HaveValueCompositeRun
@@ -458,6 +460,62 @@ theorem orLeftReturn_refines_evalStep
       h
     simpa [haveStart, liftHaveConfig, haveStateEmbed,
       encodeEvalFrames] using hl
+
+/-- The remaining physical 000 case.
+
+The premise `hread` is not a computational assumption: it is exactly the
+representation relation saying that the physical witness bit at index `i`
+encodes the semantic assignment value `sigma i`. -/
+theorem inputTag_refines_evalStep
+    (sigma : Assignment)
+    (witness tail : BitString)
+    (frames : List EvalFrame)
+    (consumed padding i : Nat)
+    (hi : i < witness.length)
+    (hread : witness.getD i false = sigma i) :
+    evalStep sigma
+      (needExpr
+        (false :: false :: false :: (encodeNat i ++ tail))
+        frames) =
+      some (haveValue (sigma i) tail frames) ∧
+    ∃ m ≤ inputTagCompositeFuel consumed i tail
+        (encodeEvalFrames frames),
+      ({ state := .doneValue (sigma i),
+         tape :=
+           (inputAfterReadTarget witness
+             (consumedAfterInputIndex (consumed + 3) i)
+             tail (encodeEvalFrames frames) padding).tape } :
+        EvalStepConfig) ∈
+      evalStepCompositeMachine.runBranches m
+        [needStart witness consumed
+          (false :: false :: false :: (encodeNat i ++ tail))
+          frames padding] := by
+  constructor
+  · simp [evalStep, needExpr, haveValue,
+      decodeNat_encodeNat_append]
+  · obtain ⟨m, hm, h⟩ :=
+      input_reaches_done
+        witness tail (encodeEvalFrames frames)
+        consumed padding i hi
+    refine ⟨m, hm, ?_⟩
+    have hl := need_mem_lift m
+      ({ state := needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (false :: false :: false :: (encodeNat i ++ tail))
+             (encodeEvalFrames frames) padding } :
+        Configuration NeedExprCompositeState (Option Bool))
+      ({ state := .doneValue (witness.getD i false),
+         tape :=
+           (inputAfterReadTarget witness
+             (consumedAfterInputIndex (consumed + 3) i)
+             tail (encodeEvalFrames frames) padding).tape } :
+        Configuration NeedExprCompositeState (Option Bool))
+      h
+    rw [hread] at hl
+    simpa [needStart, liftNeedConfig, needStateEmbed] using hl
+
+#print axioms MCore.Real.P01EvalStepSemanticRefinement.inputTag_refines_evalStep
 
 #print axioms MCore.Real.P01EvalStepSemanticRefinement.constFalse_refines_evalStep
 #print axioms MCore.Real.P01EvalStepSemanticRefinement.constTrue_refines_evalStep
