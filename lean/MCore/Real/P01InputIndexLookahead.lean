@@ -427,6 +427,15 @@ theorem lookahead_frameStack
     inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
+  change inputIndexLookaheadMachine.run (1 + (3 + (i + 2)))
+      (inputIndexLookaheadMachine.run i
+        { state := .scanIndex,
+          tape :=
+            rightStreamTape
+              (none :: (List.replicate consumed none ++ witness.map some))
+              (List.replicate i (some true) ++
+                (some false :: none :: (b :: frameTail).reverse.map some ++
+                  none :: List.replicate padding none)) }) = _
   rw [scanIndex_over_true i
     (none :: (List.replicate consumed none ++ witness.map some))
     (some false :: none :: (b :: frameTail).reverse.map some ++
