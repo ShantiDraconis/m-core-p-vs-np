@@ -80,3 +80,5 @@ import MCore.Real.P01InputNodeRoundTrip
 import MCore.Real.P01InputNodeCompositeNTM
 
 import MCore.Real.P01InputNodeCompositeRun
+
+import MCore.Real.P01InputTagDecodeMachine
