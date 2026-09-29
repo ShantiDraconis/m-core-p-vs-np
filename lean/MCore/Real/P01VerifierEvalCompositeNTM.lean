@@ -219,7 +219,7 @@ theorem prepared_nonempty_reaches_eval_start
       cEnter ∈ verifierEvalMachine.successors (scanEmbed cScanH) := by
     dsimp [cEnter, cScanH, scanEmbed]
     simp [verifierEvalMachine, NTM.successors, NTM.stepBranch,
-      sourceEndScanner]
+      sourceEndScanner, Tape.write, Tape.move]
   have hScanHand :
       cEnter ∈ verifierEvalMachine.runBranches 1 [scanEmbed cScanH] :=
     one_step_of_successor (scanEmbed cScanH) cEnter
@@ -229,12 +229,29 @@ theorem prepared_nonempty_reaches_eval_start
       (1 + mS) 1 [cStart] (scanEmbed cScanH) cEnter
       hToScan hScanHand
 
+  have hEnterTape :
+      Tape.move none .right (sourceEndTape witness (b :: bs)) =
+        evalCursorStackEndTape witness 0 (b :: bs) [] 0 := by
+    rw [sourceEnd_to_stackV2]
+    exact (evalCursorStackEndTape_zero witness (b :: bs) [] 0).symm
   have hEnterSucc :
       cEval ∈ verifierEvalMachine.successors cEnter := by
     dsimp [cEval, cEnter]
     unfold NTM.successors
-    simp [verifierEvalMachine, NTM.stepBranch, sourceEnd_to_stackV2,
-      evalCursorStackEndTape_zero, Tape.write, Tape.move]
+    simp only [verifierEvalMachine, NTM.stepBranch, List.mem_singleton]
+    change
+      ({ state := VerifierEvalState.eval evalRunLoopMachine.initial,
+         tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 } :
+        VerifierEvalConfig) =
+      { state := VerifierEvalState.eval evalRunLoopMachine.initial,
+        tape :=
+          Tape.move none .right
+            (Tape.write none (sourceEndTape witness (b :: bs))) }
+    have hwrite :
+        Tape.write none (sourceEndTape witness (b :: bs)) =
+          sourceEndTape witness (b :: bs) := by
+      rfl
+    rw [hwrite, hEnterTape]
   have hEnter :
       cEval ∈ verifierEvalMachine.runBranches 1 [cEnter] :=
     one_step_of_successor cEnter cEval
@@ -245,7 +262,7 @@ theorem prepared_nonempty_reaches_eval_start
       ((1 + mS) + 1) 1 [cStart] cEnter cEval hToEnter hEnter
   refine ⟨((1 + mS) + 1) + 1, ?_, ?_⟩
   · dsimp [cStart] at hAll ⊢
-    simp at hmS
+    simp only [List.length_cons]
     omega
   · dsimp [cStart, cEval] at hAll ⊢
     simpa [verifierEvalMachine] using hAll
