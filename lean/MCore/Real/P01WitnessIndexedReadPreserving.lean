@@ -190,6 +190,31 @@ theorem preservingRead_start_successor
       preservingMovedConfig, preservingMovedTape, encodeNat,
       TM.run, TM.step, Tape.write, Tape.move]
 
+/-- `seekMoved` crosses a finite block of blanks and stops on the first
+moved witness bit.  This is the first generic traversal lemma needed by the
+successor cycle. -/
+theorem seekMoved_over_blanks
+    (k : Nat) (b : Bool)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.run (k + 1)
+      { state := .seekMoved,
+        tape :=
+          { left := List.replicate k none ++ (some b :: left),
+            head := none,
+            right := right } } =
+      { state := .seekMoved,
+        tape :=
+          { left := left,
+            head := some b,
+            right := List.replicate (k + 1) none ++ right } } := by
+  induction k generalizing right with
+  | zero =>
+      simp [preservingReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+  | succ k ih =>
+      simp [List.replicate_succ, preservingReadMachine,
+        TM.run, TM.step, Tape.write, Tape.move, ih,
+        List.append_assoc]
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
@@ -252,6 +277,7 @@ theorem preservingRead_one_value
 
 
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_start_successor
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.seekMoved_over_blanks
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one
