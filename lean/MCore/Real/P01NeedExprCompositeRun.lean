@@ -13,6 +13,7 @@ open P01EvalCursorRoundTrip
 open P01EvalFramePushMachine
 open P01EvalCursorFramePush
 open P01EncodedStackEvaluator
+open P01EncodedFrameTape
 open P01NeedExprTagDecode
 open P01InputNodeCompositeNTM
 open P01NeedExprCompositeNTM
