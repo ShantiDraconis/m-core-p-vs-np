@@ -151,7 +151,15 @@ theorem witnessPrep_singleton_halts_eight
   rw [witnessPrep_singleton_runBranches_eight]
   intro reached hmem
   simp only [List.mem_cons, List.mem_singleton] at hmem
-  rcases hmem with h | h <;> subst reached <;> left <;> rfl
+  rcases hmem with h | h
+  · subst reached
+    left
+    rfl
+  · rcases h with h | h
+    · subst reached
+      left
+      rfl
+    · simp at h
 
 theorem witnessPrep_singleton_layout_eight
     (b : Bool)
@@ -166,8 +174,10 @@ theorem witnessPrep_singleton_layout_eight
   rcases hmem with h | h
   · subst reached
     exact ⟨[false], rfl⟩
-  · subst reached
-    exact ⟨[true], rfl⟩
+  · rcases h with h | h
+    · subst reached
+      exact ⟨[true], rfl⟩
+    · simp at h
 
 #print axioms MCore.Real.P01WitnessPrepGlobalBase.runBranches_terminal_fixed
 #print axioms MCore.Real.P01WitnessPrepGlobalBase.ntm_haltsWithin_mono
