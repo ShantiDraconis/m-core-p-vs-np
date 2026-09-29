@@ -6,6 +6,7 @@ namespace Real
 namespace P01WitnessIndexedReadPreserving
 
 open CanonicalFinalProof
+open CanonicalSATWitness
 open P01WitnessIndexedRead
 open MachineRunLemmas
 
