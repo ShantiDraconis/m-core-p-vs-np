@@ -1161,6 +1161,91 @@ theorem preservingRead_one_value
       simp [preservingReadMachine, preservingReadTape, encodeNat,
         TM.run, TM.step, Tape.write, Tape.move]
 
+/-- Exact total fuel of a preserving read from the canonical input layout.
+Index 0 is the direct terminal case; index `n + 1` pays the 6-step entry into
+the moved-prefix invariant and then the exact moved-prefix fuel. -/
+def preservingReadFuel : Nat → Nat
+  | 0 => 4
+  | n + 1 => 6 + preservingMovedFuel 1 n
+
+/-- Complete preserving indexed read for every in-range index.  Starting from
+the canonical layout, the machine halts in `halt (witness.getD i false)`, the
+whole witness is restored exactly on the left, the `i + 1` unary index cells
+are consumed into blanks, and the unread source tail is preserved. -/
+theorem preservingRead_forall
+    (witness : BitString) (i : Nat) (tail : BitString)
+    (hi : i < witness.length) :
+    preservingReadMachine.run (preservingReadFuel i)
+      { state := preservingReadMachine.initial,
+        tape := preservingReadTape witness i tail } =
+      { state := .halt (witness.getD i false),
+        tape :=
+          { left := witness.map some,
+            head := none,
+            right := List.replicate (i + 1) none ++ tail.map some } } := by
+  cases witness with
+  | nil =>
+      simp at hi
+  | cons b witnessTail =>
+      cases i with
+      | zero =>
+          simpa [preservingReadFuel] using
+            preservingRead_zero b witnessTail tail
+      | succ n =>
+          have hn : n < witnessTail.length := by
+            simpa using hi
+          rw [show preservingReadFuel (n + 1) =
+              6 + preservingMovedFuel ([b] : BitString).length n from rfl]
+          rw [run_add]
+          rw [preservingRead_start_successor]
+          rw [preservingMoved_forall b [] witnessTail tail n hn]
+          simp [List.getD_cons_succ]
+          omega
+
+/-- State-only corollary: the halt state carries exactly `witness[i]`. -/
+theorem preservingRead_forall_value
+    (witness : BitString) (i : Nat) (tail : BitString)
+    (hi : i < witness.length) :
+    (preservingReadMachine.run (preservingReadFuel i)
+      { state := preservingReadMachine.initial,
+        tape := preservingReadTape witness i tail }).state =
+      .halt (witness.getD i false) := by
+  rw [preservingRead_forall witness i tail hi]
+
+/-- Auxiliary bound on the moved-prefix fuel (used for the quadratic bound
+`preservingReadFuel_le`: a read of index `i` costs at most
+`5 * (i + 1) * (i + 1) + 6` machine steps). -/
+theorem preservingMovedFuel_le (m n : Nat) :
+    preservingMovedFuel m n ≤ (4 * (m + n) + 6) * n + 5 * (m + n) + 6 := by
+  induction n generalizing m with
+  | zero => simp [preservingMovedFuel]
+  | succ n ih =>
+      simp only [preservingMovedFuel]
+      have := ih (m + 1)
+      rw [show m + 1 + n = m + (n + 1) by omega] at this
+      have h2 : (4 * (m + (n + 1)) + 6) * n + 5 * (m + (n + 1)) + 6 +
+          (4 * m + 6) ≤
+          (4 * (m + (n + 1)) + 6) * (n + 1) + 5 * (m + (n + 1)) + 6 := by
+        rw [Nat.mul_succ]
+        omega
+      omega
+
+theorem preservingReadFuel_le (i : Nat) :
+    preservingReadFuel i ≤ 5 * (i + 1) * (i + 1) + 6 := by
+  cases i with
+  | zero => simp [preservingReadFuel]
+  | succ n =>
+      simp only [preservingReadFuel]
+      have h := preservingMovedFuel_le 1 n
+      have e1 : (4 * (1 + n) + 6) * n = 4 * (n * n) + 10 * n := by
+        simp only [Nat.add_mul, Nat.mul_add, Nat.mul_one, Nat.mul_assoc]
+        omega
+      have e2 : 5 * (n + 1 + 1) * (n + 1 + 1) = 5 * (n * n) + 20 * n + 20 := by
+        simp only [Nat.add_mul, Nat.mul_add, Nat.mul_one, Nat.one_mul,
+          Nat.mul_assoc]
+        omega
+      omega
+
 
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_start_successor
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.replicate_none_extend
@@ -1181,6 +1266,13 @@ theorem preservingRead_one_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one_value
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMoved_cycle_index
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.movedBits_false_finalize
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMoved_forall
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_forall
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_forall_value
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMovedFuel_le
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingReadFuel_le
 
 end P01WitnessIndexedReadPreserving
 end Real
