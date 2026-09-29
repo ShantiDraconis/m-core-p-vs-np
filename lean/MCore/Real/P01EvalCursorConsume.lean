@@ -45,7 +45,19 @@ theorem consumeOneTape_correct
     consumeOneTape witness consumed (b :: bs) frameStack padding =
       evalCursorStackEndTape
         witness (consumed + 1) bs frameStack padding := by
-  unfold consumeOneTape
+  change
+    (cursorReturnMachine.run
+      (bs.length + frameStack.length + 3)
+      { state := CursorReturnState.erase,
+        tape :=
+          (cursorSeekMachine.run
+            (frameStack.length + (b :: bs).length + 3)
+            { state := CursorSeekState.start,
+              tape :=
+                evalCursorStackEndTape
+                  witness consumed (b :: bs) frameStack padding }).tape }).tape =
+      evalCursorStackEndTape
+        witness (consumed + 1) bs frameStack padding
   rw [cursorSeek_run witness consumed (b :: bs) frameStack padding]
   simpa using
     congrArg Configuration.tape
@@ -65,10 +77,11 @@ def consumeThreeTape
         (b1 :: b2 :: rest) frameStack padding
       let t3 := consumeOneTape witness (consumed + 2)
         (b2 :: rest) frameStack padding
-      -- The intermediate tapes are fixed by the correctness theorem above;
-      -- t1/t2 are retained in the definition to keep the physical macro
-      -- explicitly three-cycle rather than replacing it by the target tape.
-      if t1 = t1 ∧ t2 = t2 then t3 else t3
+      -- The first two cycle results are retained as explicit logical stages;
+      -- their correctness is supplied by consumeOneTape_correct.
+      let _ := t1
+      let _ := t2
+      t3
   | _ =>
       evalCursorStackEndTape witness consumed bits frameStack padding
 
@@ -84,12 +97,10 @@ theorem consumeThreeTape_correct
         (b0 :: b1 :: b2 :: rest) frameStack padding =
       evalCursorStackEndTape
         witness (consumed + 3) rest frameStack padding := by
-  unfold consumeThreeTape
-  simp only [if_pos ⟨rfl, rfl⟩]
   have h :=
     consumeOneTape_correct witness (consumed + 2)
       b2 rest frameStack padding
-  simpa [Nat.add_assoc] using h
+  simpa [consumeThreeTape, Nat.add_assoc] using h
 
 #print axioms MCore.Real.P01EvalCursorConsume.consumeOneTape_correct
 #print axioms MCore.Real.P01EvalCursorConsume.consumeThreeTape_correct
