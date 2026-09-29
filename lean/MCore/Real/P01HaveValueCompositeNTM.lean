@@ -26,7 +26,7 @@ inductive HaveValueCompositeState where
   | doneValue : Bool → HaveValueCompositeState
   | doneNeed
   | reject
-  deriving DecidableEq, Repr
+  deriving DecidableEq, Repr, Fintype
 
 /-- One fixed NTM for the full physical `haveValue` arm of `evalStep`.
 Every active state has at most one successor. -/
