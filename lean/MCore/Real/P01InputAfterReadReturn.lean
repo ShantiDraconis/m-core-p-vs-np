@@ -222,6 +222,18 @@ theorem frameReturn_halt
   simp [frameReturnConfig, inputAfterReadReturnMachine,
     TM.run, TM.step, Tape.write, Tape.move]
 
+/-- Normalization used whenever one more physical blank has been crossed. -/
+theorem replicate_none_succ_right
+    (k : Nat) (tail : List (Option Bool)) :
+    List.replicate k none ++ (none :: tail) =
+      List.replicate (k + 1) none ++ tail := by
+  induction k with
+  | zero =>
+      rfl
+  | succ k ih =>
+      simp only [List.replicate_succ, List.cons_append]
+      congr 1
+
 /-- Crossing the source/frame separator enters the frame scan. -/
 theorem sourceSeparator_to_frames
     (left : List (Option Bool))
@@ -278,7 +290,7 @@ theorem seekSourceConfig_run
   | zero =>
       simp [seekSourceConfig, sourceReturnConfig,
         inputAfterReadReturnMachine, TM.run, TM.step,
-        Tape.write, Tape.move, List.append_assoc]
+        Tape.write, Tape.move, List.map_reverse, List.append_assoc]
   | succ k ih =>
       rw [show Nat.succ k + 1 = 1 + (k + 1) by omega]
       rw [run_add]
@@ -292,8 +304,8 @@ theorem seekSourceConfig_run
             List.replicate_succ, List.append_assoc]
       rw [hstep]
       rw [ih (none :: left)]
-      congr 2
-      simp [List.replicate_succ, List.append_assoc]
+      have hr := replicate_none_succ_right k left
+      rw [hr]
 
 /-- Canonical seek-frame configuration with exactly `k` blanks before the
 first physical frame bit. -/
@@ -334,7 +346,7 @@ theorem seekFramesConfig_run
       cases bs <;>
         simp [seekFramesConfig, frameReturnConfig,
           inputAfterReadReturnMachine, TM.run, TM.step,
-          Tape.write, Tape.move, List.append_assoc]
+          Tape.write, Tape.move, List.map_reverse, List.append_assoc]
   | succ k ih =>
       rw [show Nat.succ k + 1 = 1 + (k + 1) by omega]
       rw [run_add]
@@ -348,8 +360,8 @@ theorem seekFramesConfig_run
             List.replicate_succ, List.append_assoc]
       rw [hstep]
       rw [ih (none :: left)]
-      congr 2
-      simp [List.replicate_succ, List.append_assoc]
+      have hr := replicate_none_succ_right k left
+      rw [hr]
 
 /-- Main nonempty-source return theorem. -/
 theorem return_sourceTail
@@ -427,10 +439,8 @@ theorem return_frameStack
   | nil =>
       exact False.elim (hne hrev)
   | cons f fs =>
-      have hlen : fs.length + 1 = (b :: frameTail).length := by
-        have h := congrArg List.length hrev
-        simp at h
-        omega
+      have hlen : (b :: frameTail).length = fs.length + 1 := by
+        simpa using congrArg List.length hrev
 
       have hstart :
           inputAfterReadReturnMachine.run 1
@@ -443,10 +453,11 @@ theorem return_frameStack
           simp [afterIndexedReadTape, seekFramesConfig,
             inputAfterReadReturnMachine, left0, hrev,
             TM.run, TM.step, Tape.write, Tape.move,
-            List.replicate_succ, List.append_assoc]
+            List.map_reverse, List.replicate_succ, List.append_assoc]
 
       rw [show consumed + (b :: frameTail).length + 3 =
           1 + ((consumed + 2) + (fs.length + 1)) by
+          rw [hlen]
           omega]
       rw [run_add, hstart]
       rw [run_add]
@@ -455,8 +466,8 @@ theorem return_frameStack
       rw [frameReturn_run]
       rw [frameReturn_halt]
       simp [evalCursorStackEndTape, left0, hrev,
-        List.reverse_reverse, List.map_append, List.append_assoc,
-        List.replicate_succ]
+        List.reverse_reverse, List.map_reverse, List.map_append,
+        List.append_assoc, List.replicate_succ]
       omega
 
 /-- Final-value mode needs no cursor normalization. -/
