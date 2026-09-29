@@ -168,9 +168,7 @@ theorem scanIndex_over_true
               tape :=
                 rightStreamTape (some true :: left)
                   (List.replicate k (some true) ++ stream) } := by
-        rw [show List.replicate (1 + k) (some true) =
-            some true :: List.replicate k (some true) by
-          simp [List.replicate_succ]]
+        simp only [Nat.one_add, List.replicate_succ]
         cases hrest : List.replicate k (some true) ++ stream <;>
           simp [rightStreamTape, inputIndexLookaheadMachine,
             TM.run, TM.step, Tape.write, Tape.move, hrest]
@@ -181,8 +179,8 @@ theorem scanIndex_over_true
           ({ state := .scanIndex,
              tape := rightStreamTape l stream } :
             Configuration InputIndexLookaheadState (Option Bool)))
-      symm
-      exact replicate_same_cons (some true) k left
+      simpa [Nat.one_add] using
+        (replicate_same_cons (some true) k left).symm
 
 /-- One false terminator step enters the finite structural classifier. -/
 theorem scanIndex_false
@@ -219,7 +217,8 @@ theorem rewind_segment
         TM.run, TM.step, Tape.write, Tape.move]
   | cons b bs ih =>
       rw [show (b :: bs).length + 2 =
-          1 + (bs.length + 2) by omega]
+          1 + (bs.length + 2) by
+            simp [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]]
       rw [run_add]
       have hstep :
           inputIndexLookaheadMachine.run 1
@@ -351,6 +350,7 @@ theorem lookahead_sourceTail
   simp only [List.map_append, List.map_replicate, List.map_cons,
     List.map_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
+  rw [inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 4 = i + (1 + (1 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
@@ -389,6 +389,7 @@ theorem lookahead_frameStack
   simp only [List.map_append, List.map_replicate, List.map_cons,
     List.map_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
+  rw [inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
@@ -426,6 +427,7 @@ theorem lookahead_done
   simp only [List.map_append, List.map_replicate, List.map_cons,
     List.map_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
+  rw [inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
