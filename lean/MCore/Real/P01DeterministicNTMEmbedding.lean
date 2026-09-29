@@ -77,8 +77,12 @@ theorem runBranches_singleton_of_not_halted
     (c : Configuration State Symbol)
     (h : M.halting c.state = false) :
     (tmAsNTM M accepting).runBranches 1 [c] = [M.step c] := by
-  simp [NTM.runBranches, tmAsNTM, h,
-    tmAsNTM_successors_of_not_halted]
+  have ha : (tmAsNTM M accepting).accepting c.state = false := by
+    simp [tmAsNTM, h]
+  have hr : (tmAsNTM M accepting).rejecting c.state = false := by
+    simp [tmAsNTM, h]
+  have hs := tmAsNTM_successors_of_not_halted M accepting c h
+  simp [NTM.runBranches, ha, hr, hs]
 
 /-- A halted TM configuration is already terminal for the embedded NTM. -/
 theorem runBranches_singleton_of_halted
