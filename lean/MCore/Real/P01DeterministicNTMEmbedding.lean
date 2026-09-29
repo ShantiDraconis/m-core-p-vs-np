@@ -151,7 +151,7 @@ theorem runBranches_tmAsNTM_singleton
             simp [tmAsNTM, h]
           have hs := tmAsNTM_successors_of_not_halted M accepting c h
           rw [TM.run]
-          simp [NTM.runBranches, ha, hr, hs, ih]
+          simp [h, NTM.runBranches, ha, hr, hs, ih]
       | true =>
           rw [TM.run]
           simp [h]
@@ -195,10 +195,15 @@ theorem tmAsNTM_acceptsWithin_iff
   · rintro ⟨reached, hmem, hacc⟩
     simp only [List.mem_singleton] at hmem
     subst reached
-    simpa [tmAsNTM, hhalt] using hacc
+    have hpair :
+        M.halting (M.run n c).state = true ∧
+          accepting (M.run n c).state = true := by
+      simpa [tmAsNTM] using hacc
+    exact hpair.2
   · intro hacc
     refine ⟨M.run n c, by simp, ?_⟩
-    simp [tmAsNTM, hhalt, hacc]
+    have hh : M.halting (M.run n c).state = true := hhalt
+    simp [tmAsNTM, hh, hacc]
 
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_successors_of_not_halted
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_of_halted
