@@ -1,4 +1,6 @@
 import MCore.Real.P01WitnessIndexedReadPreserving
+import MCore.Real.P01WitnessIndexedReadGapRaw
+import MCore.Real.P01EvalCursorMachine
 import MCore.Real.P01FullVerifierInputShuttleV2
 import MCore.Real.P01EvalTagPhysicalRefinement
 import MCore.Real.P01EncodedFrameTape
@@ -12,6 +14,9 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open CircuitK1
 open P01WitnessIndexedReadPreserving
+open P01WitnessIndexedReadGap
+open P01WitnessIndexedReadGapRaw
+open P01EvalCursorMachine
 open P01FullVerifierPhysicalStackV2
 open P01FullVerifierPhysicalMoves
 open P01FullVerifierInputShuttleV2
@@ -136,6 +141,78 @@ theorem inputNode000_value_refinement
   · exact moveToWitnessSeqV2_head_refines_inputNode000
       witness tail i frames padding hi
   · exact preservingRead_forall_value i witness tail hi
+
+
+/-- Exact raw physical suffix following an input-node unary index in the
+streaming cursor layout. -/
+def inputNodeRawSuffix
+    (tail frameStack : BitString) (padding : Nat) :
+    List (Option Bool) :=
+  tail.map some ++
+    none :: frameStack.reverse.map some ++
+    none :: List.replicate padding none
+
+/-- The actual streaming cursor tape at the beginning of the unary index is
+definitionally the gap-aware preserving-reader layout, with \`consumed\` as the
+physical blank gap. -/
+theorem evalCursorReadTape_eq_preservingReadGapRawTape
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat) :
+    evalCursorReadTape witness consumed
+        (encodeNat i ++ tail) frameStack padding =
+      preservingReadGapRawTape witness consumed i
+        (inputNodeRawSuffix tail frameStack padding) := by
+  cases i with
+  | zero =>
+      simp [evalCursorReadTape, preservingReadGapRawTape,
+        gapReadRawTape, inputNodeRawSuffix, encodeNat,
+        List.map_append, List.append_assoc]
+  | succ i =>
+      simp [evalCursorReadTape, preservingReadGapRawTape,
+        gapReadRawTape, inputNodeRawSuffix, encodeNat,
+        List.map_append, List.append_assoc]
+
+/-- Full-layout preserving read for the input-node index.  This is the exact
+physical cursor layout used by the evaluator: witness, arbitrary consumed
+blank gap, unary index, unread source tail, frame separator, reversed frames,
+stack-end separator, and padding are all preserved. -/
+theorem inputNode000_full_layout_read
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    preservingReadMachine.run (preservingReadGapFuel consumed i)
+      { state := preservingReadMachine.initial,
+        tape :=
+          evalCursorReadTape witness consumed
+            (encodeNat i ++ tail) frameStack padding } =
+      { state := .halt (witness.getD i false),
+        tape :=
+          { left := witness.map some,
+            head := none,
+            right :=
+              List.replicate (consumed + i + 1) none ++
+                inputNodeRawSuffix tail frameStack padding } } := by
+  rw [evalCursorReadTape_eq_preservingReadGapRawTape]
+  exact preservingReadGapRaw_forall
+    i witness (inputNodeRawSuffix tail frameStack padding) consumed hi
+
+theorem inputNode000_full_layout_value
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    (preservingReadMachine.run (preservingReadGapFuel consumed i)
+      { state := preservingReadMachine.initial,
+        tape :=
+          evalCursorReadTape witness consumed
+            (encodeNat i ++ tail) frameStack padding }).state =
+      .halt (witness.getD i false) := by
+  rw [inputNode000_full_layout_read witness tail frameStack
+    consumed padding i hi]
+
+#print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.evalCursorReadTape_eq_preservingReadGapRawTape
+#print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.inputNode000_full_layout_read
+#print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.inputNode000_full_layout_value
+
 
 #print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.evalStep_inputNode000
 #print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.getD_eq_getElem_of_lt
