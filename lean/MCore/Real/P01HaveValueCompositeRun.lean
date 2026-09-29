@@ -274,8 +274,9 @@ theorem frame_reaches_popped
         haveValueCompositeMachine.successors cPeek := by
     dsimp [cPeek, cPop0, popConfig]
     rw [nonempty_handoff_successors v (frameBit0 frame) tPeek hPeekHead]
-    simp [framePopConfig, tPeek, t0, encodeEvalFrame_eq_bits,
-      evalCursorStackEndTape, Tape.move, List.append_assoc]
+    simp [framePopConfig, framePopMachine, tPeek, t0,
+      encodeEvalFrame_eq_bits, evalCursorStackEndTape,
+      Tape.move, List.append_assoc]
 
   have hPeek :
       popConfig v cPop0 ∈
