@@ -87,7 +87,8 @@ theorem terminal_reachable_lift :
       have hreach' :
           b ∈ evalStepCompositeMachine.runBranches n
             (evalStepCompositeMachine.successors a) := by
-        rw [show Nat.succ n = n + 1 by omega] at hreach
+        change
+          b ∈ evalStepCompositeMachine.runBranches (n + 1) [a] at hreach
         rw [runBranches_singleton_active
           evalStepCompositeMachine n a ha] at hreach
         exact hreach
