@@ -46,7 +46,7 @@ theorem consumeOneTape_correct
       evalCursorStackEndTape
         witness (consumed + 1) bs frameStack padding := by
   unfold consumeOneTape
-  rw [cursorSeek_run]
+  rw [cursorSeek_run witness consumed (b :: bs) frameStack padding]
   simpa using
     congrArg Configuration.tape
       (cursorReturn_run witness consumed b bs frameStack padding)
@@ -84,7 +84,8 @@ theorem consumeThreeTape_correct
         (b0 :: b1 :: b2 :: rest) frameStack padding =
       evalCursorStackEndTape
         witness (consumed + 3) rest frameStack padding := by
-  simp [consumeThreeTape, consumeOneTape_correct]
+  unfold consumeThreeTape
+  simp only [if_pos ⟨rfl, rfl⟩]
   have h :=
     consumeOneTape_correct witness (consumed + 2)
       b2 rest frameStack padding
