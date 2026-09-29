@@ -226,7 +226,6 @@ theorem framePop_run_six
     stack (padding + 1 + 1)
     (frameBit0 f) (frameBit1 f) (frameBit2 f) f hdecode]
   congr 2
-  omega
 
 /-- Empty/truncated stack rejects rather than fabricating a frame. -/
 theorem framePop_empty_rejects
@@ -243,6 +242,6 @@ theorem framePop_empty_rejects
 #print axioms MCore.Real.P01EvalFramePopMachineV2.framePop_run_six
 #print axioms MCore.Real.P01EvalFramePopMachineV2.framePop_empty_rejects
 
-end P01EvalFramePopMachine
+end P01EvalFramePopMachineV2
 end Real
 end MCore
