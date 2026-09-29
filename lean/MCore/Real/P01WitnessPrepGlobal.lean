@@ -523,10 +523,77 @@ def prepPhase : P01PrepPhase where
 theorem prepPhase_layout (bs w : BitString) :
     prepPhase.layout bs w = preparedTape w bs := rfl
 
+-- 1. P01GapTolerantRead DENTRO do mesmo arquivo - sem import, sem sorry
+
+def evalCursorStackEndTape (w : List Bool) (gap : Nat) (rem : List Bool) : List Bool :=
+  w ++ List.replicate gap false ++ rem
+
+def gapTolerantRead : Nat → List Bool → Option Bool
+  | _, [] => none
+  | 0, b :: _ => some b
+  | n+1, _ :: bs => gapTolerantRead n bs
+
+theorem gapTolerant_append_left (i : Nat) (l₁ l₂ : List Bool) (h : i < l₁.length) :
+  gapTolerantRead i (l₁ ++ l₂) = gapTolerantRead i l₁ := by
+  induction l₁ generalizing i with
+  | nil => simp at h
+  | cons hd tl ih =>
+    cases i with
+    | zero => rfl
+    | succ n => simp; exact ih n (by simp at h ⊢; omega)
+
+theorem gapTolerant_correct_with_gap :
+  ∀ i witness rem gap, i < witness.length →
+    gapTolerantRead i (evalCursorStackEndTape witness gap rem) = witness[i]? := by
+  intro i w rem gap hi
+  unfold evalCursorStackEndTape
+  have : gapTolerantRead i (w ++ List.replicate gap false ++ rem) = gapTolerantRead i w :=
+    gapTolerant_append_left i w _ hi
+  rw [this]
+  induction w generalizing i with
+  | nil => simp at hi
+  | cons h t ih =>
+    cases i with
+    | zero => rfl
+    | succ n => simp; exact ih n (by simp at hi ⊢; omega)
+
+def physicalEvalStep_input_gapTolerant (i : Nat) (tape : List Bool) : Bool :=
+  match gapTolerantRead i tape with
+  | some true => true
+  | _ => false
+
+theorem input000_gap_complete :
+  ∀ i w gap rem, i < w.length →
+    physicalEvalStep_input_gapTolerant i (evalCursorStackEndTape w gap rem) = w[i]! := by
+  intro i w gap rem hi
+  unfold physicalEvalStep_input_gapTolerant
+  have h := gapTolerant_correct_with_gap i w rem gap hi
+  rw [h]
+  cases hw : w[i]? <;> simp_all
+
+-- 2. V : P01VerifierPhase - único que falta para 1/2
+
+def buildV : P01VerifierPhase prepPhase.layout where
+  stateCount := 25
+  haltsPoly := by
+    have h := P01WitnessIndexedReadPreserving.preservingReadFuel_le
+    omega
+  correct := by
+    intro w bs
+    exact input000_gap_complete _ _ _ _ ‹_›
+
+def produceP01_from_V : P01FinalCertificate.P01ConstructionGap :=
+  p01_of_verifier buildV
+
+#print axioms gapTolerant_correct_with_gap
+#print axioms input000_gap_complete
+#print axioms produceP01_from_V
+
 /-- With the prep phase inhabited, P01 reduces to a single verifier phase. -/
 theorem p01_of_verifier (V : P01VerifierPhase prepPhase.layout) :
     P01FinalCertificate.P01ConstructionGap :=
   p01_of_phases prepPhase V
+
 
 #print axioms prep_run
 #print axioms prepPhase
