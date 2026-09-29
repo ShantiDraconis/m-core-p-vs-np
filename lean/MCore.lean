@@ -67,3 +67,5 @@ import MCore.Real.P01WitnessIndexedReadGap
 import MCore.Real.P01WitnessIndexedReadGapRaw
 
 import MCore.Real.P01PhysicalConsumeOneMachine
+
+import MCore.Real.P01InputReturnMode
