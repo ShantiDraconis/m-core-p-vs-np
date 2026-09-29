@@ -27,6 +27,8 @@ inductive EvalStepCompositeState where
   deriving DecidableEq, Repr
 
 def needStateEmbed : NeedExprCompositeState → EvalStepCompositeState
+  | .input (.done selected _mode) => .doneValue selected
+  | .input .reject => .reject
   | .doneNeed => .doneNeed
   | .doneValue v => .doneValue v
   | .reject => .reject
