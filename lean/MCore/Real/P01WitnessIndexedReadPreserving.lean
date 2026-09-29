@@ -1005,6 +1005,83 @@ theorem movedBits_false_finalize
   simpa [C0, C7, moved, restoredWitness, src, m,
     List.map_append, List.append_assoc] using h07
 
+
+/-- Canonical unary-index form of one successor cycle. -/
+theorem preservingMoved_cycle_index
+    (first next : Bool) (movedTail rest tail : BitString) (n : Nat) :
+    preservingReadMachine.run (4 * movedTail.length + 10)
+      (preservingMovedConfig
+        (first :: movedTail) (next :: rest) (n + 1) tail) =
+      preservingMovedConfig
+        ((first :: movedTail) ++ [next]) rest n tail := by
+  rw [preservingMovedConfig_eq_bits]
+  rw [preservingMovedConfig_eq_bits]
+  cases n with
+  | zero =>
+      simpa [encodeNat, List.append_assoc] using
+        preservingMoved_cycle first next false movedTail rest tail
+  | succ n =>
+      simpa [encodeNat, List.append_assoc] using
+        preservingMoved_cycle first next true movedTail rest
+          (encodeNat n ++ tail)
+
+/-- Exact remaining-run fuel after a nonempty prefix has already been moved.
+The recursion mirrors the machine: a terminal false uses the restore cost;
+a successor true uses one preserving cycle and continues with a prefix one
+cell longer. -/
+def preservingMovedFuel (movedLen : Nat) : Nat → Nat
+  | 0 => 5 * movedLen + 6
+  | n + 1 =>
+      (4 * movedLen + 6) + preservingMovedFuel (movedLen + 1) n
+
+/-- Complete preserving read from the moved-prefix invariant. -/
+theorem preservingMoved_forall
+    (first : Bool) (movedTail rest tail : BitString) (n : Nat)
+    (h : n < rest.length) :
+    preservingReadMachine.run
+      (preservingMovedFuel (first :: movedTail).length n)
+      (preservingMovedConfig (first :: movedTail) rest n tail) =
+      { state := .halt (rest.getD n false),
+        tape :=
+          { left := ((first :: movedTail) ++ rest).map some,
+            head := none,
+            right :=
+              List.replicate
+                ((first :: movedTail).length + n + 1) none ++
+                tail.map some } } := by
+  induction n generalizing movedTail rest with
+  | zero =>
+      cases rest with
+      | nil =>
+          simp at h
+      | cons selected restTail =>
+          rw [preservingMovedConfig_eq_bits]
+          simpa [preservingMovedFuel, preservingMovedFinalizeFuel,
+            encodeNat, List.map_append, List.append_assoc] using
+            movedBits_false_finalize first selected movedTail restTail tail
+  | succ n ih =>
+      cases rest with
+      | nil =>
+          simp at h
+      | cons selected restTail =>
+          have htail : n < restTail.length := by
+            simpa using h
+          rw [show
+            preservingMovedFuel (first :: movedTail).length (n + 1) =
+              (4 * movedTail.length + 10) +
+                preservingMovedFuel
+                  (first :: (movedTail ++ [selected])).length n by
+              simp [preservingMovedFuel]
+              omega]
+          rw [run_add]
+          rw [preservingMoved_cycle_index
+            first selected movedTail restTail tail n]
+          rw [ih (movedTail := movedTail ++ [selected])
+            (rest := restTail) htail]
+          simp [List.getD_cons_succ, List.map_append,
+            List.append_assoc]
+          omega
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
