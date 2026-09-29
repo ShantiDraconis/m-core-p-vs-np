@@ -33,14 +33,23 @@ theorem runBranches_terminal_fixed
         · simp [hr]
       have hactive :
           configs.filter (fun c =>
-            !(machine.accepting c.state || machine.rejecting c.state)) =
+            !machine.accepting c.state && !machine.rejecting c.state) =
             [] := by
         apply List.filter_eq_nil_iff.mpr
         intro c hc
         rcases hterm c hc with ha | hr
         · simp [ha]
         · simp [hr]
-      simp [NTM.runBranches, hhalted, hactive, ih]
+      rw [NTM.runBranches]
+      rw [hhalted]
+      change machine.runBranches fuel
+        (configs ++
+          List.flatMap machine.successors
+            (configs.filter (fun c =>
+              !machine.accepting c.state && !machine.rejecting c.state))) =
+          configs
+      rw [hactive]
+      simpa using ih
 
 /-- Fuel composition for the repository NTM evaluator. -/
 theorem runBranches_add
@@ -77,8 +86,7 @@ theorem witnessPrep_empty_runBranches_one :
     witnessPreservingPrep.runBranches 1
       [initialNTMConfig witnessPreservingPrep []] =
       [{ state := (11 : Fin 12), tape := inputTape [] }] := by
-  simp [NTM.runBranches, witnessPreservingPrep,
-    empty_successors, initialNTMConfig, inputTape]
+  rfl
 
 theorem witnessPrep_empty_halts_one :
     witnessPreservingPrep.HaltsWithin 1
@@ -99,7 +107,8 @@ theorem witnessPrep_empty_halts :
   apply ntm_haltsWithin_mono witnessPreservingPrep
     (initialNTMConfig witnessPreservingPrep [])
     (m := 1)
-  · norm_num [witnessPrepTimeBound]
+  · change 1 ≤ 64
+    decide
   · exact witnessPrep_empty_halts_one
 
 /-- After the full certified budget, the empty input has exactly the canonical
@@ -109,7 +118,7 @@ theorem witnessPrep_empty_runBranches :
       [initialNTMConfig witnessPreservingPrep []] =
       [{ state := (11 : Fin 12), tape := inputTape [] }] := by
   have hbound : witnessPrepTimeBound 0 = 1 + 63 := by
-    norm_num [witnessPrepTimeBound]
+    rfl
   rw [hbound, runBranches_add, witnessPrep_empty_runBranches_one]
   apply runBranches_terminal_fixed
   intro c hc
