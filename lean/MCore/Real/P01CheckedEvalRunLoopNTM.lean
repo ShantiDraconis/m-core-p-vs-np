@@ -169,10 +169,10 @@ theorem allowed_tag_successors
         (needCheckedLift (childMode mode tag)) := by
   cases tape with
   | mk left head right =>
-      cases tag <;>
+      cases mode <;> cases tag <;>
         simp [checkedEvalRunLoopMachine, needExprCompositeMachine,
           needCheckedLift, needCheckedEmbed, NTM.successors, NTM.stepBranch,
-          tagAllowed, childMode, h, Tape.write, Tape.move]
+          tagAllowed, childMode, Tape.write, Tape.move] at h ⊢
 
 /-- Any syntactically forbidden decoded tag is rejected in one physical step. -/
 theorem disallowed_tag_successors
