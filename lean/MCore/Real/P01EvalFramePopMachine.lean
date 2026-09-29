@@ -211,6 +211,7 @@ theorem framePop_run_six
       { state := FramePopState.halt f,
         tape := physicalStackV2Tape witness source stack (padding + 3) } := by
   rw [encodeEvalFrame_eq_bits]
+  simp only [List.cons_append, List.nil_append]
   have hdecode :
       decodeEvalFrame [frameBit0 f, frameBit1 f, frameBit2 f] = some f := by
     rw [← encodeEvalFrame_eq_bits]
