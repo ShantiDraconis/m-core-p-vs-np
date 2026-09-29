@@ -66,7 +66,7 @@ theorem tmAsNTM_terminal_implies_halted
   | false =>
       rcases h with h | h <;> simp [tmAsNTM, hm] at h
   | true =>
-      exact hm
+      rfl
 
 
 /-- One deterministic run step is reproduced by the singleton-branch NTM. -/
