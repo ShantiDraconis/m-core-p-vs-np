@@ -274,8 +274,7 @@ theorem frame_reaches_popped
         haveValueCompositeMachine.successors cPeek := by
     dsimp [cPeek, cPop0, popConfig]
     rw [nonempty_handoff_successors v (frameBit0 frame) tPeek hPeekHead]
-    rw [encodeEvalFrame_eq_bits]
-    simp [tPeek, t0, framePopConfig,
+    simp [framePopConfig, tPeek, t0, encodeEvalFrame_eq_bits,
       evalCursorStackEndTape, Tape.move, List.append_assoc]
 
   have hPeek :
@@ -516,9 +515,14 @@ theorem leftFrame_reaches_doneNeed
   have hHandSucc :
       pushConfig newFrame cPush0 ∈
         haveValueCompositeMachine.successors cPop := by
-    dsimp [cPop, cPush0, pushConfig]
+    change
+      ({ state := .push newFrame (.start newFrame), tape := tRest } :
+        HaveValueConfig) ∈
+      haveValueCompositeMachine.successors
+        ({ state := .pop v (.halt oldFrame), tape := tRest } :
+          HaveValueConfig)
     rw [hhandoff tRest]
-    simp [framePushConfig]
+    simp
   have hHand :
       pushConfig newFrame cPush0 ∈
         haveValueCompositeMachine.runBranches 1 [cPop] :=
