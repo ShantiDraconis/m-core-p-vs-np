@@ -90,3 +90,5 @@ import MCore.Real.P01EvalCursorReturnNoErase
 import MCore.Real.P01TagDecodeCompositeNTM
 
 import MCore.Real.P01NeedExprCompositeNTM
+
+import MCore.Real.P01TagDecodeCompositeRun
