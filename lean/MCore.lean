@@ -37,3 +37,5 @@ import MCore.Real.P01FullVerifierSourceRoundTrip
 import MCore.Real.P01FullVerifierSourceToStack
 
 import MCore.Real.P01EvalCursorMachine
+
+import MCore.Real.P01EvalCursorRoundTrip
