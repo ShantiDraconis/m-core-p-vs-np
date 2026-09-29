@@ -474,6 +474,267 @@ theorem neg_certificate
             refine ⟨cFinal.tape, ?_⟩
             simp [cFinal, evalCircuit]
 
+
+
+/-- Every canonical circuit encoding contains at least its three-bit tag. -/
+theorem encodeCircuit_ne_nil
+    (circuit : Circuit) :
+    encodeCircuit circuit ≠ [] := by
+  cases circuit <;> simp [encodeCircuit]
+
+/-- Structural producer for conjunction. The physical loop evaluates the left
+child under an andLeft frame, converts that frame to andRight carrying the
+left value, evaluates the right child, combines both Booleans, and normalizes
+the resulting haveValue state into the external circuit outcome. -/
+theorem and_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (left right : Circuit)
+    (hleft : CircuitRunCertificate sigma witness left)
+    (hright : CircuitRunCertificate sigma witness right) :
+    CircuitRunCertificate sigma witness (.and left right) := by
+  intro tail frames consumed padding hlen hread
+
+  have hlenMax :
+      max (varBound left) (varBound right) ≤ witness.length := by
+    simpa [varBound] using hlen
+  have hlenLeft : varBound left ≤ witness.length :=
+    Nat.le_trans (Nat.le_max_left _ _) hlenMax
+  have hlenRight : varBound right ≤ witness.length :=
+    Nat.le_trans (Nat.le_max_right _ _) hlenMax
+
+  have hreadLeft :
+      ∀ i, i < varBound left →
+        witness.getD i false = sigma i := by
+    intro i hi
+    exact hread i (by
+      simpa [varBound] using
+        Nat.lt_of_lt_of_le hi (Nat.le_max_left _ _))
+  have hreadRight :
+      ∀ i, i < varBound right →
+        witness.getD i false = sigma i := by
+    intro i hi
+    exact hread i (by
+      simpa [varBound] using
+        Nat.lt_of_lt_of_le hi (Nat.le_max_right _ _))
+
+  obtain ⟨m0, hm0, h0⟩ :=
+    and_loop_reaches_need
+      witness
+      (encodeCircuit left ++ encodeCircuit right ++ tail)
+      (encodeEvalFrames frames) consumed padding
+
+  let padLeft := ((padding - 1) - 1) - 1
+  let cNeedLeft : LoopConfig :=
+    { state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+      tape :=
+        evalCursorStackEndTape witness (consumed + 3)
+          (encodeCircuit left ++ encodeCircuit right ++ tail)
+          (encodeEvalFrame .andLeft ++ encodeEvalFrames frames)
+          padLeft }
+
+  have h0' :
+      cNeedLeft ∈
+        evalRunLoopMachine.runBranches m0
+          [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (encodeCircuit (.and left right) ++ tail)
+                 (encodeEvalFrames frames) padding }] := by
+    simpa [cNeedLeft, padLeft, encodeCircuit, List.append_assoc] using h0
+
+  obtain ⟨m1, cfgLeft, h1, hout1⟩ :=
+    hleft (encodeCircuit right ++ tail) (.andLeft :: frames)
+      (consumed + 3) padLeft hlenLeft hreadLeft
+
+  have h1' :
+      cfgLeft ∈ evalRunLoopMachine.runBranches m1 [cNeedLeft] := by
+    simpa [cNeedLeft, encodeEvalFrames, List.append_assoc] using h1
+
+  have h01 :=
+    mem_runBranches_trans evalRunLoopMachine
+      m0 m1
+      [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.and left right) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      cNeedLeft cfgLeft h0' h1'
+
+  have hRightTail :
+      encodeCircuit right ++ tail ≠ [] := by
+    intro hnil
+    have henc : encodeCircuit right = [] := by
+      exact (List.append_eq_nil.mp hnil).1
+    exact encodeCircuit_ne_nil right henc
+
+  have houtLeftHave :
+      ∃ consumed1 padding1,
+        cfgLeft =
+          { state := .have (.start (evalCircuit sigma left)),
+            tape :=
+              evalCursorStackEndTape witness consumed1
+                (encodeCircuit right ++ tail)
+                (encodeEvalFrames (.andLeft :: frames))
+                padding1 } := by
+    cases htail : encodeCircuit right ++ tail with
+    | nil =>
+        exact False.elim (hRightTail htail)
+    | cons b bs =>
+        have htmp :
+            ∃ consumed1 padding1,
+              cfgLeft =
+                { state := .have (.start (evalCircuit sigma left)),
+                  tape :=
+                    evalCursorStackEndTape witness consumed1
+                      (b :: bs)
+                      (encodeEvalFrames (.andLeft :: frames))
+                      padding1 } := by
+          simpa [LoopOutcome, htail] using hout1
+        rcases htmp with ⟨consumed1, padding1, hcfg⟩
+        refine ⟨consumed1, padding1, ?_⟩
+        simpa [htail] using hcfg
+
+  rcases houtLeftHave with ⟨consumed1, padding1, hcfgLeft⟩
+  subst cfgLeft
+
+  obtain ⟨m2, hm2, h2⟩ :=
+    andLeftReturn_loop_reaches_need
+      witness (encodeCircuit right ++ tail)
+      (encodeEvalFrames frames)
+      consumed1 padding1 (evalCircuit sigma left)
+
+  let padRight := (((padding1 + 3) - 1) - 1) - 1
+  let cNeedRight : LoopConfig :=
+    { state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+      tape :=
+        evalCursorStackEndTape witness consumed1
+          (encodeCircuit right ++ tail)
+          (encodeEvalFrame (.andRight (evalCircuit sigma left)) ++
+            encodeEvalFrames frames)
+          padRight }
+
+  have h2' :
+      cNeedRight ∈
+        evalRunLoopMachine.runBranches m2
+          [{ state := .have (.start (evalCircuit sigma left)),
+             tape :=
+               evalCursorStackEndTape witness consumed1
+                 (encodeCircuit right ++ tail)
+                 (encodeEvalFrames (.andLeft :: frames))
+                 padding1 }] := by
+    simpa [cNeedRight, padRight, encodeEvalFrames, List.append_assoc] using h2
+
+  have h012 :=
+    mem_runBranches_trans evalRunLoopMachine
+      (m0 + m1) m2
+      [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.and left right) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      ({ state := .have (.start (evalCircuit sigma left)),
+         tape :=
+           evalCursorStackEndTape witness consumed1
+             (encodeCircuit right ++ tail)
+             (encodeEvalFrames (.andLeft :: frames))
+             padding1 } : LoopConfig)
+      cNeedRight h01 h2'
+
+  obtain ⟨m3, cfgRight, h3, hout3⟩ :=
+    hright tail (.andRight (evalCircuit sigma left) :: frames)
+      consumed1 padRight hlenRight hreadRight
+
+  have h3' :
+      cfgRight ∈
+        evalRunLoopMachine.runBranches m3 [cNeedRight] := by
+    simpa [cNeedRight, encodeEvalFrames, List.append_assoc] using h3
+
+  have h0123 :=
+    mem_runBranches_trans evalRunLoopMachine
+      (m0 + m1 + m2) m3
+      [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.and left right) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      cNeedRight cfgRight h012 h3'
+
+  have houtRightHave :
+      ∃ consumed2 padding2,
+        cfgRight =
+          { state := .have (.start (evalCircuit sigma right)),
+            tape :=
+              evalCursorStackEndTape witness consumed2 tail
+                (encodeEvalFrames
+                  (.andRight (evalCircuit sigma left) :: frames))
+                padding2 } := by
+    simpa [LoopOutcome] using hout3
+
+  rcases houtRightHave with ⟨consumed2, padding2, hcfgRight⟩
+  subst cfgRight
+
+  obtain ⟨m4, hm4, h4⟩ :=
+    andRightReturn_loop_reaches_have
+      witness tail (encodeEvalFrames frames)
+      consumed2 padding2
+      (evalCircuit sigma left) (evalCircuit sigma right)
+
+  let finalValue :=
+    Bool.and (evalCircuit sigma left) (evalCircuit sigma right)
+  let cHave : LoopConfig :=
+    { state := .have (.start finalValue),
+      tape :=
+        evalCursorStackEndTape witness consumed2 tail
+          (encodeEvalFrames frames) (padding2 + 3) }
+
+  have h4' :
+      cHave ∈
+        evalRunLoopMachine.runBranches m4
+          [{ state := .have (.start (evalCircuit sigma right)),
+             tape :=
+               evalCursorStackEndTape witness consumed2 tail
+                 (encodeEvalFrames
+                   (.andRight (evalCircuit sigma left) :: frames))
+                 padding2 }] := by
+    simpa [cHave, finalValue, encodeEvalFrames, List.append_assoc] using h4
+
+  have h01234 :=
+    mem_runBranches_trans evalRunLoopMachine
+      (m0 + m1 + m2 + m3) m4
+      [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.and left right) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      ({ state := .have (.start (evalCircuit sigma right)),
+         tape :=
+           evalCursorStackEndTape witness consumed2 tail
+             (encodeEvalFrames
+               (.andRight (evalCircuit sigma left) :: frames))
+             padding2 } : LoopConfig)
+      cHave h0123 h4'
+
+  obtain ⟨m5, cfgFinal, h5, hout5⟩ :=
+    have_reaches_outcome
+      witness finalValue tail frames consumed2 (padding2 + 3)
+
+  have hAll :=
+    mem_runBranches_trans evalRunLoopMachine
+      (m0 + m1 + m2 + m3 + m4) m5
+      [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.and left right) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      cHave cfgFinal h01234 h5
+
+  refine ⟨m0 + m1 + m2 + m3 + m4 + m5, cfgFinal, hAll, ?_⟩
+  simpa [finalValue, evalCircuit] using hout5
+
+#print axioms MCore.Real.P01EvalRunCircuitCertificate.encodeCircuit_ne_nil
+#print axioms MCore.Real.P01EvalRunCircuitCertificate.and_certificate
+
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.input_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.constFalse_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.constTrue_certificate
