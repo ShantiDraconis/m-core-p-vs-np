@@ -48,11 +48,10 @@ theorem allowed_decode_handoff
       ({ state := .need mode (.decode (.halt tag)), tape := tape } :
         CheckedConfig) =
       [{ state := postTagState mode tag, tape := tape }] := by
-  rw [allowed_tag_successors mode tag tape hallowed]
   cases mode <;> cases tag <;>
-    simp [postTagState, childMode, tagAllowed,
-      needCheckedLift, needCheckedEmbed,
-      needExprCompositeMachine] at hallowed ⊢
+    simp [checkedEvalRunLoopMachine, postTagState, childMode, tagAllowed,
+      needExprCompositeMachine, needCheckedEmbed,
+      NTM.successors, NTM.stepBranch, Tape.write, Tape.move] at hallowed ⊢
 
 private theorem one_step_of_successor
     (a b : CheckedConfig)
@@ -92,7 +91,7 @@ theorem checked_tag_prefix_reaches
            evalCursorReadTape witness (consumed + 3)
              rest frameStack padding } : CheckedConfig) ∈
         checkedEvalRunLoopMachine.runBranches m
-          [{ state := checkedEvalRunLoopMachine.initial,
+          [{ state := .need mode needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
                  (b0 :: b1 :: b2 :: rest)
@@ -135,7 +134,8 @@ theorem checked_tag_prefix_reaches
         checkedEvalRunLoopMachine.successors (seekConfig mode cSeekH) := by
     dsimp [cCheckedDec0, seekConfig, decodeConfig, cSeekH, cDec0]
     simp [checkedEvalRunLoopMachine, needExprCompositeMachine,
-      NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
+      needCheckedEmbed, NTM.successors, NTM.stepBranch,
+      Tape.write, Tape.move]
   have hSeekHand :
       cCheckedDec0 ∈
         checkedEvalRunLoopMachine.runBranches 1 [seekConfig mode cSeekH] :=
@@ -197,7 +197,7 @@ theorem checked_tag_prefix_reaches
   · dsimp [checkedTagPrefixFuel, nSeek, source] at *
     omega
   · dsimp [cPost, tAfter, cSeek0, t0, source] at hAll ⊢
-    simpa [seekConfig, checkedEvalRunLoopMachine] using hAll
+    simpa [seekConfig] using hAll
 
 #print axioms MCore.Real.P01CheckedEvalRunTagPrefix.allowed_decode_handoff
 #print axioms MCore.Real.P01CheckedEvalRunTagPrefix.checked_tag_prefix_reaches
