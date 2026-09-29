@@ -98,3 +98,5 @@ import MCore.Real.P01NeedExprCompositeRun
 import MCore.Real.P01EvalCursorFramePop
 
 import MCore.Real.P01HaveValueCompositeNTM
+
+import MCore.Real.P01HaveValueCompositeRun
