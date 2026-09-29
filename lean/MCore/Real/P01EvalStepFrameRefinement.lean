@@ -154,6 +154,157 @@ theorem evalStep_return_frame_physically_decodable
 #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_or_tag_refined
 #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_return_frame_physically_decodable
 
+
+/-- Returning through negation: the semantic transition only updates the
+finite-control Boolean value; the physical tape action is exactly one frame
+pop. -/
+theorem evalStep_neg_return_refined
+    (sigma : Assignment)
+    (v : Bool)
+    (bits witness source : BitString)
+    (frames : List EvalFrame)
+    (padding : Nat) :
+    evalStep sigma
+      (haveValue v bits (.neg :: frames)) =
+        some (haveValue (!v) bits frames) ∧
+    let final :=
+      framePopMachine.run 4
+        (framePopConfig
+          (physicalStackV2Tape witness source
+            (encodeEvalFrames (.neg :: frames)) padding))
+    final.state = .halt .neg ∧
+      final.tape =
+        physicalStackV2Tape witness source
+          (encodeEvalFrames frames) (padding + 3) := by
+  constructor
+  · rfl
+  · exact pop_refines_frame_tail witness source frames padding .neg
+
+/-- Returning from the left operand of AND: semantic control replaces
+.andLeft by .andRight l; physically this is one certified pop followed by one
+certified push of the finite frame carrying l. -/
+theorem evalStep_andLeft_return_refined
+    (sigma : Assignment)
+    (l : Bool)
+    (bits witness source : BitString)
+    (frames : List EvalFrame)
+    (padding : Nat) :
+    evalStep sigma
+      (haveValue l bits (.andLeft :: frames)) =
+        some (needExpr bits (.andRight l :: frames)) ∧
+    let popped :=
+      framePopMachine.run 4
+        (framePopConfig
+          (physicalStackV2Tape witness source
+            (encodeEvalFrames (.andLeft :: frames)) padding))
+    let pushed :=
+      framePushMachine.run 3
+        (framePushConfig (.andRight l) popped.tape)
+    popped.state = .halt .andLeft ∧
+      pushed.state = .halt ∧
+      pushed.tape =
+        physicalStackV2Tape witness source
+          (encodeEvalFrames (.andRight l :: frames))
+          ((((padding + 3) - 1) - 1) - 1) := by
+  constructor
+  · rfl
+  · dsimp
+    have hp := pop_refines_frame_tail witness source frames padding .andLeft
+    rcases hp with ⟨hps, hpt⟩
+    rw [hpt]
+    have hq :=
+      push_refines_frame_cons witness source frames (padding + 3) (.andRight l)
+    exact ⟨hps, hq.1, hq.2⟩
+
+/-- Returning from the left operand of OR: identical physical pop/push pattern
+with the .orRight l continuation frame. -/
+theorem evalStep_orLeft_return_refined
+    (sigma : Assignment)
+    (l : Bool)
+    (bits witness source : BitString)
+    (frames : List EvalFrame)
+    (padding : Nat) :
+    evalStep sigma
+      (haveValue l bits (.orLeft :: frames)) =
+        some (needExpr bits (.orRight l :: frames)) ∧
+    let popped :=
+      framePopMachine.run 4
+        (framePopConfig
+          (physicalStackV2Tape witness source
+            (encodeEvalFrames (.orLeft :: frames)) padding))
+    let pushed :=
+      framePushMachine.run 3
+        (framePushConfig (.orRight l) popped.tape)
+    popped.state = .halt .orLeft ∧
+      pushed.state = .halt ∧
+      pushed.tape =
+        physicalStackV2Tape witness source
+          (encodeEvalFrames (.orRight l :: frames))
+          ((((padding + 3) - 1) - 1) - 1) := by
+  constructor
+  · rfl
+  · dsimp
+    have hp := pop_refines_frame_tail witness source frames padding .orLeft
+    rcases hp with ⟨hps, hpt⟩
+    rw [hpt]
+    have hq :=
+      push_refines_frame_cons witness source frames (padding + 3) (.orRight l)
+    exact ⟨hps, hq.1, hq.2⟩
+
+/-- Returning from the right operand of AND: the stored left bit is already
+finite-control data in the frame; after physical pop, the Boolean result is a
+finite-control computation and no further tape mutation is required. -/
+theorem evalStep_andRight_return_refined
+    (sigma : Assignment)
+    (l r : Bool)
+    (bits witness source : BitString)
+    (frames : List EvalFrame)
+    (padding : Nat) :
+    evalStep sigma
+      (haveValue r bits (.andRight l :: frames)) =
+        some (haveValue (Bool.and l r) bits frames) ∧
+    let final :=
+      framePopMachine.run 4
+        (framePopConfig
+          (physicalStackV2Tape witness source
+            (encodeEvalFrames (.andRight l :: frames)) padding))
+    final.state = .halt (.andRight l) ∧
+      final.tape =
+        physicalStackV2Tape witness source
+          (encodeEvalFrames frames) (padding + 3) := by
+  constructor
+  · rfl
+  · exact pop_refines_frame_tail witness source frames padding (.andRight l)
+
+/-- Returning from the right operand of OR. -/
+theorem evalStep_orRight_return_refined
+    (sigma : Assignment)
+    (l r : Bool)
+    (bits witness source : BitString)
+    (frames : List EvalFrame)
+    (padding : Nat) :
+    evalStep sigma
+      (haveValue r bits (.orRight l :: frames)) =
+        some (haveValue (Bool.or l r) bits frames) ∧
+    let final :=
+      framePopMachine.run 4
+        (framePopConfig
+          (physicalStackV2Tape witness source
+            (encodeEvalFrames (.orRight l :: frames)) padding))
+    final.state = .halt (.orRight l) ∧
+      final.tape =
+        physicalStackV2Tape witness source
+          (encodeEvalFrames frames) (padding + 3) := by
+  constructor
+  · rfl
+  · exact pop_refines_frame_tail witness source frames padding (.orRight l)
+
+#print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_neg_return_refined
+#print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_andLeft_return_refined
+#print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_orLeft_return_refined
+#print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_andRight_return_refined
+#print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_orRight_return_refined
+
 end P01EvalStepFrameRefinement
 end Real
 end MCore
