@@ -55,7 +55,7 @@ theorem seekLoop_successors_active
   simp only [seekLoopConfig]
   cases c.state <;>
     simp [evalRunLoopMachine, needExprCompositeMachine,
-      cursorSeekMachine, NTM.stepBranch, TM.step,
+      needLoopEmbed, cursorSeekMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
 
 theorem decodeLoop_successors_active
@@ -67,7 +67,7 @@ theorem decodeLoop_successors_active
   simp only [decodeLoopConfig]
   cases c.state <;>
     simp [evalRunLoopMachine, needExprCompositeMachine,
-      tagDecodeMachine, NTM.stepBranch, TM.step,
+      needLoopEmbed, tagDecodeMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
 
 theorem retValueLoop_successors_active
@@ -80,7 +80,7 @@ theorem retValueLoop_successors_active
   simp only [retValueLoopConfig]
   cases c.state <;>
     simp [evalRunLoopMachine, needExprCompositeMachine,
-      cursorReturnMachine, NTM.stepBranch, TM.step,
+      needLoopEmbed, cursorReturnMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
 
 private theorem tm_phase_run_reachable
@@ -254,7 +254,7 @@ theorem constTag_loop_reaches_have
       decodeLoopConfig cDec0 ∈
         evalRunLoopMachine.successors (seekLoopConfig cSeekH) := by
     dsimp [seekLoopConfig, decodeLoopConfig, cSeekH, cDec0]
-    simp [evalRunLoopMachine, needExprCompositeMachine,
+    simp [evalRunLoopMachine, needExprCompositeMachine, needLoopEmbed,
       NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
   have hSeekHand :
       decodeLoopConfig cDec0 ∈
@@ -293,7 +293,7 @@ theorem constTag_loop_reaches_have
     have hsrc := hhandoff tAfterTag
     simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
       Tape.write, Tape.move] at hsrc
-    simp [evalRunLoopMachine, needExprCompositeMachine,
+    simp [evalRunLoopMachine, needExprCompositeMachine, needLoopEmbed,
       NTM.successors, NTM.stepBranch, hdecode,
       Tape.write, Tape.move]
   have hDecHand :
