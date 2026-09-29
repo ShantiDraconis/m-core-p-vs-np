@@ -309,6 +309,119 @@ theorem scanMoved_over_bits
             Configuration PreservingReadState (Option Bool)))
       simp [List.reverse_cons, List.map_append, List.append_assoc]
 
+/-- Canonical view of a rightward stream under a fixed left tape. -/
+def rightStreamTape
+    (left stream : List (Option Bool)) :
+    Tape (Option Bool) :=
+  match stream with
+  | [] =>
+      { left := left, head := none, right := [] }
+  | x :: xs =>
+      { left := left, head := x, right := xs }
+
+/-- Tape view while `returnMoved` walks right across the reversed moved
+prefix and then crosses its separator blank. -/
+def returnMovedTape
+    (bits : BitString)
+    (left after : List (Option Bool)) :
+    Tape (Option Bool) :=
+  match bits with
+  | [] =>
+      rightStreamTape left (none :: after)
+  | x :: xs =>
+      { left := left,
+        head := some x,
+        right := xs.map some ++ (none :: after) }
+
+/-- One `returnMoved` step consumes the current moved-prefix bit. -/
+theorem returnMoved_step_cons
+    (x : Bool) (xs : BitString)
+    (left after : List (Option Bool)) :
+    preservingReadMachine.step
+      { state := .returnMoved,
+        tape := returnMovedTape (x :: xs) left after } =
+      { state := .returnMoved,
+        tape := returnMovedTape xs (some x :: left) after } := by
+  cases xs <;>
+    simp [returnMovedTape, rightStreamTape, preservingReadMachine,
+      TM.step, Tape.write, Tape.move]
+
+/-- `returnMoved` restores all moved-prefix bits on the left and crosses the
+separator, entering `returnBlanks` at the first symbol of `after`. -/
+theorem returnMoved_over_bits
+    (bits : BitString)
+    (left after : List (Option Bool)) :
+    preservingReadMachine.run (bits.length + 1)
+      { state := .returnMoved,
+        tape := returnMovedTape bits left after } =
+      { state := .returnBlanks,
+        tape :=
+          rightStreamTape
+            (none :: (bits.reverse.map some ++ left))
+            after } := by
+  induction bits generalizing left with
+  | nil =>
+      cases after <;>
+        simp [returnMovedTape, rightStreamTape, preservingReadMachine,
+          TM.run, TM.step, Tape.write, Tape.move]
+  | cons x xs ih =>
+      rw [show (x :: xs).length + 1 = (xs.length + 1) + 1 by simp]
+      rw [TM.run]
+      simp only [show preservingReadMachine.halting (.returnMoved) = false by rfl,
+        Bool.false_eq_true, if_false]
+      rw [returnMoved_step_cons]
+      rw [ih (some x :: left)]
+      apply congrArg
+        (fun l : List (Option Bool) =>
+          ({ state := .returnBlanks,
+             tape := rightStreamTape l after } :
+            Configuration PreservingReadState (Option Bool)))
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+/-- `returnBlanks` crosses a finite blank block and changes back to
+`indexMoved` on the first nonblank source bit. -/
+theorem returnBlanks_over_blanks
+    (k : Nat) (b : Bool)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.run (k + 2)
+      { state := .returnBlanks,
+        tape :=
+          { left := left,
+            head := none,
+            right := List.replicate k none ++ (some b :: right) } } =
+      { state := .indexMoved,
+        tape :=
+          { left := List.replicate (k + 1) none ++ left,
+            head := some b,
+            right := right } } := by
+  induction k generalizing left with
+  | zero =>
+      simp [preservingReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+  | succ k ih =>
+      rw [show Nat.succ k + 2 = (k + 2) + 1 by omega]
+      rw [TM.run]
+      simp only [show preservingReadMachine.halting (.returnBlanks) = false by rfl,
+        Bool.false_eq_true, if_false]
+      change preservingReadMachine.run (k + 2)
+        { state := .returnBlanks,
+          tape :=
+            { left := none :: left,
+              head := none,
+              right := List.replicate k none ++ (some b :: right) } } =
+        { state := .indexMoved,
+          tape :=
+            { left := List.replicate (Nat.succ k + 1) none ++ left,
+              head := some b,
+              right := right } }
+      rw [ih (none :: left)]
+      apply congrArg
+        (fun l : List (Option Bool) =>
+          ({ state := .indexMoved,
+             tape := { left := l, head := some b, right := right } } :
+            Configuration PreservingReadState (Option Bool)))
+      simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
+        replicate_none_extend k left
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
@@ -375,6 +488,9 @@ theorem preservingRead_one_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.seekMoved_over_blanks
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.scanMoved_step_cons
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.scanMoved_over_bits
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnMoved_step_cons
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnMoved_over_bits
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.returnBlanks_over_blanks
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one
