@@ -407,7 +407,7 @@ theorem consumeOne_run
   rw [show (b :: bs).length = (b :: bs).reverse.length by simp]
   rw [run_add]
   rw [seekUnread_run]
-  simp only [List.reverse_reverse, List.map_cons]
+  simp only [List.reverse_reverse]
   rw [run_add]
   rw [cursor_boundary_to_erase]
   rw [run_add]
