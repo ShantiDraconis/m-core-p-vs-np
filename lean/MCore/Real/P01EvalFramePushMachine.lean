@@ -44,7 +44,7 @@ inductive FramePushState where
   | after2 : EvalFrame → FramePushState
   | halt
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- Fixed physical machine: each successful step requires the current cell to
 be blank, writes one code bit, and advances right.  Bits are emitted in reverse
