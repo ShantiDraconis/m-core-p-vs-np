@@ -328,8 +328,9 @@ theorem constFalse_reaches_done
   have hSeekHandSucc :
       decodeConfig cDec0 ∈
         needExprCompositeMachine.successors (seekConfig cSeekH) := by
+    dsimp [seekConfig, decodeConfig, cSeekH, cDec0]
     rw [seek_handoff_successors tRead]
-    simp [seekConfig, decodeConfig, cSeekH, cDec0]
+    simp
   have hSeekHand :
       decodeConfig cDec0 ∈
         needExprCompositeMachine.runBranches 1 [seekConfig cSeekH] :=
@@ -365,8 +366,9 @@ theorem constFalse_reaches_done
   have hDecHandSucc :
       retValueConfig false cRet0 ∈
         needExprCompositeMachine.successors (decodeConfig cDecH) := by
+    dsimp [decodeConfig, retValueConfig, cDecH, cRet0]
     rw [constFalse_handoff_successors tAfterTag]
-    simp [decodeConfig, retValueConfig, cDecH, cRet0]
+    simp
   have hDecHand :
       retValueConfig false cRet0 ∈
         needExprCompositeMachine.runBranches 1 [decodeConfig cDecH] :=
@@ -404,8 +406,9 @@ theorem constFalse_reaches_done
       cDone ∈
         needExprCompositeMachine.successors
           (retValueConfig false cRetH) := by
+    dsimp [cDone, retValueConfig, cRetH]
     rw [retValue_handoff_successors false tDone]
-    simp [cDone, retValueConfig, cRetH]
+    simp
   have hFinal :
       cDone ∈
         needExprCompositeMachine.runBranches 1
