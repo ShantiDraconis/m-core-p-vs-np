@@ -357,9 +357,14 @@ theorem inputNodeComposite_reaches_done
   have hLookSucc :
       readConfig mode cRead0 ∈
         inputNodeCompositeMachine.successors (lookConfig cLookH) := by
-    dsimp [cLookH, cRead0, mode, lookConfig, readConfig]
-    rw [look_handoff_successors]
-    simp
+    have hmem :
+        ({ state := .read mode preservingReadMachine.initial, tape := tape0 } :
+          CompositeConfig) ∈
+        inputNodeCompositeMachine.successors
+          ({ state := .look (.halt mode), tape := tape0 } : CompositeConfig) := by
+      rw [look_handoff_successors]
+      simp
+    simpa [cLookH, cRead0, lookConfig, readConfig] using hmem
 
   have hReadStart :
       readConfig mode cRead0 ∈
@@ -409,9 +414,19 @@ theorem inputNodeComposite_reaches_done
   have hReadSucc :
       returnConfig mode selected cRet0 ∈
         inputNodeCompositeMachine.successors (readConfig mode cReadH) := by
-    dsimp [cReadH, cRet0, selected, mode, readConfig, returnConfig]
-    rw [read_handoff_successors]
-    simp
+    have hmem :
+        ({ state := .ret mode selected (.start mode),
+           tape :=
+             afterIndexedReadTape witness consumed'
+               tail frameStack padding } : CompositeConfig) ∈
+        inputNodeCompositeMachine.successors
+          ({ state := .read mode (.halt selected),
+             tape :=
+               afterIndexedReadTape witness consumed'
+                 tail frameStack padding } : CompositeConfig) := by
+      rw [read_handoff_successors]
+      simp
+    simpa [cReadH, cRet0, readConfig, returnConfig] using hmem
 
   have hReturnStart :
       returnConfig mode selected cRet0 ∈
@@ -472,9 +487,20 @@ theorem inputNodeComposite_reaches_done
       cDone ∈
         inputNodeCompositeMachine.successors
           (returnConfig mode selected cRetH) := by
-    dsimp [cRetH, cDone, selected, returnConfig]
-    rw [return_handoff_successors]
-    simp
+    have hmem :
+        ({ state := .done selected (inputNodeFinalMode tail frameStack),
+           tape :=
+             (inputAfterReadTarget witness consumed'
+               tail frameStack padding).tape } : CompositeConfig) ∈
+        inputNodeCompositeMachine.successors
+          ({ state := .ret mode selected
+              (.halt (inputNodeFinalMode tail frameStack)),
+             tape :=
+               (inputAfterReadTarget witness consumed'
+                 tail frameStack padding).tape } : CompositeConfig) := by
+      rw [return_handoff_successors]
+      simp
+    simpa [cRetH, cDone, returnConfig] using hmem
 
   have hDone :
       cDone ∈
@@ -490,13 +516,11 @@ theorem inputNodeComposite_reaches_done
       hReturnSucc
 
   refine ⟨(((((mL + 1) + mR) + 1) + mT) + 1), ?_, ?_⟩
-  · have hmL' := hmL
-    have hmR' := hmR
-    have hmT' := hmT
-    dsimp [readFuel] at hmR'
-    dsimp [retFuel, consumed'] at hmT'
-    dsimp [inputNodeCompositeFuel]
-    omega
+  · have hsum :
+        (((((mL + 1) + mR) + 1) + mT) + 1) ≤
+          (((((2 * i + 6) + 1) + readFuel) + 1) + retFuel) + 1 := by
+      omega
+    simpa [inputNodeCompositeFuel, readFuel, retFuel, consumed'] using hsum
   · dsimp [cDone, selected, consumed', cLook0, tape0] at hDone ⊢
     simpa [lookConfig, inputNodeCompositeMachine] using hDone
 
