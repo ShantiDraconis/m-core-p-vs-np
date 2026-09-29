@@ -40,18 +40,11 @@ theorem gapTolerant_append_left (i : Nat) (l₁ l₂ : List Bool) (h : i < l₁.
     | zero => simp [gapTolerantRead]
     | succ n => simp [gapTolerantRead]; exact ih n (by simp at h ⊢; omega)
 
-theorem gapTolerant_correct_with_gap :
-  ∀ (i : Nat) (witness rem : List Bool) (gap : Nat),
+theorem gapTolerant_correct :
+  ∀ (i : Nat) (witness : List Bool),
     i < witness.length →
-    gapTolerantRead i (evalCursorStackEndTape witness gap rem) = witness[i]? := by
-  intro i witness rem gap hi
-  unfold evalCursorStackEndTape
-  have h1 :
-      gapTolerantRead i (witness ++ List.replicate gap false ++ rem) =
-        gapTolerantRead i witness := by
-    simpa [List.append_assoc] using
-      gapTolerant_append_left i witness (List.replicate gap false ++ rem) hi
-  rw [h1]
+    gapTolerantRead i witness = witness[i]? := by
+  intro i witness hi
   induction witness generalizing i with
   | nil =>
       simp at hi
@@ -64,6 +57,20 @@ theorem gapTolerant_correct_with_gap :
             simpa using hi
           simp only [gapTolerantRead]
           simpa using ih n hi'
+
+theorem gapTolerant_correct_with_gap :
+  ∀ (i : Nat) (witness rem : List Bool) (gap : Nat),
+    i < witness.length →
+    gapTolerantRead i (evalCursorStackEndTape witness gap rem) = witness[i]? := by
+  intro i witness rem gap hi
+  unfold evalCursorStackEndTape
+  have h1 :
+      gapTolerantRead i (witness ++ List.replicate gap false ++ rem) =
+        gapTolerantRead i witness := by
+    simpa [List.append_assoc] using
+      gapTolerant_append_left i witness (List.replicate gap false ++ rem) hi
+  rw [h1]
+  exact gapTolerant_correct i witness hi
 
 theorem gapTolerant_zero_eq_preserving :
   ∀ (i : Nat) (witness : List Bool),
