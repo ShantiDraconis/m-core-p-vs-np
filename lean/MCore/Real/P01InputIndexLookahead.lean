@@ -22,7 +22,7 @@ inductive InputIndexLookaheadState where
   | rewind : InputReturnMode → InputIndexLookaheadState
   | halt : InputReturnMode → InputIndexLookaheadState
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- Fixed finite control that inspects the finite structural mode following an
 input-node unary index and then returns to the first index bit without changing
