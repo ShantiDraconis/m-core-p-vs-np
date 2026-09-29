@@ -109,31 +109,40 @@ theorem tagAllowed_of_modeCheck
     (mode : SyntaxMode) (c : Circuit)
     (h : modeCheck mode c = true) :
     tagAllowed mode (circuitTag c) = true := by
-  cases mode <;> cases c with
-  | input i =>
-      rfl
-  | const b =>
-      cases b with
-      | false =>
-          simp [modeCheck, circuitTag, tagAllowed,
-            isCNFBool, isClauseBool] at h ⊢
-      | true =>
-          cases mode with
-          | cnf =>
-              rfl
-          | clause =>
-              change false = true at h
-              contradiction
-          | mustInput =>
-              change false = true at h
-              contradiction
-  | not c =>
-      cases c <;>
-        simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
-  | and a b =>
-      simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
-  | or a b =>
-      simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
+  cases mode with
+  | cnf =>
+      cases c with
+      | input i => rfl
+      | const b => cases b <;> rfl
+      | not c => rfl
+      | and a b => rfl
+      | or a b => rfl
+  | clause =>
+      cases c with
+      | input i => rfl
+      | const b =>
+          cases b with
+          | false => rfl
+          | true =>
+              simp [modeCheck, isClauseBool] at h
+      | not c =>
+          cases c with
+          | input i => rfl
+          | const b => simp [modeCheck, isClauseBool] at h
+          | not c => simp [modeCheck, isClauseBool] at h
+          | and a b => simp [modeCheck, isClauseBool] at h
+          | or a b => simp [modeCheck, isClauseBool] at h
+      | and a b =>
+          simp [modeCheck, isClauseBool] at h
+      | or a b =>
+          rfl
+  | mustInput =>
+      cases c with
+      | input i => rfl
+      | const b => simp [modeCheck] at h
+      | not c => simp [modeCheck] at h
+      | and a b => simp [modeCheck] at h
+      | or a b => simp [modeCheck] at h
 
 /-- Negation is valid exactly when the current mode admits it and the child is
 literally an input node. -/
