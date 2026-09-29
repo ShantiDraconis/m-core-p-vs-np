@@ -1,6 +1,7 @@
 import MCore.Real.P01NeedExprCompositeNTM
 import MCore.Real.P01NTMRunLaws
 import MCore.Real.P01EvalCursorFramePush
+import MCore.Real.P01InputNodeCompositeRun
 
 namespace MCore
 namespace Real
@@ -16,10 +17,51 @@ open P01EncodedStackEvaluator
 open P01EncodedFrameTape
 open P01NeedExprTagDecode
 open P01InputNodeCompositeNTM
+open P01InputNodeCompositeRun
 open P01NeedExprCompositeNTM
 
 abbrev NeedExprConfig :=
   Configuration NeedExprCompositeState (Option Bool)
+
+/-- Exact simulation of the already-certified indexed-input NTM inside the
+global needExpr NTM.  Accepting/rejecting terminals are mapped directly to the
+global terminals, so runBranches can be transported without an extra fake
+terminal phase. -/
+def inputSimulation :
+    P01NTMRunLaws.Simulation
+      inputNodeCompositeMachine needExprCompositeMachine inputStateEmbed where
+  accepting := by
+    intro s
+    cases s <;> rfl
+  rejecting := by
+    intro s
+    cases s <;> rfl
+  successors := by
+    intro c hactive
+    rcases c with ⟨q, tape⟩
+    cases q with
+    | done selected mode =>
+        simp [Halted, inputNodeCompositeMachine] at hactive
+    | reject =>
+        simp [Halted, inputNodeCompositeMachine] at hactive
+    | look ql =>
+        unfold NTM.successors
+        simp [P01NTMRunLaws.liftConfig, inputStateEmbed,
+          needExprCompositeMachine, inputNodeCompositeMachine,
+          NTM.stepBranch, Tape.write, Tape.move]
+    | read mode qr =>
+        unfold NTM.successors
+        simp [P01NTMRunLaws.liftConfig, inputStateEmbed,
+          needExprCompositeMachine, inputNodeCompositeMachine,
+          NTM.stepBranch, Tape.write, Tape.move]
+    | ret mode selected qt =>
+        unfold NTM.successors
+        cases qt <;>
+          simp [P01NTMRunLaws.liftConfig, inputStateEmbed,
+            needExprCompositeMachine, inputNodeCompositeMachine,
+            NTM.stepBranch, Tape.write, Tape.move]
+
+#print axioms MCore.Real.P01NeedExprCompositeRun.inputSimulation
 
 def seekConfig
     (c : Configuration CursorSeekState (Option Bool)) :
