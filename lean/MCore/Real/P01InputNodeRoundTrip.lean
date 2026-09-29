@@ -47,7 +47,6 @@ theorem inputAfterReadReturnFuel_le
           simp [inputAfterReadReturnFuel]
       | nil =>
           simp [inputAfterReadReturnFuel]
-          omega
 
 /-- Canonical terminal configuration of the mode-aware return phase.
 
