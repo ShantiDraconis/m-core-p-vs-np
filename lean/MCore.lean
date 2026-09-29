@@ -41,3 +41,5 @@ import MCore.Real.P01EvalCursorMachine
 import MCore.Real.P01EvalCursorRoundTrip
 
 import MCore.Real.P01EvalCursorFramePush
+
+import MCore.Real.P01EvalCursorConsume
