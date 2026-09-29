@@ -134,3 +134,5 @@ import MCore.Real.P01CheckedEvalRunPhaseLift
 import MCore.Real.P01VerifierEvalCircuitRun
 
 import MCore.Real.P01CheckedEvalRunTagPrefix
+
+import MCore.Real.P01VerifierFiniteState
