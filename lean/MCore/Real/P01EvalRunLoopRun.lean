@@ -51,9 +51,10 @@ theorem seekLoop_successors_active
     (h : cursorSeekMachine.halting c.state = false) :
     evalRunLoopMachine.successors (seekLoopConfig c) =
       [seekLoopConfig (cursorSeekMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [seekLoopConfig]
-  cases c.state <;>
+  cases q <;>
     simp [evalRunLoopMachine, needExprCompositeMachine,
       needLoopEmbed, cursorSeekMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
@@ -63,9 +64,10 @@ theorem decodeLoop_successors_active
     (h : tagDecodeMachine.halting c.state = false) :
     evalRunLoopMachine.successors (decodeLoopConfig c) =
       [decodeLoopConfig (tagDecodeMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [decodeLoopConfig]
-  cases c.state <;>
+  cases q <;>
     simp [evalRunLoopMachine, needExprCompositeMachine,
       needLoopEmbed, tagDecodeMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
@@ -76,9 +78,10 @@ theorem retValueLoop_successors_active
     (h : cursorReturnMachine.halting c.state = false) :
     evalRunLoopMachine.successors (retValueLoopConfig value c) =
       [retValueLoopConfig value (cursorReturnMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [retValueLoopConfig]
-  cases c.state <;>
+  cases q <;>
     simp [evalRunLoopMachine, needExprCompositeMachine,
       needLoopEmbed, cursorReturnMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
@@ -289,13 +292,26 @@ theorem constTag_loop_reaches_have
   have hDecHandSucc :
       retValueLoopConfig value cRet0 ∈
         evalRunLoopMachine.successors (decodeLoopConfig cDecH) := by
-    dsimp [decodeLoopConfig, retValueLoopConfig, cDecH, cRet0]
+    change
+      ({ state := .need (.retValue value .scanUnread), tape := tAfterTag } :
+        LoopConfig) ∈
+      evalRunLoopMachine.successors
+        ({ state := .need (.decode (.halt tag)), tape := tAfterTag } :
+          LoopConfig)
     have hsrc := hhandoff tAfterTag
-    simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
-      Tape.write, Tape.move] at hsrc
-    simp [evalRunLoopMachine, needExprCompositeMachine, needLoopEmbed,
-      NTM.successors, NTM.stepBranch, hdecode,
-      Tape.write, Tape.move]
+    rw [show evalRunLoopMachine.successors
+        ({ state := .need (.decode (.halt tag)), tape := tAfterTag } :
+          LoopConfig) =
+      (needExprCompositeMachine.successors
+        ({ state := .decode (.halt tag), tape := tAfterTag } :
+          Configuration NeedExprCompositeState (Option Bool))).map
+        (fun d => ({ state := needLoopEmbed d.state, tape := d.tape } :
+          LoopConfig)) by
+        simp [evalRunLoopMachine, needExprCompositeMachine,
+          NTM.successors, NTM.stepBranch, needLoopEmbed,
+          Tape.write, Tape.move]]
+    rw [hsrc]
+    simp [needLoopEmbed]
   have hDecHand :
       retValueLoopConfig value cRet0 ∈
         evalRunLoopMachine.runBranches 1 [decodeLoopConfig cDecH] :=
