@@ -1,4 +1,3 @@
-import Mathlib.Data.List.GetD
 import MCore.Real.P01FullVerifierPhysicalStackV2
 import MCore.Real.P01FullVerifierPhysicalMoves
 
