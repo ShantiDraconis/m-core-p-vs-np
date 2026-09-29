@@ -31,6 +31,8 @@ jobs:
           cat > P01SourceCursorAxiomAudit.lean <<'EOF'
           import MCore.Real.P01SourceCursorInvariant
           #print axioms MCore.Real.P01SourceCursorInvariant.moveToSourceStart_head_correct
+          #print axioms MCore.Real.P01SourceCursorInvariant.execMoves_left_right_cancel
+          #print axioms MCore.Real.P01SourceCursorInvariant.source_cursor_roundTrip_tape
           #print axioms MCore.Real.P01SourceCursorInvariant.source_cursor_roundTrip_length
           EOF
           lake env lean P01SourceCursorAxiomAudit.lean | tee P01SourceCursorAxiomAudit.log
