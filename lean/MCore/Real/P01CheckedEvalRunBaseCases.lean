@@ -17,6 +17,7 @@ open P01EvalCursorMachine
 open P01EvalCursorRoundTrip
 open P01HaveValueCompositeNTM
 open P01NeedExprCompositeNTM
+open P01NeedExprTagDecode
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunPhaseLift
 open P01CheckedEvalRunTagPrefix
@@ -113,7 +114,7 @@ theorem checked_empty_frames_reaches_final
 
   have hStartSucc :
       cPeek ∈ checkedEvalRunLoopMachine.successors c0 := by
-    dsimp [c0, cPeek, tPeek]
+    dsimp [c0, cPeek, tPeek, t0]
     simp [checkedEvalRunLoopMachine, haveValueCompositeMachine,
       haveCheckedEmbed, NTM.successors, NTM.stepBranch,
       evalCursorStackEndTape, Tape.write, Tape.move,
