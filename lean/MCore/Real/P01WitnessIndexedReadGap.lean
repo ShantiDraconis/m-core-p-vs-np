@@ -414,10 +414,6 @@ theorem preservingMovedGap_cycle
       (next :: sourceTail)
 
   have h01 : preservingReadMachine.run 1 C0 = C1 := by
-    have hcount : gap + moved.length = k + 1 := by
-      dsimp [moved, k, m]
-      simp
-      omega
     dsimp [C0, C1, moved, m, k, witnessSuffix, src,
       movedGapBitsConfig, movedGapBitsTape]
     rw [show gap + (List.length movedTail + 1) =
@@ -474,7 +470,7 @@ theorem preservingMovedGap_cycle
 
   have h7eq : C7e = C7 := by
     have hcount :
-        gap + ((first :: movedTail) ++ [b]).length =
+        gap + ((movedTail ++ [b]).length + 1) =
           (gap + movedTail.length) + 2 := by
       simp
       omega
@@ -641,11 +637,12 @@ theorem movedGapBits_false_finalize
   have h67 : preservingReadMachine.run 3 C6 = C7 := by
     dsimp [C6, C7, restoreMovedConfig, restoredWitness,
       after, src, moved, m, k]
-    rw [replicate_none_cons
-      (gap + movedTail.length) (sourceTail.map some)]
-    simp [preservingReadMachine, TM.run, TM.step,
+    have hr :=
+      replicate_none_cons
+        (gap + movedTail.length) (sourceTail.map some)
+    simpa [preservingReadMachine, TM.run, TM.step,
       Tape.write, Tape.move, List.replicate_succ,
-      List.map_append, List.append_assoc]
+      List.map_append, List.append_assoc] using hr
 
   have h02 :
       preservingReadMachine.run (1 + (k + 1)) C0 = C2 := by
