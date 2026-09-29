@@ -247,6 +247,187 @@ theorem push_run_reachable
     (pushConfig_not_halted frame)
     (push_successors_active frame) n c
 
+/-- One active successor is reachable in one composite step. -/
+private theorem one_step_of_successor
+    (a b : NeedExprConfig)
+    (ha : ¬ Halted needExprCompositeMachine a)
+    (hs : b ∈ needExprCompositeMachine.successors a) :
+    b ∈ needExprCompositeMachine.runBranches 1 [a] := by
+  have h :=
+    mem_runBranches_succ_of_successor
+      needExprCompositeMachine 0 [a] a b
+      (by simp [NTM.runBranches]) ha hs
+  simpa using h
+
+/-- Uniform majorant for the fused constant-tag route. -/
+def constTagCompositeFuel
+    (frameStack rest : BitString) : Nat :=
+  (frameStack.length + (rest.length + 3) + 3) +
+    1 + 3 + 1 +
+    (rest.length + frameStack.length + 2) + 1
+
+/-- Complete physical `001` route in the single fused `needExpr` NTM. -/
+theorem constFalse_reaches_done
+    (witness rest frameStack : BitString)
+    (consumed padding : Nat) :
+    ∃ m ≤ constTagCompositeFuel frameStack rest,
+      ({ state := .doneValue false,
+         tape :=
+           evalCursorStackEndTape witness (consumed + 3)
+             rest frameStack padding } : NeedExprConfig) ∈
+        needExprCompositeMachine.runBranches m
+          [{ state := needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (false :: false :: true :: rest)
+                 frameStack padding }] := by
+  let nSeek := frameStack.length + (rest.length + 3) + 3
+  let nRet := rest.length + frameStack.length + 2
+  let t0 :=
+    evalCursorStackEndTape witness consumed
+      (false :: false :: true :: rest) frameStack padding
+  let tRead :=
+    evalCursorReadTape witness consumed
+      (false :: false :: true :: rest) frameStack padding
+  let tAfterTag :=
+    evalCursorReadTape witness (consumed + 3)
+      rest frameStack padding
+  let tDone :=
+    evalCursorStackEndTape witness (consumed + 3)
+      rest frameStack padding
+
+  let cSeek0 : Configuration CursorSeekState (Option Bool) :=
+    { state := cursorSeekMachine.initial, tape := t0 }
+  let cSeekH : Configuration CursorSeekState (Option Bool) :=
+    { state := .halt, tape := tRead }
+  let cDec0 : Configuration TagDecodeState (Option Bool) :=
+    { state := tagDecodeMachine.initial, tape := tRead }
+  let cDecH : Configuration TagDecodeState (Option Bool) :=
+    { state := .halt .constFalse, tape := tAfterTag }
+  let cRet0 : Configuration CursorReturnState (Option Bool) :=
+    { state := .scanUnread, tape := tAfterTag }
+  let cRetH : Configuration CursorReturnState (Option Bool) :=
+    { state := .halt, tape := tDone }
+  let cDone : NeedExprConfig :=
+    { state := .doneValue false, tape := tDone }
+
+  have hSeekExact :
+      cursorSeekMachine.run nSeek cSeek0 = cSeekH := by
+    dsimp [nSeek, cSeek0, cSeekH, t0, tRead]
+    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+      cursorSeek_run witness consumed
+        (false :: false :: true :: rest) frameStack padding
+
+  obtain ⟨mS, hmS, hS⟩ := seek_run_reachable nSeek cSeek0
+  have hS' :
+      seekConfig cSeekH ∈
+        needExprCompositeMachine.runBranches mS [seekConfig cSeek0] := by
+    rw [hSeekExact] at hS
+    exact hS
+
+  have hSeekHandSucc :
+      decodeConfig cDec0 ∈
+        needExprCompositeMachine.successors (seekConfig cSeekH) := by
+    rw [seek_handoff_successors tRead]
+    simp [seekConfig, decodeConfig, cSeekH, cDec0]
+  have hSeekHand :
+      decodeConfig cDec0 ∈
+        needExprCompositeMachine.runBranches 1 [seekConfig cSeekH] :=
+    one_step_of_successor
+      (seekConfig cSeekH) (decodeConfig cDec0)
+      (seekConfig_not_halted cSeekH) hSeekHandSucc
+
+  have hToDec :=
+    mem_runBranches_trans needExprCompositeMachine
+      mS 1 [seekConfig cSeek0]
+      (seekConfig cSeekH) (decodeConfig cDec0)
+      hS' hSeekHand
+
+  have hDecExact :
+      tagDecodeMachine.run 3 cDec0 = cDecH := by
+    dsimp [cDec0, cDecH, tRead, tAfterTag]
+    simpa [decodeTagBits] using
+      tagDecode_run_three witness rest frameStack consumed padding
+        false false true
+
+  obtain ⟨mD, hmD, hD⟩ := decode_run_reachable 3 cDec0
+  have hD' :
+      decodeConfig cDecH ∈
+        needExprCompositeMachine.runBranches mD [decodeConfig cDec0] := by
+    rw [hDecExact] at hD
+    exact hD
+  have hThroughDec :=
+    mem_runBranches_trans needExprCompositeMachine
+      (mS + 1) mD [seekConfig cSeek0]
+      (decodeConfig cDec0) (decodeConfig cDecH)
+      hToDec hD'
+
+  have hDecHandSucc :
+      retValueConfig false cRet0 ∈
+        needExprCompositeMachine.successors (decodeConfig cDecH) := by
+    rw [constFalse_handoff_successors tAfterTag]
+    simp [decodeConfig, retValueConfig, cDecH, cRet0]
+  have hDecHand :
+      retValueConfig false cRet0 ∈
+        needExprCompositeMachine.runBranches 1 [decodeConfig cDecH] :=
+    one_step_of_successor
+      (decodeConfig cDecH) (retValueConfig false cRet0)
+      (decodeConfig_not_halted cDecH) hDecHandSucc
+  have hToRet :=
+    mem_runBranches_trans needExprCompositeMachine
+      ((mS + 1) + mD) 1 [seekConfig cSeek0]
+      (decodeConfig cDecH) (retValueConfig false cRet0)
+      hThroughDec hDecHand
+
+  have hRetExact :
+      cursorReturnMachine.run nRet cRet0 = cRetH := by
+    dsimp [nRet, cRet0, cRetH, tAfterTag, tDone]
+    exact cursorReturn_preserve_run
+      witness (consumed + 3) rest frameStack padding
+
+  obtain ⟨mR, hmR, hR⟩ :=
+    retValue_run_reachable false nRet cRet0
+  have hR' :
+      retValueConfig false cRetH ∈
+        needExprCompositeMachine.runBranches mR
+          [retValueConfig false cRet0] := by
+    rw [hRetExact] at hR
+    exact hR
+  have hThroughRet :=
+    mem_runBranches_trans needExprCompositeMachine
+      (((mS + 1) + mD) + 1) mR [seekConfig cSeek0]
+      (retValueConfig false cRet0)
+      (retValueConfig false cRetH)
+      hToRet hR'
+
+  have hFinalSucc :
+      cDone ∈
+        needExprCompositeMachine.successors
+          (retValueConfig false cRetH) := by
+    rw [retValue_handoff_successors false tDone]
+    simp [cDone, retValueConfig, cRetH]
+  have hFinal :
+      cDone ∈
+        needExprCompositeMachine.runBranches 1
+          [retValueConfig false cRetH] :=
+    one_step_of_successor
+      (retValueConfig false cRetH) cDone
+      (retValueConfig_not_halted false cRetH) hFinalSucc
+
+  have hAll :=
+    mem_runBranches_trans needExprCompositeMachine
+      ((((mS + 1) + mD) + 1) + mR) 1 [seekConfig cSeek0]
+      (retValueConfig false cRetH) cDone
+      hThroughRet hFinal
+
+  refine ⟨((((mS + 1) + mD) + 1) + mR) + 1, ?_, ?_⟩
+  · dsimp [constTagCompositeFuel, nSeek, nRet] at *
+    omega
+  · dsimp [cDone, tDone, cSeek0, t0] at hAll ⊢
+    simpa [seekConfig, needExprCompositeMachine] using hAll
+
+#print axioms MCore.Real.P01NeedExprCompositeRun.constFalse_reaches_done
+
 #print axioms MCore.Real.P01NeedExprCompositeRun.seek_run_reachable
 #print axioms MCore.Real.P01NeedExprCompositeRun.decode_run_reachable
 #print axioms MCore.Real.P01NeedExprCompositeRun.retValue_run_reachable
