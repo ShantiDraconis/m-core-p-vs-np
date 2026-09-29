@@ -6,6 +6,7 @@ namespace Real
 namespace P01EvalRunLoopRun
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01NTMRunLaws
 open P01EncodedStackEvaluator
 open P01EncodedFrameTape
@@ -15,6 +16,7 @@ open P01NeedExprTagDecode
 open P01NeedExprCompositeNTM
 open P01InputNodeCompositeNTM
 open P01InputNodeCompositeRun
+open P01InputNodeRoundTrip
 open P01EvalFramePushMachine
 open P01EvalCursorFramePush
 open P01EvalRunLoopNTM
@@ -283,7 +285,7 @@ theorem inputNode_loop_from_read
   obtain ⟨k, hk, hlift⟩ :=
     input_terminal_reachable_lift m a b ha hb (by
       simpa [a, b] using hsrc)
-  exact ⟨k, le_trans hk hm, by simpa [a, b] using hlift⟩
+  exact ⟨k, Nat.le_trans hk hm, by simpa [a, b] using hlift⟩
 
 #print axioms MCore.Real.P01EvalRunLoopRun.inputLoop_successors_active
 #print axioms MCore.Real.P01EvalRunLoopRun.input_terminal_reachable_lift
