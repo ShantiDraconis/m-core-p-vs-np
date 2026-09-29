@@ -35,6 +35,14 @@ theorem moveBackToStackEndSeq_length
       sourceStartOffset stack source := by
   simp [moveBackToStackEndSeq, sourceStartOffset, moveRightSeq_length]
 
+theorem getD_append_head
+    {α : Type} (prefix : List α) (x d : α) (tail : List α) :
+    (prefix ++ x :: tail).getD prefix.length d = x := by
+  induction prefix with
+  | nil => simp
+  | cons a prefix ih =>
+      simpa [List.getD_cons_succ] using ih
+
 /-- On every nonempty canonical source, the exact left shuttle lands on the
 first source bit while preserving the represented tape contents. -/
 theorem moveToSourceStart_head_correct
@@ -48,7 +56,15 @@ theorem moveToSourceStart_head_correct
   rw [show stack.length + (b :: bs).length + 1 =
       (stack.length + bs.length + 1) + 1 by simp; omega]
   rw [execMoves_moveLeftSeq_head_getD]
-  simp [physicalStackV2Tape, List.getD_append]
+  have hidx :
+      stack.length + bs.length + 1 =
+        (stack.map some ++ none :: (bs.map some).reverse).length := by
+    simp
+    omega
+  rw [hidx]
+  exact getD_append_head
+    (stack.map some ++ none :: (bs.map some).reverse)
+    (some b) none (none :: witness.map some)
 
 /-- The source cursor motion is legal in the same primitive-move sense used by
 all prior certified P01 shuttles. -/
