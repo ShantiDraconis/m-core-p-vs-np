@@ -542,38 +542,48 @@ theorem gapTolerant_append_left (i : Nat) (l₁ l₂ : List Bool) (h : i < l₁.
     | zero => rfl
     | succ n => simp; exact ih n (by simp at h ⊢; omega)
 
+theorem gapTolerant_correct :
+  ∀ i witness, i < witness.length →
+    gapTolerantRead i witness = witness[i]? := by
+  intro i w hi
+  induction w generalizing i with
+  | nil =>
+      simp at hi
+  | cons b bs ih =>
+      cases i with
+      | zero =>
+          rfl
+      | succ n =>
+          have hi' : n < bs.length := by
+            simpa using hi
+          simp only [gapTolerantRead]
+          simpa using ih n hi'
+
 theorem gapTolerant_correct_with_gap :
   ∀ i witness rem gap, i < witness.length →
     gapTolerantRead i (evalCursorStackEndTape witness gap rem) = witness[i]? := by
   intro i w rem gap hi
   unfold evalCursorStackEndTape
-  have : gapTolerantRead i (w ++ List.replicate gap false ++ rem) = gapTolerantRead i w := by
-    simpa [List.append_assoc] using
-      gapTolerant_append_left i w (List.replicate gap false ++ rem) hi
-  rw [this]
-  induction w generalizing i with
-  | nil => simp at hi
-  | cons h t ih =>
-    cases i with
-    | zero => rfl
-    | succ n => simp; exact ih n (by simp at hi ⊢; omega)
+  have hleft :=
+    gapTolerant_append_left i w (List.replicate gap false ++ rem) hi
+  rw [show w ++ List.replicate gap false ++ rem =
+      w ++ (List.replicate gap false ++ rem) by
+      simp [List.append_assoc]]
+  rw [hleft]
+  exact gapTolerant_correct i w hi
 
 def physicalEvalStep_input_gapTolerant (i : Nat) (tape : List Bool) : Bool :=
-  match gapTolerantRead i tape with
-  | some true => true
-  | _ => false
+  (gapTolerantRead i tape).getD false
 
 theorem input000_gap_complete :
   ∀ i w gap rem, i < w.length →
-    physicalEvalStep_input_gapTolerant i (evalCursorStackEndTape w gap rem) = w[i]! := by
+    physicalEvalStep_input_gapTolerant i (evalCursorStackEndTape w gap rem) =
+      (w[i]?).getD false := by
   intro i w gap rem hi
   unfold physicalEvalStep_input_gapTolerant
-  have h := gapTolerant_correct_with_gap i w rem gap hi
-  have hget : w[i]? = some w[i] := by
-    simp [hi]
-  rw [h, hget]
-  cases w[i] <;> rfl
+  rw [gapTolerant_correct_with_gap i w rem gap hi]
 
+#print axioms gapTolerant_correct
 #print axioms gapTolerant_correct_with_gap
 #print axioms input000_gap_complete
 
