@@ -229,29 +229,14 @@ theorem prepared_nonempty_reaches_eval_start
       (1 + mS) 1 [cStart] (scanEmbed cScanH) cEnter
       hToScan hScanHand
 
-  have hEnterTape :
-      Tape.move none .right (sourceEndTape witness (b :: bs)) =
-        evalCursorStackEndTape witness 0 (b :: bs) [] 0 := by
-    rw [sourceEnd_to_stackV2]
-    exact (evalCursorStackEndTape_zero witness (b :: bs) [] 0).symm
   have hEnterSucc :
       cEval ∈ verifierEvalMachine.successors cEnter := by
     dsimp [cEval, cEnter]
     unfold NTM.successors
-    simp only [verifierEvalMachine, NTM.stepBranch, List.mem_singleton]
-    change
-      ({ state := VerifierEvalState.eval evalRunLoopMachine.initial,
-         tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 } :
-        VerifierEvalConfig) =
-      { state := VerifierEvalState.eval evalRunLoopMachine.initial,
-        tape :=
-          Tape.move none .right
-            (Tape.write (sourceEndTape witness (b :: bs)) none) }
-    have hwrite :
-        Tape.write (sourceEndTape witness (b :: bs)) none =
-          sourceEndTape witness (b :: bs) := by
-      rfl
-    rw [hwrite, hEnterTape]
+    simp [verifierEvalMachine, NTM.stepBranch,
+      sourceEndTape, evalCursorStackEndTape,
+      Tape.write, Tape.move, List.reverse_cons,
+      List.map_append, List.append_assoc]
   have hEnter :
       cEval ∈ verifierEvalMachine.runBranches 1 [cEnter] :=
     one_step_of_successor cEnter cEval
