@@ -523,7 +523,7 @@ def prepPhase : P01PrepPhase where
 theorem prepPhase_layout (bs w : BitString) :
     prepPhase.layout bs w = preparedTape w bs := rfl
 
--- 1. P01GapTolerantRead DENTRO do mesmo arquivo - sem import, sem sorry
+-- 1. P01GapTolerantRead DENTRO do mesmo arquivo - sem import, proof-complete
 
 def evalCursorStackEndTape (w : List Bool) (gap : Nat) (rem : List Bool) : List Bool :=
   w ++ List.replicate gap false ++ rem
