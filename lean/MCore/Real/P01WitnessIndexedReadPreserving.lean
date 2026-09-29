@@ -178,8 +178,24 @@ theorem preservingRead_zero_value
       .halt b := by
   rw [preservingRead_zero]
 
+
+/-- First successor checkpoint.  For unary index 1 the machine must move one
+witness cell across the temporary separator, read the second witness bit, then
+restore the moved cell before halting.  Extra fuel is inert after halting. -/
+theorem preservingRead_one_value
+    (b0 b1 : Bool) (witnessTail tail : BitString) :
+    (preservingReadMachine.run 32
+      { state := preservingReadMachine.initial,
+        tape := preservingReadTape (b0 :: b1 :: witnessTail) 1 tail }).state =
+      .halt b1 := by
+  cases b0 <;> cases b1 <;>
+    simp [preservingReadMachine, preservingReadTape, encodeNat,
+      TM.run, TM.step, Tape.write, Tape.move]
+
+
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one_value
 
 end P01WitnessIndexedReadPreserving
 end Real
