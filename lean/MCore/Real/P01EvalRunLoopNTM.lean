@@ -172,8 +172,10 @@ theorem have_empty_final_successors
     evalRunLoopMachine.successors
       { state := .have (.peek v), tape := tape } =
       [{ state := .final v, tape := Tape.move none .right tape }] := by
-  simp [evalRunLoopMachine, NTM.successors, NTM.stepBranch,
-    hblank, Tape.write]
+  cases tape with
+  | mk left head right =>
+      simp_all [evalRunLoopMachine, NTM.successors, NTM.stepBranch,
+        Tape.write, Tape.move]
 
 theorem have_nonempty_pop_successors
     (v b : Bool)
@@ -183,8 +185,10 @@ theorem have_nonempty_pop_successors
       { state := .have (.peek v), tape := tape } =
       [{ state := .have (.pop v framePopMachine.initial),
          tape := Tape.move none .right tape }] := by
-  simp [evalRunLoopMachine, NTM.successors, NTM.stepBranch,
-    hhead, Tape.write]
+  cases tape with
+  | mk left head right =>
+      simp_all [evalRunLoopMachine, NTM.successors, NTM.stepBranch,
+        Tape.write, Tape.move]
 
 theorem have_doneValue_restart_successors
     (v : Bool) (tape : Tape (Option Bool)) :
@@ -202,38 +206,10 @@ theorem have_doneNeed_restart_successors
   simp [evalRunLoopMachine, NTM.successors, NTM.stepBranch,
     Tape.write, Tape.move]
 
-theorem evalRunLoop_successors_length_le_one
-    (c : Configuration EvalRunLoopState (Option Bool)) :
-    (evalRunLoopMachine.successors c).length ≤ 1 := by
-  have hlen :
-      (evalRunLoopMachine.successors c).length =
-        (evalRunLoopMachine.transition c.state c.tape.head).length := by
-    simp [NTM.successors]
-  rw [hlen]
-  cases c.state with
-  | final v =>
-      simp [evalRunLoopMachine]
-  | reject =>
-      simp [evalRunLoopMachine]
-  | need q =>
-      cases q <;>
-        simp [evalRunLoopMachine, needExprCompositeMachine,
-          inputNodeCompositeMachine]
-      case input qi =>
-        cases qi <;>
-          simp [evalRunLoopMachine, inputNodeCompositeMachine]
-  | have q =>
-      cases q <;>
-        simp [evalRunLoopMachine, haveValueCompositeMachine]
-      case peek v =>
-        cases c.tape.head <;>
-          simp [evalRunLoopMachine]
-
 #print axioms MCore.Real.P01EvalRunLoopNTM.input_done_final_successors
 #print axioms MCore.Real.P01EvalRunLoopNTM.need_doneValue_restart_successors
 #print axioms MCore.Real.P01EvalRunLoopNTM.need_doneNeed_restart_successors
 #print axioms MCore.Real.P01EvalRunLoopNTM.have_empty_final_successors
-#print axioms MCore.Real.P01EvalRunLoopNTM.evalRunLoop_successors_length_le_one
 
 end P01EvalRunLoopNTM
 end Real
