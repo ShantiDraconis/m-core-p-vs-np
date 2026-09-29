@@ -62,8 +62,11 @@ theorem tmAsNTM_terminal_implies_halted
       (tmAsNTM M accepting).accepting q = true ∨
       (tmAsNTM M accepting).rejecting q = true) :
     M.halting q = true := by
-  rcases h with h | h <;>
-    simpa [tmAsNTM] using Bool.and_eq_true.mp h |>.1
+  cases hm : M.halting q with
+  | false =>
+      rcases h with h | h <;> simp [tmAsNTM, hm] at h
+  | true =>
+      exact hm
 
 
 /-- One deterministic run step is reproduced by the singleton-branch NTM. -/
