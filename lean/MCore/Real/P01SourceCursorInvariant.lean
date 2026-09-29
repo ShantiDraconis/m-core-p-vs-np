@@ -62,9 +62,10 @@ theorem moveToSourceStart_head_correct
     simp
     omega
   rw [hidx]
-  exact getD_append_head
-    (stack.map some ++ none :: (bs.map some).reverse)
-    (some b) none (none :: witness.map some)
+  simpa [physicalStackV2Tape, List.map_reverse, List.append_assoc] using
+    (getD_append_head
+      (stack.map some ++ none :: (bs.map some).reverse)
+      (some b) none (none :: witness.map some))
 
 /-- The source cursor motion is legal in the same primitive-move sense used by
 all prior certified P01 shuttles. -/
