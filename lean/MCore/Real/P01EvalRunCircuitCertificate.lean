@@ -999,6 +999,29 @@ theorem or_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.and_certificate
 
 
+
+
+/-- Full structural semantic/run certificate for every circuit. -/
+theorem circuit_certificate
+    (sigma : Assignment)
+    (witness : BitString) :
+    ∀ circuit : Circuit,
+      CircuitRunCertificate sigma witness circuit := by
+  intro circuit
+  induction circuit with
+  | input i =>
+      exact input_certificate sigma witness i
+  | const b =>
+      exact const_certificate sigma witness b
+  | not c ih =>
+      exact neg_certificate sigma witness c ih
+  | and a b iha ihb =>
+      exact and_certificate sigma witness a b iha ihb
+  | or a b iha ihb =>
+      exact or_certificate sigma witness a b iha ihb
+
+#print axioms MCore.Real.P01EvalRunCircuitCertificate.circuit_certificate
+
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.input_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.constFalse_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.constTrue_certificate
