@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: construct the one fixed physical verifier TM (global run/halting/correctness), then compose certified parser + witnessGuessMachine + verifier into P01MachineConstruction; P02: construct G21Pointwise. Do not reopen parser, witness-guess, indexed-read, G2.2, or literal fixed-point routes.",
+  "next": "P01: refine frozen P01EncodedEvaluator into the one fixed physical verifier TM, then compose parser + witnessGuessMachine + verifier into P01MachineConstruction; P02: construct G21Pointwise. Do not reopen parser, witness-guess, indexed-read, streaming-evaluator semantics, G2.2, or literal fixed-point routes.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -82,10 +82,23 @@
             "local physical const/neg/and/or refinements",
             "uniform polynomial cost envelopes"
           ]
+        },
+        "streaming_encoded_evaluator": {
+          "state": "GREEN_FROZEN_REDUCTION",
+          "branch": "frozen/p01-encoded-evaluator-green-62956cc7",
+          "sha": "62956cc7760834d80bae27e5b928d06d92334a62",
+          "run": 36508360906,
+          "certificate": "CERTIFICATES/P01_ENCODED_EVALUATOR_GREEN_62956cc7.md",
+          "theorems": [
+            "evalEncodedCore_encode_append",
+            "evalEncoded_encode",
+            "evalEncoded_witness"
+          ],
+          "content": "direct evaluation of canonical prefix encoding with exact tail preservation; no Circuit value reconstructed in control"
         }
       },
       "exact_remaining": [
-        "construct one fixed physical verifier TM realizing the entire evalProgram loop with global polynomial halting and physical_eq_logical",
+        "refine the GREEN streaming encoded evaluator into one fixed physical verifier TM using certified stack/witness/movement primitives, with global polynomial halting and physical_eq_logical",
         "compose parser + witnessGuessMachine + physical verifier into one P01MachineConstruction"
       ],
       "rejected_substitutes": [
