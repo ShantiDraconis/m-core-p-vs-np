@@ -113,7 +113,8 @@ theorem tagAllowed_of_modeCheck
   | input i =>
       rfl
   | const b =>
-      cases b <;> simp [modeCheck, circuitTag, tagAllowed] at h ⊢
+      cases b <;>
+        simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
   | not c =>
       cases c <;>
         simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
