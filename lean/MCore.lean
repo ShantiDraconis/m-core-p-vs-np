@@ -94,3 +94,5 @@ import MCore.Real.P01NeedExprCompositeNTM
 import MCore.Real.P01TagDecodeCompositeRun
 
 import MCore.Real.P01NeedExprCompositeRun
+
+import MCore.Real.P01EvalCursorFramePop
