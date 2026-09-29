@@ -270,6 +270,46 @@ theorem push_handoff_successors
   simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
     Tape.write, Tape.move]
 
+/-- Completed input-node evaluation hands the selected Boolean to the
+global needExpr value state without changing the tape. -/
+theorem input_done_handoff_successors
+    (selected : Bool) (mode : P01InputReturnMode.InputReturnMode)
+    (tape : Tape (Option Bool)) :
+    needExprCompositeMachine.successors
+      { state := .input (.done selected mode), tape := tape } =
+      [{ state := .doneValue selected, tape := tape }] := by
+  simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
+
+/-- Completed value-return phase records the Boolean result. -/
+theorem retValue_handoff_successors
+    (value : Bool) (tape : Tape (Option Bool)) :
+    needExprCompositeMachine.successors
+      { state := .retValue value .halt, tape := tape } =
+      [{ state := .doneValue value, tape := tape }] := by
+  simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
+
+/-- Completed cursor return for a continuation tag begins the fixed frame push. -/
+theorem retPush_handoff_successors
+    (frame : P01EncodedStackEvaluator.EvalFrame)
+    (tape : Tape (Option Bool)) :
+    needExprCompositeMachine.successors
+      { state := .retPush frame .halt, tape := tape } =
+      [{ state := .push frame (.start frame), tape := tape }] := by
+  simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
+
+/-- Completed frame push finishes one physical needExpr step. -/
+theorem push_handoff_successors
+    (frame : P01EncodedStackEvaluator.EvalFrame)
+    (tape : Tape (Option Bool)) :
+    needExprCompositeMachine.successors
+      { state := .push frame .halt, tape := tape } =
+      [{ state := .doneNeed, tape := tape }] := by
+  simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
+
 /-- Invalid tag patterns have no successor. -/
 theorem invalid110_rejects
     (tape : Tape (Option Bool)) :
@@ -287,6 +327,10 @@ theorem invalid111_rejects
 #print axioms MCore.Real.P01NeedExprCompositeNTM.input_tag_handoff_successors
 #print axioms MCore.Real.P01NeedExprCompositeNTM.constFalse_handoff_successors
 #print axioms MCore.Real.P01NeedExprCompositeNTM.neg_handoff_successors
+#print axioms MCore.Real.P01NeedExprCompositeNTM.input_done_handoff_successors
+#print axioms MCore.Real.P01NeedExprCompositeNTM.retValue_handoff_successors
+#print axioms MCore.Real.P01NeedExprCompositeNTM.retPush_handoff_successors
+#print axioms MCore.Real.P01NeedExprCompositeNTM.push_handoff_successors
 #print axioms MCore.Real.P01NeedExprCompositeNTM.invalid110_rejects
 
 end P01NeedExprCompositeNTM
