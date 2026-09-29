@@ -579,10 +579,103 @@ theorem inputNodeComposite_acceptsWithin
   rw [hsum] at hpersist
   exact ⟨c, hpersist, hacc⟩
 
+
+/-- Operational determinism lifts from one-step successors to every finite run
+started from a singleton configuration. -/
+theorem inputNodeComposite_runBranches_length_le_one :
+    ∀ (n : Nat) (c : CompositeConfig),
+      (inputNodeCompositeMachine.runBranches n [c]).length ≤ 1 := by
+  intro n
+  induction n with
+  | zero =>
+      intro c
+      simp [NTM.runBranches]
+  | succ n ih =>
+      intro c
+      by_cases hh : Halted inputNodeCompositeMachine c
+      · rw [runBranches_singleton_halted inputNodeCompositeMachine (n + 1) c hh]
+        simp
+      · rw [runBranches_singleton_active inputNodeCompositeMachine n c hh]
+        have hlen :=
+          inputNodeComposite_successors_length_le_one c
+        cases hs : inputNodeCompositeMachine.successors c with
+        | nil =>
+            simp [hs, runBranches_nil]
+        | cons d ds =>
+            cases ds with
+            | nil =>
+                simpa [hs] using ih d
+            | cons e es =>
+                simp [hs] at hlen
+
+/-- A list of length at most one containing `x` is exactly the singleton
+`[x]`. -/
+theorem list_eq_singleton_of_mem_length_le_one
+    {α : Type} (x : α) (xs : List α)
+    (hx : x ∈ xs) (hlen : xs.length ≤ 1) :
+    xs = [x] := by
+  cases xs with
+  | nil =>
+      simp at hx
+  | cons y ys =>
+      cases ys with
+      | nil =>
+          simp only [List.mem_singleton] at hx
+          subst y
+          rfl
+      | cons z zs =>
+          simp at hlen
+
+/-- The fused input-node primitive is terminal at the same uniform fuel used
+by its acceptance certificate.  No branch can remain active because the
+machine is operationally deterministic and an accepting terminal is present
+at that fuel. -/
+theorem inputNodeComposite_haltsWithin
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    inputNodeCompositeMachine.HaltsWithin
+      (inputNodeCompositeFuel consumed i tail frameStack)
+      { state := inputNodeCompositeMachine.initial,
+        tape :=
+          evalCursorReadTape witness consumed
+            (encodeNat i ++ tail) frameStack padding } := by
+  let start : CompositeConfig :=
+    { state := inputNodeCompositeMachine.initial,
+      tape :=
+        evalCursorReadTape witness consumed
+          (encodeNat i ++ tail) frameStack padding }
+  obtain ⟨terminal, hmem, hacc⟩ :=
+    inputNodeComposite_acceptsWithin
+      witness tail frameStack consumed padding i hi
+  have hlen :
+      (inputNodeCompositeMachine.runBranches
+        (inputNodeCompositeFuel consumed i tail frameStack) [start]).length ≤ 1 :=
+    inputNodeComposite_runBranches_length_le_one
+      (inputNodeCompositeFuel consumed i tail frameStack) start
+  have hmem' :
+      terminal ∈
+        inputNodeCompositeMachine.runBranches
+          (inputNodeCompositeFuel consumed i tail frameStack) [start] := by
+    simpa [start] using hmem
+  have heq :
+      inputNodeCompositeMachine.runBranches
+          (inputNodeCompositeFuel consumed i tail frameStack) [start] =
+        [terminal] :=
+    list_eq_singleton_of_mem_length_le_one terminal _ hmem' hlen
+  rw [haltsWithin_iff_halted]
+  intro z hz
+  rw [heq] at hz
+  simp only [List.mem_singleton] at hz
+  subst z
+  exact halted_of_accepting inputNodeCompositeMachine terminal hacc
+
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputAfterReadTarget_eq_finalMode
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_done
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_accepting
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_acceptsWithin
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_runBranches_length_le_one
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_haltsWithin
 
 
 /-- A completed lookahead phase reaches the preserving-reader entry in exactly
