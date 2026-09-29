@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: physicalize the frozen finite-frame evaluator into one fixed verifier TM, then compose parser + witnessGuessMachine + verifier into P01MachineConstruction; P02: construct G21Pointwise. Do not reopen parser, witness-guess, indexed-read, streaming/stack evaluator semantics, G2.2, or literal fixed-point routes.",
+  "next": "P01: physicalize the frozen three-bit EvalFrame stack, then refine evalStep globally and compose P01; P02: construct G21Pointwise. Do not reopen semantic evaluator, parser, guesser, indexed-read, G2.2, or fixed-point routes.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -108,10 +108,19 @@
             "evalRun_encode_bounded"
           ],
           "content": "finite-frame small-step evaluator for canonical prefix bits; no Circuit AST in finite control; ≤3*encoding-length semantic control steps"
+        },
+        "eval_frame_tape": {
+          "state": "GREEN_FROZEN_REDUCTION",
+          "branch": "frozen/p01-frame-tape-green-eb5713e4",
+          "sha": "eb5713e48e84a8adbb0850d1f2c60b46a738b4f6",
+          "run": 36509233942,
+          "certificate": "CERTIFICATES/P01_FRAME_TAPE_GREEN_eb5713e4.md",
+          "content": "seven EvalFrame variants encoded injectively in fixed three-bit blocks; stack round-trip and 3*depth space bound kernel-checked"
         }
       },
       "exact_remaining": [
-        "refine EvalFrame/EvalState/evalStep into one fixed finite-control physical verifier TM over the canonical Option Bool tape, reusing certified stack/witness/movement primitives and proving global polynomial halting plus physical_eq_logical",
+        "implement fixed physical push/pop/read operations for the three-bit EvalFrame stack and refine each evalStep transition on the canonical Option Bool tape",
+        "prove global physical verifier halting/correctness against frozen evalRun semantics",
         "compose parser + witnessGuessMachine + physical verifier into one P01MachineConstruction"
       ],
       "rejected_substitutes": [
