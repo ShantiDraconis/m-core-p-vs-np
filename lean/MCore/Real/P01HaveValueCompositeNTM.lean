@@ -99,8 +99,11 @@ theorem start_successors
     haveValueCompositeMachine.successors
       { state := .start v, tape := tape } =
       [{ state := .peek v, tape := Tape.move none .left tape }] := by
-  unfold NTM.successors
-  simp [haveValueCompositeMachine, hblank, NTM.stepBranch, Tape.write]
+  rcases tape with ⟨left, head, right⟩
+  simp only at hblank
+  subst head
+  simp [haveValueCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
 
 /-- If the cell left of the stack-end boundary is blank, there is no encoded
 continuation frame; the machine restores the stack-end head and preserves the
@@ -112,8 +115,11 @@ theorem empty_handoff_successors
       { state := .peek v, tape := tape } =
       [{ state := .doneValue v,
          tape := Tape.move none .right tape }] := by
-  unfold NTM.successors
-  simp [haveValueCompositeMachine, hblank, NTM.stepBranch, Tape.write]
+  rcases tape with ⟨left, head, right⟩
+  simp only at hblank
+  subst head
+  simp [haveValueCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
 
 /-- A nonblank top-frame bit returns the head to the stack-end boundary and
 enters the certified six-step frame-pop machine. -/
@@ -124,8 +130,11 @@ theorem nonempty_handoff_successors
       { state := .peek v, tape := tape } =
       [{ state := .pop v framePopMachine.initial,
          tape := Tape.move none .right tape }] := by
-  unfold NTM.successors
-  simp [haveValueCompositeMachine, hhead, NTM.stepBranch, Tape.write]
+  rcases tape with ⟨left, head, right⟩
+  simp only at hhead
+  subst head
+  simp [haveValueCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
 
 theorem pop_transition_active
     (v : Bool) (q : FramePopState) (symbol : Option Bool)
@@ -207,8 +216,12 @@ theorem haveValueComposite_successors_length_le_one
       cases c.tape.head <;>
         simp [haveValueCompositeMachine, NTM.stepBranch]
   | pop v q =>
-      cases q <;>
-        simp [haveValueCompositeMachine, NTM.stepBranch]
+      cases q with
+      | halt f =>
+          cases f <;>
+            simp [haveValueCompositeMachine, NTM.stepBranch]
+      | _ =>
+          simp [haveValueCompositeMachine, NTM.stepBranch]
   | push frame q =>
       cases q <;>
         simp [haveValueCompositeMachine, NTM.stepBranch]
