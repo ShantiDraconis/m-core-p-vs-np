@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: construct one fixed integrated NTM and prove its global HaltsWithin + AcceptsWithin↔SATBits; do not reopen certified parser, witness-reader, frame push/pop, or G21 falsified routes",
+  "next": "P01: build the single integrated NTM by wiring the certified parser NTM, witness-prep/guess phase, and physical verifier using the frozen TM→NTM transport; then prove one global polynomial bound and AcceptsWithin↔SATBits. G21Pointwise remains untouched.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -147,6 +147,23 @@
             "AND-left/OR-left pop→push continuation replacement",
             "AND-right/OR-right return"
           ]
+        },
+        "deterministic_tm_ntm_transport": {
+          "state": "GREEN_FROZEN_REDUCTION",
+          "branch": "frozen/p01-tm-ntm-transport-green-833fe0de",
+          "sha": "833fe0ded9676bfd19d226b8bf1dfd0aeb070bf5",
+          "runs": [
+            36547692311,
+            36547692227
+          ],
+          "theorems": [
+            "tmAsNTM_successors_of_not_halted",
+            "tmAsNTM_terminal_iff_halted",
+            "runBranches_tmAsNTM_singleton",
+            "tmHaltsWithin_iff_ntmHaltsWithin",
+            "tmAsNTM_acceptsWithin_iff"
+          ],
+          "content": "deterministic TM phases embed as singleton-branch NTMs with full run, halting, and acceptance preservation"
         }
       },
       "exact_remaining": [
@@ -172,7 +189,8 @@
       "physical const/neg/and/or stack transforms",
       "fixed-control indexed witness reader with polynomial halting/correctness",
       "fixed-control eval-frame push/pop machines",
-      "polynomial physical-verifier budget"
+      "polynomial physical-verifier budget",
+      "deterministic parser/verifier TM phases embed into NTM with full run/halting/acceptance preservation"
     ],
     "not_counted_as_closure": [
       "state-only phase bridges",
