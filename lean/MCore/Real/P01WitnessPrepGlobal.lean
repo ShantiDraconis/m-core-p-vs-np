@@ -547,8 +547,9 @@ theorem gapTolerant_correct_with_gap :
     gapTolerantRead i (evalCursorStackEndTape witness gap rem) = witness[i]? := by
   intro i w rem gap hi
   unfold evalCursorStackEndTape
-  have : gapTolerantRead i (w ++ List.replicate gap false ++ rem) = gapTolerantRead i w :=
-    gapTolerant_append_left i w _ hi
+  have : gapTolerantRead i (w ++ List.replicate gap false ++ rem) = gapTolerantRead i w := by
+    simpa [List.append_assoc] using
+      gapTolerant_append_left i w (List.replicate gap false ++ rem) hi
   rw [this]
   induction w generalizing i with
   | nil => simp at hi
@@ -568,28 +569,18 @@ theorem input000_gap_complete :
   intro i w gap rem hi
   unfold physicalEvalStep_input_gapTolerant
   have h := gapTolerant_correct_with_gap i w rem gap hi
-  rw [h]
-  cases hw : w[i]? <;> simp_all
-
--- 2. V : P01VerifierPhase - único que falta para 1/2
-
-def buildV : P01VerifierPhase prepPhase.layout where
-  stateCount := 25
-  haltsPoly := by
-    have h := P01WitnessIndexedReadPreserving.preservingReadFuel_le
-    omega
-  correct := by
-    intro w bs
-    exact input000_gap_complete _ _ _ _ ‹_›
-
-def produceP01_from_V : P01FinalCertificate.P01ConstructionGap :=
-  p01_of_verifier buildV
+  have hget : w[i]? = some w[i] := by
+    simp [hi]
+  rw [h, hget]
+  cases w[i] <;> rfl
 
 #print axioms gapTolerant_correct_with_gap
 #print axioms input000_gap_complete
-#print axioms produceP01_from_V
 
-/-- With the prep phase inhabited, P01 reduces to a single verifier phase. -/
+/-- With the prep phase inhabited, P01 reduces to a single verifier phase.
+
+No verifier inhabitant is asserted here: the remaining obligation is exactly a
+concrete `P01VerifierPhase prepPhase.layout`. -/
 theorem p01_of_verifier (V : P01VerifierPhase prepPhase.layout) :
     P01FinalCertificate.P01ConstructionGap :=
   p01_of_phases prepPhase V
