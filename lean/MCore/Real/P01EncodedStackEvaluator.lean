@@ -78,19 +78,32 @@ def evalRun : Nat → Assignment → EvalState → EvalState
       | none => s
       | some s' => evalRun fuel sigma s'
 
+theorem evalRun_of_step_none
+    (n : Nat) (sigma : Assignment) (s : EvalState)
+    (h : evalStep sigma s = none) :
+    evalRun n sigma s = s := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp [evalRun, h]
+
 theorem evalRun_add
     (m n : Nat) (sigma : Assignment) (s : EvalState) :
     evalRun (m + n) sigma s =
       evalRun n sigma (evalRun m sigma s) := by
   induction m generalizing s with
-  | zero => rfl
+  | zero =>
+      simp [evalRun]
   | succ m ih =>
-      simp only [Nat.succ_add, evalRun]
+      rw [Nat.succ_add]
+      simp only [evalRun]
       cases h : evalStep sigma s with
       | none =>
-          simp [evalRun, h]
+          rw [h]
+          exact (evalRun_of_step_none n sigma s h).symm
       | some s' =>
-          simp [evalRun, h, ih]
+          rw [h]
+          exact ih s'
 
 theorem evalRun_halted
     (n : Nat) (sigma : Assignment) (v : Bool) (bits : BitString) :
@@ -132,36 +145,80 @@ theorem evalRun_encode_append
           encodeCircuit, evalCircuit]
   | not c ih =>
       rw [show evalStepCount (.not c) =
-          1 + evalStepCount c + 1 by rfl]
+          1 + (evalStepCount c + 1) by simp [evalStepCount]]
       rw [evalRun_add]
-      simp [evalRun, evalStep, needExpr, encodeCircuit]
-      rw [ih]
+      have hfirst :
+          evalRun 1 sigma
+              (needExpr (encodeCircuit (.not c) ++ tail) frames) =
+            needExpr (encodeCircuit c ++ tail) (.neg :: frames) := by
+        rfl
+      rw [hfirst]
+      rw [evalRun_add]
+      rw [ih (tail := tail) (frames := .neg :: frames)]
       simp [evalRun, evalStep, haveValue, evalCircuit]
   | and a b iha ihb =>
       rw [show evalStepCount (.and a b) =
-          1 + evalStepCount a + 1 + evalStepCount b + 1 by rfl]
-      rw [show 1 + evalStepCount a + 1 + evalStepCount b + 1 =
-          1 + (evalStepCount a + (1 + (evalStepCount b + 1))) by omega]
+          1 + (evalStepCount a +
+            (1 + (evalStepCount b + 1))) by
+            simp [evalStepCount]; omega]
       rw [evalRun_add]
-      simp [evalRun, evalStep, needExpr, encodeCircuit, List.append_assoc]
+      have hfirst :
+          evalRun 1 sigma
+              (needExpr (encodeCircuit (.and a b) ++ tail) frames) =
+            needExpr
+              (encodeCircuit a ++ (encodeCircuit b ++ tail))
+              (.andLeft :: frames) := by
+        simp [evalRun, evalStep, needExpr, encodeCircuit, List.append_assoc]
+      rw [hfirst]
       rw [evalRun_add]
-      rw [iha]
-      simp [evalRun, evalStep, haveValue, needExpr]
+      rw [iha
+        (tail := encodeCircuit b ++ tail)
+        (frames := .andLeft :: frames)]
       rw [evalRun_add]
-      rw [ihb]
+      have hleft :
+          evalRun 1 sigma
+              (haveValue (evalCircuit sigma a)
+                (encodeCircuit b ++ tail) (.andLeft :: frames)) =
+            needExpr (encodeCircuit b ++ tail)
+              (.andRight (evalCircuit sigma a) :: frames) := by
+        rfl
+      rw [hleft]
+      rw [evalRun_add]
+      rw [ihb
+        (tail := tail)
+        (frames := .andRight (evalCircuit sigma a) :: frames)]
       simp [evalRun, evalStep, haveValue, evalCircuit]
   | or a b iha ihb =>
       rw [show evalStepCount (.or a b) =
-          1 + evalStepCount a + 1 + evalStepCount b + 1 by rfl]
-      rw [show 1 + evalStepCount a + 1 + evalStepCount b + 1 =
-          1 + (evalStepCount a + (1 + (evalStepCount b + 1))) by omega]
+          1 + (evalStepCount a +
+            (1 + (evalStepCount b + 1))) by
+            simp [evalStepCount]; omega]
       rw [evalRun_add]
-      simp [evalRun, evalStep, needExpr, encodeCircuit, List.append_assoc]
+      have hfirst :
+          evalRun 1 sigma
+              (needExpr (encodeCircuit (.or a b) ++ tail) frames) =
+            needExpr
+              (encodeCircuit a ++ (encodeCircuit b ++ tail))
+              (.orLeft :: frames) := by
+        simp [evalRun, evalStep, needExpr, encodeCircuit, List.append_assoc]
+      rw [hfirst]
       rw [evalRun_add]
-      rw [iha]
-      simp [evalRun, evalStep, haveValue, needExpr]
+      rw [iha
+        (tail := encodeCircuit b ++ tail)
+        (frames := .orLeft :: frames)]
       rw [evalRun_add]
-      rw [ihb]
+      have hleft :
+          evalRun 1 sigma
+              (haveValue (evalCircuit sigma a)
+                (encodeCircuit b ++ tail) (.orLeft :: frames)) =
+            needExpr (encodeCircuit b ++ tail)
+              (.orRight (evalCircuit sigma a) :: frames) := by
+        rfl
+      rw [hleft]
+      rw [evalRun_add]
+      rw [ihb
+        (tail := tail)
+        (frames := .orRight (evalCircuit sigma a) :: frames)]
       simp [evalRun, evalStep, haveValue, evalCircuit]
 
 /-- The explicit control-step count is linear in circuit size. -/
