@@ -153,6 +153,43 @@ def preservingReadTape
         head := some b,
         right := bs.map some }
 
+/-- Canonical intermediate layout after at least one unary true marker has
+been consumed.  `moved` is the witness prefix temporarily shifted across the
+separator; `rest` is the untouched witness suffix. -/
+def preservingMovedTape
+    (moved rest : BitString) (remaining : Nat) (tail : BitString) :
+    Tape (Option Bool) :=
+  match encodeNat remaining ++ tail with
+  | [] =>
+      { left := List.replicate moved.length none ++ moved.map some ++
+          (none :: rest.map some),
+        head := none,
+        right := [] }
+  | b :: bs =>
+      { left := List.replicate moved.length none ++ moved.map some ++
+          (none :: rest.map some),
+        head := some b,
+        right := bs.map some }
+
+/-- Intermediate machine configuration used by the successor induction. -/
+def preservingMovedConfig
+    (moved rest : BitString) (remaining : Nat) (tail : BitString) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .indexMoved,
+    tape := preservingMovedTape moved rest remaining tail }
+
+/-- Enter the moved-prefix invariant after the first unary true marker. -/
+theorem preservingRead_start_successor
+    (b : Bool) (witnessTail tail : BitString) (n : Nat) :
+    preservingReadMachine.run 6
+      { state := preservingReadMachine.initial,
+        tape := preservingReadTape (b :: witnessTail) (n + 1) tail } =
+      preservingMovedConfig [b] witnessTail n tail := by
+  cases b <;> cases n <;>
+    simp [preservingReadMachine, preservingReadTape,
+      preservingMovedConfig, preservingMovedTape, encodeNat,
+      TM.run, TM.step, Tape.write, Tape.move]
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
@@ -214,6 +251,7 @@ theorem preservingRead_one_value
         TM.run, TM.step, Tape.write, Tape.move]
 
 
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_start_successor
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one
