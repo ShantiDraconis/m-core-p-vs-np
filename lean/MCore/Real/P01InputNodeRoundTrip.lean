@@ -32,6 +32,23 @@ def inputAfterReadReturnFuel
       | _ :: _ => consumed + frameStack.length + 3
       | [] => 1
 
+
+/-- Uniform linear envelope for the mode-aware return phase. -/
+theorem inputAfterReadReturnFuel_le
+    (consumed : Nat) (tail frameStack : BitString) :
+    inputAfterReadReturnFuel consumed tail frameStack ≤
+      consumed + tail.length + frameStack.length + 3 := by
+  cases tail with
+  | cons b bs =>
+      simp [inputAfterReadReturnFuel]
+  | nil =>
+      cases frameStack with
+      | cons f fs =>
+          simp [inputAfterReadReturnFuel]
+      | nil =>
+          simp [inputAfterReadReturnFuel]
+          omega
+
 /-- Canonical terminal configuration of the mode-aware return phase.
 
 When no source and no frames remain, the evaluator already has its final value,
@@ -154,6 +171,7 @@ theorem inputNode000_phase_pipeline
       witness tail frameStack
       (consumedAfterInputIndex consumed i) padding
 
+#print axioms MCore.Real.P01InputNodeRoundTrip.inputAfterReadReturnFuel_le
 #print axioms MCore.Real.P01InputNodeRoundTrip.inputNode000_read_to_afterIndexedReadTape
 #print axioms MCore.Real.P01InputNodeRoundTrip.inputNode000_afterRead_return
 #print axioms MCore.Real.P01InputNodeRoundTrip.inputNode000_phase_pipeline
