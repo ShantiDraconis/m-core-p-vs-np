@@ -12,6 +12,7 @@ open P01EvalCursorMachine
 open P01EvalCursorRoundTrip
 open P01NeedExprTagDecode
 open P01NeedExprCompositeNTM
+open P01EvalFramePushMachine
 open P01EvalRunLoopNTM
 
 abbrev LoopConfig :=
@@ -30,6 +31,17 @@ def retValueLoopConfig
     (c : Configuration CursorReturnState (Option Bool)) : LoopConfig :=
   { state := .need (.retValue value c.state), tape := c.tape }
 
+
+def retPushLoopConfig
+    (frame : EvalFrame)
+    (c : Configuration CursorReturnState (Option Bool)) : LoopConfig :=
+  { state := .need (.retPush frame c.state), tape := c.tape }
+
+def pushLoopConfig
+    (frame : EvalFrame)
+    (c : Configuration FramePushState (Option Bool)) : LoopConfig :=
+  { state := .need (.push frame c.state), tape := c.tape }
+
 @[simp] theorem seekLoop_not_halted
     (c : Configuration CursorSeekState (Option Bool)) :
     ¬ Halted evalRunLoopMachine (seekLoopConfig c) := by
@@ -45,6 +57,19 @@ def retValueLoopConfig
     (c : Configuration CursorReturnState (Option Bool)) :
     ¬ Halted evalRunLoopMachine (retValueLoopConfig value c) := by
   simp [Halted, retValueLoopConfig, evalRunLoopMachine]
+
+
+@[simp] theorem retPushLoop_not_halted
+    (frame : EvalFrame)
+    (c : Configuration CursorReturnState (Option Bool)) :
+    ¬ Halted evalRunLoopMachine (retPushLoopConfig frame c) := by
+  simp [Halted, retPushLoopConfig, evalRunLoopMachine]
+
+@[simp] theorem pushLoop_not_halted
+    (frame : EvalFrame)
+    (c : Configuration FramePushState (Option Bool)) :
+    ¬ Halted evalRunLoopMachine (pushLoopConfig frame c) := by
+  simp [Halted, pushLoopConfig, evalRunLoopMachine]
 
 theorem seekLoop_successors_active
     (c : Configuration CursorSeekState (Option Bool))
@@ -84,6 +109,35 @@ theorem retValueLoop_successors_active
   cases q <;>
     simp [evalRunLoopMachine, needExprCompositeMachine,
       needLoopEmbed, cursorReturnMachine, NTM.stepBranch, TM.step,
+      Tape.write, Tape.move] at h ⊢
+
+
+theorem retPushLoop_successors_active
+    (frame : EvalFrame)
+    (c : Configuration CursorReturnState (Option Bool))
+    (h : cursorReturnMachine.halting c.state = false) :
+    evalRunLoopMachine.successors (retPushLoopConfig frame c) =
+      [retPushLoopConfig frame (cursorReturnMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
+  unfold NTM.successors
+  simp only [retPushLoopConfig]
+  cases q <;>
+    simp [evalRunLoopMachine, needExprCompositeMachine,
+      needLoopEmbed, cursorReturnMachine, NTM.stepBranch, TM.step,
+      Tape.write, Tape.move] at h ⊢
+
+theorem pushLoop_successors_active
+    (frame : EvalFrame)
+    (c : Configuration FramePushState (Option Bool))
+    (h : framePushMachine.halting c.state = false) :
+    evalRunLoopMachine.successors (pushLoopConfig frame c) =
+      [pushLoopConfig frame (framePushMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
+  unfold NTM.successors
+  simp only [pushLoopConfig]
+  cases q <;>
+    simp [evalRunLoopMachine, needExprCompositeMachine,
+      needLoopEmbed, framePushMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
 
 private theorem tm_phase_run_reachable
@@ -171,6 +225,29 @@ theorem retValueLoop_run_reachable
     cursorReturnMachine (retValueLoopConfig value)
     (retValueLoop_not_halted value)
     (retValueLoop_successors_active value) n c
+
+
+theorem retPushLoop_run_reachable
+    (frame : EvalFrame) (n : Nat)
+    (c : Configuration CursorReturnState (Option Bool)) :
+    ∃ m ≤ n,
+      retPushLoopConfig frame (cursorReturnMachine.run n c) ∈
+        evalRunLoopMachine.runBranches m [retPushLoopConfig frame c] :=
+  tm_phase_run_reachable
+    cursorReturnMachine (retPushLoopConfig frame)
+    (retPushLoop_not_halted frame)
+    (retPushLoop_successors_active frame) n c
+
+theorem pushLoop_run_reachable
+    (frame : EvalFrame) (n : Nat)
+    (c : Configuration FramePushState (Option Bool)) :
+    ∃ m ≤ n,
+      pushLoopConfig frame (framePushMachine.run n c) ∈
+        evalRunLoopMachine.runBranches m [pushLoopConfig frame c] :=
+  tm_phase_run_reachable
+    framePushMachine (pushLoopConfig frame)
+    (pushLoop_not_halted frame)
+    (pushLoop_successors_active frame) n c
 
 private theorem one_step_of_successor
     (a b : LoopConfig)
@@ -414,6 +491,8 @@ theorem constTrue_loop_reaches_have
   · rfl
   · exact constTrue_handoff_successors
 
+#print axioms MCore.Real.P01EvalRunLoopRun.retPushLoop_run_reachable
+#print axioms MCore.Real.P01EvalRunLoopRun.pushLoop_run_reachable
 #print axioms MCore.Real.P01EvalRunLoopRun.constTag_loop_reaches_have
 #print axioms MCore.Real.P01EvalRunLoopRun.constFalse_loop_reaches_have
 #print axioms MCore.Real.P01EvalRunLoopRun.constTrue_loop_reaches_have
