@@ -108,3 +108,5 @@ import MCore.Real.P01EvalStepCompositeRun
 import MCore.Real.P01EvalStepSemanticRefinement
 
 import MCore.Real.P01EvalRunLoopNTM
+
+import MCore.Real.P01EvalRunCompositeNTM
