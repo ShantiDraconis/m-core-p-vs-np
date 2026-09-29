@@ -38,7 +38,7 @@ inductive NeedExprCompositeState where
   | doneValue : Bool → NeedExprCompositeState
   | doneNeed
   | reject
-  deriving DecidableEq, Repr
+  deriving DecidableEq, Repr, Fintype
 
 /-- Terminal-preserving embedding of the indexed-input primitive into the
 global needExpr control.  Internal input states stay under `.input`; the
