@@ -1215,6 +1215,52 @@ theorem preservingRead_forall_value
   rw [preservingRead_forall i witness tail h]
 
 
+
+/-- Quadratic envelope for the exact moved-prefix fuel. -/
+theorem preservingMovedFuel_le (m n : Nat) :
+    preservingMovedFuel m n ≤
+      (4 * (m + n) + 6) * n + 5 * (m + n) + 6 := by
+  induction n generalizing m with
+  | zero =>
+      simp [preservingMovedFuel]
+  | succ n ih =>
+      simp only [preservingMovedFuel]
+      have h := ih (m + 1)
+      rw [show m + 1 + n = m + (n + 1) by omega] at h
+      have h2 :
+          (4 * (m + (n + 1)) + 6) * n +
+              5 * (m + (n + 1)) + 6 + (4 * m + 6) ≤
+            (4 * (m + (n + 1)) + 6) * (n + 1) +
+              5 * (m + (n + 1)) + 6 := by
+        rw [Nat.mul_succ]
+        omega
+      omega
+
+/-- A complete preserving indexed read is quadratically bounded in the unary
+index. -/
+theorem preservingReadFuel_le (i : Nat) :
+    preservingReadFuel i ≤ 5 * (i + 1) * (i + 1) + 6 := by
+  cases i with
+  | zero =>
+      simp [preservingReadFuel]
+  | succ n =>
+      simp only [preservingReadFuel]
+      have h := preservingMovedFuel_le 1 n
+      have e1 :
+          (4 * (1 + n) + 6) * n =
+            4 * (n * n) + 10 * n := by
+        simp only [Nat.add_mul, Nat.mul_add, Nat.mul_one, Nat.mul_assoc]
+        omega
+      have e2 :
+          5 * (n + 1 + 1) * (n + 1 + 1) =
+            5 * (n * n) + 20 * n + 20 := by
+        simp only [Nat.add_mul, Nat.mul_add, Nat.mul_one, Nat.one_mul,
+          Nat.mul_assoc]
+        omega
+      omega
+
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingReadFuel_le
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMovedFuel_le
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_forall
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_forall_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMoved_forall
