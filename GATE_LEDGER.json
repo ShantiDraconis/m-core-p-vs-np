@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: refine frozen P01EncodedEvaluator into the one fixed physical verifier TM, then compose parser + witnessGuessMachine + verifier into P01MachineConstruction; P02: construct G21Pointwise. Do not reopen parser, witness-guess, indexed-read, streaming-evaluator semantics, G2.2, or literal fixed-point routes.",
+  "next": "P01: physicalize the frozen finite-frame evaluator into one fixed verifier TM, then compose parser + witnessGuessMachine + verifier into P01MachineConstruction; P02: construct G21Pointwise. Do not reopen parser, witness-guess, indexed-read, streaming/stack evaluator semantics, G2.2, or literal fixed-point routes.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -95,10 +95,23 @@
             "evalEncoded_witness"
           ],
           "content": "direct evaluation of canonical prefix encoding with exact tail preservation; no Circuit value reconstructed in control"
+        },
+        "finite_frame_encoded_evaluator": {
+          "state": "GREEN_FROZEN_REDUCTION",
+          "branch": "frozen/p01-encoded-stack-evaluator-green-f70ab88b",
+          "sha": "f70ab88b3ac8cb1bd37c5e6f3115e26184b39b2b",
+          "run": 36508950379,
+          "certificate": "CERTIFICATES/P01_ENCODED_STACK_EVALUATOR_GREEN_f70ab88b.md",
+          "theorems": [
+            "evalRun_encode_append",
+            "evalStepCount_le_three_mul_encoding",
+            "evalRun_encode_bounded"
+          ],
+          "content": "finite-frame small-step evaluator for canonical prefix bits; no Circuit AST in finite control; ≤3*encoding-length semantic control steps"
         }
       },
       "exact_remaining": [
-        "refine the GREEN streaming encoded evaluator into one fixed physical verifier TM using certified stack/witness/movement primitives, with global polynomial halting and physical_eq_logical",
+        "refine EvalFrame/EvalState/evalStep into one fixed finite-control physical verifier TM over the canonical Option Bool tape, reusing certified stack/witness/movement primitives and proving global polynomial halting plus physical_eq_logical",
         "compose parser + witnessGuessMachine + physical verifier into one P01MachineConstruction"
       ],
       "rejected_substitutes": [
