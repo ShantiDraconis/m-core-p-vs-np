@@ -61,7 +61,7 @@ theorem evalStep_const_false_cursor_refined
         evalCursorStackEndTape witness (consumed + 3) rest
           (encodeEvalFrames frames) padding := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · exact
       consumeThreeTape_correct witness consumed
         false false true rest (encodeEvalFrames frames) padding
@@ -84,7 +84,7 @@ theorem evalStep_const_true_cursor_refined
         evalCursorStackEndTape witness (consumed + 3) rest
           (encodeEvalFrames frames) padding := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · exact
       consumeThreeTape_correct witness consumed
         false true false rest (encodeEvalFrames frames) padding
@@ -114,7 +114,7 @@ theorem evalStep_not_tag_cursor_refined
           (encodeEvalFrame .neg ++ encodeEvalFrames frames)
           (((padding - 1) - 1) - 1) := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · exact
       consumeThree_then_push_frame
         witness consumed false true true rest frames padding .neg
@@ -144,7 +144,7 @@ theorem evalStep_and_tag_cursor_refined
           (encodeEvalFrame .andLeft ++ encodeEvalFrames frames)
           (((padding - 1) - 1) - 1) := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · exact
       consumeThree_then_push_frame
         witness consumed true false false rest frames padding .andLeft
@@ -174,7 +174,7 @@ theorem evalStep_or_tag_cursor_refined
           (encodeEvalFrame .orLeft ++ encodeEvalFrames frames)
           (((padding - 1) - 1) - 1) := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · exact
       consumeThree_then_push_frame
         witness consumed true false true rest frames padding .orLeft
