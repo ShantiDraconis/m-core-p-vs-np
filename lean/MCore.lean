@@ -45,3 +45,11 @@ import MCore.Real.P01EvalCursorFramePush
 import MCore.Real.P01EvalCursorConsume
 
 import MCore.Real.P01NTMPhaseSeq
+
+import MCore.Real.P01NTMRunLaws
+
+import MCore.Real.P01NTMSeqRun
+
+import MCore.Real.P01GuessedWitnessRelation
+
+import MCore.Real.P01IntegratedAssembly
