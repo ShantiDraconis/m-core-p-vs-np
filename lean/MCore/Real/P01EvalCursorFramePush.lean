@@ -82,6 +82,32 @@ theorem framePush_run_three_cursor
   · rw [encodeEvalFrame_eq_bits]
     rfl
 
+/-- Exact configuration form of the already-certified three-step cursor frame
+push. -/
+theorem framePush_run_three_cursor_exact
+    (witness unread frameStack : BitString)
+    (consumed padding : Nat)
+    (f : EvalFrame) :
+    framePushMachine.run 3
+      (framePushConfig f
+        (evalCursorStackEndTape
+          witness consumed unread frameStack padding)) =
+      { state := .halt,
+        tape :=
+          evalCursorStackEndTape
+            witness consumed unread
+            (encodeEvalFrame f ++ frameStack)
+            (((padding - 1) - 1) - 1) } := by
+  have h :=
+    framePush_run_three_cursor
+      witness unread frameStack consumed padding f
+  dsimp at h
+  apply Configuration.ext
+  · exact h.1
+  · exact h.2
+
+#print axioms MCore.Real.P01EvalCursorFramePush.framePush_run_three_cursor_exact
+
 #print axioms MCore.Real.P01EvalCursorFramePush.pushStep_evalCursorStackEndTape
 #print axioms MCore.Real.P01EvalCursorFramePush.framePush_run_three_cursor
 
