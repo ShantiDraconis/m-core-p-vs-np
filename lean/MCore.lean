@@ -121,3 +121,4 @@ import MCore.Real.P01EvalRunBaseCases
 
 import MCore.Real.P01EvalRunCircuitCertificate
 
+import MCore.Real.P01CNFMode
