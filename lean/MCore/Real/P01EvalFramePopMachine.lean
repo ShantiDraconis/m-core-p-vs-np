@@ -210,7 +210,6 @@ theorem framePop_run_six
           (encodeEvalFrame f ++ stack) padding)) =
       { state := FramePopState.halt f,
         tape := physicalStackV2Tape witness source stack (padding + 3) } := by
-  unfold framePopConfig
   rw [encodeEvalFrame_eq_bits]
   have hdecode :
       decodeEvalFrame [frameBit0 f, frameBit1 f, frameBit2 f] = some f := by
