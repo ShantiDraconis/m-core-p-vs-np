@@ -55,6 +55,7 @@ theorem verifier_reaches_semantic_final
              tape := preparedTape (witnessBits w) (encodeCircuit phi) }] := by
   have hlen : varBound phi ≤ (witnessBits w).length := by
     rw [witnessBits_length]
+    exact Nat.le_refl _
   have hread :
       ∀ i, i < varBound phi →
         (witnessBits w).getD i false =
