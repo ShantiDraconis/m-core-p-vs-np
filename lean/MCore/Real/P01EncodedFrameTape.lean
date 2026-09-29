@@ -50,7 +50,8 @@ def decodeEvalFrame : BitString → Option EvalFrame
   | orRight b => cases b <;> rfl
 
 theorem encodeEvalFrame_injective :
-    Function.Injective encodeEvalFrame := by
+    ∀ ⦃a b : EvalFrame⦄,
+      encodeEvalFrame a = encodeEvalFrame b → a = b := by
   intro a b h
   have hd := congrArg decodeEvalFrame h
   simpa using hd
@@ -94,15 +95,23 @@ def decodeEvalFrames : BitString → Option (List EvalFrame)
   | nil => rfl
   | cons f fs ih =>
       cases f with
-      | neg => simpa [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames] using ih
-      | andLeft => simpa [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames] using ih
+      | neg =>
+          simp [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames,
+            decodeEvalFrame, ih]
+      | andLeft =>
+          simp [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames,
+            decodeEvalFrame, ih]
       | andRight b =>
           cases b <;>
-            simpa [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames] using ih
-      | orLeft => simpa [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames] using ih
+            simp [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames,
+              decodeEvalFrame, ih]
+      | orLeft =>
+          simp [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames,
+            decodeEvalFrame, ih]
       | orRight b =>
           cases b <;>
-            simpa [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames] using ih
+            simp [encodeEvalFrames, encodeEvalFrame, decodeEvalFrames,
+              decodeEvalFrame, ih]
 
 /-- The frame stack consumes at most three tape cells per semantic frame. -/
 theorem encodedFrames_linear_space
