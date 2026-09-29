@@ -544,9 +544,45 @@ theorem inputNodeComposite_reaches_accepting
   · rfl
   · exact ⟨inputNodeFinalMode tail frameStack, rfl⟩
 
+
+/-- The accepting terminal reached by the fused input-node machine persists to
+the uniform composite fuel, giving an exact `AcceptsWithin` certificate for
+the physical input primitive.  This acceptance is an internal phase handoff
+signal; the selected Boolean remains carried in the `.done` control state. -/
+theorem inputNodeComposite_acceptsWithin
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    inputNodeCompositeMachine.AcceptsWithin
+      (inputNodeCompositeFuel consumed i tail frameStack)
+      { state := inputNodeCompositeMachine.initial,
+        tape :=
+          evalCursorReadTape witness consumed
+            (encodeNat i ++ tail) frameStack padding } := by
+  obtain ⟨m, hm, c, hc, hacc, _hselected⟩ :=
+    inputNodeComposite_reaches_accepting
+      witness tail frameStack consumed padding i hi
+  have hhalt : Halted inputNodeCompositeMachine c :=
+    halted_of_accepting inputNodeCompositeMachine c hacc
+  have hpersist :=
+    mem_runBranches_persist inputNodeCompositeMachine
+      m (inputNodeCompositeFuel consumed i tail frameStack - m)
+      [{ state := inputNodeCompositeMachine.initial,
+         tape :=
+           evalCursorReadTape witness consumed
+             (encodeNat i ++ tail) frameStack padding }]
+      c hc hhalt
+  have hsum :
+      m + (inputNodeCompositeFuel consumed i tail frameStack - m) =
+        inputNodeCompositeFuel consumed i tail frameStack := by
+    omega
+  rw [hsum] at hpersist
+  exact ⟨c, hpersist, hacc⟩
+
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputAfterReadTarget_eq_finalMode
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_done
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_accepting
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_acceptsWithin
 
 
 /-- A completed lookahead phase reaches the preserving-reader entry in exactly
