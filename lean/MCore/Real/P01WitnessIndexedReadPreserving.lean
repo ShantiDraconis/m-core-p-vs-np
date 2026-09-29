@@ -1076,6 +1076,11 @@ theorem preservingMoved_forall
           rw [run_add]
           rw [preservingMoved_cycle_index
             first selected movedTail restTail tail n]
+          change preservingReadMachine.run
+            (preservingMovedFuel
+              (first :: (movedTail ++ [selected])).length n)
+            (preservingMovedConfig
+              (first :: (movedTail ++ [selected])) restTail n tail) = _
           rw [ih (movedTail := movedTail ++ [selected])
             (rest := restTail) htail]
           simp [List.getD_cons_succ, List.map_append,
