@@ -317,6 +317,18 @@ theorem inputNodeCompositeFuel_le
     inputAfterReadReturnFuel_le
       (consumedAfterInputIndex consumed i) tail frameStack
   unfold consumedAfterInputIndex at hret
+  let P := (2 * consumed + 4 * (i + 1) + 6) * i
+  have hreadP :
+      preservingReadGapFuel consumed i ≤
+        P + 3 * consumed + 5 * (i + 1) + 12 := by
+    simpa [P] using hread
+  change
+    (2 * i + 6) + 1 +
+        preservingReadGapFuel consumed i + 1 +
+        P01InputNodeRoundTrip.inputAfterReadReturnFuel
+          (consumed + i + 1) tail frameStack + 1 ≤
+      P + 4 * consumed + 8 * i +
+        tail.length + frameStack.length + 30
   omega
 
 /-- Full physical input-node reachability in one fixed NTM.
