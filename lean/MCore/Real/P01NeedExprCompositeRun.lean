@@ -304,6 +304,59 @@ private theorem one_step_of_successor
       (by simp [NTM.runBranches]) ha hs
   simpa using h
 
+/-- The certified input-node NTM transports exactly into the global needExpr
+machine through `inputStateEmbed`.  Its accepting terminal becomes
+`.doneValue selected` with the same physical tape and without an extra phase. -/
+theorem inputNode_reaches_doneValue_from_read
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    ∃ m ≤ inputNodeCompositeFuel consumed i tail frameStack,
+      ({ state := .doneValue (witness.getD i false),
+         tape :=
+           (inputAfterReadTarget witness
+             (consumedAfterInputIndex consumed i)
+             tail frameStack padding).tape } : NeedExprConfig) ∈
+        needExprCompositeMachine.runBranches m
+          [{ state := .input inputNodeCompositeMachine.initial,
+             tape :=
+               evalCursorReadTape witness consumed
+                 (encodeNat i ++ tail) frameStack padding }] := by
+  obtain ⟨m, hm, hmem⟩ :=
+    inputNodeComposite_reaches_done
+      witness tail frameStack consumed padding i hi
+  let c0 : Configuration InputNodeCompositeState (Option Bool) :=
+    { state := inputNodeCompositeMachine.initial,
+      tape :=
+        evalCursorReadTape witness consumed
+          (encodeNat i ++ tail) frameStack padding }
+  let done : Configuration InputNodeCompositeState (Option Bool) :=
+    { state :=
+        .done (witness.getD i false)
+          (inputNodeFinalMode tail frameStack),
+      tape :=
+        (inputAfterReadTarget witness
+          (consumedAfterInputIndex consumed i)
+          tail frameStack padding).tape }
+  have hmem' :
+      done ∈ inputNodeCompositeMachine.runBranches m [c0] := by
+    simpa [c0, done] using hmem
+  have hmap :=
+    P01NTMRunLaws.runBranches_map
+      inputNodeCompositeMachine needExprCompositeMachine inputStateEmbed
+      inputSimulation m [c0]
+  have hlift :
+      P01NTMRunLaws.liftConfig inputStateEmbed done ∈
+        needExprCompositeMachine.runBranches m
+          ([c0].map (P01NTMRunLaws.liftConfig inputStateEmbed)) := by
+    rw [hmap]
+    exact List.mem_map.mpr ⟨done, hmem', rfl⟩
+  refine ⟨m, hm, ?_⟩
+  simpa [c0, done, P01NTMRunLaws.liftConfig, inputStateEmbed,
+    inputNodeCompositeMachine] using hlift
+
+#print axioms MCore.Real.P01NeedExprCompositeRun.inputNode_reaches_doneValue_from_read
+
 /-- Uniform majorant for the fused constant-tag route. -/
 def constTagCompositeFuel
     (frameStack rest : BitString) : Nat :=
