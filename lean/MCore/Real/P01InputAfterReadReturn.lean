@@ -222,48 +222,131 @@ theorem frameReturn_halt
   simp [frameReturnConfig, inputAfterReadReturnMachine,
     TM.run, TM.step, Tape.write, Tape.move]
 
-/-- Skip exactly the reader-created blank block and consume the first source
-bit into the left tape. -/
-theorem seekSource_over_blanks
+/-- Crossing the source/frame separator enters the frame scan. -/
+theorem sourceSeparator_to_frames
+    (left : List (Option Bool))
+    (frameStack : BitString)
+    (padding : Nat) :
+    inputAfterReadReturnMachine.run 1
+      (sourceReturnConfig left [] frameStack padding) =
+      frameReturnConfig (none :: left) frameStack.reverse padding := by
+  cases h : frameStack.reverse <;>
+    simp [sourceReturnConfig, frameReturnConfig,
+      inputAfterReadReturnMachine, TM.run, TM.step,
+      Tape.write, Tape.move, h, List.append_assoc]
+
+/-- Canonical seek-source configuration with exactly `k` blanks before the
+first unread source bit. -/
+def seekSourceConfig
     (k : Nat) (b : Bool)
-    (left right : List (Option Bool)) :
-    inputAfterReadReturnMachine.run (k + 1)
+    (left : List (Option Bool))
+    (tail frameStack : BitString)
+    (padding : Nat) :
+    Configuration InputAfterReadReturnState (Option Bool) :=
+  match k with
+  | 0 =>
       { state := .seekSource
         tape :=
-          match k with
-          | 0 =>
-              { left := left, head := some b, right := right }
-          | n + 1 =>
-              { left := left, head := none,
-                right := List.replicate n none ++ some b :: right } } =
-      { state := .scanSource
-        tape := { left := some b :: List.replicate k none ++ left,
-                  head := match right with | [] => none | x :: _ => x,
-                  right := match right with | [] => [] | _ :: xs => xs } } := by
+          { left := left
+            head := some b
+            right :=
+              tail.map some ++ none :: frameStack.reverse.map some ++
+                none :: List.replicate padding none } }
+  | n + 1 =>
+      { state := .seekSource
+        tape :=
+          { left := left
+            head := none
+            right :=
+              List.replicate n none ++ some b ::
+                (tail.map some ++ none :: frameStack.reverse.map some ++
+                  none :: List.replicate padding none) } }
+
+/-- Seeking across the reader-created blank block consumes the first source bit
+and enters the canonical source scan. -/
+theorem seekSourceConfig_run
+    (k : Nat) (b : Bool)
+    (left : List (Option Bool))
+    (tail frameStack : BitString)
+    (padding : Nat) :
+    inputAfterReadReturnMachine.run (k + 1)
+      (seekSourceConfig k b left tail frameStack padding) =
+      sourceReturnConfig
+        (some b :: List.replicate k none ++ left)
+        tail frameStack padding := by
   induction k generalizing left with
   | zero =>
-      cases right <;>
-        simp [inputAfterReadReturnMachine, TM.run, TM.step,
-          Tape.write, Tape.move]
+      simp [seekSourceConfig, sourceReturnConfig,
+        inputAfterReadReturnMachine, TM.run, TM.step,
+        Tape.write, Tape.move, List.append_assoc]
   | succ k ih =>
-      rw [show Nat.succ k + 1 = (k + 1) + 1 by omega]
-      rw [TM.run]
-      simp only [show inputAfterReadReturnMachine.halting (.seekSource) = false by rfl,
-        Bool.false_eq_true, if_false]
-      change inputAfterReadReturnMachine.run (k + 1)
-        { state := .seekSource,
-          tape :=
-            match k with
-            | 0 =>
-                { left := none :: left, head := some b, right := right }
-            | n + 1 =>
-                { left := none :: left, head := none,
-                  right := List.replicate n none ++ some b :: right } } =
-        { state := .scanSource,
-          tape :=
-            { left := some b :: List.replicate (Nat.succ k) none ++ left,
-              head := match right with | [] => none | x :: _ => x,
-              right := match right with | [] => [] | _ :: xs => xs } }
+      rw [show Nat.succ k + 1 = 1 + (k + 1) by omega]
+      rw [run_add]
+      have hstep :
+          inputAfterReadReturnMachine.run 1
+            (seekSourceConfig (Nat.succ k) b left tail frameStack padding) =
+          seekSourceConfig k b (none :: left) tail frameStack padding := by
+        cases k <;>
+          simp [seekSourceConfig, inputAfterReadReturnMachine,
+            TM.run, TM.step, Tape.write, Tape.move,
+            List.replicate_succ, List.append_assoc]
+      rw [hstep]
+      rw [ih (none :: left)]
+      congr 2
+      simp [List.replicate_succ, List.append_assoc]
+
+/-- Canonical seek-frame configuration with exactly `k` blanks before the
+first physical frame bit. -/
+def seekFramesConfig
+    (k : Nat) (b : Bool) (bs : BitString)
+    (left : List (Option Bool))
+    (padding : Nat) :
+    Configuration InputAfterReadReturnState (Option Bool) :=
+  match k with
+  | 0 =>
+      { state := .seekFrames
+        tape :=
+          { left := left
+            head := some b
+            right := bs.map some ++ none :: List.replicate padding none } }
+  | n + 1 =>
+      { state := .seekFrames
+        tape :=
+          { left := left
+            head := none
+            right :=
+              List.replicate n none ++
+                some b :: bs.map some ++ none :: List.replicate padding none } }
+
+/-- Seeking across a known blank prefix consumes the first physical frame bit
+and enters the canonical frame scan. -/
+theorem seekFramesConfig_run
+    (k : Nat) (b : Bool) (bs : BitString)
+    (left : List (Option Bool))
+    (padding : Nat) :
+    inputAfterReadReturnMachine.run (k + 1)
+      (seekFramesConfig k b bs left padding) =
+      frameReturnConfig
+        (some b :: List.replicate k none ++ left)
+        bs padding := by
+  induction k generalizing left with
+  | zero =>
+      cases bs <;>
+        simp [seekFramesConfig, frameReturnConfig,
+          inputAfterReadReturnMachine, TM.run, TM.step,
+          Tape.write, Tape.move, List.append_assoc]
+  | succ k ih =>
+      rw [show Nat.succ k + 1 = 1 + (k + 1) by omega]
+      rw [run_add]
+      have hstep :
+          inputAfterReadReturnMachine.run 1
+            (seekFramesConfig (Nat.succ k) b bs left padding) =
+          seekFramesConfig k b bs (none :: left) padding := by
+        cases k <;>
+          simp [seekFramesConfig, inputAfterReadReturnMachine,
+            TM.run, TM.step, Tape.write, Tape.move,
+            List.replicate_succ, List.append_assoc]
+      rw [hstep]
       rw [ih (none :: left)]
       congr 2
       simp [List.replicate_succ, List.append_assoc]
@@ -287,52 +370,34 @@ theorem return_sourceTail
   let left0 : List (Option Bool) := none :: witness.map some
   let left1 : List (Option Bool) :=
     some b :: List.replicate consumed none ++ left0
+
   have hstart :
       inputAfterReadReturnMachine.run 1
         { state := .start .sourceTail,
           tape := afterIndexedReadTape witness consumed
             (b :: tail) frameStack padding } =
-        { state := .seekSource,
-          tape :=
-            match consumed with
-            | 0 =>
-                { left := left0, head := some b,
-                  right :=
-                    tail.map some ++ none :: frameStack.reverse.map some ++
-                      none :: List.replicate padding none }
-            | n + 1 =>
-                { left := left0, head := none,
-                  right :=
-                    List.replicate n none ++ some b ::
-                      (tail.map some ++ none :: frameStack.reverse.map some ++
-                        none :: List.replicate padding none) } } := by
+        seekSourceConfig consumed b left0 tail frameStack padding := by
     cases consumed <;>
-      simp [afterIndexedReadTape, inputAfterReadReturnMachine, left0,
-        TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
-        List.append_assoc]
+      simp [afterIndexedReadTape, seekSourceConfig,
+        inputAfterReadReturnMachine, left0,
+        TM.run, TM.step, Tape.write, Tape.move,
+        List.replicate_succ, List.append_assoc]
 
   rw [show consumed + (b :: tail).length + frameStack.length + 3 =
-      1 + ((consumed + 1) + (tail.length +
-        (1 + (frameStack.reverse.length + 1)))) by
+      1 + ((consumed + 1) +
+        (tail.length + (1 + (frameStack.reverse.length + 1)))) by
       simp
       omega]
   rw [run_add, hstart]
   rw [run_add]
-  rw [seekSource_over_blanks consumed b left0
-    (tail.map some ++ none :: frameStack.reverse.map some ++
-      none :: List.replicate padding none)]
+  rw [seekSourceConfig_run consumed b left0 tail frameStack padding]
   change inputAfterReadReturnMachine.run
       (tail.length + (1 + (frameStack.reverse.length + 1)))
-      (sourceReturnConfig left1 tail frameStack padding) =
-    _
+      (sourceReturnConfig left1 tail frameStack padding) = _
   rw [run_add]
   rw [sourceReturn_run]
   rw [run_add]
-  change inputAfterReadReturnMachine.run
-      (frameStack.reverse.length + 1)
-      (frameReturnConfig
-        (none :: (tail.reverse.map some ++ left1))
-        frameStack.reverse padding) = _
+  rw [sourceSeparator_to_frames]
   rw [run_add]
   rw [frameReturn_run]
   rw [frameReturn_halt]
@@ -357,68 +422,42 @@ theorem return_frameStack
           evalCursorStackEndTape witness consumed
             [] (b :: frameTail) padding } := by
   let left0 : List (Option Bool) := none :: witness.map some
-  have hstart :
-      inputAfterReadReturnMachine.run 1
-        { state := .start .frameStack,
-          tape := afterIndexedReadTape witness consumed
-            [] (b :: frameTail) padding } =
-        { state := .seekFrames,
-          tape :=
-            { left := left0,
-              head := none,
-              right :=
-                List.replicate consumed none ++
-                  (some ((b :: frameTail).reverse.getD 0 false) :: []) } } := by
-    -- The theorem below uses a direct normalized proof instead of this
-    -- intermediate shape.
-    cases consumed <;> cases b <;> cases frameTail <;>
-      simp [afterIndexedReadTape, inputAfterReadReturnMachine, left0,
-        TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
-        List.append_assoc]
-  clear hstart
-  -- A direct structural proof is simpler because the physical frame stack is
-  -- already stored reversed.
+  have hne : (b :: frameTail).reverse ≠ [] := by simp
   cases hrev : (b :: frameTail).reverse with
   | nil =>
-      simp at hrev
+      exact False.elim (hne hrev)
   | cons f fs =>
       have hlen : fs.length + 1 = (b :: frameTail).length := by
-        have := congrArg List.length hrev
-        simp at this
+        have h := congrArg List.length hrev
+        simp at h
         omega
-      let left0 : List (Option Bool) := none :: witness.map some
-      have hs :
-          inputAfterReadReturnMachine.run (consumed + 2)
+
+      have hstart :
+          inputAfterReadReturnMachine.run 1
             { state := .start .frameStack,
               tape :=
                 afterIndexedReadTape witness consumed
                   [] (b :: frameTail) padding } =
-            { state := .scanFrames,
-              tape :=
-                { left := some f :: none :: List.replicate consumed none ++ left0,
-                  head := match fs with | [] => none | x :: _ => some x,
-                  right :=
-                    match fs with
-                    | [] => List.replicate padding none
-                    | _ :: xs => xs.map some ++ none :: List.replicate padding none } } := by
-        cases consumed <;> cases f <;> cases fs <;>
-          simp [afterIndexedReadTape, inputAfterReadReturnMachine, left0,
-            hrev, TM.run, TM.step, Tape.write, Tape.move,
+            seekFramesConfig (consumed + 1) f fs left0 padding := by
+        cases consumed <;>
+          simp [afterIndexedReadTape, seekFramesConfig,
+            inputAfterReadReturnMachine, left0, hrev,
+            TM.run, TM.step, Tape.write, Tape.move,
             List.replicate_succ, List.append_assoc]
+
       rw [show consumed + (b :: frameTail).length + 3 =
-          (consumed + 2) + (fs.length + 1) by omega]
-      rw [run_add, hs]
-      change inputAfterReadReturnMachine.run (fs.length + 1)
-        (frameReturnConfig
-          (some f :: none :: List.replicate consumed none ++ left0)
-          fs padding) = _
-      rw [show fs.length + 1 = fs.length + 1 by rfl]
+          1 + ((consumed + 2) + (fs.length + 1)) by
+          omega]
+      rw [run_add, hstart]
+      rw [run_add]
+      rw [seekFramesConfig_run (consumed + 1) f fs left0 padding]
       rw [run_add]
       rw [frameReturn_run]
       rw [frameReturn_halt]
       simp [evalCursorStackEndTape, left0, hrev,
         List.reverse_reverse, List.map_append, List.append_assoc,
         List.replicate_succ]
+      omega
 
 /-- Final-value mode needs no cursor normalization. -/
 theorem return_done
@@ -429,7 +468,7 @@ theorem return_done
         tape := afterIndexedReadTape witness consumed [] [] padding } =
       { state := .halt .done,
         tape := afterIndexedReadTape witness consumed [] [] padding } := by
-  simp [inputAfterReadReturnMachine, TM.run]
+  rfl
 
 #print axioms MCore.Real.P01InputAfterReadReturn.return_sourceTail
 #print axioms MCore.Real.P01InputAfterReadReturn.return_frameStack
