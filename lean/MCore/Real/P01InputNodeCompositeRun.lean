@@ -670,6 +670,115 @@ theorem inputNodeComposite_haltsWithin
   subst z
   exact halted_of_accepting inputNodeCompositeMachine terminal hacc
 
+/-- Running the fused input-node NTM from a singleton configuration never
+creates more than one live/reached configuration. -/
+theorem inputNodeComposite_runBranches_length_le_one :
+    ∀ (n : Nat) (c : CompositeConfig),
+      (inputNodeCompositeMachine.runBranches n [c]).length ≤ 1 := by
+  intro n
+  induction n with
+  | zero =>
+      intro c
+      simp [NTM.runBranches]
+  | succ n ih =>
+      intro c
+      by_cases hh : Halted inputNodeCompositeMachine c
+      · rw [runBranches_singleton_halted
+          inputNodeCompositeMachine (n + 1) c hh]
+        simp
+      · rw [runBranches_singleton_active
+          inputNodeCompositeMachine n c hh]
+        have hs :=
+          inputNodeComposite_successors_length_le_one c
+        cases hsucc : inputNodeCompositeMachine.successors c with
+        | nil =>
+            simp [hsucc, NTM.runBranches]
+        | cons d ds =>
+            cases ds with
+            | nil =>
+                rw [hsucc]
+                exact ih d
+            | cons e es =>
+                rw [hsucc] at hs
+                simp at hs
+
+private theorem mem_eq_of_length_le_one
+    {α : Type} (xs : List α)
+    (hlen : xs.length ≤ 1)
+    {a b : α} (ha : a ∈ xs) (hb : b ∈ xs) :
+    a = b := by
+  cases xs with
+  | nil =>
+      simp at ha
+  | cons x xs =>
+      cases xs with
+      | nil =>
+          simp at ha hb
+          simpa [ha, hb]
+      | cons y ys =>
+          simp at hlen
+
+/-- The fused input-node machine halts universally at the same uniform fuel
+used by the acceptance certificate.  Since the machine has at most one branch,
+the reached accepting `.done` configuration is the only configuration left
+at that fuel. -/
+theorem inputNodeComposite_haltsWithin
+    (witness tail frameStack : CanonicalFinalProof.BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    inputNodeCompositeMachine.HaltsWithin
+      (inputNodeCompositeFuel consumed i tail frameStack)
+      { state := inputNodeCompositeMachine.initial,
+        tape :=
+          evalCursorReadTape witness consumed
+            (encodeNat i ++ tail) frameStack padding } := by
+  let fuel := inputNodeCompositeFuel consumed i tail frameStack
+  let start : CompositeConfig :=
+    { state := inputNodeCompositeMachine.initial,
+      tape :=
+        evalCursorReadTape witness consumed
+          (encodeNat i ++ tail) frameStack padding }
+  let done : CompositeConfig :=
+    { state :=
+        .done (witness.getD i false)
+          (inputNodeFinalMode tail frameStack),
+      tape :=
+        (inputAfterReadTarget witness
+          (consumedAfterInputIndex consumed i)
+          tail frameStack padding).tape }
+
+  obtain ⟨m, hm, hdone_m⟩ :=
+    inputNodeComposite_reaches_done
+      witness tail frameStack consumed padding i hi
+
+  have hdone_halted : Halted inputNodeCompositeMachine done := by
+    dsimp [done]
+    simp [Halted, inputNodeCompositeMachine]
+
+  have hdone :
+      done ∈ inputNodeCompositeMachine.runBranches fuel [start] := by
+    have hp :=
+      mem_runBranches_persist inputNodeCompositeMachine
+        m (fuel - m) [start] done hdone_m hdone_halted
+    have hsum : m + (fuel - m) = fuel := by
+      omega
+    rwa [hsum] at hp
+
+  have hlen :
+      (inputNodeCompositeMachine.runBranches fuel [start]).length ≤ 1 :=
+    inputNodeComposite_runBranches_length_le_one fuel start
+
+  intro reached hmem
+  have hreached : reached = done :=
+    mem_eq_of_length_le_one
+      (inputNodeCompositeMachine.runBranches fuel [start])
+      hlen hmem hdone
+  subst reached
+  exact Or.inl (by rfl)
+
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_runBranches_length_le_one
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_haltsWithin
+
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputAfterReadTarget_eq_finalMode
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_done
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_accepting
