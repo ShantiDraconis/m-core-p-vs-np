@@ -25,8 +25,17 @@ theorem prepared_scan_then_enter_empty_stack
       physicalStackV2Tape witness (b :: bs) [] := by
   dsimp
   rw [preparedTape_eq_scanConfig witness b bs]
-  rw [sourceEndScanner_run]
-  exact sourceEnd_to_stackV2 witness (b :: bs)
+  have hrun :=
+    sourceEndScanner_run (none :: witness.map some) (b :: bs)
+  calc
+    Tape.move none .right
+        (sourceEndScanner.run ((b :: bs).length + 1)
+          (scanConfig (none :: witness.map some) (b :: bs))).tape =
+      Tape.move none .right (sourceEndTape witness (b :: bs)) := by
+        simpa [sourceEndTape] using
+          congrArg (fun cfg => Tape.move none .right cfg.tape) hrun
+    _ = physicalStackV2Tape witness (b :: bs) [] :=
+      sourceEnd_to_stackV2 witness (b :: bs)
 
 /-- The entry path is polynomial-time before the single stack-entry move. -/
 theorem prepared_source_scan_halts_before_stack_entry
