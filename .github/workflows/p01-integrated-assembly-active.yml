@@ -1,0 +1,60 @@
+name: ATK P01 integrated assembly active
+
+on:
+  push:
+    branches:
+      - atk/next-p01-integrated-machine-v2-20260929
+    paths:
+      - 'lean/MCore/Real/P01GuessedWitnessRelation.lean'
+      - 'lean/MCore/Real/P01NTMRunLaws.lean'
+      - 'lean/MCore/Real/P01NTMSeqRun.lean'
+      - 'lean/MCore/Real/P01IntegratedAssembly.lean'
+      - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
+      - 'lean/MCore.lean'
+      - '.github/workflows/p01-integrated-assembly-active.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve dependencies
+        run: lake update
+      - name: Kernel build integrated P01
+        run: |
+          lake build MCore.Real.P01NTMRunLaws
+          lake build MCore.Real.P01NTMSeqRun
+          lake build MCore.Real.P01GuessedWitnessRelation
+          lake build MCore.Real.P01IntegratedAssembly
+          lake build MCore.Real.P01WitnessPrepGlobal
+      - name: Axiom audit integrated P01
+        run: |
+          cat > P01IntegratedAxiomAudit.lean <<'EOF'
+          import MCore.Real.P01WitnessPrepGlobal
+          #print axioms MCore.Real.P01WitnessPrepGlobal.prepPhase
+          #print axioms MCore.Real.P01WitnessPrepGlobal.p01_of_verifier
+          #print axioms MCore.Real.P01IntegratedAssembly.construction
+          #print axioms MCore.Real.P01IntegratedAssembly.p01_of_phases
+          EOF
+          lake env lean P01IntegratedAxiomAudit.lean | tee P01IntegratedAxiomAudit.log
+          if grep -F 'sorryAx' P01IntegratedAxiomAudit.log; then exit 1; fi
+      - name: Reject proof escapes
+        run: |
+          set -euo pipefail
+          if grep -nE '^[[:space:]]*(sorry|axiom|admit)[[:space:]]' \
+            lean/MCore/Real/P01GuessedWitnessRelation.lean \
+            lean/MCore/Real/P01NTMRunLaws.lean \
+            lean/MCore/Real/P01NTMSeqRun.lean \
+            lean/MCore/Real/P01IntegratedAssembly.lean \
+            lean/MCore/Real/P01WitnessPrepGlobal.lean; then
+            exit 1
+          fi
