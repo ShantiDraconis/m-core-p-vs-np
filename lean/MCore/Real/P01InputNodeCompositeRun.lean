@@ -1,4 +1,5 @@
 import MCore.Real.P01InputNodeCompositeNTM
+import MCore.Real.P01InputNodeRoundTrip
 import MCore.Real.P01NTMRunLaws
 
 namespace MCore
@@ -11,6 +12,10 @@ open P01InputIndexLookahead
 open P01WitnessIndexedReadPreserving
 open P01InputAfterReadReturn
 open P01InputNodeCompositeNTM
+open P01InputNodeRoundTrip
+open P01EvalCursorMachine
+open P01WitnessIndexedReadGap
+open CanonicalCircuitBits
 
 abbrev CompositeConfig :=
   Configuration InputNodeCompositeState (Option Bool)
@@ -263,6 +268,255 @@ theorem return_run_reachable
               hone hmem
           refine ⟨1 + m, by omega, ?_⟩
           simpa [TM.run, hhalt] using htrans
+
+/-- Final control mode of the mode-aware input return. -/
+def inputNodeFinalMode (tail frameStack : BitString) : InputReturnMode :=
+  match tail with
+  | _ :: _ => .frameStack
+  | [] =>
+      match frameStack with
+      | _ :: _ => .frameStack
+      | [] => .done
+
+/-- The canonical return target has the final mode encoded above. -/
+theorem inputAfterReadTarget_eq_finalMode
+    (witness tail frameStack : BitString)
+    (consumed padding : Nat) :
+    inputAfterReadTarget witness consumed tail frameStack padding =
+      { state := .halt (inputNodeFinalMode tail frameStack),
+        tape :=
+          (inputAfterReadTarget
+            witness consumed tail frameStack padding).tape } := by
+  cases tail with
+  | cons b bs =>
+      rfl
+  | nil =>
+      cases frameStack <;> rfl
+
+/-- Total majorant for the fused input-node NTM:
+lookahead + handoff + preserving read + handoff + return + handoff. -/
+def inputNodeCompositeFuel
+    (consumed i : Nat) (tail frameStack : BitString) : Nat :=
+  (2 * i + 6) + 1 +
+    preservingReadGapFuel consumed i + 1 +
+    P01InputNodeRoundTrip.inputAfterReadReturnFuel
+      (consumedAfterInputIndex consumed i) tail frameStack + 1
+
+/-- Full physical input-node reachability in one fixed NTM.
+
+Starting at the evaluator cursor on the unary index, the fused machine reaches
+an accepting `.done` state carrying exactly the selected witness bit.  The
+physical tape is exactly the canonical mode-aware return target. -/
+theorem inputNodeComposite_reaches_done
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    ∃ m ≤ inputNodeCompositeFuel consumed i tail frameStack,
+      ({ state :=
+           .done (witness.getD i false)
+             (inputNodeFinalMode tail frameStack),
+         tape :=
+           (inputAfterReadTarget witness
+             (consumedAfterInputIndex consumed i)
+             tail frameStack padding).tape } :
+        CompositeConfig) ∈
+      inputNodeCompositeMachine.runBranches m
+        [{ state := inputNodeCompositeMachine.initial,
+           tape :=
+             evalCursorReadTape witness consumed
+               (encodeNat i ++ tail) frameStack padding }] := by
+  let mode := inputReturnModeOf tail frameStack
+  let selected := witness.getD i false
+  let consumed' := consumedAfterInputIndex consumed i
+  let tape0 :=
+    evalCursorReadTape witness consumed
+      (encodeNat i ++ tail) frameStack padding
+
+  let cLook0 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := inputIndexLookaheadMachine.initial, tape := tape0 }
+  let cLookH : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .halt mode, tape := tape0 }
+
+  have hLookExact :
+      inputIndexLookaheadMachine.run (2 * i + 6) cLook0 = cLookH := by
+    dsimp [cLook0, cLookH, tape0, mode]
+    exact lookahead_inputReturnMode
+      witness tail frameStack consumed padding i
+
+  obtain ⟨mL, hmL, hL⟩ :=
+    look_run_reachable (2 * i + 6) cLook0
+  have hLH :
+      lookConfig cLookH ∈
+        inputNodeCompositeMachine.runBranches mL [lookConfig cLook0] := by
+    rw [hLookExact] at hL
+    exact hL
+
+  let cRead0 : Configuration PreservingReadState (Option Bool) :=
+    { state := preservingReadMachine.initial, tape := tape0 }
+  have hLookSucc :
+      readConfig mode cRead0 ∈
+        inputNodeCompositeMachine.successors (lookConfig cLookH) := by
+    dsimp [cLookH, cRead0, mode]
+    rw [look_handoff_successors]
+    simp [lookConfig, readConfig]
+
+  have hReadStart :
+      readConfig mode cRead0 ∈
+        inputNodeCompositeMachine.runBranches (mL + 1) [lookConfig cLook0] := by
+    exact mem_runBranches_succ_of_successor
+      inputNodeCompositeMachine mL [lookConfig cLook0]
+      (lookConfig cLookH) (readConfig mode cRead0)
+      hLH (lookConfig_not_halted cLookH) hLookSucc
+
+  let readFuel := preservingReadGapFuel consumed i
+  obtain ⟨mR, hmR, hR⟩ :=
+    read_run_reachable mode readFuel cRead0
+
+  let cReadH : Configuration PreservingReadState (Option Bool) :=
+    { state := .halt selected,
+      tape :=
+        afterIndexedReadTape witness consumed'
+          tail frameStack padding }
+
+  have hReadExact :
+      preservingReadMachine.run readFuel cRead0 = cReadH := by
+    dsimp [readFuel, cRead0, cReadH, selected, consumed', tape0]
+    exact inputNode000_read_to_afterIndexedReadTape
+      witness tail frameStack consumed padding i hi
+
+  have hRH :
+      readConfig mode cReadH ∈
+        inputNodeCompositeMachine.runBranches mR [readConfig mode cRead0] := by
+    rw [hReadExact] at hR
+    exact hR
+
+  have hReadReached :
+      readConfig mode cReadH ∈
+        inputNodeCompositeMachine.runBranches ((mL + 1) + mR)
+          [lookConfig cLook0] :=
+    mem_runBranches_trans inputNodeCompositeMachine
+      (mL + 1) mR [lookConfig cLook0]
+      (readConfig mode cRead0) (readConfig mode cReadH)
+      hReadStart hRH
+
+  let cRet0 : Configuration InputAfterReadReturnState (Option Bool) :=
+    { state := .start mode,
+      tape :=
+        afterIndexedReadTape witness consumed'
+          tail frameStack padding }
+
+  have hReadSucc :
+      returnConfig mode selected cRet0 ∈
+        inputNodeCompositeMachine.successors (readConfig mode cReadH) := by
+    dsimp [cReadH, cRet0, selected, mode]
+    rw [read_handoff_successors]
+    simp [readConfig, returnConfig]
+
+  have hReturnStart :
+      returnConfig mode selected cRet0 ∈
+        inputNodeCompositeMachine.runBranches (((mL + 1) + mR) + 1)
+          [lookConfig cLook0] := by
+    exact mem_runBranches_succ_of_successor
+      inputNodeCompositeMachine ((mL + 1) + mR) [lookConfig cLook0]
+      (readConfig mode cReadH) (returnConfig mode selected cRet0)
+      hReadReached (readConfig_not_halted mode cReadH) hReadSucc
+
+  let retFuel :=
+    P01InputNodeRoundTrip.inputAfterReadReturnFuel
+      consumed' tail frameStack
+  obtain ⟨mT, hmT, hT⟩ :=
+    return_run_reachable mode selected retFuel cRet0
+
+  let cRetH : Configuration InputAfterReadReturnState (Option Bool) :=
+    { state := .halt (inputNodeFinalMode tail frameStack),
+      tape :=
+        (inputAfterReadTarget witness consumed'
+          tail frameStack padding).tape }
+
+  have hReturnExact :
+      inputAfterReadReturnMachine.run retFuel cRet0 = cRetH := by
+    dsimp [retFuel, cRet0, cRetH, mode, consumed']
+    rw [inputNode000_afterRead_return
+      witness tail frameStack
+      (consumedAfterInputIndex consumed i) padding]
+    exact inputAfterReadTarget_eq_finalMode
+      witness tail frameStack
+      (consumedAfterInputIndex consumed i) padding
+
+  have hTH :
+      returnConfig mode selected cRetH ∈
+        inputNodeCompositeMachine.runBranches mT
+          [returnConfig mode selected cRet0] := by
+    rw [hReturnExact] at hT
+    exact hT
+
+  have hReturnReached :
+      returnConfig mode selected cRetH ∈
+        inputNodeCompositeMachine.runBranches
+          ((((mL + 1) + mR) + 1) + mT)
+          [lookConfig cLook0] :=
+    mem_runBranches_trans inputNodeCompositeMachine
+      (((mL + 1) + mR) + 1) mT [lookConfig cLook0]
+      (returnConfig mode selected cRet0)
+      (returnConfig mode selected cRetH)
+      hReturnStart hTH
+
+  let cDone : CompositeConfig :=
+    { state := .done selected (inputNodeFinalMode tail frameStack),
+      tape :=
+        (inputAfterReadTarget witness consumed'
+          tail frameStack padding).tape }
+
+  have hReturnSucc :
+      cDone ∈
+        inputNodeCompositeMachine.successors
+          (returnConfig mode selected cRetH) := by
+    dsimp [cRetH, cDone, selected]
+    rw [return_handoff_successors]
+    simp [returnConfig]
+
+  have hDone :
+      cDone ∈
+        inputNodeCompositeMachine.runBranches
+          (((((mL + 1) + mR) + 1) + mT) + 1)
+          [lookConfig cLook0] := by
+    exact mem_runBranches_succ_of_successor
+      inputNodeCompositeMachine ((((mL + 1) + mR) + 1) + mT)
+      [lookConfig cLook0]
+      (returnConfig mode selected cRetH) cDone
+      hReturnReached
+      (returnConfig_not_halted mode selected cRetH)
+      hReturnSucc
+
+  refine ⟨(((((mL + 1) + mR) + 1) + mT) + 1), ?_, ?_⟩
+  · dsimp [inputNodeCompositeFuel, readFuel, retFuel, consumed']
+    omega
+  · dsimp [cDone, selected, consumed', cLook0, tape0] at hDone ⊢
+    simpa [lookConfig, inputNodeCompositeMachine] using hDone
+
+/-- The reached terminal configuration is accepting in the fused NTM. -/
+theorem inputNodeComposite_reaches_accepting
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    ∃ m ≤ inputNodeCompositeFuel consumed i tail frameStack,
+      ∃ c ∈ inputNodeCompositeMachine.runBranches m
+        [{ state := inputNodeCompositeMachine.initial,
+           tape :=
+             evalCursorReadTape witness consumed
+               (encodeNat i ++ tail) frameStack padding }],
+        inputNodeCompositeMachine.accepting c.state = true ∧
+        (∃ mode, c.state = .done (witness.getD i false) mode) := by
+  obtain ⟨m, hm, hmem⟩ :=
+    inputNodeComposite_reaches_done
+      witness tail frameStack consumed padding i hi
+  refine ⟨m, hm, _, hmem, ?_, ?_⟩
+  · rfl
+  · exact ⟨inputNodeFinalMode tail frameStack, rfl⟩
+
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputAfterReadTarget_eq_finalMode
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_done
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_accepting
 
 #print axioms MCore.Real.P01InputNodeCompositeRun.look_successors_active
 #print axioms MCore.Real.P01InputNodeCompositeRun.read_successors_active
