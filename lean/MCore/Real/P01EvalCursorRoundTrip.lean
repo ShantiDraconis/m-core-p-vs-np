@@ -15,7 +15,7 @@ inductive CursorReturnState where
   | scanFrames
   | halt
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- Fixed-control return machine.  Starting on the currently unread source bit,
 it erases that bit, scans right across the remaining unread source, crosses the
