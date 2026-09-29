@@ -271,7 +271,7 @@ theorem return_run_reachable
           simpa [TM.run, hhalt] using htrans
 
 /-- Final control mode of the mode-aware input return. -/
-def inputNodeFinalMode (tail frameStack : BitString) : InputReturnMode :=
+def inputNodeFinalMode (tail frameStack : CanonicalFinalProof.BitString) : InputReturnMode :=
   match tail with
   | _ :: _ => .frameStack
   | [] =>
@@ -281,7 +281,7 @@ def inputNodeFinalMode (tail frameStack : BitString) : InputReturnMode :=
 
 /-- The canonical return target has the final mode encoded above. -/
 theorem inputAfterReadTarget_eq_finalMode
-    (witness tail frameStack : BitString)
+    (witness tail frameStack : CanonicalFinalProof.BitString)
     (consumed padding : Nat) :
     inputAfterReadTarget witness consumed tail frameStack padding =
       { state := .halt (inputNodeFinalMode tail frameStack),
@@ -297,7 +297,7 @@ theorem inputAfterReadTarget_eq_finalMode
 /-- Total majorant for the fused input-node NTM:
 lookahead + handoff + preserving read + handoff + return + handoff. -/
 def inputNodeCompositeFuel
-    (consumed i : Nat) (tail frameStack : BitString) : Nat :=
+    (consumed i : Nat) (tail frameStack : CanonicalFinalProof.BitString) : Nat :=
   (2 * i + 6) + 1 +
     preservingReadGapFuel consumed i + 1 +
     P01InputNodeRoundTrip.inputAfterReadReturnFuel
@@ -309,7 +309,7 @@ Starting at the evaluator cursor on the unary index, the fused machine reaches
 an accepting `.done` state carrying exactly the selected witness bit.  The
 physical tape is exactly the canonical mode-aware return target. -/
 theorem inputNodeComposite_reaches_done
-    (witness tail frameStack : BitString)
+    (witness tail frameStack : CanonicalFinalProof.BitString)
     (consumed padding i : Nat)
     (hi : i < witness.length) :
     ∃ m ≤ inputNodeCompositeFuel consumed i tail frameStack,
@@ -497,7 +497,7 @@ theorem inputNodeComposite_reaches_done
 
 /-- The reached terminal configuration is accepting in the fused NTM. -/
 theorem inputNodeComposite_reaches_accepting
-    (witness tail frameStack : BitString)
+    (witness tail frameStack : CanonicalFinalProof.BitString)
     (consumed padding i : Nat)
     (hi : i < witness.length) :
     ∃ m ≤ inputNodeCompositeFuel consumed i tail frameStack,
