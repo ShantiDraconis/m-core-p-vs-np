@@ -23,7 +23,7 @@ inductive InputNodeCompositeState where
       InputNodeCompositeState
   | done : Bool → InputReturnMode → InputNodeCompositeState
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- One fixed nondeterministic machine for the input node.  Every active state
 has exactly one successor, so the machine is operationally deterministic; NTM
