@@ -966,6 +966,8 @@ theorem movedBits_false_finalize
     simp [preservingReadMachine, TM.run, TM.step,
       Tape.write, Tape.move, List.replicate_succ,
       List.map_append, List.append_assoc]
+    simpa using
+      replicate_none_cons movedTail.length (sourceTail.map some)
 
   have h02 :
       preservingReadMachine.run (1 + (m + 1)) C0 = C2 := by
