@@ -13,6 +13,8 @@ open P01EvalCursorMachine
 open P01EvalCursorRoundTrip
 open P01NeedExprTagDecode
 open P01NeedExprCompositeNTM
+open P01InputNodeCompositeNTM
+open P01InputNodeCompositeRun
 open P01EvalFramePushMachine
 open P01EvalCursorFramePush
 open P01EvalRunLoopNTM
@@ -43,6 +45,11 @@ def pushLoopConfig
     (frame : EvalFrame)
     (c : Configuration FramePushState (Option Bool)) : LoopConfig :=
   { state := .need (.push frame c.state), tape := c.tape }
+
+
+def inputLoopConfig
+    (c : Configuration InputNodeCompositeState (Option Bool)) : LoopConfig :=
+  { state := inputLoopEmbed c.state, tape := c.tape }
 
 @[simp] theorem seekLoop_not_halted
     (c : Configuration CursorSeekState (Option Bool)) :
@@ -141,6 +148,146 @@ theorem pushLoop_successors_active
     simp [evalRunLoopMachine, needExprCompositeMachine,
       needLoopEmbed, framePushMachine, NTM.stepBranch, TM.step,
       Tape.write, Tape.move] at h ⊢
+
+
+/-- Active input-node configurations embed exactly into the repeated evaluator
+loop; terminal input states are handled by `inputLoopEmbed` itself. -/
+theorem inputLoop_successors_active
+    (c : Configuration InputNodeCompositeState (Option Bool))
+    (h : ¬ Halted inputNodeCompositeMachine c) :
+    evalRunLoopMachine.successors (inputLoopConfig c) =
+      (inputNodeCompositeMachine.successors c).map inputLoopConfig := by
+  rcases c with ⟨q, tape⟩
+  cases q <;>
+    simp [Halted, inputLoopConfig, inputLoopEmbed,
+      evalRunLoopMachine, inputNodeCompositeMachine,
+      NTM.successors, NTM.stepBranch, List.map_map,
+      Function.comp_def, Tape.write, Tape.move] at h ⊢
+
+theorem inputLoop_active
+    (c : Configuration InputNodeCompositeState (Option Bool))
+    (h : ¬ Halted inputNodeCompositeMachine c) :
+    ¬ Halted evalRunLoopMachine (inputLoopConfig c) := by
+  rcases c with ⟨q, tape⟩
+  cases q <;>
+    simp [Halted, inputLoopConfig, inputLoopEmbed,
+      evalRunLoopMachine, inputNodeCompositeMachine] at h ⊢
+
+/-- Terminal-aware reachability lift for the indexed-input primitive.
+
+The source primitive halts at `.done selected mode`; the target loop maps that
+same terminal directly to either `.final selected` or `.have (.start selected)`
+according to the retained return mode. -/
+theorem input_terminal_reachable_lift :
+    ∀ (n : Nat)
+      (a b : Configuration InputNodeCompositeState (Option Bool)),
+      ¬ Halted inputNodeCompositeMachine a →
+      Halted inputNodeCompositeMachine b →
+      b ∈ inputNodeCompositeMachine.runBranches n [a] →
+      ∃ m ≤ n,
+        inputLoopConfig b ∈
+          evalRunLoopMachine.runBranches m [inputLoopConfig a] := by
+  intro n
+  induction n with
+  | zero =>
+      intro a b ha hb hreach
+      simp [NTM.runBranches] at hreach
+      subst b
+      exact False.elim (ha hb)
+  | succ n ih =>
+      intro a b ha hb hreach
+      have hreach' :
+          b ∈ inputNodeCompositeMachine.runBranches n
+            (inputNodeCompositeMachine.successors a) := by
+        change b ∈ inputNodeCompositeMachine.runBranches (n + 1) [a] at hreach
+        rw [runBranches_singleton_active
+          inputNodeCompositeMachine n a ha] at hreach
+        exact hreach
+      rw [mem_runBranches_iff] at hreach'
+      rcases hreach' with ⟨c, hca, hcb⟩
+
+      have hstepSucc :
+          inputLoopConfig c ∈
+            evalRunLoopMachine.successors (inputLoopConfig a) := by
+        rw [inputLoop_successors_active a ha]
+        exact List.mem_map.mpr ⟨c, hca, rfl⟩
+      have hstep :
+          inputLoopConfig c ∈
+            evalRunLoopMachine.runBranches 1 [inputLoopConfig a] := by
+        have h :=
+          mem_runBranches_succ_of_successor
+            evalRunLoopMachine 0 [inputLoopConfig a]
+            (inputLoopConfig a) (inputLoopConfig c)
+            (by simp [NTM.runBranches])
+            (inputLoop_active a ha) hstepSucc
+        simpa using h
+
+      by_cases hc : Halted inputNodeCompositeMachine c
+      · have hcb' : b = c := by
+          rw [runBranches_singleton_halted
+            inputNodeCompositeMachine n c hc] at hcb
+          simpa using hcb
+        subst b
+        exact ⟨1, by omega, hstep⟩
+      · obtain ⟨m, hm, htail⟩ := ih c b hc hb hcb
+        have htrans :=
+          mem_runBranches_trans evalRunLoopMachine
+            1 m [inputLoopConfig a]
+            (inputLoopConfig c) (inputLoopConfig b)
+            hstep htail
+        exact ⟨1 + m, by omega, htrans⟩
+
+/-- The complete indexed-input primitive, starting after the 000 tag decoder,
+lifts to the mode-aware repeated evaluator loop with the same majorant. -/
+theorem inputNode_loop_from_read
+    (witness tail frameStack : BitString)
+    (consumed padding i : Nat)
+    (hi : i < witness.length) :
+    ∃ m ≤ inputNodeCompositeFuel consumed i tail frameStack,
+      inputLoopConfig
+        ({ state :=
+             .done (witness.getD i false)
+               (inputNodeFinalMode tail frameStack),
+           tape :=
+             (inputAfterReadTarget witness
+               (consumedAfterInputIndex consumed i)
+               tail frameStack padding).tape } :
+          Configuration InputNodeCompositeState (Option Bool)) ∈
+        evalRunLoopMachine.runBranches m
+          [inputLoopConfig
+            ({ state := inputNodeCompositeMachine.initial,
+               tape :=
+                 evalCursorReadTape witness consumed
+                   (encodeNat i ++ tail) frameStack padding } :
+              Configuration InputNodeCompositeState (Option Bool))] := by
+  obtain ⟨m, hm, hsrc⟩ :=
+    inputNodeComposite_reaches_done
+      witness tail frameStack consumed padding i hi
+  let a : Configuration InputNodeCompositeState (Option Bool) :=
+    { state := inputNodeCompositeMachine.initial,
+      tape :=
+        evalCursorReadTape witness consumed
+          (encodeNat i ++ tail) frameStack padding }
+  let b : Configuration InputNodeCompositeState (Option Bool) :=
+    { state :=
+        .done (witness.getD i false)
+          (inputNodeFinalMode tail frameStack),
+      tape :=
+        (inputAfterReadTarget witness
+          (consumedAfterInputIndex consumed i)
+          tail frameStack padding).tape }
+  have ha : ¬ Halted inputNodeCompositeMachine a := by
+    simp [Halted, a, inputNodeCompositeMachine]
+  have hb : Halted inputNodeCompositeMachine b := by
+    simp [Halted, b, inputNodeCompositeMachine]
+  obtain ⟨k, hk, hlift⟩ :=
+    input_terminal_reachable_lift m a b ha hb (by
+      simpa [a, b] using hsrc)
+  exact ⟨k, le_trans hk hm, by simpa [a, b] using hlift⟩
+
+#print axioms MCore.Real.P01EvalRunLoopRun.inputLoop_successors_active
+#print axioms MCore.Real.P01EvalRunLoopRun.input_terminal_reachable_lift
+#print axioms MCore.Real.P01EvalRunLoopRun.inputNode_loop_from_read
 
 private theorem tm_phase_run_reachable
     {S : Type}
