@@ -75,6 +75,16 @@ def framePopConfig
     Configuration FramePopState (Option Bool) :=
   { state := .start, tape := t }
 
+/-- Writing blank onto an already-blank head is physically inert. -/
+theorem tape_write_none_of_head_none
+    (t : Tape (Option Bool))
+    (h : t.head = none) :
+    Tape.write t none = t := by
+  cases t with
+  | mk left head right =>
+      simp [Tape.write] at h ⊢
+      exact h.symm
+
 theorem framePop_start_one
     (t : Tape (Option Bool))
     (hblank : t.head = none) :
@@ -82,8 +92,8 @@ theorem framePop_start_one
       { state := FramePopState.start, tape := t } =
       { state := FramePopState.read0, tape := popEnter t } := by
   rw [TM.run]
-  simp [framePopMachine, hblank, TM.step, popEnter]
-  rfl
+  simp [framePopMachine, hblank, TM.step, popEnter,
+    tape_write_none_of_head_none t hblank, TM.run]
 
 theorem framePop_read0_one
     (b0 : Bool) (t : Tape (Option Bool))
@@ -102,8 +112,8 @@ theorem framePop_gap1_one
       { state := FramePopState.gap1 b0, tape := t } =
       { state := FramePopState.read1 b0, tape := popEnter t } := by
   rw [TM.run]
-  simp [framePopMachine, hblank, TM.step, popEnter]
-  rfl
+  simp [framePopMachine, hblank, TM.step, popEnter,
+    tape_write_none_of_head_none t hblank, TM.run]
 
 theorem framePop_read1_one
     (b0 b1 : Bool) (t : Tape (Option Bool))
@@ -122,8 +132,8 @@ theorem framePop_gap2_one
       { state := FramePopState.gap2 b0 b1, tape := t } =
       { state := FramePopState.read2 b0 b1, tape := popEnter t } := by
   rw [TM.run]
-  simp [framePopMachine, hblank, TM.step, popEnter]
-  rfl
+  simp [framePopMachine, hblank, TM.step, popEnter,
+    tape_write_none_of_head_none t hblank, TM.run]
 
 theorem framePop_read2_one
     (b0 b1 b2 : Bool) (f : EvalFrame)
@@ -200,8 +210,8 @@ theorem framePop_run_six
           (encodeEvalFrame f ++ stack) padding)) =
       { state := FramePopState.halt f,
         tape := physicalStackV2Tape witness source stack (padding + 3) } := by
-  rw [encodeEvalFrame_eq_bits]
   unfold framePopConfig
+  rw [encodeEvalFrame_eq_bits]
   have hdecode :
       decodeEvalFrame [frameBit0 f, frameBit1 f, frameBit2 f] = some f := by
     rw [← encodeEvalFrame_eq_bits]
