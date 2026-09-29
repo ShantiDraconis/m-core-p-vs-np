@@ -1211,6 +1211,10 @@ theorem preservingRead_one_value
         TM.run, TM.step, Tape.write, Tape.move]
 
 
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_forall
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_forall_value
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingMoved_forall
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.movedBits_false_finalize
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_start_successor
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.replicate_none_extend
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.seekMoved_over_blanks
