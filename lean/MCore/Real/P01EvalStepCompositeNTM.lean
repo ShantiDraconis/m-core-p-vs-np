@@ -82,10 +82,14 @@ def needSimulation :
       needExprCompositeMachine evalStepCompositeMachine needStateEmbed where
   accepting := by
     intro q
-    cases q <;> rfl
+    cases q <;> try rfl
+    case input qi =>
+      cases qi <;> rfl
   rejecting := by
     intro q
-    cases q <;> rfl
+    cases q <;> try rfl
+    case input qi =>
+      cases qi <;> rfl
   successors := by
     intro c hactive
     rcases c with ⟨q, tape⟩
