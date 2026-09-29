@@ -135,6 +135,43 @@ theorem classify_done
   simp [inputReturnClassifyMachine, inputTerminatorTape,
     TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
 
+/-- Canonical finite return mode determined by the unread source tail and
+encoded frame stack. -/
+def inputReturnModeOf
+    (tail frameStack : BitString) : InputReturnMode :=
+  match tail with
+  | _ :: _ => .sourceTail
+  | [] =>
+      match frameStack with
+      | _ :: _ => .frameStack
+      | [] => .done
+
+/-- The classifier computes exactly `inputReturnModeOf` and restores the
+terminator tape unchanged. -/
+theorem classify_inputReturnMode
+    (left : List (Option Bool))
+    (tail frameStack : BitString)
+    (padding : Nat) :
+    inputReturnClassifyMachine.run 4
+      { state := inputReturnClassifyMachine.initial,
+        tape := inputTerminatorTape left tail frameStack padding } =
+      { state := .halt (inputReturnModeOf tail frameStack),
+        tape := inputTerminatorTape left tail frameStack padding } := by
+  cases tail with
+  | cons b bs =>
+      simpa [inputReturnModeOf] using
+        classify_sourceTail left b bs frameStack padding
+  | nil =>
+      cases frameStack with
+      | cons b bs =>
+          simpa [inputReturnModeOf] using
+            classify_frameStack left b bs padding
+      | nil =>
+          simpa [inputReturnModeOf] using
+            classify_done left padding
+
+#print axioms MCore.Real.P01InputReturnMode.classify_inputReturnMode
+
 #print axioms MCore.Real.P01InputReturnMode.classify_sourceTail
 #print axioms MCore.Real.P01InputReturnMode.classify_frameStack
 #print axioms MCore.Real.P01InputReturnMode.classify_done
