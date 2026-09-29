@@ -698,6 +698,115 @@ theorem preservingMoved_cycle
   rw [hFuel]
   simpa [C0, C7, moved] using h07
 
+
+/-- Exact cost of one generic preserving successor cycle.  The moved prefix is
+nonempty; one leading unary true marker is consumed, the next witness cell is
+moved into the preserved prefix, and control returns to \`.indexMoved\` on the
+next source symbol. -/
+def preservingMovedCycleFuel (moved : BitString) : Nat :=
+  4 * moved.length + 6
+
+/-- Generic physical successor cycle, stated directly on \`movedBitsConfig\`.
+This is the material induction step: it consumes exactly one true unary marker,
+extends the moved witness prefix by exactly one bit, preserves the untouched
+witness suffix, and leaves the unread source tail unchanged. -/
+theorem movedBits_true_cycle
+    (first next : Bool)
+    (movedTail rest sourceTail : BitString) :
+    preservingReadMachine.run
+      (preservingMovedCycleFuel (first :: movedTail))
+      (movedBitsConfig (first :: movedTail) (next :: rest)
+        (true :: sourceTail)) =
+      movedBitsConfig ((first :: movedTail) ++ [next]) rest sourceTail := by
+  rw [show preservingMovedCycleFuel (first :: movedTail) =
+      1 + ((movedTail.length + 1) +
+        (1 + ((movedTail.length + 1) +
+          (2 + (((first :: movedTail).reverse.length + 1) +
+            (movedTail.length + 2)))))) by
+      simp [preservingMovedCycleFuel]
+      omega]
+  rw [run_add]
+  have hstart :
+      preservingReadMachine.run 1
+        (movedBitsConfig (first :: movedTail) (next :: rest)
+          (true :: sourceTail)) =
+        { state := .seekMoved,
+          tape :=
+            { left := List.replicate movedTail.length none ++
+                (some first :: movedTail.map some ++
+                  (none :: some next :: rest.map some)),
+              head := none,
+              right := none :: sourceTail.map some } } := by
+    simp [movedBitsConfig, movedBitsTape, preservingReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
+      List.append_assoc]
+  rw [hstart]
+  rw [run_add]
+  rw [seekMoved_over_blanks movedTail.length first
+    (movedTail.map some ++ (none :: some next :: rest.map some))
+    (none :: sourceTail.map some)]
+  rw [run_add]
+  rw [TM.run]
+  simp only [show preservingReadMachine.halting (.seekMoved) = false by rfl,
+    Bool.false_eq_true, if_false]
+  rw [seekMoved_step_bit first next movedTail (rest.map some)
+    (List.replicate (movedTail.length + 1) none ++
+      none :: sourceTail.map some)]
+  rw [run_add]
+  rw [scanMoved_over_bits movedTail next (rest.map some)
+    (some first ::
+      (List.replicate (movedTail.length + 1) none ++
+        none :: sourceTail.map some))]
+  rw [run_add]
+  rw [capture_write_to_stream next (rest.map some)
+    (movedTail.reverse.map some ++
+      some first ::
+        (List.replicate (movedTail.length + 1) none ++
+          none :: sourceTail.map some))]
+  rw [run_add]
+  have hstream :
+      rightStreamTape (some next :: none :: rest.map some)
+          (movedTail.reverse.map some ++
+            some first ::
+              (List.replicate (movedTail.length + 1) none ++
+                none :: sourceTail.map some)) =
+        returnMovedTape (first :: movedTail).reverse
+          (some next :: none :: rest.map some)
+          (List.replicate movedTail.length none ++
+            none :: sourceTail.map some) := by
+    rw [returnMovedTape_eq_stream]
+    simp [List.reverse_cons, List.map_append, List.replicate_succ,
+      List.append_assoc]
+  rw [hstream]
+  rw [returnMoved_over_bits (first :: movedTail).reverse
+    (some next :: none :: rest.map some)
+    (List.replicate movedTail.length none ++
+      none :: sourceTail.map some)]
+  rw [run_add]
+  simp only [List.reverse_reverse]
+  rw [rightStreamTape_blank_block movedTail.length
+    (none ::
+      ((first :: movedTail).map some ++
+        (some next :: none :: rest.map some)))
+    (sourceTail.map some)]
+  rw [returnBlanks_over_blanks movedTail.length]
+  simp [movedBitsConfig, movedBitsTape, List.map_append,
+    List.replicate_succ, List.append_assoc, preservingMovedCycleFuel]
+
+/-- The same successor cycle in the canonical unary-index invariant:
+remaining index \`n+1\` becomes \`n\` and the witness remains recoverable
+exactly as \`moved ++ next :: rest\`. -/
+theorem preservingMoved_successor_cycle
+    (first next : Bool) (movedTail rest tail : BitString) (n : Nat) :
+    preservingReadMachine.run
+      (preservingMovedCycleFuel (first :: movedTail))
+      (preservingMovedConfig (first :: movedTail) (next :: rest) (n + 1) tail) =
+      preservingMovedConfig ((first :: movedTail) ++ [next]) rest n tail := by
+  rw [preservingMovedConfig_eq_bits]
+  rw [preservingMovedConfig_eq_bits]
+  simpa [encodeNat, List.append_assoc] using
+    (movedBits_true_cycle first next movedTail rest (encodeNat n ++ tail))
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
