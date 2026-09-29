@@ -19,7 +19,7 @@ inductive InputAfterReadReturnState where
   | scanFrames
   | halt : InputReturnMode → InputAfterReadReturnState
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 /-- Return machine used after the indexed witness reader has restored the
 witness and left the head on the witness/source separator.
