@@ -55,6 +55,7 @@ theorem look_successors_active
     inputNodeCompositeMachine.successors (lookConfig c) =
       [lookConfig (inputIndexLookaheadMachine.step c)] := by
   unfold NTM.successors
+  simp only [lookConfig]
   rw [look_transition_active c.state c.tape.head h]
   simp [lookConfig, NTM.stepBranch, TM.step,
     inputNodeCompositeMachine, inputIndexLookaheadMachine,
@@ -67,6 +68,7 @@ theorem read_successors_active
     inputNodeCompositeMachine.successors (readConfig mode c) =
       [readConfig mode (preservingReadMachine.step c)] := by
   unfold NTM.successors
+  simp only [readConfig]
   rw [read_transition_active mode c.state c.tape.head h]
   simp [readConfig, NTM.stepBranch, TM.step,
     inputNodeCompositeMachine, preservingReadMachine,
@@ -79,6 +81,7 @@ theorem return_successors_active
     inputNodeCompositeMachine.successors (returnConfig mode selected c) =
       [returnConfig mode selected (inputAfterReadReturnMachine.step c)] := by
   unfold NTM.successors
+  simp only [returnConfig]
   rw [return_transition_active mode selected c.state c.tape.head h]
   simp [returnConfig, NTM.stepBranch, TM.step,
     inputNodeCompositeMachine, inputAfterReadReturnMachine,
@@ -97,7 +100,9 @@ theorem look_run_reachable :
   induction n with
   | zero =>
       intro c
-      exact ⟨0, by omega, by simp [NTM.runBranches]⟩
+      refine ⟨0, by omega, ?_⟩
+      change lookConfig c ∈ [lookConfig c]
+      simp
   | succ n ih =>
       intro c
       cases hhalt : inputIndexLookaheadMachine.halting c.state with
@@ -106,7 +111,11 @@ theorem look_run_reachable :
             MachineRunLemmas.run_halted
               inputIndexLookaheadMachine c hhalt (n + 1)
           refine ⟨0, by omega, ?_⟩
-          simpa [hr, NTM.runBranches]
+          change
+            lookConfig (inputIndexLookaheadMachine.run (n + 1) c) ∈
+              [lookConfig c]
+          rw [hr]
+          simp
       | false =>
           obtain ⟨m, hm, hmem⟩ :=
             ih (inputIndexLookaheadMachine.step c)
@@ -147,7 +156,9 @@ theorem read_run_reachable
   induction n with
   | zero =>
       intro c
-      exact ⟨0, by omega, by simp [NTM.runBranches]⟩
+      refine ⟨0, by omega, ?_⟩
+      change readConfig mode c ∈ [readConfig mode c]
+      simp
   | succ n ih =>
       intro c
       cases hhalt : preservingReadMachine.halting c.state with
@@ -156,7 +167,11 @@ theorem read_run_reachable
             MachineRunLemmas.run_halted
               preservingReadMachine c hhalt (n + 1)
           refine ⟨0, by omega, ?_⟩
-          simpa [hr, NTM.runBranches]
+          change
+            readConfig mode (preservingReadMachine.run (n + 1) c) ∈
+              [readConfig mode c]
+          rw [hr]
+          simp
       | false =>
           obtain ⟨m, hm, hmem⟩ := ih (preservingReadMachine.step c)
           have hsucc :
@@ -197,7 +212,9 @@ theorem return_run_reachable
   induction n with
   | zero =>
       intro c
-      exact ⟨0, by omega, by simp [NTM.runBranches]⟩
+      refine ⟨0, by omega, ?_⟩
+      change returnConfig mode selected c ∈ [returnConfig mode selected c]
+      simp
   | succ n ih =>
       intro c
       cases hhalt : inputAfterReadReturnMachine.halting c.state with
@@ -206,7 +223,12 @@ theorem return_run_reachable
             MachineRunLemmas.run_halted
               inputAfterReadReturnMachine c hhalt (n + 1)
           refine ⟨0, by omega, ?_⟩
-          simpa [hr, NTM.runBranches]
+          change
+            returnConfig mode selected
+                (inputAfterReadReturnMachine.run (n + 1) c) ∈
+              [returnConfig mode selected c]
+          rw [hr]
+          simp
       | false =>
           obtain ⟨m, hm, hmem⟩ :=
             ih (inputAfterReadReturnMachine.step c)
