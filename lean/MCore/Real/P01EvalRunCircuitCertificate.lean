@@ -263,10 +263,159 @@ theorem const_certificate
   · exact constFalse_certificate sigma witness
   · exact constTrue_certificate sigma witness
 
+
+
+/-- Structural producer for negation: execute the physical 011 tag, recurse on
+the child under a neg continuation frame, then discharge that frame with the
+already-certified physical haveValue loop. -/
+theorem neg_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (circuit : Circuit)
+    (hchild : CircuitRunCertificate sigma witness circuit) :
+    CircuitRunCertificate sigma witness (.not circuit) := by
+  intro tail frames consumed padding hlen hread
+  have hlenChild : varBound circuit ≤ witness.length := by
+    simpa [varBound] using hlen
+  have hreadChild :
+      ∀ i, i < varBound circuit →
+        witness.getD i false = sigma i := by
+    intro i hi
+    exact hread i (by simpa [varBound] using hi)
+
+  obtain ⟨m0, hm0, h0⟩ :=
+    neg_loop_reaches_need
+      witness (encodeCircuit circuit ++ tail)
+      (encodeEvalFrames frames) consumed padding
+
+  let padChild := ((padding - 1) - 1) - 1
+  let cNeed : LoopConfig :=
+    { state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+      tape :=
+        evalCursorStackEndTape witness (consumed + 3)
+          (encodeCircuit circuit ++ tail)
+          (encodeEvalFrame .neg ++ encodeEvalFrames frames)
+          padChild }
+
+  have h0' :
+      cNeed ∈
+        evalRunLoopMachine.runBranches m0
+          [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (encodeCircuit (.not circuit) ++ tail)
+                 (encodeEvalFrames frames) padding }] := by
+    simpa [cNeed, padChild, encodeCircuit, List.append_assoc] using h0
+
+  obtain ⟨m1, cfg1, h1, hout1⟩ :=
+    hchild tail (.neg :: frames) (consumed + 3) padChild
+      hlenChild hreadChild
+
+  have h1' :
+      cfg1 ∈ evalRunLoopMachine.runBranches m1 [cNeed] := by
+    simpa [cNeed, encodeEvalFrames, List.append_assoc] using h1
+
+  have h01 :=
+    mem_runBranches_trans evalRunLoopMachine
+      m0 m1
+      [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.not circuit) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      cNeed cfg1 h0' h1'
+
+  have houtHave :
+      ∃ consumed1 padding1,
+        cfg1 =
+          { state := .have (.start (evalCircuit sigma circuit)),
+            tape :=
+              evalCursorStackEndTape witness consumed1 tail
+                (encodeEvalFrames (.neg :: frames)) padding1 } := by
+    simpa [LoopOutcome] using hout1
+  rcases houtHave with ⟨consumed1, padding1, hcfg1⟩
+  subst cfg1
+
+  obtain ⟨m2, hm2, h2⟩ :=
+    negReturn_loop_reaches_have
+      witness tail (encodeEvalFrames frames)
+      consumed1 padding1 (evalCircuit sigma circuit)
+
+  let cHave : LoopConfig :=
+    { state := .have (.start (!(evalCircuit sigma circuit))),
+      tape :=
+        evalCursorStackEndTape witness consumed1 tail
+          (encodeEvalFrames frames) (padding1 + 3) }
+
+  have h2' :
+      cHave ∈
+        evalRunLoopMachine.runBranches m2
+          [{ state := .have (.start (evalCircuit sigma circuit)),
+             tape :=
+               evalCursorStackEndTape witness consumed1 tail
+                 (encodeEvalFrames (.neg :: frames)) padding1 }] := by
+    simpa [cHave, encodeEvalFrames, List.append_assoc] using h2
+
+  have h012 :=
+    mem_runBranches_trans evalRunLoopMachine
+      (m0 + m1) m2
+      [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.not circuit) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      ({ state := .have (.start (evalCircuit sigma circuit)),
+         tape :=
+           evalCursorStackEndTape witness consumed1 tail
+             (encodeEvalFrames (.neg :: frames)) padding1 } : LoopConfig)
+      cHave h01 h2'
+
+  cases tail with
+  | cons b bs =>
+      refine ⟨m0 + m1 + m2, cHave, h012, ?_⟩
+      change LoopOutcome witness (evalCircuit sigma (.not circuit))
+        (b :: bs) frames cHave
+      refine ⟨consumed1, padding1 + 3, ?_⟩
+      simp [cHave, evalCircuit]
+  | nil =>
+      cases frames with
+      | cons f fs =>
+          refine ⟨m0 + m1 + m2, cHave, h012, ?_⟩
+          change LoopOutcome witness (evalCircuit sigma (.not circuit))
+            [] (f :: fs) cHave
+          refine ⟨consumed1, padding1 + 3, ?_⟩
+          simp [cHave, evalCircuit]
+      | nil =>
+          obtain ⟨m3, hm3, h3⟩ :=
+            emptyFrames_loop_reaches_final
+              witness [] consumed1 (padding1 + 3)
+                (!(evalCircuit sigma circuit))
+          let cFinal : LoopConfig :=
+            { state := .final (!(evalCircuit sigma circuit)),
+              tape :=
+                evalCursorStackEndTape witness consumed1
+                  [] [] (padding1 + 3) }
+          have hAll :=
+            mem_runBranches_trans evalRunLoopMachine
+              (m0 + m1 + m2) m3
+              [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+                 tape :=
+                   evalCursorStackEndTape witness consumed
+                     (encodeCircuit (.not circuit))
+                     [] padding }]
+              cHave cFinal h012 h3
+          refine ⟨m0 + m1 + m2 + m3, cFinal, ?_, ?_⟩
+          · simpa using hAll
+          · change LoopOutcome witness
+              (evalCircuit sigma (.not circuit)) [] [] cFinal
+            refine ⟨cFinal.tape, ?_⟩
+            simp [cFinal, evalCircuit]
+
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.input_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.constFalse_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.constTrue_certificate
 #print axioms MCore.Real.P01EvalRunCircuitCertificate.const_certificate
+#print axioms MCore.Real.P01EvalRunCircuitCertificate.neg_certificate
 
 end P01EvalRunCircuitCertificate
 end Real
