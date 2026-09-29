@@ -93,10 +93,8 @@ theorem execMoves_append
 theorem moveRightSeq_succ_last (n : Nat) :
     moveRightSeq (Nat.succ n) =
       moveRightSeq n ++ [.right] := by
-  induction n with
-  | zero => rfl
-  | succ n ih =>
-      simp [moveRightSeq, List.replicate_succ, ih]
+  simpa [moveRightSeq, Nat.succ_eq_add_one] using
+    (List.replicate_succ' n Direction.right)
 
 /-- Exact cancellation on the local tape representation requires that the left
 shuttle never runs past the represented left list.  This is the truthful
