@@ -176,10 +176,18 @@ theorem look_step_active
     | q' =>
         { state := .look q', tape := t.tape } := by
   cases q <;>
-    simp [inputNodeMachine, liftLookTransition,
-      inputIndexLookaheadMachine, TM.step, hhalt,
-      Tape.write, Tape.move] <;>
-    split <;> rfl
+    simp [inputIndexLookaheadMachine] at hhalt
+  all_goals
+    cases hhead : tape.head with
+    | none =>
+        simp [inputNodeMachine, liftLookTransition,
+          inputIndexLookaheadMachine, TM.step, hhead,
+          Tape.write, Tape.move]
+    | some b =>
+        cases b <;>
+          simp [inputNodeMachine, liftLookTransition,
+            inputIndexLookaheadMachine, TM.step, hhead,
+            Tape.write, Tape.move]
 
 /-- One active preserving-read transition is reproduced exactly, with the mode
 threaded through finite control. -/
@@ -201,10 +209,18 @@ theorem read_step_active
     | q' =>
         { state := .read mode q', tape := t.tape } := by
   cases q <;>
-    simp [inputNodeMachine, liftReadTransition,
-      preservingReadMachine, TM.step, hhalt,
-      Tape.write, Tape.move] <;>
-    split <;> rfl
+    simp [preservingReadMachine] at hhalt
+  all_goals
+    cases hhead : tape.head with
+    | none =>
+        simp [inputNodeMachine, liftReadTransition,
+          preservingReadMachine, TM.step, hhead,
+          Tape.write, Tape.move]
+    | some b =>
+        cases b <;>
+          simp [inputNodeMachine, liftReadTransition,
+            preservingReadMachine, TM.step, hhead,
+            Tape.write, Tape.move]
 
 /-- One active return transition is reproduced exactly, retaining both the read
 result and the previously classified return mode. -/
@@ -225,9 +241,16 @@ theorem return_step_active
     | q' =>
         { state := .ret result mode q', tape := t.tape } := by
   cases q <;>
-    simp [inputNodeMachine, inputAfterReadReturnMachine,
-      TM.step, hhalt, Tape.write, Tape.move] <;>
-    split <;> rfl
+    simp [inputAfterReadReturnMachine] at hhalt
+  all_goals
+    cases hhead : tape.head with
+    | none =>
+        simp [inputNodeMachine, inputAfterReadReturnMachine,
+          TM.step, hhead, Tape.write, Tape.move]
+    | some b =>
+        cases b <;>
+          simp [inputNodeMachine, inputAfterReadReturnMachine,
+            TM.step, hhead, Tape.write, Tape.move]
 
 #print axioms MCore.Real.P01InputNodeIntegratedMachine.look_handoff
 #print axioms MCore.Real.P01InputNodeIntegratedMachine.read_handoff
