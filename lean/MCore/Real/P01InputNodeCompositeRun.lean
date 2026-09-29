@@ -6,6 +6,7 @@ namespace MCore
 namespace Real
 namespace P01InputNodeCompositeRun
 
+open CanonicalFinalProof
 open P01NTMRunLaws
 open P01InputReturnMode
 open P01InputIndexLookahead
