@@ -1087,6 +1087,55 @@ theorem preservingMoved_forall
             List.append_assoc]
           omega
 
+/-- Exact fuel for a complete preserving unary-index read from the canonical
+initial layout.  The zero case is the already-certified four-step base; a
+successor first enters the moved-prefix invariant in six steps and then uses
+the exact moved-prefix fuel. -/
+def preservingReadFuel : Nat → Nat
+  | 0 => 4
+  | n + 1 => 6 + preservingMovedFuel 1 n
+
+/-- Complete preserving indexed witness read for every valid index.  The
+selected bit is returned in the halt state, the witness is restored exactly,
+the unary index is consumed into blanks, and the unread source tail is
+preserved. -/
+theorem preservingRead_forall
+    (i : Nat) (witness tail : BitString)
+    (h : i < witness.length) :
+    preservingReadMachine.run (preservingReadFuel i)
+      { state := preservingReadMachine.initial,
+        tape := preservingReadTape witness i tail } =
+      { state := .halt (witness.getD i false),
+        tape :=
+          { left := witness.map some,
+            head := none,
+            right := List.replicate (i + 1) none ++ tail.map some } } := by
+  cases i with
+  | zero =>
+      cases witness with
+      | nil =>
+          simp at h
+      | cons b witnessTail =>
+          simpa [preservingReadFuel, List.getD_cons_zero] using
+            preservingRead_zero b witnessTail tail
+  | succ n =>
+      cases witness with
+      | nil =>
+          simp at h
+      | cons b witnessTail =>
+          have htail : n < witnessTail.length := by
+            simpa using h
+          rw [show preservingReadFuel (n + 1) =
+              6 + preservingMovedFuel 1 n by rfl]
+          rw [run_add]
+          rw [preservingRead_start_successor b witnessTail tail n]
+          have hm :=
+            preservingMoved_forall b [] witnessTail tail n htail
+          simpa [List.getD_cons_succ, List.map_append,
+            List.append_assoc] using hm
+
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_forall
+
 /-- Compatibility name for the already-kernelized generic preserving cycle.
 No second proof is maintained here. -/
 theorem preservingMoved_true_cycle
