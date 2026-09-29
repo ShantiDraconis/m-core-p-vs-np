@@ -91,6 +91,53 @@ def pushConfig
     NeedExprConfig :=
   { state := .push frame c.state, tape := c.tape }
 
+def inputState
+    (q : InputNodeCompositeState) : NeedExprCompositeState :=
+  .input q
+
+def inputConfig
+    (c : Configuration InputNodeCompositeState (Option Bool)) :
+    NeedExprConfig :=
+  P01NTMRunLaws.liftConfig inputState c
+
+/-- The already-certified input-node NTM is an exact phase simulation inside
+the fused needExpr machine.  Active successors are only relabelled; the
+submachine's accepting/rejecting terminal flags are preserved verbatim. -/
+theorem inputState_simulation :
+    P01NTMRunLaws.Simulation
+      inputNodeCompositeMachine needExprCompositeMachine inputState := by
+  refine
+    { accepting := ?_
+      rejecting := ?_
+      successors := ?_ }
+  · intro q
+    cases q <;> rfl
+  · intro q
+    cases q <;> rfl
+  · intro cfg hactive
+    rcases cfg with ⟨q, tape⟩
+    cases q with
+    | done selected mode =>
+        exfalso
+        apply hactive
+        simp [Halted, inputNodeCompositeMachine]
+    | reject =>
+        exfalso
+        apply hactive
+        simp [Halted, inputNodeCompositeMachine]
+    | look ql =>
+        simp [NTM.successors, inputState, P01NTMRunLaws.liftConfig,
+          needExprCompositeMachine, inputNodeCompositeMachine,
+          NTM.stepBranch, List.map_map, Function.comp_def]
+    | read mode qr =>
+        simp [NTM.successors, inputState, P01NTMRunLaws.liftConfig,
+          needExprCompositeMachine, inputNodeCompositeMachine,
+          NTM.stepBranch, List.map_map, Function.comp_def]
+    | ret mode selected qt =>
+        simp [NTM.successors, inputState, P01NTMRunLaws.liftConfig,
+          needExprCompositeMachine, inputNodeCompositeMachine,
+          NTM.stepBranch, List.map_map, Function.comp_def]
+
 @[simp] theorem seekConfig_not_halted
     (c : Configuration CursorSeekState (Option Bool)) :
     ¬ Halted needExprCompositeMachine (seekConfig c) := by
@@ -935,6 +982,7 @@ theorem or_reaches_done
 
 #print axioms MCore.Real.P01NeedExprCompositeRun.constTrue_reaches_done
 
+#print axioms MCore.Real.P01NeedExprCompositeRun.inputState_simulation
 #print axioms MCore.Real.P01NeedExprCompositeRun.seek_run_reachable
 #print axioms MCore.Real.P01NeedExprCompositeRun.decode_run_reachable
 #print axioms MCore.Real.P01NeedExprCompositeRun.retValue_run_reachable
