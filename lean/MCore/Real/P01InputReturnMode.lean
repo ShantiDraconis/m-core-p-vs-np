@@ -117,9 +117,25 @@ theorem classify_frameStack
   | nil =>
       exact False.elim (hne hrev)
   | cons x xs =>
+      have hmap :
+          (b :: frameTail).reverse.map some =
+            some x :: xs.map some := by
+        rw [hrev]
+        rfl
+      have htape :
+          inputTerminatorTape left [] (b :: frameTail) padding =
+            { left := left,
+              head := some false,
+              right :=
+                none :: some x :: xs.map some ++
+                  none :: List.replicate padding none } := by
+        unfold inputTerminatorTape
+        rw [hmap]
+        rfl
+      rw [htape]
       cases x <;>
-        simp [inputReturnClassifyMachine, inputTerminatorTape,
-          TM.run, TM.step, Tape.write, Tape.move, hrev,
+        simp [inputReturnClassifyMachine,
+          TM.run, TM.step, Tape.write, Tape.move,
           List.append_assoc]
 
 /-- Empty source tail and empty frame stack: the semantic input value is already
