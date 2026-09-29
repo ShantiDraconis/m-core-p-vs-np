@@ -15,6 +15,7 @@ open P01EvalCursorFramePop
 open P01EvalFramePushMachine
 open P01EvalCursorFramePush
 open P01HaveValueCompositeNTM
+open P01NeedExprCompositeNTM
 open P01EvalRunLoopNTM
 open P01EvalRunLoopRun
 
@@ -193,11 +194,20 @@ theorem emptyFrames_loop_reaches_final
   let cPeek : LoopConfig := { state := .have (.peek v), tape := tPeek }
   let cFinal : LoopConfig := { state := .final v, tape := t0 }
 
+  have h0blank : t0.head = none := by
+    dsimp [t0]
+    simp [evalCursorStackEndTape]
   have hStartSucc :
       cPeek ∈ evalRunLoopMachine.successors c0 := by
-    dsimp [c0, cPeek, tPeek]
-    simp [evalRunLoopMachine, haveValueCompositeMachine,
-      NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
+    change
+      cPeek ∈
+        (haveValueCompositeMachine.successors
+          ({ state := .start v, tape := t0 } :
+            Configuration HaveValueCompositeState (Option Bool))).map
+          (fun d => ({ state := haveLoopEmbed d.state, tape := d.tape } :
+            LoopConfig))
+    rw [start_successors v t0 h0blank]
+    simp [cPeek, tPeek, haveLoopEmbed]
 
   have hStart :
       cPeek ∈ evalRunLoopMachine.runBranches 1 [c0] :=
@@ -256,11 +266,20 @@ theorem frame_loop_reaches_popped
         evalCursorStackEndTape witness consumed unread
           frameStack (padding + 3) }
 
+  have h0blank : t0.head = none := by
+    dsimp [t0]
+    simp [evalCursorStackEndTape]
   have hStartSucc :
       cPeek ∈ evalRunLoopMachine.successors c0 := by
-    dsimp [c0, cPeek, tPeek]
-    simp [evalRunLoopMachine, haveValueCompositeMachine,
-      NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
+    change
+      cPeek ∈
+        (haveValueCompositeMachine.successors
+          ({ state := .start v, tape := t0 } :
+            Configuration HaveValueCompositeState (Option Bool))).map
+          (fun d => ({ state := haveLoopEmbed d.state, tape := d.tape } :
+            LoopConfig))
+    rw [start_successors v t0 h0blank]
+    simp [cPeek, tPeek, haveLoopEmbed]
   have hStart :
       cPeek ∈ evalRunLoopMachine.runBranches 1 [c0] :=
     one_step_of_successor c0 cPeek
@@ -276,8 +295,8 @@ theorem frame_loop_reaches_popped
         evalRunLoopMachine.successors cPeek := by
     dsimp [cPeek, cPop0, havePopLoopConfig]
     rw [have_nonempty_pop_successors v (frameBit0 frame) tPeek hPeekHead]
-    rw [encodeEvalFrame_eq_bits]
-    simp [framePopConfig, framePopMachine, tPeek, t0,
+    simp [havePopLoopConfig, framePopConfig, framePopMachine,
+      tPeek, t0, encodeEvalFrame_eq_bits,
       evalCursorStackEndTape, Tape.move, List.append_assoc]
 
   have hPeek :
@@ -449,7 +468,7 @@ theorem leftFrame_loop_reaches_need
         haveValueCompositeMachine.successors
           { state := .pop v (.halt oldFrame), tape := tape } =
           [{ state := .push newFrame (.start newFrame), tape := tape }]) :
-    ∃ m ≤ 12,
+    ∃ m ≤ 13,
       ({ state := .need needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed unread
@@ -576,7 +595,7 @@ theorem andLeftReturn_loop_reaches_need
     (witness unread frameStack : BitString)
     (consumed padding : Nat)
     (v : Bool) :
-    ∃ m ≤ 12,
+    ∃ m ≤ 13,
       ({ state := .need needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed unread
@@ -596,7 +615,7 @@ theorem orLeftReturn_loop_reaches_need
     (witness unread frameStack : BitString)
     (consumed padding : Nat)
     (v : Bool) :
-    ∃ m ≤ 12,
+    ∃ m ≤ 13,
       ({ state := .need needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed unread
