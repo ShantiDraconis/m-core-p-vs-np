@@ -100,7 +100,7 @@ theorem witnessBits_getD_input
     (w : SATWitness (.input i)) :
     (witnessBits w).getD i false =
       assignmentOfWitness (.input i) w i := by
-  induction i generalizing w with
+  induction i with
   | zero =>
       simp [witnessBits, assignmentOfWitness, varBound]
   | succ i ih =>
