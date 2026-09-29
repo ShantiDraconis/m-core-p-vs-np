@@ -248,9 +248,9 @@ theorem prepared_nonempty_reaches_eval_start
       { state := VerifierEvalState.eval evalRunLoopMachine.initial,
         tape :=
           Tape.move none .right
-            (Tape.write none (sourceEndTape witness (b :: bs))) }
+            (Tape.write (sourceEndTape witness (b :: bs)) none) }
     have hwrite :
-        Tape.write none (sourceEndTape witness (b :: bs)) =
+        Tape.write (sourceEndTape witness (b :: bs)) none =
           sourceEndTape witness (b :: bs) := by
       rfl
     rw [hwrite, hEnterTape]
@@ -264,7 +264,6 @@ theorem prepared_nonempty_reaches_eval_start
       ((1 + mS) + 1) 1 [cStart] cEnter cEval hToEnter hEnter
   refine ⟨((1 + mS) + 1) + 1, ?_, ?_⟩
   · dsimp [cStart] at hAll ⊢
-    simp only [List.length_cons]
     omega
   · dsimp [cStart, cEval] at hAll ⊢
     simpa [verifierEvalMachine] using hAll
