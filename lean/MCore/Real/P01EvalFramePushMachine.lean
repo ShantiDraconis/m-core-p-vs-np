@@ -1,5 +1,6 @@
 import MCore.Real.P01EncodedFrameTape
 import MCore.Real.P01FullVerifierPhysicalStackV2
+import MCore.Real.MachineRunLemmas
 
 namespace MCore
 namespace Real
@@ -9,6 +10,7 @@ open CanonicalFinalProof
 open P01EncodedStackEvaluator
 open P01EncodedFrameTape
 open P01FullVerifierPhysicalStackV2
+open MachineRunLemmas
 
 /-- Explicit three physical bits of a semantic evaluator frame. -/
 def frameBits : EvalFrame → Bool × Bool × Bool
@@ -80,8 +82,42 @@ def framePushConfig
     Configuration FramePushState (Option Bool) :=
   { state := .start f, tape := t }
 
+/-- One start-state step is exactly the certified Boolean push transform. -/
+theorem framePush_start_one
+    (f : EvalFrame) (t : Tape (Option Bool))
+    (hblank : t.head = none) :
+    framePushMachine.run 1
+      { state := FramePushState.start f, tape := t } =
+      { state := FramePushState.after1 f,
+        tape := pushStep (frameBit2 f) t } := by
+  rw [TM.run]
+  simp [framePushMachine, hblank, TM.step, pushStep]
+
+/-- Second code-bit step. -/
+theorem framePush_after1_one
+    (f : EvalFrame) (t : Tape (Option Bool))
+    (hblank : t.head = none) :
+    framePushMachine.run 1
+      { state := FramePushState.after1 f, tape := t } =
+      { state := FramePushState.after2 f,
+        tape := pushStep (frameBit1 f) t } := by
+  rw [TM.run]
+  simp [framePushMachine, hblank, TM.step, pushStep]
+
+/-- Third code-bit step reaches the halting state. -/
+theorem framePush_after2_one
+    (f : EvalFrame) (t : Tape (Option Bool))
+    (hblank : t.head = none) :
+    framePushMachine.run 1
+      { state := FramePushState.after2 f, tape := t } =
+      { state := FramePushState.halt,
+        tape := pushStep (frameBit0 f) t } := by
+  rw [TM.run]
+  simp [framePushMachine, hblank, TM.step, pushStep]
+
 /-- Three physical push steps realize exactly the fixed-width frame encoding on
-the V2 stack layout. -/
+the V2 stack layout.  The proof composes the already-certified Boolean
+`pushStep_correct` invariant rather than normalizing raw tape padding. -/
 theorem framePush_run_three
     (witness source : BitString)
     (stack : List Bool)
@@ -97,33 +133,29 @@ theorem framePush_run_three
           (encodeEvalFrame f ++ stack)
           (((padding - 1) - 1) - 1) := by
   dsimp
-  rw [encodeEvalFrame_eq_bits]
-  cases f with
-  | neg =>
-      cases padding <;>
-        simp [framePushMachine, framePushConfig, frameBit0, frameBit1,
-          frameBit2, frameBits, TM.run, TM.step, physicalStackV2Tape,
-          Tape.write, Tape.move, List.replicate_succ]
-  | andLeft =>
-      cases padding <;>
-        simp [framePushMachine, framePushConfig, frameBit0, frameBit1,
-          frameBit2, frameBits, TM.run, TM.step, physicalStackV2Tape,
-          Tape.write, Tape.move, List.replicate_succ]
-  | andRight b =>
-      cases b <;> cases padding <;>
-        simp [framePushMachine, framePushConfig, frameBit0, frameBit1,
-          frameBit2, frameBits, TM.run, TM.step, physicalStackV2Tape,
-          Tape.write, Tape.move, List.replicate_succ]
-  | orLeft =>
-      cases padding <;>
-        simp [framePushMachine, framePushConfig, frameBit0, frameBit1,
-          frameBit2, frameBits, TM.run, TM.step, physicalStackV2Tape,
-          Tape.write, Tape.move, List.replicate_succ]
-  | orRight b =>
-      cases b <;> cases padding <;>
-        simp [framePushMachine, framePushConfig, frameBit0, frameBit1,
-          frameBit2, frameBits, TM.run, TM.step, physicalStackV2Tape,
-          Tape.write, Tape.move, List.replicate_succ]
+  have h1 := framePush_start_one f
+    (physicalStackV2Tape witness source stack padding) rfl
+  have hp1 := pushStep_correct witness source stack padding (frameBit2 f)
+  have h2 := framePush_after1_one f
+    (physicalStackV2Tape witness source
+      (frameBit2 f :: stack) (padding - 1)) rfl
+  have hp2 := pushStep_correct witness source
+    (frameBit2 f :: stack) (padding - 1) (frameBit1 f)
+  have h3 := framePush_after2_one f
+    (physicalStackV2Tape witness source
+      (frameBit1 f :: frameBit2 f :: stack) ((padding - 1) - 1)) rfl
+  have hp3 := pushStep_correct witness source
+    (frameBit1 f :: frameBit2 f :: stack) ((padding - 1) - 1)
+    (frameBit0 f)
+  rw [show 3 = 1 + 2 by decide, MachineRunLemmas.run_add]
+  rw [h1, hp1]
+  rw [show 2 = 1 + 1 by decide, MachineRunLemmas.run_add]
+  rw [h2, hp2]
+  rw [h3, hp3]
+  constructor
+  · rfl
+  · rw [encodeEvalFrame_eq_bits]
+    rfl
 
 /-- Fail-closed behavior: starting a push on a nonblank cell rejects in one
 step instead of overwriting existing data. -/
