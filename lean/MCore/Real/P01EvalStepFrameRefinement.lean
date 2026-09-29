@@ -76,7 +76,7 @@ theorem evalStep_not_tag_refined
           (encodeEvalFrames (.neg :: frames))
           (((padding - 1) - 1) - 1) := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr]
   · exact push_refines_frame_cons witness source frames padding .neg
 
 /-- The semantic AND-tag transition and its physical frame-stack action agree. -/
@@ -99,7 +99,7 @@ theorem evalStep_and_tag_refined
           (encodeEvalFrames (.andLeft :: frames))
           (((padding - 1) - 1) - 1) := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr]
   · exact push_refines_frame_cons witness source frames padding .andLeft
 
 /-- The semantic OR-tag transition and its physical frame-stack action agree. -/
@@ -122,7 +122,7 @@ theorem evalStep_or_tag_refined
           (encodeEvalFrames (.orLeft :: frames))
           (((padding - 1) - 1) - 1) := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr]
   · exact push_refines_frame_cons witness source frames padding .orLeft
 
 /-- Returning through a semantic frame is physically readable/removable with
@@ -211,10 +211,18 @@ theorem evalStep_andLeft_return_refined
   · dsimp
     have hp := pop_refines_frame_tail witness source frames padding .andLeft
     rcases hp with ⟨hps, hpt⟩
-    rw [hpt]
+    have hpt' :
+        (framePopMachine.run 4
+          (framePopConfig
+            (physicalStackV2Tape witness source
+              (encodeEvalFrame .andLeft ++ encodeEvalFrames frames) padding))).tape =
+          physicalStackV2Tape witness source
+            (encodeEvalFrames frames) (padding + 3) := by
+      simpa [encodeEvalFrames] using hpt
+    rw [hpt']
     have hq :=
       push_refines_frame_cons witness source frames (padding + 3) (.andRight l)
-    exact ⟨hps, hq.1, hq.2⟩
+    exact ⟨by simpa [encodeEvalFrames] using hps, hq.1, by simpa using hq.2⟩
 
 /-- Returning from the left operand of OR: identical physical pop/push pattern
 with the .orRight l continuation frame. -/
@@ -246,10 +254,18 @@ theorem evalStep_orLeft_return_refined
   · dsimp
     have hp := pop_refines_frame_tail witness source frames padding .orLeft
     rcases hp with ⟨hps, hpt⟩
-    rw [hpt]
+    have hpt' :
+        (framePopMachine.run 4
+          (framePopConfig
+            (physicalStackV2Tape witness source
+              (encodeEvalFrame .orLeft ++ encodeEvalFrames frames) padding))).tape =
+          physicalStackV2Tape witness source
+            (encodeEvalFrames frames) (padding + 3) := by
+      simpa [encodeEvalFrames] using hpt
+    rw [hpt']
     have hq :=
       push_refines_frame_cons witness source frames (padding + 3) (.orRight l)
-    exact ⟨hps, hq.1, hq.2⟩
+    exact ⟨by simpa [encodeEvalFrames] using hps, hq.1, by simpa using hq.2⟩
 
 /-- Returning from the right operand of AND: the stored left bit is already
 finite-control data in the frame; after physical pop, the Boolean result is a
