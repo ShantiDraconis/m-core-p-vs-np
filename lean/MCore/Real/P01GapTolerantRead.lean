@@ -30,7 +30,7 @@ theorem gapTolerantRead_length_lt (i : Nat) (l : List Bool) (h : i < l.length) :
       simp [gapTolerantRead]
       exact ih n (by simp at h ⊢; omega)
 
--- 3. CORE - sem sorry - fecha o layout evalCursorStackEndTape
+-- 3. CORE - proof-complete - fecha o layout evalCursorStackEndTape
 theorem gapTolerant_append_left (i : Nat) (l₁ l₂ : List Bool) (h : i < l₁.length) :
   gapTolerantRead i (l₁ ++ l₂) = gapTolerantRead i l₁ := by
   induction l₁ generalizing i with
@@ -46,19 +46,24 @@ theorem gapTolerant_correct_with_gap :
     gapTolerantRead i (evalCursorStackEndTape witness gap rem) = witness[i]? := by
   intro i witness rem gap hi
   unfold evalCursorStackEndTape
-  have h1 : gapTolerantRead i (witness ++ List.replicate gap false ++ rem) =
-            gapTolerantRead i witness := by
-    apply gapTolerant_append_left
-    exact hi
-  rw 
+  have h1 :
+      gapTolerantRead i (witness ++ List.replicate gap false ++ rem) =
+        gapTolerantRead i witness := by
+    simpa [List.append_assoc] using
+      gapTolerant_append_left i witness (List.replicate gap false ++ rem) hi
+  rw [h1]
   induction witness generalizing i with
-  | nil => simp at hi
+  | nil =>
+      simp at hi
   | cons hd tl ih =>
-    cases i with
-    | zero => simp
-    | succ n =>
-      simp
-      exact ih n (by simp at hi ⊢; omega)
+      cases i with
+      | zero =>
+          rfl
+      | succ n =>
+          have hi' : n < tl.length := by
+            simpa using hi
+          simp only [gapTolerantRead]
+          simpa using ih n hi'
 
 theorem gapTolerant_zero_eq_preserving :
   ∀ (i : Nat) (witness : List Bool),
@@ -73,33 +78,23 @@ theorem gapTolerant_zero_eq_preserving :
 
 -- 4. Caso 000 físico com lacuna - 6/6 completo
 def physicalEvalStep_input_gapTolerant (i : Nat) (tape : List Bool) : Bool :=
-  match gapTolerantRead i tape with
-  | some true => true
-  | _ => false
+  (gapTolerantRead i tape).getD false
 
 theorem input000_with_gap_refines :
   ∀ i witness gap rem,
     i < witness.length →
-    physicalEvalStep_input_gapTolerant i (evalCursorStackEndTape witness gap rem) = witness[i]! := by
+    physicalEvalStep_input_gapTolerant i
+        (evalCursorStackEndTape witness gap rem) =
+      (witness[i]?).getD false := by
   intro i w gap rem hi
   unfold physicalEvalStep_input_gapTolerant
-  have h := gapTolerant_correct_with_gap i w rem gap hi
-  rw [h]
-  have hsome : (w[i]?).isSome = true := by
-    simp [Option.isSome_iff_ne_none, Ne.symm, Option.ne_none_iff_isSome]
-    exact gapTolerantRead_length_lt i w hi
-  cases hw : w[i]? with
-  | none => simp at hsome; simp [hw] at hsome
-  | some v =>
-    simp [hw]
-    cases v with
-    | true => rfl
-    | false => rfl
+  rw [gapTolerant_correct_with_gap i w rem gap hi]
 
--- 5. 6/6 evalStep
-def evalStepSixComplete : Bool := true
+/-- Marker for this list-level helper only.  It is not a certificate for the
+single-TM physical evaluator or for P01. -/
+def listLevelInputHelperBuilt : Bool := true
 
-theorem evalTagComplete :
-  evalStepSixComplete = true := rfl
+theorem listLevelInputHelperBuilt_eq :
+  listLevelInputHelperBuilt = true := rfl
 
 end MCore.Real.P01GapTolerantRead
