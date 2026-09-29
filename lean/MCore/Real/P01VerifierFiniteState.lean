@@ -1,3 +1,4 @@
+import Mathlib.Data.Fintype.Basic
 import MCore.Real.P01VerifierEvalCompositeNTM
 import MCore.Real.P01IntegratedAssembly
 
