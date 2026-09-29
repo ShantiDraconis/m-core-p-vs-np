@@ -74,6 +74,66 @@ theorem moveToSourceStartSeq_legal
     LegalMoveSeq (moveToSourceStartSeq stack source) := by
   exact moveLeftSeq_legal _
 
+
+
+/-- Sequential execution respects list concatenation. -/
+theorem execMoves_append
+    {Symbol : Type}
+    (blank : Symbol)
+    (xs ys : List Direction)
+    (t : Tape Symbol) :
+    execMoves blank (xs ++ ys) t =
+      execMoves blank ys (execMoves blank xs t) := by
+  induction xs generalizing t with
+  | nil => rfl
+  | cons d ds ih =>
+      simp [execMoves, ih]
+
+/-- One primitive left move followed by one primitive right move restores the
+exact local tape. -/
+@[simp] theorem tape_left_right_cancel
+    (t : Tape (Option Bool)) :
+    Tape.move none .right (Tape.move none .left t) = t := by
+  cases t <;> simp [Tape.move]
+
+/-- Any finite left shuttle followed by the same number of right moves restores
+the exact tape, independent of its contents. -/
+theorem execMoves_left_right_cancel
+    (n : Nat) (t : Tape (Option Bool)) :
+    execMoves none (moveLeftSeq n ++ moveRightSeq n) t = t := by
+  induction n generalizing t with
+  | zero =>
+      rfl
+  | succ n ih =>
+      have hseq :
+          moveLeftSeq (Nat.succ n) ++ moveRightSeq (Nat.succ n) =
+            [.left] ++
+              (moveLeftSeq n ++ moveRightSeq n) ++
+              [.right] := by
+        simp [moveLeftSeq, moveRightSeq, List.replicate_succ,
+          List.replicate_succ', List.append_assoc]
+      rw [hseq]
+      rw [execMoves_append]
+      rw [execMoves_append]
+      simp [execMoves, ih]
+
+/-- The complete P01 source-cursor shuttle is exactly reversible: after visiting
+the first source bit and returning by the matching right shuttle, witness,
+source, frame stack and padding are all restored byte-for-byte. -/
+theorem source_cursor_roundTrip_tape
+    (witness source : BitString)
+    (stack : List Bool) (padding : Nat) :
+    execMoves none
+      (moveToSourceStartSeq stack source ++
+        moveBackToStackEndSeq stack source)
+      (physicalStackV2Tape witness source stack padding) =
+    physicalStackV2Tape witness source stack padding := by
+  unfold moveToSourceStartSeq moveBackToStackEndSeq
+  exact execMoves_left_right_cancel
+    (sourceStartOffset stack source)
+    (physicalStackV2Tape witness source stack padding)
+
+
 /-- The return shuttle has exactly the same cost envelope. -/
 theorem source_cursor_roundTrip_length
     (stack : List Bool) (source : BitString) :
@@ -85,6 +145,8 @@ theorem source_cursor_roundTrip_length
   omega
 
 #print axioms MCore.Real.P01SourceCursorInvariant.moveToSourceStart_head_correct
+#print axioms MCore.Real.P01SourceCursorInvariant.execMoves_left_right_cancel
+#print axioms MCore.Real.P01SourceCursorInvariant.source_cursor_roundTrip_tape
 #print axioms MCore.Real.P01SourceCursorInvariant.source_cursor_roundTrip_length
 
 end P01SourceCursorInvariant
