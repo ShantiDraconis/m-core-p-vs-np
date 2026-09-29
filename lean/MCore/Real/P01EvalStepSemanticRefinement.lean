@@ -53,7 +53,7 @@ theorem constFalse_refines_evalStep
           [needStart witness consumed
             (false :: false :: true :: rest) frames padding] := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · obtain ⟨m, hm, h⟩ :=
       constFalse_reaches_done
         witness rest (encodeEvalFrames frames) consumed padding
@@ -90,7 +90,7 @@ theorem constTrue_refines_evalStep
           [needStart witness consumed
             (false :: true :: false :: rest) frames padding] := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · obtain ⟨m, hm, h⟩ :=
       constTrue_reaches_done
         witness rest (encodeEvalFrames frames) consumed padding
@@ -128,7 +128,7 @@ theorem negTag_refines_evalStep
           [needStart witness consumed
             (false :: true :: true :: rest) frames padding] := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · obtain ⟨m, hm, h⟩ :=
       neg_reaches_done
         witness rest (encodeEvalFrames frames) consumed padding
@@ -168,7 +168,7 @@ theorem andTag_refines_evalStep
           [needStart witness consumed
             (true :: false :: false :: rest) frames padding] := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · obtain ⟨m, hm, h⟩ :=
       and_reaches_done
         witness rest (encodeEvalFrames frames) consumed padding
@@ -208,7 +208,7 @@ theorem orTag_refines_evalStep
           [needStart witness consumed
             (true :: false :: true :: rest) frames padding] := by
   constructor
-  · rfl
+  · simp [evalStep, needExpr, haveValue]
   · obtain ⟨m, hm, h⟩ :=
       or_reaches_done
         witness rest (encodeEvalFrames frames) consumed padding
