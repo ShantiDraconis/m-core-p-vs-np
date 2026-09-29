@@ -357,9 +357,9 @@ theorem inputNodeComposite_reaches_done
   have hLookSucc :
       readConfig mode cRead0 ∈
         inputNodeCompositeMachine.successors (lookConfig cLookH) := by
-    dsimp [cLookH, cRead0, mode]
+    dsimp [cLookH, cRead0, mode, lookConfig, readConfig]
     rw [look_handoff_successors]
-    simp [lookConfig, readConfig]
+    simp
 
   have hReadStart :
       readConfig mode cRead0 ∈
@@ -409,9 +409,9 @@ theorem inputNodeComposite_reaches_done
   have hReadSucc :
       returnConfig mode selected cRet0 ∈
         inputNodeCompositeMachine.successors (readConfig mode cReadH) := by
-    dsimp [cReadH, cRet0, selected, mode]
+    dsimp [cReadH, cRet0, selected, mode, readConfig, returnConfig]
     rw [read_handoff_successors]
-    simp [readConfig, returnConfig]
+    simp
 
   have hReturnStart :
       returnConfig mode selected cRet0 ∈
@@ -472,9 +472,9 @@ theorem inputNodeComposite_reaches_done
       cDone ∈
         inputNodeCompositeMachine.successors
           (returnConfig mode selected cRetH) := by
-    dsimp [cRetH, cDone, selected]
+    dsimp [cRetH, cDone, selected, returnConfig]
     rw [return_handoff_successors]
-    simp [returnConfig]
+    simp
 
   have hDone :
       cDone ∈
@@ -490,7 +490,12 @@ theorem inputNodeComposite_reaches_done
       hReturnSucc
 
   refine ⟨(((((mL + 1) + mR) + 1) + mT) + 1), ?_, ?_⟩
-  · dsimp [inputNodeCompositeFuel, readFuel, retFuel, consumed']
+  · have hmL' := hmL
+    have hmR' := hmR
+    have hmT' := hmT
+    dsimp [readFuel] at hmR'
+    dsimp [retFuel, consumed'] at hmT'
+    dsimp [inputNodeCompositeFuel]
     omega
   · dsimp [cDone, selected, consumed', cLook0, tape0] at hDone ⊢
     simpa [lookConfig, inputNodeCompositeMachine] using hDone
