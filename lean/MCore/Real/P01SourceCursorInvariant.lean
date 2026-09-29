@@ -61,12 +61,10 @@ theorem moveToSourceStart_head_correct
       simp
     rw [hsub]
     rw [List.getElem?_cons_succ]
-    have hrev :
-        ((bs.map some).reverse).length ≤ bs.length := by
+    have hlen :
+        ((bs.map some).reverse).length = bs.length := by
       simp
-    rw [List.getElem?_append_right]
-    · simp
-    · simpa using hrev
+    simp [List.getElem?_append, hlen]
   · simpa using hstack
 
 /-- The source cursor motion is legal in the same primitive-move sense used by
