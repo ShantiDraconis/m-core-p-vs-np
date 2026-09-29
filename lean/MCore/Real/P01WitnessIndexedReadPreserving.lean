@@ -699,6 +699,310 @@ theorem preservingMoved_cycle
   simpa [C0, C7, moved] using h07
 
 
+
+/-- Final-read analogue of \`seekMoved_over_blanks\`: cross the temporary
+blank block and stop on the first moved witness bit. -/
+theorem finalSeekMoved_over_blanks
+    (k : Nat) (b : Bool)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.run (k + 1)
+      { state := .finalSeekMoved,
+        tape :=
+          { left := List.replicate k none ++ (some b :: left),
+            head := none,
+            right := right } } =
+      { state := .finalSeekMoved,
+        tape :=
+          { left := left,
+            head := some b,
+            right := List.replicate (k + 1) none ++ right } } := by
+  induction k generalizing right with
+  | zero =>
+      simp [preservingReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+  | succ k ih =>
+      rw [show Nat.succ k + 1 = (k + 1) + 1 by omega]
+      rw [TM.run]
+      simp only [show preservingReadMachine.halting (.finalSeekMoved) = false by rfl,
+        Bool.false_eq_true, if_false]
+      change preservingReadMachine.run (k + 1)
+        { state := .finalSeekMoved,
+          tape :=
+            { left := List.replicate k none ++ (some b :: left),
+              head := none,
+              right := none :: right } } =
+        { state := .finalSeekMoved,
+          tape :=
+            { left := left,
+              head := some b,
+              right := List.replicate (Nat.succ k + 1) none ++ right } }
+      rw [ih (none :: right)]
+      apply congrArg
+        (fun r : List (Option Bool) =>
+          ({ state := .finalSeekMoved,
+             tape := { left := left, head := some b, right := r } } :
+            Configuration PreservingReadState (Option Bool)))
+      simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
+        replicate_none_extend k right
+
+/-- Once the final seek reaches the first moved witness bit, one step enters
+the final moved-prefix scan. -/
+theorem finalSeekMoved_step_bit
+    (first b : Bool) (movedTail : BitString)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.step
+      { state := .finalSeekMoved,
+        tape :=
+          { left := movedTail.map some ++ (none :: some b :: left),
+            head := some first,
+            right := right } } =
+      { state := .finalScanMoved,
+        tape := scanMovedTape movedTail b left (some first :: right) } := by
+  cases movedTail <;>
+    simp [scanMovedTape, preservingReadMachine,
+      TM.step, Tape.write, Tape.move]
+
+theorem finalScanMoved_step_cons
+    (x b : Bool) (xs : BitString)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.step
+      { state := .finalScanMoved,
+        tape := scanMovedTape (x :: xs) b left right } =
+      { state := .finalScanMoved,
+        tape := scanMovedTape xs b left (some x :: right) } := by
+  cases xs <;>
+    simp [scanMovedTape, preservingReadMachine,
+      TM.step, Tape.write, Tape.move]
+
+/-- Final scan crosses the remaining moved prefix and separator, landing on the
+selected witness bit without changing it. -/
+theorem finalScanMoved_over_bits
+    (bits : BitString) (b : Bool)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.run (bits.length + 1)
+      { state := .finalScanMoved,
+        tape := scanMovedTape bits b left right } =
+      { state := .finalReadMoved,
+        tape :=
+          { left := left,
+            head := some b,
+            right := none :: (bits.reverse.map some ++ right) } } := by
+  induction bits generalizing right with
+  | nil =>
+      simp [scanMovedTape, preservingReadMachine,
+        TM.run, TM.step, Tape.write, Tape.move]
+  | cons x xs ih =>
+      rw [show (x :: xs).length + 1 = (xs.length + 1) + 1 by simp]
+      rw [TM.run]
+      simp only [show preservingReadMachine.halting (.finalScanMoved) = false by rfl,
+        Bool.false_eq_true, if_false]
+      rw [finalScanMoved_step_cons]
+      rw [ih (some x :: right)]
+      apply congrArg
+        (fun r : List (Option Bool) =>
+          ({ state := .finalReadMoved,
+             tape := { left := left, head := some b, right := r } } :
+            Configuration PreservingReadState (Option Bool)))
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+/-- Canonical restore-loop configuration.  The current separator blank is under
+the head; \`bits\` are restored one-by-one from right to left. -/
+def restoreMovedConfig
+    (result : Bool) (left : List (Option Bool))
+    (bits : BitString) (after : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .restoreStart result,
+    tape :=
+      { left := left,
+        head := none,
+        right := bits.map some ++ after } }
+
+theorem restoreMoved_step_cons
+    (result x : Bool) (xs : BitString)
+    (left after : List (Option Bool)) :
+    preservingReadMachine.run 3
+      (restoreMovedConfig result left (x :: xs) after) =
+      restoreMovedConfig result (some x :: left) xs after := by
+  simp [restoreMovedConfig, preservingReadMachine,
+    TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
+
+/-- Restore every moved-prefix bit exactly. -/
+theorem restoreMoved_over_bits
+    (result : Bool) (bits : BitString)
+    (left after : List (Option Bool)) :
+    preservingReadMachine.run (3 * bits.length)
+      (restoreMovedConfig result left bits after) =
+      restoreMovedConfig result (bits.reverse.map some ++ left) [] after := by
+  induction bits generalizing left with
+  | nil =>
+      rfl
+  | cons x xs ih =>
+      rw [show 3 * (x :: xs).length = 3 + 3 * xs.length by
+        simp
+        omega]
+      rw [run_add]
+      rw [restoreMoved_step_cons]
+      rw [ih (some x :: left)]
+      apply congrArg
+        (fun l : List (Option Bool) =>
+          restoreMovedConfig result l [] after)
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+def preservingMovedFinalizeFuel (moved : BitString) : Nat :=
+  5 * moved.length + 6
+
+/-- Generic terminal \`false\` case for a nonempty moved prefix.  The selected
+witness bit is returned in the halt state, the entire witness is restored
+exactly, the unary index is consumed into blanks, and the unread source tail is
+preserved byte-for-byte. -/
+theorem movedBits_false_finalize
+    (first selected : Bool)
+    (movedTail rest sourceTail : BitString) :
+    preservingReadMachine.run
+      (preservingMovedFinalizeFuel (first :: movedTail))
+      (movedBitsConfig (first :: movedTail) (selected :: rest)
+        (false :: sourceTail)) =
+      { state := .halt selected,
+        tape :=
+          { left := ((first :: movedTail) ++ (selected :: rest)).map some,
+            head := none,
+            right :=
+              List.replicate ((first :: movedTail).length + 1) none ++
+                sourceTail.map some } } := by
+  let m : Nat := movedTail.length
+  let moved : BitString := first :: movedTail
+  let witnessSuffix : List (Option Bool) := rest.map some
+  let src : List (Option Bool) := sourceTail.map some
+  let after : List (Option Bool) :=
+    List.replicate (m + 1) none ++ (none :: src)
+
+  let C0 : Configuration PreservingReadState (Option Bool) :=
+    movedBitsConfig moved (selected :: rest) (false :: sourceTail)
+  let C1 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalSeekMoved,
+      tape :=
+        { left :=
+            List.replicate m none ++
+              (some first ::
+                (movedTail.map some ++
+                  (none :: some selected :: witnessSuffix))),
+          head := none,
+          right := none :: src } }
+  let C2 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalSeekMoved,
+      tape :=
+        { left :=
+            movedTail.map some ++ (none :: some selected :: witnessSuffix),
+          head := some first,
+          right := List.replicate (m + 1) none ++ (none :: src) } }
+  let C3 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalScanMoved,
+      tape :=
+        scanMovedTape movedTail selected witnessSuffix
+          (some first ::
+            (List.replicate (m + 1) none ++ (none :: src))) }
+  let C4 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalReadMoved,
+      tape :=
+        { left := witnessSuffix,
+          head := some selected,
+          right :=
+            none :: (moved.reverse.map some ++ after) } }
+  let C5 : Configuration PreservingReadState (Option Bool) :=
+    restoreMovedConfig selected (some selected :: witnessSuffix)
+      moved.reverse after
+  let restoredWitness : List (Option Bool) :=
+    moved.map some ++ (some selected :: witnessSuffix)
+  let C6 : Configuration PreservingReadState (Option Bool) :=
+    restoreMovedConfig selected restoredWitness [] after
+  let C7 : Configuration PreservingReadState (Option Bool) :=
+    { state := .halt selected,
+      tape :=
+        { left := restoredWitness,
+          head := none,
+          right := List.replicate (m + 2) none ++ src } }
+
+  have h01 : preservingReadMachine.run 1 C0 = C1 := by
+    dsimp [C0, C1, moved, m, witnessSuffix, src,
+      movedBitsConfig, movedBitsTape]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+
+  have h12 : preservingReadMachine.run (m + 1) C1 = C2 := by
+    dsimp [C1, C2]
+    simpa using
+      finalSeekMoved_over_blanks m first
+        (movedTail.map some ++ (none :: some selected :: witnessSuffix))
+        (none :: src)
+
+  have h23 : preservingReadMachine.run 1 C2 = C3 := by
+    dsimp [C2, C3]
+    simpa [TM.run] using
+      finalSeekMoved_step_bit first selected movedTail witnessSuffix
+        (List.replicate (m + 1) none ++ (none :: src))
+
+  have h34 : preservingReadMachine.run (m + 1) C3 = C4 := by
+    dsimp [C3, C4, moved, after]
+    simpa [List.reverse_cons, List.map_append, List.append_assoc] using
+      finalScanMoved_over_bits movedTail selected witnessSuffix
+        (some first ::
+          (List.replicate (movedTail.length + 1) none ++
+            (none :: sourceTail.map some)))
+
+  have h45 : preservingReadMachine.run 1 C4 = C5 := by
+    dsimp [C4, C5, moved, after, src, witnessSuffix, restoreMovedConfig]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.reverse_cons, List.map_append,
+      List.append_assoc]
+
+  have h56 :
+      preservingReadMachine.run (3 * moved.length) C5 = C6 := by
+    dsimp [C5, C6, restoredWitness]
+    simpa [moved] using
+      restoreMoved_over_bits selected moved.reverse
+        (some selected :: witnessSuffix) after
+
+  have h67 : preservingReadMachine.run 3 C6 = C7 := by
+    dsimp [C6, C7, restoreMovedConfig, restoredWitness, after, src, moved, m]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.replicate_succ,
+      List.map_append, List.append_assoc]
+
+  have h02 :
+      preservingReadMachine.run (1 + (m + 1)) C0 = C2 := by
+    rw [run_add, h01, h12]
+  have h03 :
+      preservingReadMachine.run ((1 + (m + 1)) + 1) C0 = C3 := by
+    rw [run_add, h02, h23]
+  have h04 :
+      preservingReadMachine.run (((1 + (m + 1)) + 1) + (m + 1)) C0 = C4 := by
+    rw [run_add, h03, h34]
+  have h05 :
+      preservingReadMachine.run
+        ((((1 + (m + 1)) + 1) + (m + 1)) + 1) C0 = C5 := by
+    rw [run_add, h04, h45]
+  have h06 :
+      preservingReadMachine.run
+        (((((1 + (m + 1)) + 1) + (m + 1)) + 1) +
+          (3 * moved.length)) C0 = C6 := by
+    rw [run_add, h05, h56]
+  have h07 :
+      preservingReadMachine.run
+        ((((((1 + (m + 1)) + 1) + (m + 1)) + 1) +
+          (3 * moved.length)) + 3) C0 = C7 := by
+    rw [run_add, h06, h67]
+
+  have hFuel :
+      preservingMovedFinalizeFuel moved =
+        ((((((1 + (m + 1)) + 1) + (m + 1)) + 1) +
+          (3 * moved.length)) + 3) := by
+    dsimp [preservingMovedFinalizeFuel, moved, m]
+    omega
+  rw [show preservingMovedFinalizeFuel (first :: movedTail) =
+      preservingMovedFinalizeFuel moved by rfl]
+  rw [hFuel]
+  simpa [C0, C7, moved, restoredWitness, src, m,
+    List.map_append, List.append_assoc] using h07
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
