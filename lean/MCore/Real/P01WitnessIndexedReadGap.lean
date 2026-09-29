@@ -103,7 +103,7 @@ theorem advanceSep_over_blanks
               right := List.replicate (Nat.succ k) none ++ right } }
       rw [ih (none :: right)]
       congr 2
-      simp [List.replicate_succ, List.append_assoc]
+      exact replicate_none_cons k right
 
 /-- Final zero-index scan across an arbitrary cursor gap. -/
 theorem finalSepNoMoved_over_blanks
@@ -201,9 +201,9 @@ theorem preservingReadGap_zero
 
   have h01 : preservingReadMachine.run 1 C0 = C1 := by
     dsimp [C0, C1, preservingReadGapTape, gapReadBitsTape]
-    cases gap <;>
-      simp [preservingReadMachine, encodeNat, TM.run, TM.step,
-        Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+    rw [replicate_none_cons gap ((b :: witnessTail).map some)]
+    simp [preservingReadMachine, encodeNat, TM.run, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
 
   have h12 : preservingReadMachine.run (gap + 2) C1 = C2 := by
     dsimp [C1, C2]
@@ -213,8 +213,9 @@ theorem preservingReadGap_zero
 
   have h23 : preservingReadMachine.run 1 C2 = C3 := by
     dsimp [C2, C3]
+    rw [replicate_none_cons gap (tail.map some)]
     simp [preservingReadMachine, TM.run, TM.step, Tape.write, Tape.move,
-      List.replicate_succ, List.append_assoc]
+      List.append_assoc]
 
   rw [show gap + 4 = 1 + ((gap + 2) + 1) by omega]
   rw [run_add, h01]
@@ -264,9 +265,9 @@ theorem preservingReadGap_start_true
 
   have h01 : preservingReadMachine.run 1 C0 = C1 := by
     dsimp [C0, C1, gapReadBitsTape, src]
-    cases gap <;>
-      simp [preservingReadMachine, TM.run, TM.step,
-        Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+    rw [replicate_none_cons gap ((b :: witnessTail).map some)]
+    simp [preservingReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
 
   have h12 : preservingReadMachine.run (gap + 2) C1 = C2 := by
     dsimp [C1, C2]
@@ -299,7 +300,10 @@ theorem preservingReadGap_start_true
         (sourceTail.map some)
     rw [h]
     congr 2
-    simp [List.replicate_succ, List.append_assoc]
+    have hr :=
+      replicate_none_cons gap
+        (some b :: none :: witnessTail.map some)
+    simpa [List.replicate_succ, List.append_assoc] using hr
 
   rw [show 2 * gap + 6 =
       1 + ((gap + 2) + (1 + (1 + (gap + 1)))) by omega]
