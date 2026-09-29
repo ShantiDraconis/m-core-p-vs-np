@@ -107,7 +107,7 @@ theorem prepared_circuit_reaches_final
         simpa [LoopOutcome] using hout
       rcases hout' with ⟨tape, rfl⟩
       refine ⟨mEntry + mEval, tape, ?_⟩
-      simpa [liftEvalConfig, evalStateEmbed] using hAll
+      simpa [hsrc, liftEvalConfig, evalStateEmbed] using hAll
 
 #print axioms MCore.Real.P01VerifierCircuitRun.eval_mem_lift
 #print axioms MCore.Real.P01VerifierCircuitRun.prepared_circuit_reaches_final
