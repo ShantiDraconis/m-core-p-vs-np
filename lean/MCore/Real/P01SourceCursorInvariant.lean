@@ -54,18 +54,30 @@ theorem moveToSourceStart_head_correct
         stack.length + bs.length + 1 := by
     simp
     omega
-  rw [List.getElem?_append_right]
-  · have hsub :
-        stack.length + bs.length + 1 - (stack.map some).length =
-          bs.length + 1 := by
-      simp
-    rw [hsub]
-    rw [List.getElem?_cons_succ]
-    have hlen :
-        ((bs.map some).reverse).length = bs.length := by
-      simp
-    simp [List.getElem?_append, hlen]
-  · simpa using hstack
+  have houter :
+      (stack.map some ++
+        none :: ((bs.map some).reverse ++
+          some b :: none :: witness.map some))
+          [stack.length + bs.length + 1]? =
+        (none :: ((bs.map some).reverse ++
+          some b :: none :: witness.map some))
+          [stack.length + bs.length + 1 - (stack.map some).length]? := by
+    exact List.getElem?_append_right hstack
+  rw [houter]
+  have hsub :
+      stack.length + bs.length + 1 - (stack.map some).length =
+        bs.length + 1 := by
+    simp
+  rw [hsub]
+  rw [List.getElem?_cons_succ]
+  have hinner :
+      (((bs.map some).reverse ++
+        some b :: none :: witness.map some)[bs.length]?) =
+        (some b :: none :: witness.map some)[0]? := by
+    apply List.getElem?_append_right
+    simp
+  rw [hinner]
+  simp
 
 /-- The source cursor motion is legal in the same primitive-move sense used by
 all prior certified P01 shuttles. -/
