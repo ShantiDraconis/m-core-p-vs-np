@@ -86,3 +86,5 @@ import MCore.Real.P01InputTagDecodeMachine
 import MCore.Real.P01NeedExprTagDecode
 
 import MCore.Real.P01EvalCursorReturnNoErase
+
+import MCore.Real.P01TagDecodeCompositeNTM
