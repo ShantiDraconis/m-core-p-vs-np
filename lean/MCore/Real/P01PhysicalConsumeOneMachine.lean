@@ -115,7 +115,7 @@ theorem start_to_seekStack
       seekStackConfig witness consumed unread frames
         (none :: List.replicate padding none) := by
   cases frames <;>
-    simp [consumeOneMachine, seekStart, seekStack, reject,
+    simp [consumeOneMachine, seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject,
       evalCursorStackEndTape, seekStackConfig, TM.run, TM.step,
       Tape.write, Tape.move, List.append_assoc]
 
@@ -192,11 +192,11 @@ theorem stackSeparator_to_seekUnread
       subst unread
       cases consumed <;>
         simp [seekStackConfig, seekUnreadConfig, consumeOneMachine,
-          seekStart, seekStack, seekUnread, TM.run, TM.step,
+          seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject, TM.run, TM.step,
           Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
   | cons b bs =>
       simp [seekStackConfig, seekUnreadConfig, consumeOneMachine,
-        seekStart, seekStack, seekUnread, TM.run, TM.step,
+        seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject, TM.run, TM.step,
         Tape.write, Tape.move, h, List.append_assoc]
 
 theorem seekUnread_step_cons
@@ -244,7 +244,7 @@ theorem cursor_boundary_to_erase
         tape := evalCursorReadTape witness consumed (b :: bs) frames padding } := by
   cases consumed <;>
     simp [seekUnreadConfig, evalCursorReadTape, consumeOneMachine,
-      seekStart, seekStack, seekUnread, eraseBit, TM.run, TM.step,
+      seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject, TM.run, TM.step,
       Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
 
 def returnUnreadConfig
@@ -282,7 +282,7 @@ theorem erase_to_returnUnread
         (List.replicate (consumed + 1) none ++ none :: witness.map some)
         bs frames padding := by
   cases bs <;>
-    simp [consumeOneMachine, eraseBit, returnUnread,
+    simp [consumeOneMachine, seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject,
       evalCursorReadTape, returnUnreadConfig, TM.run, TM.step,
       Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
 
@@ -293,7 +293,7 @@ theorem returnUnread_step_cons
       (returnUnreadConfig left (b :: bs) frames padding) =
       returnUnreadConfig (some b :: left) bs frames padding := by
   cases bs <;>
-    simp [returnUnreadConfig, consumeOneMachine, returnUnread,
+    simp [returnUnreadConfig, consumeOneMachine, seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject,
       TM.step, Tape.write, Tape.move, List.append_assoc]
 
 theorem returnUnread_run
@@ -319,11 +319,11 @@ def returnFrameConfig
     Configuration ConsumeState (Option Bool) :=
   match remainingRev with
   | [] =>
-      { state := returnFrames
+      { state := returnFrames,
         tape := { left := left, head := none,
           right := List.replicate padding none } }
   | b :: bs =>
-      { state := returnFrames
+      { state := returnFrames,
         tape := { left := left, head := some b,
           right := bs.map some ++ none :: List.replicate padding none } }
 
@@ -339,7 +339,7 @@ theorem sourceSeparator_to_returnFrames
       returnFrameConfig (none :: left) frames.reverse padding := by
   cases h : frames.reverse <;>
     simp [returnUnreadConfig, returnFrameConfig, consumeOneMachine,
-      returnUnread, returnFrames, TM.run, TM.step, Tape.write, Tape.move,
+      seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject, TM.run, TM.step, Tape.write, Tape.move,
       h, List.append_assoc]
 
 theorem returnFrames_step_cons
@@ -348,7 +348,7 @@ theorem returnFrames_step_cons
       (returnFrameConfig left (b :: bs) padding) =
       returnFrameConfig (some b :: left) bs padding := by
   cases bs <;>
-    simp [returnFrameConfig, consumeOneMachine, returnFrames,
+    simp [returnFrameConfig, consumeOneMachine, seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject,
       TM.step, Tape.write, Tape.move, List.append_assoc]
 
 theorem returnFrames_run
@@ -370,10 +370,10 @@ theorem returnFrames_run
 theorem returnFrames_halt
     (left : List (Option Bool)) (padding : Nat) :
     consumeOneMachine.run 1 (returnFrameConfig left [] padding) =
-      { state := halt
+      { state := halt,
         tape := { left := left, head := none,
           right := List.replicate padding none } } := by
-  simp [returnFrameConfig, consumeOneMachine, returnFrames, halt,
+  simp [returnFrameConfig, consumeOneMachine, seekStart, seekStack, seekUnread, eraseBit, returnUnread, returnFrames, halt, reject, halt,
     TM.run, TM.step, Tape.write, Tape.move]
 
 /-- Exact machine-level result: one single fixed TM consumes one source bit,
@@ -382,12 +382,12 @@ theorem consumeOne_run
     (witness : BitString) (consumed : Nat)
     (b : Bool) (bs frames : BitString) (padding : Nat) :
     consumeOneMachine.run
-      (2 * frames.length + 2 * bs.length + 8)
+      (2 * frames.length + 2 * bs.length + 7)
       { state := seekStart
         tape := evalCursorStackEndTape witness consumed (b :: bs) frames padding } =
       { state := halt
         tape := evalCursorStackEndTape witness (consumed + 1) bs frames padding } := by
-  rw [show 2 * frames.length + 2 * bs.length + 8 =
+  rw [show 2 * frames.length + 2 * bs.length + 7 =
       1 + (frames.length + (1 + ((b :: bs).length +
         (1 + (1 + (bs.length + (1 + (frames.length + 1)))))))) by
       simp
@@ -421,7 +421,7 @@ theorem consumeOne_halts
     (witness : BitString) (consumed : Nat)
     (b : Bool) (bs frames : BitString) (padding : Nat) :
     consumeOneMachine.HaltsWithin
-      (2 * frames.length + 2 * bs.length + 8)
+      (2 * frames.length + 2 * bs.length + 7)
       { state := seekStart
         tape := evalCursorStackEndTape witness consumed (b :: bs) frames padding } := by
   unfold TM.HaltsWithin
