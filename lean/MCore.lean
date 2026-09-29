@@ -135,6 +135,5 @@ import MCore.Real.P01VerifierEvalCircuitRun
 
 import MCore.Real.P01CheckedEvalRunTagPrefix
 
-import MCore.Real.P01VerifierFiniteState
 
 import MCore.Real.P01CheckedEvalRunBaseCases
