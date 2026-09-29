@@ -1,3 +1,4 @@
+import Mathlib.Data.Fintype.Basic
 import MCore.Real.P01WitnessIndexedRead
 import MCore.Real.MachineRunLemmas
 
