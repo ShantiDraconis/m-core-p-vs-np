@@ -79,9 +79,10 @@ theorem seek_successors_active
     (h : cursorSeekMachine.halting c.state = false) :
     needExprCompositeMachine.successors (seekConfig c) =
       [seekConfig (cursorSeekMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [seekConfig]
-  cases c.state <;> cases hs : c.tape.head <;>
+  cases q <;> cases hs : tape.head <;>
     simp [needExprCompositeMachine, cursorSeekMachine,
       NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
@@ -90,9 +91,10 @@ theorem decode_successors_active
     (h : tagDecodeMachine.halting c.state = false) :
     needExprCompositeMachine.successors (decodeConfig c) =
       [decodeConfig (tagDecodeMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [decodeConfig]
-  cases c.state <;> cases hs : c.tape.head <;>
+  cases q <;> cases hs : tape.head <;>
     simp [needExprCompositeMachine, tagDecodeMachine,
       NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
@@ -102,9 +104,10 @@ theorem retValue_successors_active
     (h : cursorReturnMachine.halting c.state = false) :
     needExprCompositeMachine.successors (retValueConfig value c) =
       [retValueConfig value (cursorReturnMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [retValueConfig]
-  cases c.state <;> cases hs : c.tape.head <;>
+  cases q <;> cases hs : tape.head <;>
     simp [needExprCompositeMachine, cursorReturnMachine,
       NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
@@ -127,9 +130,10 @@ theorem push_successors_active
     (h : framePushMachine.halting c.state = false) :
     needExprCompositeMachine.successors (pushConfig frame c) =
       [pushConfig frame (framePushMachine.step c)] := by
+  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [pushConfig]
-  cases c.state <;> cases hs : c.tape.head <;>
+  cases q <;> cases hs : tape.head <;>
     simp [needExprCompositeMachine, framePushMachine,
       NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
 
