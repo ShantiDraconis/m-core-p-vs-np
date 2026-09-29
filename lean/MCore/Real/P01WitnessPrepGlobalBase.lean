@@ -132,6 +132,43 @@ theorem witnessPrep_empty_layout
   subst reached
   exact ⟨[], rfl⟩
 
+
+/-- A one-bit source is fully processed and rewound in exactly eight steps.
+Both nondeterministic branches are preserved explicitly. -/
+theorem witnessPrep_singleton_runBranches_eight
+    (b : Bool) :
+    witnessPreservingPrep.runBranches 8
+      [initialNTMConfig witnessPreservingPrep [b]] =
+      [ { state := (11 : Fin 12), tape := preparedTape [false] [b] },
+        { state := (11 : Fin 12), tape := preparedTape [true] [b] } ] := by
+  cases b <;> rfl
+
+theorem witnessPrep_singleton_halts_eight
+    (b : Bool) :
+    witnessPreservingPrep.HaltsWithin 8
+      (initialNTMConfig witnessPreservingPrep [b]) := by
+  unfold NTM.HaltsWithin
+  rw [witnessPrep_singleton_runBranches_eight]
+  intro reached hmem
+  simp only [List.mem_cons, List.mem_singleton] at hmem
+  rcases hmem with h | h <;> subst reached <;> left <;> rfl
+
+theorem witnessPrep_singleton_layout_eight
+    (b : Bool)
+    (reached : Configuration (Fin 12) (Option Bool))
+    (hmem : reached ∈
+      witnessPreservingPrep.runBranches 8
+        [initialNTMConfig witnessPreservingPrep [b]]) :
+    ∃ witness : BitString,
+      reached.tape = preparedTape witness [b] := by
+  rw [witnessPrep_singleton_runBranches_eight] at hmem
+  simp only [List.mem_cons, List.mem_singleton] at hmem
+  rcases hmem with h | h
+  · subst reached
+    exact ⟨[false], rfl⟩
+  · subst reached
+    exact ⟨[true], rfl⟩
+
 #print axioms MCore.Real.P01WitnessPrepGlobalBase.runBranches_terminal_fixed
 #print axioms MCore.Real.P01WitnessPrepGlobalBase.ntm_haltsWithin_mono
 #print axioms MCore.Real.P01WitnessPrepGlobalBase.witnessPrep_empty_halts
