@@ -1,4 +1,5 @@
 import MCore.Real.CanonicalCircuitBits
+import MCore.Real.CanonicalSATWitness
 import MCore.Real.Semantics
 
 namespace MCore
@@ -117,7 +118,11 @@ theorem evalEncoded_encode
   have h :=
     evalEncodedCore_encode_append sigma c ([] : BitString)
       ((encodeCircuit c).length + 1) hFuel
-  simp [evalEncoded, h]
+  have h' :
+      evalEncodedCore ((encodeCircuit c).length + 1) sigma (encodeCircuit c) =
+        some (evalCircuit sigma c, []) := by
+    simpa using h
+  simp [evalEncoded, h']
 
 /-- The streaming evaluator agrees with witness verification on the canonical
 encoding.  This is the exact semantic specification the one-machine physical
