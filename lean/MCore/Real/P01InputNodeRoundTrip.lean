@@ -7,9 +7,11 @@ namespace Real
 namespace P01InputNodeRoundTrip
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01EvalCursorMachine
 open P01EvalInputNodePhysicalRefinement
 open P01WitnessIndexedReadPreserving
+open P01WitnessIndexedReadGap
 open P01WitnessIndexedReadGapRaw
 open P01InputReturnMode
 open P01InputIndexLookahead
