@@ -33,7 +33,7 @@ theorem runBranches_terminal_fixed
         · simp [hr]
       have hactive :
           configs.filter (fun c =>
-            !machine.accepting c.state && !machine.rejecting c.state) =
+            !(machine.accepting c.state || machine.rejecting c.state)) =
             [] := by
         apply List.filter_eq_nil_iff.mpr
         intro c hc
@@ -41,14 +41,7 @@ theorem runBranches_terminal_fixed
         · simp [ha]
         · simp [hr]
       rw [NTM.runBranches]
-      rw [hhalted]
-      change machine.runBranches fuel
-        (configs ++
-          List.flatMap machine.successors
-            (configs.filter (fun c =>
-              !machine.accepting c.state && !machine.rejecting c.state))) =
-          configs
-      rw [hactive]
+      rw [hhalted, hactive]
       simpa using ih
 
 /-- Fuel composition for the repository NTM evaluator. -/
