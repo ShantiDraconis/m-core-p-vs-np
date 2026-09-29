@@ -180,7 +180,7 @@ theorem scanIndex_over_true
              tape := rightStreamTape l stream } :
             Configuration InputIndexLookaheadState (Option Bool)))
       simpa [Nat.one_add] using
-        (replicate_same_cons (some true) k left).symm
+        replicate_same_cons (some true) k left
 
 /-- One false terminator step enters the finite structural classifier. -/
 theorem scanIndex_false
@@ -350,7 +350,6 @@ theorem lookahead_sourceTail
   simp only [List.map_append, List.map_replicate, List.map_cons,
     List.map_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
-  rw [inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 4 = i + (1 + (1 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
@@ -389,7 +388,6 @@ theorem lookahead_frameStack
   simp only [List.map_append, List.map_replicate, List.map_cons,
     List.map_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
-  rw [inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
@@ -427,7 +425,6 @@ theorem lookahead_done
   simp only [List.map_append, List.map_replicate, List.map_cons,
     List.map_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
-  rw [inputIndexLookaheadMachine_initial]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
