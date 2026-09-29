@@ -73,3 +73,5 @@ import MCore.Real.P01InputReturnMode
 import MCore.Real.P01InputAfterReadReturn
 
 import MCore.Real.P01InputIndexLookahead
+
+import MCore.Real.P01InputNodeRoundTrip
