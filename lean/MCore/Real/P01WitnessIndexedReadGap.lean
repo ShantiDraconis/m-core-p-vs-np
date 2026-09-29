@@ -478,6 +478,10 @@ theorem preservingMovedGap_cycle
       restoredLeft, moved, m, k, src]
     rw [hcount]
     simp [List.replicate_succ, List.map_append, List.append_assoc]
+    exact replicate_none_cons
+      (gap + movedTail.length)
+      (some first ::
+        (movedTail.map some ++ some b :: none :: witnessSuffix))
 
   have h56e : preservingReadMachine.run (m + 2) C5 = C6e := by
     rw [h56, h6eq]
