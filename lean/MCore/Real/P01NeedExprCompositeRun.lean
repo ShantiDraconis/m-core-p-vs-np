@@ -79,24 +79,24 @@ theorem seek_successors_active
     (h : cursorSeekMachine.halting c.state = false) :
     needExprCompositeMachine.successors (seekConfig c) =
       [seekConfig (cursorSeekMachine.step c)] := by
-  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [seekConfig]
-  cases q <;> cases hs : tape.head <;>
-    simp [needExprCompositeMachine, cursorSeekMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
+  rw [seek_transition_active c.state c.tape.head h]
+  simp [seekConfig, NTM.stepBranch, TM.step,
+    cursorSeekMachine, needExprCompositeMachine,
+    Tape.write, Tape.move]
 
 theorem decode_successors_active
     (c : Configuration TagDecodeState (Option Bool))
     (h : tagDecodeMachine.halting c.state = false) :
     needExprCompositeMachine.successors (decodeConfig c) =
       [decodeConfig (tagDecodeMachine.step c)] := by
-  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [decodeConfig]
-  cases q <;> cases hs : tape.head <;>
-    simp [needExprCompositeMachine, tagDecodeMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
+  rw [decode_transition_active c.state c.tape.head h]
+  simp [decodeConfig, NTM.stepBranch, TM.step,
+    tagDecodeMachine, needExprCompositeMachine,
+    Tape.write, Tape.move]
 
 theorem retValue_successors_active
     (value : Bool)
@@ -104,12 +104,12 @@ theorem retValue_successors_active
     (h : cursorReturnMachine.halting c.state = false) :
     needExprCompositeMachine.successors (retValueConfig value c) =
       [retValueConfig value (cursorReturnMachine.step c)] := by
-  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [retValueConfig]
-  cases q <;> cases hs : tape.head <;>
-    simp [needExprCompositeMachine, cursorReturnMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
+  rw [retValue_transition_active value c.state c.tape.head h]
+  simp [retValueConfig, NTM.stepBranch, TM.step,
+    cursorReturnMachine, needExprCompositeMachine,
+    Tape.write, Tape.move]
 
 theorem retPush_successors_active
     (frame : P01EncodedStackEvaluator.EvalFrame)
@@ -130,12 +130,12 @@ theorem push_successors_active
     (h : framePushMachine.halting c.state = false) :
     needExprCompositeMachine.successors (pushConfig frame c) =
       [pushConfig frame (framePushMachine.step c)] := by
-  rcases c with ⟨q, tape⟩
   unfold NTM.successors
   simp only [pushConfig]
-  cases q <;> cases hs : tape.head <;>
-    simp [needExprCompositeMachine, framePushMachine,
-      NTM.stepBranch, TM.step, Tape.write, Tape.move, hs] at h ⊢
+  rw [push_transition_active frame c.state c.tape.head h]
+  simp [pushConfig, NTM.stepBranch, TM.step,
+    framePushMachine, needExprCompositeMachine,
+    Tape.write, Tape.move]
 
 /-- Generic deterministic phase reachability, specialized by an injection and
 a one-step successor theorem. -/
