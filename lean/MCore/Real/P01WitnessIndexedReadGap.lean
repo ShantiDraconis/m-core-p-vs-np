@@ -704,6 +704,133 @@ theorem preservingMovedGap_cycle_index
           (encodeNat n ++ tail) gap
 
 
+
+/-- Exact remaining fuel from a nonempty moved prefix in the gap-aware layout. -/
+def preservingMovedGapFuel (gap movedLen : Nat) : Nat → Nat
+  | 0 => gap + 5 * movedLen + 6
+  | n + 1 =>
+      (2 * gap + 4 * movedLen + 6) +
+        preservingMovedGapFuel gap (movedLen + 1) n
+
+/-- Complete read from the gap-aware moved-prefix invariant. -/
+theorem preservingMovedGap_forall
+    (first : Bool) (movedTail rest tail : BitString)
+    (gap n : Nat)
+    (h : n < rest.length) :
+    preservingReadMachine.run
+      (preservingMovedGapFuel gap (first :: movedTail).length n)
+      (preservingMovedGapConfig gap (first :: movedTail) rest n tail) =
+      { state := .halt (rest.getD n false),
+        tape :=
+          { left := ((first :: movedTail) ++ rest).map some,
+            head := none,
+            right :=
+              List.replicate
+                (gap + (first :: movedTail).length + n + 1) none ++
+                tail.map some } } := by
+  induction n generalizing movedTail rest with
+  | zero =>
+      cases rest with
+      | nil =>
+          simp at h
+      | cons selected restTail =>
+          dsimp [preservingMovedGapFuel]
+          simpa [preservingMovedGapConfig, encodeNat,
+            preservingMovedGapFinalizeFuel,
+            List.map_append, List.append_assoc] using
+            movedGapBits_false_finalize
+              first selected movedTail restTail tail gap
+  | succ n ih =>
+      cases rest with
+      | nil =>
+          simp at h
+      | cons selected restTail =>
+          have htail : n < restTail.length := by
+            simpa using h
+          rw [show
+            preservingMovedGapFuel gap (first :: movedTail).length (n + 1) =
+              (2 * gap + 4 * movedTail.length + 10) +
+                preservingMovedGapFuel gap
+                  (first :: (movedTail ++ [selected])).length n by
+              simp [preservingMovedGapFuel]
+              omega]
+          rw [run_add]
+          rw [preservingMovedGap_cycle_index
+            first selected movedTail restTail tail gap n]
+          change preservingReadMachine.run
+            (preservingMovedGapFuel gap
+              (first :: (movedTail ++ [selected])).length n)
+            (preservingMovedGapConfig gap
+              (first :: (movedTail ++ [selected])) restTail n tail) = _
+          rw [ih (movedTail := movedTail ++ [selected])
+            (rest := restTail) htail]
+          simp [List.getD_cons_succ, List.map_append,
+            List.append_assoc]
+          omega
+
+/-- Exact full-run fuel from the gap-aware initial layout. -/
+def preservingReadGapFuel (gap : Nat) : Nat → Nat
+  | 0 => gap + 4
+  | n + 1 =>
+      (2 * gap + 6) + preservingMovedGapFuel gap 1 n
+
+/-- Complete preserving indexed read for every valid index and every physical
+blank gap between the source cursor and the witness separator. -/
+theorem preservingReadGap_forall
+    (i : Nat) (witness tail : BitString)
+    (gap : Nat)
+    (h : i < witness.length) :
+    preservingReadMachine.run (preservingReadGapFuel gap i)
+      { state := preservingReadMachine.initial,
+        tape := preservingReadGapTape witness gap i tail } =
+      { state := .halt (witness.getD i false),
+        tape :=
+          { left := witness.map some,
+            head := none,
+            right :=
+              List.replicate (gap + i + 1) none ++ tail.map some } } := by
+  cases i with
+  | zero =>
+      cases witness with
+      | nil =>
+          simp at h
+      | cons b witnessTail =>
+          simpa [preservingReadGapFuel, List.getD_cons_zero] using
+            preservingReadGap_zero b witnessTail tail gap
+  | succ n =>
+      cases witness with
+      | nil =>
+          simp at h
+      | cons b witnessTail =>
+          have htail : n < witnessTail.length := by
+            simpa using h
+          rw [show preservingReadGapFuel gap (n + 1) =
+              (2 * gap + 6) + preservingMovedGapFuel gap 1 n by rfl]
+          rw [run_add]
+          rw [preservingReadGap_start_successor
+            b witnessTail tail gap n]
+          have hm :=
+            preservingMovedGap_forall b [] witnessTail tail gap n htail
+          rw [hm]
+          simp [List.getD_cons_succ, List.map_append,
+            List.append_assoc]
+          omega
+
+theorem preservingReadGap_forall_value
+    (i : Nat) (witness tail : BitString)
+    (gap : Nat)
+    (h : i < witness.length) :
+    (preservingReadMachine.run (preservingReadGapFuel gap i)
+      { state := preservingReadMachine.initial,
+        tape := preservingReadGapTape witness gap i tail }).state =
+      .halt (witness.getD i false) := by
+  rw [preservingReadGap_forall i witness tail gap h]
+
+#print axioms MCore.Real.P01WitnessIndexedReadGap.preservingMovedGap_forall
+#print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_forall
+#print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_forall_value
+
+
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_zero
 #print axioms MCore.Real.P01WitnessIndexedReadGap.preservingReadGap_start_successor
 
