@@ -21,7 +21,7 @@ inductive FramePopState where
   | read2 : Bool → Bool → FramePopState
   | halt : EvalFrame → FramePopState
   | reject
-  deriving DecidableEq, Repr
+  deriving DecidableEq, Repr, Fintype
 
 /-- Fixed physical frame-pop machine.
 It alternates boundary-to-cell moves and erase/read steps.  The two already-read
