@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: construct the physical source-cursor ↔ stack-end invariant/shuttle, then refine input/const/source consumption, lift to global evalRun halting/correctness, and compose one P01MachineConstruction. P02: construct G21Pointwise. Do not reopen frame coding/push/pop/read, semantic evaluator, parser, guesser, indexed-read, G2.2, or fixed-point routes.",
+  "next": "P01: construct one fixed integrated NTM and prove its global HaltsWithin + AcceptsWithin↔SATBits; do not reopen certified parser, witness-reader, frame push/pop, or G21 falsified routes",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -161,5 +161,29 @@
         "component shells without one-machine global execution theorem"
       ]
     }
+  },
+  "p01_direct_frontier": {
+    "state": "OPEN_IMPLEMENTATION_SINGLE_INTEGRATION_OBJECT",
+    "exact_target": "Nonempty P01FinalCertificate.P01MachineConstruction",
+    "already_closed": [
+      "global canonical parser simulation",
+      "witnessGuess_halts and witnessGuess_complete",
+      "verified SAT witness relation",
+      "physical const/neg/and/or stack transforms",
+      "fixed-control indexed witness reader with polynomial halting/correctness",
+      "fixed-control eval-frame push/pop machines",
+      "polynomial physical-verifier budget"
+    ],
+    "not_counted_as_closure": [
+      "state-only phase bridges",
+      "PhysicalStackRep reconstruction without machine execution",
+      "branch frozen/p01-exact-integrated-producer-green-661e43e4 because it still contains P01MachineConstructionExpectedFailure.lean"
+    ],
+    "exact_remaining": [
+      "construct one fixed finite-control NTM composing the certified phases",
+      "prove global HaltsWithin under one polynomial timeBound",
+      "prove AcceptsWithin iff SATBits circuitBitEncoding for every bitstring"
+    ],
+    "consequence": "closing this object closes P01ConstructionGap; G21Pointwise remains independently OPEN_MATH"
   }
 }
