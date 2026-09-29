@@ -63,3 +63,5 @@ import MCore.Barrier.Audit
 import MCore.Real.P01GapTolerantRead
 
 import MCore.Real.P01WitnessIndexedReadGap
+
+import MCore.Real.P01WitnessIndexedReadGapRaw
