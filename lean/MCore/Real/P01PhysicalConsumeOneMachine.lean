@@ -409,7 +409,17 @@ theorem consumeOne_run
   rw [seekUnread_run]
   simp only [List.reverse_reverse]
   rw [run_add]
-  rw [cursor_boundary_to_erase]
+  have hErase :
+      consumeOneMachine.run 1
+        (seekUnreadConfig witness consumed []
+          ((b :: bs).map some ++
+            none :: (frames.reverse.map some ++
+              none :: List.replicate padding none))) =
+        { state := eraseBit
+          tape := evalCursorReadTape witness consumed (b :: bs) frames padding } := by
+    simpa [List.append_assoc] using
+      cursor_boundary_to_erase witness consumed b bs frames padding
+  rw [hErase]
   rw [run_add]
   rw [erase_to_returnUnread]
   rw [run_add]
