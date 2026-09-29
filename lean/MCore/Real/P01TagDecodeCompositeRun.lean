@@ -224,8 +224,11 @@ theorem tagDecodeComposite_reaches_done
     have hsucc :
         decodeConfig startDecode ∈
           tagDecodeCompositeMachine.successors (seekConfig haltSeek) := by
-      simpa [startDecode, haltSeek, seekConfig, decodeConfig] using
-        seek_handoff_successors haltSeek.tape
+      rw [show seekConfig haltSeek =
+          ({ state := .seek .halt, tape := haltSeek.tape } : CompositeConfig) by
+            rfl]
+      rw [seek_handoff_successors haltSeek.tape]
+      simp [startDecode, haltSeek, decodeConfig]
     exact mem_runBranches_succ_of_successor
       tagDecodeCompositeMachine mS [seekConfig startSeek]
       (seekConfig haltSeek) (decodeConfig startDecode)
@@ -271,8 +274,12 @@ theorem tagDecodeComposite_reaches_done
     have hsucc :
         done ∈
           tagDecodeCompositeMachine.successors (decodeConfig haltDecode) := by
-      simpa [done, haltDecode, decodeConfig] using
-        decode_handoff_successors b0 b1 b2 haltDecode.tape
+      rw [show decodeConfig haltDecode =
+          ({ state := .decode (.halt b0 b1 b2), tape := haltDecode.tape } :
+            CompositeConfig) by
+            rfl]
+      rw [decode_handoff_successors b0 b1 b2 haltDecode.tape]
+      simp [done, haltDecode]
     exact mem_runBranches_succ_of_successor
       tagDecodeCompositeMachine ((mS + 1) + mD) [seekConfig startSeek]
       (decodeConfig haltDecode) done hBoth
