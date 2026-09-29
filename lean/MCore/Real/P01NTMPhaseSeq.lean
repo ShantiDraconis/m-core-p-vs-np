@@ -112,8 +112,7 @@ theorem seq_successors_right
       (B.successors c).map
         (fun d => ({ state := Sum.inr d.state, tape := d.tape } :
           Configuration (Sum StateA StateB) Symbol)) := by
-  subst hblank
-  simp [seq, NTM.successors, NTM.stepBranch]
+  simp [seq, NTM.successors, NTM.stepBranch, hblank]
 
 /-- The handoff itself preserves the complete physical tape exactly. -/
 theorem handoff_preserves_tape
