@@ -104,7 +104,7 @@ def needSimulation :
       cases qi <;>
         simp [Halted, needStateEmbed,
           evalStepCompositeMachine, needExprCompositeMachine,
-          inputStateEmbed, inputNodeCompositeMachine,
+          inputStateEmbed, P01InputNodeCompositeNTM.inputNodeCompositeMachine,
           P01NTMRunLaws.liftConfig, NTM.successors, NTM.stepBranch,
           List.map_map, Function.comp_def, Tape.write, Tape.move] at hactive ⊢
 
