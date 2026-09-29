@@ -84,3 +84,5 @@ import MCore.Real.P01InputNodeCompositeRun
 import MCore.Real.P01InputTagDecodeMachine
 
 import MCore.Real.P01NeedExprTagDecode
+
+import MCore.Real.P01EvalCursorReturnNoErase
