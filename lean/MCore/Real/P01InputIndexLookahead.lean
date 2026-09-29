@@ -345,67 +345,95 @@ theorem lookahead_sourceTail
   let suffix : List (Option Bool) :=
     some b :: tail.map some ++ none :: frameStack.reverse.map some ++
       none :: List.replicate padding none
-  rw [evalCursorReadTape_index_stream_normalized]
-  rw [encodeNat_eq_replicate_true]
-  simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil, List.append_assoc, List.singleton_append,
-    inputIndexLookaheadMachine_initial]
-  dsimp [base, suffix]
+
+  have hview :
+      evalCursorReadTape witness consumed
+          (encodeNat i ++ (b :: tail)) frameStack padding =
+        rightStreamTape (none :: base)
+          (List.replicate i (some true) ++ some false :: suffix) := by
+    rw [evalCursorReadTape_index_stream_normalized]
+    rw [encodeNat_eq_replicate_true]
+    simp [base, suffix, List.map_append, List.map_replicate,
+      List.append_assoc]
+
+  rw [inputIndexLookaheadMachine_initial, hview]
   rw [show 2 * i + 4 = i + (1 + (1 + (i + 2))) by omega]
-  rw [run_add]
-  have hscan :
-      inputIndexLookaheadMachine.run i
-        { state := .scanIndex,
-          tape :=
-            rightStreamTape
-              (none :: (List.replicate consumed none ++ witness.map some))
-              (List.replicate i (some true) ++
-                (some false :: some b ::
-                  (tail.map some ++
-                    (none ::
-                      (frameStack.reverse.map some ++
-                        (none :: List.replicate padding none)))))) } =
-        { state := .scanIndex,
-          tape :=
-            rightStreamTape
-              (List.replicate i (some true) ++
-                (none ::
-                  (List.replicate consumed none ++ witness.map some)))
-              (some false :: some b ::
-                (tail.map some ++
-                  (none ::
-                    (frameStack.reverse.map some ++
-                      (none :: List.replicate padding none))))) } := by
-    simpa [List.append_assoc] using
-      scanIndex_over_true i
-        (none :: (List.replicate consumed none ++ witness.map some))
-        (some false :: some b ::
-          (tail.map some ++
-            (none ::
-              (frameStack.reverse.map some ++
-                (none :: List.replicate padding none)))))
-  rw [hscan]
-  rw [run_add]
-  rw [scanIndex_false
-    (List.replicate i (some true) ++
-      (none :: (List.replicate consumed none ++ witness.map some)))
-    (some b :: tail.map some ++ none ::
-      frameStack.reverse.map some ++ none ::
-        List.replicate padding none)]
-  rw [run_add]
-  rw [classify_sourceTail_after_false
-    (List.replicate i (some true) ++
-      (none :: (List.replicate consumed none ++ witness.map some)))
-    b tail frameStack padding]
-  rw [rewind_index_segment .sourceTail
-    (List.replicate i true)
-    (List.replicate consumed none ++ witness.map some)
-    (some b :: tail.map some ++ none ::
-      frameStack.reverse.map some ++ none ::
-        List.replicate padding none)]
-  simp [rightStreamTape, evalCursorReadTape,
-    encodeNat_eq_replicate_true, List.map_append,
-    List.append_assoc]
+
+  let C0 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .scanIndex,
+      tape :=
+        rightStreamTape (none :: base)
+          (List.replicate i (some true) ++ some false :: suffix) }
+  let C1 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .scanIndex,
+      tape :=
+        rightStreamTape
+          (List.replicate i (some true) ++ (none :: base))
+          (some false :: suffix) }
+  let C2 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .peekTail,
+      tape :=
+        rightStreamTape
+          (some false ::
+            (List.replicate i (some true) ++ (none :: base)))
+          suffix }
+  let C3 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .rewind .sourceTail,
+      tape :=
+        { left := List.replicate i (some true) ++ (none :: base),
+          head := some false,
+          right := suffix } }
+  let C4 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .halt .sourceTail,
+      tape :=
+        rightStreamTape (none :: base)
+          (List.replicate i (some true) ++ some false :: suffix) }
+
+  change inputIndexLookaheadMachine.run
+      (i + (1 + (1 + (i + 2)))) C0 = C4
+
+  have hscan : inputIndexLookaheadMachine.run i C0 = C1 := by
+    simpa [C0, C1] using
+      scanIndex_over_true i (none :: base) (some false :: suffix)
+
+  have hfalse : inputIndexLookaheadMachine.run 1 C1 = C2 := by
+    simpa [C1, C2] using
+      scanIndex_false
+        (List.replicate i (some true) ++ (none :: base)) suffix
+
+  have hclass : inputIndexLookaheadMachine.run 1 C2 = C3 := by
+    simpa [C2, C3, suffix] using
+      classify_sourceTail_after_false
+        (List.replicate i (some true) ++ (none :: base))
+        b tail frameStack padding
+
+  have hrew : inputIndexLookaheadMachine.run (i + 2) C3 = C4 := by
+    simpa [C3, C4, List.map_replicate] using
+      rewind_index_segment .sourceTail
+        (List.replicate i true) base suffix
+
+  calc
+    inputIndexLookaheadMachine.run
+        (i + (1 + (1 + (i + 2)))) C0 =
+      inputIndexLookaheadMachine.run
+        (1 + (1 + (i + 2)))
+        (inputIndexLookaheadMachine.run i C0) :=
+      run_add inputIndexLookaheadMachine i
+        (1 + (1 + (i + 2))) C0
+    _ = inputIndexLookaheadMachine.run
+        (1 + (1 + (i + 2))) C1 := by rw [hscan]
+    _ = inputIndexLookaheadMachine.run
+        (1 + (i + 2))
+        (inputIndexLookaheadMachine.run 1 C1) :=
+      run_add inputIndexLookaheadMachine 1 (1 + (i + 2)) C1
+    _ = inputIndexLookaheadMachine.run
+        (1 + (i + 2)) C2 := by rw [hfalse]
+    _ = inputIndexLookaheadMachine.run
+        (i + 2)
+        (inputIndexLookaheadMachine.run 1 C2) :=
+      run_add inputIndexLookaheadMachine 1 (i + 2) C2
+    _ = inputIndexLookaheadMachine.run (i + 2) C3 := by rw [hclass]
+    _ = C4 := hrew
 
 /-- Full lookahead for an empty source tail with frames remaining. -/
 theorem lookahead_frameStack
@@ -420,70 +448,96 @@ theorem lookahead_frameStack
         tape :=
           evalCursorReadTape witness consumed
             (encodeNat i) (b :: frameTail) padding } := by
-  rw [evalCursorReadTape_index_stream_nil]
-  rw [encodeNat_eq_replicate_true]
-  simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil, List.append_assoc, List.singleton_append,
-    inputIndexLookaheadMachine_initial]
+  let base : List (Option Bool) :=
+    List.replicate consumed none ++ witness.map some
+  let suffix : List (Option Bool) :=
+    none :: (b :: frameTail).reverse.map some ++
+      none :: List.replicate padding none
+
+  have hview :
+      evalCursorReadTape witness consumed
+          (encodeNat i) (b :: frameTail) padding =
+        rightStreamTape (none :: base)
+          (List.replicate i (some true) ++ some false :: suffix) := by
+    rw [evalCursorReadTape_index_stream_nil]
+    rw [encodeNat_eq_replicate_true]
+    simp [base, suffix, List.map_append, List.map_replicate,
+      List.append_assoc]
+
+  rw [inputIndexLookaheadMachine_initial, hview]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
-  rw [run_add]
-  change inputIndexLookaheadMachine.run (1 + (3 + (i + 2)))
-      (inputIndexLookaheadMachine.run i
-        { state := .scanIndex,
-          tape :=
-            rightStreamTape
-              (none :: (List.replicate consumed none ++ witness.map some))
-              (List.replicate i (some true) ++
-                (some false :: none :: (b :: frameTail).reverse.map some ++
-                  none :: List.replicate padding none)) }) = _
-  rw [scanIndex_over_true i
-    (none :: (List.replicate consumed none ++ witness.map some))
-    (some false :: none :: (b :: frameTail).reverse.map some ++
-      none :: List.replicate padding none)]
-  rw [run_add]
-  have hfalse :
-      inputIndexLookaheadMachine.run 1
-        { state := .scanIndex,
-          tape :=
-            rightStreamTape
-              (List.replicate i (some true) ++
-                (none ::
-                  (List.replicate consumed none ++ witness.map some)))
-              (some false ::
-                (none ::
-                  ((b :: frameTail).reverse.map some ++
-                    (none :: List.replicate padding none)))) } =
-        { state := .peekTail,
-          tape :=
-            rightStreamTape
-              (some false ::
-                (List.replicate i (some true) ++
-                  (none ::
-                    (List.replicate consumed none ++ witness.map some))))
-              (none ::
-                ((b :: frameTail).reverse.map some ++
-                  (none :: List.replicate padding none))) } := by
-    simpa [List.append_assoc] using
+
+  let C0 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .scanIndex,
+      tape := rightStreamTape (none :: base)
+        (List.replicate i (some true) ++ some false :: suffix) }
+  let C1 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .scanIndex,
+      tape := rightStreamTape
+        (List.replicate i (some true) ++ (none :: base))
+        (some false :: suffix) }
+  let C2 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .peekTail,
+      tape := rightStreamTape
+        (some false ::
+          (List.replicate i (some true) ++ (none :: base)))
+        suffix }
+  let C3 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .rewind .frameStack,
+      tape :=
+        { left := List.replicate i (some true) ++ (none :: base),
+          head := some false,
+          right := suffix } }
+  let C4 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .halt .frameStack,
+      tape := rightStreamTape (none :: base)
+        (List.replicate i (some true) ++ some false :: suffix) }
+
+  change inputIndexLookaheadMachine.run
+      (i + (1 + (3 + (i + 2)))) C0 = C4
+
+  have hscan : inputIndexLookaheadMachine.run i C0 = C1 := by
+    simpa [C0, C1] using
+      scanIndex_over_true i (none :: base) (some false :: suffix)
+
+  have hfalse : inputIndexLookaheadMachine.run 1 C1 = C2 := by
+    simpa [C1, C2] using
       scanIndex_false
-        (List.replicate i (some true) ++
-          (none :: (List.replicate consumed none ++ witness.map some)))
-        (none ::
-          ((b :: frameTail).reverse.map some ++
-            (none :: List.replicate padding none)))
-  rw [hfalse]
-  rw [run_add]
-  rw [classify_frameStack_after_false
-    (List.replicate i (some true) ++
-      (none :: (List.replicate consumed none ++ witness.map some)))
-    b frameTail padding]
-  rw [rewind_index_segment .frameStack
-    (List.replicate i true)
-    (List.replicate consumed none ++ witness.map some)
-    (none :: (b :: frameTail).reverse.map some ++
-      none :: List.replicate padding none)]
-  simp [rightStreamTape, evalCursorReadTape,
-    encodeNat_eq_replicate_true, List.map_append,
-    List.append_assoc]
+        (List.replicate i (some true) ++ (none :: base)) suffix
+
+  have hclass : inputIndexLookaheadMachine.run 3 C2 = C3 := by
+    simpa [C2, C3, suffix] using
+      classify_frameStack_after_false
+        (List.replicate i (some true) ++ (none :: base))
+        b frameTail padding
+
+  have hrew : inputIndexLookaheadMachine.run (i + 2) C3 = C4 := by
+    simpa [C3, C4, List.map_replicate] using
+      rewind_index_segment .frameStack
+        (List.replicate i true) base suffix
+
+  calc
+    inputIndexLookaheadMachine.run
+        (i + (1 + (3 + (i + 2)))) C0 =
+      inputIndexLookaheadMachine.run
+        (1 + (3 + (i + 2)))
+        (inputIndexLookaheadMachine.run i C0) :=
+      run_add inputIndexLookaheadMachine i
+        (1 + (3 + (i + 2))) C0
+    _ = inputIndexLookaheadMachine.run
+        (1 + (3 + (i + 2))) C1 := by rw [hscan]
+    _ = inputIndexLookaheadMachine.run
+        (3 + (i + 2))
+        (inputIndexLookaheadMachine.run 1 C1) :=
+      run_add inputIndexLookaheadMachine 1 (3 + (i + 2)) C1
+    _ = inputIndexLookaheadMachine.run
+        (3 + (i + 2)) C2 := by rw [hfalse]
+    _ = inputIndexLookaheadMachine.run
+        (i + 2)
+        (inputIndexLookaheadMachine.run 3 C2) :=
+      run_add inputIndexLookaheadMachine 3 (i + 2) C2
+    _ = inputIndexLookaheadMachine.run (i + 2) C3 := by rw [hclass]
+    _ = C4 := hrew
 
 /-- Full lookahead when the input value will be the final evaluator value. -/
 theorem lookahead_done
@@ -495,52 +549,93 @@ theorem lookahead_done
       { state := .halt .done,
         tape :=
           evalCursorReadTape witness consumed (encodeNat i) [] padding } := by
-  rw [evalCursorReadTape_index_stream_nil]
-  rw [encodeNat_eq_replicate_true]
-  simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil, List.reverse_nil, List.append_assoc, List.singleton_append,
-    inputIndexLookaheadMachine_initial]
+  let base : List (Option Bool) :=
+    List.replicate consumed none ++ witness.map some
+  let suffix : List (Option Bool) :=
+    none :: none :: List.replicate padding none
+
+  have hview :
+      evalCursorReadTape witness consumed (encodeNat i) [] padding =
+        rightStreamTape (none :: base)
+          (List.replicate i (some true) ++ some false :: suffix) := by
+    rw [evalCursorReadTape_index_stream_nil]
+    rw [encodeNat_eq_replicate_true]
+    simp [base, suffix, List.map_append, List.map_replicate,
+      List.append_assoc]
+
+  rw [inputIndexLookaheadMachine_initial, hview]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
-  rw [run_add]
-  have hscan :
-      inputIndexLookaheadMachine.run i
-        { state := .scanIndex,
-          tape :=
-            rightStreamTape
-              (none :: (List.replicate consumed none ++ witness.map some))
-              (List.replicate i (some true) ++
-                (some false :: none :: none ::
-                  List.replicate padding none)) } =
-        { state := .scanIndex,
-          tape :=
-            rightStreamTape
-              (List.replicate i (some true) ++
-                (none ::
-                  (List.replicate consumed none ++ witness.map some)))
-              (some false :: none :: none ::
-                List.replicate padding none) } := by
-    simpa [List.append_assoc] using
-      scanIndex_over_true i
-        (none :: (List.replicate consumed none ++ witness.map some))
-        (some false :: none :: none :: List.replicate padding none)
-  rw [hscan]
-  rw [run_add]
-  rw [scanIndex_false
-    (List.replicate i (some true) ++
-      (none :: (List.replicate consumed none ++ witness.map some)))
-    (none :: none :: List.replicate padding none)]
-  rw [run_add]
-  rw [classify_done_after_false
-    (List.replicate i (some true) ++
-      (none :: (List.replicate consumed none ++ witness.map some)))
-    padding]
-  rw [rewind_index_segment .done
-    (List.replicate i true)
-    (List.replicate consumed none ++ witness.map some)
-    (none :: none :: List.replicate padding none)]
-  simp [rightStreamTape, evalCursorReadTape,
-    encodeNat_eq_replicate_true, List.map_append,
-    List.append_assoc]
+
+  let C0 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .scanIndex,
+      tape := rightStreamTape (none :: base)
+        (List.replicate i (some true) ++ some false :: suffix) }
+  let C1 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .scanIndex,
+      tape := rightStreamTape
+        (List.replicate i (some true) ++ (none :: base))
+        (some false :: suffix) }
+  let C2 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .peekTail,
+      tape := rightStreamTape
+        (some false ::
+          (List.replicate i (some true) ++ (none :: base)))
+        suffix }
+  let C3 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .rewind .done,
+      tape :=
+        { left := List.replicate i (some true) ++ (none :: base),
+          head := some false,
+          right := suffix } }
+  let C4 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := .halt .done,
+      tape := rightStreamTape (none :: base)
+        (List.replicate i (some true) ++ some false :: suffix) }
+
+  change inputIndexLookaheadMachine.run
+      (i + (1 + (3 + (i + 2)))) C0 = C4
+
+  have hscan : inputIndexLookaheadMachine.run i C0 = C1 := by
+    simpa [C0, C1] using
+      scanIndex_over_true i (none :: base) (some false :: suffix)
+
+  have hfalse : inputIndexLookaheadMachine.run 1 C1 = C2 := by
+    simpa [C1, C2] using
+      scanIndex_false
+        (List.replicate i (some true) ++ (none :: base)) suffix
+
+  have hclass : inputIndexLookaheadMachine.run 3 C2 = C3 := by
+    simpa [C2, C3, suffix] using
+      classify_done_after_false
+        (List.replicate i (some true) ++ (none :: base)) padding
+
+  have hrew : inputIndexLookaheadMachine.run (i + 2) C3 = C4 := by
+    simpa [C3, C4, List.map_replicate] using
+      rewind_index_segment .done
+        (List.replicate i true) base suffix
+
+  calc
+    inputIndexLookaheadMachine.run
+        (i + (1 + (3 + (i + 2)))) C0 =
+      inputIndexLookaheadMachine.run
+        (1 + (3 + (i + 2)))
+        (inputIndexLookaheadMachine.run i C0) :=
+      run_add inputIndexLookaheadMachine i
+        (1 + (3 + (i + 2))) C0
+    _ = inputIndexLookaheadMachine.run
+        (1 + (3 + (i + 2))) C1 := by rw [hscan]
+    _ = inputIndexLookaheadMachine.run
+        (3 + (i + 2))
+        (inputIndexLookaheadMachine.run 1 C1) :=
+      run_add inputIndexLookaheadMachine 1 (3 + (i + 2)) C1
+    _ = inputIndexLookaheadMachine.run
+        (3 + (i + 2)) C2 := by rw [hfalse]
+    _ = inputIndexLookaheadMachine.run
+        (i + 2)
+        (inputIndexLookaheadMachine.run 3 C2) :=
+      run_add inputIndexLookaheadMachine 3 (i + 2) C2
+    _ = inputIndexLookaheadMachine.run (i + 2) C3 := by rw [hclass]
+    _ = C4 := hrew
 
 /-- Uniform lookahead fuel.  The source-tail case halts two steps earlier and
 therefore remains stable under the extra fuel. -/
