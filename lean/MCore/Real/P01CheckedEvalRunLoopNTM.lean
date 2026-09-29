@@ -147,6 +147,33 @@ def checkedEvalRunLoopMachine :
 @[simp] theorem rejecting_reject :
     checkedEvalRunLoopMachine.rejecting .reject = true := rfl
 
+def needCheckedLift
+    (mode : SyntaxMode)
+    (c : Configuration NeedExprCompositeState (Option Bool)) :
+    Configuration CheckedEvalRunState (Option Bool) :=
+  { state := needCheckedEmbed mode c.state
+    tape := c.tape }
+
+/-- For an admitted root tag the checked wrapper performs exactly the already
+certified physical decoder handoff, changing only the finite syntax mode for
+the child expression. -/
+theorem allowed_tag_successors
+    (mode : SyntaxMode)
+    (tag : NeedExprTag)
+    (tape : Tape (Option Bool))
+    (h : tagAllowed mode tag = true) :
+    checkedEvalRunLoopMachine.successors
+      { state := .need mode (.decode (.halt tag)), tape := tape } =
+    (needExprCompositeMachine.successors
+      { state := .decode (.halt tag), tape := tape }).map
+        (needCheckedLift (childMode mode tag)) := by
+  cases tape with
+  | mk left head right =>
+      cases tag <;>
+        simp [checkedEvalRunLoopMachine, needExprCompositeMachine,
+          needCheckedLift, needCheckedEmbed, NTM.successors, NTM.stepBranch,
+          tagAllowed, childMode, h, Tape.write, Tape.move]
+
 /-- Any syntactically forbidden decoded tag is rejected in one physical step. -/
 theorem disallowed_tag_successors
     (mode : SyntaxMode)
@@ -177,6 +204,7 @@ theorem mustInput_constFalse_rejects
       [{ state := .reject, tape := tape }] := by
   exact disallowed_tag_successors .mustInput .constFalse tape rfl
 
+#print axioms MCore.Real.P01CheckedEvalRunLoopNTM.allowed_tag_successors
 #print axioms MCore.Real.P01CheckedEvalRunLoopNTM.disallowed_tag_successors
 #print axioms MCore.Real.P01CheckedEvalRunLoopNTM.clause_and_rejects
 #print axioms MCore.Real.P01CheckedEvalRunLoopNTM.mustInput_constFalse_rejects
