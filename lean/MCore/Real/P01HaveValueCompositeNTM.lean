@@ -93,17 +93,24 @@ def haveValueCompositeMachine :
 @[simp] theorem accepting_doneNeed :
     haveValueCompositeMachine.accepting .doneNeed = true := rfl
 
+/-- Rewriting the current head symbol is physically inert. -/
+@[simp] theorem tape_write_head_self
+    (tape : Tape (Option Bool)) :
+    Tape.write tape tape.head = tape := by
+  cases tape
+  rfl
+
 theorem start_successors
     (v : Bool) (tape : Tape (Option Bool))
     (hblank : tape.head = none) :
     haveValueCompositeMachine.successors
       { state := .start v, tape := tape } =
       [{ state := .peek v, tape := Tape.move none .left tape }] := by
-  rcases tape with ⟨left, head, right⟩
-  simp only at hblank
-  subst head
+  have hwrite : Tape.write tape none = tape := by
+    rw [← hblank]
+    exact tape_write_head_self tape
   simp [haveValueCompositeMachine, NTM.successors, NTM.stepBranch,
-    Tape.write, Tape.move]
+    hblank, hwrite]
 
 /-- If the cell left of the stack-end boundary is blank, there is no encoded
 continuation frame; the machine restores the stack-end head and preserves the
@@ -115,11 +122,11 @@ theorem empty_handoff_successors
       { state := .peek v, tape := tape } =
       [{ state := .doneValue v,
          tape := Tape.move none .right tape }] := by
-  rcases tape with ⟨left, head, right⟩
-  simp only at hblank
-  subst head
+  have hwrite : Tape.write tape none = tape := by
+    rw [← hblank]
+    exact tape_write_head_self tape
   simp [haveValueCompositeMachine, NTM.successors, NTM.stepBranch,
-    Tape.write, Tape.move]
+    hblank, hwrite]
 
 /-- A nonblank top-frame bit returns the head to the stack-end boundary and
 enters the certified six-step frame-pop machine. -/
@@ -130,11 +137,11 @@ theorem nonempty_handoff_successors
       { state := .peek v, tape := tape } =
       [{ state := .pop v framePopMachine.initial,
          tape := Tape.move none .right tape }] := by
-  rcases tape with ⟨left, head, right⟩
-  simp only at hhead
-  subst head
+  have hwrite : Tape.write tape (some b) = tape := by
+    rw [← hhead]
+    exact tape_write_head_self tape
   simp [haveValueCompositeMachine, NTM.successors, NTM.stepBranch,
-    Tape.write, Tape.move]
+    hhead, hwrite]
 
 theorem pop_transition_active
     (v : Bool) (q : FramePopState) (symbol : Option Bool)
@@ -207,30 +214,34 @@ theorem push_handoff_successors
 theorem haveValueComposite_successors_length_le_one
     (c : Configuration HaveValueCompositeState (Option Bool)) :
     (haveValueCompositeMachine.successors c).length ≤ 1 := by
-  unfold NTM.successors
+  have hlen :
+      (haveValueCompositeMachine.successors c).length =
+        (haveValueCompositeMachine.transition c.state c.tape.head).length := by
+    simp [NTM.successors]
+  rw [hlen]
   cases c.state with
   | start v =>
       cases c.tape.head <;>
-        simp [haveValueCompositeMachine, NTM.stepBranch]
+        simp [haveValueCompositeMachine]
   | peek v =>
       cases c.tape.head <;>
-        simp [haveValueCompositeMachine, NTM.stepBranch]
+        simp [haveValueCompositeMachine]
   | pop v q =>
       cases q with
       | halt f =>
           cases f <;>
-            simp [haveValueCompositeMachine, NTM.stepBranch]
+            simp [haveValueCompositeMachine]
       | _ =>
-          simp [haveValueCompositeMachine, NTM.stepBranch]
+          simp [haveValueCompositeMachine]
   | push frame q =>
       cases q <;>
-        simp [haveValueCompositeMachine, NTM.stepBranch]
+        simp [haveValueCompositeMachine]
   | doneValue v =>
-      simp [haveValueCompositeMachine, NTM.stepBranch]
+      simp [haveValueCompositeMachine]
   | doneNeed =>
-      simp [haveValueCompositeMachine, NTM.stepBranch]
+      simp [haveValueCompositeMachine]
   | reject =>
-      simp [haveValueCompositeMachine, NTM.stepBranch]
+      simp [haveValueCompositeMachine]
 
 #print axioms MCore.Real.P01HaveValueCompositeNTM.start_successors
 #print axioms MCore.Real.P01HaveValueCompositeNTM.pop_transition_active
