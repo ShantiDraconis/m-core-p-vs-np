@@ -342,21 +342,20 @@ theorem lookahead_sourceTail
   let suffix : List (Option Bool) :=
     some b :: tail.map some ++ none :: frameStack.reverse.map some ++
       none :: List.replicate padding none
-  rw [evalCursorReadTape_index_stream]
+  rw [evalCursorReadTape_index_stream_normalized]
   rw [encodeNat_eq_replicate_true]
   simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil]
+    List.map_nil, List.singleton_append]
   rw [show 2 * i + 4 = i + (1 + (1 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
-    (List.replicate consumed none ++ none :: witness.map some)
+    (none :: base)
     (some false :: suffix)]
   rw [run_add]
   rw [scanIndex_false]
   rw [run_add]
   have hc := classify_sourceTail_after_false
-    (some false :: List.replicate i (some true) ++
-      (List.replicate consumed none ++ none :: witness.map some))
+    (List.replicate i (some true) ++ (none :: base))
     b tail frameStack padding
   rw [hc]
   rw [rewind_index_segment .sourceTail
@@ -380,14 +379,14 @@ theorem lookahead_frameStack
         tape :=
           evalCursorReadTape witness consumed
             (encodeNat i) (b :: frameTail) padding } := by
-  rw [evalCursorReadTape_index_stream]
+  rw [evalCursorReadTape_index_stream_nil]
   rw [encodeNat_eq_replicate_true]
   simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil]
+    List.map_nil, List.singleton_append]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
-    (List.replicate consumed none ++ none :: witness.map some)
+    (none :: (List.replicate consumed none ++ witness.map some))
     (some false :: none :: (b :: frameTail).reverse.map some ++
       none :: List.replicate padding none)]
   rw [run_add]
@@ -395,7 +394,7 @@ theorem lookahead_frameStack
   rw [run_add]
   rw [classify_frameStack_after_false
     (List.replicate i (some true) ++
-      (List.replicate consumed none ++ none :: witness.map some))
+      (none :: (List.replicate consumed none ++ witness.map some)))
     b frameTail padding]
   rw [rewind_index_segment .frameStack
     (List.replicate i true)
@@ -416,21 +415,21 @@ theorem lookahead_done
       { state := .halt .done,
         tape :=
           evalCursorReadTape witness consumed (encodeNat i) [] padding } := by
-  rw [evalCursorReadTape_index_stream]
+  rw [evalCursorReadTape_index_stream_nil]
   rw [encodeNat_eq_replicate_true]
   simp only [List.map_append, List.map_replicate, List.map_cons,
-    List.map_nil]
+    List.map_nil, List.singleton_append]
   rw [show 2 * i + 6 = i + (1 + (3 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
-    (List.replicate consumed none ++ none :: witness.map some)
+    (none :: (List.replicate consumed none ++ witness.map some))
     (some false :: none :: none :: List.replicate padding none)]
   rw [run_add]
   rw [scanIndex_false]
   rw [run_add]
   rw [classify_done_after_false
     (List.replicate i (some true) ++
-      (List.replicate consumed none ++ none :: witness.map some))
+      (none :: (List.replicate consumed none ++ witness.map some)))
     padding]
   rw [rewind_index_segment .done
     (List.replicate i true)
