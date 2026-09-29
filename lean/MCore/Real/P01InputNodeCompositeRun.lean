@@ -303,6 +303,22 @@ def inputNodeCompositeFuel
     P01InputNodeRoundTrip.inputAfterReadReturnFuel
       (consumedAfterInputIndex consumed i) tail frameStack + 1
 
+
+/-- Explicit quadratic/linear envelope for the fused input-node route. -/
+theorem inputNodeCompositeFuel_le
+    (consumed i : Nat)
+    (tail frameStack : CanonicalFinalProof.BitString) :
+    inputNodeCompositeFuel consumed i tail frameStack ≤
+      (2 * consumed + 4 * (i + 1) + 6) * i +
+        4 * consumed + 8 * i + tail.length + frameStack.length + 30 := by
+  unfold inputNodeCompositeFuel
+  have hread := preservingReadGapFuel_le consumed i
+  have hret :=
+    inputAfterReadReturnFuel_le
+      (consumedAfterInputIndex consumed i) tail frameStack
+  unfold consumedAfterInputIndex at hret
+  omega
+
 /-- Full physical input-node reachability in one fixed NTM.
 
 Starting at the evaluator cursor on the unary index, the fused machine reaches
@@ -671,6 +687,7 @@ theorem inputNodeComposite_haltsWithin
   exact halted_of_accepting inputNodeCompositeMachine terminal hacc
 
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputAfterReadTarget_eq_finalMode
+#print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeCompositeFuel_le
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_done
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_accepting
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_acceptsWithin
