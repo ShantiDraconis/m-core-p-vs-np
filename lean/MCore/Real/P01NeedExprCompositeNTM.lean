@@ -40,6 +40,15 @@ inductive NeedExprCompositeState where
   | reject
   deriving DecidableEq, Repr
 
+/-- Terminal-preserving embedding of the indexed-input primitive into the
+global needExpr control.  Internal input states stay under `.input`; the
+input primitive's accepting/rejecting terminals become the corresponding
+global terminals immediately. -/
+def inputStateEmbed : InputNodeCompositeState → NeedExprCompositeState
+  | .done selected _mode => .doneValue selected
+  | .reject => .reject
+  | q => .input q
+
 /-- One fixed NTM implementing all six valid `needExpr` tag cases. -/
 def needExprCompositeMachine :
     NTM NeedExprCompositeState (Option Bool) where
@@ -84,7 +93,7 @@ def needExprCompositeMachine :
         | .reject => []
         | _ =>
             (inputNodeCompositeMachine.transition qi symbol).map
-              (fun t => (.input t.1, t.2.1, t.2.2))
+              (fun t => (inputStateEmbed t.1, t.2.1, t.2.2))
     | .retValue value qr =>
         match qr with
         | .halt =>
