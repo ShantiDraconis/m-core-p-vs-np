@@ -211,16 +211,12 @@ theorem read_step_active
   cases q <;>
     simp [preservingReadMachine] at hhalt
   all_goals
-    cases hhead : tape.head with
-    | none =>
-        simp [inputNodeMachine, liftReadTransition,
-          preservingReadMachine, TM.step, hhead,
-          Tape.write, Tape.move]
-    | some b =>
-        cases b <;>
-          simp [inputNodeMachine, liftReadTransition,
-            preservingReadMachine, TM.step, hhead,
-            Tape.write, Tape.move]
+    unfold TM.step
+    simp only [inputNodeMachine]
+    generalize htr :
+      preservingReadMachine.transition _ tape.head = tr
+    rcases tr with ⟨q', a, d⟩
+    cases q' <;> rfl
 
 /-- One active return transition is reproduced exactly, retaining both the read
 result and the previously classified return mode. -/
@@ -243,14 +239,12 @@ theorem return_step_active
   cases q <;>
     simp [inputAfterReadReturnMachine] at hhalt
   all_goals
-    cases hhead : tape.head with
-    | none =>
-        simp [inputNodeMachine, inputAfterReadReturnMachine,
-          TM.step, hhead, Tape.write, Tape.move]
-    | some b =>
-        cases b <;>
-          simp [inputNodeMachine, inputAfterReadReturnMachine,
-            TM.step, hhead, Tape.write, Tape.move]
+    unfold TM.step
+    simp only [inputNodeMachine]
+    generalize htr :
+      inputAfterReadReturnMachine.transition _ tape.head = tr
+    rcases tr with ⟨q', a, d⟩
+    cases q' <;> rfl
 
 #print axioms MCore.Real.P01InputNodeIntegratedMachine.look_handoff
 #print axioms MCore.Real.P01InputNodeIntegratedMachine.read_handoff
