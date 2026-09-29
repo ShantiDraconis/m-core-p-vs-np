@@ -75,3 +75,5 @@ import MCore.Real.P01InputAfterReadReturn
 import MCore.Real.P01InputIndexLookahead
 
 import MCore.Real.P01InputNodeRoundTrip
+
+import MCore.Real.P01InputNodePhysicalPipeline
