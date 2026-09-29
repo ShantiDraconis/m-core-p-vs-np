@@ -110,6 +110,96 @@ theorem tmAsNTM_terminal_iff_halted
   · exact tmAsNTM_terminal_implies_halted M accepting q
   · exact tmAsNTM_terminal_of_halted M accepting q
 
+
+/-- Once a deterministic state has halted, the embedded NTM keeps that single
+configuration unchanged for any additional fuel. -/
+theorem runBranches_halted_all
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool)
+    (n : Nat)
+    (c : Configuration State Symbol)
+    (h : M.halting c.state = true) :
+    (tmAsNTM M accepting).runBranches n [c] = [c] := by
+  induction n with
+  | zero =>
+      rfl
+  | succ n ih =>
+      have ht := tmAsNTM_terminal_of_halted M accepting c.state h
+      rcases ht with ha | hr
+      · simp [NTM.runBranches, ha, ih]
+      · simp [NTM.runBranches, hr, ih]
+
+/-- Full-run correspondence: the deterministic embedding has exactly one
+reachable branch, namely the original TM run. -/
+theorem runBranches_tmAsNTM_singleton
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool)
+    (n : Nat)
+    (c : Configuration State Symbol) :
+    (tmAsNTM M accepting).runBranches n [c] = [M.run n c] := by
+  induction n generalizing c with
+  | zero =>
+      rfl
+  | succ n ih =>
+      cases h : M.halting c.state with
+      | false =>
+          have ha : (tmAsNTM M accepting).accepting c.state = false := by
+            simp [tmAsNTM, h]
+          have hr : (tmAsNTM M accepting).rejecting c.state = false := by
+            simp [tmAsNTM, h]
+          have hs := tmAsNTM_successors_of_not_halted M accepting c h
+          rw [TM.run]
+          simp [NTM.runBranches, ha, hr, hs, ih]
+      | true =>
+          rw [TM.run]
+          simp [h]
+          exact runBranches_halted_all M accepting (n + 1) c h
+
+/-- Deterministic halting is preserved exactly by the singleton-branch
+embedding. -/
+theorem tmHaltsWithin_iff_ntmHaltsWithin
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool)
+    (n : Nat)
+    (c : Configuration State Symbol) :
+    M.HaltsWithin n c ↔
+      (tmAsNTM M accepting).HaltsWithin n c := by
+  unfold TM.HaltsWithin NTM.HaltsWithin
+  rw [runBranches_tmAsNTM_singleton]
+  simp only [List.mem_singleton]
+  constructor
+  · intro h reached hEq
+    subst reached
+    exact tmAsNTM_terminal_of_halted M accepting _ h
+  · intro h
+    exact tmAsNTM_terminal_implies_halted M accepting _
+      (h (M.run n c) rfl)
+
+/-- Under the halting certificate, NTM acceptance is exactly the deterministic
+terminal classifier on the unique TM run. -/
+theorem tmAsNTM_acceptsWithin_iff
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool)
+    (n : Nat)
+    (c : Configuration State Symbol)
+    (hhalt : M.HaltsWithin n c) :
+    (tmAsNTM M accepting).AcceptsWithin n c ↔
+      accepting (M.run n c).state = true := by
+  unfold NTM.AcceptsWithin
+  rw [runBranches_tmAsNTM_singleton]
+  constructor
+  · rintro ⟨reached, hmem, hacc⟩
+    simp only [List.mem_singleton] at hmem
+    subst reached
+    simpa [tmAsNTM, hhalt] using hacc
+  · intro hacc
+    refine ⟨M.run n c, by simp, ?_⟩
+    simp [tmAsNTM, hhalt, hacc]
+
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_successors_of_not_halted
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_of_halted
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_implies_halted
