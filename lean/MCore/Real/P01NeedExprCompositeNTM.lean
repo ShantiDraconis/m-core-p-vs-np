@@ -194,6 +194,56 @@ theorem or_handoff_successors
   simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
     Tape.write, Tape.move]
 
+/-- Active seek states reproduce exactly the deterministic cursor-seek
+transition with only the composite-state injection. -/
+theorem seek_transition_active
+    (q : CursorSeekState) (symbol : Option Bool)
+    (h : cursorSeekMachine.halting q = false) :
+    needExprCompositeMachine.transition (.seek q) symbol =
+      let t := cursorSeekMachine.transition q symbol
+      [(.seek t.1, t.2.1, t.2.2)] := by
+  cases q <;>
+    simp [cursorSeekMachine, needExprCompositeMachine] at h ⊢
+
+/-- Active tag-decoder states reproduce the deterministic decoder step. -/
+theorem decode_transition_active
+    (q : TagDecodeState) (symbol : Option Bool)
+    (h : tagDecodeMachine.halting q = false) :
+    needExprCompositeMachine.transition (.decode q) symbol =
+      let t := tagDecodeMachine.transition q symbol
+      [(.decode t.1, t.2.1, t.2.2)] := by
+  cases q <;>
+    simp [tagDecodeMachine, needExprCompositeMachine] at h ⊢
+
+theorem retValue_transition_active
+    (value : Bool) (q : CursorReturnState) (symbol : Option Bool)
+    (h : cursorReturnMachine.halting q = false) :
+    needExprCompositeMachine.transition (.retValue value q) symbol =
+      let t := cursorReturnMachine.transition q symbol
+      [(.retValue value t.1, t.2.1, t.2.2)] := by
+  cases q <;>
+    simp [cursorReturnMachine, needExprCompositeMachine] at h ⊢
+
+theorem retPush_transition_active
+    (frame : P01EncodedStackEvaluator.EvalFrame)
+    (q : CursorReturnState) (symbol : Option Bool)
+    (h : cursorReturnMachine.halting q = false) :
+    needExprCompositeMachine.transition (.retPush frame q) symbol =
+      let t := cursorReturnMachine.transition q symbol
+      [(.retPush frame t.1, t.2.1, t.2.2)] := by
+  cases q <;>
+    simp [cursorReturnMachine, needExprCompositeMachine] at h ⊢
+
+theorem push_transition_active
+    (frame : P01EncodedStackEvaluator.EvalFrame)
+    (q : FramePushState) (symbol : Option Bool)
+    (h : framePushMachine.halting q = false) :
+    needExprCompositeMachine.transition (.push frame q) symbol =
+      let t := framePushMachine.transition q symbol
+      [(.push frame t.1, t.2.1, t.2.2)] := by
+  cases q <;>
+    simp [framePushMachine, needExprCompositeMachine] at h ⊢
+
 /-- Invalid tag patterns have no successor. -/
 theorem invalid110_rejects
     (tape : Tape (Option Bool)) :
