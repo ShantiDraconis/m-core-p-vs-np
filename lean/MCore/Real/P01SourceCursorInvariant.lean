@@ -48,7 +48,26 @@ theorem moveToSourceStart_head_correct
   rw [show stack.length + (b :: bs).length + 1 =
       (stack.length + bs.length + 1) + 1 by simp; omega]
   rw [execMoves_moveLeftSeq_head_getD]
-  simp [physicalStackV2Tape, List.getElem?_append]
+  simp only [physicalStackV2Tape]
+  have hstack :
+      (stack.map some).length ≤
+        stack.length + bs.length + 1 := by
+    simp
+    omega
+  rw [List.getElem?_append_right]
+  · have hsub :
+        stack.length + bs.length + 1 - (stack.map some).length =
+          bs.length + 1 := by
+      simp
+    rw [hsub]
+    rw [List.getElem?_cons_succ]
+    have hrev :
+        ((bs.map some).reverse).length ≤ bs.length := by
+      simp
+    rw [List.getElem?_append_right]
+    · simp
+    · simpa using hrev
+  · simpa using hstack
 
 /-- The source cursor motion is legal in the same primitive-move sense used by
 all prior certified P01 shuttles. -/
