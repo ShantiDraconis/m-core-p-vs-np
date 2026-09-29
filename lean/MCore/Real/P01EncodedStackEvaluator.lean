@@ -99,10 +99,11 @@ theorem evalRun_add
       simp only [evalRun]
       cases h : evalStep sigma s with
       | none =>
-          rw [h]
+          change s = evalRun n sigma s
           exact (evalRun_of_step_none n sigma s h).symm
       | some s' =>
-          rw [h]
+          change evalRun (m + n) sigma s' =
+            evalRun n sigma (evalRun m sigma s')
           exact ih s'
 
 theorem evalRun_halted
@@ -145,13 +146,14 @@ theorem evalRun_encode_append
           encodeCircuit, evalCircuit]
   | not c ih =>
       rw [show evalStepCount (.not c) =
-          1 + (evalStepCount c + 1) by simp [evalStepCount]]
+          1 + (evalStepCount c + 1) by
+            simp [evalStepCount, Nat.add_assoc]]
       rw [evalRun_add]
       have hfirst :
           evalRun 1 sigma
               (needExpr (encodeCircuit (.not c) ++ tail) frames) =
             needExpr (encodeCircuit c ++ tail) (.neg :: frames) := by
-        rfl
+        simp [evalRun, evalStep, needExpr, encodeCircuit, List.append_assoc]
       rw [hfirst]
       rw [evalRun_add]
       rw [ih (tail := tail) (frames := .neg :: frames)]
