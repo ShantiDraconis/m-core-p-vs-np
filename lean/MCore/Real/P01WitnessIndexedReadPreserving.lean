@@ -264,6 +264,20 @@ def scanMovedTape
         head := some x,
         right := right }
 
+/-- One physical `scanMoved` step peels the current moved witness bit
+and pushes it onto the right side of the tape. -/
+theorem scanMoved_step_cons
+    (x b : Bool) (xs : BitString)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.step
+      { state := .scanMoved,
+        tape := scanMovedTape (x :: xs) b left right } =
+      { state := .scanMoved,
+        tape := scanMovedTape xs b left (some x :: right) } := by
+  cases xs <;>
+    simp [scanMovedTape, preservingReadMachine,
+      TM.step, Tape.write, Tape.move]
+
 /-- `scanMoved` crosses every moved witness bit and then the separator,
 arriving at `capture` with the selected witness bit under the head. -/
 theorem scanMoved_over_bits
@@ -286,14 +300,7 @@ theorem scanMoved_over_bits
       rw [TM.run]
       simp only [show preservingReadMachine.halting (.scanMoved) = false by rfl,
         Bool.false_eq_true, if_false]
-      change preservingReadMachine.run (xs.length + 1)
-        { state := .scanMoved,
-          tape := scanMovedTape xs b left (some x :: right) } =
-        { state := .capture,
-          tape :=
-            { left := left,
-              head := some b,
-              right := none :: ((x :: xs).reverse.map some ++ right) } }
+      rw [scanMoved_step_cons]
       rw [ih (some x :: right)]
       apply congrArg
         (fun r : List (Option Bool) =>
@@ -366,6 +373,7 @@ theorem preservingRead_one_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_start_successor
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.replicate_none_extend
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.seekMoved_over_blanks
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.scanMoved_step_cons
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.scanMoved_over_bits
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
