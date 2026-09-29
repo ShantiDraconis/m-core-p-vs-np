@@ -8,6 +8,7 @@ on:
       - 'lean/MCore/Real/P01EncodedEvaluator.lean'
       - 'lean/MCore/Real/P01EncodedStackEvaluator.lean'
       - 'lean/MCore/Real/P01EncodedFrameTape.lean'
+      - 'lean/MCore/Real/P01EvalFramePushMachine.lean'
       - '.github/workflows/p01-encoded-evaluator.yml'
   workflow_dispatch:
 
@@ -31,12 +32,14 @@ jobs:
           lake build MCore.Real.P01EncodedEvaluator
           lake build MCore.Real.P01EncodedStackEvaluator
           lake build MCore.Real.P01EncodedFrameTape
+          lake build MCore.Real.P01EvalFramePushMachine
       - name: Axiom audit
         run: |
           cat > P01EncodedEvaluatorAxiomAudit.lean <<'EOF'
           import MCore.Real.P01EncodedEvaluator
           import MCore.Real.P01EncodedStackEvaluator
           import MCore.Real.P01EncodedFrameTape
+          import MCore.Real.P01EvalFramePushMachine
           #print axioms MCore.Real.P01EncodedEvaluator.evalEncodedCore_encode_append
           #print axioms MCore.Real.P01EncodedEvaluator.evalEncoded_encode
           #print axioms MCore.Real.P01EncodedStackEvaluator.evalRun_encode_append
@@ -44,13 +47,15 @@ jobs:
           #print axioms MCore.Real.P01EncodedStackEvaluator.evalRun_encode_bounded
           #print axioms MCore.Real.P01EncodedFrameTape.decodeEvalFrame_encodeEvalFrame
           #print axioms MCore.Real.P01EncodedFrameTape.decodeEvalFrames_encodeEvalFrames
+          #print axioms MCore.Real.P01EvalFramePushMachine.framePush_run_three
+          #print axioms MCore.Real.P01EvalFramePushMachine.framePush_rejects_nonblank
           EOF
           lake env lean P01EncodedEvaluatorAxiomAudit.lean | tee P01EncodedEvaluatorAxiomAudit.log
           if grep -F 'sorryAx' P01EncodedEvaluatorAxiomAudit.log; then exit 1; fi
       - name: Reject proof escapes
         run: |
           set -euo pipefail
-          if grep -nE '^[[:space:]]*(sorry|axiom|admit)[[:space:]]' lean/MCore/Real/P01EncodedEvaluator.lean lean/MCore/Real/P01EncodedStackEvaluator.lean lean/MCore/Real/P01EncodedFrameTape.lean; then
+          if grep -nE '^[[:space:]]*(sorry|axiom|admit)[[:space:]]' lean/MCore/Real/P01EncodedEvaluator.lean lean/MCore/Real/P01EncodedStackEvaluator.lean lean/MCore/Real/P01EncodedFrameTape.lean lean/MCore/Real/P01EvalFramePushMachine.lean; then
             echo "proof escape found"
             exit 1
           fi
