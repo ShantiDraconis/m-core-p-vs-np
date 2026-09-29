@@ -120,9 +120,9 @@ theorem retPush_successors_active
   unfold NTM.successors
   simp only [retPushConfig]
   rw [retPush_transition_active frame c.state c.tape.head h]
+  simp only [List.map_singleton]
   simp [retPushConfig, NTM.stepBranch, TM.step,
-    needExprCompositeMachine, cursorReturnMachine,
-    Tape.write, Tape.move]
+    needExprCompositeMachine, cursorReturnMachine]
 
 theorem push_successors_active
     (frame : P01EncodedStackEvaluator.EvalFrame)
