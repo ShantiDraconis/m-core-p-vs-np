@@ -225,7 +225,6 @@ theorem framePop_run_six
   rw [framePop_third_two witness source
     stack (padding + 1 + 1)
     (frameBit0 f) (frameBit1 f) (frameBit2 f) f hdecode]
-  congr 2
 
 /-- Empty/truncated stack rejects rather than fabricating a frame. -/
 theorem framePop_empty_rejects
