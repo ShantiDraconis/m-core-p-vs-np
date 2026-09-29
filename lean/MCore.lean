@@ -128,3 +128,5 @@ import MCore.Real.P01CheckedEvalRunLoopNTM
 import MCore.Real.P01VerifierEvalCompositeNTM
 
 import MCore.Real.P01VerifierCircuitRun
+
+import MCore.Real.P01CheckedEvalRunPhaseLift
