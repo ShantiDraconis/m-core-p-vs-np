@@ -80,7 +80,7 @@ inductive CursorSeekState where
   | scanUnread
   | halt
   | reject
-  deriving DecidableEq, Repr, Fintype
+  deriving DecidableEq, Repr
 
 def cursorSeekMachine : TM CursorSeekState (Option Bool) :=
   { initial := .start
