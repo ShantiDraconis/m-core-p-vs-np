@@ -247,6 +247,61 @@ theorem seekMoved_over_blanks
       simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
         replicate_none_extend k right
 
+/-- Tape view used while `scanMoved` walks left across the already-moved
+witness prefix.  The blank separator and selected witness bit are immediately
+after `bits` in the leftward direction. -/
+def scanMovedTape
+    (bits : BitString) (b : Bool)
+    (left right : List (Option Bool)) :
+    Tape (Option Bool) :=
+  match bits with
+  | [] =>
+      { left := some b :: left,
+        head := none,
+        right := right }
+  | x :: xs =>
+      { left := xs.map some ++ (none :: some b :: left),
+        head := some x,
+        right := right }
+
+/-- `scanMoved` crosses every moved witness bit and then the separator,
+arriving at `capture` with the selected witness bit under the head. -/
+theorem scanMoved_over_bits
+    (bits : BitString) (b : Bool)
+    (left right : List (Option Bool)) :
+    preservingReadMachine.run (bits.length + 1)
+      { state := .scanMoved,
+        tape := scanMovedTape bits b left right } =
+      { state := .capture,
+        tape :=
+          { left := left,
+            head := some b,
+            right := none :: (bits.reverse.map some ++ right) } } := by
+  induction bits generalizing right with
+  | nil =>
+      simp [scanMovedTape, preservingReadMachine,
+        TM.run, TM.step, Tape.write, Tape.move]
+  | cons x xs ih =>
+      rw [show (x :: xs).length + 1 = (xs.length + 1) + 1 by simp]
+      rw [TM.run]
+      simp only [show preservingReadMachine.halting (.scanMoved) = false by rfl,
+        Bool.false_eq_true, if_false]
+      change preservingReadMachine.run (xs.length + 1)
+        { state := .scanMoved,
+          tape := scanMovedTape xs b left (some x :: right) } =
+        { state := .capture,
+          tape :=
+            { left := left,
+              head := some b,
+              right := none :: ((x :: xs).reverse.map some ++ right) } }
+      rw [ih (some x :: right)]
+      apply congrArg
+        (fun r : List (Option Bool) =>
+          ({ state := .capture,
+             tape := { left := left, head := some b, right := r } } :
+            Configuration PreservingReadState (Option Bool)))
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
 /-- Zero-index read is already completely non-destructive: the false unary
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
@@ -311,6 +366,7 @@ theorem preservingRead_one_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_start_successor
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.replicate_none_extend
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.seekMoved_over_blanks
+#print axioms MCore.Real.P01WitnessIndexedReadPreserving.scanMoved_over_bits
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_zero_value
 #print axioms MCore.Real.P01WitnessIndexedReadPreserving.preservingRead_one
