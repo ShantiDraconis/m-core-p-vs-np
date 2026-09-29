@@ -100,7 +100,13 @@ theorem witnessBits_getD_input
     (w : SATWitness (.input i)) :
     (witnessBits w).getD i false =
       assignmentOfWitness (.input i) w i := by
-  simp [witnessBits, assignmentOfWitness, varBound]
+  induction i generalizing w with
+  | zero =>
+      simp [witnessBits, assignmentOfWitness, varBound]
+  | succ i ih =>
+      let w' : SATWitness (.input i) := fun j => w j.succ
+      have h := ih w'
+      simpa [witnessBits, assignmentOfWitness, varBound, w'] using h
 
 /-- Top-level physical execution of an encoded input node reaches the global
 final state carrying exactly the semantic assignment value. -/
