@@ -90,7 +90,7 @@ def preservingReadMachine : TM PreservingReadState (Option Bool) where
         | some b => (.reject, some b, .stay)
     | .finalReadNoMoved =>
         match symbol with
-        | some b => (.halt b, some b, .stay)
+        | some b => (.restoreHalt b, some b, .right)
         | none => (.reject, none, .stay)
     | .finalSeekMoved =>
         match symbol with
@@ -155,13 +155,13 @@ def preservingReadTape
 terminator is consumed, while the witness cell itself is only inspected. -/
 theorem preservingRead_zero
     (b : Bool) (witnessTail tail : BitString) :
-    preservingReadMachine.run 3
+    preservingReadMachine.run 4
       { state := preservingReadMachine.initial,
         tape := preservingReadTape (b :: witnessTail) 0 tail } =
       { state := .halt b,
         tape :=
-          { left := witnessTail.map some,
-            head := some b,
+          { left := (b :: witnessTail).map some,
+            head := none,
             right := none :: tail.map some } } := by
   cases b <;>
     simp [preservingReadMachine, preservingReadTape, encodeNat,
@@ -171,7 +171,7 @@ theorem preservingRead_zero
 selected bit and the untouched witness tail remain physically present. -/
 theorem preservingRead_zero_value
     (b : Bool) (witnessTail tail : BitString) :
-    (preservingReadMachine.run 3
+    (preservingReadMachine.run 4
       { state := preservingReadMachine.initial,
         tape := preservingReadTape (b :: witnessTail) 0 tail }).state =
       .halt b := by
