@@ -130,9 +130,12 @@ verifier must refine. -/
 theorem evalEncoded_witness
     (phi : Circuit)
     (w : CanonicalSATWitness.SATWitness phi) :
-    evalEncoded (fun i => w i) (encodeCircuit phi) =
-      some (evalCircuit (fun i => w i) phi) := by
-  exact evalEncoded_encode (fun i => w i) phi
+    evalEncoded (CanonicalSATWitness.assignmentOfWitness phi w)
+        (encodeCircuit phi) =
+      some (evalCircuit
+        (CanonicalSATWitness.assignmentOfWitness phi w) phi) := by
+  exact evalEncoded_encode
+    (CanonicalSATWitness.assignmentOfWitness phi w) phi
 
 #print axioms MCore.Real.P01EncodedEvaluator.evalEncodedCore_encode_append
 #print axioms MCore.Real.P01EncodedEvaluator.evalEncoded_encode
