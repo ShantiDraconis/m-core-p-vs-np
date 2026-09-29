@@ -15,7 +15,7 @@
   },
   "state_ci": "GREEN_PREFIX_REUSED",
   "state_math": "OPEN_MATH",
-  "next": "P01: physicalize the frozen three-bit EvalFrame stack, then refine evalStep globally and compose P01; P02: construct G21Pointwise. Do not reopen semantic evaluator, parser, guesser, indexed-read, G2.2, or fixed-point routes.",
+  "next": "P01: refine frozen evalStep globally on the physical tape; frame push/pop/read are GREEN_FROZEN. Then prove global verifier correctness/halting and compose P01. P02: construct G21Pointwise. Do not reopen semantic evaluator, frame coding, stack primitives, parser, guesser, indexed-read, G2.2, or fixed-point routes.",
   "progress_metric": "FROZEN_HARD/TOTAL_HARD",
   "tests_are_progress_metric": false,
   "frozen_prefix_decrements_hard": false,
@@ -116,10 +116,26 @@
           "run": 36509233942,
           "certificate": "CERTIFICATES/P01_FRAME_TAPE_GREEN_eb5713e4.md",
           "content": "seven EvalFrame variants encoded injectively in fixed three-bit blocks; stack round-trip and 3*depth space bound kernel-checked"
+        },
+        "frame_push": {
+          "state": "GREEN_FROZEN_PHYSICAL_SUBROUTINE",
+          "branch": "frozen/p01-frame-push-green-12380362",
+          "sha": "123803627c2157d41686471dc8c2c5c96eb408ae",
+          "run": 36509879658,
+          "certificate": "CERTIFICATES/P01_FRAME_PUSH_GREEN_12380362.md",
+          "content": "one fixed TM writes exactly one three-bit EvalFrame code and preserves the V2 stack layout"
+        },
+        "frame_pop_read": {
+          "state": "GREEN_FROZEN_PHYSICAL_SUBROUTINE",
+          "branch": "frozen/p01-frame-pop-read-green-7f6597a1",
+          "sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+          "run": 36540846559,
+          "certificate": "CERTIFICATES/P01_FRAME_POP_READ_GREEN_7f6597a1.md",
+          "content": "one fixed TM decodes/removes one three-bit EvalFrame in four physical steps, preserving canonical V2 layout and rejecting 111"
         }
       },
       "exact_remaining": [
-        "implement fixed physical push/pop/read operations for the three-bit EvalFrame stack and refine each evalStep transition on the canonical Option Bool tape",
+        "refine every frozen evalStep transition to the canonical Option Bool physical tape using the certified frame push/pop/read, witness-read, stack and movement primitives",
         "prove global physical verifier halting/correctness against frozen evalRun semantics",
         "compose parser + witnessGuessMachine + physical verifier into one P01MachineConstruction"
       ],
