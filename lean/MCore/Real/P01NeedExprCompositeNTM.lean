@@ -244,6 +244,32 @@ theorem push_transition_active
   cases q <;>
     simp [framePushMachine, needExprCompositeMachine] at h ⊢
 
+theorem retValue_handoff_successors
+    (value : Bool) (tape : Tape (Option Bool)) :
+    needExprCompositeMachine.successors
+      { state := .retValue value .halt, tape := tape } =
+      [{ state := .doneValue value, tape := tape }] := by
+  simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
+
+theorem retPush_handoff_successors
+    (frame : P01EncodedStackEvaluator.EvalFrame)
+    (tape : Tape (Option Bool)) :
+    needExprCompositeMachine.successors
+      { state := .retPush frame .halt, tape := tape } =
+      [{ state := .push frame (.start frame), tape := tape }] := by
+  simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
+
+theorem push_handoff_successors
+    (frame : P01EncodedStackEvaluator.EvalFrame)
+    (tape : Tape (Option Bool)) :
+    needExprCompositeMachine.successors
+      { state := .push frame .halt, tape := tape } =
+      [{ state := .doneNeed, tape := tape }] := by
+  simp [needExprCompositeMachine, NTM.successors, NTM.stepBranch,
+    Tape.write, Tape.move]
+
 /-- Invalid tag patterns have no successor. -/
 theorem invalid110_rejects
     (tape : Tape (Option Bool)) :
