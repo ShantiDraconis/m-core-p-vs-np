@@ -77,3 +77,5 @@ import MCore.Real.P01InputIndexLookahead
 import MCore.Real.P01InputNodeRoundTrip
 
 import MCore.Real.P01InputNodeIntegratedMachine
+
+import MCore.Real.P01InputNodeCompositeNTM
