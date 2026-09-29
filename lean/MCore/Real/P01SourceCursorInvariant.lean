@@ -39,12 +39,12 @@ theorem moveBackToStackEndSeq_length
 suffix.  Kept local so the cursor proof depends only on the concrete List.getD
 semantics already used by the physical-move kernel. -/
 theorem getD_append_head
-    {α : Type} (prefix : List α) (x : α) (suffix : List α) (d : α) :
-    (prefix ++ x :: suffix).getD prefix.length d = x := by
-  induction prefix with
+    {α : Type} (xs : List α) (x : α) (ys : List α) (d : α) :
+    (xs ++ x :: ys).getD xs.length d = x := by
+  induction xs with
   | nil =>
       simp [List.getD_cons_zero]
-  | cons a prefix ih =>
+  | cons a xs ih =>
       simp [List.getD_cons_succ, ih]
 
 /-- On every nonempty canonical source, the exact left shuttle lands on the
