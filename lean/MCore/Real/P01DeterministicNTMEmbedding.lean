@@ -1,4 +1,4 @@
-import MCore.Real.Model
+import MCore.Real.P01NTMRunLaws
 
 namespace MCore
 namespace Real
@@ -110,7 +110,46 @@ theorem tmAsNTM_terminal_iff_halted
   · exact tmAsNTM_terminal_implies_halted M accepting q
   · exact tmAsNTM_terminal_of_halted M accepting q
 
+
+/-- The deterministic embedding has exactly the same unique execution as the
+underlying TM, at every fuel. -/
+theorem runBranches_singleton_eq_run
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool) :
+    ∀ (n : Nat) (c : Configuration State Symbol),
+      (tmAsNTM M accepting).runBranches n [c] = [M.run n c] := by
+  intro n
+  induction n with
+  | zero =>
+      intro c
+      rfl
+  | succ n ih =>
+      intro c
+      cases hhalt : M.halting c.state with
+      | true =>
+          have hterm :
+              P01NTMRunLaws.Halted (tmAsNTM M accepting) c := by
+            rw [P01NTMRunLaws.Halted]
+            exact (tmAsNTM_terminal_iff_halted M accepting c.state).2 hhalt
+          simpa [TM.run, hhalt] using
+            P01NTMRunLaws.runBranches_singleton_halted
+              (tmAsNTM M accepting) (n + 1) c hterm
+      | false =>
+          have hacc : (tmAsNTM M accepting).accepting c.state = false := by
+            simp [tmAsNTM, hhalt]
+          have hrej : (tmAsNTM M accepting).rejecting c.state = false := by
+            simp [tmAsNTM, hhalt]
+          have hactive :
+              ¬ P01NTMRunLaws.Halted (tmAsNTM M accepting) c := by
+            simp [P01NTMRunLaws.Halted, hacc, hrej]
+          rw [P01NTMRunLaws.runBranches_singleton_active
+            (tmAsNTM M accepting) n c hactive]
+          rw [tmAsNTM_successors_of_not_halted M accepting c hhalt]
+          simpa [TM.run, hhalt] using ih (M.step c)
+
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_successors_of_not_halted
+#print axioms MCore.Real.P01DeterministicNTMEmbedding.runBranches_singleton_eq_run
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_of_halted
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_implies_halted
 
