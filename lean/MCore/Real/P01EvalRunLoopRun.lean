@@ -13,6 +13,7 @@ open P01EvalCursorRoundTrip
 open P01NeedExprTagDecode
 open P01NeedExprCompositeNTM
 open P01EvalFramePushMachine
+open P01EvalCursorFramePush
 open P01EvalRunLoopNTM
 
 abbrev LoopConfig :=
@@ -490,6 +491,303 @@ theorem constTrue_loop_reaches_have
       false true false true .constTrue
   · rfl
   · exact constTrue_handoff_successors
+
+
+/-- Same polynomial majorant as the already-certified physical continuation
+tag route, now with the terminal `doneNeed` immediately restarted by the
+global evalRun loop. -/
+def pushLoopFuel
+    (frameStack rest : BitString) : Nat :=
+  P01NeedExprCompositeRun.pushTagCompositeFuel frameStack rest
+
+/-- Generic repeated-evaluator route for the continuation tags 011/100/101. -/
+theorem pushTag_loop_reaches_need
+    (witness rest frameStack : BitString)
+    (consumed padding : Nat)
+    (b0 b1 b2 : Bool)
+    (tag : NeedExprTag)
+    (frame : EvalFrame)
+    (hTag : decodeTagBits b0 b1 b2 = tag)
+    (hHandoff :
+      ∀ tape : Tape (Option Bool),
+        needExprCompositeMachine.successors
+          { state := .decode (.halt tag), tape := tape } =
+        [{ state := .retPush frame .scanUnread, tape := tape }]) :
+    ∃ m ≤ pushLoopFuel frameStack rest,
+      ({ state := .need needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness (consumed + 3)
+             rest (encodeEvalFrame frame ++ frameStack)
+             (((padding - 1) - 1) - 1) } : LoopConfig) ∈
+        evalRunLoopMachine.runBranches m
+          [{ state := .need needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (b0 :: b1 :: b2 :: rest) frameStack padding }] := by
+  let nSeek := frameStack.length + (rest.length + 3) + 3
+  let nRet := rest.length + frameStack.length + 2
+  let t0 :=
+    evalCursorStackEndTape witness consumed
+      (b0 :: b1 :: b2 :: rest) frameStack padding
+  let tRead :=
+    evalCursorReadTape witness consumed
+      (b0 :: b1 :: b2 :: rest) frameStack padding
+  let tAfterTag :=
+    evalCursorReadTape witness (consumed + 3)
+      rest frameStack padding
+  let tStack :=
+    evalCursorStackEndTape witness (consumed + 3)
+      rest frameStack padding
+  let tPushed :=
+    evalCursorStackEndTape witness (consumed + 3)
+      rest (encodeEvalFrame frame ++ frameStack)
+      (((padding - 1) - 1) - 1)
+
+  let cSeek0 : Configuration CursorSeekState (Option Bool) :=
+    { state := cursorSeekMachine.initial, tape := t0 }
+  let cSeekH : Configuration CursorSeekState (Option Bool) :=
+    { state := .halt, tape := tRead }
+  let cDec0 : Configuration TagDecodeState (Option Bool) :=
+    { state := tagDecodeMachine.initial, tape := tRead }
+  let cDecH : Configuration TagDecodeState (Option Bool) :=
+    { state := .halt tag, tape := tAfterTag }
+  let cRet0 : Configuration CursorReturnState (Option Bool) :=
+    { state := .scanUnread, tape := tAfterTag }
+  let cRetH : Configuration CursorReturnState (Option Bool) :=
+    { state := .halt, tape := tStack }
+  let cPush0 : Configuration FramePushState (Option Bool) :=
+    framePushConfig frame tStack
+  let cPushH : Configuration FramePushState (Option Bool) :=
+    { state := .halt, tape := tPushed }
+
+  obtain ⟨mS, hmS, hS⟩ := seekLoop_run_reachable nSeek cSeek0
+  have hSeekExact :
+      cursorSeekMachine.run nSeek cSeek0 = cSeekH := by
+    dsimp [nSeek, cSeek0, cSeekH, t0, tRead]
+    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+      cursorSeek_run witness consumed
+        (b0 :: b1 :: b2 :: rest) frameStack padding
+  have hS' :
+      seekLoopConfig cSeekH ∈
+        evalRunLoopMachine.runBranches mS [seekLoopConfig cSeek0] := by
+    rw [hSeekExact] at hS
+    exact hS
+
+  have hSeekHandSucc :
+      decodeLoopConfig cDec0 ∈
+        evalRunLoopMachine.successors (seekLoopConfig cSeekH) := by
+    dsimp [seekLoopConfig, decodeLoopConfig, cSeekH, cDec0]
+    simp [evalRunLoopMachine, needExprCompositeMachine, needLoopEmbed,
+      NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
+  have hSeekHand :
+      decodeLoopConfig cDec0 ∈
+        evalRunLoopMachine.runBranches 1 [seekLoopConfig cSeekH] :=
+    one_step_of_successor
+      (seekLoopConfig cSeekH) (decodeLoopConfig cDec0)
+      (seekLoop_not_halted cSeekH) hSeekHandSucc
+  have hToDec :=
+    mem_runBranches_trans evalRunLoopMachine
+      mS 1 [seekLoopConfig cSeek0]
+      (seekLoopConfig cSeekH) (decodeLoopConfig cDec0)
+      hS' hSeekHand
+
+  obtain ⟨mD, hmD, hD⟩ := decodeLoop_run_reachable 3 cDec0
+  have hDecExact :
+      tagDecodeMachine.run 3 cDec0 = cDecH := by
+    dsimp [cDec0, cDecH, tRead, tAfterTag]
+    simpa [hTag] using
+      tagDecode_run_three witness rest frameStack consumed padding
+        b0 b1 b2
+  have hD' :
+      decodeLoopConfig cDecH ∈
+        evalRunLoopMachine.runBranches mD [decodeLoopConfig cDec0] := by
+    rw [hDecExact] at hD
+    exact hD
+  have hThroughDec :=
+    mem_runBranches_trans evalRunLoopMachine
+      (mS + 1) mD [seekLoopConfig cSeek0]
+      (decodeLoopConfig cDec0) (decodeLoopConfig cDecH)
+      hToDec hD'
+
+  have hDecHandSucc :
+      retPushLoopConfig frame cRet0 ∈
+        evalRunLoopMachine.successors (decodeLoopConfig cDecH) := by
+    change
+      ({ state := .need (.retPush frame .scanUnread), tape := tAfterTag } :
+        LoopConfig) ∈
+      evalRunLoopMachine.successors
+        ({ state := .need (.decode (.halt tag)), tape := tAfterTag } :
+          LoopConfig)
+    have hsrc := hHandoff tAfterTag
+    rw [show evalRunLoopMachine.successors
+        ({ state := .need (.decode (.halt tag)), tape := tAfterTag } :
+          LoopConfig) =
+      (needExprCompositeMachine.successors
+        ({ state := .decode (.halt tag), tape := tAfterTag } :
+          Configuration NeedExprCompositeState (Option Bool))).map
+        (fun d => ({ state := needLoopEmbed d.state, tape := d.tape } :
+          LoopConfig)) by
+        simp [evalRunLoopMachine, needExprCompositeMachine,
+          NTM.successors, NTM.stepBranch, needLoopEmbed,
+          Tape.write, Tape.move]]
+    rw [hsrc]
+    simp [needLoopEmbed]
+  have hDecHand :
+      retPushLoopConfig frame cRet0 ∈
+        evalRunLoopMachine.runBranches 1 [decodeLoopConfig cDecH] :=
+    one_step_of_successor
+      (decodeLoopConfig cDecH) (retPushLoopConfig frame cRet0)
+      (decodeLoop_not_halted cDecH) hDecHandSucc
+  have hToRet :=
+    mem_runBranches_trans evalRunLoopMachine
+      ((mS + 1) + mD) 1 [seekLoopConfig cSeek0]
+      (decodeLoopConfig cDecH) (retPushLoopConfig frame cRet0)
+      hThroughDec hDecHand
+
+  obtain ⟨mR, hmR, hR⟩ :=
+    retPushLoop_run_reachable frame nRet cRet0
+  have hRetExact :
+      cursorReturnMachine.run nRet cRet0 = cRetH := by
+    dsimp [nRet, cRet0, cRetH, tAfterTag, tStack]
+    exact cursorReturn_preserve_run
+      witness (consumed + 3) rest frameStack padding
+  have hR' :
+      retPushLoopConfig frame cRetH ∈
+        evalRunLoopMachine.runBranches mR [retPushLoopConfig frame cRet0] := by
+    rw [hRetExact] at hR
+    exact hR
+  have hThroughRet :=
+    mem_runBranches_trans evalRunLoopMachine
+      (((mS + 1) + mD) + 1) mR [seekLoopConfig cSeek0]
+      (retPushLoopConfig frame cRet0)
+      (retPushLoopConfig frame cRetH)
+      hToRet hR'
+
+  have hRetHandSucc :
+      pushLoopConfig frame cPush0 ∈
+        evalRunLoopMachine.successors (retPushLoopConfig frame cRetH) := by
+    change
+      ({ state := .need (.push frame (.start frame)), tape := tStack } :
+        LoopConfig) ∈
+      evalRunLoopMachine.successors
+        ({ state := .need (.retPush frame .halt), tape := tStack } :
+          LoopConfig)
+    simp [evalRunLoopMachine, needExprCompositeMachine, needLoopEmbed,
+      framePushConfig, NTM.successors, NTM.stepBranch,
+      Tape.write, Tape.move]
+  have hRetHand :
+      pushLoopConfig frame cPush0 ∈
+        evalRunLoopMachine.runBranches 1 [retPushLoopConfig frame cRetH] :=
+    one_step_of_successor
+      (retPushLoopConfig frame cRetH) (pushLoopConfig frame cPush0)
+      (retPushLoop_not_halted frame cRetH) hRetHandSucc
+  have hToPush :=
+    mem_runBranches_trans evalRunLoopMachine
+      ((((mS + 1) + mD) + 1) + mR) 1 [seekLoopConfig cSeek0]
+      (retPushLoopConfig frame cRetH) (pushLoopConfig frame cPush0)
+      hThroughRet hRetHand
+
+  obtain ⟨mP, hmP, hP⟩ :=
+    pushLoop_run_reachable frame 3 cPush0
+  have hPushExact :
+      framePushMachine.run 3 cPush0 = cPushH := by
+    dsimp [cPush0, cPushH, tStack, tPushed]
+    exact framePush_run_three_cursor_exact
+      witness rest frameStack (consumed + 3) padding frame
+  have hP' :
+      pushLoopConfig frame cPushH ∈
+        evalRunLoopMachine.runBranches mP [pushLoopConfig frame cPush0] := by
+    rw [hPushExact] at hP
+    exact hP
+  have hThroughPush :=
+    mem_runBranches_trans evalRunLoopMachine
+      (((((mS + 1) + mD) + 1) + mR) + 1) mP
+      [seekLoopConfig cSeek0]
+      (pushLoopConfig frame cPush0) (pushLoopConfig frame cPushH)
+      hToPush hP'
+
+  let cNeed : LoopConfig :=
+    { state := .need needExprCompositeMachine.initial, tape := tPushed }
+  have hFinalSucc :
+      cNeed ∈ evalRunLoopMachine.successors (pushLoopConfig frame cPushH) := by
+    dsimp [cNeed, pushLoopConfig, cPushH]
+    simp [evalRunLoopMachine, needExprCompositeMachine, needLoopEmbed,
+      NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
+  have hFinal :
+      cNeed ∈ evalRunLoopMachine.runBranches 1 [pushLoopConfig frame cPushH] :=
+    one_step_of_successor
+      (pushLoopConfig frame cPushH) cNeed
+      (pushLoop_not_halted frame cPushH) hFinalSucc
+
+  have hAll :=
+    mem_runBranches_trans evalRunLoopMachine
+      ((((((mS + 1) + mD) + 1) + mR) + 1) + mP) 1
+      [seekLoopConfig cSeek0]
+      (pushLoopConfig frame cPushH) cNeed
+      hThroughPush hFinal
+
+  refine ⟨((((((mS + 1) + mD) + 1) + mR) + 1) + mP) + 1, ?_, ?_⟩
+  · dsimp [pushLoopFuel, P01NeedExprCompositeRun.pushTagCompositeFuel,
+      nSeek, nRet] at *
+    omega
+  · dsimp [cNeed, tPushed, cSeek0, t0] at hAll ⊢
+    simpa [seekLoopConfig, needExprCompositeMachine] using hAll
+
+theorem neg_loop_reaches_need
+    (witness rest frameStack : BitString)
+    (consumed padding : Nat) :
+    ∃ m ≤ pushLoopFuel frameStack rest,
+      ({ state := .need needExprCompositeMachine.initial,
+         tape := evalCursorStackEndTape witness (consumed + 3) rest
+           (encodeEvalFrame .neg ++ frameStack)
+           (((padding - 1) - 1) - 1) } : LoopConfig) ∈
+        evalRunLoopMachine.runBranches m
+          [{ state := .need needExprCompositeMachine.initial,
+             tape := evalCursorStackEndTape witness consumed
+               (false :: true :: true :: rest) frameStack padding }] := by
+  apply pushTag_loop_reaches_need witness rest frameStack consumed padding
+    false true true .neg .neg
+  · rfl
+  · exact P01NeedExprCompositeNTM.neg_handoff_successors
+
+theorem and_loop_reaches_need
+    (witness rest frameStack : BitString)
+    (consumed padding : Nat) :
+    ∃ m ≤ pushLoopFuel frameStack rest,
+      ({ state := .need needExprCompositeMachine.initial,
+         tape := evalCursorStackEndTape witness (consumed + 3) rest
+           (encodeEvalFrame .andLeft ++ frameStack)
+           (((padding - 1) - 1) - 1) } : LoopConfig) ∈
+        evalRunLoopMachine.runBranches m
+          [{ state := .need needExprCompositeMachine.initial,
+             tape := evalCursorStackEndTape witness consumed
+               (true :: false :: false :: rest) frameStack padding }] := by
+  apply pushTag_loop_reaches_need witness rest frameStack consumed padding
+    true false false .and .andLeft
+  · rfl
+  · exact P01NeedExprCompositeNTM.and_handoff_successors
+
+theorem or_loop_reaches_need
+    (witness rest frameStack : BitString)
+    (consumed padding : Nat) :
+    ∃ m ≤ pushLoopFuel frameStack rest,
+      ({ state := .need needExprCompositeMachine.initial,
+         tape := evalCursorStackEndTape witness (consumed + 3) rest
+           (encodeEvalFrame .orLeft ++ frameStack)
+           (((padding - 1) - 1) - 1) } : LoopConfig) ∈
+        evalRunLoopMachine.runBranches m
+          [{ state := .need needExprCompositeMachine.initial,
+             tape := evalCursorStackEndTape witness consumed
+               (true :: false :: true :: rest) frameStack padding }] := by
+  apply pushTag_loop_reaches_need witness rest frameStack consumed padding
+    true false true .or .orLeft
+  · rfl
+  · exact P01NeedExprCompositeNTM.or_handoff_successors
+
+#print axioms MCore.Real.P01EvalRunLoopRun.pushTag_loop_reaches_need
+#print axioms MCore.Real.P01EvalRunLoopRun.neg_loop_reaches_need
+#print axioms MCore.Real.P01EvalRunLoopRun.and_loop_reaches_need
+#print axioms MCore.Real.P01EvalRunLoopRun.or_loop_reaches_need
 
 #print axioms MCore.Real.P01EvalRunLoopRun.retPushLoop_run_reachable
 #print axioms MCore.Real.P01EvalRunLoopRun.pushLoop_run_reachable
