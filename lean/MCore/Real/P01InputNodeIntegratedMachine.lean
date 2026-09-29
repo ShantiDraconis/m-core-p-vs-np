@@ -189,7 +189,20 @@ theorem look_step_active
             inputIndexLookaheadMachine, TM.step, hhead,
             Tape.write, Tape.move]
 
-/-- One active preserving-read transition is reproduced exactly, with the mode
+/-- Transition-level preserving-reader simulation.  Keeping this theorem
+independent of the tape prevents the large `TM.step` reduction from exploding
+across the full preserving-reader state space. -/
+theorem read_transition_active
+    (mode : InputReturnMode)
+    (q : PreservingReadState)
+    (symbol : Option Bool)
+    (hhalt : preservingReadMachine.halting q = false) :
+    inputNodeMachine.transition (.read mode q) symbol =
+      liftReadTransition mode (preservingReadMachine.transition q symbol) := by
+  cases q <;>
+    simp [preservingReadMachine, inputNodeMachine, liftReadTransition] at hhalt ⊢
+
+/-- One active preserving-read step is reproduced exactly, with the mode
 threaded through finite control. -/
 theorem read_step_active
     (mode : InputReturnMode)
@@ -208,18 +221,63 @@ theorem read_step_active
         { state := .reject, tape := t.tape }
     | q' =>
         { state := .read mode q', tape := t.tape } := by
-  cases q <;>
-    simp [preservingReadMachine] at hhalt
-  all_goals
-    unfold TM.step
-    simp only [inputNodeMachine]
-    generalize htr :
-      preservingReadMachine.transition _ tape.head = tr
-    rcases tr with ⟨q', a, d⟩
-    cases q' <;> rfl
+  simp only [TM.step]
+  rw [read_transition_active mode q tape.head hhalt]
+  generalize ht :
+      preservingReadMachine.transition q tape.head = tr
+  rcases tr with ⟨q', a', d'⟩
+  cases q' <;> rfl
 
-/-- One active return transition is reproduced exactly, retaining both the read
-result and the previously classified return mode. -/
+private def liftReturnTransitionStable
+    (result : Bool) (mode : InputReturnMode)
+    (t : InputAfterReadReturnState × Option Bool × Direction) :
+    InputNodeState × Option Bool × Direction :=
+  match t with
+  | (.halt mode', a, _d) =>
+      (.halt result mode', a, .stay)
+  | (.reject, a, _d) =>
+      (.reject, a, .stay)
+  | (q', a, d') =>
+      (.ret result mode q', a, d')
+
+/-- Transition-level return simulation with the originally classified mode
+retained through every active return state. -/
+theorem return_transition_active
+    (result : Bool) (mode : InputReturnMode)
+    (q : InputAfterReadReturnState)
+    (symbol : Option Bool)
+    (hhalt : inputAfterReadReturnMachine.halting q = false) :
+    inputNodeMachine.transition (.ret result mode q) symbol =
+      liftReturnTransitionStable result mode
+        (inputAfterReadReturnMachine.transition q symbol) := by
+  cases q with
+  | start m =>
+      cases m <;> cases symbol with
+      | none => rfl
+      | some b => cases b <;> rfl
+  | seekSource =>
+      cases symbol with
+      | none => rfl
+      | some b => cases b <;> rfl
+  | scanSource =>
+      cases symbol with
+      | none => rfl
+      | some b => cases b <;> rfl
+  | seekFrames =>
+      cases symbol with
+      | none => rfl
+      | some b => cases b <;> rfl
+  | scanFrames =>
+      cases symbol with
+      | none => rfl
+      | some b => cases b <;> rfl
+  | halt m =>
+      simp [inputAfterReadReturnMachine] at hhalt
+  | reject =>
+      simp [inputAfterReadReturnMachine] at hhalt
+
+/-- One active return step is reproduced exactly, retaining both the read result
+and the previously classified return mode. -/
 theorem return_step_active
     (result : Bool) (mode : InputReturnMode)
     (q : InputAfterReadReturnState)
@@ -236,15 +294,12 @@ theorem return_step_active
         { state := .reject, tape := t.tape }
     | q' =>
         { state := .ret result mode q', tape := t.tape } := by
-  cases q <;>
-    simp [inputAfterReadReturnMachine] at hhalt
-  all_goals
-    unfold TM.step
-    simp only [inputNodeMachine]
-    generalize htr :
-      inputAfterReadReturnMachine.transition _ tape.head = tr
-    rcases tr with ⟨q', a, d⟩
-    cases q' <;> rfl
+  simp only [TM.step]
+  rw [return_transition_active result mode q tape.head hhalt]
+  generalize ht :
+      inputAfterReadReturnMachine.transition q tape.head = tr
+  rcases tr with ⟨q', a', d'⟩
+  cases q' <;> rfl
 
 #print axioms MCore.Real.P01InputNodeIntegratedMachine.look_handoff
 #print axioms MCore.Real.P01InputNodeIntegratedMachine.read_handoff
