@@ -350,23 +350,33 @@ theorem lookahead_sourceTail
   simp only [List.map_append, List.map_replicate, List.map_cons,
     List.map_nil, List.append_assoc, List.singleton_append,
     inputIndexLookaheadMachine_initial]
+  dsimp [base, suffix]
   rw [show 2 * i + 4 = i + (1 + (1 + (i + 2))) by omega]
   rw [run_add]
   rw [scanIndex_over_true i
-    (none :: base)
-    (some false :: suffix)]
+    (none :: (List.replicate consumed none ++ witness.map some))
+    (some false :: some b :: tail.map some ++ none ::
+      frameStack.reverse.map some ++ none ::
+        List.replicate padding none)]
   rw [run_add]
-  rw [scanIndex_false]
+  rw [scanIndex_false
+    (List.replicate i (some true) ++
+      (none :: (List.replicate consumed none ++ witness.map some)))
+    (some b :: tail.map some ++ none ::
+      frameStack.reverse.map some ++ none ::
+        List.replicate padding none)]
   rw [run_add]
-  have hc := classify_sourceTail_after_false
-    (List.replicate i (some true) ++ (none :: base))
-    b tail frameStack padding
-  rw [hc]
+  rw [classify_sourceTail_after_false
+    (List.replicate i (some true) ++
+      (none :: (List.replicate consumed none ++ witness.map some)))
+    b tail frameStack padding]
   rw [rewind_index_segment .sourceTail
     (List.replicate i true)
     (List.replicate consumed none ++ witness.map some)
-    suffix]
-  simp [rightStreamTape, evalCursorReadTape, suffix,
+    (some b :: tail.map some ++ none ::
+      frameStack.reverse.map some ++ none ::
+        List.replicate padding none)]
+  simp [rightStreamTape, evalCursorReadTape,
     encodeNat_eq_replicate_true, List.map_append,
     List.append_assoc]
 
@@ -395,7 +405,11 @@ theorem lookahead_frameStack
     (some false :: none :: (b :: frameTail).reverse.map some ++
       none :: List.replicate padding none)]
   rw [run_add]
-  rw [scanIndex_false]
+  rw [scanIndex_false
+    (List.replicate i (some true) ++
+      (none :: (List.replicate consumed none ++ witness.map some)))
+    (none :: (b :: frameTail).reverse.map some ++
+      none :: List.replicate padding none)]
   rw [run_add]
   rw [classify_frameStack_after_false
     (List.replicate i (some true) ++
@@ -431,7 +445,10 @@ theorem lookahead_done
     (none :: (List.replicate consumed none ++ witness.map some))
     (some false :: none :: none :: List.replicate padding none)]
   rw [run_add]
-  rw [scanIndex_false]
+  rw [scanIndex_false
+    (List.replicate i (some true) ++
+      (none :: (List.replicate consumed none ++ witness.map some)))
+    (none :: none :: List.replicate padding none)]
   rw [run_add]
   rw [classify_done_after_false
     (List.replicate i (some true) ++
