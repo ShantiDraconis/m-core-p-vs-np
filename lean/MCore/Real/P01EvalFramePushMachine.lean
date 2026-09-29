@@ -92,6 +92,7 @@ theorem framePush_start_one
         tape := pushStep (frameBit2 f) t } := by
   rw [TM.run]
   simp [framePushMachine, hblank, TM.step, pushStep]
+  rfl
 
 /-- Second code-bit step. -/
 theorem framePush_after1_one
@@ -103,6 +104,7 @@ theorem framePush_after1_one
         tape := pushStep (frameBit1 f) t } := by
   rw [TM.run]
   simp [framePushMachine, hblank, TM.step, pushStep]
+  rfl
 
 /-- Third code-bit step reaches the halting state. -/
 theorem framePush_after2_one
@@ -114,6 +116,7 @@ theorem framePush_after2_one
         tape := pushStep (frameBit0 f) t } := by
   rw [TM.run]
   simp [framePushMachine, hblank, TM.step, pushStep]
+  rfl
 
 /-- Three physical push steps realize exactly the fixed-width frame encoding on
 the V2 stack layout.  The proof composes the already-certified Boolean
@@ -133,6 +136,7 @@ theorem framePush_run_three
           (encodeEvalFrame f ++ stack)
           (((padding - 1) - 1) - 1) := by
   dsimp
+  unfold framePushConfig
   have h1 := framePush_start_one f
     (physicalStackV2Tape witness source stack padding) rfl
   have hp1 := pushStep_correct witness source stack padding (frameBit2 f)
