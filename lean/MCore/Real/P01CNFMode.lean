@@ -94,6 +94,34 @@ theorem modeCheck_clause_iff (c : Circuit) :
     modeCheck mode (.const true) = tagAllowed mode .constTrue := by
   cases mode <;> rfl
 
+/-- Root physical decoder tag of a semantic circuit. -/
+def circuitTag : Circuit → NeedExprTag
+  | .input _ => .input
+  | .const false => .constFalse
+  | .const true => .constTrue
+  | .not _ => .neg
+  | .and _ _ => .and
+  | .or _ _ => .or
+
+/-- Any circuit accepted by a syntax mode has a physically admissible root
+tag in that same mode. -/
+theorem tagAllowed_of_modeCheck
+    (mode : SyntaxMode) (c : Circuit)
+    (h : modeCheck mode c = true) :
+    tagAllowed mode (circuitTag c) = true := by
+  cases mode <;> cases c with
+  | input i =>
+      rfl
+  | const b =>
+      cases b <;> simp [modeCheck, circuitTag, tagAllowed] at h ⊢
+  | not c =>
+      cases c <;>
+        simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
+  | and a b =>
+      simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
+  | or a b =>
+      simp [modeCheck, circuitTag, tagAllowed, isCNFBool, isClauseBool] at h ⊢
+
 /-- Negation is valid exactly when the current mode admits it and the child is
 literally an input node. -/
 theorem modeCheck_not
@@ -123,6 +151,7 @@ theorem modeCheck_or
   cases mode <;>
     simp [modeCheck, tagAllowed, isCNFBool, isClauseBool]
 
+#print axioms MCore.Real.P01CNFMode.tagAllowed_of_modeCheck
 #print axioms MCore.Real.P01CNFMode.modeCheck_cnf_iff
 #print axioms MCore.Real.P01CNFMode.modeCheck_clause_iff
 #print axioms MCore.Real.P01CNFMode.modeCheck_mustInput_iff
