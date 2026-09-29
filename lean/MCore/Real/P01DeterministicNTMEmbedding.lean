@@ -65,6 +65,44 @@ theorem tmAsNTM_terminal_implies_halted
   rcases h with h | h <;>
     simpa [tmAsNTM] using Bool.and_eq_true.mp h |>.1
 
+
+/-- One deterministic run step is reproduced by the singleton-branch NTM. -/
+theorem runBranches_singleton_of_not_halted
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool)
+    (c : Configuration State Symbol)
+    (h : M.halting c.state = false) :
+    (tmAsNTM M accepting).runBranches 1 [c] = [M.step c] := by
+  simp [NTM.runBranches, tmAsNTM, h,
+    tmAsNTM_successors_of_not_halted]
+
+/-- A halted TM configuration is already terminal for the embedded NTM. -/
+theorem runBranches_singleton_of_halted
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool)
+    (c : Configuration State Symbol)
+    (h : M.halting c.state = true) :
+    (tmAsNTM M accepting).runBranches 1 [c] = [c] := by
+  have ht := tmAsNTM_terminal_of_halted M accepting c.state h
+  rcases ht with ha | hr
+  · simp [NTM.runBranches, ha]
+  · simp [NTM.runBranches, hr]
+
+/-- The embedded NTM classifies exactly the halted TM states as terminal. -/
+theorem tmAsNTM_terminal_iff_halted
+    {State Symbol : Type}
+    (M : TM State Symbol)
+    (accepting : State → Bool)
+    (q : State) :
+    ((tmAsNTM M accepting).accepting q = true ∨
+      (tmAsNTM M accepting).rejecting q = true) ↔
+      M.halting q = true := by
+  constructor
+  · exact tmAsNTM_terminal_implies_halted M accepting q
+  · exact tmAsNTM_terminal_of_halted M accepting q
+
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_successors_of_not_halted
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_of_halted
 #print axioms MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_implies_halted
