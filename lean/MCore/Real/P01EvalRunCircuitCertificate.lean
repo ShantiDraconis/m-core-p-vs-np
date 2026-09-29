@@ -395,6 +395,15 @@ theorem neg_certificate
               tape :=
                 evalCursorStackEndTape witness consumed1
                   [] [] (padding1 + 3) }
+          have h012Final :
+              cHave ∈
+                evalRunLoopMachine.runBranches (m0 + m1 + m2)
+                  [{ state := .need P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+                     tape :=
+                       evalCursorStackEndTape witness consumed
+                         (encodeCircuit (.not circuit))
+                         [] padding }] := by
+            simpa using h012
           have hAll :=
             mem_runBranches_trans evalRunLoopMachine
               (m0 + m1 + m2) m3
@@ -403,7 +412,7 @@ theorem neg_certificate
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.not circuit))
                      [] padding }]
-              cHave cFinal h012 h3
+              cHave cFinal h012Final h3
           refine ⟨m0 + m1 + m2 + m3, cFinal, ?_, ?_⟩
           · simpa using hAll
           · change LoopOutcome witness
