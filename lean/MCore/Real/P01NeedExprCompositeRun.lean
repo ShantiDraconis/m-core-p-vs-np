@@ -8,6 +8,7 @@ namespace Real
 namespace P01NeedExprCompositeRun
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01NTMRunLaws
 open P01EvalCursorMachine
 open P01EvalCursorRoundTrip
@@ -18,6 +19,7 @@ open P01EncodedFrameTape
 open P01NeedExprTagDecode
 open P01InputNodeCompositeNTM
 open P01InputNodeCompositeRun
+open P01InputNodeRoundTrip
 open P01NeedExprCompositeNTM
 
 abbrev NeedExprConfig :=
