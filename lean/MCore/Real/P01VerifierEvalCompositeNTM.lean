@@ -218,10 +218,8 @@ theorem prepared_nonempty_reaches_eval_start
   have hScanHandSucc :
       cEnter ∈ verifierEvalMachine.successors (scanEmbed cScanH) := by
     dsimp [cEnter, cScanH, scanEmbed]
-    simp only [verifierEvalMachine, NTM.successors, NTM.stepBranch,
-      sourceEndScanner, List.mem_singleton]
-    congr 2
-    cases sourceEndTape witness (b :: bs) <;> rfl
+    simp [verifierEvalMachine, NTM.successors, NTM.stepBranch,
+      sourceEndScanner, sourceEndTape, Tape.write, Tape.move]
   have hScanHand :
       cEnter ∈ verifierEvalMachine.runBranches 1 [scanEmbed cScanH] :=
     one_step_of_successor (scanEmbed cScanH) cEnter
