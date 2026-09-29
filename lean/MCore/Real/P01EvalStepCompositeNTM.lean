@@ -100,6 +100,13 @@ def needSimulation :
         evalStepCompositeMachine, needExprCompositeMachine,
         P01NTMRunLaws.liftConfig, NTM.successors, NTM.stepBranch,
         List.map_map, Function.comp_def, Tape.write, Tape.move] at hactive ⊢
+    case input qi =>
+      cases qi <;>
+        simp [Halted, needStateEmbed,
+          evalStepCompositeMachine, needExprCompositeMachine,
+          inputStateEmbed, inputNodeCompositeMachine,
+          P01NTMRunLaws.liftConfig, NTM.successors, NTM.stepBranch,
+          List.map_map, Function.comp_def, Tape.write, Tape.move] at hactive ⊢
 
 /-- Exact terminal-preserving simulation of the complete `haveValue` NTM. -/
 def haveSimulation :
