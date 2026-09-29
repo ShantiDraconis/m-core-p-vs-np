@@ -431,6 +431,173 @@ theorem constFalse_reaches_done
 
 #print axioms MCore.Real.P01NeedExprCompositeRun.constFalse_reaches_done
 
+theorem constTrue_reaches_done
+    (witness rest frameStack : BitString)
+    (consumed padding : Nat) :
+    ∃ m ≤ constTagCompositeFuel frameStack rest,
+      ({ state := .doneValue true,
+         tape :=
+           evalCursorStackEndTape witness (consumed + 3)
+             rest frameStack padding } : NeedExprConfig) ∈
+        needExprCompositeMachine.runBranches m
+          [{ state := needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (false :: true :: false :: rest)
+                 frameStack padding }] := by
+  let nSeek := frameStack.length + (rest.length + 3) + 3
+  let nRet := rest.length + frameStack.length + 2
+  let t0 :=
+    evalCursorStackEndTape witness consumed
+      (false :: true :: false :: rest) frameStack padding
+  let tRead :=
+    evalCursorReadTape witness consumed
+      (false :: true :: false :: rest) frameStack padding
+  let tAfterTag :=
+    evalCursorReadTape witness (consumed + 3)
+      rest frameStack padding
+  let tDone :=
+    evalCursorStackEndTape witness (consumed + 3)
+      rest frameStack padding
+
+  let cSeek0 : Configuration CursorSeekState (Option Bool) :=
+    { state := cursorSeekMachine.initial, tape := t0 }
+  let cSeekH : Configuration CursorSeekState (Option Bool) :=
+    { state := .halt, tape := tRead }
+  let cDec0 : Configuration TagDecodeState (Option Bool) :=
+    { state := tagDecodeMachine.initial, tape := tRead }
+  let cDecH : Configuration TagDecodeState (Option Bool) :=
+    { state := .halt .constTrue, tape := tAfterTag }
+  let cRet0 : Configuration CursorReturnState (Option Bool) :=
+    { state := .scanUnread, tape := tAfterTag }
+  let cRetH : Configuration CursorReturnState (Option Bool) :=
+    { state := .halt, tape := tDone }
+  let cDone : NeedExprConfig :=
+    { state := .doneValue true, tape := tDone }
+
+  have hSeekExact :
+      cursorSeekMachine.run nSeek cSeek0 = cSeekH := by
+    dsimp [nSeek, cSeek0, cSeekH, t0, tRead]
+    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+      cursorSeek_run witness consumed
+        (false :: true :: false :: rest) frameStack padding
+
+  obtain ⟨mS, hmS, hS⟩ := seek_run_reachable nSeek cSeek0
+  have hS' :
+      seekConfig cSeekH ∈
+        needExprCompositeMachine.runBranches mS [seekConfig cSeek0] := by
+    rw [hSeekExact] at hS
+    exact hS
+
+  have hSeekHandSucc :
+      decodeConfig cDec0 ∈
+        needExprCompositeMachine.successors (seekConfig cSeekH) := by
+    dsimp [seekConfig, decodeConfig, cSeekH, cDec0]
+    rw [seek_handoff_successors tRead]
+    simp
+  have hSeekHand :
+      decodeConfig cDec0 ∈
+        needExprCompositeMachine.runBranches 1 [seekConfig cSeekH] :=
+    one_step_of_successor
+      (seekConfig cSeekH) (decodeConfig cDec0)
+      (seekConfig_not_halted cSeekH) hSeekHandSucc
+
+  have hToDec :=
+    mem_runBranches_trans needExprCompositeMachine
+      mS 1 [seekConfig cSeek0]
+      (seekConfig cSeekH) (decodeConfig cDec0)
+      hS' hSeekHand
+
+  have hDecExact :
+      tagDecodeMachine.run 3 cDec0 = cDecH := by
+    dsimp [cDec0, cDecH, tRead, tAfterTag]
+    simpa [decodeTagBits] using
+      tagDecode_run_three witness rest frameStack consumed padding
+        false true false
+
+  obtain ⟨mD, hmD, hD⟩ := decode_run_reachable 3 cDec0
+  have hD' :
+      decodeConfig cDecH ∈
+        needExprCompositeMachine.runBranches mD [decodeConfig cDec0] := by
+    rw [hDecExact] at hD
+    exact hD
+  have hThroughDec :=
+    mem_runBranches_trans needExprCompositeMachine
+      (mS + 1) mD [seekConfig cSeek0]
+      (decodeConfig cDec0) (decodeConfig cDecH)
+      hToDec hD'
+
+  have hDecHandSucc :
+      retValueConfig true cRet0 ∈
+        needExprCompositeMachine.successors (decodeConfig cDecH) := by
+    dsimp [decodeConfig, retValueConfig, cDecH, cRet0]
+    rw [constTrue_handoff_successors tAfterTag]
+    simp
+  have hDecHand :
+      retValueConfig true cRet0 ∈
+        needExprCompositeMachine.runBranches 1 [decodeConfig cDecH] :=
+    one_step_of_successor
+      (decodeConfig cDecH) (retValueConfig true cRet0)
+      (decodeConfig_not_halted cDecH) hDecHandSucc
+  have hToRet :=
+    mem_runBranches_trans needExprCompositeMachine
+      ((mS + 1) + mD) 1 [seekConfig cSeek0]
+      (decodeConfig cDecH) (retValueConfig true cRet0)
+      hThroughDec hDecHand
+
+  have hRetExact :
+      cursorReturnMachine.run nRet cRet0 = cRetH := by
+    dsimp [nRet, cRet0, cRetH, tAfterTag, tDone]
+    exact cursorReturn_preserve_run
+      witness (consumed + 3) rest frameStack padding
+
+  obtain ⟨mR, hmR, hR⟩ :=
+    retValue_run_reachable true nRet cRet0
+  have hR' :
+      retValueConfig true cRetH ∈
+        needExprCompositeMachine.runBranches mR
+          [retValueConfig true cRet0] := by
+    rw [hRetExact] at hR
+    exact hR
+  have hThroughRet :=
+    mem_runBranches_trans needExprCompositeMachine
+      (((mS + 1) + mD) + 1) mR [seekConfig cSeek0]
+      (retValueConfig true cRet0)
+      (retValueConfig true cRetH)
+      hToRet hR'
+
+  have hFinalSucc :
+      cDone ∈
+        needExprCompositeMachine.successors
+          (retValueConfig true cRetH) := by
+    dsimp [cDone, retValueConfig, cRetH]
+    rw [retValue_handoff_successors true tDone]
+    simp
+  have hFinal :
+      cDone ∈
+        needExprCompositeMachine.runBranches 1
+          [retValueConfig true cRetH] :=
+    one_step_of_successor
+      (retValueConfig true cRetH) cDone
+      (retValueConfig_not_halted false cRetH) hFinalSucc
+
+  have hAll :=
+    mem_runBranches_trans needExprCompositeMachine
+      ((((mS + 1) + mD) + 1) + mR) 1 [seekConfig cSeek0]
+      (retValueConfig true cRetH) cDone
+      hThroughRet hFinal
+
+  refine ⟨((((mS + 1) + mD) + 1) + mR) + 1, ?_, ?_⟩
+  · dsimp [constTagCompositeFuel, nSeek, nRet] at *
+    omega
+  · dsimp [cDone, tDone, cSeek0, t0] at hAll ⊢
+    simpa [seekConfig, needExprCompositeMachine] using hAll
+
+
+#print axioms MCore.Real.P01NeedExprCompositeRun.constTrue_reaches_done
+
+
+
 #print axioms MCore.Real.P01NeedExprCompositeRun.seek_run_reachable
 #print axioms MCore.Real.P01NeedExprCompositeRun.decode_run_reachable
 #print axioms MCore.Real.P01NeedExprCompositeRun.retValue_run_reachable
