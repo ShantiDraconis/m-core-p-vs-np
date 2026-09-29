@@ -10,6 +10,7 @@ open CanonicalFinalProof
 open P01NTMRunLaws
 open P01CheckedEvalRunLoopNTM
 open P01NeedExprCompositeNTM
+open P01NeedExprTagDecode
 open P01EvalCursorMachine
 open P01EvalCursorRoundTrip
 open P01EvalFramePushMachine
@@ -27,7 +28,7 @@ def seekConfig
 
 def decodeConfig
     (mode : SyntaxMode)
-    (c : Configuration TagDecodeState (Option Bool)) :
+    (c : Configuration P01NeedExprTagDecode.TagDecodeState (Option Bool)) :
     CheckedConfig :=
   { state := .need mode (.decode c.state), tape := c.tape }
 
@@ -57,7 +58,7 @@ def pushConfig
 
 @[simp] theorem decodeConfig_not_halted
     (mode : SyntaxMode)
-    (c : Configuration TagDecodeState (Option Bool)) :
+    (c : Configuration P01NeedExprTagDecode.TagDecodeState (Option Bool)) :
     ¬ Halted checkedEvalRunLoopMachine (decodeConfig mode c) := by
   simp [Halted, decodeConfig, checkedEvalRunLoopMachine]
 
@@ -90,22 +91,22 @@ theorem seek_successors_active
   rcases c with ⟨q, tape⟩
   cases q <;>
     simp [seekConfig, checkedEvalRunLoopMachine,
-      P01NeedExprCompositeNTM.needExprCompositeMachine,
+      P01NeedExprCompositeNTM.needExprCompositeMachine, needCheckedEmbed,
       NTM.successors, NTM.stepBranch, TM.step,
       cursorSeekMachine, Tape.write, Tape.move] at h ⊢
 
 theorem decode_successors_active
     (mode : SyntaxMode)
-    (c : Configuration TagDecodeState (Option Bool))
-    (h : tagDecodeMachine.halting c.state = false) :
+    (c : Configuration P01NeedExprTagDecode.TagDecodeState (Option Bool))
+    (h : P01NeedExprTagDecode.tagDecodeMachine.halting c.state = false) :
     checkedEvalRunLoopMachine.successors (decodeConfig mode c) =
-      [decodeConfig mode (tagDecodeMachine.step c)] := by
+      [decodeConfig mode (P01NeedExprTagDecode.tagDecodeMachine.step c)] := by
   rcases c with ⟨q, tape⟩
   cases q <;>
     simp [decodeConfig, checkedEvalRunLoopMachine,
-      P01NeedExprCompositeNTM.needExprCompositeMachine,
+      P01NeedExprCompositeNTM.needExprCompositeMachine, needCheckedEmbed,
       NTM.successors, NTM.stepBranch, TM.step,
-      tagDecodeMachine, Tape.write, Tape.move] at h ⊢
+      P01NeedExprTagDecode.tagDecodeMachine, Tape.write, Tape.move] at h ⊢
 
 theorem retValue_successors_active
     (mode : SyntaxMode) (value : Bool)
@@ -214,11 +215,11 @@ theorem seek_run_reachable
 
 theorem decode_run_reachable
     (mode : SyntaxMode) (n : Nat)
-    (c : Configuration TagDecodeState (Option Bool)) :
+    (c : Configuration P01NeedExprTagDecode.TagDecodeState (Option Bool)) :
     ∃ m ≤ n,
-      decodeConfig mode (tagDecodeMachine.run n c) ∈
+      decodeConfig mode (P01NeedExprTagDecode.tagDecodeMachine.run n c) ∈
         checkedEvalRunLoopMachine.runBranches m [decodeConfig mode c] :=
-  tm_phase_run_reachable tagDecodeMachine (decodeConfig mode)
+  tm_phase_run_reachable P01NeedExprTagDecode.tagDecodeMachine (decodeConfig mode)
     (decodeConfig_not_halted mode) (decode_successors_active mode) n c
 
 theorem retValue_run_reachable
