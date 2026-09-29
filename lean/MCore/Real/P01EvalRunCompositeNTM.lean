@@ -11,6 +11,7 @@ open P01EvalCursorMachine
 open P01NeedExprCompositeNTM
 open P01HaveValueCompositeNTM
 open P01EvalStepCompositeNTM
+open P01NTMRunLaws
 
 /-- Physical controller for repeated evaluator steps.
 
@@ -113,7 +114,7 @@ theorem step_successors
 
 private theorem one_step_of_successor
     (a b : Configuration EvalRunCompositeState (Option Bool))
-    (ha : ¬ Halted evalRunCompositeMachine a)
+    (ha : ¬ P01NTMRunLaws.Halted evalRunCompositeMachine a)
     (hs : b ∈ evalRunCompositeMachine.successors a) :
     b ∈ evalRunCompositeMachine.runBranches 1 [a] := by
   have h :=
@@ -155,7 +156,7 @@ theorem value_empty_frames_run_two
   have h01 :
       c1 ∈ evalRunCompositeMachine.runBranches 1 [c0] :=
     one_step_of_successor c0 c1
-      (by simp [Halted, c0, evalRunCompositeMachine]) h01succ
+      (by simp [P01NTMRunLaws.Halted, c0, evalRunCompositeMachine]) h01succ
 
   have h12succ :
       c2 ∈ evalRunCompositeMachine.successors c1 := by
@@ -166,7 +167,7 @@ theorem value_empty_frames_run_two
   have h12 :
       c2 ∈ evalRunCompositeMachine.runBranches 1 [c1] :=
     one_step_of_successor c1 c2
-      (by simp [Halted, c1, evalRunCompositeMachine]) h12succ
+      (by simp [P01NTMRunLaws.Halted, c1, evalRunCompositeMachine]) h12succ
 
   have h :=
     P01NTMRunLaws.mem_runBranches_trans evalRunCompositeMachine
@@ -213,7 +214,7 @@ theorem value_nonempty_frames_run_three
   have h01 :
       c1 ∈ evalRunCompositeMachine.runBranches 1 [c0] :=
     one_step_of_successor c0 c1
-      (by simp [Halted, c0, evalRunCompositeMachine]) h01succ
+      (by simp [P01NTMRunLaws.Halted, c0, evalRunCompositeMachine]) h01succ
 
   have h12succ :
       c2 ∈ evalRunCompositeMachine.successors c1 := by
@@ -224,7 +225,7 @@ theorem value_nonempty_frames_run_three
   have h12 :
       c2 ∈ evalRunCompositeMachine.runBranches 1 [c1] :=
     one_step_of_successor c1 c2
-      (by simp [Halted, c1, evalRunCompositeMachine]) h12succ
+      (by simp [P01NTMRunLaws.Halted, c1, evalRunCompositeMachine]) h12succ
 
   have h23succ :
       c3 ∈ evalRunCompositeMachine.successors c2 := by
@@ -235,7 +236,7 @@ theorem value_nonempty_frames_run_three
   have h23 :
       c3 ∈ evalRunCompositeMachine.runBranches 1 [c2] :=
     one_step_of_successor c2 c3
-      (by simp [Halted, c2, evalRunCompositeMachine]) h23succ
+      (by simp [P01NTMRunLaws.Halted, c2, evalRunCompositeMachine]) h23succ
 
   have h02 :=
     P01NTMRunLaws.mem_runBranches_trans evalRunCompositeMachine
@@ -274,24 +275,34 @@ theorem value_encoded_frame_run_three
           witness unread ([false, true] ++ frameStack)
           consumed padding v false
   | andRight b =>
-      cases b <;>
-        simpa [encodeEvalFrame] using
-          value_nonempty_frames_run_three
-            witness unread
-              ((if b then [true, true] else [true, false]) ++ frameStack)
-            consumed padding v false
+      cases b with
+      | false =>
+          simpa [encodeEvalFrame] using
+            value_nonempty_frames_run_three
+              witness unread ([true, false] ++ frameStack)
+              consumed padding v false
+      | true =>
+          simpa [encodeEvalFrame] using
+            value_nonempty_frames_run_three
+              witness unread ([true, true] ++ frameStack)
+              consumed padding v false
   | orLeft =>
       simpa [encodeEvalFrame] using
         value_nonempty_frames_run_three
           witness unread ([false, false] ++ frameStack)
           consumed padding v true
   | orRight b =>
-      cases b <;>
-        simpa [encodeEvalFrame] using
-          value_nonempty_frames_run_three
-            witness unread
-              ((if b then [true, false] else [false, true]) ++ frameStack)
-            consumed padding v true
+      cases b with
+      | false =>
+          simpa [encodeEvalFrame] using
+            value_nonempty_frames_run_three
+              witness unread ([false, true] ++ frameStack)
+              consumed padding v true
+      | true =>
+          simpa [encodeEvalFrame] using
+            value_nonempty_frames_run_three
+              witness unread ([true, false] ++ frameStack)
+              consumed padding v true
 
 #print axioms MCore.Real.P01EvalRunCompositeNTM.step_successors
 #print axioms MCore.Real.P01EvalRunCompositeNTM.value_empty_frames_run_two
