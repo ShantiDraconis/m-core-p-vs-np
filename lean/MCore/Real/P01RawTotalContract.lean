@@ -140,12 +140,13 @@ def rawMalformedBudget (fuel n : Nat) : Nat :=
 
 /-- Raw malformed rejection contract at one fixed decoder fuel. -/
 def RawMalformedAtFuel (fuel : Nat) : Prop :=
-  ∀ (witness bits frameStack : BitString)
+  ∀ (witness bits : BitString)
+      (frames : List EvalFrame)
       (mode : SyntaxMode)
       (consumed padding n : Nat),
     bits.length < fuel →
     decodeCircuitCore fuel bits = none →
-    CheckedLayoutBound n consumed bits frameStack →
+    CheckedLayoutBound n consumed bits (encodeEvalFrames frames) →
     bits.length ≤ witness.length →
     ∃ m ≤ rawMalformedBudget fuel n,
       ∃ cfg : Configuration CheckedEvalRunState (Option Bool),
@@ -153,7 +154,7 @@ def RawMalformedAtFuel (fuel : Nat) : Prop :=
           [{ state := .need mode P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
-                 bits frameStack padding }] ∧
+                 bits (encodeEvalFrames frames) padding }] ∧
         EvalFailClosed cfg
 
 /-- Terminal raw obligation after all reusable circuit-level machinery has been
