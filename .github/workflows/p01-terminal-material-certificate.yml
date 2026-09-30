@@ -1,0 +1,45 @@
+name: P01 Terminal Material Certificate
+
+on:
+  push:
+    branches:
+      - atk/p01-terminal-promotion-candidate-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terminal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
+      - name: Build material terminal
+        run: lake build MCore.Real.P01TerminalMaterialCertificate
+      - name: Reject proof placeholders
+        run: |
+          set -euo pipefail
+          FILES="lean/MCore/Real/P01CoreDecodeFailureBudget.lean lean/MCore/Real/P01CoreDecodeFailurePhysical.lean lean/MCore/Real/P01TerminalMaterialCertificate.lean"
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $FILES
+      - name: Axiom audit
+        run: |
+          cat > P01TerminalMaterialAxioms.lean <<'EOF'
+          import MCore.Real.P01TerminalMaterialCertificate
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.coreDecodeFailurePhysicalReject
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.p01ConstructionGap
+          #print axioms MCore.Real.P01TerminalMaterialCertificate.p01_closed_no_hypothesis
+          #print axioms MCore.Real.P01TerminalMaterialCertificate.material_terminal
+          EOF
+          lake env lean P01TerminalMaterialAxioms.lean | tee p01-terminal-material-axioms.txt
+          ! grep -E 'sorryAx' p01-terminal-material-axioms.txt
