@@ -23,12 +23,14 @@ theorem CheckedLayoutBound.consumed_le
     {n consumed : Nat} {source frameStack : BitString}
     (h : CheckedLayoutBound n consumed source frameStack) :
     consumed ≤ n := by
+  have hs := h.source_budget
   omega
 
 theorem CheckedLayoutBound.source_le
     {n consumed : Nat} {source frameStack : BitString}
     (h : CheckedLayoutBound n consumed source frameStack) :
     source.length ≤ n := by
+  have hs := h.source_budget
   omega
 
 theorem CheckedLayoutBound.frames_le
@@ -46,8 +48,11 @@ theorem after_tag
         (b0 :: b1 :: b2 :: rest) frameStack) :
     CheckedLayoutBound n (consumed + 3) rest frameStack := by
   constructor
-  · simpa using h.source_budget
-  · exact Nat.le_trans h.frames_paid (by omega)
+  · have hs := h.source_budget
+    simp at hs
+    omega
+  · have hf := h.frames_paid
+    omega
 
 theorem after_push_tag
     (n consumed : Nat)
@@ -60,8 +65,11 @@ theorem after_push_tag
     CheckedLayoutBound n (consumed + 3) rest
       (encodeEvalFrame frame ++ frameStack) := by
   constructor
-  · simpa using h.source_budget
-  · rw [List.length_append, encodeEvalFrame_length]
+  · have hs := h.source_budget
+    simp at hs
+    omega
+  · have hf := h.frames_paid
+    rw [List.length_append, encodeEvalFrame_length]
     omega
 
 theorem after_input
@@ -75,14 +83,13 @@ theorem after_input
       (consumedAfterInputIndex (consumed + 3) i)
       tail frameStack := by
   constructor
-  · unfold consumedAfterInputIndex
-    rw [show
-      (false :: false :: false :: (encodeNat i ++ tail)).length =
-        3 + (i + 1) + tail.length by
-          simp [List.length_append, encodeNat_length]]
+  · have hs := h.source_budget
+    simp [List.length_append, encodeNat_length] at hs
+    unfold consumedAfterInputIndex
     omega
-  · unfold consumedAfterInputIndex
-    exact Nat.le_trans h.frames_paid (by omega)
+  · have hf := h.frames_paid
+    unfold consumedAfterInputIndex
+    omega
 
 theorem replace_top_frame
     (n consumed : Nat)
@@ -132,10 +139,7 @@ theorem input_index_le
         frameStack) :
     i ≤ n := by
   have hs := h.source_budget
-  rw [show
-    (false :: false :: false :: (encodeNat i ++ tail)).length =
-      3 + (i + 1) + tail.length by
-        simp [List.length_append, encodeNat_length]] at hs
+  simp [List.length_append, encodeNat_length] at hs
   omega
 
 theorem root
