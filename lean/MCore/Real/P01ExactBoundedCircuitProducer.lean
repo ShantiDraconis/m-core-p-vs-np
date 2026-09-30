@@ -1232,7 +1232,7 @@ theorem or_exact_bounded_certificate
   have h0' :
       cNeedLeft ∈
         checkedEvalRunLoopMachine.runBranches m0
-          [{ state := .need .clause needExprCompositeMachine.initial,
+          [{ state := .need mode needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
                  (encodeCircuit (.or left right) ++ tail)
@@ -1526,7 +1526,7 @@ theorem or_exact_bounded_certificate
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + m1 + m2 + m3 + m4) m5
-              [{ state := .need .clause needExprCompositeMachine.initial,
+              [{ state := .need mode needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right))
