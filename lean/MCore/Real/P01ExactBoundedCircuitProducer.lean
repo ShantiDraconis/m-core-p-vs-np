@@ -80,11 +80,11 @@ def ExactBoundedCheckedCircuitRunCertificate
 /-- Static source consumption preserves the global layout budget. -/
 theorem layout_consume_prefix
     (n consumed : Nat)
-    (prefix rest frameStack : BitString)
+    (bitsPrefix rest frameStack : BitString)
     (h :
       CheckedLayoutBound n consumed
-        (prefix ++ rest) frameStack) :
-    CheckedLayoutBound n (consumed + prefix.length)
+        (bitsPrefix ++ rest) frameStack) :
+    CheckedLayoutBound n (consumed + bitsPrefix.length)
       rest frameStack := by
   constructor
   · have hs := h.source_budget
@@ -155,7 +155,7 @@ theorem input_exact_bounded_certificate
         refine ⟨padding, ?_⟩
         simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
           cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-          P01CheckedEvalRunInputTag.inputCheckedEmbed,
+          P01CheckedEvalRunLoopNTM.inputCheckedEmbed,
           P01InputNodeCompositeRun.inputNodeFinalMode,
           inputAfterReadTarget]
     | nil =>
@@ -165,7 +165,7 @@ theorem input_exact_bounded_certificate
               [] [] padding).tape, ?_⟩
             simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
               cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-              P01CheckedEvalRunInputTag.inputCheckedEmbed,
+              P01CheckedEvalRunLoopNTM.inputCheckedEmbed,
               P01InputNodeCompositeRun.inputNodeFinalMode,
               inputAfterReadTarget]
         | cons f fs =>
@@ -174,33 +174,33 @@ theorem input_exact_bounded_certificate
             | neg =>
                 simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                   cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                  P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                  P01CheckedEvalRunLoopNTM.inputCheckedEmbed,
                   P01InputNodeCompositeRun.inputNodeFinalMode,
                   inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | andLeft =>
                 simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                   cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                  P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                  P01CheckedEvalRunLoopNTM.inputCheckedEmbed,
                   P01InputNodeCompositeRun.inputNodeFinalMode,
                   inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | andRight a =>
                 cases a <;>
                   simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                     cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                    P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                    P01CheckedEvalRunLoopNTM.inputCheckedEmbed,
                     P01InputNodeCompositeRun.inputNodeFinalMode,
                     inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | orLeft =>
                 simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                   cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                  P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                  P01CheckedEvalRunLoopNTM.inputCheckedEmbed,
                   P01InputNodeCompositeRun.inputNodeFinalMode,
                   inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | orRight a =>
                 cases a <;>
                   simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                     cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                    P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                    P01CheckedEvalRunLoopNTM.inputCheckedEmbed,
                     P01InputNodeCompositeRun.inputNodeFinalMode,
                     inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
 
@@ -644,18 +644,18 @@ theorem exact_outcome_have_of_frames_ne_nil
       | nil => exact False.elim (hne rfl)
       | cons f fs => exact h
 
-/-- The static layout budget after consuming a prefix and replacing the
+/-- The static layout budget after consuming a bitsPrefix and replacing the
 top continuation frame by another three-bit frame. -/
 theorem layout_after_prefix_with_frame
     (n consumed : Nat)
-    (prefix rest frameStack : BitString)
+    (bitsPrefix rest frameStack : BitString)
     (frame : EvalFrame)
     (h :
       CheckedLayoutBound n consumed
-        (prefix ++ rest) frameStack) :
-    CheckedLayoutBound n (consumed + prefix.length)
+        (bitsPrefix ++ rest) frameStack) :
+    CheckedLayoutBound n (consumed + bitsPrefix.length)
       rest (encodeEvalFrame frame ++ frameStack) := by
-  have hp := layout_consume_prefix n consumed prefix rest frameStack h
+  have hp := layout_consume_prefix n consumed bitsPrefix rest frameStack h
   constructor
   · exact hp.source_budget
   · rw [List.length_append, encodeEvalFrame_length]
