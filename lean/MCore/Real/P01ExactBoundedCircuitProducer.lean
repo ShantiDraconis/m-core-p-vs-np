@@ -628,8 +628,8 @@ theorem neg_exact_bounded_certificate
           · change ExactCheckedLoopOutcome witness (exitMode mode (.not child))
               (evalCircuit sigma (.not child)) [] []
               (consumed + (encodeCircuit (.not child)).length) cfgFinal
-            simp [ExactCheckedLoopOutcome] at hout3 ⊢
             rw [← hExit]
+            simp [ExactCheckedLoopOutcome] at hout3 ⊢
             simpa [evalCircuit] using hout3
 
 
