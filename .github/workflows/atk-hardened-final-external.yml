@@ -1,0 +1,23 @@
+name: ATK hardened final external
+on:
+  push:
+    branches: [atk/auto-compose-terminal-20260930]
+    paths:
+      - 'lean/MCore/Real/HardenedFinalExternal.lean'
+      - '.github/workflows/atk-hardened-final-external.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hardened-final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve dependencies
+        run: lake update
+      - name: Build hardened final external
+        run: lake build MCore.Real.HardenedFinalExternal
