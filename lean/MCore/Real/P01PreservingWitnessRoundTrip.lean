@@ -56,8 +56,15 @@ theorem execMoves_left_right_roundTrip {Symbol : Type}
       rw [show moveLeftSeq (n + 1) = .left :: moveLeftSeq n by
         simp [moveLeftSeq, List.replicate_succ]]
       simp only [execMoves_cons]
-      rw [show moveRightSeq (n + 1) = moveRightSeq n ++ [.right] by
-        simp [moveRightSeq, List.replicate_succ, List.replicate_succ_eq_append]]
+      have hright :
+          moveRightSeq (n + 1) = moveRightSeq n ++ [.right] := by
+        unfold moveRightSeq
+        induction n with
+        | zero =>
+            rfl
+        | succ n ihn =>
+            simp [List.replicate_succ, ihn]
+      rw [hright]
       rw [execMoves_append]
       rw [ih (Tape.move blank .left t) htail]
       simpa [execMoves] using move_left_right_cancel blank t hleft
