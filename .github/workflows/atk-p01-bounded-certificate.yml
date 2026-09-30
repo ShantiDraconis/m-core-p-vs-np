@@ -1,0 +1,24 @@
+name: ATK P01 bounded certificate
+on:
+  push:
+    branches: [atk/auto-compose-terminal-20260930]
+    paths:
+      - 'lean/MCore/Real/P01CheckedEvalRunBounded*.lean'
+      - 'lean/MCore/Real/P01CheckedVerifierInvariant.lean'
+      - '.github/workflows/atk-p01-bounded-certificate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve dependencies
+        run: lake update
+      - name: Build bounded certificate
+        run: lake build MCore.Real.P01CheckedEvalRunBoundedCertificate
