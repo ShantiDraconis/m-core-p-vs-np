@@ -5,6 +5,8 @@ namespace Real
 namespace P01ExactBoundedBinary
 
 open CanonicalFinalProof
+open CircuitK1
+open CanonicalSATWitness
 open CanonicalCircuitBits
 open P01EncodedStackEvaluator
 open P01EncodedFrameTape
@@ -12,6 +14,8 @@ open P01EvalCursorMachine
 open P01NeedExprCompositeNTM
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunBoundedHelpers
+open P01CheckedEvalRunBoundedCertificate
+open P01CheckedEvalRunBaseCases
 open P01CheckedVerifierInvariant
 open P01CheckedVerifierGlobalBudget
 open P01ExactBoundedCircuitProducer
@@ -71,7 +75,7 @@ prefix length after the left child and its top frame is replaced from
 andLeft to andRight before invoking the right child.
 -/
 theorem and_exact_bounded_certificate
-    (sigma : CircuitK1.Assignment)
+    (sigma : Assignment)
     (witness : BitString)
     (mode : SyntaxMode)
     (left right : CircuitK1.Circuit)
@@ -456,7 +460,7 @@ theorem and_exact_bounded_certificate
 AND producer, but the recursive children and continuation mode are clause.
 -/
 theorem or_exact_bounded_certificate
-    (sigma : CircuitK1.Assignment)
+    (sigma : Assignment)
     (witness : BitString)
     (mode : SyntaxMode)
     (left right : CircuitK1.Circuit)
