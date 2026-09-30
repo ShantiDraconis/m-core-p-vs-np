@@ -1,5 +1,5 @@
 import MCore.Real.P01FinalCertificate
-import MCore.Real.P02G21G22Attack
+import MCore.Real.FailProofAllGaps
 
 namespace MCore.Real
 namespace CanonicalFinalExternal
@@ -9,44 +9,67 @@ open CanonicalCircuitBits
 open CanonicalSATBoundary
 open FailProofAllGaps
 open P01FinalCertificate
-open P02G21G22Attack
 
-/-- Exact internal final-external payload on one canonical bitstring SAT model. -/
-structure FinalExternalCertificate : Prop where
-  p01 : P01ConstructionGap
-  g21 : G21Pointwise
+/-- Hardened final external certificate on the canonical finite-control
+    bitstring machine model. -/
+structure FinalExternalCertificate : Type where
+  satInNP :
+    SATInNPGap circuitBitEncoding
+  failGenerator :
+    FailureGenerator (SATBits circuitBitEncoding)
 
-/-- Canonical internal separation root. -/
+/-- Internal canonical separation root. -/
 def FINAL_ROOT : Prop :=
   PneqNP
 
+/-- The final external certificate yields the hardened internal separation. -/
 theorem finalExternal_to_FINAL_ROOT
     (E : FinalExternalCertificate) :
     FINAL_ROOT := by
-  have hP01 : SATInNPGap circuitBitEncoding :=
-    construction_closes_p01 E.p01
-  exact p01_g21_closes_internal hP01 E.g21
+  exact target_failure_implies_p_ne_np
+    E.satInNP
+    (failure_generator_implies_universal_failure E.failGenerator)
 
-/-- External presentation adds only a proof that the chosen external P/NP
-    predicates coincide with the hardened internal model. -/
-structure OfficialFinalExternalCertificate
-    (officialP officialNP : BitLanguage → Prop) : Prop
-    extends FinalExternalCertificate where
-  model_match : ExternalModelMatch officialP officialNP
+/-- The P01 construction supplies exactly the SAT-in-NP field of the
+    hardened final external certificate. -/
+theorem p01_supplies_satInNP
+    (h : P01ConstructionGap) :
+    SATInNPGap circuitBitEncoding :=
+  construction_closes_p01 h
 
-def OFFICIAL_FINAL_ROOT
-    (officialP officialNP : BitLanguage → Prop) : Prop :=
-  OfficialPneqNP officialP officialNP
+/-- Exact producer from the two remaining canonical ingredients:
+    (1) a concrete P01 machine construction and
+    (2) a universal deterministic failure generator for the same SATBits. -/
+def finalExternal_of_p01_and_failure
+    (hP01 : P01ConstructionGap)
+    (G : FailureGenerator (SATBits circuitBitEncoding)) :
+    FinalExternalCertificate :=
+  {
+    satInNP := p01_supplies_satInNP hP01
+    failGenerator := G
+  }
 
-theorem officialFinalExternal_to_ROOT
+theorem FINAL_ROOT_of_p01_and_failure
+    (hP01 : P01ConstructionGap)
+    (G : FailureGenerator (SATBits circuitBitEncoding)) :
+    FINAL_ROOT :=
+  finalExternal_to_FINAL_ROOT
+    (finalExternal_of_p01_and_failure hP01 G)
+
+/-- External/official transfer remains a separate semantic obligation. -/
+theorem official_root_of_p01_failure_and_model_match
     {officialP officialNP : BitLanguage → Prop}
-    (E : OfficialFinalExternalCertificate officialP officialNP) :
-    OFFICIAL_FINAL_ROOT officialP officialNP :=
-  internal_separation_transfers E.model_match
-    (finalExternal_to_FINAL_ROOT E.toFinalExternalCertificate)
+    (hP01 : P01ConstructionGap)
+    (G : FailureGenerator (SATBits circuitBitEncoding))
+    (M : ExternalModelMatch officialP officialNP) :
+    OfficialPneqNP officialP officialNP := by
+  exact internal_separation_transfers M
+    (FINAL_ROOT_of_p01_and_failure hP01 G)
 
-#print axioms MCore.Real.CanonicalFinalExternal.finalExternal_to_FINAL_ROOT
-#print axioms MCore.Real.CanonicalFinalExternal.officialFinalExternal_to_ROOT
+#print axioms MCore.Real.CanonicalFinalExternal.p01_supplies_satInNP
+#print axioms MCore.Real.CanonicalFinalExternal.finalExternal_of_p01_and_failure
+#print axioms MCore.Real.CanonicalFinalExternal.FINAL_ROOT_of_p01_and_failure
+#print axioms MCore.Real.CanonicalFinalExternal.official_root_of_p01_failure_and_model_match
 
 end CanonicalFinalExternal
 end MCore.Real
