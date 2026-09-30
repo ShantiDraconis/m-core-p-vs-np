@@ -86,6 +86,65 @@ def ExactBoundedCheckedCircuitRunCertificate
       ExactCheckedLoopOutcome witness (exitMode mode phi)
         (evalCircuit sigma phi) tail frames consumed phi cfg
 
+/--
+When unread source remains, exact outcome exposes the unique expected consumed
+counter directly.
+-/
+theorem exact_outcome_have_of_tail_ne_nil
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (value : Bool)
+    (tail : BitString)
+    (frames : List EvalFrame)
+    (consumed : Nat)
+    (phi : CircuitK1.Circuit)
+    (cfg : CheckedConfig)
+    (htail : tail ≠ [])
+    (h :
+      ExactCheckedLoopOutcome witness mode value tail frames
+        consumed phi cfg) :
+    ∃ padding' : Nat,
+      cfg =
+        { state := .have mode (.start value),
+          tape :=
+            evalCursorStackEndTape witness
+              (consumed + (encodeCircuit phi).length)
+              tail (encodeEvalFrames frames) padding' } := by
+  rcases h with ⟨hout, hexact⟩
+  cases tail with
+  | nil => exact False.elim (htail rfl)
+  | cons b bs =>
+      simpa [ExactCheckedLoopOutcome] using hexact
+
+/--
+When the source tail is empty but a continuation frame remains, exact outcome
+still exposes the exact consumed counter.
+-/
+theorem exact_outcome_have_of_frames_ne_nil
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (value : Bool)
+    (frames : List EvalFrame)
+    (consumed : Nat)
+    (phi : CircuitK1.Circuit)
+    (cfg : CheckedConfig)
+    (hframes : frames ≠ [])
+    (h :
+      ExactCheckedLoopOutcome witness mode value [] frames
+        consumed phi cfg) :
+    ∃ padding' : Nat,
+      cfg =
+        { state := .have mode (.start value),
+          tape :=
+            evalCursorStackEndTape witness
+              (consumed + (encodeCircuit phi).length)
+              [] (encodeEvalFrames frames) padding' } := by
+  rcases h with ⟨hout, hexact⟩
+  cases frames with
+  | nil => exact False.elim (hframes rfl)
+  | cons f fs =>
+      simpa [ExactCheckedLoopOutcome] using hexact
+
 /-- Exact consumption strictly strengthens the existing bounded certificate. -/
 theorem exact_to_bounded
     {sigma : Assignment}
@@ -259,6 +318,8 @@ theorem input_exact_bounded_certificate
             inputCheckedConfig, inputCheckedEmbed,
             inputNodeFinalMode, inputAfterReadTarget]
 
+#print axioms MCore.Real.P01CheckedEvalRunExactCertificate.exact_outcome_have_of_tail_ne_nil
+#print axioms MCore.Real.P01CheckedEvalRunExactCertificate.exact_outcome_have_of_frames_ne_nil
 #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_consumed_exact
 #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_exact_bounded_certificate
 #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.exact_to_bounded
