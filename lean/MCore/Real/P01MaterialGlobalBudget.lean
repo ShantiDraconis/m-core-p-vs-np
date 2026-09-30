@@ -94,6 +94,42 @@ theorem entry_plus_checkedCircuitBudget_le_material
 #print axioms MCore.Real.P01MaterialGlobalBudget.materialVerifierGlobalTimeBound_poly
 #print axioms MCore.Real.P01MaterialGlobalBudget.checkedCircuitBudget_le_6144_cubic
 #print axioms MCore.Real.P01MaterialGlobalBudget.scan_entry_le_2048_cubic
+
+/-- Final whole-wrapper budget.  The 8192-cubic material budget is reserved
+for evaluator work; this doubled envelope also absorbs source scan/handoff
+and malformed-source rejection without changing polynomial degree. -/
+def terminalVerifierTimeBound : TimeBound :=
+  fun n => 16384 * (n + 1) ^ 3
+
+theorem terminalVerifierTimeBound_poly :
+    PolynomialTimeBound terminalVerifierTimeBound := by
+  refine ⟨16384, 3, ?_⟩
+  intro n
+  exact Nat.le_refl _
+
+theorem material_le_terminal
+    (n : Nat) :
+    materialVerifierGlobalTimeBound n ≤ terminalVerifierTimeBound n := by
+  unfold materialVerifierGlobalTimeBound terminalVerifierTimeBound
+  exact Nat.mul_le_mul_right ((n + 1)^3) (by omega)
+
+theorem entry_plus_material_le_terminal
+    (n : Nat) :
+    n + 3 + materialVerifierGlobalTimeBound n ≤
+      terminalVerifierTimeBound n := by
+  have hentry := scan_entry_le_2048_cubic n
+  unfold materialVerifierGlobalTimeBound terminalVerifierTimeBound
+  calc
+    n + 3 + 8192 * (n + 1)^3
+        ≤ 2048 * (n + 1)^3 + 8192 * (n + 1)^3 :=
+          Nat.add_le_add_right hentry _
+    _ ≤ 16384 * (n + 1)^3 := by
+          exact Nat.mul_le_mul_right ((n + 1)^3) (by omega)
+
+#print axioms MCore.Real.P01MaterialGlobalBudget.terminalVerifierTimeBound_poly
+#print axioms MCore.Real.P01MaterialGlobalBudget.material_le_terminal
+#print axioms MCore.Real.P01MaterialGlobalBudget.entry_plus_material_le_terminal
+
 #print axioms MCore.Real.P01MaterialGlobalBudget.entry_plus_checkedCircuitBudget_le_material
 
 end P01MaterialGlobalBudget
