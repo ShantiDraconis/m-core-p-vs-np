@@ -1,4 +1,5 @@
 import MCore.Real.P01CheckedVerifierBudget
+import MCore.Real.P01CheckedVerifierGlobalBudget
 import MCore.Real.P01CheckedEvalRunBaseCases
 import MCore.Real.P01CheckedEvalRunNeedTags
 import MCore.Real.P01CheckedEvalRunHaveValue
@@ -19,13 +20,14 @@ open P01CheckedEvalRunNeedTags
 open P01CheckedEvalRunHaveValue
 open P01CheckedEvalRunInputTag
 open P01CheckedVerifierBudget
+open P01CheckedVerifierGlobalBudget
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
 
 private theorem small_const_le_stepEnvelope
     (n k : Nat) (hk : k ≤ 13) :
-    k ≤ checkedStepEnvelope n := by
+    k ≤ checkedLoopStepEnvelope n := by
   unfold checkedStepEnvelope
   have h1 : 1 ≤ n + 1 := by omega
   have hsq : 1 ≤ (n + 1) ^ 2 := by
@@ -49,7 +51,7 @@ theorem inputTag_checked_reaches_mode_within_envelope
     (hindex : i ≤ n)
     (htail : tail.length ≤ n)
     (hframes : frameStack.length ≤ n) :
-    ∃ m ≤ checkedStepEnvelope n,
+    ∃ m ≤ checkedLoopStepEnvelope n,
       inputCheckedConfig mode
         ({ state :=
              .done (witness.getD i false)
@@ -71,9 +73,11 @@ theorem inputTag_checked_reaches_mode_within_envelope
     inputTag_checked_reaches_mode
       mode witness tail frameStack consumed padding i hi
   refine ⟨m, Nat.le_trans hm ?_, hrun⟩
-  exact checkedInputTagFuel_le
-    n consumed i tail frameStack
-    hsource hc3 hindex htail hframes
+  have h :=
+    checkedInputTagFuel_le
+      n consumed i tail frameStack
+      hsource hc3 hindex htail hframes
+  simpa [checkedLoopStepEnvelope] using h
 
 /-- Generic continuation-producing checked tag under the common envelope. -/
 theorem pushTag_checked_reaches_need_within_envelope
@@ -93,7 +97,7 @@ theorem pushTag_checked_reaches_need_within_envelope
         .need (P01CNFMode.childMode mode tag) (.retPush frame .scanUnread))
     (hsource : (b0 :: b1 :: b2 :: rest).length ≤ n)
     (hframes : frameStack.length ≤ n) :
-    ∃ m ≤ checkedStepEnvelope n,
+    ∃ m ≤ checkedLoopStepEnvelope n,
       ({ state := .need (P01CNFMode.childMode mode tag)
            P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
          tape :=
@@ -129,7 +133,7 @@ theorem have_reaches_outcome_within_envelope
     (tail : BitString)
     (frames : List EvalFrame)
     (consumed padding : Nat) :
-    ∃ m ≤ checkedStepEnvelope n, ∃ cfg,
+    ∃ m ≤ checkedLoopStepEnvelope n, ∃ cfg,
       cfg ∈
         checkedEvalRunLoopMachine.runBranches m
           [{ state := .have mode (.start value),
@@ -170,18 +174,25 @@ theorem have_reaches_outcome_within_envelope
                 Tape.move none .left
                   (Tape.move none .left
                     (evalCursorStackEndTape witness consumed [] [] padding)) }
-          refine ⟨m, Nat.le_trans hm (small_const_le_stepEnvelope n 3 (by omega)),
+          refine ⟨m, Nat.le_trans hm
+              (Nat.le_trans
+                (small_const_le_stepEnvelope n 3 (by omega))
+                (checkedStepEnvelope_le_loopEnvelope n)),
             cfg, ?_, ?_⟩
           · simpa [cfg] using hrun
           · exact ⟨cfg.tape, rfl⟩
 
 theorem nine_le_stepEnvelope (n : Nat) :
-    9 ≤ checkedStepEnvelope n :=
-  small_const_le_stepEnvelope n 9 (by omega)
+    9 ≤ checkedLoopStepEnvelope n :=
+  Nat.le_trans
+    (small_const_le_stepEnvelope n 9 (by omega))
+    (checkedStepEnvelope_le_loopEnvelope n)
 
 theorem thirteen_le_stepEnvelope (n : Nat) :
-    13 ≤ checkedStepEnvelope n :=
-  small_const_le_stepEnvelope n 13 (by omega)
+    13 ≤ checkedLoopStepEnvelope n :=
+  Nat.le_trans
+    (small_const_le_stepEnvelope n 13 (by omega))
+    (checkedStepEnvelope_le_loopEnvelope n)
 
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.inputTag_checked_reaches_mode_within_envelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.pushTag_checked_reaches_need_within_envelope
