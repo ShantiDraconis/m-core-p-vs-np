@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   canonical-model:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
           if grep -q 'sorryAx' gap-canonical-model.log; then exit 1; fi
 
   gap-compression:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +65,7 @@ jobs:
           if grep -q 'sorryAx' gap-compression.log; then exit 1; fi
 
   sat-foundations:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -154,7 +154,7 @@ jobs:
           if grep -q 'sorryAx' gap-sat-foundations.log; then exit 1; fi
 
   negative-attacks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
