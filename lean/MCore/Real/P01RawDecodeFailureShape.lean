@@ -145,29 +145,40 @@ theorem rawDecodeFailure_of_none :
                           | true =>
                               exact .invalid111 fuel rest
 
-/-- Every whole-source decoder failure has a classified recursive raw cause. -/
-theorem decodeCircuit_none_has_raw_failure
+/-- Whole-source malformed inputs split exactly into a recursive decoder failure
+or a successfully decoded canonical prefix followed by nonempty residual bits. -/
+inductive WholeDecodeFailure (bits : BitString) : Prop
+  | core
+      (h : RawDecodeFailure (bits.length + 1) bits) :
+      WholeDecodeFailure bits
+  | residual
+      (phi : Circuit) (b : Bool) (tail : BitString)
+      (h :
+        decodeCircuitCore (bits.length + 1) bits =
+          some (phi, b :: tail)) :
+      WholeDecodeFailure bits
+
+theorem decodeCircuit_none_has_failure
     (bits : BitString)
     (h : decodeCircuit bits = none) :
-    RawDecodeFailure (bits.length + 1) bits := by
+    WholeDecodeFailure bits := by
   unfold decodeCircuit at h
   cases hc :
       decodeCircuitCore (bits.length + 1) bits with
   | none =>
-      exact rawDecodeFailure_of_none
-        (bits.length + 1) bits (by simpa using hc)
+      exact .core
+        (rawDecodeFailure_of_none
+          (bits.length + 1) bits (by simpa using hc))
   | some p =>
       rcases p with ⟨phi, tail⟩
       cases tail with
       | nil =>
           simp [hc] at h
       | cons b bs =>
-          -- A successful prefix with residual source is a whole-source
-          -- malformed input.  It is intentionally not a core-decoder failure.
-          -- This branch is handled separately by exact residual-tail rejection.
-          simp [hc] at h
+          exact .residual phi b bs (by simpa using hc)
 
 #print axioms MCore.Real.P01RawDecodeFailureShape.rawDecodeFailure_of_none
+#print axioms MCore.Real.P01RawDecodeFailureShape.decodeCircuit_none_has_failure
 
 end P01RawDecodeFailureShape
 end Real
