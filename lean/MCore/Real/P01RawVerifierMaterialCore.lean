@@ -23,13 +23,13 @@ structure RawVerifierMaterialCore : Prop where
   halts :
     ∀ (bs w : BitString), w.length = bs.length →
       checkedVerifierMachine.HaltsWithin
-        (materialVerifierGlobalTimeBound bs.length)
+        (terminalVerifierTimeBound bs.length)
         { state := checkedVerifierMachine.initial,
           tape := preparedTape w bs }
   correct :
     ∀ (bs w : BitString), w.length = bs.length →
       (checkedVerifierMachine.AcceptsWithin
-          (materialVerifierGlobalTimeBound bs.length)
+          (terminalVerifierTimeBound bs.length)
           { state := checkedVerifierMachine.initial,
             tape := preparedTape w bs } ↔
         VerifyBits bs w)
