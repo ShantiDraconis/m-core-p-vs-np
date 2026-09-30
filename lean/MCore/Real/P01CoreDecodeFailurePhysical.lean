@@ -312,7 +312,9 @@ theorem coreDecodeFailurePhysicalAux :
                     (encodeEvalFrames (.andLeft :: frames)) := by
                 simpa [hrestEq] using hPushLayout
               have henc : (encodeCircuit a).length ≤ n := by
-                exact hLayoutA.source_le.trans (Nat.le_refl n)
+                have hs := hLayoutA.source_le
+                simp [List.length_append] at hs
+                omega
               have hvar : varBound a ≤ witness.length :=
                 Nat.le_trans (varBound_le_encoded_length a)
                   (Nat.le_trans henc hwit)
@@ -592,8 +594,10 @@ theorem coreDecodeFailurePhysicalAux :
                     (encodeCircuit a ++ rest')
                     (encodeEvalFrames (.orLeft :: frames)) := by
                 simpa [hrestEq] using hPushLayout
-              have henc : (encodeCircuit a).length ≤ n :=
-                hLayoutA.source_le
+              have henc : (encodeCircuit a).length ≤ n := by
+                have hs := hLayoutA.source_le
+                simp [List.length_append] at hs
+                omega
               have hvar : varBound a ≤ witness.length :=
                 Nat.le_trans (varBound_le_encoded_length a)
                   (Nat.le_trans henc hwit)
@@ -790,27 +794,23 @@ theorem coreDecodeFailurePhysicalAux :
                   simpa [hrestEq, List.length_append, Nat.add_assoc] using hcap
 
       · rcases hinvalid with ⟨third, rest, rfl⟩
+        have hdis :
+            tagAllowed mode
+              (P01NeedExprTagDecode.decodeTagBits true true third) = false := by
+          cases mode <;> cases third <;> rfl
         obtain ⟨m, hm, hrun⟩ :=
-          invalid_tag_rejects_material
+          disallowed_tag_prefix_reaches_reject_within_envelope
             n mode witness rest (encodeEvalFrames frames)
-            consumed padding third hLayout.source_le hLayout.frames_le
-        refine ⟨m, Nat.le_trans hm ?_,
+            consumed padding true true third hdis
+            hLayout.source_le hLayout.frames_le
+        refine ⟨m,
+          Nat.le_trans hm
+            (loop_le_potential
+              (true :: true :: third :: rest).length n),
           { state := .reject,
             tape := evalCursorReadTape witness (consumed + 3)
               rest (encodeEvalFrames frames) padding },
           hrun, rfl⟩
-        exact Nat.le_trans
-          (P01CoreDecodeFailureAtoms.checkedLoopStepEnvelope_le_material n)
-          (by
-            have hp := loop_le_potential
-              (true :: true :: third :: rest).length n
-            exact Nat.le_trans
-              (P01CoreDecodeFailureAtoms.checkedLoopStepEnvelope_le_material n)
-              (Nat.le_trans (material_le_terminal n)
-                (by
-                  unfold terminalVerifierTimeBound coreRejectPotential
-                  checkedLoopStepEnvelope
-                  exact Nat.mul_le_mul_right ((n + 1)^3) (by omega))))
 
 /-- The exact remaining malformed-core contract is now inhabited. -/
 theorem coreDecodeFailurePhysicalReject :
