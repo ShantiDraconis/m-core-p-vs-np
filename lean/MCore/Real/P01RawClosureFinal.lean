@@ -56,7 +56,9 @@ def unifiedVerifierTimeBound : TimeBound :=
 
 theorem unifiedVerifierTimeBound_poly :
     PolynomialTimeBound unifiedVerifierTimeBound := by
-  exact ⟨65536, 3, fun n => Nat.le_refl _⟩
+  refine ⟨65536, 3, ?_⟩
+  intro n
+  exact Nat.le_refl _
 
 theorem exactTime_le_unified (n : Nat) :
     checkedVerifierExactTimeBound n ≤ unifiedVerifierTimeBound n := by
