@@ -31,21 +31,25 @@ jobs:
           lake build MCore.Real.P01CheckedEvalRunBoundedHelpers
           lake build MCore.Real.P01CheckedEvalRunBoundedConst
           lake build MCore.Real.P01CheckedEvalRunBoundedCertificate
+          lake build MCore.Real.P01CheckedEvalRunBoundedBinary
       - name: Reject proof placeholders
         run: |
           set -euo pipefail
-          FILES="lean/MCore/Real/P01CheckedEvalBoundedOutcome.lean lean/MCore/Real/P01CheckedEvalRunBoundedHelpers.lean lean/MCore/Real/P01CheckedEvalRunBoundedConst.lean lean/MCore/Real/P01CheckedEvalRunBoundedCertificate.lean"
+          FILES="lean/MCore/Real/P01CheckedEvalBoundedOutcome.lean lean/MCore/Real/P01CheckedEvalRunBoundedHelpers.lean lean/MCore/Real/P01CheckedEvalRunBoundedConst.lean lean/MCore/Real/P01CheckedEvalRunBoundedCertificate.lean lean/MCore/Real/P01CheckedEvalRunBoundedBinary.lean"
           ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $FILES
       - name: Axiom audit
         run: |
           cat > P01BoundedLayoutAxioms.lean <<'EOF'
-          import MCore.Real.P01CheckedEvalRunBoundedCertificate
+          import MCore.Real.P01CheckedEvalRunBoundedBinary
           #print axioms MCore.Real.P01CheckedEvalBoundedOutcome.layout_of_frames_ne_nil
           #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.have_reaches_bounded_outcome
           #print axioms MCore.Real.P01CheckedEvalRunBoundedConst.const_checked_run_within_loopEnvelope
           #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.input_bounded_certificate
           #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.const_bounded_certificate
           #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.neg_bounded_certificate
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedBinary.and_bounded_certificate
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedBinary.or_bounded_certificate
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedBinary.circuit_bounded_certificate
           EOF
           lake env lean P01BoundedLayoutAxioms.lean | tee p01-bounded-layout-axioms.txt
           ! grep -E 'sorryAx' p01-bounded-layout-axioms.txt
