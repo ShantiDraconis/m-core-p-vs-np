@@ -251,7 +251,8 @@ theorem input_reject_certificate
     (i : Nat) :
     CheckedCircuitRejectCertificate sigma witness mode (.input i) := by
   intro hinvalid
-  cases mode <;> simp [modeCheck, tagAllowed] at hinvalid
+  cases mode <;>
+    simp [modeCheck, tagAllowed, isCNFBool, isClauseBool] at hinvalid
 
 /-- Constants rejected by a syntax mode are rejected immediately at their root
 tag. -/
@@ -265,7 +266,8 @@ theorem const_reject_certificate
   have hroot :
       tagAllowed mode (circuitTag (.const v)) = false := by
     cases v <;> cases mode <;>
-      simp [modeCheck, tagAllowed, circuitTag] at hinvalid ⊢
+      simp [modeCheck, tagAllowed, circuitTag,
+        isCNFBool, isClauseBool] at hinvalid ⊢
   obtain ⟨m, hrun⟩ :=
     root_disallowed_reaches_reject
       mode witness (.const v) tail frames consumed padding hroot
