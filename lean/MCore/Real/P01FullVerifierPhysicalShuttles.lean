@@ -116,7 +116,20 @@ theorem witness_roundTrip_length
   omega
 
 
-/-- Pure left/right shuttling is nondestructive.  Starting from a tape with at
+/-- Execution distributes over concatenation of primitive move sequences. -/
+theorem execMoves_append
+    {Symbol : Type}
+    (blank : Symbol)
+    (xs ys : List Direction)
+    (t : Tape Symbol) :
+    execMoves blank (xs ++ ys) t =
+      execMoves blank ys (execMoves blank xs t) := by
+  induction xs generalizing t with
+  | nil => rfl
+  | cons d ds ih =>
+      simp [execMoves, ih]
+
+/-- Pure left/right shuttling is nondestructive. Starting from a tape with at
 least n cells on the left, moving left n times and then right n times restores
 the exact original tape. -/
 theorem moveLeftRight_roundTrip
@@ -136,23 +149,20 @@ theorem moveLeftRight_roundTrip
         | cons x xs =>
             have hn : n ≤ xs.length := by
               simpa using Nat.succ_le_succ_iff.mp h
-            simp only [moveLeftSeq, moveRightSeq, List.replicate_succ,
-              execMoves_cons]
-            change
-              execMoves none (List.replicate n Direction.right)
-                (Tape.move none Direction.right
-                  (execMoves none (List.replicate n Direction.left)
-                    (Tape.move none Direction.left
-                      { left := x :: xs, head := head, right := right }))) =
-                { left := x :: xs, head := head, right := right }
-            have hih :=
-              ih
-                (t := Tape.move none Direction.left
-                  { left := x :: xs, head := head, right := right })
-                hn
-            simp [moveLeftSeq, moveRightSeq] at hih
-            rw [hih]
-            rfl
+            let t' : Tape (Option Bool) :=
+              { left := xs, head := x, right := head :: right }
+            have hleft :
+                execMoves none (moveLeftSeq (n + 1))
+                  { left := x :: xs, head := head, right := right } =
+                execMoves none (moveLeftSeq n) t' := by
+              simp [moveLeftSeq, t', execMoves, Tape.move]
+            have hright :
+                moveRightSeq (n + 1) =
+                  moveRightSeq n ++ [Direction.right] := by
+              simp [moveRightSeq, List.replicate_succ_eq_append]
+            rw [hleft, hright, execMoves_append]
+            rw [ih t' hn]
+            simp [t', execMoves, Tape.move]
 
 /-- The existing source-end witness shuttle is therefore preserving: it reads
 witness[i] and returns to the exact source-end tape without changing witness or
