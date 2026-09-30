@@ -389,7 +389,6 @@ theorem neg_bounded_certificate
       _ = checkedCircuitBudget (.not child) n := by
             unfold checkedCircuitBudget
             rw [hcount]
-            rfl
 
   have hchildInput :
       ∃ i, child = .input i := by
