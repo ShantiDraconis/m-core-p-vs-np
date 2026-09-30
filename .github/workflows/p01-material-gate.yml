@@ -1,0 +1,83 @@
+name: p01-material-gate
+
+on:
+  push:
+    branches:
+      - atk/p01-material-inhabitant-frontier-20260930
+  workflow_dispatch:
+
+jobs:
+  material:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lean toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve pinned dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: Build P01 material frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake build \
+            MCore.Real.P01ExactBoundedCircuitProducer \
+            MCore.Real.P01ExactBoundedBinary \
+            MCore.Real.P01ExactBoundedAll \
+            MCore.Real.P01CheckedEvalRejectBounded \
+            MCore.Real.P01MaterialGlobalBudget \
+            MCore.Real.P01MalformedRawBoundedReject \
+            MCore.Real.P01CheckedVerifierFiniteState \
+            MCore.Real.P01MaterialInhabitantFrontier
+
+      - name: Material axiom audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > P01MaterialAudit.lean <<'EOF'
+          import MCore.Real.P01ExactBoundedAll
+          import MCore.Real.P01CheckedEvalRejectBounded
+          import MCore.Real.P01MalformedRawBoundedReject
+          import MCore.Real.P01MaterialInhabitantFrontier
+          #print axioms MCore.Real.P01ExactBoundedAll.exact_bounded_all
+          #print axioms MCore.Real.P01CheckedEvalRejectBounded.bounded_circuit_reject_certificate
+          #print axioms MCore.Real.P01MalformedRawBoundedReject.decodeCircuit_none_split
+          #print axioms MCore.Real.P01MalformedRawBoundedReject.checked_nonempty_source_reaches_reject
+          #print axioms MCore.Real.P01MalformedRawBoundedReject.core_success_with_trailing_reaches_reject_bounded
+          #print axioms MCore.Real.P01MalformedRawBoundedReject.checkedCircuitBudget_plus_loop_le_material
+          #print axioms MCore.Real.P01MalformedRawBoundedReject.malformed_raw_reaches_reject_bounded_of_core
+          #print axioms MCore.Real.P01MaterialInhabitantFrontier.p01_of_material_core
+          EOF
+          lake env lean P01MaterialAudit.lean 2>&1 | tee P01MaterialAudit.log
+          if grep -q 'sorryAx' P01MaterialAudit.log; then
+            echo "sorryAx found in material frontier"
+            exit 1
+          fi
+
+      - name: Source hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in \
+            lean/MCore/Real/P01ExactBoundedBinary.lean \
+            lean/MCore/Real/P01ExactBoundedAll.lean \
+            lean/MCore/Real/P01CheckedEvalRejectBounded.lean \
+            lean/MCore/Real/P01MalformedRawBoundedReject.lean \
+            lean/MCore/Real/P01MaterialGlobalBudget.lean \
+            lean/MCore/Real/P01MaterialInhabitantFrontier.lean
+          do
+            if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)|^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"; then
+              exit 1
+            fi
+          done
