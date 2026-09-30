@@ -233,6 +233,50 @@ def preservingReadAccepting : PreservingReadState → Bool
   | .haltTrue => true
   | _ => false
 
+
+/-- Canonical loop configuration after at least one unary true has already
+advanced the witness marker.  `prefix` is the traversed witness prefix and
+therefore has the same length as the erased unary-true region. -/
+def indexSomeConfig
+    (prefix suffix : BitString) (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  match encodeNat n with
+  | [] =>
+      { state := .reject
+        tape :=
+          { left :=
+              List.replicate prefix.length none ++
+                prefix.map some ++ none :: suffix.map some
+            head := none
+            right := [] } }
+  | bit :: rest =>
+      { state := .indexSome
+        tape :=
+          { left :=
+              List.replicate prefix.length none ++
+                prefix.map some ++ none :: suffix.map some
+            head := some bit
+            right := rest.map some } }
+
+@[simp] theorem indexSomeConfig_state
+    (prefix suffix : BitString) (n : Nat) :
+    (indexSomeConfig prefix suffix n).state = .indexSome := by
+  cases n <;> rfl
+
+/-- The first unary true establishes the general loop invariant in exactly
+eight physical steps.  It erases one unary marker, moves the unique witness
+marker across the first witness bit, and returns to the next unary symbol. -/
+theorem preservingRead_first_true_cycle
+    (b : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 8
+      { state := preservingUnaryReadMachine.initial
+        tape := witnessReadTape (b :: tail) (n + 1) } =
+      indexSomeConfig [b] tail n := by
+  cases b <;> cases n <;>
+    simp [preservingUnaryReadMachine, witnessReadTape, indexSomeConfig,
+      encodeNat, TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
 /-- Exact final tape for zero index: the witness is unchanged; the unary false
 terminator is erased and the original witness separator remains blank. -/
 def zeroDoneTape (witness : BitString) : Tape (Option Bool) :=
@@ -268,6 +312,7 @@ theorem preservingRead_zero_correct
   rw [preservingRead_zero_run_five]
   cases b <;> rfl
 
+#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_first_true_cycle
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_run_five
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_preserves_witness
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_correct
