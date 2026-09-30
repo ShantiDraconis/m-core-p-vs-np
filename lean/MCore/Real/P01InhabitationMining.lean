@@ -33,20 +33,31 @@ elab "#mine_structure " n:ident : command => do
     | throwError "not a structure: {structName}"
   logInfo m!"[MINING STRUCTURE] {structName}"
   for field in info.fieldNames do
-    let projName := Name.str structName field.toString
-    let finfo ← getConstInfo projName
-    let mut hits : Array Name := #[]
-    for (declName, declInfo) in env.constants.toList do
-      if declName != projName && !(declName.toString.startsWith "_") then
-        let ok ← liftTermElabM do typeUnifies finfo.type declInfo.type
-        if ok then hits := hits.push declName
-    logInfo m!"[FIELD] {field}"
-    logInfo m!"  TYPE: {finfo.type}"
-    if hits.isEmpty then
-      logInfo m!"  STATUS: NO_PRODUCER_TYPE"
-    else
-      logInfo m!"  STATUS: COMPOSABLE_TYPE_CANDIDATES ({hits.size})"
-      logInfo m!"  CANDIDATES: {hits.toList.take 24}"
+    let finfo? ←
+      try
+        pure (some (← getConstInfo field))
+      catch _ =>
+        let projName := Name.str structName field.toString
+        try
+          pure (some (← getConstInfo projName))
+        catch _ =>
+          pure none
+    match finfo? with
+    | none =>
+        logInfo m!"[FIELD-SKIP] {field} (no projection constant)"
+    | some finfo =>
+        let mut hits : Array Name := #[]
+        for (declName, declInfo) in env.constants.toList do
+          if !(declName.toString.startsWith "_") then
+            let ok ← liftTermElabM do typeUnifies finfo.type declInfo.type
+            if ok then hits := hits.push declName
+        logInfo m!"[FIELD] {field}"
+        logInfo m!"  TYPE: {finfo.type}"
+        if hits.isEmpty then
+          logInfo m!"  STATUS: NO_PRODUCER_TYPE"
+        else
+          logInfo m!"  STATUS: COMPOSABLE_TYPE_CANDIDATES ({hits.size})"
+          logInfo m!"  CANDIDATES: {hits.toList.take 24}"
 
 #mine_structure MCore.Real.P01FinalCertificate.P01MachineConstruction
 
