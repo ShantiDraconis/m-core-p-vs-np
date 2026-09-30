@@ -1,0 +1,53 @@
+name: P01 Verifier Phase Min-Cut Clean
+
+on:
+  push:
+    branches:
+      - atk/p01-verifier-phase-mincut-clean-20260930
+    paths:
+      - 'lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean'
+      - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
+      - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
+      - 'lean/MCore/Real/P01IntegratedAssembly.lean'
+      - 'lean-toolchain'
+      - 'lakefile.lean'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mincut:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build structural min-cut
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01VerifierPhaseMinCutStructural
+      - name: Exact axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P01VerifierPhaseMinCutAudit.lean <<'EOF'
+          import MCore.Real.P01VerifierPhaseMinCutStructural
+          #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
+          #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.satInNPGap_of_verifierPhase
+          EOF
+          lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
+          ! grep -E 'sorryAx' P01VerifierPhaseMinCutAudit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean
