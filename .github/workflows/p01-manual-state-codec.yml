@@ -7,7 +7,7 @@ on:
     paths:
       - 'lean/MCore/Real/P01ManualStateCodecBase.lean'
       - 'lean/MCore/Real/P01ManualStateCodecComposite.lean'
-      - 'lean/MCore/Real/P01ManualCheckedVerifierFiniteState.lean'
+      - 'lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean'
       - '.github/workflows/p01-manual-state-codec.yml'
       - 'lean-toolchain'
       - 'lakefile.lean'
@@ -37,26 +37,26 @@ jobs:
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P01ManualStateCodecBase
           lake build MCore.Real.P01ManualStateCodecComposite
-          lake build MCore.Real.P01ManualCheckedVerifierFiniteState
+          lake build MCore.Real.P01CheckedVerifierManualFiniteState
       - name: Axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
           cat > P01ManualCodecAudit.lean <<'EOF'
-          import MCore.Real.P01ManualCheckedVerifierFiniteState
+          import MCore.Real.P01CheckedVerifierManualFiniteState
           #print axioms MCore.Real.P01ManualStateCodecBase.inputNodeDecode_code
           #print axioms MCore.Real.P01ManualStateCodecComposite.needExprDecode_code
           #print axioms MCore.Real.P01ManualStateCodecComposite.haveValueDecode_code
           #print axioms MCore.Real.P01ManualStateCodecComposite.checkedEvalDecode_code
-          #print axioms MCore.Real.P01ManualCheckedVerifierFiniteState.checkedVerifierStateDecode_encode
-          #print axioms MCore.Real.P01ManualCheckedVerifierFiniteState.checkedVerifierFinMachine_haltsWithin_iff
-          #print axioms MCore.Real.P01ManualCheckedVerifierFiniteState.checkedVerifierFinMachine_acceptsWithin_iff
+          #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierStateDecode_encode
+          #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierFinMachine_haltsWithin_iff
+          #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierFinMachine_acceptsWithin_iff
           EOF
           lake env lean P01ManualCodecAudit.lean | tee P01ManualCodecAudit.log
           ! grep -E 'sorryAx' P01ManualCodecAudit.log
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          for FILE in             lean/MCore/Real/P01ManualStateCodecBase.lean             lean/MCore/Real/P01ManualStateCodecComposite.lean             lean/MCore/Real/P01ManualCheckedVerifierFiniteState.lean
+          for FILE in             lean/MCore/Real/P01ManualStateCodecBase.lean             lean/MCore/Real/P01ManualStateCodecComposite.lean             lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean
           do
             ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$FILE"
             ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$FILE"
