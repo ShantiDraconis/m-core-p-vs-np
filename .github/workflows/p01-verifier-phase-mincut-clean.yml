@@ -14,6 +14,7 @@ on:
       - 'lean/MCore/Real/P01ExactBoundedReject.lean'
       - 'lean/MCore/Real/P01ExactVerifierGlobalBudget.lean'
       - 'lean/MCore/Real/P01ExactVerifierCanonicalRun.lean'
+      - 'lean/MCore/Real/P01RawTotalizationMinCut.lean'
       - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
       - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
       - 'lean/MCore/Real/P01IntegratedAssembly.lean'
@@ -51,6 +52,7 @@ jobs:
           lake build MCore.Real.P01ExactBoundedReject
           lake build MCore.Real.P01ExactVerifierGlobalBudget
           lake build MCore.Real.P01ExactVerifierCanonicalRun
+          lake build MCore.Real.P01RawTotalizationMinCut
           lake build MCore.Real.P01VerifierPhaseMinCutStructural
       - name: Exact axiom audit
         run: |
@@ -63,6 +65,7 @@ jobs:
           import MCore.Real.P01ExactBoundedReject
           import MCore.Real.P01ExactVerifierGlobalBudget
           import MCore.Real.P01ExactVerifierCanonicalRun
+          import MCore.Real.P01RawTotalizationMinCut
           #print axioms MCore.Real.P01ManualStateCodecBase.inputNodeDecode_code
           #print axioms MCore.Real.P01ManualStateCodecComposite.checkedEvalDecode_code
           #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierStateDecode_encode
@@ -75,6 +78,8 @@ jobs:
           #print axioms MCore.Real.P01ExactVerifierGlobalBudget.checkedVerifierExactTimeBound_poly
           #print axioms MCore.Real.P01ExactVerifierCanonicalRun.prepared_canonical_halts_within_exact_global
           #print axioms MCore.Real.P01ExactVerifierCanonicalRun.prepared_canonical_accepts_iff_exact_global
+          #print axioms MCore.Real.P01RawTotalizationMinCut.RawDecodeNoneFailClosed.toGlobalCore
+          #print axioms MCore.Real.P01RawTotalizationMinCut.raw_totalization_gap_closes_p01
           #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
           EOF
           lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
