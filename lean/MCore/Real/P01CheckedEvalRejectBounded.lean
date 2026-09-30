@@ -155,7 +155,8 @@ private theorem binary_right_reject_cap
           8 * (evalStepCount right + 1)) * E := by
             unfold checkedCircuitBudget
             dsimp [E]
-            omega
+            simp only [Nat.add_mul, Nat.one_mul]
+            ac_rfl
     _ ≤ 8 * (evalStepCount left + evalStepCount right + 4) * E := hmul
 
 theorem input_bounded_reject_certificate
