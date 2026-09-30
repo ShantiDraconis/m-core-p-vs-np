@@ -3,7 +3,7 @@ name: P01 Direct Terminal Bounded
 on:
   push:
     branches:
-      - atk/p01-direct-terminal-bounded-20260930
+      - atk/direct-p01-terminal-close-v2-20260930
   workflow_dispatch:
 
 permissions:
