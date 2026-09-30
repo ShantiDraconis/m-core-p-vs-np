@@ -1,6 +1,7 @@
 import MCore.Real.P01CheckedEvalRunBaseCases
 import MCore.Real.P01CheckedVerifierInvariant
 import MCore.Real.P01CheckedVerifierGlobalBudget
+import MCore.Real.P01CheckedEvalBoundedOutcome
 
 namespace MCore
 namespace Real
@@ -23,6 +24,7 @@ open P01CheckedVerifierGlobalBudget
 open P01CheckedVerifierInvariant
 open P01CNFMode
 open P01NTMRunLaws
+open P01CheckedEvalBoundedOutcome
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -71,7 +73,7 @@ theorem const_checked_run_within_loopEnvelope
                evalCursorStackEndTape witness consumed
                  (encodeCircuit (.const v) ++ tail)
                  (encodeEvalFrames frames) padding }] ∧
-      CheckedLoopOutcome witness (exitMode mode (.const v))
+      BoundedCheckedLoopOutcome n witness (exitMode mode (.const v))
         v tail frames cfg := by
   let b0 := false
   let b1 := v
@@ -84,6 +86,17 @@ theorem const_checked_run_within_loopEnvelope
       tagAllowed mode
         (if v then NeedExprTag.constTrue else NeedExprTag.constFalse) = true := by
     cases v <;> simpa using hmode
+
+  have hLayoutTag :
+      CheckedLayoutBound n consumed
+        (b0 :: b1 :: b2 :: tail) (encodeEvalFrames frames) := by
+    cases v <;>
+      simpa [b0, b1, b2, encodeCircuit] using hLayout
+  have hLayoutAfter :
+      CheckedLayoutBound n (consumed + 3)
+        tail (encodeEvalFrames frames) :=
+    after_tag n consumed b0 b1 b2 tail
+      (encodeEvalFrames frames) hLayoutTag
 
   obtain ⟨m0, hm0, h0⟩ :=
     checked_tag_prefix_reaches
@@ -217,23 +230,27 @@ theorem const_checked_run_within_loopEnvelope
   | cons x xs =>
       refine ⟨m0 + mR + 1, ?_, cHave, hToHave, ?_⟩
       · omega
-      · change CheckedLoopOutcome witness (exitMode mode (.const v))
-          v (x :: xs) frames cHave
-        refine ⟨consumed + 3, padding, ?_⟩
-        cases v <;> cases mode <;>
-          simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-            cHave, tDone, modeCheck] at hmode ⊢
+      · change BoundedCheckedLoopOutcome n witness
+          (exitMode mode (.const v)) v (x :: xs) frames cHave
+        constructor
+        · refine ⟨consumed + 3, padding, ?_⟩
+          cases v <;> cases mode <;>
+            simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+              cHave, tDone, modeCheck] at hmode ⊢
+        · exact Or.inr ⟨consumed + 3, padding, rfl, hLayoutAfter⟩
   | nil =>
       cases frames with
       | cons f fs =>
           refine ⟨m0 + mR + 1, ?_, cHave, hToHave, ?_⟩
           · omega
-          · change CheckedLoopOutcome witness (exitMode mode (.const v))
-              v [] (f :: fs) cHave
-            refine ⟨consumed + 3, padding, ?_⟩
-            cases v <;> cases mode <;>
-              simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-                cHave, tDone, modeCheck] at hmode ⊢
+          · change BoundedCheckedLoopOutcome n witness
+              (exitMode mode (.const v)) v [] (f :: fs) cHave
+            constructor
+            · refine ⟨consumed + 3, padding, ?_⟩
+              cases v <;> cases mode <;>
+                simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cHave, tDone, modeCheck] at hmode ⊢
+            · exact Or.inr ⟨consumed + 3, padding, rfl, hLayoutAfter⟩
       | nil =>
           obtain ⟨mF, hmF, hF⟩ :=
             checked_empty_frames_reaches_final
@@ -267,7 +284,9 @@ theorem const_checked_run_within_loopEnvelope
           refine ⟨m0 + mR + 1 + mF, ?_, cFinal, ?_, ?_⟩
           · omega
           · simpa using hAll
-          · exact ⟨cFinal.tape, rfl⟩
+          · constructor
+            · exact ⟨cFinal.tape, rfl⟩
+            · exact Or.inl ⟨rfl, rfl⟩
 
 #print axioms MCore.Real.P01CheckedEvalRunBoundedConst.const_checked_run_within_loopEnvelope
 
