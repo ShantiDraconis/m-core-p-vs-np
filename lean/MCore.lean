@@ -188,3 +188,4 @@ import MCore.Real.P01MaterialGlobalBudget
 import MCore.Real.P01RawVerifierMaterialCore
 import MCore.Real.P01FiniteCodec
 import MCore.Real.P01CheckedVerifierStateCodec
+import MCore.Real.P01CheckedVerifierFiniteState
