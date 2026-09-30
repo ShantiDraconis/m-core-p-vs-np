@@ -840,9 +840,8 @@ theorem or_exact_bounded_certificate
               (exitMode mode (.or left right))
               (evalCircuit sigma (.or left right)) [] []
               (consumed + (encodeCircuit (.or left right)).length) cfgFinal
-            simp [ExactCheckedLoopOutcome] at hout5 ⊢
-            rw [hExit]
-            simpa [finalValue, evalCircuit] using hout5
+            simpa [ExactCheckedLoopOutcome, CheckedLoopOutcome,
+              finalValue, evalCircuit, exitMode, circuitTag, childMode] using hout5
 
 #print axioms MCore.Real.P01ExactBoundedBinary.and_exact_bounded_certificate
 #print axioms MCore.Real.P01ExactBoundedBinary.or_exact_bounded_certificate
