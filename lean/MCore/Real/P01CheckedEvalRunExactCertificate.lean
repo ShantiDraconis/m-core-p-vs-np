@@ -213,41 +213,43 @@ theorem input_exact_bounded_certificate
               trivial
           | cons f fs =>
               refine ⟨padding, ?_⟩
-              rw [← hvalue]
-              rw [input_consumed_exact consumed i]
               cases f with
               | neg =>
-                  simp [ExactCheckedLoopOutcome, cfg, consumed',
+                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                    input_consumed_exact, cfg, consumed',
                     inputCheckedConfig, inputCheckedEmbed,
                     inputNodeFinalMode, inputAfterReadTarget,
                     encodeEvalFrames, encodeEvalFrame]
               | andLeft =>
-                  simp [ExactCheckedLoopOutcome, cfg, consumed',
+                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                    input_consumed_exact, cfg, consumed',
                     inputCheckedConfig, inputCheckedEmbed,
                     inputNodeFinalMode, inputAfterReadTarget,
                     encodeEvalFrames, encodeEvalFrame]
               | andRight b =>
                   cases b <;>
-                    simp [ExactCheckedLoopOutcome, cfg, consumed',
+                    simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                      input_consumed_exact, cfg, consumed',
                       inputCheckedConfig, inputCheckedEmbed,
                       inputNodeFinalMode, inputAfterReadTarget,
                       encodeEvalFrames, encodeEvalFrame]
               | orLeft =>
-                  simp [ExactCheckedLoopOutcome, cfg, consumed',
+                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                    input_consumed_exact, cfg, consumed',
                     inputCheckedConfig, inputCheckedEmbed,
                     inputNodeFinalMode, inputAfterReadTarget,
                     encodeEvalFrames, encodeEvalFrame]
               | orRight b =>
                   cases b <;>
-                    simp [ExactCheckedLoopOutcome, cfg, consumed',
+                    simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                      input_consumed_exact, cfg, consumed',
                       inputCheckedConfig, inputCheckedEmbed,
                       inputNodeFinalMode, inputAfterReadTarget,
                       encodeEvalFrames, encodeEvalFrame]
       | cons b bs =>
           refine ⟨padding, ?_⟩
-          rw [← hvalue]
-          rw [input_consumed_exact consumed i]
-          simp [ExactCheckedLoopOutcome, cfg, consumed',
+          simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+            input_consumed_exact, cfg, consumed',
             inputCheckedConfig, inputCheckedEmbed,
             inputNodeFinalMode, inputAfterReadTarget]
 
