@@ -80,11 +80,11 @@ def ExactBoundedCheckedCircuitRunCertificate
 /-- Static source consumption preserves the global layout budget. -/
 theorem layout_consume_prefix
     (n consumed : Nat)
-    (prefix rest frameStack : BitString)
+    (pref rest frameStack : BitString)
     (h :
       CheckedLayoutBound n consumed
-        (prefix ++ rest) frameStack) :
-    CheckedLayoutBound n (consumed + prefix.length)
+        (pref ++ rest) frameStack) :
+    CheckedLayoutBound n (consumed + pref.length)
       rest frameStack := by
   constructor
   · have hs := h.source_budget
@@ -155,7 +155,7 @@ theorem input_exact_bounded_certificate
         refine ⟨padding, ?_⟩
         simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
           cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-          P01CheckedEvalRunInputTag.inputCheckedEmbed,
+          inputCheckedEmbed,
           P01InputNodeCompositeRun.inputNodeFinalMode,
           inputAfterReadTarget]
     | nil =>
@@ -165,7 +165,7 @@ theorem input_exact_bounded_certificate
               [] [] padding).tape, ?_⟩
             simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
               cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-              P01CheckedEvalRunInputTag.inputCheckedEmbed,
+              inputCheckedEmbed,
               P01InputNodeCompositeRun.inputNodeFinalMode,
               inputAfterReadTarget]
         | cons f fs =>
@@ -174,33 +174,33 @@ theorem input_exact_bounded_certificate
             | neg =>
                 simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                   cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                  P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                  inputCheckedEmbed,
                   P01InputNodeCompositeRun.inputNodeFinalMode,
                   inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | andLeft =>
                 simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                   cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                  P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                  inputCheckedEmbed,
                   P01InputNodeCompositeRun.inputNodeFinalMode,
                   inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | andRight a =>
                 cases a <;>
                   simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                     cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                    P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                    inputCheckedEmbed,
                     P01InputNodeCompositeRun.inputNodeFinalMode,
                     inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | orLeft =>
                 simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                   cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                  P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                  inputCheckedEmbed,
                   P01InputNodeCompositeRun.inputNodeFinalMode,
                   inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
             | orRight a =>
                 cases a <;>
                   simp [ExactCheckedLoopOutcome, exitMode, circuitTag, childMode,
                     cfg, P01CheckedEvalRunInputTag.inputCheckedConfig,
-                    P01CheckedEvalRunInputTag.inputCheckedEmbed,
+                    inputCheckedEmbed,
                     P01InputNodeCompositeRun.inputNodeFinalMode,
                     inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
 
