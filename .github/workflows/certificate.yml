@@ -8,7 +8,7 @@ concurrency:
 
 jobs:
   c12:
-    runs-on: ubuntu-24.04
+    runs-on: macos-14
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -309,7 +309,11 @@ jobs:
           grep -q '^family,n,k,seed,width,restriction,alpha,beta,' distribution.csv
           grep -q ',true$' distribution.csv
           grep -q ',false$' distribution.csv
-          sha256sum distribution.csv | tee distribution.sha256
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum distribution.csv | tee distribution.sha256
+          else
+            shasum -a 256 distribution.csv | tee distribution.sha256
+          fi
 
       - name: Analyze C12 real-data baseline
         run: |
