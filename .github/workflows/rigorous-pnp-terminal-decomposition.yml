@@ -26,19 +26,25 @@ jobs:
           lake update
           lake exe cache get || true
       - name: Build rigorous terminal decomposition
-        run: lake build MCore.Real.RigorousTerminalDecomposition
+        run: |
+          lake build MCore.Real.RigorousTerminalDecomposition
+          lake build MCore.Real.RigorousP02ProducerSpec
       - name: Reject proof placeholders
         run: |
           set -euo pipefail
-          FILE=lean/MCore/Real/RigorousTerminalDecomposition.lean
-          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$FILE"
+          FILES="lean/MCore/Real/RigorousTerminalDecomposition.lean lean/MCore/Real/RigorousP02ProducerSpec.lean"
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $FILES
       - name: Axiom audit
         run: |
           cat > RigorousPNPTerminalAxioms.lean <<'EOF'
-          import MCore.Real.RigorousTerminalDecomposition
+          import MCore.Real.RigorousP02ProducerSpec
           #print axioms MCore.Real.RigorousTerminalDecomposition.encoded_sat_not_in_p_implies_universal_failure
           #print axioms MCore.Real.RigorousTerminalDecomposition.encoded_p02_target_iff_sat_not_in_p
           #print axioms MCore.Real.RigorousTerminalDecomposition.rigorous_residual_to_root
+          #print axioms MCore.Real.RigorousP02ProducerSpec.failure_family_iff_encoded_p02
+          #print axioms MCore.Real.RigorousP02ProducerSpec.producer_nonempty_iff_encoded_p02
+          #print axioms MCore.Real.RigorousP02ProducerSpec.legacy_arbitrary_encode_lower_bound_uninhabited
+          #print axioms MCore.Real.RigorousP02ProducerSpec.live_p02_material_target_iff
           EOF
           lake env lean RigorousPNPTerminalAxioms.lean | tee rigorous-pnp-terminal-axioms.txt
           ! grep -E 'sorryAx' rigorous-pnp-terminal-axioms.txt
