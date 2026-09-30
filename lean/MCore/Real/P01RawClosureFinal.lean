@@ -65,17 +65,47 @@ theorem exactTime_le_unified (n : Nat) :
 
 private theorem linear_four_le_cubic (n : Nat) :
     n + 4 ≤ 4 * (n + 1) ^ 3 := by
-  have hp : (n + 1) ^ 1 ≤ (n + 1) ^ 3 :=
-    Nat.pow_le_pow_right (Nat.succ_pos n) (by omega)
   have h0 : n + 4 ≤ 4 * (n + 1) := by omega
-  exact Nat.le_trans h0 (by simpa using Nat.mul_le_mul_left 4 hp)
+  have h1 : n + 1 ≤ (n + 1) ^ 2 := by
+    have hp : 1 ≤ n + 1 := by omega
+    calc
+      n + 1 = (n + 1) * 1 := by simp
+      _ ≤ (n + 1) * (n + 1) :=
+        Nat.mul_le_mul_left (n + 1) hp
+      _ = (n + 1) ^ 2 := by ring
+  have h2 : (n + 1) ^ 2 ≤ (n + 1) ^ 3 := by
+    have hp : 1 ≤ n + 1 := by omega
+    calc
+      (n + 1) ^ 2 = (n + 1) ^ 2 * 1 := by simp
+      _ ≤ (n + 1) ^ 2 * (n + 1) :=
+        Nat.mul_le_mul_left ((n + 1) ^ 2) hp
+      _ = (n + 1) ^ 3 := by ring
+  exact Nat.le_trans h0
+    (Nat.le_trans
+      (Nat.mul_le_mul_left 4 h1)
+      (Nat.mul_le_mul_left 4 h2))
 
 private theorem linear_seven_le_cubic (n : Nat) :
     n + 7 ≤ 7 * (n + 1) ^ 3 := by
-  have hp : (n + 1) ^ 1 ≤ (n + 1) ^ 3 :=
-    Nat.pow_le_pow_right (Nat.succ_pos n) (by omega)
   have h0 : n + 7 ≤ 7 * (n + 1) := by omega
-  exact Nat.le_trans h0 (by simpa using Nat.mul_le_mul_left 7 hp)
+  have h1 : n + 1 ≤ (n + 1) ^ 2 := by
+    have hp : 1 ≤ n + 1 := by omega
+    calc
+      n + 1 = (n + 1) * 1 := by simp
+      _ ≤ (n + 1) * (n + 1) :=
+        Nat.mul_le_mul_left (n + 1) hp
+      _ = (n + 1) ^ 2 := by ring
+  have h2 : (n + 1) ^ 2 ≤ (n + 1) ^ 3 := by
+    have hp : 1 ≤ n + 1 := by omega
+    calc
+      (n + 1) ^ 2 = (n + 1) ^ 2 * 1 := by simp
+      _ ≤ (n + 1) ^ 2 * (n + 1) :=
+        Nat.mul_le_mul_left ((n + 1) ^ 2) hp
+      _ = (n + 1) ^ 3 := by ring
+  exact Nat.le_trans h0
+    (Nat.le_trans
+      (Nat.mul_le_mul_left 7 h1)
+      (Nat.mul_le_mul_left 7 h2))
 
 theorem rawCoreBudget_root_eq (n : Nat) :
     rawCoreBudget n n = 16384 * (n + 1) ^ 3 := by
