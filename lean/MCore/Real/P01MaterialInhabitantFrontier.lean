@@ -1,6 +1,6 @@
 import MCore.Real.P01WitnessPrepGlobal
 import MCore.Real.P01RawVerifierMaterialCore
-import MCore.Real.P01CheckedVerifierFiniteState
+import MCore.Real.P01CheckedVerifierStateCodec
 import MCore.Real.P01IntegratedAssembly
 import MCore.Real.P01MaterialGlobalBudget
 
@@ -13,7 +13,7 @@ open P01WitnessPreservingPrep
 open P01WitnessPrepGlobal
 open P01IntegratedAssembly
 open P01CheckedVerifierCompositeNTM
-open P01CheckedVerifierFiniteState
+open P01CheckedVerifierStateCodec
 open P01MaterialGlobalBudget
 open P01RawVerifierMaterialCore
 open P01GuessedWitnessRelation
@@ -29,10 +29,16 @@ def verifierPhaseOfRawCore
     (K : RawVerifierMaterialCore) :
     P01VerifierPhase prepPhase.layout where
   State := CheckedVerifierState
-  stateCount := checkedVerifierStateCount
-  encode := checkedVerifierStateEncode
-  decode := checkedVerifierStateDecode
-  decode_encode := checkedVerifierStateDecode_encode
+  stateCount := 1851
+  encode := fun q =>
+    Fin.cast checkedVerifierStateCodec_size
+      (checkedVerifierStateCodec.encode q)
+  decode := fun i =>
+    checkedVerifierStateCodec.decode
+      (Fin.cast checkedVerifierStateCodec_size.symm i)
+  decode_encode := by
+    intro q
+    simpa using checkedVerifierStateCodec.decode_encode q
   machine := checkedVerifierMachine
   blank_none := checkedVerifierMachine_blank
   timeBound := terminalVerifierTimeBound
