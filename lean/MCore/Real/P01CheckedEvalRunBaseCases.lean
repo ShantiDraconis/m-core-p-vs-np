@@ -90,16 +90,18 @@ private theorem one_step_of_successor
   simpa using h
 
 /-- A computed value with no unread source and no continuation frame reaches
-the checked loop's global final state in two physical control steps. -/
+the checked loop's global final state after the mandatory source-empty guard. -/
 theorem checked_empty_frames_reaches_final
     (mode : SyntaxMode)
     (witness : BitString)
     (consumed padding : Nat)
     (v : Bool) :
-    ∃ m ≤ 2,
+    ∃ m ≤ 3,
       ({ state := .final v,
          tape :=
-           evalCursorStackEndTape witness consumed [] [] padding } :
+           Tape.move none .left
+             (Tape.move none .left
+               (evalCursorStackEndTape witness consumed [] [] padding)) } :
         CheckedConfig) ∈
       checkedEvalRunLoopMachine.runBranches m
         [{ state := .have mode (.start v),
@@ -108,9 +110,11 @@ theorem checked_empty_frames_reaches_final
   let t0 :=
     evalCursorStackEndTape witness consumed [] [] padding
   let tPeek := Tape.move none .left t0
+  let tCheck := Tape.move none .left tPeek
   let c0 : CheckedConfig := { state := .have mode (.start v), tape := t0 }
   let cPeek : CheckedConfig := { state := .have mode (.peek v), tape := tPeek }
-  let cFinal : CheckedConfig := { state := .final v, tape := t0 }
+  let cCheck : CheckedConfig := { state := .checkSource v, tape := tCheck }
+  let cFinal : CheckedConfig := { state := .final v, tape := tCheck }
 
   have hStartSucc :
       cPeek ∈ checkedEvalRunLoopMachine.successors c0 := by
@@ -129,25 +133,44 @@ theorem checked_empty_frames_reaches_final
       hStartSucc
 
   have hPeekSucc :
-      cFinal ∈ checkedEvalRunLoopMachine.successors cPeek := by
-    dsimp [cPeek, cFinal, tPeek, t0]
+      cCheck ∈ checkedEvalRunLoopMachine.successors cPeek := by
+    dsimp [cPeek, cCheck, tPeek, tCheck, t0]
     simp [checkedEvalRunLoopMachine, evalCursorStackEndTape,
       NTM.successors, NTM.stepBranch, Tape.write, Tape.move,
       List.append_assoc]
 
   have hPeek :
-      cFinal ∈ checkedEvalRunLoopMachine.runBranches 1 [cPeek] :=
-    one_step_of_successor cPeek cFinal
+      cCheck ∈ checkedEvalRunLoopMachine.runBranches 1 [cPeek] :=
+    one_step_of_successor cPeek cCheck
       (by
         dsimp [cPeek]
         simp [Halted, checkedEvalRunLoopMachine])
       hPeekSucc
 
+  have hCheckSucc :
+      cFinal ∈ checkedEvalRunLoopMachine.successors cCheck := by
+    dsimp [cCheck, cFinal, tCheck, tPeek, t0]
+    cases consumed <;>
+      simp [checkedEvalRunLoopMachine, evalCursorStackEndTape,
+        NTM.successors, NTM.stepBranch, Tape.write, Tape.move,
+        List.replicate_succ, List.append_assoc]
+
+  have hCheck :
+      cFinal ∈ checkedEvalRunLoopMachine.runBranches 1 [cCheck] :=
+    one_step_of_successor cCheck cFinal
+      (by
+        dsimp [cCheck]
+        simp [Halted, checkedEvalRunLoopMachine])
+      hCheckSucc
+
+  have h01 :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      1 1 [c0] cPeek cCheck hStart hPeek
   have hAll :=
     mem_runBranches_trans checkedEvalRunLoopMachine
-      1 1 [c0] cPeek cFinal hStart hPeek
-  refine ⟨2, by omega, ?_⟩
-  dsimp [c0, cFinal, t0] at hAll ⊢
+      2 1 [c0] cCheck cFinal h01 hCheck
+  refine ⟨3, by omega, ?_⟩
+  dsimp [c0, cFinal, t0, tPeek, tCheck] at hAll ⊢
   simpa using hAll
 
 /-- Shared checked physical execution for a constant tag. -/
