@@ -205,9 +205,12 @@ theorem const_checked_run_within_loopEnvelope
     dsimp [nRet] at hmR
     omega
 
+  have hm0Half :
+      m0 ≤ 128 * (n + 1) ^ 2 := by
+    simpa [P01CheckedVerifierBudget.checkedStepEnvelope] using hm0'
   have htotal :
       m0 + mR + 1 + 3 ≤ checkedLoopStepEnvelope n := by
-    unfold checkedStepEnvelope checkedLoopStepEnvelope at hm0' ⊢
+    change m0 + mR + 1 + 3 ≤ 256 * (n + 1) ^ 2
     omega
 
   cases tail with
