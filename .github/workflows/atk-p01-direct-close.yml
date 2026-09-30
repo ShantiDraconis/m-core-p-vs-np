@@ -1,0 +1,35 @@
+name: atk-p01-direct-close
+
+on:
+  push:
+    branches:
+      - atk/direct-p01-inhabitant-close-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  direct-close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Lean
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          lake-package-directory: .
+      - name: Build bounded helper
+        run: lake build MCore.Real.P01CheckedEvalRunBoundedHelpers
+      - name: Build bounded circuit certificate
+        run: lake build MCore.Real.P01CheckedEvalRunBoundedCertificate
+      - name: Audit no sorryAx in bounded certificate
+        run: |
+          cat > DirectCloseAxioms.lean <<'EOF'
+          import MCore.Real.P01CheckedEvalRunBoundedCertificate
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.input_bounded_certificate
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.const_bounded_certificate
+          EOF
+          lake env lean DirectCloseAxioms.lean | tee direct-close-axioms.txt
+          ! grep -E 'sorryAx' direct-close-axioms.txt
