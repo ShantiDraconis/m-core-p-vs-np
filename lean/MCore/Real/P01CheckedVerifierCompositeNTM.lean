@@ -191,6 +191,133 @@ theorem checked_eval_runBranches_map
     checkedEvalRunLoopMachine checkedVerifierMachine
       checkedEvalEmbed checkedEvalSimulation n xs
 
+/-- A nonempty prepared verifier tape reaches the checked evaluator's
+canonical root state without changing the witness or source encoding.
+
+The wrapper's start transition performs the first source-scan step; the
+certified scanner consumes the remaining source; one handoff enters `.enter`;
+and the final right move restores the canonical stack-end blank expected by
+the checked evaluator. -/
+theorem prepared_nonempty_reaches_eval_start
+    (witness : BitString)
+    (b : Bool) (bs : BitString) :
+    ∃ m ≤ (b :: bs).length + 3,
+      ({ state := .eval checkedEvalRunLoopMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness 0 (b :: bs) [] 0 } :
+        CheckedVerifierConfig) ∈
+      checkedVerifierMachine.runBranches m
+        [{ state := checkedVerifierMachine.initial,
+           tape := preparedTape witness (b :: bs) }] := by
+  let c0 : CheckedVerifierConfig :=
+    { state := checkedVerifierMachine.initial,
+      tape := preparedTape witness (b :: bs) }
+  let cScanStart : Configuration (Fin 2) (Option Bool) :=
+    sourceEndScanner.step
+      { state := sourceEndScanner.initial,
+        tape := preparedTape witness (b :: bs) }
+  let cScanH : Configuration (Fin 2) (Option Bool) :=
+    { state := (1 : Fin 2),
+      tape :=
+        { left := bs.reverse.map some ++
+            (some b :: none :: witness.map some),
+          head := none,
+          right := [] } }
+  let cEnter : CheckedVerifierConfig :=
+    { state := .enter, tape := cScanH.tape }
+  let cEval : CheckedVerifierConfig :=
+    { state := .eval checkedEvalRunLoopMachine.initial,
+      tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 }
+
+  have hStartSucc :
+      scanEmbed cScanStart ∈ checkedVerifierMachine.successors c0 := by
+    dsimp [c0, cScanStart, scanEmbed]
+    simp [checkedVerifierMachine, NTM.successors, NTM.stepBranch,
+      P01FullVerifierTraversal.sourceEndScanner,
+      P01WitnessPreservingPrep.preparedTape,
+      TM.step, Tape.write, Tape.move]
+
+  have hStart :
+      scanEmbed cScanStart ∈
+        checkedVerifierMachine.runBranches 1 [c0] :=
+    one_step_of_successor c0 (scanEmbed cScanStart)
+      (start_not_halted (preparedTape witness (b :: bs))) hStartSucc
+
+  have hScanStart :
+      cScanStart =
+        scanConfig (some b :: none :: witness.map some) bs := by
+    dsimp [cScanStart]
+    simp [P01WitnessPreservingPrep.preparedTape,
+      P01FullVerifierTraversal.sourceEndScanner,
+      P01FullVerifierTraversal.scanConfig,
+      TM.step, Tape.write, Tape.move]
+
+  have hScanExact :
+      sourceEndScanner.run (bs.length + 1) cScanStart = cScanH := by
+    rw [hScanStart]
+    dsimp [cScanH]
+    simpa [List.append_assoc] using
+      sourceEndScanner_run
+        (some b :: none :: witness.map some) bs
+
+  obtain ⟨mS, hmS, hS⟩ :=
+    tm_scan_run_reachable (bs.length + 1) cScanStart
+  have hS' :
+      scanEmbed cScanH ∈
+        checkedVerifierMachine.runBranches mS [scanEmbed cScanStart] := by
+    rw [hScanExact] at hS
+    exact hS
+
+  have hToScan :=
+    mem_runBranches_trans checkedVerifierMachine
+      1 mS [c0] (scanEmbed cScanStart) (scanEmbed cScanH)
+      hStart hS'
+
+  have hScanHalt : sourceEndScanner.halting cScanH.state = true := by
+    rfl
+
+  have hEnterSucc :
+      cEnter ∈ checkedVerifierMachine.successors (scanEmbed cScanH) := by
+    dsimp [cEnter, scanEmbed]
+    simp [checkedVerifierMachine, NTM.successors, NTM.stepBranch, hScanHalt]
+
+  have hEnterOne :
+      cEnter ∈
+        checkedVerifierMachine.runBranches 1 [scanEmbed cScanH] :=
+    one_step_of_successor
+      (scanEmbed cScanH) cEnter
+      (scanEmbed_not_halted cScanH) hEnterSucc
+
+  have hToEnter :=
+    mem_runBranches_trans checkedVerifierMachine
+      (1 + mS) 1 [c0] (scanEmbed cScanH) cEnter
+      hToScan hEnterOne
+
+  have hEvalSucc :
+      cEval ∈ checkedVerifierMachine.successors cEnter := by
+    dsimp [cEval, cEnter, cScanH]
+    simp [checkedVerifierMachine, NTM.successors, NTM.stepBranch,
+      evalCursorStackEndTape, Tape.write, Tape.move,
+      List.reverse_cons, List.map_append, List.append_assoc]
+
+  have hEvalOne :
+      cEval ∈ checkedVerifierMachine.runBranches 1 [cEnter] :=
+    one_step_of_successor cEnter cEval
+      (enter_not_halted cScanH.tape) hEvalSucc
+
+  have hAll :=
+    mem_runBranches_trans checkedVerifierMachine
+      ((1 + mS) + 1) 1 [c0] cEnter cEval
+      hToEnter hEvalOne
+
+  refine ⟨((1 + mS) + 1) + 1, ?_, ?_⟩
+  · dsimp at hmS ⊢
+    omega
+  · dsimp [c0, cEval] at hAll ⊢
+    simpa using hAll
+
+#print axioms MCore.Real.P01CheckedVerifierCompositeNTM.prepared_nonempty_reaches_eval_start
+
 #print axioms MCore.Real.P01CheckedVerifierCompositeNTM.scan_successors_active
 #print axioms MCore.Real.P01CheckedVerifierCompositeNTM.checkedEvalSimulation
 #print axioms MCore.Real.P01CheckedVerifierCompositeNTM.checked_eval_runBranches_map
