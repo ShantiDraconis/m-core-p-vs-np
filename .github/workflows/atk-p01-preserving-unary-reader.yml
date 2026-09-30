@@ -1,0 +1,41 @@
+name: ATK P01 preserving unary reader gate
+
+on:
+  push:
+    branches:
+      - atk/p01-preserving-reader-20260930
+  workflow_dispatch:
+
+jobs:
+  preserving-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+
+      - name: Build preserving unary reader boundary
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01PreservingUnaryReadBoundary
+
+      - name: Placeholder firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=lean/MCore/Real/P01PreservingUnaryReadBoundary.lean
+          if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)' "$FILE"; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+          if grep -nE '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' "$FILE"; then exit 1; else rc=$?; [ "$rc" -eq 1 ] || exit "$rc"; fi
+
+      - name: Axiom audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > P01PreservingUnaryReadAudit.lean <<'EOF'
+          import MCore.Real.P01PreservingUnaryReadBoundary
+          #print axioms MCore.Real.P01PreservingUnaryReadBoundary.old_reader_consumes_witness_prefix
+          #print axioms MCore.Real.P01PreservingUnaryReadBoundary.certificate_refines_input_value
+          #print axioms MCore.Real.P01PreservingUnaryReadBoundary.certificate_preserves_global_layout
+          EOF
+          lake env lean P01PreservingUnaryReadAudit.lean 2>&1 | tee P01PreservingUnaryReadAudit.log
+          if grep -q 'sorryAx' P01PreservingUnaryReadAudit.log; then exit 1; fi
