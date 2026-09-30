@@ -441,7 +441,7 @@ theorem and_exact_bounded_reject
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
+            dsimp [E] at hmul ⊢
             have hadd :
                 E + 8 * (evalStepCount left + 1) * E =
                   (1 + 8 * (evalStepCount left + 1)) * E := by
@@ -611,7 +611,7 @@ theorem and_exact_bounded_reject
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
+            dsimp [E] at hmul ⊢
             have hadd :
                 E + 8 * (evalStepCount left + 1) * E +
                     E + 8 * (evalStepCount right + 1) * E =
@@ -764,7 +764,7 @@ theorem or_exact_bounded_reject
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
+            dsimp [E] at hmul ⊢
             have hadd :
                 E + 8 * (evalStepCount left + 1) * E =
                   (1 + 8 * (evalStepCount left + 1)) * E := by
@@ -934,7 +934,7 @@ theorem or_exact_bounded_reject
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
+            dsimp [E] at hmul ⊢
             have hadd :
                 E + 8 * (evalStepCount left + 1) * E +
                     E + 8 * (evalStepCount right + 1) * E =
