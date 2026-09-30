@@ -693,11 +693,9 @@ theorem and_exact_bounded_certificate
 
   cases mode with
   | clause =>
-      rw [modeCheck_and] at hmode
-      simp [tagAllowed] at hmode
+      simp [modeCheck, tagAllowed, isClauseBool] at hmode
   | mustInput =>
-      rw [modeCheck_and] at hmode
-      simp [tagAllowed] at hmode
+      simp [modeCheck, tagAllowed] at hmode
   | cnf =>
       have hchildren :
           modeCheck .cnf left = true ∧
@@ -880,7 +878,7 @@ theorem and_exact_bounded_certificate
             (.andRight (evalCircuit sigma left))
           · simp
           · simpa [encodeCircuit, List.append_assoc] using hLayout
-        simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
+        convert hp using 1 <;> simp [afterLeft, leftConsumed] <;> omega
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
         hright hrightMode tail
@@ -1145,7 +1143,7 @@ theorem or_exact_bounded_certificate
         modeCheck .clause right = true := by
     have h := hmode
     rw [modeCheck_or] at h
-    simpa using h
+    simpa [Bool.and_eq_true] using h
   have hAllowed : tagAllowed mode .or = true := hparts.1.1
   have hleftMode : modeCheck .clause left = true := hparts.1.2
   have hrightMode : modeCheck .clause right = true := hparts.2
@@ -1233,7 +1231,7 @@ theorem or_exact_bounded_certificate
   have h01 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       m0 m1
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1288,7 +1286,7 @@ theorem or_exact_bounded_certificate
   have h012 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1) m2
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1322,7 +1320,7 @@ theorem or_exact_bounded_certificate
         (.orRight (evalCircuit sigma left))
       · simp
       · simpa [encodeCircuit, List.append_assoc] using hLayout
-    simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
+    convert hp using 1 <;> simp [afterLeft, leftConsumed] <;> omega
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
     hright hrightMode tail
@@ -1339,7 +1337,7 @@ theorem or_exact_bounded_certificate
   have h0123 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2) m3
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1388,7 +1386,7 @@ theorem or_exact_bounded_certificate
   have h01234 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2 + m3) m4
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1495,7 +1493,7 @@ theorem or_exact_bounded_certificate
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + m1 + m2 + m3 + m4) m5
-              [{ state := .need .clause needExprCompositeMachine.initial,
+              [{ state := .need mode needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right))
