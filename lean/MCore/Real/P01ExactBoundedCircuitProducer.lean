@@ -1264,7 +1264,7 @@ theorem or_exact_bounded_certificate
   have h01 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       m0 m1
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1319,7 +1319,7 @@ theorem or_exact_bounded_certificate
   have h012 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1) m2
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1370,7 +1370,7 @@ theorem or_exact_bounded_certificate
   have h0123 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2) m3
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1419,7 +1419,7 @@ theorem or_exact_bounded_certificate
   have h01234 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2 + m3) m4
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
