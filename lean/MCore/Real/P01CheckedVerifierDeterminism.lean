@@ -1,27 +1,207 @@
-import MCore.Real.P01CheckedVerifierFiniteState
-import MCore.Real.P01NTMRunLaws
+import MCore.Real.P01CheckedVerifierCompositeNTM
 import MCore.Real.P01InputNodeCompositeRun
+import MCore.Real.P01NeedExprCompositeNTM
+import MCore.Real.P01HaveValueCompositeNTM
+import MCore.Real.P01NTMRunLaws
 
 namespace MCore
 namespace Real
 namespace P01CheckedVerifierDeterminism
 
 open P01NTMRunLaws
+open P01InputNodeCompositeNTM
+open P01NeedExprCompositeNTM
+open P01HaveValueCompositeNTM
+open P01CheckedEvalRunLoopNTM
 open P01CheckedVerifierCompositeNTM
-open P01CheckedVerifierFiniteState
 
-/-- The checked verifier is operationally deterministic at the transition
-table: every control/head-symbol pair has at most one outgoing move.
+private theorem input_transition_length_le_one
+    (q : InputNodeCompositeState) (symbol : Option Bool) :
+    (inputNodeCompositeMachine.transition q symbol).length ≤ 1 := by
+  let tape : Tape (Option Bool) :=
+    { left := [], head := symbol, right := [] }
+  have h :=
+    inputNodeComposite_successors_length_le_one
+      ({ state := q, tape := tape } :
+        Configuration InputNodeCompositeState (Option Bool))
+  simpa [NTM.successors, tape] using h
 
-This is a finite statement because the control alphabet and Option Bool are
-finite.  It is checked by the kernel after native reduction; no semantic
-endpoint is used. -/
-theorem checkedVerifier_transition_length_le_one :
-    ∀ (q : CheckedVerifierState) (symbol : Option Bool),
-      (checkedVerifierMachine.transition q symbol).length ≤ 1 := by
-  native_decide
+theorem needExpr_transition_length_le_one
+    (q : NeedExprCompositeState) (symbol : Option Bool) :
+    (needExprCompositeMachine.transition q symbol).length ≤ 1 := by
+  cases q with
+  | seek qs =>
+      cases qs <;> simp [needExprCompositeMachine]
+  | decode qd =>
+      cases qd with
+      | start => simp [needExprCompositeMachine]
+      | bit1 b1 => cases b1 <;> simp [needExprCompositeMachine]
+      | bit2 b1 b2 =>
+          cases b1 <;> cases b2 <;> simp [needExprCompositeMachine]
+      | halt tag =>
+          cases tag <;> simp [needExprCompositeMachine]
+      | reject => simp [needExprCompositeMachine]
+  | input qi =>
+      cases qi with
+      | done selected mode => simp [needExprCompositeMachine]
+      | reject => simp [needExprCompositeMachine]
+      | look ql =>
+          simpa [needExprCompositeMachine] using
+            input_transition_length_le_one (.look ql) symbol
+      | read mode qr =>
+          simpa [needExprCompositeMachine] using
+            input_transition_length_le_one (.read mode qr) symbol
+      | ret mode selected qt =>
+          simpa [needExprCompositeMachine] using
+            input_transition_length_le_one (.ret mode selected qt) symbol
+  | retValue value qr =>
+      cases qr <;> simp [needExprCompositeMachine]
+  | retPush frame qr =>
+      cases qr <;> simp [needExprCompositeMachine]
+  | push frame qp =>
+      cases qp <;> simp [needExprCompositeMachine]
+  | doneValue v => simp [needExprCompositeMachine]
+  | doneNeed => simp [needExprCompositeMachine]
+  | reject => simp [needExprCompositeMachine]
 
-/-- Hence every concrete configuration has at most one successor. -/
+theorem haveValue_transition_length_le_one
+    (q : HaveValueCompositeState) (symbol : Option Bool) :
+    (haveValueCompositeMachine.transition q symbol).length ≤ 1 := by
+  cases q with
+  | start v =>
+      cases symbol <;> simp [haveValueCompositeMachine]
+  | peek v =>
+      cases symbol <;> simp [haveValueCompositeMachine]
+  | pop v qp =>
+      cases qp <;> simp [haveValueCompositeMachine]
+  | push frame qp =>
+      cases qp <;> simp [haveValueCompositeMachine]
+  | doneValue v => simp [haveValueCompositeMachine]
+  | doneNeed => simp [haveValueCompositeMachine]
+  | reject => simp [haveValueCompositeMachine]
+
+theorem checkedEval_transition_length_le_one
+    (q : CheckedEvalRunState) (symbol : Option Bool) :
+    (checkedEvalRunLoopMachine.transition q symbol).length ≤ 1 := by
+  cases q with
+  | need mode qn =>
+      cases qn with
+      | input qi =>
+          cases qi with
+          | done selected retMode =>
+              cases retMode <;> simp [checkedEvalRunLoopMachine]
+          | reject =>
+              simp [checkedEvalRunLoopMachine]
+          | look ql =>
+              simpa [checkedEvalRunLoopMachine] using
+                input_transition_length_le_one (.look ql) symbol
+          | read retMode qr =>
+              simpa [checkedEvalRunLoopMachine] using
+                input_transition_length_le_one (.read retMode qr) symbol
+          | ret retMode selected qt =>
+              simpa [checkedEvalRunLoopMachine] using
+                input_transition_length_le_one (.ret retMode selected qt) symbol
+      | decode qd =>
+          cases qd with
+          | halt tag =>
+              cases h : P01CNFMode.tagAllowed mode tag <;>
+                simp [checkedEvalRunLoopMachine, h,
+                  needExpr_transition_length_le_one]
+          | start =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.decode .start) symbol
+          | bit1 b1 =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.decode (.bit1 b1)) symbol
+          | bit2 b1 b2 =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.decode (.bit2 b1 b2)) symbol
+          | reject =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.decode .reject) symbol
+      | seek qs =>
+          simpa [checkedEvalRunLoopMachine] using
+            needExpr_transition_length_le_one (.seek qs) symbol
+      | retValue value qr =>
+          simpa [checkedEvalRunLoopMachine] using
+            needExpr_transition_length_le_one (.retValue value qr) symbol
+      | retPush frame qr =>
+          simpa [checkedEvalRunLoopMachine] using
+            needExpr_transition_length_le_one (.retPush frame qr) symbol
+      | push frame qp =>
+          simpa [checkedEvalRunLoopMachine] using
+            needExpr_transition_length_le_one (.push frame qp) symbol
+      | doneValue v => simp [checkedEvalRunLoopMachine]
+      | doneNeed => simp [checkedEvalRunLoopMachine]
+      | reject => simp [checkedEvalRunLoopMachine]
+  | have mode qh =>
+      cases qh with
+      | peek v =>
+          cases symbol <;> simp [checkedEvalRunLoopMachine]
+      | pop v qp =>
+          cases qp with
+          | halt frame =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v (.halt frame)) symbol
+          | start =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v .start) symbol
+          | bit1 b1 =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v (.bit1 b1)) symbol
+          | bit2 b1 b2 =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v (.bit2 b1 b2)) symbol
+          | reject =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v .reject) symbol
+      | start v =>
+          simpa [checkedEvalRunLoopMachine] using
+            haveValue_transition_length_le_one (.start v) symbol
+      | push frame qp =>
+          simpa [checkedEvalRunLoopMachine] using
+            haveValue_transition_length_le_one (.push frame qp) symbol
+      | doneValue v => simp [checkedEvalRunLoopMachine]
+      | doneNeed => simp [checkedEvalRunLoopMachine]
+      | reject => simp [checkedEvalRunLoopMachine]
+  | checkSource v =>
+      cases symbol <;> simp [checkedEvalRunLoopMachine]
+  | final v =>
+      simp [checkedEvalRunLoopMachine]
+  | reject =>
+      simp [checkedEvalRunLoopMachine]
+
+theorem checkedVerifier_transition_length_le_one
+    (q : CheckedVerifierState) (symbol : Option Bool) :
+    (checkedVerifierMachine.transition q symbol).length ≤ 1 := by
+  cases q with
+  | start =>
+      cases symbol <;> simp [checkedVerifierMachine]
+  | scan qs =>
+      by_cases h : P01FullVerifierTraversal.sourceEndScanner.halting qs
+      · simp [checkedVerifierMachine, h]
+      · simp [checkedVerifierMachine, h]
+  | enter =>
+      simp [checkedVerifierMachine]
+  | eval qe =>
+      cases qe with
+      | reject =>
+          simp [checkedVerifierMachine]
+      | need mode qn =>
+          simpa [checkedVerifierMachine] using
+            checkedEval_transition_length_le_one (.need mode qn) symbol
+      | have mode qh =>
+          simpa [checkedVerifierMachine] using
+            checkedEval_transition_length_le_one (.have mode qh) symbol
+      | checkSource v =>
+          simpa [checkedVerifierMachine] using
+            checkedEval_transition_length_le_one (.checkSource v) symbol
+      | final v =>
+          simpa [checkedVerifierMachine] using
+            checkedEval_transition_length_le_one (.final v) symbol
+  | reject =>
+      simp [checkedVerifierMachine]
+
 theorem checkedVerifier_successors_length_le_one
     (c : Configuration CheckedVerifierState (Option Bool)) :
     (checkedVerifierMachine.successors c).length ≤ 1 := by
@@ -29,8 +209,6 @@ theorem checkedVerifier_successors_length_le_one
   simpa [NTM.successors] using
     checkedVerifier_transition_length_le_one q tape.head
 
-/-- Operational determinism propagates to every finite run from a singleton
-configuration. -/
 theorem checkedVerifier_runBranches_length_le_one :
     ∀ (n : Nat) (c : Configuration CheckedVerifierState (Option Bool)),
       (checkedVerifierMachine.runBranches n [c]).length ≤ 1 := by
@@ -56,7 +234,6 @@ theorem checkedVerifier_runBranches_length_le_one :
             | cons e es =>
                 simp [hs] at hlen
 
-/-- Reusable singleton principle specialized to the checked verifier. -/
 theorem runBranches_eq_singleton_of_mem
     (n : Nat)
     (start terminal :
@@ -68,8 +245,6 @@ theorem runBranches_eq_singleton_of_mem
   · exact hmem
   · exact checkedVerifier_runBranches_length_le_one n start
 
-/-- Any terminal reached by the checked verifier at fuel n exhausts the whole
-run at that same fuel.  This is the bridge needed later for HaltsWithin. -/
 theorem haltsWithin_of_reaches_halted
     (n : Nat)
     (start terminal :
@@ -86,8 +261,10 @@ theorem haltsWithin_of_reaches_halted
   subst z
   exact hhalt
 
+#print axioms MCore.Real.P01CheckedVerifierDeterminism.needExpr_transition_length_le_one
+#print axioms MCore.Real.P01CheckedVerifierDeterminism.haveValue_transition_length_le_one
+#print axioms MCore.Real.P01CheckedVerifierDeterminism.checkedEval_transition_length_le_one
 #print axioms MCore.Real.P01CheckedVerifierDeterminism.checkedVerifier_transition_length_le_one
-#print axioms MCore.Real.P01CheckedVerifierDeterminism.checkedVerifier_successors_length_le_one
 #print axioms MCore.Real.P01CheckedVerifierDeterminism.checkedVerifier_runBranches_length_le_one
 #print axioms MCore.Real.P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted
 
