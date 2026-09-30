@@ -318,11 +318,34 @@ theorem input_certificate
               inputNodeFinalMode, inputAfterReadTarget]
         | cons f fs =>
             refine ⟨consumedAfterInputIndex (consumed + 3) i, padding, ?_⟩
-            cases f <;>
-              simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-                cfg, inputCheckedConfig, inputCheckedEmbed,
-                inputNodeFinalMode, inputAfterReadTarget,
-                encodeEvalFrames, encodeEvalFrame]
+            cases f with
+            | neg =>
+                simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  inputNodeFinalMode, inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | andLeft =>
+                simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  inputNodeFinalMode, inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | andRight b =>
+                cases b <;>
+                  simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                    cfg, inputCheckedConfig, inputCheckedEmbed,
+                    inputNodeFinalMode, inputAfterReadTarget,
+                    encodeEvalFrames, encodeEvalFrame]
+            | orLeft =>
+                simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  inputNodeFinalMode, inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | orRight b =>
+                cases b <;>
+                  simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                    cfg, inputCheckedConfig, inputCheckedEmbed,
+                    inputNodeFinalMode, inputAfterReadTarget,
+                    encodeEvalFrames, encodeEvalFrame]
 
 #print axioms MCore.Real.P01CheckedEvalRunInputTag.inputChecked_successors_active
 #print axioms MCore.Real.P01CheckedEvalRunInputTag.input_terminal_reachable_lift
