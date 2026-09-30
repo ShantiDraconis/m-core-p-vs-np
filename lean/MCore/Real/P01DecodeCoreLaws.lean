@@ -32,6 +32,26 @@ theorem decodeNat_sound
               have hs := ih m t hr
               simp [encodeNat, hs, List.append_assoc]
 
+
+theorem decodeNat_none_eq_replicate_true
+    (bits : BitString)
+    (h : decodeNat bits = none) :
+    bits = List.replicate bits.length true := by
+  induction bits with
+  | nil => rfl
+  | cons b rest ih =>
+      cases b with
+      | false =>
+          simp [decodeNat] at h
+      | true =>
+          cases hr : decodeNat rest with
+          | none =>
+              have hs := ih hr
+              rw [hs]
+              simp [List.replicate_succ]
+          | some p =>
+              simp [decodeNat, hr] at h
+
 theorem decodeCircuitCore_sound
     (fuel : Nat) (bits : BitString)
     (phi : Circuit) (tail : BitString)
