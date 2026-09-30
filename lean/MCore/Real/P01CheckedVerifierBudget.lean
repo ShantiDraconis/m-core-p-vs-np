@@ -22,12 +22,15 @@ theorem encodeNat_length (i : Nat) :
 
 /-- Uniform physical cost of one semantic evaluator transition when every
 dynamic tape component is bounded by the original source length. -/
-def checkedStepEnvelope (n : Nat) : Nat :=
+def checkedCoreEnvelope (n : Nat) : Nat :=
   64 * (n + 1) ^ 2
+
+def checkedStepEnvelope (n : Nat) : Nat :=
+  128 * (n + 1) ^ 2
 
 theorem checkedStepEnvelope_poly :
     PolynomialTimeBound checkedStepEnvelope := by
-  refine ⟨64, 2, ?_⟩
+  refine ⟨128, 2, ?_⟩
   intro n
   exact Nat.le_refl _
 
@@ -40,7 +43,7 @@ theorem constTagCompositeFuel_le_envelope
   have hlin :
       2 * frameStack.length + 2 * rest.length + 14 ≤ 4 * n + 14 := by
     omega
-  have hquad : 4 * n + 14 ≤ 64 * (n + 1) ^ 2 := by
+  have hquad : 4 * n + 14 ≤ 128 * (n + 1) ^ 2 := by
     nlinarith
   omega
 
@@ -53,7 +56,7 @@ theorem pushTagCompositeFuel_le_envelope
   have hlin :
       2 * frameStack.length + 2 * rest.length + 18 ≤ 4 * n + 18 := by
     omega
-  have hquad : 4 * n + 18 ≤ 64 * (n + 1) ^ 2 := by
+  have hquad : 4 * n + 18 ≤ 128 * (n + 1) ^ 2 := by
     nlinarith
   omega
 
@@ -61,12 +64,12 @@ theorem pushTagCompositeFuel_le_envelope
 theorem inputNodeCompositeFuel_le_envelope
     (n consumed i : Nat)
     (tail frameStack : BitString)
-    (hc : consumed ≤ n)
+    (hc3 : consumed + 3 ≤ n)
     (hi : i ≤ n)
     (ht : tail.length ≤ n)
     (hf : frameStack.length ≤ n) :
     inputNodeCompositeFuel consumed i tail frameStack ≤
-      checkedStepEnvelope n := by
+      checkedCoreEnvelope n := by
   have hbase :=
     inputNodeCompositeFuel_le consumed i tail frameStack
   have hcoef :
@@ -84,7 +87,7 @@ theorem inputNodeCompositeFuel_le_envelope
       (6 * n + 10) * n + (14 * n + 30) ≤
         64 * (n + 1) ^ 2 := by
     nlinarith
-  unfold checkedStepEnvelope
+  unfold checkedCoreEnvelope
   omega
 
 theorem inputTagCompositeFuel_le_envelope
@@ -99,10 +102,10 @@ theorem inputTagCompositeFuel_le_envelope
   have hnode :=
     inputNodeCompositeFuel_le_envelope
       n (consumed + 3) i tail frameStack
-      (by omega) hi ht hf
+      hc3 hi ht hf
   have henc : (encodeNat i).length = i + 1 :=
     encodeNat_length i
-  unfold inputTagCompositeFuel checkedStepEnvelope at *
+  unfold inputTagCompositeFuel checkedStepEnvelope checkedCoreEnvelope at *
   rw [List.length_append, henc]
   simp only [List.length_cons, List.length_nil, Nat.zero_add]
   have hpref :
