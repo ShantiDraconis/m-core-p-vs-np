@@ -692,16 +692,27 @@ theorem and_exact_bounded_certificate
 
   cases mode with
   | clause =>
-      simp [modeCheck, tagAllowed, isClauseBool] at hmode
+      have hf : False := by
+        have h := hmode
+        rw [modeCheck_and] at h
+        simp [tagAllowed] at h
+      exact False.elim hf
   | mustInput =>
-      simp [modeCheck, tagAllowed] at hmode
+      have hf : False := by
+        have h := hmode
+        rw [modeCheck_and] at h
+        simp [tagAllowed] at h
+      exact False.elim hf
   | cnf =>
       have hchildren :
           modeCheck .cnf left = true ∧
             modeCheck .cnf right = true := by
         have h := hmode
         rw [modeCheck_and] at h
-        simpa [tagAllowed] using h
+        cases hl : modeCheck .cnf left <;>
+          cases hr : modeCheck .cnf right <;>
+          simp [tagAllowed, hl, hr] at h
+        exact ⟨hl, hr⟩
       have hleftMode := hchildren.1
       have hrightMode := hchildren.2
 
@@ -877,7 +888,14 @@ theorem and_exact_bounded_certificate
             (.andRight (evalCircuit sigma left))
           · simp
           · simpa [encodeCircuit, List.append_assoc] using hLayout
-        convert hp using 1 <;> simp [afterLeft, leftConsumed] <;> omega
+        have hcursor :
+            afterLeft =
+              consumed + (true :: false :: false :: encodeCircuit left).length := by
+          unfold afterLeft leftConsumed
+          simp
+          omega
+        rw [hcursor]
+        exact hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
         hright hrightMode tail
@@ -1144,7 +1162,11 @@ theorem or_exact_bounded_certificate
         modeCheck .clause right = true := by
     have h := hmode
     rw [modeCheck_or] at h
-    simpa [Bool.and_eq_true] using h
+    cases ha : tagAllowed mode .or <;>
+      cases hl : modeCheck .clause left <;>
+      cases hr : modeCheck .clause right <;>
+      simp [ha, hl, hr] at h
+    exact ⟨⟨ha, hl⟩, hr⟩
   have hAllowed : tagAllowed mode .or = true := hparts.1.1
   have hleftMode : modeCheck .clause left = true := hparts.1.2
   have hrightMode : modeCheck .clause right = true := hparts.2
@@ -1321,7 +1343,14 @@ theorem or_exact_bounded_certificate
         (.orRight (evalCircuit sigma left))
       · simp
       · simpa [encodeCircuit, List.append_assoc] using hLayout
-    convert hp using 1 <;> simp [afterLeft, leftConsumed] <;> omega
+    have hcursor :
+        afterLeft =
+          consumed + (true :: false :: true :: encodeCircuit left).length := by
+      unfold afterLeft leftConsumed
+      simp
+      omega
+    rw [hcursor]
+    exact hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
     hright hrightMode tail
