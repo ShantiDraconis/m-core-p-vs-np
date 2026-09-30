@@ -50,10 +50,20 @@ def evalFrameDecode : Nat → EvalFrame
 
 @[simp] theorem evalFrameDecode_code (f : EvalFrame) :
     evalFrameDecode (evalFrameCode f) = f := by
-  cases f <;> first | rfl | cases val <;> rfl
+  cases f with
+  | neg => rfl
+  | andLeft => rfl
+  | andRight b => cases b <;> rfl
+  | orLeft => rfl
+  | orRight b => cases b <;> rfl
 
 theorem evalFrameCode_lt (f : EvalFrame) : evalFrameCode f < 7 := by
-  cases f <;> first | decide | cases val <;> decide
+  cases f with
+  | neg => decide
+  | andLeft => decide
+  | andRight b => cases b <;> decide
+  | orLeft => decide
+  | orRight b => cases b <;> decide
 
 def returnModeCode : InputReturnMode → Nat
   | .sourceTail => 0
@@ -212,18 +222,28 @@ def framePushDecode (n : Nat) : FramePushState :=
     framePushDecode (framePushCode q) = q := by
   cases q with
   | start f =>
-      have h := evalFrameCode_lt f
-      simp [framePushDecode, framePushCode, h]
+      cases f with
+      | neg => rfl
+      | andLeft => rfl
+      | andRight b => cases b <;> rfl
+      | orLeft => rfl
+      | orRight b => cases b <;> rfl
   | after1 f =>
-      have h := evalFrameCode_lt f
-      simp [framePushDecode, framePushCode, h]
-      omega
+      cases f with
+      | neg => rfl
+      | andLeft => rfl
+      | andRight b => cases b <;> rfl
+      | orLeft => rfl
+      | orRight b => cases b <;> rfl
   | after2 f =>
-      have h := evalFrameCode_lt f
-      simp [framePushDecode, framePushCode, h]
-      omega
-  | halt => simp [framePushDecode, framePushCode]
-  | reject => simp [framePushDecode, framePushCode]
+      cases f with
+      | neg => rfl
+      | andLeft => rfl
+      | andRight b => cases b <;> rfl
+      | orLeft => rfl
+      | orRight b => cases b <;> rfl
+  | halt => rfl
+  | reject => rfl
 
 theorem framePushCode_lt (q : FramePushState) :
     framePushCode q < 23 := by
@@ -292,7 +312,13 @@ def framePopDecode : Nat → FramePopState
   | read1 b => cases b <;> rfl
   | gap2 b0 b1 => cases b0 <;> cases b1 <;> rfl
   | read2 b0 b1 => cases b0 <;> cases b1 <;> rfl
-  | halt f => cases f <;> first | rfl | cases val <;> rfl
+  | halt f =>
+      cases f with
+      | neg => rfl
+      | andLeft => rfl
+      | andRight b => cases b <;> rfl
+      | orLeft => rfl
+      | orRight b => cases b <;> rfl
   | reject => rfl
 
 theorem framePopCode_lt (q : FramePopState) :
