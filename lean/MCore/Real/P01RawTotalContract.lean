@@ -112,6 +112,26 @@ theorem parsed_prefix_exact_dichotomy
     exact circuit_exact_bounded_reject
       (witnessAssignment witness) witness phi mode
 
+/-- Physical fail-closed outcome used by malformed raw recursion.
+
+The checked evaluator has two honest failure forms:
+* the explicit rejecting state;
+* an active dead configuration with no successors.
+
+The latter is intentional: one more run step erases that branch, which the
+already-certified verifier determinism lemmas turn into HaltsWithin and
+non-acceptance. -/
+def EvalFailClosed
+    (cfg : Configuration CheckedEvalRunState (Option Bool)) : Prop :=
+  cfg.state = .reject ∨
+    (¬ Halted checkedEvalRunLoopMachine cfg ∧
+      checkedEvalRunLoopMachine.successors cfg = [])
+
+/-- Generous polynomial envelope for raw structural rejection.  The square in
+fuel absorbs successful-prefix evaluation before a later malformed child. -/
+def rawMalformedBudget (fuel n : Nat) : Nat :=
+  256 * (fuel + 1) ^ 2 * checkedLoopStepEnvelope n
+
 /-- Terminal raw obligation after all reusable circuit-level machinery has been
 factored out: only genuine decoder failure still requires a physical producer.
 
@@ -124,14 +144,14 @@ def RawMalformedPhysicalProducer : Prop :=
     decodeCircuitCore fuel bits = none →
     CheckedLayoutBound n consumed bits frameStack →
     bits.length ≤ witness.length →
-    ∃ m ≤ 16 * (fuel + 1) * checkedLoopStepEnvelope n,
+    ∃ m ≤ rawMalformedBudget fuel n,
       ∃ cfg : Configuration CheckedEvalRunState (Option Bool),
         cfg ∈ checkedEvalRunLoopMachine.runBranches m
           [{ state := .need mode P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
                  bits frameStack padding }] ∧
-        cfg.state = .reject
+        EvalFailClosed cfg
 
 /-- Once the raw malformed producer exists, structural raw parsing has no
 remaining case outside the exact positive/negative producers. -/
