@@ -53,8 +53,12 @@ theorem neg_budget_absorbs
   have hshape :
       E + (8 * (k + 1) * E) + E + E =
         (8 * (k + 1) + 3) * E := by
-    rw [Nat.add_mul]
-    omega
+    calc
+      E + (8 * (k + 1) * E) + E + E
+          = 8 * (k + 1) * E + (E + E + E) := by omega
+      _ = 8 * (k + 1) * E + 3 * E := by omega
+      _ = (8 * (k + 1) + 3) * E := by
+        exact (Nat.add_mul (8 * (k + 1)) 3 E).symm
   exact hshape.trans_le hmul
 
 /-- Bounded structural producer for negation.
