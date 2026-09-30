@@ -14,6 +14,7 @@ open CanonicalCircuitBits
 open CanonicalSATWitness
 open P01CNFMode
 open P01EvalCursorMachine
+open P01EncodedStackEvaluator
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunBaseCases
 open P01CheckedVerifierInvariant
@@ -40,7 +41,7 @@ theorem scan_entry_le_exact_allowance
       n + 1 = (n + 1) * 1 := by simp
       _ ≤ (n + 1) * (n + 1) :=
         Nat.mul_le_mul_left (n + 1) hpos
-      _ = (n + 1) ^ 2 := by ring
+      _ = (n + 1) ^ 2 := by simp [pow_two]
   have h4 := Nat.mul_le_mul_left 4 hsq
   calc
     n + 3 ≤ 4 * (n + 1) := h1
@@ -67,8 +68,8 @@ theorem prepared_cnf_reaches_semantic_final_within_exact_global
           checkedVerifierMachine.runBranches m
             [{ state := checkedVerifierMachine.initial,
                tape := preparedTape witness (encodeCircuit phi) }] := by
-  have hne : encodeCircuit phi ≠ [] := by
-    cases phi <;> simp [encodeCircuit]
+  have hne : encodeCircuit phi ≠ [] :=
+    encodeCircuit_ne_nil phi
   cases hsrc : encodeCircuit phi with
   | nil =>
       exact False.elim (hne hsrc)
