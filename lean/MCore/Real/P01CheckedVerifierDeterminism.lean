@@ -73,7 +73,14 @@ theorem haveValue_transition_length_le_one
   | peek v =>
       cases symbol <;> simp [haveValueCompositeMachine]
   | pop v qp =>
-      cases qp <;> simp [haveValueCompositeMachine]
+      cases qp with
+      | halt frame =>
+          cases frame <;> simp [haveValueCompositeMachine]
+      | start => simp [haveValueCompositeMachine]
+      | bit1 b1 => cases b1 <;> simp [haveValueCompositeMachine]
+      | bit2 b1 b2 =>
+          cases b1 <;> cases b2 <;> simp [haveValueCompositeMachine]
+      | reject => simp [haveValueCompositeMachine]
   | push frame qp =>
       cases qp <;> simp [haveValueCompositeMachine]
   | doneValue v => simp [haveValueCompositeMachine]
@@ -134,7 +141,7 @@ theorem checkedEval_transition_length_le_one
       | doneValue v => simp [checkedEvalRunLoopMachine]
       | doneNeed => simp [checkedEvalRunLoopMachine]
       | reject => simp [checkedEvalRunLoopMachine]
-  | have mode qh =>
+  | «have» mode qh =>
       cases qh with
       | peek v =>
           cases symbol <;> simp [checkedEvalRunLoopMachine]
@@ -190,7 +197,7 @@ theorem checkedVerifier_transition_length_le_one
       | need mode qn =>
           simpa [checkedVerifierMachine] using
             checkedEval_transition_length_le_one (.need mode qn) symbol
-      | have mode qh =>
+      | «have» mode qh =>
           simpa [checkedVerifierMachine] using
             checkedEval_transition_length_le_one (.have mode qh) symbol
       | checkSource v =>
