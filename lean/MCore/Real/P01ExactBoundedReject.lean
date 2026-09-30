@@ -613,10 +613,12 @@ theorem and_exact_bounded_reject
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
             have hadd :
-                E + 8 * (evalStepCount left + 1) * E =
-                  (1 + 8 * (evalStepCount left + 1)) * E := by
-              rw [Nat.add_mul]
-              simp
+                E + 8 * (evalStepCount left + 1) * E +
+                    E + 8 * (evalStepCount right + 1) * E =
+                  (8 * (evalStepCount left + 1) +
+                    8 * (evalStepCount right + 1) + 2) * E := by
+              simp only [Nat.add_mul]
+              omega
             rw [hadd]
             exact hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
@@ -934,10 +936,12 @@ theorem or_exact_bounded_reject
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
             have hadd :
-                E + 8 * (evalStepCount left + 1) * E =
-                  (1 + 8 * (evalStepCount left + 1)) * E := by
-              rw [Nat.add_mul]
-              simp
+                E + 8 * (evalStepCount left + 1) * E +
+                    E + 8 * (evalStepCount right + 1) * E =
+                  (8 * (evalStepCount left + 1) +
+                    8 * (evalStepCount right + 1) + 2) * E := by
+              simp only [Nat.add_mul]
+              omega
             rw [hadd]
             exact hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
