@@ -21,7 +21,7 @@ theorem p01Construction_of_verifier
 
 /-- Exact current internal OPEN_MATH pair:
     one physical verifier phase + the same-input G2.1 lower bound. -/
-structure MinimalFinalExternalCertificate : Prop where
+structure MinimalFinalExternalCertificate : Type where
   verifier : P01RemainingVerifier
   g21 : G21Pointwise
 
