@@ -44,6 +44,7 @@ theorem tagDecode_short_state_reject
           simp [tagDecodeMachine, evalCursorReadTape,
             TM.run, TM.step, Tape.write, Tape.move]
       · simp at hshort
+        omega
 
 /-- Starting from the checked evaluator's canonical need-state, every
 truncated tag reaches a dead checked-decoder state within the seek cost plus
