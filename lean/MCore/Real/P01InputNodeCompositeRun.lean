@@ -698,6 +698,81 @@ theorem inputNodeComposite_haltsWithin
   subst z
   exact halted_of_accepting inputNodeCompositeMachine terminal hacc
 
+
+/-- An unterminated unary index is rejected by the full input-node composite.
+
+The lookahead scans all true markers, reaches its nested reject state on the
+blank where the false terminator was required, and the fail-closed composite
+wrapper promotes that nested state to the unique terminal reject. -/
+theorem unterminated_index_reaches_reject
+    (witness frameStack : BitString)
+    (consumed padding n : Nat) :
+    ∃ m ≤ n + 2, ∃ tape : Tape (Option Bool),
+      ({ state := InputNodeCompositeState.reject, tape := tape } :
+        CompositeConfig) ∈
+      inputNodeCompositeMachine.runBranches m
+        [{ state := inputNodeCompositeMachine.initial,
+           tape :=
+             evalCursorReadTape witness consumed
+               (List.replicate n true) frameStack padding }] := by
+  let c0 : Configuration InputIndexLookaheadState (Option Bool) :=
+    { state := inputIndexLookaheadMachine.initial,
+      tape :=
+        evalCursorReadTape witness consumed
+          (List.replicate n true) frameStack padding }
+  let cR := inputIndexLookaheadMachine.run (n + 1) c0
+
+  have hstate : cR.state = .reject := by
+    dsimp [cR, c0]
+    exact unterminated_true_index_rejects
+      witness frameStack consumed padding n
+
+  obtain ⟨m0, hm0, h0⟩ :=
+    look_run_reachable (n + 1) c0
+
+  let cLook : CompositeConfig := lookConfig cR
+  have h0' :
+      cLook ∈ inputNodeCompositeMachine.runBranches m0
+        [{ state := inputNodeCompositeMachine.initial,
+           tape :=
+             evalCursorReadTape witness consumed
+               (List.replicate n true) frameStack padding }] := by
+    simpa [cLook, cR, c0, lookConfig,
+      inputNodeCompositeMachine] using h0
+
+  let cReject : CompositeConfig :=
+    { state := .reject, tape := cR.tape }
+  have hsucc :
+      cReject ∈ inputNodeCompositeMachine.successors cLook := by
+    rcases cR with ⟨q, tape⟩
+    simp only at hstate
+    subst q
+    rw [(nested_input_reject_successors (.sourceTail) false tape).1]
+    simp [cLook, cReject, lookConfig]
+
+  have hone :
+      cReject ∈ inputNodeCompositeMachine.runBranches 1 [cLook] := by
+    have h :=
+      mem_runBranches_succ_of_successor
+        inputNodeCompositeMachine 0 [cLook] cLook cReject
+        (by simp [NTM.runBranches])
+        (lookConfig_not_halted cR) hsucc
+    simpa using h
+
+  have hAll :=
+    mem_runBranches_trans inputNodeCompositeMachine
+      m0 1
+      [{ state := inputNodeCompositeMachine.initial,
+         tape :=
+           evalCursorReadTape witness consumed
+             (List.replicate n true) frameStack padding }]
+      cLook cReject h0' hone
+
+  refine ⟨m0 + 1, by omega, cR.tape, ?_⟩
+  simpa [cReject] using hAll
+
+#print axioms MCore.Real.P01InputNodeCompositeRun.unterminated_index_reaches_reject
+
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputAfterReadTarget_eq_finalMode
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeCompositeFuel_le
 #print axioms MCore.Real.P01InputNodeCompositeRun.inputNodeComposite_reaches_done
