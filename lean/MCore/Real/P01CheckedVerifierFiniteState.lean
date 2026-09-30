@@ -1,6 +1,6 @@
-import Mathlib.Tactic.DeriveFintype
 import MCore.Real.P01CheckedVerifierCompositeNTM
 import MCore.Real.P01IntegratedAssembly
+import MCore.Real.P01CheckedVerifierStateCodec
 
 namespace MCore
 namespace Real
@@ -8,59 +8,38 @@ namespace P01CheckedVerifierFiniteState
 
 open P01IntegratedAssembly
 open P01CheckedVerifierCompositeNTM
+open P01CheckedVerifierStateCodec
 
-deriving instance Fintype for P01EncodedStackEvaluator.EvalFrame
-deriving instance Fintype for P01InputReturnMode.InputReturnMode
-deriving instance Fintype for P01InputReturnMode.InputReturnClassifyState
-deriving instance Fintype for P01InputIndexLookahead.InputIndexLookaheadState
-deriving instance Fintype for P01WitnessIndexedReadPreserving.PreservingReadState
-deriving instance Fintype for P01InputAfterReadReturn.InputAfterReadReturnState
-deriving instance Fintype for P01InputNodeCompositeNTM.InputNodeCompositeState
-deriving instance Fintype for P01EvalCursorMachine.CursorSeekState
-deriving instance Fintype for P01EvalCursorRoundTrip.CursorReturnState
-deriving instance Fintype for P01NeedExprTagDecode.NeedExprTag
-deriving instance Fintype for P01NeedExprTagDecode.TagDecodeState
-deriving instance Fintype for P01EvalFramePushMachine.FramePushState
-deriving instance Fintype for P01EvalFramePopMachineV2.FramePopState
-deriving instance Fintype for P01NeedExprCompositeNTM.NeedExprCompositeState
-deriving instance Fintype for P01HaveValueCompositeNTM.HaveValueCompositeState
-deriving instance Fintype for P01CNFMode.SyntaxMode
-deriving instance Fintype for P01CheckedEvalRunLoopNTM.CheckedEvalRunState
-deriving instance Fintype for CheckedVerifierState
+/-- Exact number expected by P01MachineConstruction: the concrete verifier
+has 1852 reachable control values, represented as Fin (1851 + 1). -/
+def checkedVerifierStateCount : Nat := 1851
 
-/-- One spare code is intentionally left unreachable, exactly as in the
-previous verifier relabelling. -/
-def checkedVerifierStateCount : Nat :=
-  Fintype.card CheckedVerifierState
-
-noncomputable def checkedVerifierStateEquiv :
-    CheckedVerifierState ≃ Fin (Fintype.card CheckedVerifierState) :=
-  Fintype.equivFin CheckedVerifierState
-
-noncomputable def checkedVerifierStateEncode
+def checkedVerifierStateEncode
     (q : CheckedVerifierState) :
     Fin (checkedVerifierStateCount + 1) :=
-  ⟨(checkedVerifierStateEquiv q).val,
-    Nat.lt_succ_of_lt (checkedVerifierStateEquiv q).isLt⟩
+  ⟨(checkedVerifierStateCodec.encode q).val, by
+    have h := (checkedVerifierStateCodec.encode q).isLt
+    rw [checkedVerifierStateCodec_size] at h
+    simpa [checkedVerifierStateCount] using h⟩
 
-noncomputable def checkedVerifierStateDecode
+def checkedVerifierStateDecode
     (q : Fin (checkedVerifierStateCount + 1)) :
     CheckedVerifierState :=
-  if h : q.val < Fintype.card CheckedVerifierState then
-    checkedVerifierStateEquiv.symm ⟨q.val, h⟩
-  else
-    checkedVerifierMachine.initial
+  checkedVerifierStateCodec.decode
+    ⟨q.val, by
+      have h := q.isLt
+      rw [checkedVerifierStateCodec_size]
+      simpa [checkedVerifierStateCount] using h⟩
 
 theorem checkedVerifierStateDecode_encode
     (q : CheckedVerifierState) :
     checkedVerifierStateDecode (checkedVerifierStateEncode q) = q := by
   unfold checkedVerifierStateDecode checkedVerifierStateEncode
-    checkedVerifierStateCount
-  simp [checkedVerifierStateEquiv]
+  simpa using checkedVerifierStateCodec.decode_encode q
 
-/-- Concrete Fin-indexed checked verifier, obtained only by control-state
-relabeling. No transition or tape behavior is changed. -/
-noncomputable def checkedVerifierFinMachine :
+/-- Concrete Fin-indexed checked verifier obtained only by control-state
+relabeling. No transition, tape, acceptance or rejection semantics changes. -/
+def checkedVerifierFinMachine :
     NTM (Fin (checkedVerifierStateCount + 1)) (Option Bool) :=
   P01IntegratedAssembly.relabel
     checkedVerifierMachine
