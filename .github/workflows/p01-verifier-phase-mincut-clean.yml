@@ -10,6 +10,10 @@ on:
       - 'lean/MCore/Real/P01ManualStateCodecComposite.lean'
       - 'lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean'
       - 'lean/MCore/Real/P01CheckedVerifierGlobalCoreV2.lean'
+      - 'lean/MCore/Real/P01ExactBoundedCircuitProducer.lean'
+      - 'lean/MCore/Real/P01ExactBoundedReject.lean'
+      - 'lean/MCore/Real/P01ExactVerifierGlobalBudget.lean'
+      - 'lean/MCore/Real/P01ExactVerifierCanonicalRun.lean'
       - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
       - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
       - 'lean/MCore/Real/P01IntegratedAssembly.lean'
@@ -43,6 +47,10 @@ jobs:
           lake build MCore.Real.P01ManualStateCodecComposite
           lake build MCore.Real.P01CheckedVerifierManualFiniteState
           lake build MCore.Real.P01CheckedVerifierGlobalCoreV2
+          lake build MCore.Real.P01ExactBoundedCircuitProducer
+          lake build MCore.Real.P01ExactBoundedReject
+          lake build MCore.Real.P01ExactVerifierGlobalBudget
+          lake build MCore.Real.P01ExactVerifierCanonicalRun
           lake build MCore.Real.P01VerifierPhaseMinCutStructural
       - name: Exact axiom audit
         run: |
@@ -51,6 +59,10 @@ jobs:
           import MCore.Real.P01VerifierPhaseMinCutStructural
           import MCore.Real.P01CheckedVerifierManualFiniteState
           import MCore.Real.P01CheckedVerifierGlobalCoreV2
+          import MCore.Real.P01ExactBoundedCircuitProducer
+          import MCore.Real.P01ExactBoundedReject
+          import MCore.Real.P01ExactVerifierGlobalBudget
+          import MCore.Real.P01ExactVerifierCanonicalRun
           #print axioms MCore.Real.P01ManualStateCodecBase.inputNodeDecode_code
           #print axioms MCore.Real.P01ManualStateCodecComposite.checkedEvalDecode_code
           #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierStateDecode_encode
@@ -58,6 +70,11 @@ jobs:
           #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierFinMachine_acceptsWithin_iff
           #print axioms MCore.Real.P01CheckedVerifierGlobalCoreV2.p01ConstructionGap_of_core
           #print axioms MCore.Real.P01CheckedVerifierGlobalCoreV2.mechanical_gap_closes_p01
+          #print axioms MCore.Real.P01ExactBoundedCircuitProducer.circuit_exact_bounded_certificate
+          #print axioms MCore.Real.P01ExactBoundedReject.circuit_exact_bounded_reject
+          #print axioms MCore.Real.P01ExactVerifierGlobalBudget.checkedVerifierExactTimeBound_poly
+          #print axioms MCore.Real.P01ExactVerifierCanonicalRun.prepared_canonical_halts_within_exact_global
+          #print axioms MCore.Real.P01ExactVerifierCanonicalRun.prepared_canonical_accepts_iff_exact_global
           #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
           EOF
           lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
