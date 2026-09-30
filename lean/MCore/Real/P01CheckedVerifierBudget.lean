@@ -143,8 +143,6 @@ theorem inputTagCompositeFuel_le_envelope
   have henc : (encodeNat i).length = i + 1 :=
     encodeNat_length i
   unfold inputTagCompositeFuel checkedStepEnvelope checkedCoreEnvelope at *
-  rw [List.length_append, henc]
-  simp only [List.length_cons, List.length_nil, Nat.zero_add]
   have hpref :
       frameStack.length +
           (false :: false :: false :: (encodeNat i ++ tail)).length + 3 +
