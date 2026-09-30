@@ -17,6 +17,7 @@ on:
       - 'lean/MCore/Real/P01RawTotalizationMinCut.lean'
       - 'lean/MCore/Real/P01RawBaseExact.lean'
       - 'lean/MCore/Real/P01RawRecursiveBudget.lean'
+      - 'lean/MCore/Real/P01RawEvalSink.lean'
       - 'lean/MCore/Real/P01RawSourceSplit.lean'
       - 'lean/MCore/Real/P01RawDecodeFailureShape.lean'
       - 'lean/MCore/Real/P01RawDecodeFailureDescent.lean'
@@ -79,6 +80,7 @@ jobs:
           lake build MCore.Real.P01RawTotalizationMinCut
           lake build MCore.Real.P01RawBaseExact
           lake build MCore.Real.P01RawRecursiveBudget
+          lake build MCore.Real.P01RawEvalSink
           lake build MCore.Real.P01VerifierPhaseMinCutStructural
       - name: Exact axiom audit
         run: |
@@ -140,6 +142,9 @@ jobs:
           #print axioms MCore.Real.P01RawRecursiveBudget.checkedVerifierRawTimeBound_poly
           #print axioms MCore.Real.P01RawRecursiveBudget.circuit_plus_two_loops_le_rawChunk
           #print axioms MCore.Real.P01RawRecursiveBudget.rootFailure_plus_chunk_le_rawTimeBound
+          #print axioms MCore.Real.P01RawEvalSink.disallowed_tag_reaches_sink
+          #print axioms MCore.Real.P01RawEvalSink.truncated_tag_reaches_sink
+          #print axioms MCore.Real.P01RawEvalSink.unary_none_reaches_sink
           #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
           EOF
           lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
