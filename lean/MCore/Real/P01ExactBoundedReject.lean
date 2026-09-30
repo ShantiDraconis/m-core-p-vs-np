@@ -442,13 +442,7 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul ⊢
-            have hadd :
-                E + 8 * (evalStepCount left + 1) * E =
-                  (1 + 8 * (evalStepCount left + 1)) * E := by
-              rw [Nat.add_mul]
-              simp
-            rw [hadd]
-            exact hmul
+            simpa [Nat.add_mul, Nat.mul_assoc] using hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .cnf right = false := by
@@ -612,15 +606,8 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul ⊢
-            have hadd :
-                E + 8 * (evalStepCount left + 1) * E +
-                    E + 8 * (evalStepCount right + 1) * E =
-                  (8 * (evalStepCount left + 1) +
-                    8 * (evalStepCount right + 1) + 2) * E := by
-              simp only [Nat.add_mul]
-              omega
-            rw [hadd]
-            exact hmul
+            simpa [Nat.add_mul, Nat.mul_assoc, Nat.add_assoc,
+              Nat.add_comm, Nat.add_left_comm] using hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 
@@ -765,13 +752,7 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul ⊢
-            have hadd :
-                E + 8 * (evalStepCount left + 1) * E =
-                  (1 + 8 * (evalStepCount left + 1)) * E := by
-              rw [Nat.add_mul]
-              simp
-            rw [hadd]
-            exact hmul
+            simpa [Nat.add_mul, Nat.mul_assoc] using hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .clause right = false := by
@@ -935,15 +916,8 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul ⊢
-            have hadd :
-                E + 8 * (evalStepCount left + 1) * E +
-                    E + 8 * (evalStepCount right + 1) * E =
-                  (8 * (evalStepCount left + 1) +
-                    8 * (evalStepCount right + 1) + 2) * E := by
-              simp only [Nat.add_mul]
-              omega
-            rw [hadd]
-            exact hmul
+            simpa [Nat.add_mul, Nat.mul_assoc, Nat.add_assoc,
+              Nat.add_comm, Nat.add_left_comm] using hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 /-- Exact bounded negative structural producer for every canonical circuit. -/
