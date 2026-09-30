@@ -2,6 +2,7 @@ import MCore.Real.P01CheckedEvalReject
 import MCore.Real.P01CheckedVerifierRun
 import MCore.Real.P01CheckedVerifierDeterminism
 import MCore.Real.P01CheckedVerifierGlobalBudget
+import MCore.Real.P01GuessedWitnessRelation
 
 namespace MCore
 namespace Real
@@ -21,6 +22,7 @@ open P01CheckedVerifierRun
 open P01CheckedVerifierDeterminism
 open P01WitnessPreservingPrep
 open P01NTMRunLaws
+open P01GuessedWitnessRelation
 
 abbrev CheckedVerifierConfig :=
   Configuration CheckedVerifierState (Option Bool)
@@ -202,9 +204,97 @@ theorem prepared_canonical_halts_exists
              tape := tape } : CheckedVerifierConfig)
           hreach hhalt⟩
 
+
+/-- Canonical encoded sources reduce the bit-level verifier relation to the
+CNF predicate and the concrete witness assignment. -/
+theorem verifyBits_encode_iff
+    (phi : Circuit)
+    (witness : BitString) :
+    VerifyBits (encodeCircuit phi) witness ↔
+      IsCNF phi ∧
+        evalCircuit (witnessAssignment witness) phi = true := by
+  constructor
+  · rintro ⟨psi, hdecode, hcnf, heval⟩
+    rw [decodeCircuit_encode] at hdecode
+    cases hdecode
+    exact ⟨hcnf, by simpa [witnessAssignment] using heval⟩
+  · rintro ⟨hcnf, heval⟩
+    exact ⟨phi, decodeCircuit_encode phi, hcnf,
+      by simpa [witnessAssignment] using heval⟩
+
+/-- Determinism turns one reached terminal configuration into an exact
+acceptance characterization at that same fuel. -/
+theorem acceptsWithin_iff_of_reached_terminal
+    (n : Nat)
+    (start terminal : CheckedVerifierConfig)
+    (hmem :
+      terminal ∈ checkedVerifierMachine.runBranches n [start]) :
+    checkedVerifierMachine.AcceptsWithin n start ↔
+      checkedVerifierMachine.accepting terminal.state = true := by
+  have heq :=
+    runBranches_eq_singleton_of_mem n start terminal hmem
+  unfold NTM.AcceptsWithin
+  rw [heq]
+  simp
+
+/-- On every canonical circuit encoding, some concrete physical fuel already
+has exact acceptance semantics.  The remaining inhabitant obligation is to
+replace this existential fuel by one uniform polynomial bound and then cover
+noncanonical raw bitstrings fail-closed. -/
+theorem prepared_canonical_accepts_exact_exists
+    (witness : BitString)
+    (phi : Circuit)
+    (hlen : varBound phi ≤ witness.length) :
+    ∃ m,
+      (checkedVerifierMachine.AcceptsWithin m
+          { state := checkedVerifierMachine.initial,
+            tape := preparedTape witness (encodeCircuit phi) } ↔
+        VerifyBits (encodeCircuit phi) witness) := by
+  cases hmode : modeCheck .cnf phi with
+  | false =>
+      obtain ⟨m, tape, hreach⟩ :=
+        prepared_canonical_reaches_reject witness phi hlen hmode
+      refine ⟨m, ?_⟩
+      rw [acceptsWithin_iff_of_reached_terminal
+        m
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness (encodeCircuit phi) }
+        ({ state := .reject, tape := tape } : CheckedVerifierConfig)
+        hreach,
+        verifyBits_encode_iff]
+      have hnotcnf : ¬ IsCNF phi := by
+        intro hcnf
+        have ht := (modeCheck_cnf_iff phi).2 hcnf
+        rw [hmode] at ht
+        contradiction
+      simp [checkedVerifierMachine, hnotcnf]
+  | true =>
+      obtain ⟨m, tape, hreach⟩ :=
+        prepared_cnf_reaches_semantic_final
+          (witnessAssignment witness) witness phi
+          hmode hlen (by
+            intro i hi
+            rfl)
+      refine ⟨m, ?_⟩
+      rw [acceptsWithin_iff_of_reached_terminal
+        m
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness (encodeCircuit phi) }
+        ({ state :=
+             .eval (.final (evalCircuit (witnessAssignment witness) phi)),
+           tape := tape } : CheckedVerifierConfig)
+        hreach,
+        verifyBits_encode_iff]
+      have hcnf : IsCNF phi :=
+        (modeCheck_cnf_iff phi).1 hmode
+      simp [checkedVerifierMachine, checkedEvalRunLoopMachine, hcnf]
+
 #print axioms MCore.Real.P01DirectVerifierInhabitant.circuit_reject_certificate
 #print axioms MCore.Real.P01DirectVerifierInhabitant.prepared_canonical_reaches_reject
 #print axioms MCore.Real.P01DirectVerifierInhabitant.prepared_canonical_halts_exists
+#print axioms MCore.Real.P01DirectVerifierInhabitant.verifyBits_encode_iff
+#print axioms MCore.Real.P01DirectVerifierInhabitant.acceptsWithin_iff_of_reached_terminal
+#print axioms MCore.Real.P01DirectVerifierInhabitant.prepared_canonical_accepts_exact_exists
 
 end P01DirectVerifierInhabitant
 end Real
