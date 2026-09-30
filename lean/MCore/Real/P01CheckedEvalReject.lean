@@ -10,6 +10,7 @@ namespace P01CheckedEvalReject
 open CanonicalFinalProof
 open CircuitK1
 open CanonicalCircuitBits
+open CanonicalSATWitness
 open P01CNFMode
 open P01EncodedFrameTape
 open P01EvalCursorMachine
@@ -215,6 +216,82 @@ theorem invalid_not_reaches_reject
           cChild cReject h0' h1'
 
       exact ⟨m0 + m1, cReject, hAll, rfl⟩
+
+/-- Producer-first rejection certificate for one circuit under one syntax
+mode.  It is dual to `CheckedCircuitRunCertificate`: a failing mode check must
+lead the physical checked loop to its reject state, while preserving arbitrary
+external source tail and continuation stack. -/
+def CheckedCircuitRejectCertificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (phi : Circuit) : Prop :=
+  modeCheck mode phi = false →
+  ∀ (tail : BitString)
+      (frames : List P01EncodedStackEvaluator.EvalFrame)
+      (consumed padding : Nat),
+    varBound phi ≤ witness.length →
+    (∀ i, i < varBound phi →
+      witness.getD i false = sigma i) →
+    ∃ m cfg,
+      cfg ∈ checkedEvalRunLoopMachine.runBranches m
+        [{ state := .need mode needExprCompositeMachine.initial,
+           tape :=
+             evalCursorStackEndTape witness consumed
+               (encodeCircuit phi ++ tail)
+               (encodeEvalFrames frames) padding }] ∧
+      cfg.state = .reject
+
+/-- Input nodes are admitted by every syntax mode, so an invalid-input
+certificate is vacuous. -/
+theorem input_reject_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (i : Nat) :
+    CheckedCircuitRejectCertificate sigma witness mode (.input i) := by
+  intro hinvalid
+  cases mode <;> simp [modeCheck, tagAllowed] at hinvalid
+
+/-- Constants rejected by a syntax mode are rejected immediately at their root
+tag. -/
+theorem const_reject_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (v : Bool) :
+    CheckedCircuitRejectCertificate sigma witness mode (.const v) := by
+  intro hinvalid tail frames consumed padding hlen hread
+  have hroot :
+      tagAllowed mode (circuitTag (.const v)) = false := by
+    cases v <;> cases mode <;>
+      simp [modeCheck, tagAllowed, circuitTag] at hinvalid ⊢
+  obtain ⟨m, hrun⟩ :=
+    root_disallowed_reaches_reject
+      mode witness (.const v) tail frames consumed padding hroot
+  let cfg : CheckedConfig :=
+    { state := .reject,
+      tape :=
+        evalCursorReadTape witness (consumed + 3)
+          ((encodeCircuit (.const v)).drop 3 ++ tail)
+          (encodeEvalFrames frames) padding }
+  exact ⟨m, cfg, by simpa [cfg] using hrun, rfl⟩
+
+/-- Negation rejection certificate: invalid negation is already completely
+handled by the root/must-input producer above. -/
+theorem not_reject_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (child : Circuit) :
+    CheckedCircuitRejectCertificate sigma witness mode (.not child) := by
+  intro hinvalid tail frames consumed padding hlen hread
+  exact invalid_not_reaches_reject
+    mode witness child tail frames consumed padding hinvalid
+
+#print axioms MCore.Real.P01CheckedEvalReject.input_reject_certificate
+#print axioms MCore.Real.P01CheckedEvalReject.const_reject_certificate
+#print axioms MCore.Real.P01CheckedEvalReject.not_reject_certificate
 
 #print axioms MCore.Real.P01CheckedEvalReject.mustInput_root_disallowed_of_check_false
 #print axioms MCore.Real.P01CheckedEvalReject.invalid_not_reaches_reject
