@@ -98,8 +98,9 @@ theorem barrier_compilerValue_not_computable :
   have hPred :
       ComputablePred (fun c : Nat.Partrec.Code =>
         compilerValue barrierCandidate (markHalting c) =
-          barrierOutTrue) :=
-    hEqDec.computablePred
+          barrierOutTrue) := by
+    refine ⟨fun c => inferInstance, ?_⟩
+    simpa using hEqDec
   have hHalting :
       ComputablePred (fun c : Nat.Partrec.Code =>
         (c.eval 0).Dom) :=
