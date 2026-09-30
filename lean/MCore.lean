@@ -31,3 +31,4 @@ import MCore.C12.Families
 import MCore.Frontier.K3Gaps
 import MCore.AttackDAG.K3AlgebraAttacks
 import MCore.Audit
+import MCore.AutoCompose
