@@ -116,6 +116,7 @@ theorem pushTag_checked_reaches_need_within_envelope
     checkedPushTagFuel_le_envelope
       n (b0 :: b1 :: b2 :: rest) frameStack hsource hframes
   unfold checkedPushTagFuel at hfuel
+  simp at hfuel
   omega
 
 /-- Normalizing an already-produced value to the external checked outcome costs
