@@ -1,0 +1,36 @@
+name: P01 Exact Bounded Outcome
+
+on:
+  push:
+    branches:
+      - atk/p01-exact-bounded-outcome-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-bounded:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Setup Lean
+        run: |
+          elan toolchain install $(cat lean-toolchain)
+          elan default $(cat lean-toolchain)
+      - name: Dependencies
+        run: |
+          lake update
+          lake exe cache get || true
+      - name: Build exact bounded outcome
+        run: lake build MCore.Real.P01CheckedEvalRunExactOutcome
+      - name: Source firewall
+        run: |
+          set -euo pipefail
+          FILE=lean/MCore/Real/P01CheckedEvalRunExactOutcome.lean
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx|axiom)([^[:alnum:]_]|$)' "$FILE"
