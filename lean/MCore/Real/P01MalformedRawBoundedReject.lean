@@ -305,6 +305,65 @@ theorem core_success_with_trailing_reaches_reject_bounded
       · omega
       · simpa [hsource] using hAll
 
+
+/-- One extra checked-loop envelope after a complete circuit evaluation still
+fits the material 8192-cubic verifier budget. -/
+theorem checkedCircuitBudget_plus_loop_le_material
+    (n : Nat) (phi : Circuit)
+    (henc : (encodeCircuit phi).length ≤ n) :
+    checkedCircuitBudget phi n + checkedLoopStepEnvelope n ≤
+      materialVerifierGlobalTimeBound n := by
+  have heval := checkedCircuitBudget_le_6144_cubic n phi henc
+  have hloop :
+      checkedLoopStepEnvelope n ≤ 256 * (n + 1) ^ 3 := by
+    unfold checkedLoopStepEnvelope
+    have h1 : 1 ≤ n + 1 := by omega
+    have hpow : (n + 1)^2 ≤ (n + 1)^3 := by
+      rw [Nat.pow_succ]
+      exact Nat.le_mul_of_pos_right _ h1
+    exact Nat.mul_le_mul_left 256 hpow
+  unfold materialVerifierGlobalTimeBound
+  calc
+    checkedCircuitBudget phi n + checkedLoopStepEnvelope n
+        ≤ 6144 * (n + 1)^3 + 256 * (n + 1)^3 :=
+          Nat.add_le_add heval hloop
+    _ ≤ 8192 * (n + 1)^3 := by
+          exact Nat.mul_le_mul_right ((n + 1)^3) (by omega)
+
+/-- Full evaluator-level malformed-source reduction.
+
+Once recursive core-decoder failure is physically rejected, every raw source
+whose total decoder returns none is rejected within the same global material
+bound.  The other possible decoder failure -- a successfully decoded circuit
+with trailing garbage -- is already physically closed above. -/
+theorem malformed_raw_reaches_reject_bounded_of_core
+    (K : CoreDecodeFailurePhysicalReject)
+    (witness bs : BitString)
+    (hw : witness.length = bs.length)
+    (hdecode : decodeCircuit bs = none) :
+    ∃ m ≤ materialVerifierGlobalTimeBound bs.length, ∃ cfg,
+      cfg ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .need .cnf needExprCompositeMachine.initial,
+             tape := evalCursorStackEndTape witness 0 bs [] 0 }] ∧
+      cfg.state = .reject := by
+  rcases decodeCircuit_none_split bs hdecode with hcore | htrail
+  · exact K witness bs hw hcore
+  · rcases htrail with ⟨phi, b, rest, hcore⟩
+    obtain ⟨m, hm, cfg, hrun, hrej⟩ :=
+      core_success_with_trailing_reaches_reject_bounded
+        witness bs phi b rest hw hcore
+    have hsource :
+        bs = encodeCircuit phi ++ (b :: rest) :=
+      decodeCircuitCore_sound _ bs phi (b :: rest) hcore
+    have henc : (encodeCircuit phi).length ≤ bs.length := by
+      rw [hsource]
+      simp
+    exact ⟨m,
+      Nat.le_trans hm
+        (checkedCircuitBudget_plus_loop_le_material bs.length phi henc),
+      cfg, hrun, hrej⟩
+
 /-- After closing the trailing-garbage branch, the only raw-decoder case not
 yet supplied by existing physical certificates is recursive core failure. -/
 def CoreDecodeFailurePhysicalReject : Prop :=
@@ -321,6 +380,8 @@ def CoreDecodeFailurePhysicalReject : Prop :=
 #print axioms MCore.Real.P01MalformedRawBoundedReject.decodeCircuit_none_split
 #print axioms MCore.Real.P01MalformedRawBoundedReject.checked_nonempty_source_reaches_reject
 #print axioms MCore.Real.P01MalformedRawBoundedReject.core_success_with_trailing_reaches_reject_bounded
+#print axioms MCore.Real.P01MalformedRawBoundedReject.checkedCircuitBudget_plus_loop_le_material
+#print axioms MCore.Real.P01MalformedRawBoundedReject.malformed_raw_reaches_reject_bounded_of_core
 
 end P01MalformedRawBoundedReject
 end Real
