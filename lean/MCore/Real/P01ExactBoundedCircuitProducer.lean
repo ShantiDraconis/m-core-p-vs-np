@@ -832,7 +832,8 @@ theorem and_exact_bounded_certificate
         leftConsumed + (encodeCircuit left).length
 
       have hRightTail : encodeCircuit right ++ tail ≠ [] := by
-        exact List.append_ne_nil_of_left_ne_nil (encodeCircuit_ne_nil right)
+        intro hnil
+        exact encodeCircuit_ne_nil right (List.append_eq_nil_iff.mp hnil).1
 
       obtain ⟨padding1, hcfgLeft⟩ :=
         exact_outcome_have_of_tail_ne_nil
@@ -1272,7 +1273,8 @@ theorem or_exact_bounded_certificate
     leftConsumed + (encodeCircuit left).length
 
   have hRightTail : encodeCircuit right ++ tail ≠ [] := by
-        exact List.append_ne_nil_of_left_ne_nil (encodeCircuit_ne_nil right)
+        intro hnil
+        exact encodeCircuit_ne_nil right (List.append_eq_nil_iff.mp hnil).1
 
   obtain ⟨padding1, hcfgLeft⟩ :=
     exact_outcome_have_of_tail_ne_nil
