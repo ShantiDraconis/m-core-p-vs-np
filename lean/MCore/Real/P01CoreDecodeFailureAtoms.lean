@@ -134,19 +134,20 @@ theorem unterminated_input_rejects_material
     unfold checkedUnterminatedInputFuel checkedTagPrefixFuel
     simp
     omega
+  have hbase : N + 1 ≤ (N + 1)^2 := by
+    have hp : 1 ≤ N + 1 := by omega
+    calc
+      N + 1 = (N + 1) * 1 := by simp
+      _ ≤ (N + 1) * (N + 1) :=
+        Nat.mul_le_mul_left (N + 1) hp
+      _ = (N + 1)^2 := by simp [Nat.pow_two]
+  have hlinear : 3 * N + 13 ≤ 16 * (N + 1) := by omega
+  have hscale :
+      16 * (N + 1) ≤ 16 * (N + 1)^2 :=
+    Nat.mul_le_mul_left 16 hbase
   have hlin :
-      3 * N + 13 ≤ 16 * (N + 1)^2 := by
-    have hN : N ≤ (N + 1)^2 := by
-      have h1 : N ≤ N + 1 := by omega
-      have h2 : N + 1 ≤ (N + 1)^2 := by
-        have hp : 1 ≤ N + 1 := by omega
-        calc
-          N + 1 = (N + 1) * 1 := by simp
-          _ ≤ (N + 1) * (N + 1) :=
-            Nat.mul_le_mul_left (N + 1) hp
-          _ = (N + 1)^2 := by simp [Nat.pow_two]
-      exact Nat.le_trans h1 h2
-    nlinarith
+      3 * N + 13 ≤ 16 * (N + 1)^2 :=
+    Nat.le_trans hlinear hscale
   have htoLoop :
       16 * (N + 1)^2 ≤ checkedLoopStepEnvelope N := by
     unfold checkedLoopStepEnvelope
@@ -179,13 +180,11 @@ theorem input_decode_failure_rejects_material
                    (false :: false :: false :: rest)
                    frameStack padding }] := by
   have hrep := decodeNat_none_eq_replicate_true rest hdecode
-  subst rest
-  simpa using
+  have hbase :=
     unterminated_input_rejects_material
-      N mode witness frameStack consumed padding
-      (List.replicate (List.length (List.replicate (List.length ([] : BitString)) true)) true).length
-      (by simp)
-      hframes
+      N mode witness frameStack consumed padding rest.length
+      hrest hframes
+  simpa [hrep] using hbase
 
 #print axioms MCore.Real.P01CoreDecodeFailureAtoms.decodeNat_none_eq_replicate_true
 #print axioms MCore.Real.P01CoreDecodeFailureAtoms.short_source_rejects_material
