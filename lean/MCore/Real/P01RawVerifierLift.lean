@@ -124,6 +124,7 @@ theorem prepared_nonempty_dead_fail_closed
   let total := m0 + m1 + 1
   refine ⟨total, ?_, ?_, ?_⟩
   · dsimp [total]
+    simp at hm0 ⊢
     omega
   · exact haltsWithin_succ_of_reaches_dead
       (m0 + m1)
