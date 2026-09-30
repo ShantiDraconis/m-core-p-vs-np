@@ -1,5 +1,6 @@
 import MCore.Real.P01ExactBoundedReject
 import MCore.Real.P01ExactVerifierGlobalBudget
+import MCore.Real.P01ExactVerifierCanonicalRun
 import MCore.Real.P01CheckedVerifierCompositeNTM
 import MCore.Real.P01CheckedVerifierRun
 import MCore.Real.P01NTMRunLaws
@@ -22,6 +23,7 @@ open P01CheckedVerifierInvariant
 open P01CheckedEvalRunBoundedCertificate
 open P01ExactBoundedReject
 open P01ExactVerifierGlobalBudget
+open P01ExactVerifierCanonicalRun
 open P01WitnessPreservingPrep
 open P01NTMRunLaws
 
@@ -46,8 +48,8 @@ theorem prepared_cnf_invalid_reaches_reject_within_exact_global
           checkedVerifierMachine.runBranches m
             [{ state := checkedVerifierMachine.initial,
                tape := preparedTape witness (encodeCircuit phi) }] := by
-  have hne : encodeCircuit phi ≠ [] := by
-    cases phi <;> simp [encodeCircuit]
+  have hne : encodeCircuit phi ≠ [] :=
+    P01ExactBoundedCircuitProducer.encodeCircuit_ne_nil phi
   cases hsrc : encodeCircuit phi with
   | nil =>
       exact False.elim (hne hsrc)
@@ -59,7 +61,7 @@ theorem prepared_cnf_invalid_reaches_reject_within_exact_global
       have hLayout :
           CheckedLayoutBound n 0
             (encodeCircuit phi ++ ([] : BitString))
-            (encodeEvalFrames []) := by
+            (P01EncodedStackEvaluator.encodeEvalFrames []) := by
         constructor
         · simp [n, hsrc]
         · simp
@@ -108,23 +110,8 @@ theorem prepared_cnf_invalid_reaches_reject_within_exact_global
           h0 hLift
 
       have hscan :
-          m0 ≤ 256 * (n + 1) ^ 2 := by
-        have hbase :
-            n + 3 ≤ 256 * (n + 1) ^ 2 := by
-          have h1 : n + 3 ≤ 4 * (n + 1) := by omega
-          have hsq : n + 1 ≤ (n + 1) ^ 2 := by
-            have hpos : 1 ≤ n + 1 := by omega
-            calc
-              n + 1 = (n + 1) * 1 := by simp
-              _ ≤ (n + 1) * (n + 1) :=
-                Nat.mul_le_mul_left (n + 1) hpos
-              _ = (n + 1) ^ 2 := by ring
-          calc
-            n + 3 ≤ 4 * (n + 1) := h1
-            _ ≤ 4 * (n + 1) ^ 2 := Nat.mul_le_mul_left 4 hsq
-            _ ≤ 256 * (n + 1) ^ 2 := by
-              exact Nat.mul_le_mul_right ((n + 1) ^ 2) (by omega)
-        exact Nat.le_trans hm0 hbase
+          m0 ≤ 256 * (n + 1) ^ 2 :=
+        Nat.le_trans hm0 (scan_entry_le_exact_allowance n)
 
       have henc : (encodeCircuit phi).length ≤ n := by
         simp [n, hsrc]
