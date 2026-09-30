@@ -35,8 +35,8 @@ def verifierPhaseOfRawCore
   decode_encode := checkedVerifierStateDecode_encode
   machine := checkedVerifierMachine
   blank_none := checkedVerifierMachine_blank
-  timeBound := materialVerifierGlobalTimeBound
-  time_poly := materialVerifierGlobalTimeBound_poly
+  timeBound := terminalVerifierTimeBound
+  time_poly := terminalVerifierTimeBound_poly
   halts := by
     intro bs w hw
     simpa [prepPhase_layout] using K.halts bs w hw
