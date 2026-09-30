@@ -1,0 +1,44 @@
+name: P01 Core Decode Physical Reject
+
+on:
+  push:
+    branches:
+      - atk/p01-core-decode-physical-reject-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core-decode-reject:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
+      - name: Build physical core decoder reject
+        run: lake build MCore.Real.P01CoreDecodeFailurePhysical
+      - name: Reject proof placeholders
+        run: |
+          set -euo pipefail
+          FILE=lean/MCore/Real/P01CoreDecodeFailurePhysical.lean
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$FILE"
+      - name: Axiom audit
+        run: |
+          cat > P01CoreDecodeRejectAxioms.lean <<'EOF'
+          import MCore.Real.P01CoreDecodeFailurePhysical
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.coreRejectBudget_le_material
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.decodeCore_none_reaches_reject
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.core_decode_failure_physical_reject
+          EOF
+          lake env lean P01CoreDecodeRejectAxioms.lean | tee p01-core-decode-reject-axioms.txt
+          ! grep -E 'sorryAx' p01-core-decode-reject-axioms.txt
