@@ -1,0 +1,280 @@
+{
+  "accepted_axiom_observation": {
+    "common": [
+      "propext",
+      "Quot.sound"
+    ],
+    "forbidden_and_absent_from_certified_green_logs": [
+      "sorryAx"
+    ],
+    "present_in_some_constructive_or_extraction_layers": [
+      "Classical.choice"
+    ]
+  },
+  "certificate_scope": "P01_CHECKED_VERIFIER_CURRENT_GREEN",
+  "certification_rule": "Only current branch artifacts included in the umbrella and validated by the paired SUCCESS workflows at source_commit are certified. Historical RED snapshots are not certified.",
+  "certified_components": [
+    {
+      "axiom_profile": "[propext, Quot.sound] for generic preserving/gap theorems",
+      "evidence": [
+        "preservingRead_forall",
+        "preservingRead_forall_value",
+        "preservingMoved_forall",
+        "preservingReadGap_forall",
+        "preservingReadGap_forall_value",
+        "preservingReadGapRaw_forall"
+      ],
+      "modules": [
+        "MCore.Real.P01WitnessIndexedReadPreserving",
+        "MCore.Real.P01WitnessIndexedReadGap",
+        "MCore.Real.P01WitnessIndexedReadGapRaw"
+      ],
+      "name": "preserving_indexed_witness_read",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "no sorryAx in certifying run",
+      "evidence": [
+        "full physical 000 input route is present in current umbrella",
+        "input lookahead/return classification and composite run replay successfully"
+      ],
+      "modules": [
+        "MCore.Real.P01InputNodeCompositeNTM",
+        "MCore.Real.P01InputNodeCompositeRun",
+        "MCore.Real.P01InputIndexLookahead",
+        "MCore.Real.P01InputReturnMode"
+      ],
+      "name": "input_node_physical_path",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "[propext, Quot.sound] on complete physical routes",
+      "evidence": [
+        "constFalse_reaches_done",
+        "constTrue_reaches_done",
+        "neg_reaches_done",
+        "and_reaches_done",
+        "or_reaches_done",
+        "input_reaches_done"
+      ],
+      "modules": [
+        "MCore.Real.P01NeedExprCompositeNTM",
+        "MCore.Real.P01NeedExprCompositeRun"
+      ],
+      "name": "need_expr_six_tag_composite",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "[propext, Quot.sound]",
+      "evidence": [
+        "empty_frames_reaches_doneValue",
+        "neg_reaches_doneValue",
+        "andRight_reaches_doneValue",
+        "orRight_reaches_doneValue",
+        "andLeft_reaches_doneNeed",
+        "orLeft_reaches_doneNeed"
+      ],
+      "modules": [
+        "MCore.Real.P01HaveValueCompositeNTM",
+        "MCore.Real.P01HaveValueCompositeRun"
+      ],
+      "name": "have_value_composite",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "Simulation theorems [propext]; run/refinement/envelope theorems [propext, Quot.sound]",
+      "evidence": [
+        "needSimulation",
+        "haveSimulation",
+        "need_runBranches_map",
+        "have_runBranches_map",
+        "need_mem_lift",
+        "have_mem_lift",
+        "12 physical evalStep branches bounded by one envelope"
+      ],
+      "modules": [
+        "MCore.Real.P01EvalStepCompositeNTM",
+        "MCore.Real.P01EvalStepCompositeRun",
+        "MCore.Real.P01EvalStepSemanticRefinement",
+        "MCore.Real.P01EvalStepEnvelope"
+      ],
+      "name": "unified_eval_step_ntm",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "predominantly [propext, Quot.sound]; some certificate construction uses Classical.choice",
+      "evidence": [
+        "checked tag prefix",
+        "constant certificates",
+        "input certificate",
+        "need-tag certificates",
+        "have-value frame certificates",
+        "neg/and/or circuit certificates"
+      ],
+      "modules": [
+        "MCore.Real.P01CheckedEvalRunLoopNTM",
+        "MCore.Real.P01CheckedEvalRunPhaseLift",
+        "MCore.Real.P01CheckedEvalRunTagPrefix",
+        "MCore.Real.P01CheckedEvalRunBaseCases",
+        "MCore.Real.P01CheckedEvalRunInputTag",
+        "MCore.Real.P01CheckedEvalRunHaveValue",
+        "MCore.Real.P01CheckedEvalRunNeedTags",
+        "MCore.Real.P01CheckedEvalRunCircuitCertificate"
+      ],
+      "name": "checked_eval_run",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "no sorryAx; theorem-specific profiles include propext/Quot.sound and, where construction extracts witnesses, Classical.choice",
+      "evidence": [
+        "prepared_nonempty_reaches_eval_start",
+        "checkedEvalSimulation",
+        "checked_eval_runBranches_map",
+        "prepared_cnf_reaches_semantic_final",
+        "prepared_cnf_reaches_accepting_iff_eval_true",
+        "canonical_witness_reaches_accepting_iff_eval_true"
+      ],
+      "modules": [
+        "MCore.Real.P01CheckedVerifierCompositeNTM",
+        "MCore.Real.P01CheckedVerifierRun"
+      ],
+      "name": "checked_verifier_whole_run",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "no sorryAx; and/or rejection certificates include Classical.choice",
+      "evidence": [
+        "input_reject_certificate",
+        "const_reject_certificate",
+        "not_reject_certificate",
+        "and_reject_certificate",
+        "or_reject_certificate",
+        "root_disallowed_reaches_reject"
+      ],
+      "modules": [
+        "MCore.Real.P01CheckedEvalReject"
+      ],
+      "name": "checked_rejection",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "no sorryAx",
+      "evidence": [
+        "needExpr_transition_length_le_one",
+        "haveValue_transition_length_le_one",
+        "checkedEval_transition_length_le_one",
+        "checkedVerifier_transition_length_le_one",
+        "checkedVerifier_runBranches_length_le_one",
+        "haltsWithin_of_reaches_halted"
+      ],
+      "modules": [
+        "MCore.Real.P01CheckedVerifierDeterminism"
+      ],
+      "name": "operational_determinism",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "checkedVerifierGlobalTimeBound_poly has no axioms; envelope inequalities use propext/Quot.sound",
+      "evidence": [
+        "constTagCompositeFuel_le_envelope",
+        "pushTagCompositeFuel_le_envelope",
+        "inputNodeCompositeFuel_le_envelope",
+        "inputTagCompositeFuel_le_envelope",
+        "checkedTagPrefixFuel_le_envelope",
+        "checkedPushTagFuel_le_envelope",
+        "checkedInputTagFuel_le",
+        "checkedVerifierGlobalTimeBound_poly",
+        "evaluation_plus_scan_le_global"
+      ],
+      "modules": [
+        "MCore.Real.P01CheckedVerifierBudget",
+        "MCore.Real.P01CheckedVerifierGlobalBudget"
+      ],
+      "name": "checked_verifier_runtime_budget",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "[propext] or [propext, Quot.sound]",
+      "evidence": [
+        "after_tag",
+        "after_push_tag",
+        "after_input",
+        "replace_top_frame",
+        "pop_frame",
+        "consumed_add_three_le",
+        "input_index_le"
+      ],
+      "modules": [
+        "MCore.Real.P01CheckedVerifierInvariant"
+      ],
+      "name": "checked_layout_invariant",
+      "status": "GREEN"
+    },
+    {
+      "axiom_profile": "source-hygiene gate passed",
+      "evidence": [
+        "certificate workflow SUCCESS",
+        "fail-proof-all-gaps workflow SUCCESS",
+        "global audit/*.log sorryAx scan passed"
+      ],
+      "name": "fail_proof_global_hygiene",
+      "status": "GREEN"
+    }
+  ],
+  "certifying_runs": [
+    {
+      "conclusion": "success",
+      "id": 36700802088,
+      "workflow": "certificate"
+    },
+    {
+      "conclusion": "success",
+      "id": 36700802092,
+      "workflow": "fail-proof-all-gaps"
+    }
+  ],
+  "current_terminal_status": {
+    "g21_pointwise": "OPEN_MATH",
+    "p01_construction_gap": "OPEN",
+    "p_vs_np_ledger": "0/2 until the official evidence terms are wired",
+    "produceG21": "MISSING",
+    "produceP01": "MISSING"
+  },
+  "does_not_certify": [
+    "A closed term named produceP01 : P01MachineConstruction.",
+    "An inhabitant of P01ConstructionGap / Nonempty P01MachineConstruction.",
+    "A closed term produceG21 : G21Pointwise.",
+    "SAT not in P.",
+    "P != NP.",
+    "Any Clay/Millennium Prize claim."
+  ],
+  "fail_closed_rules": {
+    "admit_allowed": false,
+    "hidden_axiom_promotion_allowed": false,
+    "proxy_to_endpoint_promotion_allowed": false,
+    "sorry_allowed": false,
+    "vacuous_witness_promotion_allowed": false
+  },
+  "generated_date": "2026-09-30",
+  "milestone_green_pairs": [
+    {"certificate_run":36688908870,"fail_proof_run":36688908832,"sha":"40feb35474894084a88f22a51cb051ccaca3e9d0"},
+    {"certificate_run":36689256557,"fail_proof_run":36689256618,"sha":"1ddf1f7d81e2f9c3ca43644e9766c07574f66b33"},
+    {"certificate_run":36690136254,"fail_proof_run":36690136263,"sha":"60696aa1dc6fd65136dc89f3d34de346f1fe2361"},
+    {"certificate_run":36690206609,"fail_proof_run":36690206694,"sha":"eee8a7d352037ea84f6c83e0383846a74fd77191"},
+    {"certificate_run":36692399421,"fail_proof_run":36692399422,"sha":"1b2dab68d3efe04984a81add1de7acb958f6cf63"},
+    {"certificate_run":36693495165,"fail_proof_run":36693494914,"sha":"a93fda0968fcc6a5dd354c2b422529de15ab8457"},
+    {"certificate_run":36697397627,"fail_proof_run":36697397633,"sha":"6c63facea71ecd4a9d5f6b0c336c971f8c162d1b"},
+    {"certificate_run":36698600649,"fail_proof_run":36698600678,"sha":"4c82e850dec88692575a7dfeddb394f5f3c6b3e4"},
+    {"certificate_run":36699060495,"fail_proof_run":36699060518,"sha":"64379600c747113dd791a59ec39b63bf0a61e413"},
+    {"certificate_run":36699501788,"fail_proof_run":36699501801,"sha":"4ab2502326febb19576b700e143ce6f2cb64f5c0"},
+    {"certificate_run":36700015867,"fail_proof_run":36700015848,"sha":"d2dce380e895417643216b27f5b79a6a514de22b"},
+    {"certificate_run":36700596118,"fail_proof_run":36700596334,"sha":"accfc83b84a1218d9562a375b8352db0578d2318"},
+    {"certificate_run":36700601901,"fail_proof_run":36700601978,"sha":"26a0862e0eaff2a8ee8bfb2faf3ad1a84b3ba7af"},
+    {"certificate_run":36700802088,"fail_proof_run":36700802092,"sha":"b137c0d674347d7f7302f77a6eb4c36d563af1b7"}
+  ],
+  "repository": "ShantiDraconis/m-core-p-vs-np",
+  "schema": "atk.p01.green-certificate.v2",
+  "source_branch": "atk/next-p01-input-node-refinement-20260929",
+  "source_commit": "b137c0d674347d7f7302f77a6eb4c36d563af1b7",
+  "source_status": "GREEN_CERTIFIABLE"
+}
