@@ -74,7 +74,7 @@ theorem producer_iff_pointwise :
 /--
 OPEN_MATH endpoint.
 
-Any future proof should inhabit this theorem without axioms/sorry/admit.
+Any future proof should inhabit this theorem using only kernel-checked derivations.
 Once inhabited, P02BoundedFinalBridge already promotes it to D3, P02 and the
 external certificate chain.
 -/
