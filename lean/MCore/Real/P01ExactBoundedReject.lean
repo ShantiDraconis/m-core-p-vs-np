@@ -16,6 +16,7 @@ open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunBoundedHelpers
 open P01CheckedEvalRunBoundedCertificate
 open P01CheckedEvalReject
+open P01CheckedEvalRunBaseCases
 open P01CheckedVerifierInvariant
 open P01CheckedVerifierBudget
 open P01CheckedVerifierGlobalBudget
@@ -25,6 +26,12 @@ open P01NTMRunLaws
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
+
+/-- Every canonical circuit encoding contains at least its three-bit root tag. -/
+theorem encodeCircuit_ne_nil (phi : CircuitK1.Circuit) :
+    encodeCircuit phi ≠ [] := by
+  cases phi <;> simp [encodeCircuit]
+
 
 /-- Bounded negative counterpart of the exact positive circuit certificate. -/
 def ExactBoundedCheckedCircuitRejectCertificate
@@ -472,7 +479,7 @@ theorem and_exact_bounded_reject
             intro hnil
             have henc : encodeCircuit right = [] :=
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
+            exact (encodeCircuit_ne_nil right) henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
@@ -548,7 +555,7 @@ theorem and_exact_bounded_reject
                 (encodeEvalFrames frames)
                 (.andRight (evalCircuit sigma left))
               simpa [encodeCircuit, List.append_assoc] using hLayout
-            simpa [afterLeft, leftConsumed] using hp
+            convert hp using 1 <;> simp [afterLeft, leftConsumed] <;> omega
 
           obtain ⟨m3, hm3, cfgReject, h3, hrej⟩ :=
             hrightReject hrightMode tail
@@ -774,7 +781,7 @@ theorem or_exact_bounded_reject
             intro hnil
             have henc : encodeCircuit right = [] :=
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
+            exact (encodeCircuit_ne_nil right) henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
@@ -850,7 +857,7 @@ theorem or_exact_bounded_reject
                 (encodeEvalFrames frames)
                 (.orRight (evalCircuit sigma left))
               simpa [encodeCircuit, List.append_assoc] using hLayout
-            simpa [afterLeft, leftConsumed] using hp
+            convert hp using 1 <;> simp [afterLeft, leftConsumed] <;> omega
 
           obtain ⟨m3, hm3, cfgReject, h3, hrej⟩ :=
             hrightReject hrightMode tail
