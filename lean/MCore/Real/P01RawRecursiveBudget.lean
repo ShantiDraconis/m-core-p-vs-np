@@ -63,6 +63,33 @@ theorem loopEnvelope_le_rawChunk (n : Nat) :
 
 /-- A full canonical child plus two local continuation envelopes fits one raw
 cubic block. -/
+theorem step_plus_linear_le_rawChunk (n : Nat) :
+    checkedStepEnvelope n + (n + 1) ≤ rawChunk n := by
+  have hs := stepEnvelope_le_rawChunk n
+  have hp := square_le_cube n
+  have hstep :
+      checkedStepEnvelope n ≤ 128 * (n + 1) ^ 3 := by
+    unfold checkedStepEnvelope
+    exact Nat.mul_le_mul_left 128 hp
+  have hlin : n + 1 ≤ (n + 1) ^ 3 := by
+    calc
+      n + 1 ≤ (n + 1) * (n + 1) :=
+        Nat.le_mul_of_pos_right (n + 1) (by omega)
+      _ ≤ ((n + 1) * (n + 1)) * (n + 1) :=
+        Nat.mul_le_mul_right (n + 1)
+          (Nat.le_mul_of_pos_right (n + 1) (by omega))
+      _ = (n + 1) ^ 3 := by ring
+  have hsum :
+      checkedStepEnvelope n + (n + 1) ≤
+        129 * (n + 1) ^ 3 := by
+    have := Nat.add_le_add hstep hlin
+    omega
+  have hcoef :
+      129 * (n + 1) ^ 3 ≤ 8192 * (n + 1) ^ 3 :=
+    Nat.mul_le_mul_right ((n + 1) ^ 3) (by omega)
+  simpa [rawChunk, checkedVerifierExactTimeBound] using
+    Nat.le_trans hsum hcoef
+
 theorem circuit_plus_two_loops_le_rawChunk
     (n : Nat) (phi : CircuitK1.Circuit)
     (henc : (encodeCircuit phi).length ≤ n) :
