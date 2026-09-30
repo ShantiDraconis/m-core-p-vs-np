@@ -91,11 +91,11 @@ theorem prepared_cnf_reaches_semantic_final
       have h0' :
           ({ state := .eval checkedEvalRunLoopMachine.initial,
              tape := evalCursorStackEndTape witness 0
-               (encodeCircuit phi) [] 0 } : CheckedVerifierConfig) ∈
+               (b :: bs) [] 0 } : CheckedVerifierConfig) ∈
             checkedVerifierMachine.runBranches m0
               [{ state := checkedVerifierMachine.initial,
-                 tape := preparedTape witness (encodeCircuit phi) }] := by
-        simpa [hsrc] using h0
+                 tape := preparedTape witness (b :: bs) }] := by
+        exact h0
 
       have hcert :=
         circuit_certificate sigma witness phi .cnf
@@ -116,7 +116,7 @@ theorem prepared_cnf_reaches_semantic_final
             checkedVerifierMachine.runBranches m1
               [({ state := .eval checkedEvalRunLoopMachine.initial,
                   tape := evalCursorStackEndTape witness 0
-                    (encodeCircuit phi) [] 0 } :
+                    (b :: bs) [] 0 } :
                 CheckedVerifierConfig)] := by
         have hlift :=
           checked_eval_mem_lift m1 cEval
@@ -124,21 +124,22 @@ theorem prepared_cnf_reaches_semantic_final
                tape := tape1 } :
               Configuration CheckedEvalRunState (Option Bool))
             h1src
-        simpa [cEval, checkedEvalEmbed] using hlift
+        simpa [cEval, checkedEvalEmbed, P01NTMRunLaws.liftConfig] using hlift
 
       have hAll :=
         mem_runBranches_trans checkedVerifierMachine
           m0 m1
           [{ state := checkedVerifierMachine.initial,
-             tape := preparedTape witness (encodeCircuit phi) }]
+             tape := preparedTape witness (b :: bs) }]
           ({ state := .eval checkedEvalRunLoopMachine.initial,
              tape := evalCursorStackEndTape witness 0
-               (encodeCircuit phi) [] 0 } : CheckedVerifierConfig)
+               (b :: bs) [] 0 } : CheckedVerifierConfig)
           ({ state := .eval (.final (evalCircuit sigma phi)),
              tape := tape1 } : CheckedVerifierConfig)
           h0' hLift
 
-      exact ⟨m0 + m1, tape1, hAll⟩
+      refine ⟨m0 + m1, tape1, ?_⟩
+      simpa [hsrc] using hAll
 
 /-- On valid CNF input, checked-verifier acceptance is exactly the semantic
 circuit Boolean. -/
