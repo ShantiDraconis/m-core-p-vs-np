@@ -18,58 +18,37 @@ open P01MaterialGlobalBudget
 open P01RawVerifierMaterialCore
 open P01GuessedWitnessRelation
 
-/-- The preparation half is a concrete existing inhabitant. -/
 theorem prep_phase_inhabited :
     Nonempty P01PrepPhase :=
   ⟨prepPhase⟩
 
-/-- Relabel a raw material verifier core into the exact Fin-indexed verifier
-phase expected by the already-certified sequential assembly. -/
+/-- Raw checked-verifier semantics packaged directly into the explicit-state
+verifier interface.  Relabelling to Fin is performed once, downstream, by
+P01IntegratedAssembly.verifierFinMachine. -/
 def verifierPhaseOfRawCore
     (K : RawVerifierMaterialCore) :
     P01VerifierPhase prepPhase.layout where
+  State := CheckedVerifierState
   stateCount := checkedVerifierStateCount
-  machine := checkedVerifierFinMachine
-  blank_none := checkedVerifierFinMachine_blank
+  encode := checkedVerifierStateEncode
+  decode := checkedVerifierStateDecode
+  decode_encode := checkedVerifierStateDecode_encode
+  machine := checkedVerifierMachine
+  blank_none := checkedVerifierMachine_blank
   timeBound := materialVerifierGlobalTimeBound
   time_poly := materialVerifierGlobalTimeBound_poly
   halts := by
     intro bs w hw
-    let cRaw : Configuration CheckedVerifierState (Option Bool) :=
-      { state := checkedVerifierMachine.initial,
-        tape := preparedTape w bs }
-    have hRaw := K.halts bs w hw
-    have hFin :=
-      (checkedVerifierFinMachine_haltsWithin_iff
-        (materialVerifierGlobalTimeBound bs.length) cRaw).2 hRaw
-    simpa [cRaw, P01NTMRunLaws.liftConfig, prepPhase_layout] using hFin
+    simpa [prepPhase_layout] using K.halts bs w hw
   correct := by
     intro bs w hw
-    let cRaw : Configuration CheckedVerifierState (Option Bool) :=
-      { state := checkedVerifierMachine.initial,
-        tape := preparedTape w bs }
-    have hRel :=
-      checkedVerifierFinMachine_acceptsWithin_iff
-        (materialVerifierGlobalTimeBound bs.length) cRaw
-    have hRaw := K.correct bs w hw
-    calc
-      checkedVerifierFinMachine.AcceptsWithin
-          (materialVerifierGlobalTimeBound bs.length)
-          { state := checkedVerifierFinMachine.initial,
-            tape := prepPhase.layout bs w }
-        ↔ checkedVerifierMachine.AcceptsWithin
-            (materialVerifierGlobalTimeBound bs.length) cRaw := by
-              simpa [cRaw, P01NTMRunLaws.liftConfig, prepPhase_layout] using hRel
-      _ ↔ VerifyBits bs w := hRaw
+    simpa [prepPhase_layout] using K.correct bs w hw
 
-/-- Once the raw physical verifier core is inhabited, the full P01 machine
-construction follows with no additional mathematical premise. -/
 theorem p01_of_raw_material_core
     (K : RawVerifierMaterialCore) :
     P01FinalCertificate.P01ConstructionGap :=
   p01_of_phases prepPhase (verifierPhaseOfRawCore K)
 
-/-- Exact current P01 reduction. -/
 theorem p01_reduced_to_raw_core :
     RawVerifierMaterialCore →
       P01FinalCertificate.P01ConstructionGap :=
