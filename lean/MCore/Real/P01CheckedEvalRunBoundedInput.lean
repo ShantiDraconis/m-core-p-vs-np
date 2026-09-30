@@ -76,13 +76,10 @@ theorem inputTag_checked_reaches_within_loopEnvelope
       checkedInputTagFuel_le
         n consumed i tail frameStack
         hsource hc3 hindex htail hframes
-  have hstep :
-      checkedStepEnvelope n ≤ checkedLoopStepEnvelope n :=
-    checkedStepEnvelope_le_loopEnvelope n
   have hfuel :
       checkedInputTagFuel consumed i tail frameStack ≤
-        checkedLoopStepEnvelope n :=
-    Nat.le_trans h hstep
+        checkedLoopStepEnvelope n := by
+    simpa [checkedLoopStepEnvelope] using h
   exact ⟨m, Nat.le_trans hm hfuel, hrun⟩
 
 /-- The input route also fits any larger accumulated budget. -/
