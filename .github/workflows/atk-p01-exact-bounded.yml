@@ -6,6 +6,8 @@ on:
       - 'lean/MCore/Real/P01ExactBoundedCircuitProducer.lean'
       - 'lean/MCore/Real/P01ExactOrBounded.lean'
       - 'lean/MCore/Real/P01CheckedVerifierGlobalBudget.lean'
+      - 'lean/MCore/Real/P01CheckedEvalRunBoundedInput.lean'
+      - 'lean/MCore/Real/P01CheckedEvalRunBoundedHelpers.lean'
       - '.github/workflows/atk-p01-exact-bounded.yml'
   workflow_dispatch:
 permissions:
