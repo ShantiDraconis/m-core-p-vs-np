@@ -1,5 +1,3 @@
-import Mathlib.Data.Fintype.Basic
-import MCore.Real.P01VerifierFiniteState
 import MCore.Real.P01CheckedVerifierCompositeNTM
 import MCore.Real.P01IntegratedAssembly
 
@@ -10,6 +8,21 @@ namespace P01CheckedVerifierFiniteState
 open P01IntegratedAssembly
 open P01CheckedVerifierCompositeNTM
 
+deriving instance Fintype for P01EncodedStackEvaluator.EvalFrame
+deriving instance Fintype for P01InputReturnMode.InputReturnMode
+deriving instance Fintype for P01InputReturnMode.InputReturnClassifyState
+deriving instance Fintype for P01InputIndexLookahead.InputIndexLookaheadState
+deriving instance Fintype for P01WitnessIndexedReadPreserving.PreservingReadState
+deriving instance Fintype for P01InputAfterReadReturn.InputAfterReadReturnState
+deriving instance Fintype for P01InputNodeCompositeNTM.InputNodeCompositeState
+deriving instance Fintype for P01EvalCursorMachine.CursorSeekState
+deriving instance Fintype for P01EvalCursorRoundTrip.CursorReturnState
+deriving instance Fintype for P01NeedExprTagDecode.NeedExprTag
+deriving instance Fintype for P01NeedExprTagDecode.TagDecodeState
+deriving instance Fintype for P01EvalFramePushMachine.FramePushState
+deriving instance Fintype for P01EvalFramePopMachineV2.FramePopState
+deriving instance Fintype for P01NeedExprCompositeNTM.NeedExprCompositeState
+deriving instance Fintype for P01HaveValueCompositeNTM.HaveValueCompositeState
 deriving instance Fintype for P01CNFMode.SyntaxMode
 deriving instance Fintype for P01CheckedEvalRunLoopNTM.CheckedEvalRunState
 deriving instance Fintype for CheckedVerifierState
