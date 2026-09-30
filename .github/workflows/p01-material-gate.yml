@@ -39,7 +39,10 @@ jobs:
             MCore.Real.P01MaterialGlobalBudget \
             MCore.Real.P01MalformedRawBoundedReject \
             MCore.Real.P01CheckedVerifierFiniteState \
-            MCore.Real.P01MaterialInhabitantFrontier
+            MCore.Real.P01MaterialInhabitantFrontier \
+            MCore.Real.P01GlobalParserBound \
+            MCore.Real.CanonicalSATParserNTM \
+            MCore.Real.P01ParserWitnessComposition
 
       - name: Material axiom audit
         shell: bash
@@ -50,6 +53,7 @@ jobs:
           import MCore.Real.P01CheckedEvalRejectBounded
           import MCore.Real.P01MalformedRawBoundedReject
           import MCore.Real.P01MaterialInhabitantFrontier
+          import MCore.Real.P01ParserWitnessComposition
           #print axioms MCore.Real.P01ExactBoundedAll.exact_bounded_all
           #print axioms MCore.Real.P01CheckedEvalRejectBounded.bounded_circuit_reject_certificate
           #print axioms MCore.Real.P01MalformedRawBoundedReject.decodeCircuit_none_split
@@ -58,6 +62,8 @@ jobs:
           #print axioms MCore.Real.P01MalformedRawBoundedReject.checkedCircuitBudget_plus_loop_le_material
           #print axioms MCore.Real.P01MalformedRawBoundedReject.malformed_raw_reaches_reject_bounded_of_core
           #print axioms MCore.Real.P01MaterialInhabitantFrontier.p01_of_material_core
+          #print axioms MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate
+          #print axioms MCore.Real.P01ParserWitnessComposition.parserPhaseCertificate
           EOF
           lake env lean P01MaterialAudit.lean 2>&1 | tee P01MaterialAudit.log
           if grep -q 'sorryAx' P01MaterialAudit.log; then
