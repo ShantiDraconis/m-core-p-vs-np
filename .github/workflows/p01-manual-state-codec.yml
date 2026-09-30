@@ -1,0 +1,63 @@
+name: P01 Manual State Codec
+
+on:
+  push:
+    branches:
+      - atk/p01-verifier-phase-mincut-clean-20260930
+    paths:
+      - 'lean/MCore/Real/P01ManualStateCodecBase.lean'
+      - 'lean/MCore/Real/P01ManualStateCodecComposite.lean'
+      - 'lean/MCore/Real/P01ManualCheckedVerifierFiniteState.lean'
+      - '.github/workflows/p01-manual-state-codec.yml'
+      - 'lean-toolchain'
+      - 'lakefile.lean'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codec:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build explicit codecs
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01ManualStateCodecBase
+          lake build MCore.Real.P01ManualStateCodecComposite
+          lake build MCore.Real.P01ManualCheckedVerifierFiniteState
+      - name: Axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P01ManualCodecAudit.lean <<'EOF'
+          import MCore.Real.P01ManualCheckedVerifierFiniteState
+          #print axioms MCore.Real.P01ManualStateCodecBase.inputNodeDecode_code
+          #print axioms MCore.Real.P01ManualStateCodecComposite.needExprDecode_code
+          #print axioms MCore.Real.P01ManualStateCodecComposite.haveValueDecode_code
+          #print axioms MCore.Real.P01ManualStateCodecComposite.checkedEvalDecode_code
+          #print axioms MCore.Real.P01ManualCheckedVerifierFiniteState.checkedVerifierStateDecode_encode
+          #print axioms MCore.Real.P01ManualCheckedVerifierFiniteState.checkedVerifierFinMachine_haltsWithin_iff
+          #print axioms MCore.Real.P01ManualCheckedVerifierFiniteState.checkedVerifierFinMachine_acceptsWithin_iff
+          EOF
+          lake env lean P01ManualCodecAudit.lean | tee P01ManualCodecAudit.log
+          ! grep -E 'sorryAx' P01ManualCodecAudit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          for FILE in             lean/MCore/Real/P01ManualStateCodecBase.lean             lean/MCore/Real/P01ManualStateCodecComposite.lean             lean/MCore/Real/P01ManualCheckedVerifierFiniteState.lean
+          do
+            ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$FILE"
+            ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$FILE"
+          done
