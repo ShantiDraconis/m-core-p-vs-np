@@ -367,10 +367,12 @@ theorem and_reject_certificate
           simpa [varBound] using
             Nat.lt_of_lt_of_le hi (Nat.le_max_right _ _))
 
-      have hinvalidChildren :
-          modeCheck .cnf left && modeCheck .cnf right = false := by
+      have hinvalidRight :
+          modeCheck .cnf left = true →
+            modeCheck .cnf right = false := by
+        intro hleftTrue
         rw [modeCheck_and] at hinvalid
-        simpa [tagAllowed] using hinvalid
+        simpa [tagAllowed, hleftTrue] using hinvalid
 
       obtain ⟨m0, h0⟩ :=
         and_checked_reaches_need
@@ -423,8 +425,8 @@ theorem and_reject_certificate
           exact ⟨m0 + m1, cfgReject, hAll, hrej⟩
 
       | true =>
-          have hrightMode : modeCheck .cnf right = false := by
-            simpa [hleftMode] using hinvalidChildren
+          have hrightMode : modeCheck .cnf right = false :=
+            hinvalidRight hleftMode
 
           have hleftPositive :=
             P01CheckedEvalRunCircuitCertificate.circuit_certificate
@@ -567,10 +569,12 @@ theorem or_reject_certificate
               (encodeEvalFrames frames) padding }
       exact ⟨m, cfg, by simpa [cfg] using hrun, rfl⟩
   | true =>
-      have hinvalidChildren :
-          modeCheck .clause left && modeCheck .clause right = false := by
+      have hinvalidRight :
+          modeCheck .clause left = true →
+            modeCheck .clause right = false := by
+        intro hleftTrue
         rw [modeCheck_or] at hinvalid
-        simpa [hroot] using hinvalid
+        simpa [hroot, hleftTrue] using hinvalid
 
       have hlenMax :
           max (varBound left) (varBound right) ≤ witness.length := by
@@ -647,8 +651,8 @@ theorem or_reject_certificate
           exact ⟨m0 + m1, cfgReject, hAll, hrej⟩
 
       | true =>
-          have hrightMode : modeCheck .clause right = false := by
-            simpa [hleftMode] using hinvalidChildren
+          have hrightMode : modeCheck .clause right = false :=
+            hinvalidRight hleftMode
 
           have hleftPositive :=
             P01CheckedEvalRunCircuitCertificate.circuit_certificate
