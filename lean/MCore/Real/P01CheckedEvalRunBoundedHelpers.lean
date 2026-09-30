@@ -193,11 +193,136 @@ theorem thirteen_le_stepEnvelope (n : Nat) :
     13 ≤ checkedLoopStepEnvelope n :=
   small_const_le_stepEnvelope n 13 (by omega)
 
+
+/-- Negation continuation under the common checked-loop envelope. -/
+theorem negReturn_checked_reaches_have_within_envelope
+    (n : Nat)
+    (mode : P01CNFMode.SyntaxMode)
+    (witness unread frameStack : BitString)
+    (consumed padding : Nat)
+    (v : Bool) :
+    ∃ m ≤ checkedLoopStepEnvelope n,
+      ({ state := .have mode (.start (!v)),
+         tape :=
+           evalCursorStackEndTape witness consumed unread
+             frameStack (padding + 3) } : CheckedConfig) ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .have mode (.start v),
+             tape :=
+               evalCursorStackEndTape witness consumed unread
+                 (encodeEvalFrame .neg ++ frameStack) padding }] := by
+  obtain ⟨m, hm, hrun⟩ :=
+    negReturn_checked_reaches_have
+      mode witness unread frameStack consumed padding v
+  exact ⟨m, Nat.le_trans hm
+    (small_const_le_stepEnvelope n 9 (by omega)), hrun⟩
+
+/-- AND-left continuation under the common checked-loop envelope. -/
+theorem andLeftReturn_checked_reaches_need_within_envelope
+    (n : Nat)
+    (mode : P01CNFMode.SyntaxMode)
+    (witness unread frameStack : BitString)
+    (consumed padding : Nat)
+    (v : Bool) :
+    ∃ m ≤ checkedLoopStepEnvelope n,
+      ({ state := .need .cnf
+           P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed unread
+             (encodeEvalFrame (.andRight v) ++ frameStack)
+             ((((padding + 3) - 1) - 1) - 1) } : CheckedConfig) ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .have mode (.start v),
+             tape :=
+               evalCursorStackEndTape witness consumed unread
+                 (encodeEvalFrame .andLeft ++ frameStack) padding }] := by
+  obtain ⟨m, hm, hrun⟩ :=
+    andLeftReturn_checked_reaches_need
+      mode witness unread frameStack consumed padding v
+  exact ⟨m, Nat.le_trans hm
+    (small_const_le_stepEnvelope n 13 (by omega)), hrun⟩
+
+/-- AND-right continuation under the common checked-loop envelope. -/
+theorem andRightReturn_checked_reaches_have_within_envelope
+    (n : Nat)
+    (mode : P01CNFMode.SyntaxMode)
+    (witness unread frameStack : BitString)
+    (consumed padding : Nat)
+    (l v : Bool) :
+    ∃ m ≤ checkedLoopStepEnvelope n,
+      ({ state := .have .cnf (.start (Bool.and l v)),
+         tape :=
+           evalCursorStackEndTape witness consumed unread
+             frameStack (padding + 3) } : CheckedConfig) ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .have mode (.start v),
+             tape :=
+               evalCursorStackEndTape witness consumed unread
+                 (encodeEvalFrame (.andRight l) ++ frameStack) padding }] := by
+  obtain ⟨m, hm, hrun⟩ :=
+    andRightReturn_checked_reaches_have
+      mode witness unread frameStack consumed padding l v
+  exact ⟨m, Nat.le_trans hm
+    (small_const_le_stepEnvelope n 9 (by omega)), hrun⟩
+
+/-- OR-left continuation under the common checked-loop envelope. -/
+theorem orLeftReturn_checked_reaches_need_within_envelope
+    (n : Nat)
+    (mode : P01CNFMode.SyntaxMode)
+    (witness unread frameStack : BitString)
+    (consumed padding : Nat)
+    (v : Bool) :
+    ∃ m ≤ checkedLoopStepEnvelope n,
+      ({ state := .need .clause
+           P01NeedExprCompositeNTM.needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed unread
+             (encodeEvalFrame (.orRight v) ++ frameStack)
+             ((((padding + 3) - 1) - 1) - 1) } : CheckedConfig) ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .have mode (.start v),
+             tape :=
+               evalCursorStackEndTape witness consumed unread
+                 (encodeEvalFrame .orLeft ++ frameStack) padding }] := by
+  obtain ⟨m, hm, hrun⟩ :=
+    orLeftReturn_checked_reaches_need
+      mode witness unread frameStack consumed padding v
+  exact ⟨m, Nat.le_trans hm
+    (small_const_le_stepEnvelope n 13 (by omega)), hrun⟩
+
+/-- OR-right continuation under the common checked-loop envelope. -/
+theorem orRightReturn_checked_reaches_have_within_envelope
+    (n : Nat)
+    (mode : P01CNFMode.SyntaxMode)
+    (witness unread frameStack : BitString)
+    (consumed padding : Nat)
+    (l v : Bool) :
+    ∃ m ≤ checkedLoopStepEnvelope n,
+      ({ state := .have .clause (.start (Bool.or l v)),
+         tape :=
+           evalCursorStackEndTape witness consumed unread
+             frameStack (padding + 3) } : CheckedConfig) ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .have mode (.start v),
+             tape :=
+               evalCursorStackEndTape witness consumed unread
+                 (encodeEvalFrame (.orRight l) ++ frameStack) padding }] := by
+  obtain ⟨m, hm, hrun⟩ :=
+    orRightReturn_checked_reaches_have
+      mode witness unread frameStack consumed padding l v
+  exact ⟨m, Nat.le_trans hm
+    (small_const_le_stepEnvelope n 9 (by omega)), hrun⟩
+
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.inputTag_checked_reaches_mode_within_envelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.pushTag_checked_reaches_need_within_envelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.have_reaches_outcome_within_envelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.nine_le_stepEnvelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.thirteen_le_stepEnvelope
+#print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.negReturn_checked_reaches_have_within_envelope
+#print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.andLeftReturn_checked_reaches_need_within_envelope
+#print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.andRightReturn_checked_reaches_have_within_envelope
+#print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.orLeftReturn_checked_reaches_need_within_envelope
+#print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.orRightReturn_checked_reaches_have_within_envelope
 
 end P01CheckedEvalRunBoundedHelpers
 end Real
