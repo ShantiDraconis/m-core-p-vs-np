@@ -34,11 +34,13 @@ jobs:
         run: |
           lake build MCore.Real.P01CheckedEvalRunExactCertificate
           lake build MCore.Real.P01BinaryLayoutConservation
+          lake build MCore.Real.P01BoundedOperatorBudget
       - name: Axiom audit
         run: |
           cat > P01ExactConsumptionAxioms.lean <<'EOF'
           import MCore.Real.P01CheckedEvalRunExactCertificate
           import MCore.Real.P01BinaryLayoutConservation
+          import MCore.Real.P01BoundedOperatorBudget
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_consumed_exact
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_exact_bounded_certificate
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.exact_to_bounded
@@ -46,6 +48,9 @@ jobs:
           #print axioms MCore.Real.P01BinaryLayoutConservation.or_right_layout
           #print axioms MCore.Real.P01BinaryLayoutConservation.and_consumed_arithmetic
           #print axioms MCore.Real.P01BinaryLayoutConservation.or_consumed_arithmetic
+          #print axioms MCore.Real.P01BoundedOperatorBudget.not_budget_absorbs
+          #print axioms MCore.Real.P01BoundedOperatorBudget.and_budget_absorbs
+          #print axioms MCore.Real.P01BoundedOperatorBudget.or_budget_absorbs
           EOF
           lake env lean P01ExactConsumptionAxioms.lean | tee p01-exact-consumption-axioms.txt
           ! grep -E 'sorryAx' p01-exact-consumption-axioms.txt
