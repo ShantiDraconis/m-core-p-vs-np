@@ -49,6 +49,12 @@ theorem lookahead_truncated_unary_reject
           List.map_replicate, List.replicate_succ,
           List.append_assoc]
   rw [hview]
+  change
+    (inputIndexLookaheadMachine.run (k + 1)
+      { state := .scanIndex,
+        tape :=
+          rightStreamTape base
+            (List.replicate k (some true) ++ suffix) }).state = .reject
   rw [run_add inputIndexLookaheadMachine k 1]
   rw [scanIndex_over_true k base suffix]
   simp [suffix, rightStreamTape, inputIndexLookaheadMachine,
@@ -79,18 +85,15 @@ theorem inputComposite_truncated_unary_reaches_dead
     simpa [c0] using
       lookahead_truncated_unary_reject
         witness frameStack consumed padding k
-  let tape :=
-    (inputIndexLookaheadMachine.run (k + 1) c0).tape
-  have heq :
-      inputIndexLookaheadMachine.run (k + 1) c0 =
-        ({ state := .reject, tape := tape } :
-          Configuration InputIndexLookaheadState (Option Bool)) := by
-    apply Configuration.ext
-    · exact hstate
-    · rfl
-  rw [heq] at hmem
-  refine ⟨m, hm, tape, ?_⟩
-  simpa [lookConfig] using hmem
+  cases hres :
+      inputIndexLookaheadMachine.run (k + 1) c0 with
+  | mk q tape =>
+      have hq : q = .reject := by
+        simpa [hres] using hstate
+      subst q
+      rw [hres] at hmem
+      refine ⟨m, hm, tape, ?_⟩
+      simpa [lookConfig] using hmem
 
 /-- The malformed composite target is active but has no successors. This is a
 fail-closed dead state rather than a labelled accepting/rejecting terminal. -/
