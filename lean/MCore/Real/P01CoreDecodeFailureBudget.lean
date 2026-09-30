@@ -74,13 +74,22 @@ theorem binary_right_path_le
           coreRejectPotential rightLength n ≤
         (1 + (24 * (encodeCircuit phi).length + 8) + 1 +
           32 * (rightLength + 1)) * E := by
-    unfold coreRejectPotential
-    dsimp [E]
-    exact Nat.add_le_add
-      (Nat.add_le_add
-        (Nat.le_refl _)
-        (Nat.add_le_add he (Nat.le_refl _)))
-      (Nat.le_refl _)
+    have hmono :
+        checkedLoopStepEnvelope n +
+            checkedCircuitBudget phi n +
+            checkedLoopStepEnvelope n +
+            coreRejectPotential rightLength n ≤
+          checkedLoopStepEnvelope n +
+            ((24 * (encodeCircuit phi).length + 8) *
+              checkedLoopStepEnvelope n) +
+            checkedLoopStepEnvelope n +
+            coreRejectPotential rightLength n := by
+      omega
+    exact Nat.le_trans hmono (by
+      unfold coreRejectPotential
+      dsimp [E]
+      simp only [Nat.add_mul, Nat.one_mul]
+      ac_rfl)
   have hc :
       1 + (24 * (encodeCircuit phi).length + 8) + 1 +
           32 * (rightLength + 1) ≤
@@ -105,8 +114,15 @@ theorem binary_left_semantic_reject_le
   have hsum :
       checkedLoopStepEnvelope n + checkedCircuitBudget phi n ≤
         (1 + (24 * (encodeCircuit phi).length + 8)) * E := by
-    dsimp [E]
-    exact Nat.add_le_add (Nat.le_refl _) he
+    have hmono :
+        checkedLoopStepEnvelope n + checkedCircuitBudget phi n ≤
+          checkedLoopStepEnvelope n +
+            ((24 * (encodeCircuit phi).length + 8) *
+              checkedLoopStepEnvelope n) := by
+      exact Nat.add_le_add_left he _
+    exact Nat.le_trans hmono (by
+      dsimp [E]
+      rw [Nat.add_mul, Nat.one_mul])
   have hc :
       1 + (24 * (encodeCircuit phi).length + 8) ≤
         32 * (3 + (encodeCircuit phi).length + rightLength + 1) := by
