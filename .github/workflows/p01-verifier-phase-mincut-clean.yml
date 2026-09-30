@@ -5,7 +5,8 @@ on:
     branches:
       - atk/p01-verifier-phase-mincut-clean-20260930
     paths:
-      - 'lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean lean/MCore/Real/P01CheckedVerifierGlobalCore.lean'
+      - 'lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean'
+      - 'lean/MCore/Real/P01CheckedVerifierGlobalCore.lean'
       - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
       - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
       - 'lean/MCore/Real/P01IntegratedAssembly.lean'
