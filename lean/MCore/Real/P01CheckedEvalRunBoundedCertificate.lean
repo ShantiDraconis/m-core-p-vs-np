@@ -26,6 +26,7 @@ open P01CheckedVerifierInvariant
 open P01CheckedVerifierGlobalBudget
 open P01CheckedEvalRunCircuitCertificate
 open P01CheckedEvalRunHaveValue
+open P01NTMRunLaws
 open P01CNFMode
 
 abbrev CheckedConfig :=
