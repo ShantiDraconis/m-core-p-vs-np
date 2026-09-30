@@ -712,7 +712,7 @@ theorem and_exact_bounded_certificate
         cases hl : modeCheck .cnf left <;>
           cases hr : modeCheck .cnf right <;>
           simp [tagAllowed, hl, hr] at h
-        exact ⟨hl, hr⟩
+        exact ⟨rfl, rfl⟩
       have hleftMode := hchildren.1
       have hrightMode := hchildren.2
 
@@ -1121,7 +1121,7 @@ theorem and_exact_bounded_certificate
                           unfold checkedCircuitBudget
                           dsimp [E]
                           rw [Nat.add_mul, Nat.add_mul]
-                  omega
+                          omega
                     _ ≤
                       8 * (evalStepCount left + evalStepCount right + 4) * E :=
                         hmul
@@ -1166,7 +1166,7 @@ theorem or_exact_bounded_certificate
       cases hl : modeCheck .clause left <;>
       cases hr : modeCheck .clause right <;>
       simp [ha, hl, hr] at h
-    exact ⟨⟨ha, hl⟩, hr⟩
+    exact ⟨⟨rfl, rfl⟩, rfl⟩
   have hAllowed : tagAllowed mode .or = true := hparts.1.1
   have hleftMode : modeCheck .clause left = true := hparts.1.2
   have hrightMode : modeCheck .clause right = true := hparts.2
@@ -1576,7 +1576,7 @@ theorem or_exact_bounded_certificate
                       unfold checkedCircuitBudget
                       dsimp [E]
                       rw [Nat.add_mul, Nat.add_mul]
-                  omega
+                      omega
                 _ ≤
                   8 * (evalStepCount left + evalStepCount right + 4) * E :=
                     hmul
