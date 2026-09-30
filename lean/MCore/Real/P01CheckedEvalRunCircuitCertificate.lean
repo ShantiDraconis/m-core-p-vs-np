@@ -290,14 +290,6 @@ theorem outcome_have_of_frames_ne_nil
       | cons f fs =>
           exact h
 
-/-- Canonical circuit encodings are never empty.  Kept local so the checked
-certificate does not depend on the non-checked circuit certificate module. -/
-theorem encodeCircuit_ne_nil (c : Circuit) :
-    CanonicalCircuitBits.encodeCircuit c ≠ [] := by
-  cases c <;> simp [CanonicalCircuitBits.encodeCircuit]
-
-#print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.encodeCircuit_ne_nil
-
 /-- Checked structural producer for conjunction.  A valid conjunction can
 only occur in CNF mode; both children are recursively checked in CNF mode. -/
 theorem and_certificate
@@ -397,7 +389,7 @@ theorem and_certificate
         intro hnil
         have henc : encodeCircuit right = [] :=
           (List.append_eq_nil.mp hnil).1
-        exact encodeCircuit_ne_nil right henc
+        exact P01EvalRunCircuitCertificate.encodeCircuit_ne_nil right henc
 
       obtain ⟨consumed1, padding1, hcfgLeft⟩ :=
         outcome_have_of_tail_ne_nil
