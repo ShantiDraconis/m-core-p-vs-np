@@ -442,7 +442,8 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul ⊢
-            simpa [Nat.add_mul, Nat.mul_assoc] using hmul
+            exact Nat.le_trans hraw (by
+              simpa [Nat.add_mul, Nat.mul_assoc] using hmul)
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .cnf right = false := by
@@ -606,8 +607,9 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul ⊢
-            simpa [Nat.add_mul, Nat.mul_assoc, Nat.add_assoc,
-              Nat.add_comm, Nat.add_left_comm] using hmul
+            exact Nat.le_trans hraw (by
+              simpa [Nat.add_mul, Nat.mul_assoc, Nat.add_assoc,
+                Nat.add_comm, Nat.add_left_comm] using hmul)
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 
