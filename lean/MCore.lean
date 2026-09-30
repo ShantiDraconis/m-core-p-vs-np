@@ -173,7 +173,6 @@ import MCore.Real.P01CheckedEvalRunBoundedConst
 
 import MCore.Real.P01CheckedEvalRunBoundedCertificate
 
-import MCore.Real.P01MaterialInhabitantFrontier
 
 import MCore.Real.P01ExactBoundedAll
 
@@ -184,3 +183,6 @@ import MCore.Real.P01MalformedRawBoundedReject
 import MCore.Real.P01ParserWitnessComposition
 
 import MCore.Real.P01ParserFirewall
+import MCore.Real.P01ExactBoundedBinary
+import MCore.Real.P01MaterialGlobalBudget
+import MCore.Real.P01RawVerifierMaterialCore
