@@ -632,7 +632,7 @@ theorem or_certificate
     intro hnil
     have henc : encodeCircuit right = [] :=
       (List.append_eq_nil_iff.mp hnil).1
-    exact encodeCircuit_ne_nil right henc
+    exact P01EvalRunCircuitCertificate.encodeCircuit_ne_nil right henc
 
   obtain ⟨consumed1, padding1, hcfgLeft⟩ :=
     outcome_have_of_tail_ne_nil
