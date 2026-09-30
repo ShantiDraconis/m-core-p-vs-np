@@ -107,7 +107,7 @@ structure PhysicalEvalRunCertificate where
             tape :=
               evalCursorStackEndTape witness 0 source [] pad }
       result final.state =
-          some (CircuitK1.evalCircuit (witnessAssignment witness) c) ∧
+          some (evalCircuit (witnessAssignment witness) c) ∧
         final.tape =
           evalCursorStackEndTape
             witness source.length [] [] pad
