@@ -82,7 +82,7 @@ theorem prepared_cnf_reaches_semantic_final_within_exact_global
       have hLayout :
           CheckedLayoutBound n 0
             (encodeCircuit phi ++ ([] : BitString))
-            (P01EncodedStackEvaluator.encodeEvalFrames []) := by
+            (P01EncodedFrameTape.encodeEvalFrames []) := by
         constructor
         · simp [n, hsrc]
         · simp
