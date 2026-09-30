@@ -129,7 +129,8 @@ private theorem tm_scan_run_reachable :
   | zero =>
       intro c
       refine ⟨0, by omega, ?_⟩
-      simp [NTM.runBranches]
+      change scanEmbed c ∈ [scanEmbed c]
+      simp
   | succ n ih =>
       intro c
       cases hhalt : sourceEndScanner.halting c.state with
