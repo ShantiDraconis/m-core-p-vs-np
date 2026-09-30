@@ -290,6 +290,7 @@ theorem neg_bounded_certificate
              (encodeEvalFrames frames) padding }]
       cNeed cfg1 h0' h1'
 
+  simp [CheckedLoopOutcome] at hout1
   rcases hout1 with ⟨consumed1, padding1, hcfg1⟩
   subst cfg1
 
