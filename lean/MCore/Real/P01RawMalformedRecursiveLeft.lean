@@ -37,7 +37,8 @@ theorem slice_add_child_budget
 /-- A syntactically forbidden root tag is already an explicit physical reject,
 and costs at most one raw budget slice. -/
 theorem disallowed_root_fail_closed
-    (witness rest frameStack : BitString)
+    (witness rest : BitString)
+    (frames : List EvalFrame)
     (mode : SyntaxMode)
     (consumed padding n fuel : Nat)
     (b0 b1 b2 : Bool)
@@ -45,17 +46,17 @@ theorem disallowed_root_fail_closed
       tagAllowed mode (decodeTagBits b0 b1 b2) = false)
     (hLayout :
       CheckedLayoutBound n consumed
-        (b0 :: b1 :: b2 :: rest) frameStack) :
+        (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
       cfg ∈ checkedEvalRunLoopMachine.runBranches m
         [{ state := .need mode needExprCompositeMachine.initial,
            tape :=
              evalCursorStackEndTape witness consumed
-               (b0 :: b1 :: b2 :: rest) frameStack padding }] ∧
+               (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames) padding }] ∧
       EvalFailClosed cfg := by
   obtain ⟨m, hm, tape, hmem⟩ :=
     root_tag_reject_within_envelope
-      n mode witness rest frameStack consumed padding
+      n mode witness rest (encodeEvalFrames frames) consumed padding
       b0 b1 b2 hdis hLayout.source_le hLayout.frames_le
   have hmSlice :
       m ≤ rawMalformedSlice n :=
@@ -74,7 +75,8 @@ physical fail-closed state is also a fail-closed state of the whole operator.
 -/
 theorem push_tag_then_recursive_fail_closed
     (fuel n consumed padding : Nat)
-    (witness rest frameStack : BitString)
+    (witness rest : BitString)
+    (frames : List EvalFrame)
     (mode : SyntaxMode)
     (b0 b1 b2 : Bool)
     (tag : NeedExprTag)
@@ -85,7 +87,7 @@ theorem push_tag_then_recursive_fail_closed
     (hChildNone : decodeCircuitCore fuel rest = none)
     (hLayout :
       CheckedLayoutBound n consumed
-        (b0 :: b1 :: b2 :: rest) frameStack)
+        (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames)
     (hWitness :
       (b0 :: b1 :: b2 :: rest).length ≤ witness.length)
     (hTag : decodeTagBits b0 b1 b2 = tag)
@@ -98,7 +100,7 @@ theorem push_tag_then_recursive_fail_closed
         [{ state := .need mode needExprCompositeMachine.initial,
            tape :=
              evalCursorStackEndTape witness consumed
-               (b0 :: b1 :: b2 :: rest) frameStack padding }] ∧
+               (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames) padding }] ∧
       EvalFailClosed cfg := by
   have hChildFuel : rest.length < fuel := by
     simp at hFuel
@@ -108,12 +110,12 @@ theorem push_tag_then_recursive_fail_closed
     omega
   have hChildLayout :
       CheckedLayoutBound n (consumed + 3) rest
-        (encodeEvalFrame frame ++ frameStack) :=
+        (encodeEvalFrames (frame :: frames)) :=
     after_push_tag n consumed b0 b1 b2 rest frameStack frame hLayout
 
   obtain ⟨m0, hm0, h0⟩ :=
     pushTag_checked_reaches_need_within_envelope
-      n mode witness rest frameStack consumed padding
+      n mode witness rest (encodeEvalFrames frames) consumed padding
       b0 b1 b2 tag frame hTag hAllowed hPost
       hLayout.source_le hLayout.frames_le
 
@@ -122,18 +124,18 @@ theorem push_tag_then_recursive_fail_closed
     { state := .need (childMode mode tag) needExprCompositeMachine.initial,
       tape :=
         evalCursorStackEndTape witness (consumed + 3)
-          rest (encodeEvalFrame frame ++ frameStack) padChild }
+          rest (encodeEvalFrames (frame :: frames)) padChild }
 
   have h0' :
       cNeed ∈ checkedEvalRunLoopMachine.runBranches m0
         [{ state := .need mode needExprCompositeMachine.initial,
            tape :=
              evalCursorStackEndTape witness consumed
-               (b0 :: b1 :: b2 :: rest) frameStack padding }] := by
+               (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames) padding }] := by
     simpa [cNeed, padChild] using h0
 
   obtain ⟨m1, hm1, cfg, h1, hfc⟩ :=
-    hRec witness rest (encodeEvalFrame frame ++ frameStack)
+    hRec witness rest (frame :: frames)
       (childMode mode tag) (consumed + 3) padChild n
       hChildFuel hChildNone hChildLayout hChildWitness
 
@@ -147,7 +149,7 @@ theorem push_tag_then_recursive_fail_closed
       [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
-             (b0 :: b1 :: b2 :: rest) frameStack padding }]
+             (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames) padding }]
       cNeed cfg h0' h1'
 
   have hm0Slice :
@@ -166,7 +168,8 @@ theorem push_tag_then_recursive_fail_closed
 
 theorem neg_child_failure
     (fuel n consumed padding : Nat)
-    (witness rest frameStack : BitString)
+    (witness rest : BitString)
+    (frames : List EvalFrame)
     (mode : SyntaxMode)
     (hRec : RawMalformedAtFuel fuel)
     (hFuel :
@@ -174,7 +177,7 @@ theorem neg_child_failure
     (hNone : decodeCircuitCore fuel rest = none)
     (hLayout :
       CheckedLayoutBound n consumed
-        (false :: true :: true :: rest) frameStack)
+        (false :: true :: true :: rest) encodeEvalFrames frames)
     (hWitness :
       (false :: true :: true :: rest).length ≤ witness.length) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
@@ -182,23 +185,24 @@ theorem neg_child_failure
         [{ state := .need mode needExprCompositeMachine.initial,
            tape :=
              evalCursorStackEndTape witness consumed
-               (false :: true :: true :: rest) frameStack padding }] ∧
+               (false :: true :: true :: rest) (encodeEvalFrames frames) padding }] ∧
       EvalFailClosed cfg := by
   cases hAllowed : tagAllowed mode .neg with
   | false =>
       exact disallowed_root_fail_closed
-        witness rest frameStack mode consumed padding n fuel
+        witness rest frames mode consumed padding n fuel
         false true true (by simpa using hAllowed) hLayout
   | true =>
       exact push_tag_then_recursive_fail_closed
-        fuel n consumed padding witness rest frameStack mode
+        fuel n consumed padding witness rest frames mode
         false true true .neg .neg hRec hFuel hNone hLayout hWitness
         rfl hAllowed
         (by simp [postTagState, childMode])
 
 theorem and_left_failure
     (fuel n consumed padding : Nat)
-    (witness rest frameStack : BitString)
+    (witness rest : BitString)
+    (frames : List EvalFrame)
     (mode : SyntaxMode)
     (hRec : RawMalformedAtFuel fuel)
     (hFuel :
@@ -206,7 +210,7 @@ theorem and_left_failure
     (hNone : decodeCircuitCore fuel rest = none)
     (hLayout :
       CheckedLayoutBound n consumed
-        (true :: false :: false :: rest) frameStack)
+        (true :: false :: false :: rest) encodeEvalFrames frames)
     (hWitness :
       (true :: false :: false :: rest).length ≤ witness.length) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
@@ -214,16 +218,16 @@ theorem and_left_failure
         [{ state := .need mode needExprCompositeMachine.initial,
            tape :=
              evalCursorStackEndTape witness consumed
-               (true :: false :: false :: rest) frameStack padding }] ∧
+               (true :: false :: false :: rest) (encodeEvalFrames frames) padding }] ∧
       EvalFailClosed cfg := by
   cases hAllowed : tagAllowed mode .and with
   | false =>
       exact disallowed_root_fail_closed
-        witness rest frameStack mode consumed padding n fuel
+        witness rest frames mode consumed padding n fuel
         true false false (by simpa using hAllowed) hLayout
   | true =>
       exact push_tag_then_recursive_fail_closed
-        fuel n consumed padding witness rest frameStack mode
+        fuel n consumed padding witness rest frames mode
         true false false .and .andLeft hRec hFuel hNone hLayout hWitness
         rfl hAllowed
         (by
@@ -233,7 +237,8 @@ theorem and_left_failure
 
 theorem or_left_failure
     (fuel n consumed padding : Nat)
-    (witness rest frameStack : BitString)
+    (witness rest : BitString)
+    (frames : List EvalFrame)
     (mode : SyntaxMode)
     (hRec : RawMalformedAtFuel fuel)
     (hFuel :
@@ -241,7 +246,7 @@ theorem or_left_failure
     (hNone : decodeCircuitCore fuel rest = none)
     (hLayout :
       CheckedLayoutBound n consumed
-        (true :: false :: true :: rest) frameStack)
+        (true :: false :: true :: rest) encodeEvalFrames frames)
     (hWitness :
       (true :: false :: true :: rest).length ≤ witness.length) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
@@ -249,16 +254,16 @@ theorem or_left_failure
         [{ state := .need mode needExprCompositeMachine.initial,
            tape :=
              evalCursorStackEndTape witness consumed
-               (true :: false :: true :: rest) frameStack padding }] ∧
+               (true :: false :: true :: rest) (encodeEvalFrames frames) padding }] ∧
       EvalFailClosed cfg := by
   cases hAllowed : tagAllowed mode .or with
   | false =>
       exact disallowed_root_fail_closed
-        witness rest frameStack mode consumed padding n fuel
+        witness rest frames mode consumed padding n fuel
         true false true (by simpa using hAllowed) hLayout
   | true =>
       exact push_tag_then_recursive_fail_closed
-        fuel n consumed padding witness rest frameStack mode
+        fuel n consumed padding witness rest frames mode
         true false true .or .orLeft hRec hFuel hNone hLayout hWitness
         rfl hAllowed
         (by simp [postTagState, childMode])
