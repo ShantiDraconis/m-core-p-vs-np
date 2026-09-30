@@ -13,6 +13,7 @@ open CanonicalCircuitBits
 open CanonicalSATWitness
 open CanonicalSATVerifier
 open P01CNFMode
+open P01EvalCursorMachine
 open P01CheckedEvalRunBaseCases
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunCircuitCertificate
