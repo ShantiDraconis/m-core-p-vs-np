@@ -1,6 +1,7 @@
 import MCore.Real.P01CheckedEvalRejectBounded
 import MCore.Real.P01ExactBoundedAll
 import MCore.Real.P01CheckedEvalRunBaseCases
+import MCore.Real.P01MaterialGlobalBudget
 
 namespace MCore
 namespace Real
@@ -22,6 +23,7 @@ open P01CheckedEvalRunBoundedCertificate
 open P01CheckedVerifierInvariant
 open P01CheckedEvalRejectBounded
 open P01ExactBoundedAll
+open P01MaterialGlobalBudget
 open P01NTMRunLaws
 
 abbrev CheckedConfig :=
