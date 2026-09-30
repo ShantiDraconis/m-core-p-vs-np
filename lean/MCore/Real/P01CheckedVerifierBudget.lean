@@ -64,7 +64,7 @@ theorem pushTagCompositeFuel_le_envelope
 theorem inputNodeCompositeFuel_le_envelope
     (n consumed i : Nat)
     (tail frameStack : BitString)
-    (hc3 : consumed + 3 ≤ n)
+    (hc : consumed ≤ n)
     (hi : i ≤ n)
     (ht : tail.length ≤ n)
     (hf : frameStack.length ≤ n) :
@@ -93,7 +93,7 @@ theorem inputNodeCompositeFuel_le_envelope
 theorem inputTagCompositeFuel_le_envelope
     (n consumed i : Nat)
     (tail frameStack : BitString)
-    (hc : consumed ≤ n)
+    (hc3 : consumed + 3 ≤ n)
     (hi : i ≤ n)
     (ht : tail.length ≤ n)
     (hf : frameStack.length ≤ n) :
