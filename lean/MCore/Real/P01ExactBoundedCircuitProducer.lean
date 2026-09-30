@@ -881,10 +881,14 @@ theorem and_exact_bounded_certificate
             (.andRight (evalCircuit sigma left))
             (by simp)
           simpa [encodeCircuit, List.append_assoc] using hLayout
-        have hcursor :
-            consumed + (encodeCircuit left).length + 3 =
-              consumed + 3 + (encodeCircuit left).length := by omega
-        simpa [afterLeft, leftConsumed, hcursor] using hp
+        have hidx :
+            consumed +
+                (true :: false :: false :: encodeCircuit left).length =
+              afterLeft := by
+          simp [afterLeft, leftConsumed]
+          omega
+        rw [hidx] at hp
+        exact hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
         hright hrightMode tail
@@ -1213,7 +1217,7 @@ theorem or_exact_bounded_certificate
                  (encodeCircuit (.or left right) ++ tail)
                  (encodeEvalFrames frames) padding }] := by
     simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-      List.append_assoc] using h0
+      List.append_assoc, childMode] using h0
 
   have hLayoutLeft :
       CheckedLayoutBound n leftConsumed
@@ -1329,10 +1333,14 @@ theorem or_exact_bounded_certificate
         (.orRight (evalCircuit sigma left))
         (by simp)
       simpa [encodeCircuit, List.append_assoc] using hLayout
-    have hcursor :
-        consumed + (encodeCircuit left).length + 3 =
-          consumed + 3 + (encodeCircuit left).length := by omega
-    simpa [afterLeft, leftConsumed, hcursor] using hp
+    have hidx :
+        consumed +
+            (true :: false :: true :: encodeCircuit left).length =
+          afterLeft := by
+      simp [afterLeft, leftConsumed]
+      omega
+    rw [hidx] at hp
+    exact hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
     hright hrightMode tail
@@ -1501,7 +1509,7 @@ theorem or_exact_bounded_certificate
       | nil =>
           obtain ⟨m5, hm5, cfgFinal, h5, hout5⟩ :=
             have_reaches_outcome_within_envelope
-              n mode witness finalValue [] []
+              n .clause witness finalValue [] []
               finalConsumed (padding2 + 3)
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
