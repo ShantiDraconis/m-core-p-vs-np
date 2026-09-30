@@ -709,9 +709,7 @@ theorem and_exact_bounded_certificate
             modeCheck .cnf right = true := by
         have h := hmode
         rw [modeCheck_and] at h
-        have hOuter := (Bool.and_eq_true).mp h
-        have hInner := (Bool.and_eq_true).mp hOuter.1
-        exact ⟨hInner.2, hOuter.2⟩
+        simpa [Bool.and_eq_true, tagAllowed] using h
       have hleftMode := hchildren.1
       have hrightMode := hchildren.2
 
@@ -1161,9 +1159,7 @@ theorem or_exact_bounded_certificate
         modeCheck .clause right = true := by
     have h := hmode
     rw [modeCheck_or] at h
-    have hOuter := (Bool.and_eq_true).mp h
-    have hInner := (Bool.and_eq_true).mp hOuter.1
-    exact ⟨⟨hInner.1, hInner.2⟩, hOuter.2⟩
+    simpa [Bool.and_eq_true] using h
   have hAllowed : tagAllowed mode .or = true := hparts.1.1
   have hleftMode : modeCheck .clause left = true := hparts.1.2
   have hrightMode : modeCheck .clause right = true := hparts.2
