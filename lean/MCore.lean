@@ -178,3 +178,5 @@ import MCore.Real.P01RawDeadEnd
 import MCore.Real.P01RawMalformedUnary
 
 import MCore.Real.P01RawMalformedTag
+
+import MCore.Real.P01RawVerifierLift
