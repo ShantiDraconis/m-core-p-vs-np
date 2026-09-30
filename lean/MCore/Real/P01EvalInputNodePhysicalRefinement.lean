@@ -3,6 +3,9 @@ import MCore.Real.P01FullVerifierInputShuttleV2
 import MCore.Real.P01EvalTagPhysicalRefinement
 import MCore.Real.P01EncodedFrameTape
 import MCore.Real.P01EncodedStackEvaluator
+import MCore.Real.P01EvalCursorConsume
+import MCore.Real.P01EvalCursorMachine
+import MCore.Real.P01GapPreservingRead
 
 namespace MCore
 namespace Real
@@ -17,6 +20,9 @@ open P01FullVerifierPhysicalMoves
 open P01FullVerifierInputShuttleV2
 open P01EncodedStackEvaluator
 open P01EncodedFrameTape
+open P01EvalCursorConsume
+open P01EvalCursorMachine
+open P01GapPreservingRead
 
 /-- The source bits of an encoded input node.  The witness is not appended to
 this bitstring; it lives in the separate witness region of the physical tape. -/
@@ -136,6 +142,89 @@ theorem inputNode000_value_refinement
   · exact moveToWitnessSeqV2_head_refines_inputNode000
       witness tail i frames padding hi
   · exact preservingRead_forall_value i witness tail hi
+
+
+/-- Physical suffix to the right of the unread source while the cursor is at
+the first unread source bit. -/
+def inputReadSuffix
+    (frames : List EvalFrame) (padding : Nat) :
+    List (Option Bool) :=
+  none :: (encodeEvalFrames frames).reverse.map some ++
+    none :: List.replicate padding none
+
+/-- After consuming the three-bit input tag and seeking the next unread source
+bit, the physical tape is exactly the canonical gapped preserving-reader
+configuration.  This is the representation bridge that was missing from the
+older value-only refinement. -/
+theorem input_cursor_is_gapReadConfig
+    (witness : BitString)
+    (consumed i : Nat)
+    (rest : BitString)
+    (frames : List EvalFrame)
+    (padding : Nat) :
+    let frameBits := encodeEvalFrames frames
+    let tagged := false :: false :: false :: (encodeNat i ++ rest)
+    let afterTag :=
+      consumeThreeTape witness consumed tagged frameBits padding
+    let seekFinal :=
+      cursorSeekMachine.run
+        (frameBits.length + (encodeNat i ++ rest).length + 3)
+        { state := CursorSeekState.start, tape := afterTag }
+    seekFinal.tape =
+      (gapReadConfig witness (consumed + 3) i rest
+        (inputReadSuffix frames padding)).tape := by
+  dsimp
+  rw [consumeThreeTape_correct]
+  rw [cursorSeek_run]
+  cases i <;>
+    simp [evalCursorReadTape, gapReadConfig, gapReadTape,
+      inputReadSuffix, encodeNat, List.append_assoc]
+
+/-- Full local physical input-node refinement on the streaming cursor layout.
+It connects the frozen semantic evaluator directly to the closed gap-tolerant
+preserving reader and proves the exact resulting tape. -/
+theorem evalStep_inputNode000_full_layout
+    (witness : BitString)
+    (consumed i : Nat)
+    (rest : BitString)
+    (frames : List EvalFrame)
+    (padding : Nat)
+    (hi : i < witness.length) :
+    let sigma := assignmentOfBits witness
+    let frameBits := encodeEvalFrames frames
+    let tagged := false :: false :: false :: (encodeNat i ++ rest)
+    let afterTag :=
+      consumeThreeTape witness consumed tagged frameBits padding
+    let seekFinal :=
+      cursorSeekMachine.run
+        (frameBits.length + (encodeNat i ++ rest).length + 3)
+        { state := CursorSeekState.start, tape := afterTag }
+    let readFinal :=
+      gapReadMachine.run (gapReadFuel (consumed + 3) i)
+        { state := gapReadMachine.initial, tape := seekFinal.tape }
+    evalStep sigma (needExpr tagged frames) =
+        some (haveValue (witness.getD i false) rest frames) ∧
+      readFinal.state = .halt (witness.getD i false) ∧
+      readFinal.tape =
+        { left := witness.map some,
+          head := none,
+          right :=
+            List.replicate (consumed + 3 + i + 1) none ++
+              (rest.map some ++ inputReadSuffix frames padding) } := by
+  dsimp
+  constructor
+  · simpa [inputNode000Bits, assignmentOfBits] using
+      evalStep_inputNode000 witness rest i frames
+  · have hbridge :=
+      input_cursor_is_gapReadConfig witness consumed i rest frames padding
+    rw [hbridge]
+    have hrun :=
+      gapRead_forall witness rest (consumed + 3) i
+        (inputReadSuffix frames padding) hi
+    simpa using hrun
+
+#print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.input_cursor_is_gapReadConfig
+#print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.evalStep_inputNode000_full_layout
 
 #print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.evalStep_inputNode000
 #print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.getD_eq_getElem_of_lt
