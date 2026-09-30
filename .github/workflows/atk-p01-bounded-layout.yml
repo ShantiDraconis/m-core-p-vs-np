@@ -24,7 +24,7 @@ jobs:
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
           lake update
-          lake exe cache get
+          lake exe cache get || true
       - name: Build bounded layout certificate
         run: |
           lake build MCore.Real.P01CheckedEvalBoundedOutcome
