@@ -29,8 +29,8 @@ theorem reducedProducer_implies_universal_literal_fixed_point
 
 /-- The reduced semantic-fixed-point producer is therefore impossible. -/
 theorem not_ReducedProducer :
-    ¬ ReducedProducer := by
-  intro R
+    ¬ Nonempty ReducedProducer := by
+  rintro ⟨R⟩
   exact no_universal_literal_fixed_point
     (reducedProducer_implies_universal_literal_fixed_point R)
 
