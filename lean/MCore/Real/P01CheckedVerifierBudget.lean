@@ -239,28 +239,37 @@ theorem checkedInputTagFuel_le
     (ht : tail.length ≤ n)
     (hf : frameStack.length ≤ n) :
     checkedInputTagFuel consumed i tail frameStack ≤
-      256 * (n + 1) ^ 2 := by
+      checkedStepEnvelope n := by
   let source := false :: false :: false :: (encodeNat i ++ tail)
-  have hp :
-      checkedTagPrefixFuel source frameStack ≤ checkedStepEnvelope n :=
-    checkedTagPrefixFuel_le_envelope n source frameStack
-      (by simpa [source] using hsource) hf
+  have hs : source.length ≤ n := by
+    simpa [source] using hsource
+  have hpExact :
+      checkedTagPrefixFuel source frameStack ≤ 2 * n + 8 := by
+    unfold checkedTagPrefixFuel
+    omega
   have hn :
       inputNodeCompositeFuel (consumed + 3) i tail frameStack ≤
         checkedCoreEnvelope n :=
     inputNodeCompositeFuel_le_envelope
       n (consumed + 3) i tail frameStack hc3 hi ht hf
-  unfold checkedInputTagFuel checkedStepEnvelope checkedCoreEnvelope at *
+  have hlin : 2 * n + 8 ≤ 8 * (n + 1) := by
+    omega
+  have hlinQuad :
+      8 * (n + 1) ≤ 8 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 8
+      (Nat.le_mul_of_pos_right (n + 1) (by omega))
   have hsum :
       checkedTagPrefixFuel source frameStack +
           inputNodeCompositeFuel (consumed + 3) i tail frameStack
-        ≤ 192 * ((n + 1) * (n + 1)) := by
-    simp [Nat.pow_two] at hp hn
+        ≤ 72 * ((n + 1) * (n + 1)) := by
+    unfold checkedCoreEnvelope at hn
+    simp [Nat.pow_two] at hn
     omega
   have hcoef :
-      192 * ((n + 1) * (n + 1)) ≤
-        256 * ((n + 1) * (n + 1)) :=
+      72 * ((n + 1) * (n + 1)) ≤
+        128 * ((n + 1) * (n + 1)) :=
     Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
+  unfold checkedInputTagFuel checkedStepEnvelope
   simpa [source, Nat.pow_two] using Nat.le_trans hsum hcoef
 
 /-- Global candidate budget for the checked physical verifier.  The cubic
