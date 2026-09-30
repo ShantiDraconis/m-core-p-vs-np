@@ -162,3 +162,4 @@ import MCore.Real.P01CheckedVerifierBudget
 import MCore.Real.ExactFinalProducer
 
 import MCore.Real.EncodedFinalProof
+import MCore.Real.P01CanonicalPolynomialClose
