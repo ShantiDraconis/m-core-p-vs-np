@@ -140,6 +140,25 @@ theorem rootFailure_plus_chunk_le_rawTimeBound (n : Nat) :
     ring)
 
 /-- Any source scan overhead n+3 itself fits one cubic raw chunk. -/
+theorem scanPlusOne_le_rawChunk (n : Nat) :
+    n + 4 ≤ rawChunk n := by
+  have h1 : n + 4 ≤ 4 * (n + 1) := by omega
+  have h2 : 4 * (n + 1) ≤ 4 * (n + 1) ^ 3 := by
+    have hp : n + 1 ≤ (n + 1) ^ 3 := by
+      calc
+        n + 1 ≤ (n + 1) * (n + 1) :=
+          Nat.le_mul_of_pos_right (n + 1) (by omega)
+        _ ≤ ((n + 1) * (n + 1)) * (n + 1) :=
+          Nat.mul_le_mul_right (n + 1)
+            (Nat.le_mul_of_pos_right (n + 1) (by omega))
+        _ = (n + 1) ^ 3 := by ring
+    exact Nat.mul_le_mul_left 4 hp
+  have h3 :
+      4 * (n + 1) ^ 3 ≤ 8192 * (n + 1) ^ 3 :=
+    Nat.mul_le_mul_right ((n + 1) ^ 3) (by omega)
+  simpa [rawChunk, checkedVerifierExactTimeBound] using
+    Nat.le_trans h1 (Nat.le_trans h2 h3)
+
 theorem scanLinear_le_rawChunk (n : Nat) :
     n + 3 ≤ rawChunk n := by
   have h1 : n + 3 ≤ 3 * (n + 1) := by omega
