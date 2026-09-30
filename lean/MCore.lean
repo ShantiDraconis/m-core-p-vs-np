@@ -200,3 +200,9 @@ import MCore.Real.P01RawMalformedRecursiveLeft
 import MCore.Real.P01RawMalformedRecursiveRight
 
 import MCore.Real.P01RawMalformedProducer
+
+import MCore.Real.P01RawResidualReject
+
+import MCore.Real.P01RawVerifierFailClosed
+
+import MCore.Real.P01RawMalformedVerifier
