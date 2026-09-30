@@ -1,7 +1,6 @@
 import MCore.Real.P02SameInputOnlyFrontier
 import MCore.Real.P02CookLevinFromBoundedExec
 import MCore.Real.P02BoundedComputationEncoding
-import MCore.Real.P02CompilerHaltingCounterexample
 import MCore.Real.P02ExtensionalCoreAfterCookLevin
 
 namespace MCore
@@ -16,6 +15,25 @@ open P02KleeneBridge
 open P02SameInputOnlyFrontier
 open P02ExtensionalSameInputBridge
 open P02ExtensionalCoreAfterCookLevin
+
+
+/-- Minimal concrete candidate used only to instantiate universal core gaps. -/
+def lengthBarrierMachine : TM (Fin 1) (Option Bool) where
+  initial := 0
+  blank := none
+  transition := fun q a => (q, a, .stay)
+  halting := fun _ => true
+
+def lengthBarrierCandidate : PolyDTMCandidate where
+  stateCount := 0
+  machine := lengthBarrierMachine
+  blank_none := rfl
+  accepting := fun _ => false
+  timeBound := fun _ => 0
+  time_poly := by
+    refine ⟨0, 0, ?_⟩
+    intro n
+    simp
 
 /-- Every canonical circuit encoding contains at least its three-bit root tag. -/
 theorem encodeCircuit_length_ge_three
@@ -117,7 +135,7 @@ theorem sameInputCoreGap_false :
     ¬ SameInputCoreGap := by
   intro h
   rcases h with ⟨S⟩
-  let M : PolyDTMCandidate := P02CompilerHaltingCounterexample.barrierCandidate
+  let M : PolyDTMCandidate := lengthBarrierCandidate
   exact
     no_sameInputTransport M (S.compiler M)
       ⟨S.transport M⟩
@@ -149,8 +167,8 @@ theorem uniformExtensionalRejectCompilerCoreGap_false :
   intro h
   rcases h with ⟨U⟩
   exact no_extensionalRejectCompilerCore
-    P02CompilerHaltingCounterexample.barrierCandidate
-    ⟨U.core P02CompilerHaltingCounterexample.barrierCandidate⟩
+    lengthBarrierCandidate
+    ⟨U.core lengthBarrierCandidate⟩
 
 #print axioms MCore.Real.P02SameInputLengthFirewall.encodeCircuit_length_ge_three
 #print axioms MCore.Real.P02SameInputLengthFirewall.cnfCircuit_encoding_length_ge
