@@ -1597,6 +1597,35 @@ theorem or_exact_bounded_certificate
             simpa [exitMode, childMode, circuitTag, finalValue,
               evalCircuit] using hout5
 
+/-- Exact bounded structural producer for every checked circuit. -/
+theorem circuit_exact_bounded_certificate
+    (sigma : Assignment)
+    (witness : BitString) :
+    ∀ (phi : CircuitK1.Circuit) (mode : SyntaxMode),
+      ExactBoundedCheckedCircuitRunCertificate sigma witness mode phi := by
+  intro phi
+  induction phi with
+  | input i =>
+      intro mode
+      exact input_exact_bounded_certificate sigma witness mode i
+  | const v =>
+      intro mode
+      exact const_exact_bounded_certificate sigma witness mode v
+  | not child ih =>
+      intro mode
+      exact neg_exact_bounded_certificate
+        sigma witness mode child (ih (childMode mode .neg))
+  | and left right ihLeft ihRight =>
+      intro mode
+      exact and_exact_bounded_certificate
+        sigma witness mode left right (ihLeft .cnf) (ihRight .cnf)
+  | or left right ihLeft ihRight =>
+      intro mode
+      exact or_exact_bounded_certificate
+        sigma witness mode left right (ihLeft .clause) (ihRight .clause)
+
+#print axioms MCore.Real.P01ExactBoundedCircuitProducer.circuit_exact_bounded_certificate
+
 #print axioms MCore.Real.P01ExactBoundedCircuitProducer.layout_consume_prefix
 #print axioms MCore.Real.P01ExactBoundedCircuitProducer.input_exact_bounded_certificate
 
