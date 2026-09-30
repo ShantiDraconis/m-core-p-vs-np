@@ -356,22 +356,56 @@ theorem neg_bounded_certificate
           checkedLoopStepEnvelope n +
           checkedLoopStepEnvelope n ≤
         checkedCircuitBudget (.not child) n := by
-    unfold checkedCircuitBudget
-    rw [show evalStepCount (.not child) = evalStepCount child + 2 by
-      simp [evalStepCount]; omega]
-    have :
-        (8 * (evalStepCount child + 1) + 3) *
-              checkedLoopStepEnvelope n ≤
-          (8 * (evalStepCount child + 3)) *
-              checkedLoopStepEnvelope n := by
-      exact Nat.mul_le_mul_right (checkedLoopStepEnvelope n) (by omega)
-    simpa [Nat.add_mul, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm,
-      Nat.mul_assoc] using this
+    let E := checkedLoopStepEnvelope n
+    have hpack :
+        checkedCircuitBudget child n + 3 * E =
+          (8 * (evalStepCount child + 1) + 3) * E := by
+      unfold checkedCircuitBudget
+      dsimp [E]
+      rw [Nat.add_mul]
+    have hcoef :
+        8 * (evalStepCount child + 1) + 3 ≤
+          8 * (evalStepCount child + 3) := by
+      omega
+    have hmul :
+        (8 * (evalStepCount child + 1) + 3) * E ≤
+          (8 * (evalStepCount child + 3)) * E :=
+      Nat.mul_le_mul_right E hcoef
+    have hcount :
+        evalStepCount (.not child) + 1 =
+          evalStepCount child + 3 := by
+      simp [evalStepCount]
+      omega
+    calc
+      checkedLoopStepEnvelope n +
+            checkedCircuitBudget child n +
+            checkedLoopStepEnvelope n +
+            checkedLoopStepEnvelope n
+          = checkedCircuitBudget child n + 3 * E := by
+              dsimp [E]
+              omega
+      _ = (8 * (evalStepCount child + 1) + 3) * E := hpack
+      _ ≤ (8 * (evalStepCount child + 3)) * E := hmul
+      _ = checkedCircuitBudget (.not child) n := by
+            unfold checkedCircuitBudget
+            rw [hcount]
+            rfl
+
+  have hchildInput :
+      ∃ i, child = .input i := by
+    have hm : modeCheck .mustInput child = true := by
+      simpa [childMode] using hchildMode
+    exact (modeCheck_mustInput_iff child).1 hm
+  have hExit :
+      exitMode (childMode mode .neg) child =
+        exitMode mode (.not child) := by
+    rcases hchildInput with ⟨i, rfl⟩
+    simp [exitMode, childMode, circuitTag]
 
   refine ⟨m0 + m1 + m2 + m3, ?_, cfgFinal, hAll, ?_⟩
   · exact Nat.le_trans (by omega) hbudget
-  · simpa [CheckedLoopOutcome, exitMode, childMode, circuitTag, evalCircuit]
-      using hout3
+  · rw [← hExit]
+    simpa [evalCircuit] using hout3
 
 #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.loopEnvelope_le_checkedCircuitBudget
 #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.input_bounded_certificate
