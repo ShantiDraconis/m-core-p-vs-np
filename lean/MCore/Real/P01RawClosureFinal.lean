@@ -313,55 +313,32 @@ theorem residual_nonempty_fail_closed
                tape := evalCursorStackEndTape witness 0 source [] 0 }] := by
         simpa [hsource, checkedEvalRunLoopMachine] using hreach
       have hend : RawFailEndpoint cfg := Or.inl hreject
-      obtain ⟨total, htotal, hhalt, hnot⟩ :=
-        prepared_nonempty_raw_fail_closed
-          witness
-          (by
-            have hne : source ≠ [] := by
-              rw [hsource]
-              simp [encodeCircuit]
-            exact source.head hne)
-          (source.tail) m cfg
-          (by
-            cases hs : source with
-            | nil => simp [hs] at hsource
-            | cons b bs =>
-                simpa [hs] using hreach')
-          hend
-      have hbudget :
-          total ≤ unifiedVerifierTimeBound source.length := by
-        have hm' : m ≤ checkedCircuitBudget phi source.length + 3 := hm
-        cases hs : source with
-        | nil => simp [hs] at hsource
-        | cons b bs =>
-            have ht :
-                total ≤ (b :: bs).length + 3 + m + 1 := by
-              simpa [hs] using htotal
-            exact Nat.le_trans ht
+      cases hs : source with
+      | nil =>
+          simp [hs] at hsource
+      | cons b bs =>
+          obtain ⟨total, htotal, hhalt, hnot⟩ :=
+            prepared_nonempty_raw_fail_closed
+              witness b bs m cfg (by simpa [hs] using hreach') hend
+          have hm' :
+              m ≤ checkedCircuitBudget phi source.length + 3 := hm
+          have hbudget :
+              total ≤ unifiedVerifierTimeBound source.length :=
+            Nat.le_trans (by simpa [hs] using htotal)
               (circuit_with_wrapper_le_unified
                 source.length m phi henc hm')
-      constructor
-      · exact haltsWithin_mono_le checkedVerifierMachine
-          total (unifiedVerifierTimeBound source.length)
-          { state := checkedVerifierMachine.initial,
-            tape := preparedTape witness source }
-          hbudget (by
-            cases hs : source with
-            | nil => simp [hs] at hsource
-            | cons b bs => simpa [hs] using hhalt)
-      · exact not_acceptsWithin_mono_after_halt
-          total (unifiedVerifierTimeBound source.length)
-          { state := checkedVerifierMachine.initial,
-            tape := preparedTape witness source }
-          hbudget
-          (by
-            cases hs : source with
-            | nil => simp [hs] at hsource
-            | cons b bs => simpa [hs] using hhalt)
-          (by
-            cases hs : source with
-            | nil => simp [hs] at hsource
-            | cons b bs => simpa [hs] using hnot)
+          constructor
+          · exact haltsWithin_mono_le checkedVerifierMachine
+              total (unifiedVerifierTimeBound source.length)
+              { state := checkedVerifierMachine.initial,
+                tape := preparedTape witness source }
+              hbudget (by simpa [hs] using hhalt)
+          · exact not_acceptsWithin_mono_after_halt
+              total (unifiedVerifierTimeBound source.length)
+              { state := checkedVerifierMachine.initial,
+                tape := preparedTape witness source }
+              hbudget (by simpa [hs] using hhalt)
+              (by simpa [hs] using hnot)
   | false =>
       obtain ⟨m, hm, cfg, hreach, hreject⟩ :=
         (circuit_exact_bounded_reject sigma witness phi .cnf)
