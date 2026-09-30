@@ -305,6 +305,47 @@ theorem checked_truncated_unary_reaches_dead
       refine ⟨m0 + m1, ?_, dead, hAll, hactive, hdead⟩
       omega
 
+
+/-- The complete prepared verifier is fail-closed on a 000 input payload whose
+unary index never terminates with false. -/
+theorem prepared_truncated_unary_fail_closed
+    (witness : BitString)
+    (k : Nat) :
+    let source : BitString :=
+      false :: false :: false :: List.replicate k true
+    ∃ total ≤ 3 * source.length + 10,
+      checkedVerifierMachine.HaltsWithin total
+        { state := checkedVerifierMachine.initial,
+          tape := P01WitnessPreservingPrep.preparedTape witness source } ∧
+      ¬ checkedVerifierMachine.AcceptsWithin total
+        { state := checkedVerifierMachine.initial,
+          tape := P01WitnessPreservingPrep.preparedTape witness source } := by
+  let source : BitString :=
+    false :: false :: false :: List.replicate k true
+  obtain ⟨m1, hm1, dead, hreach, hactive, hdead⟩ :=
+    checked_truncated_unary_reaches_dead
+      .cnf witness [] 0 0 k
+  have hreach' :
+      dead ∈ checkedEvalRunLoopMachine.runBranches m1
+        [{ state := checkedEvalRunLoopMachine.initial,
+           tape := evalCursorStackEndTape witness 0 source [] 0 }] := by
+    simpa [source, checkedEvalRunLoopMachine] using hreach
+  obtain ⟨total, htotal, hhalt, hnot⟩ :=
+    prepared_nonempty_dead_fail_closed
+      witness false
+      (false :: false :: List.replicate k true)
+      m1 dead
+      (by simpa [source] using hreach')
+      hactive hdead
+  refine ⟨total, ?_, ?_, ?_⟩
+  · dsimp [source] at hm1 htotal ⊢
+    simp [checkedTagPrefixFuel] at hm1 htotal ⊢
+    omega
+  · simpa [source] using hhalt
+  · simpa [source] using hnot
+
+#print axioms MCore.Real.P01RawMalformedUnary.prepared_truncated_unary_fail_closed
+
 #print axioms MCore.Real.P01RawMalformedUnary.inputLook_checked_successors_active
 #print axioms MCore.Real.P01RawMalformedUnary.inputLook_checked_run_reachable
 #print axioms MCore.Real.P01RawMalformedUnary.checked_truncated_unary_reaches_dead
