@@ -588,8 +588,7 @@ theorem neg_exact_bounded_certificate
               (evalCircuit sigma (.not child)) [] []
               (consumed + (encodeCircuit (.not child)).length) cfgFinal
             simp [ExactCheckedLoopOutcome] at hout3 ⊢
-            rw [← hExit]
-            simpa [evalCircuit] using hout3
+            simpa [evalCircuit, hExit] using hout3
 
 
 
@@ -650,6 +649,7 @@ theorem layout_after_prefix_with_frame
     (n consumed : Nat)
     (bitsPrefix rest frameStack : BitString)
     (frame : EvalFrame)
+    (hPrefix : 3 ≤ bitsPrefix.length)
     (h :
       CheckedLayoutBound n consumed
         (bitsPrefix ++ rest) frameStack) :
@@ -661,6 +661,16 @@ theorem layout_after_prefix_with_frame
   · rw [List.length_append, encodeEvalFrame_length]
     have hf := h.frames_paid
     omega
+
+/-- Every canonical circuit encoding contains at least its three-bit root tag. -/
+theorem encodeCircuit_ne_nil (phi : CircuitK1.Circuit) :
+    encodeCircuit phi ≠ [] := by
+  cases phi with
+  | input i => simp [encodeCircuit]
+  | const b => cases b <;> simp [encodeCircuit]
+  | not child => simp [encodeCircuit]
+  | and left right => simp [encodeCircuit]
+  | or left right => simp [encodeCircuit]
 
 /-- Exact bounded producer for conjunction.  This is the missing binary
 composition: tag, exact left child, left-frame handoff, exact right child,
@@ -792,9 +802,7 @@ theorem and_exact_bounded_certificate
 
       have hRightTail : encodeCircuit right ++ tail ≠ [] := by
         intro hnil
-        have henc : encodeCircuit right = [] :=
-          (List.append_eq_nil_iff.mp hnil).1
-        cases right <;> simp [encodeCircuit] at henc
+        exact encodeCircuit_ne_nil right (List.append_eq_nil_iff.mp hnil).1
 
       obtain ⟨padding1, hcfgLeft⟩ :=
         exact_outcome_have_of_tail_ne_nil
@@ -869,8 +877,9 @@ theorem and_exact_bounded_certificate
             (encodeCircuit right ++ tail)
             (encodeEvalFrames frames)
             (.andRight (evalCircuit sigma left))
-          simpa [encodeCircuit, List.append_assoc] using hLayout
-        simpa [afterLeft, leftConsumed] using hp
+          · simp
+          · simpa [encodeCircuit, List.append_assoc] using hLayout
+        simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
         hright hrightMode tail
@@ -999,7 +1008,7 @@ theorem and_exact_bounded_certificate
                 8 * (evalStepCount right + 1) + 3) * E := by
                   unfold checkedCircuitBudget
                   dsimp [E]
-                  omega
+                  ring
             _ ≤
               8 * (evalStepCount left + evalStepCount right + 4) * E :=
                 hmul
@@ -1094,7 +1103,7 @@ theorem and_exact_bounded_certificate
                         8 * (evalStepCount right + 1) + 4) * E := by
                           unfold checkedCircuitBudget
                           dsimp [E]
-                          omega
+                          ring
                     _ ≤
                       8 * (evalStepCount left + evalStepCount right + 4) * E :=
                         hmul
@@ -1191,13 +1200,13 @@ theorem or_exact_bounded_certificate
   have h0' :
       cNeedLeft ∈
         checkedEvalRunLoopMachine.runBranches m0
-          [{ state := .need .clause needExprCompositeMachine.initial,
+          [{ state := .need mode needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
                  (encodeCircuit (.or left right) ++ tail)
                  (encodeEvalFrames frames) padding }] := by
     simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-      List.append_assoc] using h0
+      childMode, List.append_assoc] using h0
 
   have hLayoutLeft :
       CheckedLayoutBound n leftConsumed
@@ -1235,9 +1244,7 @@ theorem or_exact_bounded_certificate
 
   have hRightTail : encodeCircuit right ++ tail ≠ [] := by
     intro hnil
-    have henc : encodeCircuit right = [] :=
-      (List.append_eq_nil_iff.mp hnil).1
-    cases right <;> simp [encodeCircuit] at henc
+    exact encodeCircuit_ne_nil right (List.append_eq_nil_iff.mp hnil).1
 
   obtain ⟨padding1, hcfgLeft⟩ :=
     exact_outcome_have_of_tail_ne_nil
@@ -1312,8 +1319,9 @@ theorem or_exact_bounded_certificate
         (encodeCircuit right ++ tail)
         (encodeEvalFrames frames)
         (.orRight (evalCircuit sigma left))
-      simpa [encodeCircuit, List.append_assoc] using hLayout
-    simpa [afterLeft, leftConsumed] using hp
+      · simp
+      · simpa [encodeCircuit, List.append_assoc] using hLayout
+    simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
     hright hrightMode tail
@@ -1442,7 +1450,7 @@ theorem or_exact_bounded_certificate
             8 * (evalStepCount right + 1) + 3) * E := by
               unfold checkedCircuitBudget
               dsimp [E]
-              omega
+              ring
         _ ≤
           8 * (evalStepCount left + evalStepCount right + 4) * E :=
             hmul
@@ -1537,7 +1545,7 @@ theorem or_exact_bounded_certificate
                     8 * (evalStepCount right + 1) + 4) * E := by
                       unfold checkedCircuitBudget
                       dsimp [E]
-                      omega
+                      ring
                 _ ≤
                   8 * (evalStepCount left + evalStepCount right + 4) * E :=
                     hmul
