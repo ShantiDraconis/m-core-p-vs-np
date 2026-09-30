@@ -31,7 +31,9 @@ jobs:
           ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx|unsafe|cheat|bypass|placeholder)([^[:alnum:]_]|$)' "$FILE"
           ! grep -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' "$FILE"
       - name: Build exact consumption certificate
-        run: lake build MCore.Real.P01CheckedEvalRunExactCertificate
+        run: |
+          lake build MCore.Real.P01CheckedEvalRunExactCertificate
+          lake build MCore.Real.P01BinaryLayoutConservation
       - name: Axiom audit
         run: |
           cat > P01ExactConsumptionAxioms.lean <<'EOF'
@@ -39,6 +41,11 @@ jobs:
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_consumed_exact
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_exact_bounded_certificate
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.exact_to_bounded
+          import MCore.Real.P01BinaryLayoutConservation
+          #print axioms MCore.Real.P01BinaryLayoutConservation.and_right_layout
+          #print axioms MCore.Real.P01BinaryLayoutConservation.or_right_layout
+          #print axioms MCore.Real.P01BinaryLayoutConservation.and_consumed_arithmetic
+          #print axioms MCore.Real.P01BinaryLayoutConservation.or_consumed_arithmetic
           EOF
           lake env lean P01ExactConsumptionAxioms.lean | tee p01-exact-consumption-axioms.txt
           ! grep -E 'sorryAx' p01-exact-consumption-axioms.txt
