@@ -35,11 +35,12 @@ jobs:
           lake build MCore.Real.P01CheckedEvalRunBoundedConst
           lake build MCore.Real.P01CheckedEvalRunBoundedCertificate
           lake build MCore.Real.P01DirectVerifierInhabitant
+          lake build MCore.Real.P01ExactBoundedCircuitProducer
 
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          for FILE in             lean/MCore/Real/P01CheckedEvalRunBoundedHelpers.lean             lean/MCore/Real/P01CheckedEvalRunBoundedConst.lean             lean/MCore/Real/P01CheckedEvalRunBoundedCertificate.lean             lean/MCore/Real/P01DirectVerifierInhabitant.lean
+          for FILE in             lean/MCore/Real/P01CheckedEvalRunBoundedHelpers.lean             lean/MCore/Real/P01CheckedEvalRunBoundedConst.lean             lean/MCore/Real/P01CheckedEvalRunBoundedCertificate.lean             lean/MCore/Real/P01DirectVerifierInhabitant.lean             lean/MCore/Real/P01ExactBoundedCircuitProducer.lean
           do
             ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$FILE"
           done
