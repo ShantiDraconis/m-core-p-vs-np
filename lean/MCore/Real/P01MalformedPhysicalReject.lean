@@ -66,18 +66,14 @@ theorem short_source_reaches_reject
     (witness bits frameStack : BitString)
     (consumed padding : Nat)
     (hshort : bits.length < 3) :
-    ∃ m ≤ frameStack.length + bits.length + 8,
-      ({ state := .reject,
-         tape := (tagDecodeMachine.run
-           (Nat.min 3 3)
-           { state := tagDecodeMachine.initial,
-             tape := evalCursorReadTape witness consumed bits frameStack padding }).tape } :
-        CheckedConfig) ∈
-      checkedEvalRunLoopMachine.runBranches m
-        [{ state := .need mode needExprCompositeMachine.initial,
-           tape :=
-             evalCursorStackEndTape witness consumed
-               bits frameStack padding }] := by
+    ∃ m ≤ frameStack.length + bits.length + 8, ∃ cfg : CheckedConfig,
+      cfg ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .need mode needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 bits frameStack padding }] ∧
+      cfg.state = .reject := by
   let nSeek := frameStack.length + bits.length + 3
   let cSeek0 : Configuration CursorSeekState (Option Bool) :=
     { state := cursorSeekMachine.initial,
@@ -152,38 +148,34 @@ theorem short_source_reaches_reject
 
   have hRejectSucc :
       cReject ∈ checkedEvalRunLoopMachine.successors cDecR := by
-    rw [show cDecR =
-      ({ state := .need mode (.decode .reject), tape := cDecR.tape } :
-        CheckedConfig) by
-          cases cDecR
-          simp_all]
+    rcases cDecR with ⟨q, tape⟩
+    simp only at hcstate
+    subst q
     dsimp [cReject]
     simp [checkedEvalRunLoopMachine, needExprCompositeMachine,
       needCheckedEmbed, NTM.successors, NTM.stepBranch,
       Tape.write, Tape.move]
 
+  have hNotHalted : ¬ Halted checkedEvalRunLoopMachine cDecR := by
+    rcases cDecR with ⟨q, tape⟩
+    simp only at hcstate
+    subst q
+    simp [Halted, checkedEvalRunLoopMachine, needExprCompositeMachine]
+
   have hRejectOne :
       cReject ∈ checkedEvalRunLoopMachine.runBranches 1 [cDecR] :=
-    one_step_of_successor cDecR cReject
-      (by
-        rw [show cDecR =
-          ({ state := .need mode (.decode .reject), tape := cDecR.tape } :
-            CheckedConfig) by
-              cases cDecR
-              simp_all]
-        simp [Halted, checkedEvalRunLoopMachine, needExprCompositeMachine])
-      hRejectSucc
+    one_step_of_successor cDecR cReject hNotHalted hRejectSucc
 
   have hAll :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (mS + 1 + mD) 1 [seekConfig mode cSeek0]
       cDecR cReject hToRejectDecode hRejectOne
 
-  refine ⟨mS + 1 + mD + 1, ?_, ?_⟩
+  refine ⟨mS + 1 + mD + 1, ?_, cReject, ?_, rfl⟩
   · dsimp [nSeek] at hmS
     omega
   · dsimp [cSeek0, seekConfig] at hAll ⊢
-    simpa [cReject] using hAll
+    simpa using hAll
 
 #print axioms MCore.Real.P01MalformedPhysicalReject.tagDecode_short_rejects_within_three
 #print axioms MCore.Real.P01MalformedPhysicalReject.short_source_reaches_reject
