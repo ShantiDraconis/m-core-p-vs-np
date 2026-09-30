@@ -72,6 +72,24 @@ theorem cnfCircuit_encoding_length_ge
     (setLeftCell guard M x t s i target).length = 3 := by
   simp [setLeftCell]
 
+theorem flatMap_length_three
+    {α β : Type}
+    (xs : List α)
+    (f : α → List β)
+    (h : ∀ x ∈ xs, (f x).length = 3) :
+    (xs.flatMap f).length = 3 * xs.length := by
+  induction xs with
+  | nil =>
+      simp
+  | cons x xs ih =>
+      have hx : (f x).length = 3 := h x (by simp)
+      have hxs : ∀ y ∈ xs, (f y).length = 3 := by
+        intro y hy
+        exact h y (by simp [hy])
+      rw [List.flatMap_cons, List.length_append, hx, ih hxs]
+      simp
+      omega
+
 theorem initialLeftPart_length
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -80,8 +98,15 @@ theorem initialLeftPart_length
       setLeftCell [] M x t 0 i
         ((inputTape x).left.getD i M.machine.blank)).length =
       3 * radius x t := by
-  simp [setLeftCell, setSymbolClauses, alphabet]
-  ring
+  let f := fun i =>
+    setLeftCell [] M x t 0 i
+      ((inputTape x).left.getD i M.machine.blank)
+  have hblocks :
+      ∀ i ∈ List.range (radius x t), (f i).length = 3 := by
+    intro i hi
+    simp [f]
+  have h := flatMap_length_three (List.range (radius x t)) f hblocks
+  simpa [f] using h
 
 /-- The initial tableau already contains at least one left-cell block per
 radius position, hence at least radius-many clauses. -/
@@ -110,6 +135,7 @@ theorem initialCNF_length_le_tableau
     (initialCNF M x t).length <=
       (boundedExecTableauCNF M x t).length := by
   simp [boundedExecTableauCNF]
+  omega
 
 /-- A bounded-execution circuit encoding is strictly longer than the raw input
 whose execution it encodes. -/
