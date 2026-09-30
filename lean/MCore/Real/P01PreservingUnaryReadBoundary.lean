@@ -24,6 +24,16 @@ theorem old_reader_consumes_witness_prefix
       markerConfig (pad + 2) tail n :=
   marker_succ_run pad n b tail
 
+/-- Concrete non-preservation witness for the legacy reader.  After one unary
+successor step, the first witness cell has been physically removed from the
+witness region. -/
+theorem old_reader_not_preserving_example :
+    (witnessIndexedReadMachine.run 3
+      (markerConfig 0 [false, true] 1)).tape ≠
+      (markerConfig 0 [false, true] 1).tape := by
+  rw [old_reader_consumes_witness_prefix]
+  simp [markerConfig, encodeNat]
+
 /-- Exact source width of one canonical input node. -/
 def inputNodeWidth (i : Nat) : Nat := 3 + (encodeNat i).length
 
