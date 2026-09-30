@@ -129,6 +129,17 @@ theorem execMoves_append
   | cons d ds ih =>
       simp [execMoves, ih]
 
+theorem replicate_succ_eq_append_singleton
+    {α : Type} (a : α) (n : Nat) :
+    List.replicate (n + 1) a = List.replicate n a ++ [a] := by
+  induction n with
+  | zero =>
+      rfl
+  | succ n ih =>
+      change a :: List.replicate (n + 1) a =
+        a :: (List.replicate n a ++ [a])
+      exact congrArg (fun xs => a :: xs) ih
+
 /-- Pure left/right shuttling is nondestructive. Starting from a tape with at
 least n cells on the left, moving left n times and then right n times restores
 the exact original tape. -/
@@ -159,11 +170,8 @@ theorem moveLeftRight_roundTrip
               simp [moveLeftSeq, List.replicate_succ, execMoves, t', Tape.move]
             have hrep :
                 List.replicate (n + 1) Direction.right =
-                  List.replicate n Direction.right ++ [Direction.right] := by
-              induction n with
-              | zero => simp
-              | succ n ih =>
-                  simp [List.replicate_succ, ih, List.append_assoc]
+                  List.replicate n Direction.right ++ [Direction.right] :=
+              replicate_succ_eq_append_singleton Direction.right n
             have hright :
                 moveRightSeq (n + 1) =
                   moveRightSeq n ++ [Direction.right] := by
