@@ -5,7 +5,7 @@ on:
     branches:
       - atk/p01-verifier-phase-mincut-clean-20260930
     paths:
-      - 'lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean'
+      - 'lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean lean/MCore/Real/P01CheckedVerifierGlobalCore.lean'
       - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
       - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
       - 'lean/MCore/Real/P01IntegratedAssembly.lean'
@@ -36,12 +36,16 @@ jobs:
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P01VerifierPhaseMinCutStructural
+          lake build MCore.Real.P01CheckedVerifierGlobalCore
       - name: Exact axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
           cat > P01VerifierPhaseMinCutAudit.lean <<'EOF'
           import MCore.Real.P01VerifierPhaseMinCutStructural
+          import MCore.Real.P01CheckedVerifierGlobalCore
           #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
+          #print axioms MCore.Real.P01CheckedVerifierGlobalCore.CheckedVerifierGlobalCore.toVerifierPhase
+          #print axioms MCore.Real.P01CheckedVerifierGlobalCore.p01ConstructionGap_of_core
           EOF
           lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
           ! grep -E 'sorryAx' P01VerifierPhaseMinCutAudit.log
