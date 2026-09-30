@@ -459,9 +459,8 @@ theorem and_exact_bounded_certificate
                   (exitMode .cnf (.and left right))
                   (evalCircuit sigma (.and left right)) [] []
                   (consumed + (encodeCircuit (.and left right)).length) cfgFinal
-                simp [ExactCheckedLoopOutcome] at hout5 ⊢
-                rw [hExitAnd]
-                simpa [finalValue, evalCircuit, CheckedLoopOutcome] using hout5
+                simpa [ExactCheckedLoopOutcome, CheckedLoopOutcome,
+                  finalValue, evalCircuit, exitMode, circuitTag, childMode] using hout5
 
 /-- Exact bounded binary producer for disjunction.  The argument mirrors the
 AND producer, but the recursive children and continuation mode are clause.
@@ -742,7 +741,8 @@ theorem or_exact_bounded_certificate
     omega
 
   have hExit :
-      exitMode mode (.or left right) = .clause := rfl
+      exitMode mode (.or left right) = .clause := by
+    simp [exitMode, circuitTag, childMode]
 
   have hprefixBudget :
       m0 + m1 + m2 + m3 + m4 ≤
