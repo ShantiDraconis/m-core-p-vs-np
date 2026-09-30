@@ -1,3 +1,4 @@
+import MCore.Real.P01EvalRunCircuitCertificate
 import MCore.Real.CanonicalCircuitBits
 import MCore.Real.CanonicalSATWitness
 import MCore.Real.P01EncodedFrameTape
