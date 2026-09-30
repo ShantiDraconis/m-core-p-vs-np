@@ -1134,8 +1134,8 @@ theorem and_exact_bounded_certificate
                       (8 * (evalStepCount left + 1) +
                         8 * (evalStepCount right + 1) + 4) * E := by
                           unfold checkedCircuitBudget
-                  dsimp [E]
-                  ring
+                          dsimp [E]
+                          ring
                     _ ≤
                       8 * (evalStepCount left + evalStepCount right + 4) * E :=
                         hmul
@@ -1481,8 +1481,8 @@ theorem or_exact_bounded_certificate
           (8 * (evalStepCount left + 1) +
             8 * (evalStepCount right + 1) + 3) * E := by
               unfold checkedCircuitBudget
-                  dsimp [E]
-                  ring
+              dsimp [E]
+              ring
         _ ≤
           8 * (evalStepCount left + evalStepCount right + 4) * E :=
             hmul
@@ -1576,8 +1576,8 @@ theorem or_exact_bounded_certificate
                   (8 * (evalStepCount left + 1) +
                     8 * (evalStepCount right + 1) + 4) * E := by
                       unfold checkedCircuitBudget
-                  dsimp [E]
-                  ring
+                      dsimp [E]
+                      ring
                 _ ≤
                   8 * (evalStepCount left + evalStepCount right + 4) * E :=
                     hmul
