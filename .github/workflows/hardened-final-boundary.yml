@@ -1,0 +1,45 @@
+name: Hardened Final Boundary
+
+on:
+  push:
+    branches:
+      - atk/hardened-final-boundary-20261001
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  boundary:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
+      - name: Build hardened final boundary
+        run: lake build MCore.Real.HardenedFinalBoundary
+      - name: Reject proof placeholders
+        run: |
+          set -euo pipefail
+          FILE=lean/MCore/Real/HardenedFinalBoundary.lean
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$FILE"
+      - name: Axiom audit
+        run: |
+          cat > HardenedFinalBoundaryAxioms.lean <<'EOF'
+          import MCore.Real.HardenedFinalBoundary
+          #print axioms MCore.Real.HardenedFinalBoundary.final_external_nonempty_iff_two_producers
+          #print axioms MCore.Real.HardenedFinalBoundary.final_external_nonempty_iff_p01_and_universal_failure
+          #print axioms MCore.Real.HardenedFinalBoundary.exact_two_producers_to_final_root
+          #print axioms MCore.Real.HardenedFinalBoundary.exact_two_producers_to_official_root
+          EOF
+          lake env lean HardenedFinalBoundaryAxioms.lean | tee hardened-final-boundary-axioms.txt
+          ! grep -E 'sorryAx' hardened-final-boundary-axioms.txt
