@@ -40,7 +40,7 @@ def inputNodeCompositeMachine :
         match ql with
         | .halt mode =>
             [(.read mode preservingReadMachine.initial, symbol, .stay)]
-        | .reject => []
+        | .reject => [(.reject, symbol, .stay)]
         | _ =>
             let t := inputIndexLookaheadMachine.transition ql symbol
             [(.look t.1, t.2.1, t.2.2)]
@@ -48,7 +48,7 @@ def inputNodeCompositeMachine :
         match qr with
         | .halt selected =>
             [(.ret mode selected (.start mode), symbol, .stay)]
-        | .reject => []
+        | .reject => [(.reject, symbol, .stay)]
         | _ =>
             let t := preservingReadMachine.transition qr symbol
             [(.read mode t.1, t.2.1, t.2.2)]
@@ -56,7 +56,7 @@ def inputNodeCompositeMachine :
         match qt with
         | .halt finalMode =>
             [(.done selected finalMode, symbol, .stay)]
-        | .reject => []
+        | .reject => [(.reject, symbol, .stay)]
         | _ =>
             let t := inputAfterReadReturnMachine.transition qt symbol
             [(.ret mode selected t.1, t.2.1, t.2.2)]
@@ -84,6 +84,26 @@ def inputNodeCompositeMachine :
 
 @[simp] theorem inputNodeCompositeMachine_rejecting_reject :
     inputNodeCompositeMachine.rejecting .reject = true := rfl
+
+/-- Nested failures from lookahead/read/return are fail-closed: one additional
+composite step promotes them to the unique rejecting terminal. -/
+theorem nested_input_reject_successors
+    (mode : InputReturnMode) (selected : Bool)
+    (tape : Tape (Option Bool)) :
+    inputNodeCompositeMachine.successors
+        { state := .look .reject, tape := tape } =
+          [{ state := .reject, tape := tape }] ∧
+    inputNodeCompositeMachine.successors
+        { state := .read mode .reject, tape := tape } =
+          [{ state := .reject, tape := tape }] ∧
+    inputNodeCompositeMachine.successors
+        { state := .ret mode selected .reject, tape := tape } =
+          [{ state := .reject, tape := tape }] := by
+  simp [inputNodeCompositeMachine, NTM.successors,
+    NTM.stepBranch, Tape.write, Tape.move]
+
+#print axioms MCore.Real.P01InputNodeCompositeNTM.nested_input_reject_successors
+
 
 /-- Lookahead handoff preserves the entire tape and stores the classified mode
 in finite control. -/
