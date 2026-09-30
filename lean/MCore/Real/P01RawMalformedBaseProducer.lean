@@ -29,42 +29,39 @@ open P01RawMalformedUnary
 abbrev EvalConfig :=
   Configuration CheckedEvalRunState (Option Bool)
 
-theorem loopEnvelope_le_rawMalformedBudget
-    (fuel n : Nat) :
-    checkedLoopStepEnvelope n ≤ rawMalformedBudget fuel n := by
-  unfold rawMalformedBudget
-  have hcoef : 1 ≤ 256 * (fuel + 1) ^ 2 := by
-    have hp : 1 ≤ (fuel + 1) ^ 2 := by
-      have h1 : 1 ≤ fuel + 1 := by omega
-      exact Nat.one_le_pow_of_one_le h1
-    exact Nat.le_trans hp (Nat.le_mul_of_pos_left _ (by decide))
-  calc
-    checkedLoopStepEnvelope n =
-        1 * checkedLoopStepEnvelope n := by simp
-    _ ≤ (256 * (fuel + 1) ^ 2) * checkedLoopStepEnvelope n :=
-      Nat.mul_le_mul_right _ hcoef
-    _ = rawMalformedBudget fuel n := by
-      unfold rawMalformedBudget
-      ring
+theorem loopEnvelope_le_rawMalformedSlice
+    (n : Nat) :
+    checkedLoopStepEnvelope n ≤ rawMalformedSlice n := by
+  unfold checkedLoopStepEnvelope rawMalformedSlice
+  have hpow :
+      (n + 1) ^ 2 ≤ (n + 1) ^ 3 := by
+    exact Nat.pow_le_pow_right (by omega) (by omega)
+  have hcoef :
+      256 * (n + 1) ^ 2 ≤ 8192 * (n + 1) ^ 2 := by
+    exact Nat.mul_le_mul_right _ (by omega)
+  exact Nat.le_trans hcoef (Nat.mul_le_mul_left 8192 hpow)
 
-theorem two_loopEnvelope_le_rawMalformedBudget
+theorem two_loopEnvelope_le_rawMalformedSlice
+    (n : Nat) :
+    2 * checkedLoopStepEnvelope n ≤ rawMalformedSlice n := by
+  have h := loopEnvelope_le_rawMalformedSlice n
+  unfold checkedLoopStepEnvelope rawMalformedSlice at *
+  have hcoef :
+      2 * (256 * (n + 1) ^ 2) ≤ 8192 * (n + 1) ^ 2 := by
+    ring_nf
+    exact Nat.mul_le_mul_right _ (by omega)
+  exact Nat.le_trans hcoef
+    (Nat.mul_le_mul_left 8192
+      (Nat.pow_le_pow_right (by omega) (by omega)))
+
+theorem slice_le_rawMalformedBudget
     (fuel n : Nat) :
-    2 * checkedLoopStepEnvelope n ≤ rawMalformedBudget fuel n := by
+    rawMalformedSlice n ≤ rawMalformedBudget fuel n := by
   unfold rawMalformedBudget
-  have hcoef : 2 ≤ 256 * (fuel + 1) ^ 2 := by
-    have hp : 1 ≤ (fuel + 1) ^ 2 := by
-      have h1 : 1 ≤ fuel + 1 := by omega
-      exact Nat.one_le_pow_of_one_le h1
-    have h256 : 256 ≤ 256 * (fuel + 1) ^ 2 :=
-      Nat.mul_le_mul_left 256 hp
-    omega
   calc
-    2 * checkedLoopStepEnvelope n
-        ≤ (256 * (fuel + 1) ^ 2) * checkedLoopStepEnvelope n :=
-      Nat.mul_le_mul_right _ hcoef
-    _ = rawMalformedBudget fuel n := by
-      unfold rawMalformedBudget
-      ring
+    rawMalformedSlice n = 1 * rawMalformedSlice n := by simp
+    _ ≤ (fuel + 1) * rawMalformedSlice n :=
+      Nat.mul_le_mul_right _ (by omega)
 
 theorem n_le_loopEnvelope (n : Nat) :
     n ≤ checkedLoopStepEnvelope n := by
@@ -126,7 +123,7 @@ theorem short_reaches_fail_closed
     unfold checkedTagPrefixFuel at hpref
     omega
   refine ⟨m, Nat.le_trans hmLoop
-      (loopEnvelope_le_rawMalformedBudget fuel n), dead, hmem, ?_⟩
+      (Nat.le_trans (loopEnvelope_le_rawMalformedSlice n) (slice_le_rawMalformedBudget fuel n)), dead, hmem, ?_⟩
   exact Or.inr ⟨hactive, hdead⟩
 
 /-- 110 and 111 are not semantic circuit tags and reject explicitly. -/
@@ -169,7 +166,7 @@ theorem invalid_tag_reaches_fail_closed
         evalCursorReadTape witness (consumed + 3)
           rest frameStack padding }
   refine ⟨m, Nat.le_trans hmLoop
-      (loopEnvelope_le_rawMalformedBudget fuel n), cfg, ?_, ?_⟩
+      (Nat.le_trans (loopEnvelope_le_rawMalformedSlice n) (slice_le_rawMalformedBudget fuel n)), cfg, ?_, ?_⟩
   · simpa [cfg] using hmem
   · exact Or.inl rfl
 
@@ -214,7 +211,7 @@ theorem unary_reaches_fail_closed
       checkedStepEnvelope_le_loopEnvelope n
     omega
   refine ⟨m, Nat.le_trans hm2
-      (two_loopEnvelope_le_rawMalformedBudget fuel n),
+      (two_Nat.le_trans (loopEnvelope_le_rawMalformedSlice n) (slice_le_rawMalformedBudget fuel n)),
     dead, hmem, Or.inr ⟨hactive, hdead⟩⟩
 
 #print axioms MCore.Real.P01RawMalformedBaseProducer.short_reaches_fail_closed
