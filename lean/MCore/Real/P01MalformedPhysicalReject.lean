@@ -53,7 +53,7 @@ theorem tagDecode_short_rejects_within_three
     cases b0 <;> cases b1 <;>
       simp [tagDecodeMachine, evalCursorReadTape, TM.run, TM.step,
         Tape.write, Tape.move]
-  · simp at hshort
+  · omega
 
 /-- Short unread sources are physically rejected by the checked evaluator.
 
