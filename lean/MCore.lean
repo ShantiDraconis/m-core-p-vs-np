@@ -196,3 +196,7 @@ import MCore.Real.P01RawDecodeFailureCases
 import MCore.Real.P01RawMalformedBaseProducer
 
 import MCore.Real.P01RawMalformedRecursiveLeft
+
+import MCore.Real.P01RawMalformedRecursiveRight
+
+import MCore.Real.P01RawMalformedProducer
