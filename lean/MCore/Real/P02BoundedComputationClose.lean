@@ -845,6 +845,211 @@ theorem evalCNF_append_eq
   | cons c cs ih =>
       simp [evalCNF, ih, Bool.and_assoc]
 
+
+/-! Guard-vacuity laws for inactive tableau transition cases. -/
+
+theorem setStateClauses_true_of_guard
+    (sigma : Assignment) (guard : Clause)
+    (M : PolyDTMCandidate) (t s : Nat)
+    (target : Fin (M.stateCount + 1))
+    (hguard : evalClause sigma guard = true) :
+    evalCNF sigma (setStateClauses guard M t s target) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro clause hclause
+  unfold setStateClauses at hclause
+  rcases List.mem_ofFn.mp hclause with ⟨q, rfl⟩
+  rw [evalClause_append, hguard]
+  simp
+
+theorem setSymbolClauses_true_of_guard
+    (sigma : Assignment) (guard : Clause)
+    (varAt : Option Bool → Nat) (target : Option Bool)
+    (hguard : evalClause sigma guard = true) :
+    evalCNF sigma (setSymbolClauses guard varAt target) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro clause hclause
+  unfold setSymbolClauses at hclause
+  rw [List.mem_map] at hclause
+  rcases hclause with ⟨a, ha, rfl⟩
+  rw [evalClause_append, hguard]
+  simp
+
+theorem copySymbolClauses_true_of_guard
+    (sigma : Assignment) (guard : Clause)
+    (oldVar newVar : Option Bool → Nat)
+    (hguard : evalClause sigma guard = true) :
+    evalCNF sigma (copySymbolClauses guard oldVar newVar) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro clause hclause
+  unfold copySymbolClauses at hclause
+  simp only [List.mem_flatMap] at hclause
+  rcases hclause with ⟨a, ha, hpair⟩
+  simp only [List.mem_cons, List.mem_singleton] at hpair
+  rcases hpair with rfl | rfl <;>
+    rw [evalClause_append, hguard] <;> simp
+
+theorem copyLeftAll_true_of_guard
+    (sigma : Assignment) (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (hguard : evalClause sigma guard = true) :
+    evalCNF sigma (copyLeftAll guard M x t s) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro clause hclause
+  unfold copyLeftAll at hclause
+  simp only [List.mem_flatMap] at hclause
+  rcases hclause with ⟨i, hi, hc⟩
+  exact evalCNF_member_true sigma
+    (copySymbolClauses guard
+      (leftVar M x t s i) (leftVar M x t (s + 1) i))
+    clause hc
+    (copySymbolClauses_true_of_guard sigma guard _ _ hguard)
+
+theorem copyRightAll_true_of_guard
+    (sigma : Assignment) (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (hguard : evalClause sigma guard = true) :
+    evalCNF sigma (copyRightAll guard M x t s) = true := by
+  apply evalCNF_true_of_forall_mem
+  intro clause hclause
+  unfold copyRightAll at hclause
+  simp only [List.mem_flatMap] at hclause
+  rcases hclause with ⟨i, hi, hc⟩
+  exact evalCNF_member_true sigma
+    (copySymbolClauses guard
+      (rightVar M x t s i) (rightVar M x t (s + 1) i))
+    clause hc
+    (copySymbolClauses_true_of_guard sigma guard _ _ hguard)
+
+theorem copyLeftCell_true_of_guard
+    (sigma : Assignment) (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t oldS oldI newS newI : Nat)
+    (hguard : evalClause sigma guard = true) :
+    evalCNF sigma (copyLeftCell guard M x t oldS oldI newS newI) = true := by
+  exact copySymbolClauses_true_of_guard sigma guard _ _ hguard
+
+theorem copyRightCell_true_of_guard
+    (sigma : Assignment) (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t oldS oldI newS newI : Nat)
+    (hguard : evalClause sigma guard = true) :
+    evalCNF sigma (copyRightCell guard M x t oldS oldI newS newI) = true := by
+  exact copySymbolClauses_true_of_guard sigma guard _ _ hguard
+
+theorem transitionCaseCNF_true_of_guard
+    (sigma : Assignment)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hguard :
+      evalClause sigma
+        [neg (stateVar M t s q), neg (headVar M t s a)] = true) :
+    evalCNF sigma (transitionCaseCNF M x t s q a) = true := by
+  let guard : Clause :=
+    [neg (stateVar M t s q), neg (headVar M t s a)]
+  have hg : evalClause sigma guard = true := by
+    simpa [guard] using hguard
+  by_cases hh : M.machine.halting q = true
+  · simp only [transitionCaseCNF, hh, if_pos]
+    unfold haltingCaseCNF
+    rw [evalCNF_append_eq, evalCNF_append_eq, evalCNF_append_eq]
+    simp only [
+      setStateClauses_true_of_guard sigma guard M t (s + 1) q hg,
+      copySymbolClauses_true_of_guard sigma guard
+        (headVar M t s) (headVar M t (s + 1)) hg,
+      copyLeftAll_true_of_guard sigma guard M x t s hg,
+      copyRightAll_true_of_guard sigma guard M x t s hg,
+      Bool.and_true]
+  · simp only [transitionCaseCNF, hh, if_neg]
+    rcases ht : M.machine.transition q a with ⟨qNext, write, dir⟩
+    cases dir with
+    | stay =>
+        simp only [ht]
+        unfold stayCaseCNF
+        rw [evalCNF_append_eq, evalCNF_append_eq, evalCNF_append_eq]
+        simp only [
+          setStateClauses_true_of_guard sigma guard M t (s + 1) qNext hg,
+          setSymbolClauses_true_of_guard sigma guard
+            (headVar M t (s + 1)) write hg,
+          copyLeftAll_true_of_guard sigma guard M x t s hg,
+          copyRightAll_true_of_guard sigma guard M x t s hg,
+          Bool.and_true]
+    | left =>
+        simp only [ht]
+        unfold leftMoveCaseCNF
+        let r := radius x t
+        let shiftedLeft :=
+          (List.range (r - 1)).flatMap fun i =>
+            copyLeftCell guard M x t s (i + 1) (s + 1) i
+        let shiftedRight :=
+          (List.range (r - 1)).flatMap fun i =>
+            copyRightCell guard M x t s i (s + 1) (i + 1)
+        have hSL : evalCNF sigma shiftedLeft = true := by
+          apply evalCNF_true_of_forall_mem
+          intro clause hc
+          dsimp [shiftedLeft] at hc
+          simp only [List.mem_flatMap] at hc
+          rcases hc with ⟨i, hi, hci⟩
+          exact evalCNF_member_true sigma
+            (copyLeftCell guard M x t s (i + 1) (s + 1) i)
+            clause hci
+            (copyLeftCell_true_of_guard sigma guard M x t
+              s (i + 1) (s + 1) i hg)
+        have hSR : evalCNF sigma shiftedRight = true := by
+          apply evalCNF_true_of_forall_mem
+          intro clause hc
+          dsimp [shiftedRight] at hc
+          simp only [List.mem_flatMap] at hc
+          rcases hc with ⟨i, hi, hci⟩
+          exact evalCNF_member_true sigma
+            (copyRightCell guard M x t s i (s + 1) (i + 1))
+            clause hci
+            (copyRightCell_true_of_guard sigma guard M x t
+              s i (s + 1) (i + 1) hg)
+        dsimp [guard, r, shiftedLeft, shiftedRight] at hg hSL hSR ⊢
+        repeat' rw [evalCNF_append_eq]
+        simp [
+          setStateClauses_true_of_guard,
+          copySymbolClauses_true_of_guard,
+          setSymbolClauses_true_of_guard,
+          hSL, hSR, hg]
+    | right =>
+        simp only [ht]
+        unfold rightMoveCaseCNF
+        let r := radius x t
+        let shiftedLeft :=
+          (List.range (r - 1)).flatMap fun i =>
+            copyLeftCell guard M x t s i (s + 1) (i + 1)
+        let shiftedRight :=
+          (List.range (r - 1)).flatMap fun i =>
+            copyRightCell guard M x t s (i + 1) (s + 1) i
+        have hSL : evalCNF sigma shiftedLeft = true := by
+          apply evalCNF_true_of_forall_mem
+          intro clause hc
+          dsimp [shiftedLeft] at hc
+          simp only [List.mem_flatMap] at hc
+          rcases hc with ⟨i, hi, hci⟩
+          exact evalCNF_member_true sigma
+            (copyLeftCell guard M x t s i (s + 1) (i + 1))
+            clause hci
+            (copyLeftCell_true_of_guard sigma guard M x t
+              s i (s + 1) (i + 1) hg)
+        have hSR : evalCNF sigma shiftedRight = true := by
+          apply evalCNF_true_of_forall_mem
+          intro clause hc
+          dsimp [shiftedRight] at hc
+          simp only [List.mem_flatMap] at hc
+          rcases hc with ⟨i, hi, hci⟩
+          exact evalCNF_member_true sigma
+            (copyRightCell guard M x t s (i + 1) (s + 1) i)
+            clause hci
+            (copyRightCell_true_of_guard sigma guard M x t
+              s (i + 1) (s + 1) i hg)
+        dsimp [guard, r, shiftedLeft, shiftedRight] at hg hSL hSR ⊢
+        repeat' rw [evalCNF_append_eq]
+        simp [
+          setStateClauses_true_of_guard,
+          copySymbolClauses_true_of_guard,
+          setSymbolClauses_true_of_guard,
+          hSL, hSR, hg]
+
 theorem executionAssignment_initialCNF
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
     evalCNF (executionAssignment M x t) (initialCNF M x t) = true := by
