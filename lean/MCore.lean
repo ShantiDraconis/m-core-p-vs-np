@@ -154,3 +154,5 @@ import MCore.Real.P01CheckedVerifierRun
 
 
 import MCore.Real.P01CheckedEvalReject
+
+import MCore.Real.P01CheckedVerifierDeterminism
