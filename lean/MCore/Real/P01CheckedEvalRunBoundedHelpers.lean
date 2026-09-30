@@ -124,7 +124,7 @@ theorem pushTag_checked_reaches_need_within_envelope
           (b0 :: b1 :: b2 :: rest) frameStack +
           (rest.length + frameStack.length + 2) + 1 + 3 + 1 =
         checkedPushTagFuel (b0 :: b1 :: b2 :: rest) frameStack := by
-    simp [checkedPushTagFuel]
+    simp [checkedPushTagFuel, Nat.add_assoc]
   rw [heq]
   exact Nat.le_trans hfuel (checkedStepEnvelope_le_loopEnvelope n)
 
