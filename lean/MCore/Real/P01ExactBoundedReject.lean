@@ -20,6 +20,7 @@ open P01CheckedVerifierInvariant
 open P01CheckedVerifierBudget
 open P01CheckedVerifierGlobalBudget
 open P01ExactBoundedCircuitProducer
+open P01CheckedEvalRunBaseCases
 open P01CNFMode
 open P01NTMRunLaws
 
@@ -269,7 +270,13 @@ theorem neg_exact_bounded_reject
               checkedCircuitBudget (.not child) n := by
           unfold checkedCircuitBudget
           dsimp [E] at hmul ⊢
-          omega
+          have hadd :
+              E + 8 * (evalStepCount child + 1) * E =
+                (1 + 8 * (evalStepCount child + 1)) * E := by
+            rw [Nat.add_mul]
+            simp
+          rw [hadd]
+          exact hmul
         exact Nat.le_trans hraw hcap
 
       exact ⟨m0 + m1, hbudget, cfg1, hAll, hrej⟩
@@ -387,7 +394,7 @@ theorem and_exact_bounded_reject
                      (encodeCircuit (.and left right) ++ tail)
                      (encodeEvalFrames frames) padding }] := by
         simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-          List.append_assoc] using h0
+          List.append_assoc, childMode] using h0
 
       have hLayoutLeft :
           CheckedLayoutBound n leftConsumed
@@ -435,7 +442,13 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            have hadd :
+                E + 8 * (evalStepCount left + 1) * E =
+                  (1 + 8 * (evalStepCount left + 1)) * E := by
+              rw [Nat.add_mul]
+              simp
+            rw [hadd]
+            exact hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .cnf right = false := by
@@ -470,9 +483,8 @@ theorem and_exact_bounded_reject
             leftConsumed + (encodeCircuit left).length
           have hRightTail : encodeCircuit right ++ tail ≠ [] := by
             intro hnil
-            have henc : encodeCircuit right = [] :=
+            exact encodeCircuit_ne_nil right
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
@@ -600,7 +612,13 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            have hadd :
+                E + 8 * (evalStepCount left + 1) * E =
+                  (1 + 8 * (evalStepCount left + 1)) * E := by
+              rw [Nat.add_mul]
+              simp
+            rw [hadd]
+            exact hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 
@@ -697,7 +715,7 @@ theorem or_exact_bounded_reject
                      (encodeCircuit (.or left right) ++ tail)
                      (encodeEvalFrames frames) padding }] := by
         simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-          List.append_assoc] using h0
+          List.append_assoc, childMode] using h0
 
       have hLayoutLeft :
           CheckedLayoutBound n leftConsumed
@@ -745,7 +763,13 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            have hadd :
+                E + 8 * (evalStepCount left + 1) * E =
+                  (1 + 8 * (evalStepCount left + 1)) * E := by
+              rw [Nat.add_mul]
+              simp
+            rw [hadd]
+            exact hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .clause right = false := by
@@ -780,9 +804,8 @@ theorem or_exact_bounded_reject
             leftConsumed + (encodeCircuit left).length
           have hRightTail : encodeCircuit right ++ tail ≠ [] := by
             intro hnil
-            have henc : encodeCircuit right = [] :=
+            exact encodeCircuit_ne_nil right
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
@@ -910,7 +933,13 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            have hadd :
+                E + 8 * (evalStepCount left + 1) * E =
+                  (1 + 8 * (evalStepCount left + 1)) * E := by
+              rw [Nat.add_mul]
+              simp
+            rw [hadd]
+            exact hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 /-- Exact bounded negative structural producer for every canonical circuit. -/
