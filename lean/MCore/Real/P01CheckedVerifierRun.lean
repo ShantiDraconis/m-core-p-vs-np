@@ -138,7 +138,8 @@ theorem prepared_cnf_reaches_semantic_final
              tape := tape1 } : CheckedVerifierConfig)
           h0' hLift
 
-      exact ⟨m0 + m1, tape1, hAll⟩
+      refine ⟨m0 + m1, tape1, ?_⟩
+      simpa [hsrc] using hAll
 
 /-- On valid CNF input, checked-verifier acceptance is exactly the semantic
 circuit Boolean. -/
