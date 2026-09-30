@@ -691,6 +691,7 @@ theorem layout_after_prefix_with_frame
     (n consumed : Nat)
     (bitsPrefix rest frameStack : BitString)
     (frame : EvalFrame)
+    (hPrefix : 3 ≤ bitsPrefix.length)
     (h :
       CheckedLayoutBound n consumed
         (bitsPrefix ++ rest) frameStack) :
@@ -908,7 +909,8 @@ theorem and_exact_bounded_certificate
             (encodeCircuit right ++ tail)
             (encodeEvalFrames frames)
             (.andRight (evalCircuit sigma left))
-          simpa [encodeCircuit, List.append_assoc] using hLayout
+          · simp
+          · simpa [encodeCircuit, List.append_assoc] using hLayout
         simpa [afterLeft, leftConsumed] using hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
@@ -1349,7 +1351,8 @@ theorem or_exact_bounded_certificate
         (encodeCircuit right ++ tail)
         (encodeEvalFrames frames)
         (.orRight (evalCircuit sigma left))
-      simpa [encodeCircuit, List.append_assoc] using hLayout
+      · simp
+      · simpa [encodeCircuit, List.append_assoc] using hLayout
     simpa [afterLeft, leftConsumed] using hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
