@@ -2,6 +2,7 @@ import MCore.Real.P01CheckedEvalRejectBounded
 import MCore.Real.P01ExactBoundedAll
 import MCore.Real.P01CheckedEvalRunBaseCases
 import MCore.Real.P01MaterialGlobalBudget
+import MCore.Real.P01DecodeCoreLaws
 
 namespace MCore
 namespace Real
@@ -25,6 +26,7 @@ open P01CheckedEvalRejectBounded
 open P01ExactBoundedAll
 open P01MaterialGlobalBudget
 open P01NTMRunLaws
+open P01DecodeCoreLaws
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
