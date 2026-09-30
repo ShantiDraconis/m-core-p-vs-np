@@ -77,9 +77,8 @@ theorem inputTag_checked_reaches_within_loopEnvelope
         n consumed i tail frameStack
         hsource hc3 hindex htail hframes
   have hstep :
-      checkedStepEnvelope n ≤ checkedLoopStepEnvelope n := by
-    unfold checkedStepEnvelope checkedLoopStepEnvelope
-    exact Nat.mul_le_mul_right ((n + 1) ^ 2) (by omega)
+      checkedStepEnvelope n ≤ checkedLoopStepEnvelope n :=
+    checkedStepEnvelope_le_loopEnvelope n
   have hfuel :
       checkedInputTagFuel consumed i tail frameStack ≤
         checkedLoopStepEnvelope n :=
