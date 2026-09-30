@@ -149,7 +149,7 @@ theorem inputLook_checked_run_reachable
   induction n with
   | zero =>
       intro c
-      exact ⟨0, by omega, by simp [NTM.runBranches]⟩
+      exact ⟨0, by omega, by simp [NTM.runBranches, TM.run]⟩
   | succ n ih =>
       intro c
       cases hhalt : inputIndexLookaheadMachine.halting c.state with
@@ -237,11 +237,13 @@ theorem checked_truncated_unary_reaches_dead
   cases hres :
       inputIndexLookaheadMachine.run (k + 1) cLook0 with
   | mk q tape =>
-      have hq : q = .reject := by
-        have hs :=
-          lookahead_truncated_unary_reject
-            witness frameStack (consumed + 3) padding k
-        simpa [cLook0, hres] using hs
+      have hs :
+          (inputIndexLookaheadMachine.run (k + 1) cLook0).state = .reject := by
+        simpa [cLook0] using
+          (lookahead_truncated_unary_reject
+            witness frameStack (consumed + 3) padding k)
+      rw [hres] at hs
+      have hq : q = .reject := hs
       subst q
 
       let dead : EvalConfig :=
