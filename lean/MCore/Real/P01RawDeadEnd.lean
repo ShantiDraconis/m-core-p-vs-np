@@ -52,6 +52,25 @@ theorem not_acceptsWithin_succ_of_reaches_dead
   rw [runBranches_singleton_active checkedVerifierMachine 0 dead hactive] at hz
   simp [hdead, NTM.runBranches] at hz
 
+
+/-- Once a run is known to have halted by fuel n, absence of an accepting
+configuration at n persists at every larger fuel. -/
+theorem not_acceptsWithin_mono_after_halt
+    (n m : Nat)
+    (start : CheckedVerifierConfig)
+    (hnm : n ≤ m)
+    (hhalt : checkedVerifierMachine.HaltsWithin n start)
+    (hnot : ¬ checkedVerifierMachine.AcceptsWithin n start) :
+    ¬ checkedVerifierMachine.AcceptsWithin m start := by
+  intro hacc
+  rcases hacc with ⟨z, hz, hzacc⟩
+  have hzhalt : Halted checkedVerifierMachine z :=
+    halted_of_accepting checkedVerifierMachine z hzacc
+  have hzsmall :=
+    mem_of_haltsWithin checkedVerifierMachine n m start z
+      hhalt hz hzhalt
+  exact hnot ⟨z, hzsmall, hzacc⟩
+
 #print axioms MCore.Real.P01RawDeadEnd.haltsWithin_succ_of_reaches_dead
 #print axioms MCore.Real.P01RawDeadEnd.not_acceptsWithin_succ_of_reaches_dead
 
