@@ -171,6 +171,120 @@ theorem inputNode_checked_from_read
       simpa [a, b] using hsrc)
   exact ⟨k, Nat.le_trans hk hm, by simpa [a, b] using hlift⟩
 
+
+/-- Unterminated unary payload, starting immediately after an already-decoded
+000 tag, reaches the checked evaluator's unique reject state. -/
+theorem unterminated_input_checked_from_read
+    (mode : SyntaxMode)
+    (witness frameStack : BitString)
+    (consumed padding n : Nat) :
+    ∃ m ≤ n + 2, ∃ tape : Tape (Option Bool),
+      ({ state := CheckedEvalRunState.reject, tape := tape } :
+        CheckedConfig) ∈
+      checkedEvalRunLoopMachine.runBranches m
+        [inputCheckedConfig mode
+          ({ state := inputNodeCompositeMachine.initial,
+             tape :=
+               evalCursorReadTape witness consumed
+                 (List.replicate n true) frameStack padding } :
+            Configuration InputNodeCompositeState (Option Bool))] := by
+  obtain ⟨m, hm, tape, hsrc⟩ :=
+    unterminated_index_reaches_reject
+      witness frameStack consumed padding n
+
+  let a : Configuration InputNodeCompositeState (Option Bool) :=
+    { state := inputNodeCompositeMachine.initial,
+      tape :=
+        evalCursorReadTape witness consumed
+          (List.replicate n true) frameStack padding }
+  let b : Configuration InputNodeCompositeState (Option Bool) :=
+    { state := .reject, tape := tape }
+
+  have ha : ¬ Halted inputNodeCompositeMachine a := by
+    simp [Halted, a, inputNodeCompositeMachine]
+  have hb : Halted inputNodeCompositeMachine b := by
+    simp [Halted, b, inputNodeCompositeMachine]
+
+  obtain ⟨k, hk, hlift⟩ :=
+    input_terminal_reachable_lift mode m a b ha hb (by
+      simpa [a, b] using hsrc)
+
+  refine ⟨k, Nat.le_trans hk hm, tape, ?_⟩
+  simpa [a, b, inputCheckedConfig, inputCheckedEmbed] using hlift
+
+def checkedUnterminatedInputFuel
+    (n : Nat) (frameStack : BitString) : Nat :=
+  checkedTagPrefixFuel
+      (false :: false :: false :: List.replicate n true) frameStack +
+    (n + 2)
+
+/-- Complete checked 000 rejection path for a unary natural-number payload
+that never supplies its mandatory false terminator. -/
+theorem inputTag_unterminated_reaches_reject
+    (mode : SyntaxMode)
+    (witness frameStack : BitString)
+    (consumed padding n : Nat) :
+    ∃ m ≤ checkedUnterminatedInputFuel n frameStack,
+      ∃ tape : Tape (Option Bool),
+        ({ state := .reject, tape := tape } : CheckedConfig) ∈
+          checkedEvalRunLoopMachine.runBranches m
+            [{ state := .need mode needExprCompositeMachine.initial,
+               tape :=
+                 evalCursorStackEndTape witness consumed
+                   (false :: false :: false :: List.replicate n true)
+                   frameStack padding }] := by
+  obtain ⟨m0, hm0, h0⟩ :=
+    checked_tag_prefix_reaches
+      mode witness (List.replicate n true) frameStack
+      consumed padding false false false (by
+        cases mode <;> rfl)
+
+  let tAfter :=
+    evalCursorReadTape witness (consumed + 3)
+      (List.replicate n true) frameStack padding
+  let cInput0 : Configuration InputNodeCompositeState (Option Bool) :=
+    { state := inputNodeCompositeMachine.initial, tape := tAfter }
+
+  have h0' :
+      inputCheckedConfig mode cInput0 ∈
+        checkedEvalRunLoopMachine.runBranches m0
+          [{ state := .need mode needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (false :: false :: false :: List.replicate n true)
+                 frameStack padding }] := by
+    simpa [cInput0, tAfter, inputCheckedConfig, inputCheckedEmbed,
+      postTagState, childMode] using h0
+
+  obtain ⟨m1, hm1, tape1, h1⟩ :=
+    unterminated_input_checked_from_read
+      mode witness frameStack (consumed + 3) padding n
+
+  have h1' :
+      ({ state := .reject, tape := tape1 } : CheckedConfig) ∈
+        checkedEvalRunLoopMachine.runBranches m1
+          [inputCheckedConfig mode cInput0] := by
+    simpa [cInput0, tAfter] using h1
+
+  have hAll :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      m0 m1
+      [{ state := .need mode needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (false :: false :: false :: List.replicate n true)
+             frameStack padding }]
+      (inputCheckedConfig mode cInput0)
+      ({ state := .reject, tape := tape1 } : CheckedConfig)
+      h0' h1'
+
+  refine ⟨m0 + m1, ?_, tape1, hAll⟩
+  unfold checkedUnterminatedInputFuel
+  omega
+
+#print axioms MCore.Real.P01CheckedEvalRunInputTag.unterminated_input_checked_from_read
+#print axioms MCore.Real.P01CheckedEvalRunInputTag.inputTag_unterminated_reaches_reject
+
 def checkedInputTagFuel
     (consumed i : Nat) (tail frameStack : BitString) : Nat :=
   checkedTagPrefixFuel
