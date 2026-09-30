@@ -392,7 +392,7 @@ theorem andRightReturn_checked_reaches_have
     (consumed padding : Nat)
     (l v : Bool) :
     ∃ m ≤ 9,
-      ({ state := .have mode (.start (Bool.and l v)),
+      ({ state := .have .cnf (.start (Bool.and l v)),
          tape :=
            evalCursorStackEndTape witness consumed unread
              frameStack (padding + 3) } : CheckedConfig) ∈
@@ -413,7 +413,7 @@ theorem orRightReturn_checked_reaches_have
     (consumed padding : Nat)
     (l v : Bool) :
     ∃ m ≤ 9,
-      ({ state := .have mode (.start (Bool.or l v)),
+      ({ state := .have .clause (.start (Bool.or l v)),
          tape :=
            evalCursorStackEndTape witness consumed unread
              frameStack (padding + 3) } : CheckedConfig) ∈
