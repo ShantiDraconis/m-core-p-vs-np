@@ -147,12 +147,37 @@ theorem input_bounded_certificate
         | cons f fs =>
             refine ⟨P01InputNodeRoundTrip.consumedAfterInputIndex
               (consumed + 3) i, padding, ?_⟩
-            cases f <;>
-              simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-                cfg, inputCheckedConfig, inputCheckedEmbed,
-                P01InputNodeCompositeRun.inputNodeFinalMode,
-                P01InputNodeRoundTrip.inputAfterReadTarget,
-                encodeEvalFrames, encodeEvalFrame]
+            cases f with
+            | neg =>
+                simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  P01InputNodeCompositeRun.inputNodeFinalMode,
+                  P01InputNodeRoundTrip.inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | andLeft =>
+                simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  P01InputNodeCompositeRun.inputNodeFinalMode,
+                  P01InputNodeRoundTrip.inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | andRight b =>
+                cases b <;> simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  P01InputNodeCompositeRun.inputNodeFinalMode,
+                  P01InputNodeRoundTrip.inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | orLeft =>
+                simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  P01InputNodeCompositeRun.inputNodeFinalMode,
+                  P01InputNodeRoundTrip.inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
+            | orRight b =>
+                cases b <;> simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                  cfg, inputCheckedConfig, inputCheckedEmbed,
+                  P01InputNodeCompositeRun.inputNodeFinalMode,
+                  P01InputNodeRoundTrip.inputAfterReadTarget,
+                  encodeEvalFrames, encodeEvalFrame]
 
 /-- Constant leaf: the generic bounded constant run inhabits the same bounded
 circuit certificate. -/
