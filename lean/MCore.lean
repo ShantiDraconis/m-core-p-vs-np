@@ -158,3 +158,5 @@ import MCore.Real.P01CheckedEvalReject
 import MCore.Real.P01CheckedVerifierDeterminism
 
 import MCore.Real.P01CheckedVerifierBudget
+
+import MCore.Real.ExactFinalProducer
