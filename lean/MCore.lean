@@ -182,3 +182,5 @@ import MCore.Real.P01CheckedEvalRejectBounded
 import MCore.Real.P01MalformedRawBoundedReject
 
 import MCore.Real.P01ParserWitnessComposition
+
+import MCore.Real.P01ParserFirewall
