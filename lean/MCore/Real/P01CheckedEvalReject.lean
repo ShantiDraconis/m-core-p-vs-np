@@ -2,6 +2,7 @@ import MCore.Real.P01CheckedEvalRunTagPrefix
 import MCore.Real.CanonicalCircuitBits
 import MCore.Real.P01EncodedFrameTape
 import MCore.Real.P01CheckedEvalRunNeedTags
+import MCore.Real.P01CheckedEvalRunCircuitCertificate
 
 namespace MCore
 namespace Real
@@ -19,6 +20,9 @@ open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunTagPrefix
 open P01CheckedEvalRunNeedTags
 open P01NTMRunLaws
+open P01CheckedEvalRunBaseCases
+open P01CheckedEvalRunHaveValue
+open P01CheckedEvalRunCircuitCertificate
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -290,6 +294,245 @@ theorem not_reject_certificate
   intro hinvalid tail frames consumed padding hlen hread
   exact invalid_not_reaches_reject
     mode witness child tail frames consumed padding hinvalid
+
+/-- Structural rejection producer for conjunction.
+
+The child rejection certificates are the only recursive inputs.  If the root
+mode itself forbids conjunction, rejection is immediate.  In CNF mode:
+* an invalid left child is entered and rejected recursively;
+* if the left child is valid but the right child is invalid, the already
+  certified positive left run is used to reach the right child, which is then
+  rejected recursively. -/
+theorem and_reject_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (left right : Circuit)
+    (hleftReject :
+      CheckedCircuitRejectCertificate sigma witness .cnf left)
+    (hrightReject :
+      CheckedCircuitRejectCertificate sigma witness .cnf right) :
+    ∀ mode : SyntaxMode,
+      CheckedCircuitRejectCertificate
+        sigma witness mode (.and left right) := by
+  intro mode hinvalid tail frames consumed padding hlen hread
+  cases mode with
+  | clause =>
+      have hroot :
+          tagAllowed .clause (circuitTag (.and left right)) = false := rfl
+      obtain ⟨m, hrun⟩ :=
+        root_disallowed_reaches_reject
+          .clause witness (.and left right) tail frames
+          consumed padding hroot
+      let cfg : CheckedConfig :=
+        { state := .reject,
+          tape :=
+            evalCursorReadTape witness (consumed + 3)
+              ((encodeCircuit (.and left right)).drop 3 ++ tail)
+              (encodeEvalFrames frames) padding }
+      exact ⟨m, cfg, by simpa [cfg] using hrun, rfl⟩
+  | mustInput =>
+      have hroot :
+          tagAllowed .mustInput (circuitTag (.and left right)) = false := rfl
+      obtain ⟨m, hrun⟩ :=
+        root_disallowed_reaches_reject
+          .mustInput witness (.and left right) tail frames
+          consumed padding hroot
+      let cfg : CheckedConfig :=
+        { state := .reject,
+          tape :=
+            evalCursorReadTape witness (consumed + 3)
+              ((encodeCircuit (.and left right)).drop 3 ++ tail)
+              (encodeEvalFrames frames) padding }
+      exact ⟨m, cfg, by simpa [cfg] using hrun, rfl⟩
+  | cnf =>
+      have hlenMax :
+          max (varBound left) (varBound right) ≤ witness.length := by
+        simpa [varBound] using hlen
+      have hlenLeft : varBound left ≤ witness.length :=
+        Nat.le_trans (Nat.le_max_left _ _) hlenMax
+      have hlenRight : varBound right ≤ witness.length :=
+        Nat.le_trans (Nat.le_max_right _ _) hlenMax
+      have hreadLeft :
+          ∀ i, i < varBound left →
+            witness.getD i false = sigma i := by
+        intro i hi
+        exact hread i (by
+          simpa [varBound] using
+            Nat.lt_of_lt_of_le hi (Nat.le_max_left _ _))
+      have hreadRight :
+          ∀ i, i < varBound right →
+            witness.getD i false = sigma i := by
+        intro i hi
+        exact hread i (by
+          simpa [varBound] using
+            Nat.lt_of_lt_of_le hi (Nat.le_max_right _ _))
+
+      have hinvalidChildren :
+          modeCheck .cnf left && modeCheck .cnf right = false := by
+        rw [modeCheck_and] at hinvalid
+        simpa [tagAllowed] using hinvalid
+
+      obtain ⟨m0, h0⟩ :=
+        and_checked_reaches_need
+          .cnf witness
+          (encodeCircuit left ++ encodeCircuit right ++ tail)
+          (encodeEvalFrames frames) consumed padding (by rfl)
+
+      let padLeft := ((padding - 1) - 1) - 1
+      let cNeedLeft : CheckedConfig :=
+        { state := .need .cnf needExprCompositeMachine.initial,
+          tape :=
+            evalCursorStackEndTape witness (consumed + 3)
+              (encodeCircuit left ++ encodeCircuit right ++ tail)
+              (encodeEvalFrame .andLeft ++ encodeEvalFrames frames)
+              padLeft }
+
+      have h0' :
+          cNeedLeft ∈
+            checkedEvalRunLoopMachine.runBranches m0
+              [{ state := .need .cnf needExprCompositeMachine.initial,
+                 tape :=
+                   evalCursorStackEndTape witness consumed
+                     (encodeCircuit (.and left right) ++ tail)
+                     (encodeEvalFrames frames) padding }] := by
+        simpa [cNeedLeft, padLeft, encodeCircuit,
+          childMode, List.append_assoc] using h0
+
+      cases hleftMode : modeCheck .cnf left with
+      | false =>
+          obtain ⟨m1, cfgReject, h1, hrej⟩ :=
+            hleftReject hleftMode
+              (encodeCircuit right ++ tail) (.andLeft :: frames)
+              (consumed + 3) padLeft hlenLeft hreadLeft
+
+          have h1' :
+              cfgReject ∈
+                checkedEvalRunLoopMachine.runBranches m1 [cNeedLeft] := by
+            simpa [cNeedLeft, encodeEvalFrames, List.append_assoc] using h1
+
+          have hAll :=
+            mem_runBranches_trans checkedEvalRunLoopMachine
+              m0 m1
+              [{ state := .need .cnf needExprCompositeMachine.initial,
+                 tape :=
+                   evalCursorStackEndTape witness consumed
+                     (encodeCircuit (.and left right) ++ tail)
+                     (encodeEvalFrames frames) padding }]
+              cNeedLeft cfgReject h0' h1'
+
+          exact ⟨m0 + m1, cfgReject, hAll, hrej⟩
+
+      | true =>
+          have hrightMode : modeCheck .cnf right = false := by
+            simpa [hleftMode] using hinvalidChildren
+
+          have hleftPositive :=
+            P01CheckedEvalRunCircuitCertificate.circuit_certificate
+              sigma witness left .cnf
+
+          obtain ⟨m1, cfgLeft, h1, hout1⟩ :=
+            hleftPositive hleftMode
+              (encodeCircuit right ++ tail) (.andLeft :: frames)
+              (consumed + 3) padLeft hlenLeft hreadLeft
+
+          have h1' :
+              cfgLeft ∈
+                checkedEvalRunLoopMachine.runBranches m1 [cNeedLeft] := by
+            simpa [cNeedLeft, encodeEvalFrames, List.append_assoc] using h1
+
+          have h01 :=
+            mem_runBranches_trans checkedEvalRunLoopMachine
+              m0 m1
+              [{ state := .need .cnf needExprCompositeMachine.initial,
+                 tape :=
+                   evalCursorStackEndTape witness consumed
+                     (encodeCircuit (.and left right) ++ tail)
+                     (encodeEvalFrames frames) padding }]
+              cNeedLeft cfgLeft h0' h1'
+
+          have hRightTail : encodeCircuit right ++ tail ≠ [] := by
+            intro hnil
+            have henc : encodeCircuit right = [] :=
+              (List.append_eq_nil.mp hnil).1
+            exact P01EvalRunCircuitCertificate.encodeCircuit_ne_nil right henc
+
+          obtain ⟨consumed1, padding1, hcfgLeft⟩ :=
+            outcome_have_of_tail_ne_nil
+              witness (exitMode .cnf left) (evalCircuit sigma left)
+              (encodeCircuit right ++ tail) (.andLeft :: frames)
+              cfgLeft hRightTail hout1
+          subst cfgLeft
+
+          obtain ⟨m2, hm2, h2⟩ :=
+            andLeftReturn_checked_reaches_need
+              (exitMode .cnf left)
+              witness (encodeCircuit right ++ tail)
+              (encodeEvalFrames frames)
+              consumed1 padding1 (evalCircuit sigma left)
+
+          let padRight := (((padding1 + 3) - 1) - 1) - 1
+          let cNeedRight : CheckedConfig :=
+            { state := .need .cnf needExprCompositeMachine.initial,
+              tape :=
+                evalCursorStackEndTape witness consumed1
+                  (encodeCircuit right ++ tail)
+                  (encodeEvalFrame (.andRight (evalCircuit sigma left)) ++
+                    encodeEvalFrames frames)
+                  padRight }
+
+          have h2' :
+              cNeedRight ∈
+                checkedEvalRunLoopMachine.runBranches m2
+                  [{ state := .have (exitMode .cnf left)
+                       (.start (evalCircuit sigma left)),
+                     tape :=
+                       evalCursorStackEndTape witness consumed1
+                         (encodeCircuit right ++ tail)
+                         (encodeEvalFrames (.andLeft :: frames))
+                         padding1 }] := by
+            simpa [cNeedRight, padRight, encodeEvalFrames,
+              List.append_assoc] using h2
+
+          have h012 :=
+            mem_runBranches_trans checkedEvalRunLoopMachine
+              (m0 + m1) m2
+              [{ state := .need .cnf needExprCompositeMachine.initial,
+                 tape :=
+                   evalCursorStackEndTape witness consumed
+                     (encodeCircuit (.and left right) ++ tail)
+                     (encodeEvalFrames frames) padding }]
+              ({ state := .have (exitMode .cnf left)
+                   (.start (evalCircuit sigma left)),
+                 tape :=
+                   evalCursorStackEndTape witness consumed1
+                     (encodeCircuit right ++ tail)
+                     (encodeEvalFrames (.andLeft :: frames))
+                     padding1 } : CheckedConfig)
+              cNeedRight h01 h2'
+
+          obtain ⟨m3, cfgReject, h3, hrej⟩ :=
+            hrightReject hrightMode tail
+              (.andRight (evalCircuit sigma left) :: frames)
+              consumed1 padRight hlenRight hreadRight
+
+          have h3' :
+              cfgReject ∈
+                checkedEvalRunLoopMachine.runBranches m3 [cNeedRight] := by
+            simpa [cNeedRight, encodeEvalFrames, List.append_assoc] using h3
+
+          have hAll :=
+            mem_runBranches_trans checkedEvalRunLoopMachine
+              (m0 + m1 + m2) m3
+              [{ state := .need .cnf needExprCompositeMachine.initial,
+                 tape :=
+                   evalCursorStackEndTape witness consumed
+                     (encodeCircuit (.and left right) ++ tail)
+                     (encodeEvalFrames frames) padding }]
+              cNeedRight cfgReject h012 h3'
+
+          exact ⟨m0 + m1 + m2 + m3, cfgReject, hAll, hrej⟩
+
+#print axioms MCore.Real.P01CheckedEvalReject.and_reject_certificate
 
 #print axioms MCore.Real.P01CheckedEvalReject.input_reject_certificate
 #print axioms MCore.Real.P01CheckedEvalReject.const_reject_certificate
