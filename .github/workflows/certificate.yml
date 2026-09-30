@@ -1,6 +1,11 @@
 name: certificate
 on: [push, pull_request]
 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   c12:
     runs-on: ubuntu-latest
