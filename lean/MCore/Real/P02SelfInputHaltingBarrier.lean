@@ -17,8 +17,7 @@ def markHalting (c : Nat.Partrec.Code) : Nat.Partrec.Code :=
 theorem markHalting_computable :
     Computable markHalting := by
   exact
-    (Primrec₂.comp
-      Nat.Partrec.Code.primrec₂_comp
+    (Nat.Partrec.Code.comp_prim.comp
       (Primrec.const (Nat.Partrec.Code.const haltMarkerNat))
       Primrec.id).to_comp
 
@@ -26,7 +25,10 @@ theorem markHalting_eval_zero
     (c : Nat.Partrec.Code) :
     (markHalting c).eval 0 =
       c.eval 0 >>= fun _ => Part.some haltMarkerNat := by
-  simp [markHalting, haltMarkerNat]
+  rw [show markHalting c =
+      (Nat.Partrec.Code.const haltMarkerNat).comp c by rfl]
+  rw [Nat.Partrec.Code.eval]
+  simp [haltMarkerNat]
 
 theorem selfInput_markHalting_iff
     (c : Nat.Partrec.Code) :
@@ -38,7 +40,10 @@ theorem selfInput_markHalting_iff
     have hcNone : c.eval 0 = Part.none :=
       (Part.eq_none_iff').2 hdom
     have hmNone : (markHalting c).eval 0 = Part.none := by
-      simp [markHalting, hcNone]
+      rw [show markHalting c =
+        (Nat.Partrec.Code.const haltMarkerNat).comp c by rfl]
+      rw [Nat.Partrec.Code.eval, hcNone]
+      rfl
     have hmNotDom : ¬((markHalting c).eval 0).Dom := by
       rw [hmNone]
       exact Part.not_none_dom
@@ -54,7 +59,10 @@ theorem selfInput_markHalting_iff
       exact Part.some_get hdom
     have hmSome :
         (markHalting c).eval 0 = Part.some haltMarkerNat := by
-      simp [markHalting, hcSome, haltMarkerNat]
+      rw [show markHalting c =
+        (Nat.Partrec.Code.const haltMarkerNat).comp c by rfl]
+      rw [Nat.Partrec.Code.eval, hcSome]
+      simp [haltMarkerNat]
     have hmem :
         encodeBitsNat [true] ∈ (markHalting c).eval 0 := by
       rw [hmSome]
@@ -77,8 +85,9 @@ theorem selfInput_not_computable :
     exact Primrec.eq.to_comp.comp hMarked (Computable.const [true])
   have hPred :
       ComputablePred (fun c : Nat.Partrec.Code =>
-        selfInput (markHalting c) = [true]) :=
-    Computable.computablePred hEqDec
+        selfInput (markHalting c) = [true]) := by
+    refine ⟨fun c => inferInstance, ?_⟩
+    simpa using hEqDec
   have hHalting :
       ComputablePred (fun c : Nat.Partrec.Code =>
         (c.eval 0).Dom) :=
