@@ -26,6 +26,8 @@ on:
       - 'lean/MCore/Real/P01RawMalformedTag.lean'
       - 'lean/MCore/Real/P01RawMalformedUnary.lean'
       - 'lean/MCore/Real/P01RawResidualReject.lean'
+      - 'lean/MCore/Real/P01RawLocalReject.lean'
+      - 'lean/MCore/Real/P01RawPreparedRejectLift.lean'
       - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
       - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
       - 'lean/MCore/Real/P01IntegratedAssembly.lean'
@@ -72,6 +74,8 @@ jobs:
           lake build MCore.Real.P01RawMalformedTag
           lake build MCore.Real.P01RawMalformedUnary
           lake build MCore.Real.P01RawResidualReject
+          lake build MCore.Real.P01RawPreparedRejectLift
+          lake build MCore.Real.P01RawLocalReject
           lake build MCore.Real.P01RawTotalizationMinCut
           lake build MCore.Real.P01RawBaseExact
           lake build MCore.Real.P01RawRecursiveBudget
@@ -96,6 +100,8 @@ jobs:
           import MCore.Real.P01RawMalformedTag
           import MCore.Real.P01RawMalformedUnary
           import MCore.Real.P01RawResidualReject
+          import MCore.Real.P01RawPreparedRejectLift
+          import MCore.Real.P01RawLocalReject
           import MCore.Real.P01RawTotalizationMinCut
           #print axioms MCore.Real.P01ManualStateCodecBase.inputNodeDecode_code
           #print axioms MCore.Real.P01ManualStateCodecComposite.checkedEvalDecode_code
@@ -119,6 +125,11 @@ jobs:
           #print axioms MCore.Real.P01RawMalformedTag.prepared_truncated_tag_fail_closed
           #print axioms MCore.Real.P01RawMalformedUnary.prepared_truncated_unary_fail_closed
           #print axioms MCore.Real.P01RawResidualReject.canonical_prefix_with_residual_reaches_reject
+          #print axioms MCore.Real.P01RawPreparedRejectLift.prepared_empty_reject_fail_closed
+          #print axioms MCore.Real.P01RawPreparedRejectLift.prepared_nonempty_reject_fail_closed
+          #print axioms MCore.Real.P01RawLocalReject.prepared_invalid110_fail_closed
+          #print axioms MCore.Real.P01RawLocalReject.prepared_invalid111_fail_closed
+          #print axioms MCore.Real.P01RawLocalReject.prepared_residual_fail_closed
           #print axioms MCore.Real.P01RawDeadEnd.haltsWithin_succ_of_reaches_dead
           #print axioms MCore.Real.P01RawDeadEnd.not_acceptsWithin_succ_of_reaches_dead
           #print axioms MCore.Real.P01RawTotalizationMinCut.raw_totalization_gap_closes_p01
