@@ -1,5 +1,5 @@
 import MCore.Real.P01RawSourceSplit
-import MCore.Real.P01ExactVerifierCanonicalRun
+import MCore.Real.P01RawGlobalBudgetLift
 import MCore.Real.P01CheckedVerifierGlobalCoreV2
 
 namespace MCore
@@ -13,30 +13,31 @@ open CanonicalSATWitness
 open P01WitnessPreservingPrep
 open P01CheckedVerifierCompositeNTM
 open P01ExactVerifierGlobalBudget
-open P01ExactVerifierCanonicalRun
+open P01RawRecursiveBudget
+open P01RawGlobalBudgetLift
 open P01RawSourceSplit
 open P01CheckedVerifierGlobalCoreV2
 
 /-- Sole remaining raw-source obligation once canonical bounded evaluation has
 been proved.
 
-It says exactly what is needed for decoder failure: at the SAME global cubic
-fuel already used by canonical sources, the fixed checked verifier halts and
-does not accept. No new machine, parser, witness object, or mathematical
-hypothesis is introduced. -/
+It says exactly what is needed for decoder failure at one uniform quartic
+polynomial fuel. Canonical cubic execution is lifted to the same quartic fuel
+by the already-proved post-halting stability law. No new machine, parser,
+witness object, or mathematical hypothesis is introduced. -/
 structure RawDecodeNoneFailClosed where
   halts :
     ∀ (bs w : BitString), w.length = bs.length →
       decodeCircuit bs = none →
       checkedVerifierMachine.HaltsWithin
-        (checkedVerifierExactTimeBound bs.length)
+        (checkedVerifierRawTimeBound bs.length)
         { state := checkedVerifierMachine.initial,
           tape := preparedTape w bs }
   rejects :
     ∀ (bs w : BitString), w.length = bs.length →
       decodeCircuit bs = none →
       ¬ checkedVerifierMachine.AcceptsWithin
-        (checkedVerifierExactTimeBound bs.length)
+        (checkedVerifierRawTimeBound bs.length)
         { state := checkedVerifierMachine.initial,
           tape := preparedTape w bs }
 
@@ -45,8 +46,8 @@ This constructs the exact global execution core needed by P01. -/
 def RawDecodeNoneFailClosed.toGlobalCore
     (R : RawDecodeNoneFailClosed) :
     CheckedVerifierGlobalCore where
-  timeBound := checkedVerifierExactTimeBound
-  time_poly := checkedVerifierExactTimeBound_poly
+  timeBound := checkedVerifierRawTimeBound
+  time_poly := checkedVerifierRawTimeBound_poly
   halts := by
     intro bs w hw
     rcases exact_encoding_or_decode_none bs with hcanon | hnone
@@ -54,7 +55,7 @@ def RawDecodeNoneFailClosed.toGlobalCore
       have hlen : varBound phi ≤ w.length := by
         rw [hw]
         exact varBound_le_encoded_length phi
-      exact prepared_canonical_halts_within_exact_global w phi hlen
+      exact prepared_canonical_halts_within_raw_global w phi hlen
     · exact R.halts bs w hw hnone
   correct := by
     intro bs w hw
@@ -63,7 +64,7 @@ def RawDecodeNoneFailClosed.toGlobalCore
       have hlen : varBound phi ≤ w.length := by
         rw [hw]
         exact varBound_le_encoded_length phi
-      exact prepared_canonical_accepts_iff_exact_global w phi hlen
+      exact prepared_canonical_accepts_iff_raw_global w phi hlen
     · constructor
       · intro hacc
         exact False.elim ((R.rejects bs w hw hnone) hacc)
