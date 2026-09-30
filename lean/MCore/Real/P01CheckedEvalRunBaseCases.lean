@@ -319,8 +319,10 @@ theorem const_checked_run
           let cFinal : CheckedConfig :=
             { state := .final v,
               tape :=
-                evalCursorStackEndTape witness (consumed + 3)
-                  [] [] padding }
+                Tape.move none .left
+                  (Tape.move none .left
+                    (evalCursorStackEndTape witness (consumed + 3)
+                      [] [] padding)) }
           have hToHaveNil :
               cHave ∈
                 checkedEvalRunLoopMachine.runBranches (m0 + mR + 1)
