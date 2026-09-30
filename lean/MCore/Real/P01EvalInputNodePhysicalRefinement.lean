@@ -221,7 +221,17 @@ theorem evalStep_inputNode000_full_layout
     have hrun :=
       gapRead_forall witness rest (consumed + 3) i
         (inputReadSuffix frames padding) hi
-    simpa using hrun
+    have hcfg :
+        ({ state := gapReadMachine.initial,
+           tape :=
+             (gapReadConfig witness (consumed + 3) i rest
+               (inputReadSuffix frames padding)).tape } :
+          Configuration PreservingReadState (Option Bool)) =
+        gapReadConfig witness (consumed + 3) i rest
+          (inputReadSuffix frames padding) := by
+      cases i <;> rfl
+    rw [hcfg, hrun]
+    exact ⟨rfl, rfl⟩
 
 #print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.input_cursor_is_gapReadConfig
 #print axioms MCore.Real.P01EvalInputNodePhysicalRefinement.evalStep_inputNode000_full_layout
