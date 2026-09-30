@@ -82,10 +82,10 @@ theorem pushTag_checked_reaches_need_within_envelope
     (witness rest frameStack : BitString)
     (consumed padding : Nat)
     (b0 b1 b2 : Bool)
-    (tag : P01NeedExprCompositeNTM.NeedExprTag)
+    (tag : P01NeedExprTagDecode.NeedExprTag)
     (frame : EvalFrame)
     (hTag :
-      P01NeedExprCompositeNTM.decodeTagBits b0 b1 b2 = tag)
+      P01NeedExprTagDecode.decodeTagBits b0 b1 b2 = tag)
     (hAllowed :
       P01CNFMode.tagAllowed mode tag = true)
     (hPost :
@@ -115,7 +115,8 @@ theorem pushTag_checked_reaches_need_within_envelope
         checkedStepEnvelope n :=
     checkedPushTagFuel_le_envelope
       n (b0 :: b1 :: b2 :: rest) frameStack hsource hframes
-  simpa [checkedPushTagFuel] using hfuel
+  unfold checkedPushTagFuel at hfuel
+  omega
 
 /-- Normalizing an already-produced value to the external checked outcome costs
 at most one common step envelope. -/
