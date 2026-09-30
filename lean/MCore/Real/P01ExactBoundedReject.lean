@@ -270,13 +270,26 @@ theorem neg_exact_bounded_reject
           simp [evalStepCount]
           omega
         have hmul := Nat.mul_le_mul_right E hcoef
+        have hcount :
+            evalStepCount (.not child) + 1 =
+              evalStepCount child + 3 := by
+          simp [evalStepCount]
+          omega
         have hcap :
             checkedLoopStepEnvelope n +
                 checkedCircuitBudget child n ≤
               checkedCircuitBudget (.not child) n := by
-          unfold checkedCircuitBudget
-          dsimp [E] at hmul ⊢
-          omega
+          calc
+            checkedLoopStepEnvelope n +
+                  checkedCircuitBudget child n
+                = (1 + 8 * (evalStepCount child + 1)) * E := by
+                    unfold checkedCircuitBudget
+                    dsimp [E]
+                    rw [Nat.add_mul]
+            _ ≤ (8 * (evalStepCount child + 3)) * E := hmul
+            _ = checkedCircuitBudget (.not child) n := by
+                  unfold checkedCircuitBudget
+                  rw [hcount]
         exact Nat.le_trans hraw hcap
 
       exact ⟨m0 + m1, hbudget, cfg1, hAll, hrej⟩
@@ -440,9 +453,26 @@ theorem and_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
-            unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            omega
+            have hcount :
+                evalStepCount (.and left right) + 1 =
+                  evalStepCount left + evalStepCount right + 4 := by
+              simp [evalStepCount]
+              omega
+            have hcap :
+                checkedLoopStepEnvelope n +
+                    checkedCircuitBudget left n ≤
+                  checkedCircuitBudget (.and left right) n := by
+              calc
+                checkedLoopStepEnvelope n +
+                      checkedCircuitBudget left n
+                    = (1 + 8 * (evalStepCount left + 1)) * E := by
+                        unfold checkedCircuitBudget
+                        dsimp [E]
+                        rw [Nat.add_mul]
+                _ ≤ (8 * (evalStepCount (.and left right) + 1)) * E := hmul
+                _ = checkedCircuitBudget (.and left right) n := by
+                      unfold checkedCircuitBudget
+            exact Nat.le_trans hraw hcap
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .cnf right = false := by
@@ -597,9 +627,29 @@ theorem and_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
-            unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            omega
+            have hcap :
+                checkedLoopStepEnvelope n +
+                    checkedCircuitBudget left n +
+                    checkedLoopStepEnvelope n +
+                    checkedCircuitBudget right n ≤
+                  checkedCircuitBudget (.and left right) n := by
+              calc
+                checkedLoopStepEnvelope n +
+                      checkedCircuitBudget left n +
+                      checkedLoopStepEnvelope n +
+                      checkedCircuitBudget right n
+                    =
+                  (8 * (evalStepCount left + 1) +
+                    8 * (evalStepCount right + 1) + 2) * E := by
+                      unfold checkedCircuitBudget
+                      dsimp [E]
+                      rw [Nat.add_mul, Nat.add_mul]
+                      omega
+                _ ≤
+                  8 * (evalStepCount (.and left right) + 1) * E := hmul
+                _ = checkedCircuitBudget (.and left right) n := by
+                      unfold checkedCircuitBudget
+            exact Nat.le_trans hraw hcap
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 
@@ -742,9 +792,21 @@ theorem or_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
-            unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            omega
+            have hcap :
+                checkedLoopStepEnvelope n +
+                    checkedCircuitBudget left n ≤
+                  checkedCircuitBudget (.or left right) n := by
+              calc
+                checkedLoopStepEnvelope n +
+                      checkedCircuitBudget left n
+                    = (1 + 8 * (evalStepCount left + 1)) * E := by
+                        unfold checkedCircuitBudget
+                        dsimp [E]
+                        rw [Nat.add_mul]
+                _ ≤ (8 * (evalStepCount (.or left right) + 1)) * E := hmul
+                _ = checkedCircuitBudget (.or left right) n := by
+                      unfold checkedCircuitBudget
+            exact Nat.le_trans hraw hcap
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .clause right = false := by
@@ -899,9 +961,29 @@ theorem or_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
-            unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            omega
+            have hcap :
+                checkedLoopStepEnvelope n +
+                    checkedCircuitBudget left n +
+                    checkedLoopStepEnvelope n +
+                    checkedCircuitBudget right n ≤
+                  checkedCircuitBudget (.or left right) n := by
+              calc
+                checkedLoopStepEnvelope n +
+                      checkedCircuitBudget left n +
+                      checkedLoopStepEnvelope n +
+                      checkedCircuitBudget right n
+                    =
+                  (8 * (evalStepCount left + 1) +
+                    8 * (evalStepCount right + 1) + 2) * E := by
+                      unfold checkedCircuitBudget
+                      dsimp [E]
+                      rw [Nat.add_mul, Nat.add_mul]
+                      omega
+                _ ≤
+                  8 * (evalStepCount (.or left right) + 1) * E := hmul
+                _ = checkedCircuitBudget (.or left right) n := by
+                      unfold checkedCircuitBudget
+            exact Nat.le_trans hraw hcap
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 /-- Exact bounded negative structural producer for every canonical circuit. -/
