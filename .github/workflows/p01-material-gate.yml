@@ -46,7 +46,8 @@ jobs:
             MCore.Real.P01GlobalParserBound \
             MCore.Real.CanonicalSATParserNTM \
             MCore.Real.P01ParserWitnessComposition \
-            MCore.Real.P01ParserFirewall
+            MCore.Real.P01ParserFirewall \
+            MCore.Real.P01TerminalCertificate
 
       - name: Material axiom audit
         shell: bash
@@ -63,6 +64,7 @@ jobs:
           import MCore.Real.P01MaterialInhabitantFrontier
           import MCore.Real.P01ParserWitnessComposition
           import MCore.Real.P01ParserFirewall
+          import MCore.Real.P01TerminalCertificate
           #print axioms MCore.Real.P01ExactBoundedAll.exact_bounded_all
           #print axioms MCore.Real.P01CheckedEvalRejectBounded.bounded_circuit_reject_certificate
           #print axioms MCore.Real.P01MalformedRawBoundedReject.decodeCircuit_none_split
@@ -80,6 +82,8 @@ jobs:
           #print axioms MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate
           #print axioms MCore.Real.P01ParserWitnessComposition.parserPhaseCertificate
           #print axioms MCore.Real.P01ParserFirewall.decode_none_iff_parser_not_accepts
+          #print axioms MCore.Real.P01TerminalCertificate.p01ConstructionGap
+          #print axioms MCore.Real.P01TerminalCertificate.canonicalSATMachineClosure
           EOF
           lake env lean P01MaterialAudit.lean 2>&1 | tee P01MaterialAudit.log
           if grep -q 'sorryAx' P01MaterialAudit.log; then
@@ -101,7 +105,8 @@ jobs:
             lean/MCore/Real/P01CoreDecodeFailurePhysical.lean \
             lean/MCore/Real/P01RawVerifierFromCoreReject.lean \
             lean/MCore/Real/P01CheckedVerifierStateCodec.lean \
-            lean/MCore/Real/P01MaterialInhabitantFrontier.lean
+            lean/MCore/Real/P01MaterialInhabitantFrontier.lean \
+            lean/MCore/Real/P01TerminalCertificate.lean
           do
             if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)|^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"; then
               exit 1
