@@ -124,7 +124,7 @@ theorem prepared_cnf_reaches_semantic_final
                tape := tape1 } :
               Configuration CheckedEvalRunState (Option Bool))
             h1src
-        simpa [cEval, checkedEvalEmbed] using hlift
+        simpa [cEval, checkedEvalEmbed, P01NTMRunLaws.liftConfig, hsrc] using hlift
 
       have hAll :=
         mem_runBranches_trans checkedVerifierMachine
