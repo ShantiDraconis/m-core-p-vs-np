@@ -4,6 +4,7 @@ import MCore.Real.P01CanonicalWrapperBounded
 import MCore.Real.P01CheckedEvalRejectBounded
 import MCore.Real.P01DecodeCoreLaws
 import MCore.Real.P01CheckedVerifierDeterminism
+import MCore.Real.P01MaterialInhabitantFrontier
 
 namespace MCore
 namespace Real
