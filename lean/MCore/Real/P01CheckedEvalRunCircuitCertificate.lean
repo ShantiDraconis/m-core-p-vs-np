@@ -550,18 +550,18 @@ theorem or_certificate
     CheckedCircuitRunCertificate sigma witness mode (.or left right) := by
   intro hmode tail frames consumed padding hlen hread
 
-  have hmodeEq := hmode
-  rw [modeCheck_or] at hmodeEq
-  have houter :
-      (tagAllowed mode .or && modeCheck .clause left) = true ∧
-        modeCheck .clause right = true :=
-    Bool.and_eq_true.mp hmodeEq
-  have hinner :
-      tagAllowed mode .or = true ∧ modeCheck .clause left = true :=
-    Bool.and_eq_true.mp houter.1
-  have hAllowed : tagAllowed mode .or = true := hinner.1
-  have hleftMode : modeCheck .clause left = true := hinner.2
-  have hrightMode : modeCheck .clause right = true := houter.2
+  have hAllowed : tagAllowed mode .or = true := by
+    cases mode <;>
+      simp [modeCheck_or, tagAllowed] at hmode ⊢
+  have hchildren :
+      modeCheck .clause left = true ∧
+        modeCheck .clause right = true := by
+    have h := hmode
+    rw [modeCheck_or] at h
+    rw [hAllowed] at h
+    simpa using h
+  have hleftMode : modeCheck .clause left = true := hchildren.1
+  have hrightMode : modeCheck .clause right = true := hchildren.2
 
   have hlenMax :
       max (varBound left) (varBound right) ≤ witness.length := by
