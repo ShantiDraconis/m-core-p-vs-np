@@ -119,14 +119,10 @@ theorem pushTag_checked_reaches_need_within_envelope
         checkedStepEnvelope n :=
     checkedPushTagFuel_le_envelope
       n (b0 :: b1 :: b2 :: rest) frameStack hsource hframes
-  have heq :
-      P01CheckedEvalRunTagPrefix.checkedTagPrefixFuel
-          (b0 :: b1 :: b2 :: rest) frameStack +
-          (rest.length + frameStack.length + 2) + 1 + 3 + 1 =
-        checkedPushTagFuel (b0 :: b1 :: b2 :: rest) frameStack := by
-    simp [checkedPushTagFuel]
-  exact Nat.le_trans
-    (by simpa [heq] using hm)
+  have hmPush :
+      m ≤ checkedPushTagFuel (b0 :: b1 :: b2 :: rest) frameStack := by
+    simpa [checkedPushTagFuel] using hm
+  exact Nat.le_trans hmPush
     (Nat.le_trans hfuel (checkedStepEnvelope_le_loopEnvelope n))
 
 /-- Normalizing an already-produced value to the external checked outcome costs
