@@ -160,3 +160,5 @@ import MCore.Real.P01CheckedVerifierDeterminism
 import MCore.Real.P01CheckedVerifierBudget
 
 import MCore.Real.P01CheckedVerifierGlobalBudget
+
+import MCore.Real.P01CheckedVerifierInvariant
