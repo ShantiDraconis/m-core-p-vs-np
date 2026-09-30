@@ -17,6 +17,7 @@ open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunNeedTags
 open P01CheckedEvalRunHaveValue
 open P01CheckedEvalRunCircuitCertificate
+open P01CheckedEvalRunBaseCases
 open P01CheckedEvalRunBoundedHelpers
 open P01CheckedEvalRunBoundedCertificate
 open P01CheckedVerifierInvariant
@@ -49,10 +50,12 @@ theorem neg_budget_absorbs
   change
     E + (8 * (k + 1) * E) + E + E ≤
       8 * (k + 3) * E
-  calc
-    E + (8 * (k + 1) * E) + E + E
-        = (8 * (k + 1) + 3) * E := by ring
-    _ ≤ (8 * (k + 3)) * E := hmul
+  have hshape :
+      E + (8 * (k + 1) * E) + E + E =
+        (8 * (k + 1) + 3) * E := by
+    rw [Nat.add_mul]
+    omega
+  exact hshape.trans_le hmul
 
 /-- Bounded structural producer for negation.
 
@@ -234,7 +237,8 @@ theorem neg_bounded_certificate
         Nat.le_trans hm2 (nine_le_stepEnvelope n)
       omega
     exact Nat.le_trans hsum (neg_budget_absorbs circuit n)
-  · simpa [evalCircuit] using hout3
+  · simpa [P01CheckedEvalRunBaseCases.exitMode, childMode,
+      circuitTag, evalCircuit] using hout3
 
 #print axioms MCore.Real.P01CheckedEvalRunBoundedNeg.neg_budget_absorbs
 #print axioms MCore.Real.P01CheckedEvalRunBoundedNeg.neg_bounded_certificate
