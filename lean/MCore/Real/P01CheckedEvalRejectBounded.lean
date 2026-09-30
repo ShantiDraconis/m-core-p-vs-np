@@ -55,6 +55,49 @@ def BoundedCheckedCircuitRejectCertificate
                  (encodeEvalFrames frames) padding }] ∧
       cfg.state = .reject
 
+
+theorem short_tag_reaches_reject_within_envelope
+    (n : Nat)
+    (mode : SyntaxMode)
+    (witness source frameStack : BitString)
+    (consumed padding : Nat)
+    (hshort : source.length < 3)
+    (hsource : source.length ≤ n)
+    (hframes : frameStack.length ≤ n) :
+    ∃ m ≤ checkedLoopStepEnvelope n,
+      ∃ tape : Tape (Option Bool),
+        ({ state := .reject, tape := tape } : CheckedConfig) ∈
+          checkedEvalRunLoopMachine.runBranches m
+            [{ state := .need mode needExprCompositeMachine.initial,
+               tape :=
+                 evalCursorStackEndTape witness consumed
+                   source frameStack padding }] := by
+  obtain ⟨m, hm, tape, hrun⟩ :=
+    short_tag_source_reaches_reject
+      mode witness source frameStack consumed padding hshort
+  have hfuel :
+      checkedShortTagRejectFuel source frameStack ≤ 8 * (n + 1) := by
+    unfold checkedShortTagRejectFuel
+    omega
+  have hsq : n + 1 ≤ (n + 1)^2 := by
+    have hpos : 1 ≤ n + 1 := by omega
+    calc
+      n + 1 = (n + 1) * 1 := by simp
+      _ ≤ (n + 1) * (n + 1) :=
+        Nat.mul_le_mul_left (n + 1) hpos
+      _ = (n + 1)^2 := by simp [Nat.pow_two]
+  have h8 :
+      8 * (n + 1) ≤ 8 * (n + 1)^2 :=
+    Nat.mul_le_mul_left 8 hsq
+  have h256 :
+      8 * (n + 1)^2 ≤ 256 * (n + 1)^2 :=
+    Nat.mul_le_mul_right ((n + 1)^2) (by omega)
+  refine ⟨m, Nat.le_trans hm ?_, tape, hrun⟩
+  unfold checkedLoopStepEnvelope
+  exact Nat.le_trans hfuel (Nat.le_trans h8 h256)
+
+#print axioms MCore.Real.P01CheckedEvalRejectBounded.short_tag_reaches_reject_within_envelope
+
 /-- A forbidden root tag rejects inside the common checked-loop envelope. -/
 theorem disallowed_tag_prefix_reaches_reject_within_envelope
     (n : Nat)
