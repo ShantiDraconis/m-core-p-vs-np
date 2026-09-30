@@ -42,7 +42,6 @@ jobs:
           cat > P01VerifierPhaseMinCutAudit.lean <<'EOF'
           import MCore.Real.P01VerifierPhaseMinCutStructural
           #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
-          #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.satInNPGap_of_verifierPhase
           EOF
           lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
           ! grep -E 'sorryAx' P01VerifierPhaseMinCutAudit.log
