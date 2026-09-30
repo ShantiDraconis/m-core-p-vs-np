@@ -588,8 +588,7 @@ theorem neg_exact_bounded_certificate
               (evalCircuit sigma (.not child)) [] []
               (consumed + (encodeCircuit (.not child)).length) cfgFinal
             simp [ExactCheckedLoopOutcome] at hout3 ⊢
-            rw [← hExit]
-            simpa [evalCircuit] using hout3
+            simpa [evalCircuit, hExit] using hout3
 
 
 
@@ -870,7 +869,10 @@ theorem and_exact_bounded_certificate
             (encodeEvalFrames frames)
             (.andRight (evalCircuit sigma left))
           simpa [encodeCircuit, List.append_assoc] using hLayout
-        simpa [afterLeft, leftConsumed] using hp
+        have hcursor :
+            consumed + (encodeCircuit left).length + 3 =
+              consumed + 3 + (encodeCircuit left).length := by omega
+        simpa [afterLeft, leftConsumed, hcursor] using hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
         hright hrightMode tail
@@ -999,7 +1001,7 @@ theorem and_exact_bounded_certificate
                 8 * (evalStepCount right + 1) + 3) * E := by
                   unfold checkedCircuitBudget
                   dsimp [E]
-                  omega
+                  ring
             _ ≤
               8 * (evalStepCount left + evalStepCount right + 4) * E :=
                 hmul
@@ -1094,7 +1096,7 @@ theorem and_exact_bounded_certificate
                         8 * (evalStepCount right + 1) + 4) * E := by
                           unfold checkedCircuitBudget
                           dsimp [E]
-                          omega
+                          ring
                     _ ≤
                       8 * (evalStepCount left + evalStepCount right + 4) * E :=
                         hmul
@@ -1313,7 +1315,10 @@ theorem or_exact_bounded_certificate
         (encodeEvalFrames frames)
         (.orRight (evalCircuit sigma left))
       simpa [encodeCircuit, List.append_assoc] using hLayout
-    simpa [afterLeft, leftConsumed] using hp
+    have hcursor :
+        consumed + (encodeCircuit left).length + 3 =
+          consumed + 3 + (encodeCircuit left).length := by omega
+    simpa [afterLeft, leftConsumed, hcursor] using hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
     hright hrightMode tail
@@ -1442,7 +1447,7 @@ theorem or_exact_bounded_certificate
             8 * (evalStepCount right + 1) + 3) * E := by
               unfold checkedCircuitBudget
               dsimp [E]
-              omega
+              ring
         _ ≤
           8 * (evalStepCount left + evalStepCount right + 4) * E :=
             hmul
@@ -1537,7 +1542,7 @@ theorem or_exact_bounded_certificate
                     8 * (evalStepCount right + 1) + 4) * E := by
                       unfold checkedCircuitBudget
                       dsimp [E]
-                      omega
+                      ring
                 _ ≤
                   8 * (evalStepCount left + evalStepCount right + 4) * E :=
                     hmul
