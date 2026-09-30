@@ -115,10 +115,11 @@ theorem nonempty_source_rejects
       (Tape.move none .left
         (evalCursorStackEndTape witness consumed (b :: rest) [] padding)),
     ?_⟩
-  cases v <;> cases b <;> cases rest <;>
+  cases v <;> cases b <;>
     simp [finalCheckStart, finalSourceCheckMachine,
       evalCursorStackEndTape, NTM.runBranches, NTM.successors,
       NTM.stepBranch, Halted, Tape.write, Tape.move,
+      List.reverse_cons, List.map_append,
       List.replicate_succ, List.append_assoc]
 
 /-- The guard's terminal value agrees with the evaluator Boolean when the
