@@ -18,9 +18,11 @@ theorem exact_encoding_or_decode_none
       decodeCircuit bs = none := by
   cases hdec : decodeCircuit bs with
   | none =>
-      exact Or.inr hdec
+      exact Or.inr rfl
   | some phi =>
-      exact Or.inl ⟨phi, decodeCircuit_sound bs phi hdec⟩
+      have hs : bs = encodeCircuit phi :=
+        decodeCircuit_sound bs phi hdec
+      exact Or.inl ⟨phi, hs⟩
 
 /-- Decoder failure makes the concrete verifier relation false for every
 witness. -/
