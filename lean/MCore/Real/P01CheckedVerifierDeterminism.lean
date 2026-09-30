@@ -77,9 +77,13 @@ theorem haveValue_transition_length_le_one
       | halt frame =>
           cases frame <;> simp [haveValueCompositeMachine]
       | start => simp [haveValueCompositeMachine]
-      | bit1 b1 => cases b1 <;> simp [haveValueCompositeMachine]
-      | bit2 b1 b2 =>
-          cases b1 <;> cases b2 <;> simp [haveValueCompositeMachine]
+      | read0 => simp [haveValueCompositeMachine]
+      | gap1 b0 => cases b0 <;> simp [haveValueCompositeMachine]
+      | read1 b0 => cases b0 <;> simp [haveValueCompositeMachine]
+      | gap2 b0 b1 =>
+          cases b0 <;> cases b1 <;> simp [haveValueCompositeMachine]
+      | read2 b0 b1 =>
+          cases b0 <;> cases b1 <;> simp [haveValueCompositeMachine]
       | reject => simp [haveValueCompositeMachine]
   | push frame qp =>
       cases qp <;> simp [haveValueCompositeMachine]
@@ -156,12 +160,21 @@ theorem checkedEval_transition_length_le_one
           | start =>
               simpa [checkedEvalRunLoopMachine] using
                 haveValue_transition_length_le_one (.pop v .start) symbol
-          | bit1 b1 =>
+          | read0 =>
               simpa [checkedEvalRunLoopMachine] using
-                haveValue_transition_length_le_one (.pop v (.bit1 b1)) symbol
-          | bit2 b1 b2 =>
+                haveValue_transition_length_le_one (.pop v .read0) symbol
+          | gap1 b0 =>
               simpa [checkedEvalRunLoopMachine] using
-                haveValue_transition_length_le_one (.pop v (.bit2 b1 b2)) symbol
+                haveValue_transition_length_le_one (.pop v (.gap1 b0)) symbol
+          | read1 b0 =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v (.read1 b0)) symbol
+          | gap2 b0 b1 =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v (.gap2 b0 b1)) symbol
+          | read2 b0 b1 =>
+              simpa [checkedEvalRunLoopMachine] using
+                haveValue_transition_length_le_one (.pop v (.read2 b0 b1)) symbol
           | reject =>
               simpa [checkedEvalRunLoopMachine] using
                 haveValue_transition_length_le_one (.pop v .reject) symbol
