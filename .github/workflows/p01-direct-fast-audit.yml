@@ -1,0 +1,39 @@
+name: P01 Direct Fast Audit
+
+on:
+  push:
+    branches:
+      - atk/direct-p01-terminal-close-v2-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p01-direct-fast-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies and cache
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
+      - name: Build direct exact producer
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01ExactBoundedCircuitProducer
+      - name: Placeholder firewall
+        run: |
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01ExactBoundedCircuitProducer.lean
