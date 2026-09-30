@@ -194,6 +194,27 @@ theorem decodeCircuitCore_size_lt
                   · simp [decodeCircuitCore] at h
                   · simp [decodeCircuitCore] at h
 
+
+theorem decodeCircuit_sound
+    (bits : BitString) (phi : Circuit)
+    (h : decodeCircuit bits = some phi) :
+    bits = encodeCircuit phi := by
+  unfold decodeCircuit at h
+  cases hc : decodeCircuitCore (bits.length + 1) bits with
+  | none =>
+      simp [hc] at h
+  | some p =>
+      rcases p with ⟨c,tail⟩
+      cases tail with
+      | nil =>
+          simp [hc] at h
+          subst c
+          have hs :=
+            decodeCircuitCore_sound (bits.length + 1) bits phi [] hc
+          simpa using hs
+      | cons b rest =>
+          simp [hc] at h
+
 theorem decodeCircuitCore_some_mono
     {fuel fuel' : Nat} (hff : fuel ≤ fuel')
     {bits : BitString} {phi : Circuit} {tail : BitString}
