@@ -26,13 +26,7 @@ theorem p01ConstructionGap_of_verifierPhase
   rcases h with ⟨V⟩
   exact p01_of_verifier V
 
-theorem satInNPGap_of_verifierPhase
-    (h : P01MechanicalMinCut) :
-    SATInNPGap circuitBitEncoding :=
-  p01ConstructionGap_of_verifierPhase h
-
 #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
-#print axioms MCore.Real.P01VerifierPhaseMinCutStructural.satInNPGap_of_verifierPhase
 
 end P01VerifierPhaseMinCutStructural
 end Real
