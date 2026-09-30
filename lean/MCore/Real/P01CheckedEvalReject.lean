@@ -1,6 +1,7 @@
 import MCore.Real.P01CheckedEvalRunTagPrefix
 import MCore.Real.CanonicalCircuitBits
 import MCore.Real.P01EncodedFrameTape
+import MCore.Real.P01CheckedEvalRunNeedTags
 
 namespace MCore
 namespace Real
@@ -15,6 +16,7 @@ open P01EvalCursorMachine
 open P01NeedExprCompositeNTM
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunTagPrefix
+open P01CheckedEvalRunNeedTags
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -97,6 +99,124 @@ theorem root_disallowed_reaches_reject
           true false true hroot
       refine ⟨m, ?_⟩
       simpa [encodeCircuit, circuitTag, List.append_assoc] using hrun
+
+/-- In must-input mode, every failing semantic check is already visible
+at the root tag: the only admitted circuit form is an input node. -/
+theorem mustInput_root_disallowed_of_check_false
+    (phi : Circuit)
+    (h : modeCheck .mustInput phi = false) :
+    tagAllowed .mustInput (circuitTag phi) = false := by
+  cases phi with
+  | input i =>
+      simp [modeCheck] at h
+  | const v =>
+      cases v <;> rfl
+  | not c =>
+      rfl
+  | and a b =>
+      rfl
+  | or a b =>
+      rfl
+
+/-- A syntactically invalid negation is physically rejected.
+
+If the current mode forbids the negation tag, rejection happens at the root.
+Otherwise negation switches to must-input mode; any invalid child then has a
+root-disallowed tag, so the already-certified root rejection producer applies
+after the physical neg-frame push. -/
+theorem invalid_not_reaches_reject
+    (mode : SyntaxMode)
+    (witness : BitString)
+    (child : Circuit)
+    (tail : BitString)
+    (frames : List P01EncodedStackEvaluator.EvalFrame)
+    (consumed padding : Nat)
+    (hinvalid : modeCheck mode (.not child) = false) :
+    ∃ m cfg,
+      cfg ∈ checkedEvalRunLoopMachine.runBranches m
+        [{ state := .need mode needExprCompositeMachine.initial,
+           tape :=
+             evalCursorStackEndTape witness consumed
+               (encodeCircuit (.not child) ++ tail)
+               (encodeEvalFrames frames) padding }] ∧
+      cfg.state = .reject := by
+  cases hroot : tagAllowed mode .neg with
+  | false =>
+      have hroot' :
+          tagAllowed mode (circuitTag (.not child)) = false := by
+        simpa [circuitTag] using hroot
+      obtain ⟨m, hrun⟩ :=
+        root_disallowed_reaches_reject
+          mode witness (.not child) tail frames consumed padding hroot'
+      let cfg : CheckedConfig :=
+        { state := .reject,
+          tape :=
+            evalCursorReadTape witness (consumed + 3)
+              ((encodeCircuit (.not child)).drop 3 ++ tail)
+              (encodeEvalFrames frames) padding }
+      exact ⟨m, cfg, by simpa [cfg] using hrun, rfl⟩
+  | true =>
+      have hchild :
+          modeCheck .mustInput child = false := by
+        rw [modeCheck_not] at hinvalid
+        simpa [hroot, childMode] using hinvalid
+      have hchildRoot :
+          tagAllowed .mustInput (circuitTag child) = false :=
+        mustInput_root_disallowed_of_check_false child hchild
+
+      obtain ⟨m0, h0⟩ :=
+        neg_checked_reaches_need
+          mode witness (encodeCircuit child ++ tail)
+          (encodeEvalFrames frames) consumed padding hroot
+
+      let padChild := ((padding - 1) - 1) - 1
+      let cChild : CheckedConfig :=
+        { state := .need .mustInput needExprCompositeMachine.initial,
+          tape :=
+            evalCursorStackEndTape witness (consumed + 3)
+              (encodeCircuit child ++ tail)
+              (encodeEvalFrames (.neg :: frames)) padChild }
+
+      have h0' :
+          cChild ∈ checkedEvalRunLoopMachine.runBranches m0
+            [{ state := .need mode needExprCompositeMachine.initial,
+               tape :=
+                 evalCursorStackEndTape witness consumed
+                   (encodeCircuit (.not child) ++ tail)
+                   (encodeEvalFrames frames) padding }] := by
+        simpa [cChild, padChild, encodeCircuit,
+          encodeEvalFrames, List.append_assoc] using h0
+
+      obtain ⟨m1, h1⟩ :=
+        root_disallowed_reaches_reject
+          .mustInput witness child tail (.neg :: frames)
+          (consumed + 3) padChild hchildRoot
+
+      let cReject : CheckedConfig :=
+        { state := .reject,
+          tape :=
+            evalCursorReadTape witness (consumed + 6)
+              ((encodeCircuit child).drop 3 ++ tail)
+              (encodeEvalFrames (.neg :: frames)) padChild }
+
+      have h1' :
+          cReject ∈ checkedEvalRunLoopMachine.runBranches m1 [cChild] := by
+        simpa [cReject, cChild] using h1
+
+      have hAll :=
+        mem_runBranches_trans checkedEvalRunLoopMachine
+          m0 m1
+          [{ state := .need mode needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (encodeCircuit (.not child) ++ tail)
+                 (encodeEvalFrames frames) padding }]
+          cChild cReject h0' h1'
+
+      exact ⟨m0 + m1, cReject, hAll, rfl⟩
+
+#print axioms MCore.Real.P01CheckedEvalReject.mustInput_root_disallowed_of_check_false
+#print axioms MCore.Real.P01CheckedEvalReject.invalid_not_reaches_reject
 
 #print axioms MCore.Real.P01CheckedEvalReject.root_disallowed_reaches_reject
 
