@@ -180,3 +180,11 @@ import MCore.Real.P01RawMalformedUnary
 import MCore.Real.P01RawMalformedTag
 
 import MCore.Real.P01RawVerifierLift
+
+import MCore.Real.P01ExactBoundedCircuitProducer
+
+import MCore.Real.P01ExactVerifierGlobalBudget
+
+import MCore.Real.P01ExactVerifierCanonicalRun
+
+import MCore.Real.P01RawSourceSplit
