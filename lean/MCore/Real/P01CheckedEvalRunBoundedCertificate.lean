@@ -24,6 +24,7 @@ open P01CheckedEvalRunBoundedHelpers
 open P01CheckedVerifierInvariant
 open P01CheckedVerifierGlobalBudget
 open P01CNFMode
+open P01NTMRunLaws
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -197,6 +198,179 @@ theorem const_bounded_certificate
     Nat.le_trans hm (loopEnvelope_le_checkedCircuitBudget (.const v) n),
     cfg, hrun, ?_⟩
   simpa [evalCircuit] using hout
+
+
+/-- Negation: compose one bounded tag transition, the bounded child,
+the bounded continuation return, and final outcome normalization. -/
+theorem neg_bounded_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (child : CircuitK1.Circuit)
+    (hchild :
+      BoundedCheckedCircuitRunCertificate
+        sigma witness (childMode mode .neg) child) :
+    BoundedCheckedCircuitRunCertificate sigma witness mode (.not child) := by
+  intro hmode tail frames consumed padding n hLayout hlen hread
+
+  have hparts :
+      tagAllowed mode .neg = true ∧
+        modeCheck (childMode mode .neg) child = true := by
+    have h := hmode
+    rw [modeCheck_not] at h
+    simpa using h
+  have hAllowed := hparts.1
+  have hchildMode := hparts.2
+
+  have hlenChild : varBound child ≤ witness.length := by
+    simpa [varBound] using hlen
+  have hreadChild :
+      ∀ i, i < varBound child →
+        witness.getD i false = sigma i := by
+    intro i hi
+    exact hread i (by simpa [varBound] using hi)
+
+  have hLayout0 :
+      CheckedLayoutBound n consumed
+        (false :: true :: true :: (encodeCircuit child ++ tail))
+        (encodeEvalFrames frames) := by
+    simpa [encodeCircuit, List.append_assoc] using hLayout
+
+  have hLayoutChild :
+      CheckedLayoutBound n (consumed + 3)
+        (encodeCircuit child ++ tail)
+        (encodeEvalFrame .neg ++ encodeEvalFrames frames) :=
+    after_push_tag n consumed false true true
+      (encodeCircuit child ++ tail) (encodeEvalFrames frames) .neg hLayout0
+
+  obtain ⟨m0, hm0, h0⟩ :=
+    pushTag_checked_reaches_need_within_envelope
+      n mode witness (encodeCircuit child ++ tail)
+      (encodeEvalFrames frames) consumed padding
+      false true true .neg .neg rfl hAllowed rfl
+      hLayout0.source_le hLayout0.frames_le
+
+  let padChild := ((padding - 1) - 1) - 1
+  let cNeed : CheckedConfig :=
+    { state := .need (childMode mode .neg)
+        needExprCompositeMachine.initial,
+      tape :=
+        evalCursorStackEndTape witness (consumed + 3)
+          (encodeCircuit child ++ tail)
+          (encodeEvalFrame .neg ++ encodeEvalFrames frames)
+          padChild }
+
+  have h0' :
+      cNeed ∈
+        checkedEvalRunLoopMachine.runBranches m0
+          [{ state := .need mode needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (encodeCircuit (.not child) ++ tail)
+                 (encodeEvalFrames frames) padding }] := by
+    simpa [cNeed, padChild, encodeCircuit, List.append_assoc] using h0
+
+  obtain ⟨m1, hm1, cfg1, h1, hout1⟩ :=
+    hchild hchildMode tail (.neg :: frames)
+      (consumed + 3) padChild n
+      (by simpa [encodeEvalFrames, List.append_assoc] using hLayoutChild)
+      hlenChild hreadChild
+
+  have h1' :
+      cfg1 ∈ checkedEvalRunLoopMachine.runBranches m1 [cNeed] := by
+    simpa [cNeed, encodeEvalFrames, List.append_assoc] using h1
+
+  have h01 :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      m0 m1
+      [{ state := .need mode needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.not child) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      cNeed cfg1 h0' h1'
+
+  rcases hout1 with ⟨consumed1, padding1, hcfg1⟩
+  subst cfg1
+
+  obtain ⟨m2, hm2, h2⟩ :=
+    negReturn_checked_reaches_have_within_envelope
+      n (exitMode (childMode mode .neg) child)
+      witness tail (encodeEvalFrames frames)
+      consumed1 padding1 (evalCircuit sigma child)
+
+  let cHave : CheckedConfig :=
+    { state := .have (exitMode (childMode mode .neg) child)
+        (.start (!(evalCircuit sigma child))),
+      tape :=
+        evalCursorStackEndTape witness consumed1 tail
+          (encodeEvalFrames frames) (padding1 + 3) }
+
+  have h2' :
+      cHave ∈
+        checkedEvalRunLoopMachine.runBranches m2
+          [{ state := .have (exitMode (childMode mode .neg) child)
+               (.start (evalCircuit sigma child)),
+             tape :=
+               evalCursorStackEndTape witness consumed1 tail
+                 (encodeEvalFrame .neg ++ encodeEvalFrames frames)
+                 padding1 }] := by
+    simpa [cHave] using h2
+
+  have h012 :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      (m0 + m1) m2
+      [{ state := .need mode needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.not child) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      ({ state := .have (exitMode (childMode mode .neg) child)
+           (.start (evalCircuit sigma child)),
+         tape :=
+           evalCursorStackEndTape witness consumed1 tail
+             (encodeEvalFrame .neg ++ encodeEvalFrames frames)
+             padding1 } : CheckedConfig)
+      cHave h01 h2'
+
+  obtain ⟨m3, hm3, cfgFinal, h3, hout3⟩ :=
+    have_reaches_outcome_within_envelope
+      n (exitMode (childMode mode .neg) child)
+      witness (!(evalCircuit sigma child))
+      tail frames consumed1 (padding1 + 3)
+
+  have hAll :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      (m0 + m1 + m2) m3
+      [{ state := .need mode needExprCompositeMachine.initial,
+         tape :=
+           evalCursorStackEndTape witness consumed
+             (encodeCircuit (.not child) ++ tail)
+             (encodeEvalFrames frames) padding }]
+      cHave cfgFinal h012 h3
+
+  have hbudget :
+      checkedLoopStepEnvelope n +
+          checkedCircuitBudget child n +
+          checkedLoopStepEnvelope n +
+          checkedLoopStepEnvelope n ≤
+        checkedCircuitBudget (.not child) n := by
+    unfold checkedCircuitBudget
+    rw [show evalStepCount (.not child) = evalStepCount child + 2 by
+      simp [evalStepCount]; omega]
+    have :
+        (8 * (evalStepCount child + 1) + 3) *
+              checkedLoopStepEnvelope n ≤
+          (8 * (evalStepCount child + 3)) *
+              checkedLoopStepEnvelope n := by
+      exact Nat.mul_le_mul_right (checkedLoopStepEnvelope n) (by omega)
+    simpa [Nat.add_mul, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm,
+      Nat.mul_assoc] using this
+
+  refine ⟨m0 + m1 + m2 + m3, ?_, cfgFinal, hAll, ?_⟩
+  · exact Nat.le_trans (by omega) hbudget
+  · simpa [CheckedLoopOutcome, exitMode, childMode, circuitTag, evalCircuit]
+      using hout3
 
 #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.loopEnvelope_le_checkedCircuitBudget
 #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.input_bounded_certificate
