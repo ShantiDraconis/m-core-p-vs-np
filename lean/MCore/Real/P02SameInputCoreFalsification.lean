@@ -39,8 +39,8 @@ theorem no_sameInputTransport
 
 /-- Therefore the current SameInputCore structure has no inhabitant. -/
 theorem not_SameInputCore :
-    ¬ SameInputCore := by
-  intro S
+    ¬ Nonempty SameInputCore := by
+  rintro ⟨S⟩
   let M : PolyDTMCandidate :=
     { stateCount := 0
       machine :=
@@ -62,7 +62,7 @@ theorem not_SameInputCoreGap :
     ¬ SameInputCoreGap := by
   intro h
   rcases h with ⟨S⟩
-  exact not_SameInputCore S
+  exact not_SameInputCore ⟨S⟩
 
 #print axioms MCore.Real.P02SameInputCoreFalsification.no_sameInputTransport
 #print axioms MCore.Real.P02SameInputCoreFalsification.not_SameInputCore
