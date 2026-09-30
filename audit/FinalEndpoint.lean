@@ -55,3 +55,4 @@ def forbiddenHypotheses : List String :=
 
 end BackwardAudit
 end MCore
+-- ATK DIRECT TERMINAL RUN 2026-09-30: no semantic change.
