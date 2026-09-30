@@ -1,3 +1,6 @@
+import MCore.Real.CanonicalCircuitBits
+import MCore.Real.CanonicalSATWitness
+import MCore.Real.P01EncodedFrameTape
 import MCore.Real.P01CheckedEvalRunBaseCases
 import MCore.Real.P01CheckedEvalRunNeedTags
 import MCore.Real.P01CheckedEvalRunHaveValue
@@ -45,7 +48,7 @@ theorem have_reaches_outcome
           [{ state := .have mode (.start value),
              tape :=
                evalCursorStackEndTape witness consumed tail
-                 (encodeEvalFrames frames) padding }] ∧
+                 (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) padding }] ∧
       CheckedLoopOutcome witness mode value tail frames cfg := by
   cases tail with
   | cons b bs =>
@@ -53,7 +56,7 @@ theorem have_reaches_outcome
         { state := .have mode (.start value),
           tape :=
             evalCursorStackEndTape witness consumed (b :: bs)
-              (encodeEvalFrames frames) padding }
+              (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) padding }
       refine ⟨0, cfg, ?_, ?_⟩
       · simp [cfg, NTM.runBranches]
       · exact ⟨consumed, padding, rfl⟩
@@ -64,7 +67,7 @@ theorem have_reaches_outcome
             { state := .have mode (.start value),
               tape :=
                 evalCursorStackEndTape witness consumed []
-                  (encodeEvalFrames (f :: fs)) padding }
+                  (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames (f :: fs)) padding }
           refine ⟨0, cfg, ?_, ?_⟩
           · simp [cfg, NTM.runBranches]
           · exact ⟨consumed, padding, rfl⟩
@@ -109,18 +112,18 @@ theorem neg_certificate
   have hchildMode :
       modeCheck (childMode mode .neg) circuit = true := hmodeParts.2
 
-  have hlenChild : varBound circuit ≤ witness.length := by
-    simpa [varBound] using hlen
+  have hlenChild : CanonicalSATWitness.varBound circuit ≤ witness.length := by
+    simpa [CanonicalSATWitness.varBound] using hlen
   have hreadChild :
-      ∀ i, i < varBound circuit →
+      ∀ i, i < CanonicalSATWitness.varBound circuit →
         witness.getD i false = sigma i := by
     intro i hi
-    exact hread i (by simpa [varBound] using hi)
+    exact hread i (by simpa [CanonicalSATWitness.varBound] using hi)
 
   obtain ⟨m0, h0⟩ :=
     neg_checked_reaches_need
-      mode witness (encodeCircuit circuit ++ tail)
-        (encodeEvalFrames frames) consumed padding hAllowed
+      mode witness (CanonicalCircuitBits.encodeCircuit circuit ++ tail)
+        (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) consumed padding hAllowed
 
   let padChild := ((padding - 1) - 1) - 1
   let childMode' := childMode mode .neg
@@ -128,8 +131,8 @@ theorem neg_certificate
     { state := .need childMode' needExprCompositeMachine.initial,
       tape :=
         evalCursorStackEndTape witness (consumed + 3)
-          (encodeCircuit circuit ++ tail)
-          (encodeEvalFrame .neg ++ encodeEvalFrames frames)
+          (CanonicalCircuitBits.encodeCircuit circuit ++ tail)
+          (P01EncodedFrameTape.encodeEvalFrame .neg ++ P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames)
           padChild }
 
   have h0' :
@@ -138,9 +141,9 @@ theorem neg_certificate
           [{ state := .need mode needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
-                 (encodeCircuit (.not circuit) ++ tail)
-                 (encodeEvalFrames frames) padding }] := by
-    simpa [cNeed, childMode', childMode, padChild, encodeCircuit,
+                 (CanonicalCircuitBits.encodeCircuit (.not circuit) ++ tail)
+                 (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) padding }] := by
+    simpa [cNeed, childMode', childMode, padChild, CanonicalCircuitBits.encodeCircuit,
       List.append_assoc] using h0
 
   obtain ⟨m1, cfg1, h1, hout1⟩ :=
@@ -149,7 +152,7 @@ theorem neg_certificate
 
   have h1' :
       cfg1 ∈ checkedEvalRunLoopMachine.runBranches m1 [cNeed] := by
-    simpa [cNeed, childMode', encodeEvalFrames,
+    simpa [cNeed, childMode', P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames,
       List.append_assoc] using h1
 
   have h01 :=
@@ -158,8 +161,8 @@ theorem neg_certificate
       [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
-             (encodeCircuit (.not circuit) ++ tail)
-             (encodeEvalFrames frames) padding }]
+             (CanonicalCircuitBits.encodeCircuit (.not circuit) ++ tail)
+             (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) padding }]
       cNeed cfg1 h0' h1'
 
   have hchildInput :
@@ -175,7 +178,7 @@ theorem neg_certificate
           { state := .have .mustInput (.start (evalCircuit sigma circuit)),
             tape :=
               evalCursorStackEndTape witness consumed1 tail
-                (encodeEvalFrames (.neg :: frames)) padding1 } := by
+                (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames (.neg :: frames)) padding1 } := by
     rcases hchildInput with ⟨i, rfl⟩
     simpa [CheckedLoopOutcome, exitMode, childMode, circuitTag] using hout1
 
@@ -184,14 +187,14 @@ theorem neg_certificate
 
   obtain ⟨m2, hm2, h2⟩ :=
     negReturn_checked_reaches_have
-      .mustInput witness tail (encodeEvalFrames frames)
+      .mustInput witness tail (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames)
       consumed1 padding1 (evalCircuit sigma circuit)
 
   let cHave : CheckedConfig :=
     { state := .have .mustInput (.start (!(evalCircuit sigma circuit))),
       tape :=
         evalCursorStackEndTape witness consumed1 tail
-          (encodeEvalFrames frames) (padding1 + 3) }
+          (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) (padding1 + 3) }
 
   have h2' :
       cHave ∈
@@ -200,8 +203,8 @@ theorem neg_certificate
                (.start (evalCircuit sigma circuit)),
              tape :=
                evalCursorStackEndTape witness consumed1 tail
-                 (encodeEvalFrames (.neg :: frames)) padding1 }] := by
-    simpa [cHave, encodeEvalFrames, List.append_assoc] using h2
+                 (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames (.neg :: frames)) padding1 }] := by
+    simpa [cHave, P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames, List.append_assoc] using h2
 
   have h012 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
@@ -209,13 +212,13 @@ theorem neg_certificate
       [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
-             (encodeCircuit (.not circuit) ++ tail)
-             (encodeEvalFrames frames) padding }]
+             (CanonicalCircuitBits.encodeCircuit (.not circuit) ++ tail)
+             (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) padding }]
       ({ state := .have .mustInput
            (.start (evalCircuit sigma circuit)),
          tape :=
            evalCursorStackEndTape witness consumed1 tail
-             (encodeEvalFrames (.neg :: frames)) padding1 } : CheckedConfig)
+             (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames (.neg :: frames)) padding1 } : CheckedConfig)
       cHave h01 h2'
 
   obtain ⟨m3, cfgFinal, h3, hout3⟩ :=
@@ -229,8 +232,8 @@ theorem neg_certificate
       [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
-             (encodeCircuit (.not circuit) ++ tail)
-             (encodeEvalFrames frames) padding }]
+             (CanonicalCircuitBits.encodeCircuit (.not circuit) ++ tail)
+             (P01EncodedFrameTape.P01EncodedFrameTape.encodeEvalFrames frames) padding }]
       cHave cfgFinal h012 h3
 
   refine ⟨m0 + m1 + m2 + m3, cfgFinal, hAll, ?_⟩
