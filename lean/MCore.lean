@@ -62,3 +62,5 @@ import MCore.Real.P02ReducedProducerFalsification
 import MCore.Real.P02UniversalDiagonalFirewall
 
 import MCore.Real.P02UniversalTheoremAudit
+
+import MCore.Real.P02LiveFrontierAfterFirewall
