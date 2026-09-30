@@ -1,4 +1,5 @@
 import MCore.Real.CanonicalCircuitBits
+import MCore.Real.P01GuessedWitnessRelation
 
 namespace MCore
 namespace Real
