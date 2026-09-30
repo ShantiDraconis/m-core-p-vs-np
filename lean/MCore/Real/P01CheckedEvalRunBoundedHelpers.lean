@@ -77,7 +77,7 @@ theorem inputTag_checked_reaches_mode_within_envelope
     checkedInputTagFuel_le
       n consumed i tail frameStack
       hsource hc3 hindex htail hframes
-  simpa [P01CheckedVerifierGlobalBudget.checkedLoopStepEnvelope] using h
+  exact Nat.le_trans h (checkedStepEnvelope_le_loopEnvelope n)
 
 /-- Generic continuation-producing checked tag under the common envelope. -/
 theorem pushTag_checked_reaches_need_within_envelope
@@ -120,7 +120,8 @@ theorem pushTag_checked_reaches_need_within_envelope
     checkedPushTagFuel_le_envelope
       n (b0 :: b1 :: b2 :: rest) frameStack hsource hframes
   have heq :
-      checkedTagPrefixFuel (b0 :: b1 :: b2 :: rest) frameStack +
+      P01CheckedEvalRunTagPrefix.checkedTagPrefixFuel
+        (b0 :: b1 :: b2 :: rest) frameStack +
           (rest.length + frameStack.length + 2) + 1 + 3 + 1 =
         checkedPushTagFuel (b0 :: b1 :: b2 :: rest) frameStack := by
     simp [checkedPushTagFuel]
