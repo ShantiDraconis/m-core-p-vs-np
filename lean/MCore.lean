@@ -196,3 +196,4 @@ import MCore.Real.P01CoreDecodeFailureAtoms
 import MCore.Real.P01DecodeFailureLaws
 import MCore.Real.P01RawVerifierFromCoreReject
 import MCore.Real.P01CoreDecodeFailureBudget
+import MCore.Real.P01CoreDecodeFailurePhysical
