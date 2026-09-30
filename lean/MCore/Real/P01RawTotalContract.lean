@@ -141,6 +141,7 @@ def RawMalformedPhysicalProducer : Prop :=
   ∀ (witness bits frameStack : BitString)
       (mode : SyntaxMode)
       (consumed padding n fuel : Nat),
+    bits.length < fuel →
     decodeCircuitCore fuel bits = none →
     CheckedLayoutBound n consumed bits frameStack →
     bits.length ≤ witness.length →
