@@ -41,7 +41,8 @@ theorem scan_entry_le_exact_allowance
       n + 1 = (n + 1) * 1 := by simp
       _ ≤ (n + 1) * (n + 1) :=
         Nat.mul_le_mul_left (n + 1) hpos
-      _ = (n + 1) ^ 2 := by simp [pow_two]
+      _ = (n + 1) ^ 2 := by
+        simp [Nat.pow_succ, Nat.mul_comm]
   have h4 := Nat.mul_le_mul_left 4 hsq
   calc
     n + 3 ≤ 4 * (n + 1) := h1
@@ -81,7 +82,7 @@ theorem prepared_cnf_reaches_semantic_final_within_exact_global
       have hLayout :
           CheckedLayoutBound n 0
             (encodeCircuit phi ++ ([] : BitString))
-            (encodeEvalFrames []) := by
+            (P01EncodedStackEvaluator.encodeEvalFrames []) := by
         constructor
         · simp [n, hsrc]
         · simp
