@@ -56,3 +56,5 @@ import MCore.Real.CanonicalSATParserRewindProof
 import MCore.Real.P02SameInputOnlyFrontier
 
 import MCore.Real.P02SameInputCoreFalsification
+
+import MCore.Real.P02ReducedProducerFalsification
