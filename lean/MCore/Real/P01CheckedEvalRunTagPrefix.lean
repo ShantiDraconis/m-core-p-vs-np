@@ -68,6 +68,125 @@ def checkedTagPrefixFuel
     (source frameStack : BitString) : Nat :=
   frameStack.length + source.length + 3 + 1 + 3 + 1
 
+
+def checkedShortTagRejectFuel
+    (source frameStack : BitString) : Nat :=
+  frameStack.length + source.length + 8
+
+/-- A malformed source with fewer than three unread bits is physically
+rejected by the checked evaluator.  This closes the short-tag base case of the
+raw recursive decoder, including the seek and global reject handoffs. -/
+theorem short_tag_source_reaches_reject
+    (mode : SyntaxMode)
+    (witness source frameStack : BitString)
+    (consumed padding : Nat)
+    (hshort : source.length < 3) :
+    ∃ m ≤ checkedShortTagRejectFuel source frameStack,
+      ∃ tape : Tape (Option Bool),
+        ({ state := .reject, tape := tape } : CheckedConfig) ∈
+          checkedEvalRunLoopMachine.runBranches m
+            [{ state := .need mode needExprCompositeMachine.initial,
+               tape :=
+                 evalCursorStackEndTape witness consumed
+                   source frameStack padding }] := by
+  let nSeek := frameStack.length + source.length + 3
+  let t0 :=
+    evalCursorStackEndTape witness consumed source frameStack padding
+  let tRead :=
+    evalCursorReadTape witness consumed source frameStack padding
+  let cSeek0 : Configuration CursorSeekState (Option Bool) :=
+    { state := cursorSeekMachine.initial, tape := t0 }
+  let cSeekH : Configuration CursorSeekState (Option Bool) :=
+    { state := .halt, tape := tRead }
+
+  have hSeekExact :
+      cursorSeekMachine.run nSeek cSeek0 = cSeekH := by
+    dsimp [nSeek, cSeek0, cSeekH, t0, tRead]
+    exact cursorSeek_run witness consumed source frameStack padding
+
+  obtain ⟨mS, hmS, hS⟩ :=
+    seek_run_reachable mode nSeek cSeek0
+  have hS' :
+      seekConfig mode cSeekH ∈
+        checkedEvalRunLoopMachine.runBranches mS [seekConfig mode cSeek0] := by
+    rw [hSeekExact] at hS
+    exact hS
+
+  let cDec0 : Configuration P01NeedExprTagDecode.TagDecodeState (Option Bool) :=
+    { state := P01NeedExprTagDecode.tagDecodeMachine.initial,
+      tape := tRead }
+  let cCheckedDec0 : CheckedConfig := decodeConfig mode cDec0
+  have hSeekHandSucc :
+      cCheckedDec0 ∈
+        checkedEvalRunLoopMachine.successors (seekConfig mode cSeekH) := by
+    dsimp [cCheckedDec0, seekConfig, decodeConfig, cSeekH, cDec0]
+    simp [checkedEvalRunLoopMachine, needExprCompositeMachine,
+      needCheckedEmbed, NTM.successors, NTM.stepBranch,
+      Tape.write, Tape.move]
+  have hSeekHand :
+      cCheckedDec0 ∈
+        checkedEvalRunLoopMachine.runBranches 1 [seekConfig mode cSeekH] :=
+    one_step_of_successor
+      (seekConfig mode cSeekH) cCheckedDec0
+      (seekConfig_not_halted mode cSeekH) hSeekHandSucc
+
+  have hToDec :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      mS 1 [seekConfig mode cSeek0]
+      (seekConfig mode cSeekH) cCheckedDec0
+      hS' hSeekHand
+
+  let cDecR :=
+    P01NeedExprTagDecode.tagDecodeMachine.run 3 cDec0
+  have hDecReject : cDecR.state = .reject := by
+    dsimp [cDecR, cDec0, tRead]
+    exact P01NeedExprTagDecode.tagDecode_rejects_short_three
+      witness source frameStack consumed padding hshort
+
+  obtain ⟨mD, hmD, hD⟩ :=
+    decode_run_reachable mode 3 cDec0
+  have hD' :
+      decodeConfig mode cDecR ∈
+        checkedEvalRunLoopMachine.runBranches mD [cCheckedDec0] := by
+    simpa [cDecR, cCheckedDec0] using hD
+
+  have hThroughDec :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      (mS + 1) mD [seekConfig mode cSeek0]
+      cCheckedDec0 (decodeConfig mode cDecR)
+      hToDec hD'
+
+  let cReject : CheckedConfig :=
+    { state := .reject, tape := cDecR.tape }
+  have hRejectSucc :
+      cReject ∈
+        checkedEvalRunLoopMachine.successors (decodeConfig mode cDecR) := by
+    rcases cDecR with ⟨q, tape⟩
+    simp only at hDecReject
+    subst q
+    simp [cReject, decodeConfig, checkedEvalRunLoopMachine,
+      NTM.successors, NTM.stepBranch, Tape.write, Tape.move]
+  have hReject :
+      cReject ∈
+        checkedEvalRunLoopMachine.runBranches 1 [decodeConfig mode cDecR] :=
+    one_step_of_successor
+      (decodeConfig mode cDecR) cReject
+      (decodeConfig_not_halted mode cDecR) hRejectSucc
+
+  have hAll :=
+    mem_runBranches_trans checkedEvalRunLoopMachine
+      (mS + 1 + mD) 1 [seekConfig mode cSeek0]
+      (decodeConfig mode cDecR) cReject
+      hThroughDec hReject
+
+  refine ⟨mS + 1 + mD + 1, ?_, cReject.tape, ?_⟩
+  · dsimp [checkedShortTagRejectFuel, nSeek]
+    omega
+  · dsimp [cSeek0, t0] at hAll ⊢
+    simpa [seekConfig, cReject] using hAll
+
+#print axioms MCore.Real.P01CheckedEvalRunTagPrefix.short_tag_source_reaches_reject
+
 /-- Common physical prefix for every admitted evaluator tag.
 
 Starting at the canonical stack-end layout, this theorem:
