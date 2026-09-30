@@ -557,6 +557,7 @@ theorem p01ConstructionGap_closed :
 #print axioms MCore.Real.P01RawClosureFinal.unifiedVerifierPhase
 #print axioms MCore.Real.P01RawClosureFinal.p01ConstructionGap_closed
 
+-- ATK final closure rerun trigger 2026-10-01; no semantic change.
 end P01RawClosureFinal
 end Real
 end MCore
