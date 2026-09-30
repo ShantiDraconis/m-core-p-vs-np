@@ -56,6 +56,33 @@ theorem cnfCircuit_encoding_length_ge
       simp [cnfCircuit, encodeCircuit]
       omega
 
+@[simp] theorem setSymbolClauses_length
+    (guard : Clause)
+    (varAt : Option Bool → Nat)
+    (target : Option Bool) :
+    (setSymbolClauses guard varAt target).length = 3 := by
+  simp [setSymbolClauses, alphabet]
+
+@[simp] theorem setLeftCell_length
+    (guard : Clause)
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t s i : Nat)
+    (target : Option Bool) :
+    (setLeftCell guard M x t s i target).length = 3 := by
+  simp [setLeftCell]
+
+theorem initialLeftPart_length
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    ((List.range (radius x t)).flatMap fun i =>
+      setLeftCell [] M x t 0 i
+        ((inputTape x).left.getD i M.machine.blank)).length =
+      3 * radius x t := by
+  simp [setLeftCell, setSymbolClauses, alphabet]
+  ring
+
 /-- The initial tableau already contains at least one left-cell block per
 radius position, hence at least radius-many clauses. -/
 theorem radius_le_initialCNF_length
@@ -63,9 +90,16 @@ theorem radius_le_initialCNF_length
     (x : BitString)
     (t : Nat) :
     radius x t <= (initialCNF M x t).length := by
+  let leftPart :=
+    (List.range (radius x t)).flatMap fun i =>
+      setLeftCell [] M x t 0 i
+        ((inputTape x).left.getD i M.machine.blank)
+  have hleft : leftPart.length = 3 * radius x t := by
+    simpa [leftPart] using initialLeftPart_length M x t
   unfold initialCNF
   dsimp
-  simp [setLeftCell, setSymbolClauses, alphabet]
+  simp only [List.length_append]
+  have hr : radius x t ≤ 3 * radius x t := by omega
   omega
 
 /-- The complete tableau contains the initial tableau as a prefix. -/
