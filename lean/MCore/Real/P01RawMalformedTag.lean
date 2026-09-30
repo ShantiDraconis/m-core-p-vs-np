@@ -1,6 +1,7 @@
 import MCore.Real.P01CheckedEvalRunPhaseLift
 import MCore.Real.P01CheckedVerifierRun
 import MCore.Real.P01RawDeadEnd
+import MCore.Real.P01RawVerifierLift
 
 namespace MCore
 namespace Real
@@ -17,6 +18,8 @@ open P01CNFMode
 open P01CheckedVerifierRun
 open P01CheckedVerifierCompositeNTM
 open P01RawDeadEnd
+open P01RawVerifierLift
+open P01WitnessPreservingPrep
 
 abbrev EvalConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -163,6 +166,39 @@ theorem checked_truncated_tag_reaches_dead
         omega
       · dsimp [cSeek0, t0, seekConfig] at hAll ⊢
         simpa using hAll
+
+
+/-- A nonempty source shorter than one three-bit tag is fail-closed already at
+the prepared verifier level. -/
+theorem prepared_truncated_tag_fail_closed
+    (witness source : BitString)
+    (hne : source ≠ [])
+    (hshort : source.length < 3) :
+    ∃ total ≤ 2 * source.length + 11,
+      checkedVerifierMachine.HaltsWithin total
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness source } ∧
+      ¬ checkedVerifierMachine.AcceptsWithin total
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness source } := by
+  cases source with
+  | nil =>
+      contradiction
+  | cons b bs =>
+      obtain ⟨m1, hm1, dead, hreach, hactive, hdead⟩ :=
+        checked_truncated_tag_reaches_dead
+          .cnf witness (b :: bs) [] 0 0 (by simpa using hshort)
+      have hreach' :
+          dead ∈ checkedEvalRunLoopMachine.runBranches m1
+            [{ state := checkedEvalRunLoopMachine.initial,
+               tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 }] := by
+        simpa [checkedEvalRunLoopMachine] using hreach
+      obtain ⟨total, htotal, hhalt, hnot⟩ :=
+        prepared_nonempty_dead_fail_closed
+          witness b bs m1 dead hreach' hactive hdead
+      refine ⟨total, ?_, hhalt, hnot⟩
+      simp at hm1 htotal ⊢
+      omega
 
 #print axioms MCore.Real.P01RawMalformedTag.tagDecode_short_state_reject
 #print axioms MCore.Real.P01RawMalformedTag.checked_truncated_tag_reaches_dead
