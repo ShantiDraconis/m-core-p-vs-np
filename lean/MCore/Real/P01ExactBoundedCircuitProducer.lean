@@ -15,6 +15,7 @@ open P01NeedExprCompositeNTM
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunBaseCases
 open P01CheckedEvalRunBoundedInput
+open P01CheckedEvalRunBoundedConst
 open P01CheckedEvalRunBoundedHelpers
 open P01CheckedEvalRunBoundedCertificate
 open P01CheckedVerifierInvariant
@@ -202,6 +203,109 @@ theorem input_exact_bounded_certificate
                     P01CheckedEvalRunInputTag.inputCheckedEmbed,
                     P01InputNodeCompositeRun.inputNodeFinalMode,
                     inputAfterReadTarget, encodeEvalFrames, encodeEvalFrame]
+
+
+/-- Exact bounded leaf producer for constants. -/
+theorem const_exact_bounded_certificate
+    (sigma : Assignment)
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (v : Bool) :
+    ExactBoundedCheckedCircuitRunCertificate
+      sigma witness mode (.const v) := by
+  intro hmode tail frames consumed padding n hLayout hlen hread
+
+  obtain ⟨m0, hm0, h0⟩ :=
+    const_checked_reaches_have_within_loopEnvelope
+      n sigma witness tail frames mode consumed padding v hmode hLayout
+
+  let finalConsumed := consumed + 3
+  have hfinalConsumed :
+      finalConsumed =
+        consumed + (encodeCircuit (.const v)).length := by
+    unfold finalConsumed
+    cases v <;> simp [encodeCircuit]
+
+  let cHave : CheckedConfig :=
+    { state := .have mode (.start v),
+      tape :=
+        evalCursorStackEndTape witness finalConsumed tail
+          (encodeEvalFrames frames) padding }
+
+  have h0' :
+      cHave ∈
+        checkedEvalRunLoopMachine.runBranches m0
+          [{ state := .need mode needExprCompositeMachine.initial,
+             tape :=
+               evalCursorStackEndTape witness consumed
+                 (encodeCircuit (.const v) ++ tail)
+                 (encodeEvalFrames frames) padding }] := by
+    simpa [cHave, finalConsumed] using h0
+
+  have hleafBudget :
+      checkedLoopStepEnvelope n ≤
+        checkedCircuitBudget (.const v) n := by
+    exact loopEnvelope_le_checkedCircuitBudget (.const v) n
+
+  cases tail with
+  | cons b bs =>
+      refine ⟨m0, Nat.le_trans hm0 hleafBudget, cHave, h0', ?_⟩
+      change ExactCheckedLoopOutcome witness (exitMode mode (.const v))
+        (evalCircuit sigma (.const v)) (b :: bs) frames
+        (consumed + (encodeCircuit (.const v)).length) cHave
+      rw [← hfinalConsumed]
+      refine ⟨padding, ?_⟩
+      cases v <;> cases mode <;>
+        simp [ExactCheckedLoopOutcome, exitMode, childMode, circuitTag,
+          evalCircuit, cHave, finalConsumed, modeCheck] at hmode ⊢
+  | nil =>
+      cases frames with
+      | cons f fs =>
+          refine ⟨m0, Nat.le_trans hm0 hleafBudget, cHave, h0', ?_⟩
+          change ExactCheckedLoopOutcome witness (exitMode mode (.const v))
+            (evalCircuit sigma (.const v)) [] (f :: fs)
+            (consumed + (encodeCircuit (.const v)).length) cHave
+          rw [← hfinalConsumed]
+          refine ⟨padding, ?_⟩
+          cases v <;> cases mode <;>
+            simp [ExactCheckedLoopOutcome, exitMode, childMode, circuitTag,
+              evalCircuit, cHave, finalConsumed, modeCheck] at hmode ⊢
+      | nil =>
+          obtain ⟨m1, hm1, cfgFinal, h1, hout1⟩ :=
+            have_reaches_outcome_within_envelope
+              n mode witness v [] [] finalConsumed padding
+          have hAll :=
+            mem_runBranches_trans checkedEvalRunLoopMachine
+              m0 m1
+              [{ state := .need mode needExprCompositeMachine.initial,
+                 tape :=
+                   evalCursorStackEndTape witness consumed
+                     (encodeCircuit (.const v))
+                     (encodeEvalFrames []) padding }]
+              cHave cfgFinal (by simpa using h0') (by simpa [cHave] using h1)
+          have hbudget :
+              m0 + m1 ≤ checkedCircuitBudget (.const v) n := by
+            have hsum :
+                m0 + m1 ≤ 2 * checkedLoopStepEnvelope n := by
+              omega
+            have h2 :
+                2 * checkedLoopStepEnvelope n ≤
+                  checkedCircuitBudget (.const v) n := by
+              unfold checkedCircuitBudget
+              simp [evalStepCount]
+              have h :
+                  2 ≤ 16 := by omega
+              exact Nat.mul_le_mul_right
+                (checkedLoopStepEnvelope n) h
+            exact Nat.le_trans hsum h2
+          refine ⟨m0 + m1, hbudget, cfgFinal, ?_, ?_⟩
+          · simpa using hAll
+          · change ExactCheckedLoopOutcome witness
+              (exitMode mode (.const v))
+              (evalCircuit sigma (.const v)) [] []
+              (consumed + (encodeCircuit (.const v)).length) cfgFinal
+            simp [ExactCheckedLoopOutcome] at hout1 ⊢
+            simpa [evalCircuit] using hout1
 
 #print axioms MCore.Real.P01ExactBoundedCircuitProducer.layout_consume_prefix
 #print axioms MCore.Real.P01ExactBoundedCircuitProducer.input_exact_bounded_certificate
