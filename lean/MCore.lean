@@ -54,3 +54,17 @@ import MCore.Real.CanonicalSATParserWorkScanProof
 import MCore.Real.CanonicalSATParserRewindProof
 
 import MCore.Real.P02SameInputOnlyFrontier
+
+import MCore.Real.P02BitStringNatCoding
+
+import MCore.Real.P02CodeSemanticInput
+
+import MCore.Real.P02KleeneDefinednessFrontier
+
+import MCore.Real.P02ExactCompilerSemantics
+
+import MCore.Real.P02EffectiveCompilerConstruction
+
+import MCore.Real.P02SelfInputHaltingBarrier
+
+import MCore.Real.P02CompilerHaltingCounterexample
