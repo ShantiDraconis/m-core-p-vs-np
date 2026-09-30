@@ -6,6 +6,9 @@ on:
       - atk/p01-verifier-phase-mincut-clean-20260930
     paths:
       - 'lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean'
+      - 'lean/MCore/Real/P01ManualStateCodecBase.lean'
+      - 'lean/MCore/Real/P01ManualStateCodecComposite.lean'
+      - 'lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean'
       - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
       - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
       - 'lean/MCore/Real/P01IntegratedAssembly.lean'
@@ -35,12 +38,21 @@ jobs:
       - name: Build structural min-cut
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01ManualStateCodecBase
+          lake build MCore.Real.P01ManualStateCodecComposite
+          lake build MCore.Real.P01CheckedVerifierManualFiniteState
           lake build MCore.Real.P01VerifierPhaseMinCutStructural
       - name: Exact axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
           cat > P01VerifierPhaseMinCutAudit.lean <<'EOF'
           import MCore.Real.P01VerifierPhaseMinCutStructural
+          import MCore.Real.P01CheckedVerifierManualFiniteState
+          #print axioms MCore.Real.P01ManualStateCodecBase.inputNodeDecode_code
+          #print axioms MCore.Real.P01ManualStateCodecComposite.checkedEvalDecode_code
+          #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierStateDecode_encode
+          #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierFinMachine_haltsWithin_iff
+          #print axioms MCore.Real.P01CheckedVerifierManualFiniteState.checkedVerifierFinMachine_acceptsWithin_iff
           #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
           EOF
           lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
@@ -50,3 +62,5 @@ jobs:
           set -euo pipefail
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01ManualStateCodecBase.lean lean/MCore/Real/P01ManualStateCodecComposite.lean lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01ManualStateCodecBase.lean lean/MCore/Real/P01ManualStateCodecComposite.lean lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean
