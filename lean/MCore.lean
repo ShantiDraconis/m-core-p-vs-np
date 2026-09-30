@@ -190,3 +190,4 @@ import MCore.Real.P01FiniteCodec
 import MCore.Real.P01CheckedVerifierStateCodec
 import MCore.Real.P01CheckedVerifierFiniteState
 import MCore.Real.P01MaterialInhabitantFrontier
+import MCore.Real.P01CanonicalWrapperBounded
