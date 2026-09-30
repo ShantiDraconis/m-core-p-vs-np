@@ -1,6 +1,5 @@
 import MCore.Real.P01CheckedEvalRunBoundedCertificate
 import MCore.Real.P01CheckedVerifierCompositeNTM
-import MCore.Real.P01CheckedVerifierFiniteState
 import MCore.Real.P01CheckedVerifierDeterminism
 
 namespace MCore
