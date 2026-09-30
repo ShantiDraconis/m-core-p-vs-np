@@ -1,4 +1,4 @@
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Tactic.DeriveFintype
 import MCore.Real.P01CheckedVerifierCompositeNTM
 import MCore.Real.P01IntegratedAssembly
 
