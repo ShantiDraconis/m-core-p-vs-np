@@ -1174,7 +1174,7 @@ theorem or_exact_bounded_certificate
       n mode witness
       (encodeCircuit left ++ encodeCircuit right ++ tail)
       (encodeEvalFrames frames) consumed padding
-      true false false .and .orLeft rfl rfl (by
+      true false true .or .orLeft rfl hAllowed (by
         simp [P01CheckedEvalRunTagPrefix.postTagState, childMode])
       hLayout0.source_le hLayout0.frames_le
 
