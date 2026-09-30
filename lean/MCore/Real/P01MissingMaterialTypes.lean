@@ -70,6 +70,9 @@ theorem preservingUnaryWitnessReadGap_closed :
     PreservingUnaryWitnessReadGap :=
   ⟨preservingUnaryWitnessReadCertificate⟩
 
+#print axioms MCore.Real.P01MissingMaterialTypes.preservingUnaryWitnessReadCertificate
+#print axioms MCore.Real.P01MissingMaterialTypes.preservingUnaryWitnessReadGap_closed
+
 /-- Exact global physical-verifier producer after all local evalStep cases are
 refined.  A valid inhabitant must execute the frozen evaluator semantics with
 one fixed TM, preserve the witness, consume exactly the encoded circuit, empty
