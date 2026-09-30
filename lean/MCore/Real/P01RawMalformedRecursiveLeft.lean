@@ -46,7 +46,7 @@ theorem disallowed_root_fail_closed
       tagAllowed mode (decodeTagBits b0 b1 b2) = false)
     (hLayout :
       CheckedLayoutBound n consumed
-        (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames) :
+        (b0 :: b1 :: b2 :: rest) (encodeEvalFrames frames)) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
       cfg ∈ checkedEvalRunLoopMachine.runBranches m
         [{ state := .need mode needExprCompositeMachine.initial,
@@ -110,8 +110,10 @@ theorem push_tag_then_recursive_fail_closed
     omega
   have hChildLayout :
       CheckedLayoutBound n (consumed + 3) rest
-        (encodeEvalFrames (frame :: frames)) :=
-    after_push_tag n consumed b0 b1 b2 rest frameStack frame hLayout
+        (encodeEvalFrames (frame :: frames)) := by
+    simpa [encodeEvalFrames, List.append_assoc] using
+      (after_push_tag n consumed b0 b1 b2 rest
+        (encodeEvalFrames frames) frame hLayout)
 
   obtain ⟨m0, hm0, h0⟩ :=
     pushTag_checked_reaches_need_within_envelope
@@ -177,7 +179,7 @@ theorem neg_child_failure
     (hNone : decodeCircuitCore fuel rest = none)
     (hLayout :
       CheckedLayoutBound n consumed
-        (false :: true :: true :: rest) encodeEvalFrames frames)
+        (false :: true :: true :: rest) (encodeEvalFrames frames))
     (hWitness :
       (false :: true :: true :: rest).length ≤ witness.length) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
@@ -210,7 +212,7 @@ theorem and_left_failure
     (hNone : decodeCircuitCore fuel rest = none)
     (hLayout :
       CheckedLayoutBound n consumed
-        (true :: false :: false :: rest) encodeEvalFrames frames)
+        (true :: false :: false :: rest) (encodeEvalFrames frames))
     (hWitness :
       (true :: false :: false :: rest).length ≤ witness.length) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
@@ -246,7 +248,7 @@ theorem or_left_failure
     (hNone : decodeCircuitCore fuel rest = none)
     (hLayout :
       CheckedLayoutBound n consumed
-        (true :: false :: true :: rest) encodeEvalFrames frames)
+        (true :: false :: true :: rest) (encodeEvalFrames frames))
     (hWitness :
       (true :: false :: true :: rest).length ≤ witness.length) :
     ∃ m ≤ rawMalformedBudget (fuel + 1) n, ∃ cfg : EvalConfig,
