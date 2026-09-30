@@ -163,3 +163,5 @@ import MCore.Real.ExactFinalProducer
 
 import MCore.Real.EncodedFinalProof
 import MCore.Real.P01CanonicalPolynomialClose
+import MCore.Real.P01VerifierResidualCore
+import MCore.Real.P01VerifierResidualClose
