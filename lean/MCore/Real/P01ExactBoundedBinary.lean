@@ -26,7 +26,7 @@ abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
 
 private theorem binary_budget_cap
-    (left right : CircuitK1.Circuit) (n : Nat) :
+    (left right : Circuit) (n : Nat) :
     checkedCircuitBudget left n +
         checkedCircuitBudget right n +
         4 * checkedLoopStepEnvelope n ≤
@@ -38,34 +38,39 @@ private theorem binary_budget_cap
           8 * (evalStepCount right + 1) + 4 ≤
         8 * (evalStepCount left + evalStepCount right + 4) := by
     omega
-  have hmul := Nat.mul_le_mul_right E hcoef
-  calc
-    checkedCircuitBudget left n +
+  have heq :
+      checkedCircuitBudget left n +
           checkedCircuitBudget right n +
-          4 * checkedLoopStepEnvelope n
-        =
-      (8 * (evalStepCount left + 1) +
+          4 * checkedLoopStepEnvelope n =
+        (8 * (evalStepCount left + 1) +
           8 * (evalStepCount right + 1) + 4) * E := by
-            unfold checkedCircuitBudget
-            dsimp [E]
-            omega
-    _ ≤
-      8 * (evalStepCount left + evalStepCount right + 4) * E := hmul
+    unfold checkedCircuitBudget
+    dsimp [E]
+    rw [Nat.add_mul, Nat.add_mul]
+  rw [heq]
+  exact Nat.mul_le_mul_right E hcoef
 
 private theorem binary_prefix_budget_cap
-    (left right : CircuitK1.Circuit) (n : Nat) :
+    (left right : Circuit) (n : Nat) :
     checkedCircuitBudget left n +
         checkedCircuitBudget right n +
         3 * checkedLoopStepEnvelope n ≤
       8 * (evalStepCount left + evalStepCount right + 4) *
         checkedLoopStepEnvelope n := by
-  exact Nat.le_trans
-    (Nat.add_le_add_left
-      (Nat.add_le_add_left
-        (Nat.mul_le_mul_right (checkedLoopStepEnvelope n) (by omega : 3 ≤ 4))
-        (checkedCircuitBudget right n))
-      (checkedCircuitBudget left n))
-    (binary_budget_cap left right n)
+  have h34 :
+      3 * checkedLoopStepEnvelope n ≤
+        4 * checkedLoopStepEnvelope n :=
+    Nat.mul_le_mul_right (checkedLoopStepEnvelope n) (by omega)
+  have hadd :
+      checkedCircuitBudget left n +
+          checkedCircuitBudget right n +
+          3 * checkedLoopStepEnvelope n ≤
+        checkedCircuitBudget left n +
+          checkedCircuitBudget right n +
+          4 * checkedLoopStepEnvelope n := by
+    exact Nat.add_le_add_left h34
+      (checkedCircuitBudget left n + checkedCircuitBudget right n)
+  exact Nat.le_trans hadd (binary_budget_cap left right n)
 
 /-- Exact bounded binary producer for conjunction.
 
@@ -354,6 +359,9 @@ theorem and_exact_bounded_certificate
         simp [encodeCircuit, List.length_append]
         omega
 
+      have hExitAnd :
+          exitMode .cnf (.and left right) = .cnf := rfl
+
       have hprefixBudget :
           m0 + m1 + m2 + m3 + m4 ≤
             checkedCircuitBudget (.and left right) n := by
@@ -389,10 +397,9 @@ theorem and_exact_bounded_certificate
             (evalCircuit sigma (.and left right))
             (b :: bs) frames
             (consumed + (encodeCircuit (.and left right)).length) cHave
-          rw [← hConsumed]
+          rw [hExitAnd, ← hConsumed]
           refine ⟨padding2 + 3, ?_⟩
-          simp [ExactCheckedLoopOutcome, cHave, finalValue,
-            evalCircuit, exitMode, circuitTag]
+          simp [ExactCheckedLoopOutcome, cHave, finalValue, evalCircuit]
       | nil =>
           cases frames with
           | cons f fs =>
@@ -403,10 +410,9 @@ theorem and_exact_bounded_certificate
                 (evalCircuit sigma (.and left right))
                 [] (f :: fs)
                 (consumed + (encodeCircuit (.and left right)).length) cHave
-              rw [← hConsumed]
+              rw [hExitAnd, ← hConsumed]
               refine ⟨padding2 + 3, ?_⟩
-              simp [ExactCheckedLoopOutcome, cHave, finalValue,
-                evalCircuit, exitMode, circuitTag]
+              simp [ExactCheckedLoopOutcome, cHave, finalValue, evalCircuit]
           | nil =>
               obtain ⟨m5, hm5, cfgFinal, h5, hout5⟩ :=
                 have_reaches_outcome_within_envelope
@@ -454,7 +460,8 @@ theorem and_exact_bounded_certificate
                   (evalCircuit sigma (.and left right)) [] []
                   (consumed + (encodeCircuit (.and left right)).length) cfgFinal
                 simp [ExactCheckedLoopOutcome] at hout5 ⊢
-                simpa [finalValue, evalCircuit, exitMode, circuitTag] using hout5
+                rw [hExitAnd]
+                simpa [finalValue, evalCircuit, CheckedLoopOutcome] using hout5
 
 /-- Exact bounded binary producer for disjunction.  The argument mirrors the
 AND producer, but the recursive children and continuation mode are clause.
@@ -735,9 +742,7 @@ theorem or_exact_bounded_certificate
     omega
 
   have hExit :
-      exitMode mode (.or left right) = .clause := by
-    cases mode <;>
-      simp [modeCheck_or, tagAllowed, exitMode, circuitTag] at hmode ⊢
+      exitMode mode (.or left right) = .clause := rfl
 
   have hprefixBudget :
       m0 + m1 + m2 + m3 + m4 ≤
