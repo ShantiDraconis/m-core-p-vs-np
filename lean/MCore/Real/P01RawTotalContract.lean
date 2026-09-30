@@ -127,10 +127,16 @@ def EvalFailClosed
     (¬ Halted checkedEvalRunLoopMachine cfg ∧
       checkedEvalRunLoopMachine.successors cfg = [])
 
-/-- Generous polynomial envelope for raw structural rejection.  The square in
-fuel absorbs successful-prefix evaluation before a later malformed child. -/
+/-- One cubic budget slice pays for a successful canonical prefix evaluation
+plus the finite-control handoffs at one raw-decoder recursion level. -/
+def rawMalformedSlice (n : Nat) : Nat :=
+  8192 * (n + 1) ^ 3
+
+/-- Polynomial raw-rejection budget: one cubic slice per remaining decoder
+fuel level.  At the top fuel = source.length + 1, hence this is quartic in the
+source length. -/
 def rawMalformedBudget (fuel n : Nat) : Nat :=
-  256 * (fuel + 1) ^ 2 * checkedLoopStepEnvelope n
+  (fuel + 1) * rawMalformedSlice n
 
 /-- Terminal raw obligation after all reusable circuit-level machinery has been
 factored out: only genuine decoder failure still requires a physical producer.
