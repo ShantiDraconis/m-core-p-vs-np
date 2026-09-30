@@ -179,13 +179,7 @@ theorem const_checked_run
   have hallowed :
       tagAllowed mode
         (if v then NeedExprTag.constTrue else NeedExprTag.constFalse) = true := by
-    cases v with
-    | false =>
-        rw [← modeCheck_constFalse mode]
-        exact hmode
-    | true =>
-        rw [← modeCheck_constTrue mode]
-        exact hmode
+    cases v <;> simpa using hmode
 
   obtain ⟨m0, hm0, h0⟩ :=
     checked_tag_prefix_reaches
@@ -220,9 +214,9 @@ theorem const_checked_run
                  (encodeCircuit (.const v) ++ tail)
                  (encodeEvalFrames frames) padding }] := by
     cases v <;>
-      simpa [cCheckedRet0, tAfter, postTagState, exitMode,
+      simpa [cCheckedRet0, tAfter, postTagState,
         childMode, circuitTag, encodeCircuit, b0, b1, b2,
-        htag] using h0
+        decodeTagBits] using h0
 
   have hRetExact :
       cursorReturnMachine.run nRet cRet0 = cRetH := by
@@ -282,8 +276,9 @@ theorem const_checked_run
       change CheckedLoopOutcome witness (exitMode mode (.const v))
         v (x :: xs) frames cHave
       refine ⟨consumed + 3, padding, ?_⟩
-      simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-        cHave, tDone]
+      cases v <;> cases mode <;>
+        simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+          cHave, tDone, modeCheck] at hmode ⊢
   | nil =>
       cases frames with
       | cons f fs =>
@@ -291,8 +286,9 @@ theorem const_checked_run
           change CheckedLoopOutcome witness (exitMode mode (.const v))
             v [] (f :: fs) cHave
           refine ⟨consumed + 3, padding, ?_⟩
-          simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-            cHave, tDone]
+          cases v <;> cases mode <;>
+            simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+              cHave, tDone, modeCheck] at hmode ⊢
       | nil =>
           obtain ⟨mF, hmF, hF⟩ :=
             checked_empty_frames_reaches_final
@@ -302,6 +298,15 @@ theorem const_checked_run
               tape :=
                 evalCursorStackEndTape witness (consumed + 3)
                   [] [] padding }
+          have hToHaveNil :
+              cHave ∈
+                checkedEvalRunLoopMachine.runBranches (m0 + mR + 1)
+                  [{ state := .need mode needExprCompositeMachine.initial,
+                     tape :=
+                       evalCursorStackEndTape witness consumed
+                         (encodeCircuit (.const v))
+                         (encodeEvalFrames []) padding }] := by
+            simpa using hToHave
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + mR + 1) mF
@@ -310,7 +315,7 @@ theorem const_checked_run
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.const v))
                      (encodeEvalFrames []) padding }]
-              cHave cFinal hToHave
+              cHave cFinal hToHaveNil
               (by simpa [cFinal] using hF)
           refine ⟨m0 + mR + 1 + mF, cFinal, ?_, ?_⟩
           · simpa using hAll
