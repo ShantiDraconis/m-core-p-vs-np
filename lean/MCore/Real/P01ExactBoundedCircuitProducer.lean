@@ -93,6 +93,47 @@ theorem layout_consume_prefix
   · have hf := h.frames_paid
     omega
 
+/-- Canonical circuit encodings are never empty. -/
+theorem encodeCircuit_ne_nil
+    (phi : CircuitK1.Circuit) :
+    encodeCircuit phi ≠ [] := by
+  cases phi <;> simp [encodeCircuit]
+
+/-- One common loop envelope plus one exact circuit budget normalizes
+algebraically to the coefficient form used in all compositional budgets. -/
+theorem loop_plus_budget_eq
+    (n steps : Nat) :
+    checkedLoopStepEnvelope n +
+        (8 * (steps + 1) * checkedLoopStepEnvelope n) =
+      (8 * (steps + 1) + 1) * checkedLoopStepEnvelope n := by
+  ring
+
+/-- Two exact child budgets and three loop envelopes have the canonical
+binary-prefix coefficient. -/
+theorem binary_prefix_budget_eq
+    (n leftSteps rightSteps : Nat) :
+    checkedLoopStepEnvelope n +
+        (8 * (leftSteps + 1) * checkedLoopStepEnvelope n) +
+        checkedLoopStepEnvelope n +
+        (8 * (rightSteps + 1) * checkedLoopStepEnvelope n) +
+        checkedLoopStepEnvelope n =
+      (8 * (leftSteps + 1) + 8 * (rightSteps + 1) + 3) *
+        checkedLoopStepEnvelope n := by
+  ring
+
+/-- Binary evaluation plus final normalization has four loop envelopes. -/
+theorem binary_final_budget_eq
+    (n leftSteps rightSteps : Nat) :
+    checkedLoopStepEnvelope n +
+        (8 * (leftSteps + 1) * checkedLoopStepEnvelope n) +
+        checkedLoopStepEnvelope n +
+        (8 * (rightSteps + 1) * checkedLoopStepEnvelope n) +
+        checkedLoopStepEnvelope n +
+        checkedLoopStepEnvelope n =
+      (8 * (leftSteps + 1) + 8 * (rightSteps + 1) + 4) *
+        checkedLoopStepEnvelope n := by
+  ring
+
 /-- Exact bounded leaf producer for input nodes. -/
 theorem input_exact_bounded_certificate
     (sigma : Assignment)
@@ -791,10 +832,7 @@ theorem and_exact_bounded_certificate
         leftConsumed + (encodeCircuit left).length
 
       have hRightTail : encodeCircuit right ++ tail ≠ [] := by
-        intro hnil
-        have henc : encodeCircuit right = [] :=
-          (List.append_eq_nil_iff.mp hnil).1
-        cases right <;> simp [encodeCircuit] at henc
+        exact List.append_ne_nil_of_left_ne_nil (encodeCircuit_ne_nil right)
 
       obtain ⟨padding1, hcfgLeft⟩ :=
         exact_outcome_have_of_tail_ne_nil
@@ -999,7 +1037,7 @@ theorem and_exact_bounded_certificate
                 8 * (evalStepCount right + 1) + 3) * E := by
                   unfold checkedCircuitBudget
                   dsimp [E]
-                  omega
+                  ring
             _ ≤
               8 * (evalStepCount left + evalStepCount right + 4) * E :=
                 hmul
@@ -1093,8 +1131,8 @@ theorem and_exact_bounded_certificate
                       (8 * (evalStepCount left + 1) +
                         8 * (evalStepCount right + 1) + 4) * E := by
                           unfold checkedCircuitBudget
-                          dsimp [E]
-                          omega
+                  dsimp [E]
+                  ring
                     _ ≤
                       8 * (evalStepCount left + evalStepCount right + 4) * E :=
                         hmul
@@ -1234,10 +1272,7 @@ theorem or_exact_bounded_certificate
     leftConsumed + (encodeCircuit left).length
 
   have hRightTail : encodeCircuit right ++ tail ≠ [] := by
-    intro hnil
-    have henc : encodeCircuit right = [] :=
-      (List.append_eq_nil_iff.mp hnil).1
-    cases right <;> simp [encodeCircuit] at henc
+        exact List.append_ne_nil_of_left_ne_nil (encodeCircuit_ne_nil right)
 
   obtain ⟨padding1, hcfgLeft⟩ :=
     exact_outcome_have_of_tail_ne_nil
@@ -1441,8 +1476,8 @@ theorem or_exact_bounded_certificate
           (8 * (evalStepCount left + 1) +
             8 * (evalStepCount right + 1) + 3) * E := by
               unfold checkedCircuitBudget
-              dsimp [E]
-              omega
+                  dsimp [E]
+                  ring
         _ ≤
           8 * (evalStepCount left + evalStepCount right + 4) * E :=
             hmul
@@ -1536,8 +1571,8 @@ theorem or_exact_bounded_certificate
                   (8 * (evalStepCount left + 1) +
                     8 * (evalStepCount right + 1) + 4) * E := by
                       unfold checkedCircuitBudget
-                      dsimp [E]
-                      omega
+                  dsimp [E]
+                  ring
                 _ ≤
                   8 * (evalStepCount left + evalStepCount right + 4) * E :=
                     hmul
