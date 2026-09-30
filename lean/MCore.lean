@@ -178,3 +178,5 @@ import MCore.Real.P01MaterialInhabitantFrontier
 import MCore.Real.P01ExactBoundedAll
 
 import MCore.Real.P01CheckedEvalRejectBounded
+
+import MCore.Real.P01MalformedRawBoundedReject
