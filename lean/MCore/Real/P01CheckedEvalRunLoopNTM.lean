@@ -91,6 +91,16 @@ def checkedEvalRunLoopMachine :
         | _ =>
             (inputNodeCompositeMachine.transition qi symbol).map
               (fun t => (inputCheckedEmbed mode t.1, t.2.1, t.2.2))
+    | .need mode (.seek .reject) =>
+        [(.reject, symbol, .stay)]
+    | .need mode (.decode .reject) =>
+        [(.reject, symbol, .stay)]
+    | .need mode (.retValue _ .reject) =>
+        [(.reject, symbol, .stay)]
+    | .need mode (.retPush _ .reject) =>
+        [(.reject, symbol, .stay)]
+    | .need mode (.push _ .reject) =>
+        [(.reject, symbol, .stay)]
     | .need mode (.decode (.halt tag)) =>
         if tagAllowed mode tag then
           let nextMode := childMode mode tag
@@ -159,6 +169,32 @@ def checkedEvalRunLoopMachine :
 
 @[simp] theorem rejecting_reject :
     checkedEvalRunLoopMachine.rejecting .reject = true := rfl
+
+/-- Every nested physical failure in the need-expression subsystem is promoted
+to the single global reject state in one machine step. -/
+theorem nested_need_reject_successors
+    (mode : SyntaxMode)
+    (tape : Tape (Option Bool)) :
+    checkedEvalRunLoopMachine.successors
+        { state := .need mode (.seek .reject), tape := tape } =
+          [{ state := .reject, tape := tape }] ∧
+    checkedEvalRunLoopMachine.successors
+        { state := .need mode (.decode .reject), tape := tape } =
+          [{ state := .reject, tape := tape }] ∧
+    (∀ v, checkedEvalRunLoopMachine.successors
+        { state := .need mode (.retValue v .reject), tape := tape } =
+          [{ state := .reject, tape := tape }]) ∧
+    (∀ f, checkedEvalRunLoopMachine.successors
+        { state := .need mode (.retPush f .reject), tape := tape } =
+          [{ state := .reject, tape := tape }]) ∧
+    (∀ f, checkedEvalRunLoopMachine.successors
+        { state := .need mode (.push f .reject), tape := tape } =
+          [{ state := .reject, tape := tape }]) := by
+  simp [checkedEvalRunLoopMachine, NTM.successors,
+    NTM.stepBranch, Tape.write, Tape.move]
+
+#print axioms MCore.Real.P01CheckedEvalRunLoopNTM.nested_need_reject_successors
+
 
 def needCheckedLift
     (mode : SyntaxMode)
