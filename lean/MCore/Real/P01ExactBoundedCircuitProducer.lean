@@ -592,6 +592,17 @@ theorem neg_exact_bounded_certificate
 
 
 
+/-- Canonical circuit encodings are never empty. -/
+theorem encodeCircuit_ne_nil
+    (phi : CircuitK1.Circuit) :
+    encodeCircuit phi ≠ [] := by
+  cases phi with
+  | input i => simp [encodeCircuit]
+  | const v => cases v <;> simp [encodeCircuit]
+  | not child => simp [encodeCircuit]
+  | and left right => simp [encodeCircuit]
+  | or left right => simp [encodeCircuit]
+
 /-- Exact outcome with nonempty unread source is necessarily a have-state at
 the statically known source cursor. -/
 theorem exact_outcome_have_of_tail_ne_nil
@@ -649,6 +660,7 @@ theorem layout_after_prefix_with_frame
     (n consumed : Nat)
     (bitsPrefix rest frameStack : BitString)
     (frame : EvalFrame)
+    (hprefix : 3 ≤ bitsPrefix.length)
     (h :
       CheckedLayoutBound n consumed
         (bitsPrefix ++ rest) frameStack) :
@@ -791,9 +803,8 @@ theorem and_exact_bounded_certificate
 
       have hRightTail : encodeCircuit right ++ tail ≠ [] := by
         intro hnil
-        have henc : encodeCircuit right = [] :=
+        exact encodeCircuit_ne_nil right
           (List.append_eq_nil_iff.mp hnil).1
-        cases right <;> simp [encodeCircuit] at henc
 
       obtain ⟨padding1, hcfgLeft⟩ :=
         exact_outcome_have_of_tail_ne_nil
@@ -868,6 +879,7 @@ theorem and_exact_bounded_certificate
             (encodeCircuit right ++ tail)
             (encodeEvalFrames frames)
             (.andRight (evalCircuit sigma left))
+            (by simp)
           simpa [encodeCircuit, List.append_assoc] using hLayout
         have hcursor :
             consumed + (encodeCircuit left).length + 3 =
@@ -1193,7 +1205,7 @@ theorem or_exact_bounded_certificate
   have h0' :
       cNeedLeft ∈
         checkedEvalRunLoopMachine.runBranches m0
-          [{ state := .need .clause needExprCompositeMachine.initial,
+          [{ state := .need mode needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
                  (encodeCircuit (.or left right) ++ tail)
@@ -1225,7 +1237,7 @@ theorem or_exact_bounded_certificate
   have h01 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       m0 m1
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1237,9 +1249,8 @@ theorem or_exact_bounded_certificate
 
   have hRightTail : encodeCircuit right ++ tail ≠ [] := by
     intro hnil
-    have henc : encodeCircuit right = [] :=
+    exact encodeCircuit_ne_nil right
       (List.append_eq_nil_iff.mp hnil).1
-    cases right <;> simp [encodeCircuit] at henc
 
   obtain ⟨padding1, hcfgLeft⟩ :=
     exact_outcome_have_of_tail_ne_nil
@@ -1282,7 +1293,7 @@ theorem or_exact_bounded_certificate
   have h012 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1) m2
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1314,6 +1325,7 @@ theorem or_exact_bounded_certificate
         (encodeCircuit right ++ tail)
         (encodeEvalFrames frames)
         (.orRight (evalCircuit sigma left))
+        (by simp)
       simpa [encodeCircuit, List.append_assoc] using hLayout
     have hcursor :
         consumed + (encodeCircuit left).length + 3 =
@@ -1335,7 +1347,7 @@ theorem or_exact_bounded_certificate
   have h0123 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2) m3
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1384,7 +1396,7 @@ theorem or_exact_bounded_certificate
   have h01234 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2 + m3) m4
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1491,7 +1503,7 @@ theorem or_exact_bounded_certificate
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + m1 + m2 + m3 + m4) m5
-              [{ state := .need .clause needExprCompositeMachine.initial,
+              [{ state := .need mode needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right))
