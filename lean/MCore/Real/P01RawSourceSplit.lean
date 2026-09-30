@@ -20,7 +20,8 @@ theorem exact_encoding_or_decode_none
   | none =>
       exact Or.inr hdec
   | some phi =>
-      exact Or.inl ⟨phi, decodeCircuit_sound bs phi hdec⟩
+      have hdec' : decodeCircuit bs = some phi := by simpa using hdec
+      exact Or.inl ⟨phi, decodeCircuit_sound bs phi hdec'⟩
 
 /-- Decoder failure makes the concrete verifier relation false for every
 witness. -/
