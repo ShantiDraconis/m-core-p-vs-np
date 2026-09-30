@@ -1,5 +1,6 @@
 import MCore.Real.P01CheckedVerifierFiniteState
 import MCore.Real.P01NTMRunLaws
+import MCore.Real.P01InputNodeCompositeRun
 
 namespace MCore
 namespace Real
