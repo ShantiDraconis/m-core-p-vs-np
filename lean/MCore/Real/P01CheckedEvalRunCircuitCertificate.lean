@@ -2,6 +2,9 @@ import MCore.Real.P01CheckedEvalRunBaseCases
 import MCore.Real.P01CheckedEvalRunNeedTags
 import MCore.Real.P01CheckedEvalRunHaveValue
 import MCore.Real.P01CheckedEvalRunInputTag
+import MCore.Real.CanonicalSATWitness
+import MCore.Real.CanonicalCircuitBits
+import MCore.Real.P01EncodedFrameTape
 
 namespace MCore
 namespace Real
@@ -9,6 +12,9 @@ namespace P01CheckedEvalRunCircuitCertificate
 
 open CanonicalFinalProof
 open CircuitK1
+open CanonicalSATWitness
+open CanonicalCircuitBits
+open P01EncodedFrameTape
 open P01EncodedStackEvaluator
 open P01EvalCursorMachine
 open P01NeedExprCompositeNTM
