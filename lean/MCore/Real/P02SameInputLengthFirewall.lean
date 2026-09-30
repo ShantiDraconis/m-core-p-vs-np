@@ -2,6 +2,7 @@ import MCore.Real.P02SameInputOnlyFrontier
 import MCore.Real.P02CookLevinFromBoundedExec
 import MCore.Real.P02BoundedComputationEncoding
 import MCore.Real.P02CompilerHaltingCounterexample
+import MCore.Real.P02ExtensionalCoreAfterCookLevin
 
 namespace MCore
 namespace Real
@@ -13,6 +14,8 @@ open P02BoundedComputationEncoding
 open P02CookLevinFromBoundedExec
 open P02KleeneBridge
 open P02SameInputOnlyFrontier
+open P02ExtensionalSameInputBridge
+open P02ExtensionalCoreAfterCookLevin
 
 /-- Every canonical circuit encoding contains at least its three-bit root tag. -/
 theorem encodeCircuit_length_ge_three
@@ -118,6 +121,36 @@ theorem sameInputCoreGap_false :
   exact
     no_sameInputTransport M (S.compiler M)
       ⟨S.transport M⟩
+
+
+/-- The post-Cook-Levin extensional core is also impossible for the current
+rejectCircuit carrier.  At an extensional fixed point, selfInput_ext and
+compile_realizes force the forbidden literal equation
+x = encodeCircuit (rejectCircuit M x). -/
+theorem no_extensionalRejectCompilerCore
+    (M : PolyDTMCandidate) :
+    ¬ Nonempty (ExtensionalRejectCompilerCore M) := by
+  intro h
+  rcases h with ⟨E⟩
+  let C : ExtensionalSameInputCompiler M := E.toCompiler
+  rcases extensional_fixed_point C with ⟨c, hfixed⟩
+  have hsame :
+      E.selfInput c =
+        encodeCircuit (rejectCircuit M (E.selfInput c)) := by
+    have h := same_input_at_fixed_point C c hfixed
+    simpa [C, ExtensionalRejectCompilerCore.toCompiler] using h
+  exact rejectCircuit_no_literal_same_input M (E.selfInput c) hsame
+
+/-- Therefore the uniform extensional core gap is empty, independently of the
+compiler-halting barrier.  Any live G21 route must avoid literal equality
+between the candidate input and the strictly larger Cook-Levin encoding. -/
+theorem uniformExtensionalRejectCompilerCoreGap_false :
+    ¬ UniformExtensionalRejectCompilerCoreGap := by
+  intro h
+  rcases h with ⟨U⟩
+  exact no_extensionalRejectCompilerCore
+    P02CompilerHaltingCounterexample.barrierCandidate
+    ⟨U.core P02CompilerHaltingCounterexample.barrierCandidate⟩
 
 #print axioms MCore.Real.P02SameInputLengthFirewall.encodeCircuit_length_ge_three
 #print axioms MCore.Real.P02SameInputLengthFirewall.cnfCircuit_encoding_length_ge
