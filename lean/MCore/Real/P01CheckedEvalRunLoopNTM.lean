@@ -37,8 +37,10 @@ Only left binary frames lead to a new right-hand expression. -/
 def modeAfterFrame (current : SyntaxMode) :
     P01EncodedStackEvaluator.EvalFrame → SyntaxMode
   | .andLeft => .cnf
+  | .andRight _ => .cnf
   | .orLeft => .clause
-  | _ => current
+  | .orRight _ => .clause
+  | .neg => current
 
 def inputCheckedEmbed
     (mode : SyntaxMode) :
