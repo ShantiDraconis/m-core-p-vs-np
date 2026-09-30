@@ -149,3 +149,5 @@ import MCore.Real.P01FinalSourceEmptyCheck
 import MCore.Real.P01CheckedVerifierCompositeNTM
 
 import MCore.Real.P01CheckedEvalRunCircuitCertificate
+
+import MCore.Real.P01CheckedVerifierRun
