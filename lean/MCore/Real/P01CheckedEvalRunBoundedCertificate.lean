@@ -4,6 +4,7 @@ import MCore.Real.P01CheckedEvalRunBoundedHelpers
 import MCore.Real.P01CheckedVerifierInvariant
 import MCore.Real.P01CheckedVerifierGlobalBudget
 import MCore.Real.P01CheckedEvalRunCircuitCertificate
+import MCore.Real.P01CheckedEvalBoundedOutcome
 
 namespace MCore
 namespace Real
@@ -28,6 +29,7 @@ open P01CheckedEvalRunCircuitCertificate
 open P01CheckedEvalRunHaveValue
 open P01NTMRunLaws
 open P01CNFMode
+open P01CheckedEvalBoundedOutcome
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -78,7 +80,7 @@ def BoundedCheckedCircuitRunCertificate
                evalCursorStackEndTape witness consumed
                  (encodeCircuit phi ++ tail)
                  (encodeEvalFrames frames) padding }] ∧
-      CheckedLoopOutcome witness (exitMode mode phi)
+      BoundedCheckedLoopOutcome n witness (exitMode mode phi)
         (evalCircuit sigma phi) tail frames cfg
 
 /-- Input leaf: the already-bounded checked 000 producer inhabits the bounded
@@ -103,6 +105,14 @@ theorem input_bounded_certificate
         (encodeEvalFrames frames) := by
     simpa [encodeCircuit, List.append_assoc] using hLayout
 
+  have hLayoutAfterInput :
+      CheckedLayoutBound n
+        (P01InputNodeRoundTrip.consumedAfterInputIndex
+          (consumed + 3) i)
+        tail (encodeEvalFrames frames) :=
+    P01CheckedVerifierInvariant.after_input
+      n consumed i tail (encodeEvalFrames frames) hLayoutInput
+
   obtain ⟨m, hm, hrun⟩ :=
     inputTag_checked_reaches_within_loopEnvelope
       n mode witness tail (encodeEvalFrames frames)
@@ -126,32 +136,43 @@ theorem input_bounded_certificate
     Nat.le_trans hm (loopEnvelope_le_checkedCircuitBudget (.input i) n),
     cfg, ?_, ?_⟩
   · simpa [cfg, encodeCircuit] using hrun
-  · change CheckedLoopOutcome witness (exitMode mode (.input i))
+  · change BoundedCheckedLoopOutcome n witness (exitMode mode (.input i))
       (sigma i) tail frames cfg
     rw [← hvalue]
     cases tail with
     | cons b bs =>
-        refine ⟨P01InputNodeRoundTrip.consumedAfterInputIndex
-          (consumed + 3) i, padding, ?_⟩
-        simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-          cfg, inputCheckedConfig, inputCheckedEmbed,
-          P01InputNodeCompositeRun.inputNodeFinalMode,
-          P01InputNodeRoundTrip.inputAfterReadTarget]
+        constructor
+        · refine ⟨P01InputNodeRoundTrip.consumedAfterInputIndex
+            (consumed + 3) i, padding, ?_⟩
+          simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+            cfg, inputCheckedConfig, inputCheckedEmbed,
+            P01InputNodeCompositeRun.inputNodeFinalMode,
+            P01InputNodeRoundTrip.inputAfterReadTarget]
+        · exact Or.inr ⟨
+            P01InputNodeRoundTrip.consumedAfterInputIndex (consumed + 3) i,
+            padding, by
+              simp [cfg, inputCheckedConfig, inputCheckedEmbed,
+                P01InputNodeCompositeRun.inputNodeFinalMode,
+                P01InputNodeRoundTrip.inputAfterReadTarget],
+            hLayoutAfterInput⟩
     | nil =>
         cases frames with
         | nil =>
-            refine ⟨(P01InputNodeRoundTrip.inputAfterReadTarget witness
-              (P01InputNodeRoundTrip.consumedAfterInputIndex
-                (consumed + 3) i)
-              [] [] padding).tape, ?_⟩
-            simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
-              cfg, inputCheckedConfig, inputCheckedEmbed,
-              P01InputNodeCompositeRun.inputNodeFinalMode,
-              P01InputNodeRoundTrip.inputAfterReadTarget]
+            constructor
+            · refine ⟨(P01InputNodeRoundTrip.inputAfterReadTarget witness
+                (P01InputNodeRoundTrip.consumedAfterInputIndex
+                  (consumed + 3) i)
+                [] [] padding).tape, ?_⟩
+              simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
+                cfg, inputCheckedConfig, inputCheckedEmbed,
+                P01InputNodeCompositeRun.inputNodeFinalMode,
+                P01InputNodeRoundTrip.inputAfterReadTarget]
+            · exact Or.inl ⟨rfl, rfl⟩
         | cons f fs =>
-            refine ⟨P01InputNodeRoundTrip.consumedAfterInputIndex
-              (consumed + 3) i, padding, ?_⟩
-            cases f with
+            constructor
+            · refine ⟨P01InputNodeRoundTrip.consumedAfterInputIndex
+                (consumed + 3) i, padding, ?_⟩
+              cases f with
             | neg =>
                 simp [CheckedLoopOutcome, exitMode, circuitTag, childMode,
                   cfg, inputCheckedConfig, inputCheckedEmbed,
@@ -182,6 +203,15 @@ theorem input_bounded_certificate
                   P01InputNodeCompositeRun.inputNodeFinalMode,
                   P01InputNodeRoundTrip.inputAfterReadTarget,
                   encodeEvalFrames, encodeEvalFrame]
+            · exact Or.inr ⟨
+                P01InputNodeRoundTrip.consumedAfterInputIndex (consumed + 3) i,
+                padding, by
+                  cases f <;>
+                    simp [cfg, inputCheckedConfig, inputCheckedEmbed,
+                      P01InputNodeCompositeRun.inputNodeFinalMode,
+                      P01InputNodeRoundTrip.inputAfterReadTarget,
+                      encodeEvalFrames, encodeEvalFrame],
+                hLayoutAfterInput⟩
 
 /-- Constant leaf: the generic bounded constant run inhabits the same bounded
 circuit certificate. -/
@@ -320,19 +350,27 @@ theorem neg_bounded_certificate
       simpa [childMode] using hchildMode
     exact (modeCheck_mustInput_iff circuit).1 hm
 
-  have houtHave :
-      ∃ consumed1 padding1,
-        cfg1 =
-          { state := .have .mustInput
-              (.start (evalCircuit sigma circuit)),
-            tape :=
-              evalCursorStackEndTape witness consumed1 tail
-                (encodeEvalFrames (.neg :: frames)) padding1 } := by
+  obtain ⟨consumed1, padding1, hcfg1Raw, hLayoutAfterChild⟩ :=
+    layout_of_frames_ne_nil hout1 (by simp)
+  have hcfg1 :
+      cfg1 =
+        { state := .have .mustInput
+            (.start (evalCircuit sigma circuit)),
+          tape :=
+            evalCursorStackEndTape witness consumed1 tail
+              (encodeEvalFrames (.neg :: frames)) padding1 } := by
     rcases hchildInput with ⟨i, rfl⟩
-    simpa [CheckedLoopOutcome, exitMode, childMode, circuitTag] using hout1
-
-  rcases houtHave with ⟨consumed1, padding1, hcfg1⟩
+    simpa [exitMode, childMode, circuitTag] using hcfg1Raw
   subst cfg1
+
+  have hLayoutNeg :
+      CheckedLayoutBound n consumed1 tail
+        (encodeEvalFrame .neg ++ encodeEvalFrames frames) := by
+    simpa [encodeEvalFrames, List.append_assoc] using hLayoutAfterChild
+  have hLayoutAfterNeg :
+      CheckedLayoutBound n consumed1 tail (encodeEvalFrames frames) :=
+    P01CheckedVerifierInvariant.pop_frame
+      n consumed1 tail (encodeEvalFrames frames) .neg hLayoutNeg
 
   obtain ⟨m2, hm2, h2⟩ :=
     negReturn_checked_reaches_have
@@ -372,9 +410,9 @@ theorem neg_bounded_certificate
       cHave h01 h2'
 
   obtain ⟨m3, hm3, cfgFinal, h3, hout3⟩ :=
-    have_reaches_outcome_within_envelope
+    have_reaches_bounded_outcome
       n .mustInput witness (!(evalCircuit sigma circuit))
-      tail frames consumed1 (padding1 + 3)
+      tail frames consumed1 (padding1 + 3) hLayoutAfterNeg
 
   have hAll :=
     mem_runBranches_trans checkedEvalRunLoopMachine
@@ -415,8 +453,8 @@ theorem neg_bounded_certificate
       _ ≤ checkedCircuitBudget (.not circuit) n := hbudget
 
   refine ⟨m0 + m1 + m2 + m3, htotal, cfgFinal, hAll, ?_⟩
-  simpa [CheckedLoopOutcome, exitMode, childMode,
-    circuitTag, evalCircuit] using hout3
+  simpa [BoundedCheckedLoopOutcome, CheckedLoopOutcome,
+    exitMode, childMode, circuitTag, evalCircuit] using hout3
 
 #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.loopEnvelope_le_checkedCircuitBudget
 #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.input_bounded_certificate
