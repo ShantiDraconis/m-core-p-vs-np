@@ -131,16 +131,25 @@ theorem witness_index_decomposition
       witness = prefix ++ b :: suffix ∧
       prefix.length = i ∧
       witness.getD i false = b := by
-  let b := witness.get ⟨i, h⟩
-  let prefix := witness.take i
-  let suffix := witness.drop (i + 1)
-  refine ⟨prefix, b, suffix, ?_, ?_, ?_⟩
-  · dsimp [prefix, b, suffix]
-    exact (List.take_append_getElem_drop witness i h).symm
-  · simp [prefix, h]
-  · dsimp [b]
-    rw [List.getD_eq_getElem?_getD]
-    simp [h]
+  induction witness generalizing i with
+  | nil =>
+      simp at h
+  | cons head tail ih =>
+      cases i with
+      | zero =>
+          refine ⟨[], head, tail, ?_, ?_, ?_⟩
+          · simp
+          · simp
+          · simp [List.getD_cons_zero]
+      | succ i =>
+          have hi : i < tail.length := by
+            simpa using Nat.succ_lt_succ_iff.mp h
+          obtain ⟨prefix, b, suffix, hsplit, hlen, hget⟩ :=
+            ih i hi
+          refine ⟨head :: prefix, b, suffix, ?_, ?_, ?_⟩
+          · simp [hsplit, List.append_assoc]
+          · simp [hlen]
+          · simpa [List.getD_cons_succ] using hget
 
 /-- Consequently, moving a marker through exactly the decomposition prefix
 does not change the represented witness and positions the marker immediately
