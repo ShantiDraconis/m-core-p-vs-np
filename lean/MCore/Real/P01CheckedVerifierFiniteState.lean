@@ -1,6 +1,5 @@
-import MCore.Real.P01CheckedVerifierCompositeNTM
-import MCore.Real.P01IntegratedAssembly
 import MCore.Real.P01CheckedVerifierStateCodec
+import MCore.Real.P01IntegratedAssembly
 
 namespace MCore
 namespace Real
@@ -10,38 +9,36 @@ open P01IntegratedAssembly
 open P01CheckedVerifierCompositeNTM
 open P01CheckedVerifierStateCodec
 
-/-- Exact number expected by P01MachineConstruction: the concrete verifier
-has 1852 reachable control values, represented as Fin (1851 + 1). -/
+/-- Exact explicit control count obtained from the no-Mathlib codec. -/
 def checkedVerifierStateCount : Nat := 1851
 
 def checkedVerifierStateEncode
     (q : CheckedVerifierState) :
-    Fin (checkedVerifierStateCount + 1) :=
-  ⟨(checkedVerifierStateCodec.encode q).val, by
-    have h := (checkedVerifierStateCodec.encode q).isLt
-    rw [checkedVerifierStateCodec_size] at h
-    simpa [checkedVerifierStateCount] using h⟩
+    Fin (checkedVerifierStateCount + 1) := by
+  change Fin 1852
+  simpa [checkedVerifierStateCodec_size] using
+    checkedVerifierStateCodec.encode q
 
 def checkedVerifierStateDecode
     (q : Fin (checkedVerifierStateCount + 1)) :
-    CheckedVerifierState :=
-  checkedVerifierStateCodec.decode
-    ⟨q.val, by
-      have h := q.isLt
-      rw [checkedVerifierStateCodec_size]
-      simpa [checkedVerifierStateCount] using h⟩
+    CheckedVerifierState := by
+  change Fin 1852 at q
+  exact checkedVerifierStateCodec.decode
+    (by simpa [checkedVerifierStateCodec_size] using q)
 
 theorem checkedVerifierStateDecode_encode
     (q : CheckedVerifierState) :
     checkedVerifierStateDecode (checkedVerifierStateEncode q) = q := by
-  unfold checkedVerifierStateDecode checkedVerifierStateEncode
-  simpa using checkedVerifierStateCodec.decode_encode q
+  simpa [checkedVerifierStateDecode, checkedVerifierStateEncode,
+    checkedVerifierStateCount] using
+      checkedVerifier_decode_encode q
 
 /-- Concrete Fin-indexed checked verifier obtained only by control-state
-relabeling. No transition, tape, acceptance or rejection semantics changes. -/
+relabeling. No transition, tape behavior, acceptance or rejection semantics
+are changed. -/
 def checkedVerifierFinMachine :
     NTM (Fin (checkedVerifierStateCount + 1)) (Option Bool) :=
-  P01IntegratedAssembly.relabel
+  relabel
     checkedVerifierMachine
     checkedVerifierStateEncode
     checkedVerifierStateDecode
@@ -55,7 +52,7 @@ theorem checkedVerifierFinMachine_haltsWithin_iff
     checkedVerifierFinMachine.HaltsWithin n
         (P01NTMRunLaws.liftConfig checkedVerifierStateEncode c) ↔
       checkedVerifierMachine.HaltsWithin n c := by
-  exact P01IntegratedAssembly.relabel_haltsWithin_iff
+  exact relabel_haltsWithin_iff
     checkedVerifierMachine
     checkedVerifierStateEncode
     checkedVerifierStateDecode
@@ -68,7 +65,7 @@ theorem checkedVerifierFinMachine_acceptsWithin_iff
     checkedVerifierFinMachine.AcceptsWithin n
         (P01NTMRunLaws.liftConfig checkedVerifierStateEncode c) ↔
       checkedVerifierMachine.AcceptsWithin n c := by
-  exact P01IntegratedAssembly.relabel_acceptsWithin_iff
+  exact relabel_acceptsWithin_iff
     checkedVerifierMachine
     checkedVerifierStateEncode
     checkedVerifierStateDecode
