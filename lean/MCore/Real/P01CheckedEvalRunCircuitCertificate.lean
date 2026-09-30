@@ -140,7 +140,7 @@ theorem neg_certificate
                evalCursorStackEndTape witness consumed
                  (encodeCircuit (.not circuit) ++ tail)
                  (encodeEvalFrames frames) padding }] := by
-    simpa [cNeed, childMode', padChild, encodeCircuit,
+    simpa [cNeed, childMode', childMode, padChild, encodeCircuit,
       List.append_assoc] using h0
 
   obtain ⟨m1, cfg1, h1, hout1⟩ :=
@@ -234,7 +234,7 @@ theorem neg_certificate
       cHave cfgFinal h012 h3
 
   refine ⟨m0 + m1 + m2 + m3, cfgFinal, hAll, ?_⟩
-  simpa [CheckedLoopOutcome, exitMode, childMode, evalCircuit] using hout3
+  simpa [CheckedLoopOutcome, exitMode, childMode, circuitTag, evalCircuit] using hout3
 
 #print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.have_reaches_outcome
 #print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.neg_certificate
