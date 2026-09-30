@@ -2,6 +2,7 @@ import MCore.Real.P01WitnessPrepGlobal
 import MCore.Real.P01CheckedVerifierFiniteState
 import MCore.Real.P01CheckedVerifierGlobalBudget
 import MCore.Real.P01ExactBoundedCircuitProducer
+import MCore.Real.P01ExactBoundedBinary
 import MCore.Real.P01GuessedWitnessRelation
 
 namespace MCore
@@ -19,6 +20,7 @@ open P01CheckedVerifierCompositeNTM
 open P01CheckedVerifierFiniteState
 open P01CheckedVerifierGlobalBudget
 open P01ExactBoundedCircuitProducer
+open P01ExactBoundedBinary
 open P01CNFMode
 
 /-- The preparation half of P01 is already genuinely inhabited. -/
@@ -144,6 +146,8 @@ theorem p01_reduced_frontier :
 #print axioms MCore.Real.P01MaterialInhabitantFrontier.prep_phase_inhabited
 #print axioms MCore.Real.P01MaterialInhabitantFrontier.verifierPhaseOfCore
 #print axioms MCore.Real.P01MaterialInhabitantFrontier.p01_of_material_core
+#print axioms MCore.Real.P01MaterialInhabitantFrontier.binaryExactCore
+#print axioms MCore.Real.P01MaterialInhabitantFrontier.exact_bounded_all
 #print axioms MCore.Real.P01MaterialInhabitantFrontier.exact_bounded_all_of_binary_core
 #print axioms MCore.Real.P01MaterialInhabitantFrontier.p01_reduced_frontier
 
