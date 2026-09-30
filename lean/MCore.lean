@@ -191,6 +191,5 @@ import MCore.Real.P01ExactBoundedReject
 
 import MCore.Real.P01RawDecodeClassification
 
-import MCore.Real.P01MalformedPhysicalReject
 
 import MCore.Real.P01RawDecodeFailureShape
