@@ -46,8 +46,7 @@ theorem checkedCircuitBudget_le_exact_global
     8 * (evalStepCount phi + 1) * (256 * (n + 1) ^ 2)
         ≤ (8 * (3 * (n + 1))) * (256 * (n + 1) ^ 2) := hmul
     _ = 6144 * (n + 1) ^ 3 := by
-      norm_num [pow_succ]
-      ac_rfl
+      simp [pow_succ, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
 
 /-- Exact evaluator budget plus scanner/entry overhead fits one fixed cubic
 verifier budget. -/
