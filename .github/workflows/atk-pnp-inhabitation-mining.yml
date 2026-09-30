@@ -1,0 +1,22 @@
+name: ATK PNP inhabitation mining
+on:
+  push:
+    branches: [atk/auto-compose-terminal-20260930]
+    paths:
+      - 'lean/MCore/Real/P01InhabitationMining.lean'
+      - '.github/workflows/atk-pnp-inhabitation-mining.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - run: lake update
+      - name: Mine P01 and SAT lower bound fields
+        run: lake env lean lean/MCore/Real/P01InhabitationMining.lean
