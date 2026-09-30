@@ -72,3 +72,5 @@ import MCore.Real.P02CompilerHaltingCounterexample
 import MCore.Real.P02ExtensionalCoreAfterCookLevin
 
 import MCore.Real.P02SameInputLengthFirewall
+
+import MCore.Real.P02CanonicalClockReduction
