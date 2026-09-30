@@ -115,12 +115,25 @@ theorem nonempty_source_rejects
       (Tape.move none .left
         (evalCursorStackEndTape witness consumed (b :: rest) [] padding)),
     ?_⟩
-  cases v <;> cases b <;>
-    simp [finalCheckStart, finalSourceCheckMachine,
-      evalCursorStackEndTape, NTM.runBranches, NTM.successors,
-      NTM.stepBranch, Halted, Tape.write, Tape.move,
-      List.reverse_cons, List.map_append,
-      List.replicate_succ, List.append_assoc]
+  cases v <;>
+    cases hrev : rest.reverse with
+    | nil =>
+        have hrest : rest = [] := by
+          simpa using hrev
+        subst rest
+        cases b <;>
+          simp [finalCheckStart, finalSourceCheckMachine,
+            evalCursorStackEndTape, NTM.runBranches, NTM.successors,
+            NTM.stepBranch, Halted, Tape.write, Tape.move,
+            List.reverse_cons, List.map_append,
+            List.replicate_succ, List.append_assoc]
+    | cons x xs =>
+        cases x <;> cases b <;>
+          simp [finalCheckStart, finalSourceCheckMachine,
+            evalCursorStackEndTape, NTM.runBranches, NTM.successors,
+            NTM.stepBranch, Halted, Tape.write, Tape.move,
+            List.reverse_cons, List.map_append, hrev,
+            List.replicate_succ, List.append_assoc]
 
 /-- The guard's terminal value agrees with the evaluator Boolean when the
 source was fully consumed. -/
