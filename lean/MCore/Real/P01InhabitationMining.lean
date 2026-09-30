@@ -1,5 +1,7 @@
 import Lean
 import MCore.Real.P01FinalCertificate
+import MCore.Real.P01DirectVerifierInhabitant
+import MCore.Real.FinalProof
 
 open Lean Elab Command Meta
 
