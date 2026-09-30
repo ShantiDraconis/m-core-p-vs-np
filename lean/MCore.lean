@@ -192,3 +192,4 @@ import MCore.Real.P01CheckedVerifierFiniteState
 import MCore.Real.P01MaterialInhabitantFrontier
 import MCore.Real.P01CanonicalWrapperBounded
 import MCore.Real.P01DecodeCoreLaws
+import MCore.Real.P01CoreDecodeFailureAtoms
