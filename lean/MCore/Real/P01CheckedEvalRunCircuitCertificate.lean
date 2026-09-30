@@ -239,6 +239,59 @@ theorem neg_certificate
   refine ⟨m0 + m1 + m2 + m3, cfgFinal, hAll, ?_⟩
   simpa [CheckedLoopOutcome, exitMode, childMode, circuitTag, evalCircuit] using hout3
 
+/-- A checked outcome with a nonempty unread source is necessarily a
+physical haveValue state; the global final branch is impossible. -/
+theorem outcome_have_of_tail_ne_nil
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (value : Bool)
+    (tail : BitString)
+    (frames : List EvalFrame)
+    (cfg : CheckedConfig)
+    (hne : tail ≠ [])
+    (h : CheckedLoopOutcome witness mode value tail frames cfg) :
+    ∃ consumed padding,
+      cfg =
+        { state := .have mode (.start value),
+          tape :=
+            evalCursorStackEndTape witness consumed tail
+              (P01EncodedFrameTape.encodeEvalFrames frames) padding } := by
+  cases tail with
+  | nil =>
+      exact False.elim (hne rfl)
+  | cons b bs =>
+      exact h
+
+/-- A checked outcome with a nonempty continuation stack is necessarily a
+physical haveValue state, even when the unread source tail is empty. -/
+theorem outcome_have_of_frames_ne_nil
+    (witness : BitString)
+    (mode : SyntaxMode)
+    (value : Bool)
+    (tail : BitString)
+    (frames : List EvalFrame)
+    (cfg : CheckedConfig)
+    (hne : frames ≠ [])
+    (h : CheckedLoopOutcome witness mode value tail frames cfg) :
+    ∃ consumed padding,
+      cfg =
+        { state := .have mode (.start value),
+          tape :=
+            evalCursorStackEndTape witness consumed tail
+              (P01EncodedFrameTape.encodeEvalFrames frames) padding } := by
+  cases tail with
+  | cons b bs =>
+      exact h
+  | nil =>
+      cases frames with
+      | nil =>
+          exact False.elim (hne rfl)
+      | cons f fs =>
+          exact h
+
+#print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.outcome_have_of_tail_ne_nil
+#print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.outcome_have_of_frames_ne_nil
+
 #print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.have_reaches_outcome
 #print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.neg_certificate
 
