@@ -130,6 +130,12 @@ theorem input_exact_bounded_certificate
     Nat.lt_of_lt_of_le hiVar hlen
   have hvalue : witness.getD i false = sigma i :=
     hread i hiVar
+  have hmodeExit :
+      mode = P01CheckedEvalRunBaseCases.exitMode mode (.input i) := by
+    simp [P01CheckedEvalRunBaseCases.exitMode, circuitTag, childMode]
+  have hvalueElem :
+      witness[i]?.getD false = sigma i := by
+    simpa [List.getD_eq_getElem?_getD] using hvalue
 
   have hLayoutInput :
       CheckedLayoutBound n consumed
@@ -215,40 +221,40 @@ theorem input_exact_bounded_certificate
               refine ⟨padding, ?_⟩
               cases f with
               | neg =>
-                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue, hmodeExit, hvalueElem,
                     input_consumed_exact, cfg, consumed',
                     inputCheckedConfig, inputCheckedEmbed,
                     inputNodeFinalMode, inputAfterReadTarget,
                     encodeEvalFrames, encodeEvalFrame]
               | andLeft =>
-                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue, hmodeExit, hvalueElem,
                     input_consumed_exact, cfg, consumed',
                     inputCheckedConfig, inputCheckedEmbed,
                     inputNodeFinalMode, inputAfterReadTarget,
                     encodeEvalFrames, encodeEvalFrame]
               | andRight b =>
                   cases b <;>
-                    simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                    simp [ExactCheckedLoopOutcome, evalCircuit, hvalue, hmodeExit, hvalueElem,
                       input_consumed_exact, cfg, consumed',
                       inputCheckedConfig, inputCheckedEmbed,
                       inputNodeFinalMode, inputAfterReadTarget,
                       encodeEvalFrames, encodeEvalFrame]
               | orLeft =>
-                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                  simp [ExactCheckedLoopOutcome, evalCircuit, hvalue, hmodeExit, hvalueElem,
                     input_consumed_exact, cfg, consumed',
                     inputCheckedConfig, inputCheckedEmbed,
                     inputNodeFinalMode, inputAfterReadTarget,
                     encodeEvalFrames, encodeEvalFrame]
               | orRight b =>
                   cases b <;>
-                    simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+                    simp [ExactCheckedLoopOutcome, evalCircuit, hvalue, hmodeExit, hvalueElem,
                       input_consumed_exact, cfg, consumed',
                       inputCheckedConfig, inputCheckedEmbed,
                       inputNodeFinalMode, inputAfterReadTarget,
                       encodeEvalFrames, encodeEvalFrame]
       | cons b bs =>
           refine ⟨padding, ?_⟩
-          simp [ExactCheckedLoopOutcome, evalCircuit, hvalue,
+          simp [ExactCheckedLoopOutcome, evalCircuit, hvalue, hmodeExit, hvalueElem,
             input_consumed_exact, cfg, consumed',
             inputCheckedConfig, inputCheckedEmbed,
             inputNodeFinalMode, inputAfterReadTarget]
