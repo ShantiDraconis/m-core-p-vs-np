@@ -4,6 +4,7 @@ import MCore.Real.P01CheckedEvalRunBoundedHelpers
 import MCore.Real.P01CheckedVerifierInvariant
 import MCore.Real.P01CheckedVerifierGlobalBudget
 import MCore.Real.P01CheckedEvalRunCircuitCertificate
+import MCore.Real.P01NTMRunLaws
 
 namespace MCore
 namespace Real
