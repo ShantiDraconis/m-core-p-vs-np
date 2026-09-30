@@ -26,6 +26,7 @@ new expression:
 inductive CheckedEvalRunState where
   | need : SyntaxMode → NeedExprCompositeState → CheckedEvalRunState
   | have : SyntaxMode → HaveValueCompositeState → CheckedEvalRunState
+  | checkSource : Bool → CheckedEvalRunState
   | final : Bool → CheckedEvalRunState
   | reject
   deriving DecidableEq, Repr
@@ -109,9 +110,13 @@ def checkedEvalRunLoopMachine :
     | .have mode (.peek v) =>
         match symbol with
         | none =>
-            [(.final v, none, .right)]
+            [(.checkSource v, none, .left)]
         | some b =>
             [(.have mode (.pop v framePopMachine.initial), some b, .right)]
+    | .checkSource v =>
+        match symbol with
+        | none => [(.final v, none, .stay)]
+        | some b => [(.reject, some b, .stay)]
     | .have mode (.pop v (.halt frame)) =>
         let nextMode := modeAfterFrame mode frame
         (haveValueCompositeMachine.transition (.pop v (.halt frame)) symbol).map
