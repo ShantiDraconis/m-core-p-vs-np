@@ -44,28 +44,28 @@ private theorem wrapper_reject_not_accepts
     (hmem : terminal ∈ checkedVerifierMachine.runBranches m [start])
     (hrej : terminal.state = .reject) :
     ¬ checkedVerifierMachine.AcceptsWithin T start := by
-  subst terminal.state
+  rcases terminal with ⟨q, tape⟩
+  simp only at hrej
+  subst q
+  let terminal : VConfig := { state := .reject, tape := tape }
+  have hmem' :
+      terminal ∈ checkedVerifierMachine.runBranches m [start] := by
+    simpa [terminal] using hmem
   have hhalt : Halted checkedVerifierMachine terminal := by
-    rcases terminal with ⟨q,tape⟩
-    simp only at hrej
-    subst q
-    simp [Halted, checkedVerifierMachine]
+    simp [terminal, Halted, checkedVerifierMachine]
   have hp :=
     mem_runBranches_persist checkedVerifierMachine
-      m (T - m) [start] terminal hmem hhalt
+      m (T - m) [start] terminal hmem' hhalt
   have hpT : terminal ∈ checkedVerifierMachine.runBranches T [start] := by
     rwa [show m + (T - m) = T by omega] at hp
   have heq :=
     runBranches_eq_singleton_of_mem T start terminal hpT
   intro hacc
-  rcases hacc with ⟨z,hz,hza⟩
+  rcases hacc with ⟨z, hz, hza⟩
   rw [heq] at hz
   simp only [List.mem_singleton] at hz
   subst z
-  rcases terminal with ⟨q,tape⟩
-  simp only at hrej
-  subst q
-  simp [checkedVerifierMachine] at hza
+  simp [terminal, checkedVerifierMachine] at hza
 
 private theorem wrapper_final_accepts_iff
     (T m : Nat) (start : VConfig)
