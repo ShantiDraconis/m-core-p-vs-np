@@ -1,7 +1,6 @@
 import MCore.Real.P01CheckedEvalReject
 import MCore.Real.P01CheckedVerifierRun
 import MCore.Real.P01CheckedVerifierDeterminism
-import MCore.Real.P01CheckedVerifierGlobalBudget
 import MCore.Real.P01GuessedWitnessRelation
 
 namespace MCore
