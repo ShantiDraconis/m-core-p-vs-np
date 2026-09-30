@@ -186,7 +186,7 @@ theorem inputTag_refines_within_envelope
     (hframes : (encodeEvalFrames frames).length ≤ n) :
     evalStep sigma
       (needExpr
-        (false :: false :: false :: (encodeNat i ++ tail))
+        (false :: false :: false :: (CanonicalCircuitBits.encodeNat i ++ tail))
         frames) =
       some (haveValue (sigma i) tail frames) ∧
     ∃ m ≤ checkedStepEnvelope n,
@@ -199,7 +199,7 @@ theorem inputTag_refines_within_envelope
         EvalStepConfig) ∈
       evalStepCompositeMachine.runBranches m
         [needStart witness consumed
-          (false :: false :: false :: (encodeNat i ++ tail))
+          (false :: false :: false :: (CanonicalCircuitBits.encodeNat i ++ tail))
           frames padding] := by
   obtain ⟨hsem, m, hm, hrun⟩ :=
     inputTag_refines_evalStep
