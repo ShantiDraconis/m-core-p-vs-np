@@ -77,7 +77,7 @@ theorem inputTag_checked_reaches_mode_within_envelope
     checkedInputTagFuel_le
       n consumed i tail frameStack
       hsource hc3 hindex htail hframes
-  exact Nat.le_trans h (checkedStepEnvelope_le_loopEnvelope n)
+  simpa [checkedLoopStepEnvelope] using h
 
 /-- Generic continuation-producing checked tag under the common envelope. -/
 theorem pushTag_checked_reaches_need_within_envelope
