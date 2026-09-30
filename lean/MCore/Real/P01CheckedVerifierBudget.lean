@@ -18,7 +18,6 @@ theorem encodeNat_length (i : Nat) :
   | zero => rfl
   | succ i ih =>
       simp [encodeNat, ih, Nat.succ_eq_add_one]
-      omega
 
 /-- Uniform physical cost of one semantic evaluator transition when every
 dynamic tape component is bounded by the original source length. -/
@@ -43,8 +42,16 @@ theorem constTagCompositeFuel_le_envelope
   have hlin :
       2 * frameStack.length + 2 * rest.length + 14 ≤ 4 * n + 14 := by
     omega
-  have hquad : 4 * n + 14 ≤ 128 * (n + 1) ^ 2 := by
-    nlinarith
+  have hlin' : 4 * n + 14 ≤ 18 * (n + 1) := by
+    omega
+  have hmul :
+      18 * (n + 1) ≤ 18 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 18 (Nat.le_mul_of_pos_right (n + 1) (by omega))
+  have hcoef :
+      18 * ((n + 1) * (n + 1)) ≤
+        128 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
+  simp [Nat.pow_two] at *
   omega
 
 theorem pushTagCompositeFuel_le_envelope
@@ -56,8 +63,16 @@ theorem pushTagCompositeFuel_le_envelope
   have hlin :
       2 * frameStack.length + 2 * rest.length + 18 ≤ 4 * n + 18 := by
     omega
-  have hquad : 4 * n + 18 ≤ 128 * (n + 1) ^ 2 := by
-    nlinarith
+  have hlin' : 4 * n + 18 ≤ 22 * (n + 1) := by
+    omega
+  have hmul :
+      22 * (n + 1) ≤ 22 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 22 (Nat.le_mul_of_pos_right (n + 1) (by omega))
+  have hcoef :
+      22 * ((n + 1) * (n + 1)) ≤
+        128 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
+  simp [Nat.pow_two] at *
   omega
 
 /-- The complete 000 input primitive is also uniformly quadratic. -/
@@ -83,11 +98,33 @@ theorem inputNodeCompositeFuel_le_envelope
       4 * consumed + 8 * i + tail.length + frameStack.length + 30 ≤
         14 * n + 30 := by
     omega
-  have hpoly :
+  have hcoef16 : 6 * n + 10 ≤ 16 * (n + 1) := by
+    omega
+  have hprod1 :
+      (6 * n + 10) * n ≤ (16 * (n + 1)) * n :=
+    Nat.mul_le_mul_right n hcoef16
+  have hn : n ≤ n + 1 := Nat.le_succ n
+  have hprod2 :
+      (16 * (n + 1)) * n ≤
+        16 * ((n + 1) * (n + 1)) := by
+    simpa [Nat.mul_assoc] using
+      Nat.mul_le_mul_left (16 * (n + 1)) hn
+  have hrest30 : 14 * n + 30 ≤ 30 * (n + 1) := by
+    omega
+  have hrest2 :
+      30 * (n + 1) ≤ 30 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 30
+      (Nat.le_mul_of_pos_right (n + 1) (by omega))
+  have hsum :
       (6 * n + 10) * n + (14 * n + 30) ≤
-        64 * (n + 1) ^ 2 := by
-    nlinarith
+        46 * ((n + 1) * (n + 1)) := by
+    omega
+  have hcoef64 :
+      46 * ((n + 1) * (n + 1)) ≤
+        64 * ((n + 1) * (n + 1)) :=
+    Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
   unfold checkedCoreEnvelope
+  simp [Nat.pow_two]
   omega
 
 theorem inputTagCompositeFuel_le_envelope
@@ -116,12 +153,21 @@ theorem inputTagCompositeFuel_le_envelope
     rw [List.length_cons, List.length_cons, List.length_cons,
       List.length_append, henc]
     omega
-  have hpoly :
-      3 * n + 12 + 64 * (n + 1) ^ 2 ≤
-        128 * (n + 1) ^ 2 := by
-    nlinarith
-  -- The input path needs a slightly larger common envelope than the non-input
-  -- tags; expose it explicitly rather than hiding the constant.
+  have hlin12 : 3 * n + 12 ≤ 12 * (n + 1) := by
+    omega
+  have hquad12 :
+      12 * (n + 1) ≤ 12 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 12
+      (Nat.le_mul_of_pos_right (n + 1) (by omega))
+  have hsum :
+      3 * n + 12 + 64 * ((n + 1) * (n + 1)) ≤
+        76 * ((n + 1) * (n + 1)) := by
+    omega
+  have hcoef128 :
+      76 * ((n + 1) * (n + 1)) ≤
+        128 * ((n + 1) * (n + 1)) :=
+    Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
+  simp [Nat.pow_two] at *
   omega
 
 /-- Global candidate budget for the checked physical verifier.  The cubic
