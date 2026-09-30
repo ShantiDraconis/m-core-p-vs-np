@@ -38,28 +38,14 @@ theorem neg_budget_absorbs
         checkedLoopStepEnvelope n +
         checkedLoopStepEnvelope n ≤
       checkedCircuitBudget (.not c) n := by
-  let E := checkedLoopStepEnvelope n
-  let k := evalStepCount c
-  have hcoeff :
-      8 * (k + 1) + 3 ≤ 8 * (k + 3) := by
+  have hcoef :
+      8 * (evalStepCount c + 1) + 3 ≤
+        8 * (evalStepCount (.not c) + 1) := by
+    simp [evalStepCount]
     omega
-  have hmul :
-      (8 * (k + 1) + 3) * E ≤
-        (8 * (k + 3)) * E :=
-    Nat.mul_le_mul_right E hcoeff
-  change
-    E + (8 * (k + 1) * E) + E + E ≤
-      8 * (k + 3) * E
-  have hshape :
-      E + (8 * (k + 1) * E) + E + E =
-        (8 * (k + 1) + 3) * E := by
-    calc
-      E + (8 * (k + 1) * E) + E + E
-          = 8 * (k + 1) * E + (E + E + E) := by omega
-      _ = 8 * (k + 1) * E + 3 * E := by omega
-      _ = (8 * (k + 1) + 3) * E := by
-        exact (Nat.add_mul (8 * (k + 1)) 3 E).symm
-  exact hshape.trans_le hmul
+  have hmul :=
+    Nat.mul_le_mul_right (checkedLoopStepEnvelope n) hcoef
+  simpa [checkedCircuitBudget, Nat.add_mul] using hmul
 
 /-- Bounded structural producer for negation.
 
