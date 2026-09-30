@@ -155,11 +155,19 @@ theorem moveLeftRight_roundTrip
                 execMoves none (moveLeftSeq (n + 1))
                   { left := x :: xs, head := head, right := right } =
                 execMoves none (moveLeftSeq n) t' := by
-              simp [moveLeftSeq, t', execMoves, Tape.move]
+              rw [show n + 1 = Nat.succ n by omega]
+              simp [moveLeftSeq, List.replicate_succ, execMoves, t', Tape.move]
+            have hrep :
+                List.replicate (n + 1) Direction.right =
+                  List.replicate n Direction.right ++ [Direction.right] := by
+              induction n with
+              | zero => simp
+              | succ n ih =>
+                  simp [List.replicate_succ, ih, List.append_assoc]
             have hright :
                 moveRightSeq (n + 1) =
                   moveRightSeq n ++ [Direction.right] := by
-              simp [moveRightSeq, List.replicate_succ_eq_append]
+              exact hrep
             rw [hleft, hright, execMoves_append]
             rw [ih t' hn]
             simp [t', execMoves, Tape.move]
