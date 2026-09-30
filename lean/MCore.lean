@@ -47,3 +47,5 @@ import MCore.Real.P01EvalCursorConsume
 import MCore.Real.P01NTMPhaseSeq
 
 import MCore.Real.P01MissingMaterialTypes
+
+import MCore.Real.P01EvalInputNodePhysicalRefinement
