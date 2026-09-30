@@ -196,3 +196,5 @@ import MCore.Real.P01ExactBoundedReject
 import MCore.Real.P01RawCoreFailure
 
 import MCore.Real.P01RawCoreFailureRecursive
+
+import MCore.Real.P01RawSourceClosure
