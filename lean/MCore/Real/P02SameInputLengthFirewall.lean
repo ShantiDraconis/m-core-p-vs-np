@@ -1,6 +1,7 @@
 import MCore.Real.P02SameInputOnlyFrontier
 import MCore.Real.P02CookLevinFromBoundedExec
 import MCore.Real.P02BoundedComputationEncoding
+import MCore.Real.P02CompilerHaltingCounterexample
 
 namespace MCore
 namespace Real
@@ -80,7 +81,7 @@ same bitstring as its own source input. -/
 theorem rejectCircuit_no_literal_same_input
     (M : PolyDTMCandidate)
     (x : BitString) :
-    x != encodeCircuit (rejectCircuit M x) := by
+    x ≠ encodeCircuit (rejectCircuit M x) := by
   intro h
   have hlen :
       x.length =
@@ -100,7 +101,7 @@ literal SAT bitstring equality contradicts the strict encoding-length bound. -/
 theorem no_sameInputTransport
     (M : PolyDTMCandidate)
     (K : EffectiveDiagonalCompiler M) :
-    not (Nonempty (SameInputTransport M K)) := by
+    ¬ (Nonempty (SameInputTransport M K)) := by
   intro hS
   rcases hS with ⟨S⟩
   rcases kleene_fixed_point K with ⟨c, hfixed⟩
@@ -110,7 +111,7 @@ theorem no_sameInputTransport
 
 /-- Consequently the current SameInputCore route is formally empty. -/
 theorem sameInputCoreGap_false :
-    not SameInputCoreGap := by
+    ¬ SameInputCoreGap := by
   intro h
   rcases h with ⟨S⟩
   let M : PolyDTMCandidate := P02CompilerHaltingCounterexample.barrierCandidate
