@@ -15,8 +15,8 @@ open CanonicalSATNTMAttack
 The candidate cannot choose an input encoder and therefore cannot precompute
 language membership outside the machine runtime. -/
 structure CanonicalPolyDTMCandidate where
-  State : Type
-  machine : TM State (Option Bool)
+  stateCount : Nat
+  machine : TM (Fin (stateCount + 1)) (Option Bool)
   accepting : State → Bool
   timeBound : TimeBound
   time_poly : PolynomialTimeBound timeBound
@@ -24,7 +24,7 @@ structure CanonicalPolyDTMCandidate where
 def CanonicalPolyDTMCandidate.encode
     (candidate : CanonicalPolyDTMCandidate)
     (φ : Circuit) :
-    Configuration candidate.State (Option Bool) :=
+    Configuration (Fin (candidate.stateCount + 1)) (Option Bool) :=
   initialTMConfig candidate.machine (encodeCircuit φ)
 
 def CanonicalPolyDTMCandidate.CorrectAt
