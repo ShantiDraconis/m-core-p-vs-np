@@ -3,6 +3,7 @@ import MCore.Real.P01EvalCursorMachine
 import MCore.Real.P01EncodedStackEvaluator
 import MCore.Real.P01EncodedFrameTape
 import MCore.Real.CanonicalSATWitness
+import MCore.Real.P01GapPreservingRead
 
 namespace MCore
 namespace Real
@@ -15,71 +16,59 @@ open P01FinalCertificate
 open P01EvalCursorMachine
 open P01EncodedStackEvaluator
 open P01EncodedFrameTape
+open P01GapPreservingRead
+open P01WitnessIndexedReadPreserving
 
 /-- Concrete witness assignment induced by the physical witness bitstring. -/
 def witnessAssignment (witness : BitString) : Assignment :=
   fun i => witness.getD i false
 
 /-- Exact remaining local P01 input-node producer.
-A valid inhabitant must read 000 ++ encodeNat(i), return witness[i],
-restore the witness exactly, preserve the frame stack, preserve the unread tail,
-and advance only the source cursor. -/
-structure PreservingUnaryWitnessReadCertificate where
-  stateCount : Nat
-  machine : TM (Fin (stateCount + 1)) (Option Bool)
-  blank_none : machine.blank = none
 
-  result : Fin (stateCount + 1) → Option Bool
+The machine itself is the already-kernelized fixed-control `gapReadMachine`.
+This certificate records only the substantive universal properties still needed
+by the evaluator: exact indexed value, exact witness restoration, exact
+tail/suffix preservation, and a uniform quadratic fuel bound. -/
+structure PreservingUnaryWitnessReadCertificate : Prop where
+  blank_none :
+    gapReadMachine.blank = none
 
-  timeBound : TimeBound
-  time_poly : PolynomialTimeBound timeBound
-
-  halts :
-    ∀ (witness : BitString)
-      (consumed : Nat)
-      (rest : BitString)
-      (frames : List EvalFrame)
-      (padding i : Nat),
+  exact_run :
+    ∀ (witness tail : BitString) (k i : Nat)
+      (suffix : List (Option Bool)),
       i < witness.length →
-      let source := [false, false, false] ++ encodeNat i ++ rest
-      let frameBits := encodeEvalFrames frames
-      let inputSize :=
-        witness.length + source.length + frameBits.length + padding
-      machine.HaltsWithin (timeBound inputSize)
-        { state := machine.initial,
+      gapReadMachine.run (gapReadFuel k i)
+          (gapReadConfig witness k i tail suffix) =
+        { state := .halt (witness.getD i false),
           tape :=
-            evalCursorStackEndTape
-              witness consumed source frameBits padding }
+            { left := witness.map some,
+              head := none,
+              right :=
+                List.replicate (k + i + 1) none ++
+                  (tail.map some ++ suffix) } }
 
-  correct :
-    ∀ (witness : BitString)
-      (consumed : Nat)
-      (rest : BitString)
-      (frames : List EvalFrame)
-      (padding i : Nat),
-      i < witness.length →
-      let source := [false, false, false] ++ encodeNat i ++ rest
-      let frameBits := encodeEvalFrames frames
-      let inputSize :=
-        witness.length + source.length + frameBits.length + padding
-      let final :=
-        machine.run (timeBound inputSize)
-          { state := machine.initial,
-            tape :=
-              evalCursorStackEndTape
-                witness consumed source frameBits padding }
-      result final.state = some (witness.getD i false) ∧
-        final.tape =
-          evalCursorStackEndTape
-            witness
-            (consumed + 3 + (encodeNat i).length)
-            rest
-            frameBits
-            padding
+  fuel_quadratic :
+    ∀ k i : Nat,
+      gapReadFuel k i ≤
+        6 * ((k + i + 2) * (k + i + 2))
 
-/-- OPEN implementation target for the single remaining local evalStep case. -/
+/-- Material inhabitant of the sole remaining local input-read obligation.
+No endpoint assumption is consumed: both fields are discharged by the
+kernelized gap-preserving reader theorems. -/
+def preservingUnaryWitnessReadCertificate :
+    PreservingUnaryWitnessReadCertificate where
+  blank_none := rfl
+  exact_run := by
+    intro witness tail k i suffix hi
+    exact gapRead_forall witness tail k i suffix hi
+  fuel_quadratic := gapReadFuel_le
+
 def PreservingUnaryWitnessReadGap : Prop :=
   Nonempty PreservingUnaryWitnessReadCertificate
+
+theorem preservingUnaryWitnessReadGap_closed :
+    PreservingUnaryWitnessReadGap :=
+  ⟨preservingUnaryWitnessReadCertificate⟩
 
 /-- Exact global physical-verifier producer after all local evalStep cases are
 refined.  A valid inhabitant must execute the frozen evaluator semantics with
