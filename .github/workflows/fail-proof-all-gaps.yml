@@ -2,6 +2,11 @@ name: fail-proof-all-gaps
 
 on: [push, pull_request]
 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   canonical-model:
     runs-on: ubuntu-latest
