@@ -182,6 +182,42 @@ theorem scanIndex_over_true
       simpa [Nat.one_add] using
         replicate_same_cons (some true) k left
 
+
+/-- A unary payload containing only true markers has no mandatory false
+terminator.  The physical lookahead scans all markers and rejects on the first
+blank immediately after them. -/
+theorem unterminated_true_index_rejects
+    (witness frameStack : BitString)
+    (consumed padding n : Nat) :
+    (inputIndexLookaheadMachine.run (n + 1)
+      { state := inputIndexLookaheadMachine.initial,
+        tape :=
+          evalCursorReadTape witness consumed
+            (List.replicate n true) frameStack padding }).state = .reject := by
+  let base : List (Option Bool) :=
+    List.replicate consumed none ++ none :: witness.map some
+  let suffix : List (Option Bool) :=
+    none :: frameStack.reverse.map some ++
+      none :: List.replicate padding none
+  have hview :
+      evalCursorReadTape witness consumed
+          (List.replicate n true) frameStack padding =
+        rightStreamTape base
+          (List.replicate n (some true) ++ suffix) := by
+    cases n with
+    | zero =>
+        simp [base, suffix, evalCursorReadTape, rightStreamTape]
+    | succ n =>
+        simp [base, suffix, evalCursorReadTape, rightStreamTape,
+          List.replicate_succ, List.map_replicate, List.append_assoc]
+  rw [inputIndexLookaheadMachine_initial, hview]
+  rw [show n + 1 = n + 1 by rfl, MachineRunLemmas.run_add]
+  rw [scanIndex_over_true n base suffix]
+  simp [suffix, rightStreamTape, inputIndexLookaheadMachine,
+    TM.run, TM.step, Tape.write, Tape.move]
+
+#print axioms MCore.Real.P01InputIndexLookahead.unterminated_true_index_rejects
+
 /-- One false terminator step enters the finite structural classifier. -/
 theorem scanIndex_false
     (left stream : List (Option Bool)) :
