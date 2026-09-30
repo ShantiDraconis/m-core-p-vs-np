@@ -147,6 +147,43 @@ theorem root
     CheckedLayoutBound source.length 0 source [] := by
   constructor <;> simp
 
+
+/-- Exact source-consumption conservation.
+
+If a bounded layout consists of one canonical circuit prefix followed by an
+external tail, then advancing the consumed counter by exactly the canonical
+encoding length leaves a valid layout for that tail.  The frame stack is
+unchanged.  This is the arithmetic conservation law needed to compose the
+left and right children of binary circuit nodes. -/
+theorem after_exact_circuit
+    (n consumed : Nat)
+    (phi : CircuitK1.Circuit)
+    (tail frameStack : BitString)
+    (h :
+      CheckedLayoutBound n consumed
+        (encodeCircuit phi ++ tail) frameStack) :
+    CheckedLayoutBound n
+      (consumed + (encodeCircuit phi).length)
+      tail frameStack := by
+  constructor
+  · have hs := h.source_budget
+    rw [List.length_append] at hs
+    omega
+  · exact Nat.le_trans h.frames_paid (Nat.le_add_right consumed _)
+
+/-- Replacing one encoded continuation frame by another preserves the exact
+layout budget because every EvalFrame encoding has the same physical length. -/
+theorem replace_top_frame_exact
+    (n consumed : Nat)
+    (source frameStack : BitString)
+    (oldFrame newFrame : EvalFrame)
+    (h :
+      CheckedLayoutBound n consumed source
+        (encodeEvalFrame oldFrame ++ frameStack)) :
+    CheckedLayoutBound n consumed source
+      (encodeEvalFrame newFrame ++ frameStack) :=
+  replace_top_frame n consumed source frameStack oldFrame newFrame h
+
 #print axioms MCore.Real.P01CheckedVerifierInvariant.after_tag
 #print axioms MCore.Real.P01CheckedVerifierInvariant.after_push_tag
 #print axioms MCore.Real.P01CheckedVerifierInvariant.after_input
