@@ -15,6 +15,7 @@ on:
       - 'lean/MCore/Real/P01ExactVerifierGlobalBudget.lean'
       - 'lean/MCore/Real/P01ExactVerifierCanonicalRun.lean'
       - 'lean/MCore/Real/P01RawTotalizationMinCut.lean'
+      - 'lean/MCore/Real/P01RawBaseExact.lean'
       - 'lean/MCore/Real/P01RawSourceSplit.lean'
       - 'lean/MCore/Real/P01RawDeadEnd.lean'
       - 'lean/MCore/Real/P01RawVerifierLift.lean'
@@ -65,6 +66,7 @@ jobs:
           lake build MCore.Real.P01RawMalformedUnary
           lake build MCore.Real.P01RawResidualReject
           lake build MCore.Real.P01RawTotalizationMinCut
+          lake build MCore.Real.P01RawBaseExact
           lake build MCore.Real.P01VerifierPhaseMinCutStructural
       - name: Exact axiom audit
         run: |
@@ -103,6 +105,10 @@ jobs:
           #print axioms MCore.Real.P01RawDeadEnd.haltsWithin_succ_of_reaches_dead
           #print axioms MCore.Real.P01RawDeadEnd.not_acceptsWithin_succ_of_reaches_dead
           #print axioms MCore.Real.P01RawTotalizationMinCut.raw_totalization_gap_closes_p01
+          #print axioms MCore.Real.P01RawBaseExact.prepared_empty_fail_closed_exact
+          #print axioms MCore.Real.P01RawBaseExact.prepared_truncated_tag_fail_closed_exact
+          #print axioms MCore.Real.P01RawBaseExact.prepared_input_unary_none_fail_closed_exact
+          #print axioms MCore.Real.P01RawBaseExact.prepared_invalid_terminal_tag_fail_closed_exact
           #print axioms MCore.Real.P01VerifierPhaseMinCutStructural.p01ConstructionGap_of_verifierPhase
           EOF
           lake env lean P01VerifierPhaseMinCutAudit.lean | tee P01VerifierPhaseMinCutAudit.log
@@ -112,5 +118,5 @@ jobs:
           set -euo pipefail
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean
-          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01ManualStateCodecBase.lean lean/MCore/Real/P01ManualStateCodecComposite.lean lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean lean/MCore/Real/P01CheckedVerifierGlobalCoreV2.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01ManualStateCodecBase.lean lean/MCore/Real/P01ManualStateCodecComposite.lean lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean lean/MCore/Real/P01CheckedVerifierGlobalCoreV2.lean lean/MCore/Real/P01RawBaseExact.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01ManualStateCodecBase.lean lean/MCore/Real/P01ManualStateCodecComposite.lean lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean
