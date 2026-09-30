@@ -115,6 +115,63 @@ theorem witness_roundTrip_length
   rw [List.length_append, moveToWitnessSeq_length, moveToStackSeq_length]
   omega
 
+
+/-- Pure left/right shuttling is nondestructive.  Starting from a tape with at
+least n cells on the left, moving left n times and then right n times restores
+the exact original tape. -/
+theorem moveLeftRight_roundTrip
+    (t : Tape (Option Bool)) (n : Nat)
+    (h : n ≤ t.left.length) :
+    execMoves none (moveRightSeq n)
+      (execMoves none (moveLeftSeq n) t) = t := by
+  induction n generalizing t with
+  | zero =>
+      rfl
+  | succ n ih =>
+      cases t with
+      | mk left head right =>
+        cases left with
+        | nil =>
+            simp at h
+        | cons x xs =>
+            have hn : n ≤ xs.length := by
+              simpa using Nat.succ_le_succ_iff.mp h
+            simp only [moveLeftSeq, moveRightSeq, List.replicate_succ,
+              execMoves_cons]
+            change
+              execMoves none (List.replicate n Direction.right)
+                (Tape.move none Direction.right
+                  (execMoves none (List.replicate n Direction.left)
+                    (Tape.move none Direction.left
+                      { left := x :: xs, head := head, right := right }))) =
+                { left := x :: xs, head := head, right := right }
+            have hih :=
+              ih
+                (t := Tape.move none Direction.left
+                  { left := x :: xs, head := head, right := right })
+                hn
+            simp [moveLeftSeq, moveRightSeq] at hih
+            rw [hih]
+            rfl
+
+/-- The existing source-end witness shuttle is therefore preserving: it reads
+witness[i] and returns to the exact source-end tape without changing witness or
+source. -/
+theorem witness_roundTrip_tape_exact
+    (witness source : BitString) (i : Nat)
+    (hi : i < witness.length) :
+    execMoves none (moveToStackSeq source i)
+      (execMoves none (moveToWitnessSeq source i)
+        (sourceEndTape witness source)) =
+      sourceEndTape witness source := by
+  exact moveLeftRight_roundTrip
+    (sourceEndTape witness source)
+    (witnessOffset source i)
+    (witnessOffset_le_left_length witness source i hi)
+
+#print axioms MCore.Real.P01FullVerifierPhysicalShuttles.moveLeftRight_roundTrip
+#print axioms MCore.Real.P01FullVerifierPhysicalShuttles.witness_roundTrip_tape_exact
+
 #print axioms MCore.Real.P01FullVerifierPhysicalShuttles.witnessOffset_le_left_length
 #print axioms MCore.Real.P01FullVerifierPhysicalShuttles.moveToWitnessSeq_head_correct
 #print axioms MCore.Real.P01FullVerifierPhysicalShuttles.witness_roundTrip_length
