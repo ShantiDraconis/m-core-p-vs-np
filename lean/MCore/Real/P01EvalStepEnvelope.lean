@@ -6,6 +6,7 @@ namespace Real
 namespace P01EvalStepEnvelope
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01EncodedStackEvaluator
 open P01EncodedFrameTape
 open P01EvalCursorMachine
@@ -18,9 +19,12 @@ private theorem small_const_le_envelope (n k : Nat) (hk : k ≤ 13) :
     k ≤ checkedStepEnvelope n := by
   unfold checkedStepEnvelope
   have hbase : 13 ≤ 128 * (n + 1) ^ 2 := by
+    have h1 : 1 ≤ n + 1 := by omega
     have hpos : 1 ≤ (n + 1) ^ 2 := by
-      exact Nat.one_le_pow _ (by omega)
-    have : 128 ≤ 128 * (n + 1) ^ 2 := by
+      have hmul : 1 * 1 ≤ (n + 1) * (n + 1) :=
+        Nat.mul_le_mul h1 h1
+      simpa [Nat.pow_two] using hmul
+    have h128 : 128 ≤ 128 * (n + 1) ^ 2 := by
       simpa using Nat.mul_le_mul_left 128 hpos
     omega
   omega
