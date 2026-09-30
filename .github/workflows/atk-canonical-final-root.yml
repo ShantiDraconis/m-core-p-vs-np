@@ -4,6 +4,7 @@ on:
     branches: [atk/auto-compose-terminal-20260930]
     paths:
       - 'lean/MCore/Real/CanonicalFinalExternal.lean'
+      - 'lean/MCore/Real/P02*.lean'
       - '.github/workflows/atk-canonical-final-root.yml'
   workflow_dispatch:
 permissions:
@@ -20,4 +21,6 @@ jobs:
       - name: Resolve dependencies
         run: lake update
       - name: Build hardened canonical FINAL_ROOT
-        run: lake build MCore.Real.CanonicalFinalExternal
+        run: |
+          lake build MCore.Real.CanonicalFinalExternal
+          lake build MCore.Real.P02UniversalFailureAlgebra
