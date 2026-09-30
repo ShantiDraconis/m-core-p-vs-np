@@ -147,6 +147,39 @@ theorem root
     CheckedLayoutBound source.length 0 source [] := by
   constructor <;> simp
 
+
+/-- Consuming an arbitrary encoded circuit prefix preserves the same global
+layout budget purely by length accounting.  This is the static half of the
+binary-child handoff: the dynamic run only has to identify its output
+`consumed` counter with this exact prefix consumption. -/
+theorem after_encoded_prefix
+    (n consumed : Nat)
+    (prefix tail frameStack : BitString)
+    (h :
+      CheckedLayoutBound n consumed
+        (prefix ++ tail) frameStack) :
+    CheckedLayoutBound n (consumed + prefix.length)
+      tail frameStack := by
+  constructor
+  · have hs := h.source_budget
+    rw [List.length_append] at hs
+    omega
+  · have hf := h.frames_paid
+    omega
+
+/-- Circuit-specialized static accounting used by bounded recursive runs. -/
+theorem after_circuit
+    (n consumed : Nat)
+    (phi : CircuitK1.Circuit)
+    (tail frameStack : BitString)
+    (h :
+      CheckedLayoutBound n consumed
+        (encodeCircuit phi ++ tail) frameStack) :
+    CheckedLayoutBound n
+      (consumed + (encodeCircuit phi).length)
+      tail frameStack :=
+  after_encoded_prefix n consumed (encodeCircuit phi) tail frameStack h
+
 #print axioms MCore.Real.P01CheckedVerifierInvariant.after_tag
 #print axioms MCore.Real.P01CheckedVerifierInvariant.after_push_tag
 #print axioms MCore.Real.P01CheckedVerifierInvariant.after_input
