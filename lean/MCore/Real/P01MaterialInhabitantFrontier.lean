@@ -3,6 +3,7 @@ import MCore.Real.P01CheckedVerifierFiniteState
 import MCore.Real.P01CheckedVerifierGlobalBudget
 import MCore.Real.P01ExactBoundedCircuitProducer
 import MCore.Real.P01ExactBoundedBinary
+import MCore.Real.P01MaterialGlobalBudget
 import MCore.Real.P01GuessedWitnessRelation
 
 namespace MCore
@@ -21,6 +22,7 @@ open P01CheckedVerifierFiniteState
 open P01CheckedVerifierGlobalBudget
 open P01ExactBoundedCircuitProducer
 open P01ExactBoundedBinary
+open P01MaterialGlobalBudget
 open P01CNFMode
 
 /-- The preparation half of P01 is already genuinely inhabited. -/
@@ -39,13 +41,13 @@ structure VerifierMaterialCore : Prop where
   halts :
     ∀ (bs w : BitString), w.length = bs.length →
       checkedVerifierFinMachine.HaltsWithin
-        (checkedVerifierGlobalTimeBound bs.length)
+        (materialVerifierGlobalTimeBound bs.length)
         { state := checkedVerifierFinMachine.initial,
           tape := preparedTape w bs }
   correct :
     ∀ (bs w : BitString), w.length = bs.length →
       (checkedVerifierFinMachine.AcceptsWithin
-          (checkedVerifierGlobalTimeBound bs.length)
+          (materialVerifierGlobalTimeBound bs.length)
           { state := checkedVerifierFinMachine.initial,
             tape := preparedTape w bs } ↔
         VerifyBits bs w)
@@ -58,8 +60,8 @@ noncomputable def verifierPhaseOfCore
   stateCount := checkedVerifierStateCount
   machine := checkedVerifierFinMachine
   blank_none := checkedVerifierFinMachine_blank
-  timeBound := checkedVerifierGlobalTimeBound
-  time_poly := checkedVerifierGlobalTimeBound_poly
+  timeBound := materialVerifierGlobalTimeBound
+  time_poly := materialVerifierGlobalTimeBound_poly
   halts := by
     intro bs w hw
     simpa [prepPhase_layout] using K.halts bs w hw
