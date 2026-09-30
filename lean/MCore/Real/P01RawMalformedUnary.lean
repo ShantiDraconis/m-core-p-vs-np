@@ -12,6 +12,10 @@ open CanonicalFinalProof
 open P01EvalCursorMachine
 open P01WitnessIndexedReadPreserving
 open P01InputReturnMode
+open P01CNFMode
+open P01NeedExprTagDecode
+open P01NeedExprCompositeNTM
+open P01CheckedVerifierCompositeNTM
 open P01InputIndexLookahead
 open P01InputNodeCompositeNTM
 open P01InputNodeCompositeRun
@@ -119,7 +123,7 @@ abbrev EvalConfig :=
 
 /-- Active lookahead states embed step-for-step in the checked evaluator. -/
 theorem inputLook_checked_successors_active
-    (mode : SyntaxMode)
+    (mode : P01CNFMode.SyntaxMode)
     (c : Configuration InputIndexLookaheadState (Option Bool))
     (h : inputIndexLookaheadMachine.halting c.state = false) :
     checkedEvalRunLoopMachine.successors
@@ -134,7 +138,7 @@ theorem inputLook_checked_successors_active
 
 /-- Any finite lookahead execution lifts into the checked evaluator. -/
 theorem inputLook_checked_run_reachable
-    (mode : SyntaxMode) :
+    (mode : P01CNFMode.SyntaxMode) :
     ∀ (n : Nat) (c : Configuration InputIndexLookaheadState (Option Bool)),
       ∃ m ≤ n,
         inputCheckedConfig mode
@@ -199,7 +203,7 @@ theorem inputLook_checked_run_reachable
 /-- The full checked evaluator follows an input tag with a truncated unary
 payload to an active dead state. -/
 theorem checked_truncated_unary_reaches_dead
-    (mode : SyntaxMode)
+    (mode : P01CNFMode.SyntaxMode)
     (witness frameStack : BitString)
     (consumed padding k : Nat) :
     ∃ m ≤
