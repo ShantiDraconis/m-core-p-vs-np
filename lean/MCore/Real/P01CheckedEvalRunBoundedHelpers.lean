@@ -4,6 +4,7 @@ import MCore.Real.P01CheckedEvalRunBaseCases
 import MCore.Real.P01CheckedEvalRunNeedTags
 import MCore.Real.P01CheckedEvalRunHaveValue
 import MCore.Real.P01CheckedEvalRunInputTag
+import MCore.Real.P01CheckedEvalBoundedOutcome
 
 namespace MCore
 namespace Real
@@ -21,6 +22,7 @@ open P01CheckedEvalRunHaveValue
 open P01CheckedEvalRunInputTag
 open P01CheckedVerifierBudget
 open P01CheckedVerifierGlobalBudget
+open P01CheckedEvalBoundedOutcome
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -187,6 +189,69 @@ theorem have_reaches_outcome_within_envelope
           · simpa [cfg] using hrun
           · exact ⟨cfg.tape, rfl⟩
 
+/-- Normalize an already-produced value while carrying the global layout
+invariant needed by a following recursive circuit. -/
+theorem have_reaches_bounded_outcome
+    (n : Nat)
+    (mode : P01CNFMode.SyntaxMode)
+    (witness : BitString)
+    (value : Bool)
+    (tail : BitString)
+    (frames : List EvalFrame)
+    (consumed padding : Nat)
+    (hLayout :
+      CheckedLayoutBound n consumed tail (encodeEvalFrames frames)) :
+    ∃ m ≤ checkedLoopStepEnvelope n, ∃ cfg,
+      cfg ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .have mode (.start value),
+             tape :=
+               evalCursorStackEndTape witness consumed tail
+                 (encodeEvalFrames frames) padding }] ∧
+      BoundedCheckedLoopOutcome n witness mode value tail frames cfg := by
+  cases tail with
+  | cons b bs =>
+      let cfg : CheckedConfig :=
+        { state := .have mode (.start value),
+          tape :=
+            evalCursorStackEndTape witness consumed (b :: bs)
+              (encodeEvalFrames frames) padding }
+      refine ⟨0, Nat.zero_le _, cfg, ?_, ?_⟩
+      · simp [cfg, NTM.runBranches]
+      · constructor
+        · exact ⟨consumed, padding, rfl⟩
+        · exact Or.inr ⟨consumed, padding, rfl, hLayout⟩
+  | nil =>
+      cases frames with
+      | cons f fs =>
+          let cfg : CheckedConfig :=
+            { state := .have mode (.start value),
+              tape :=
+                evalCursorStackEndTape witness consumed []
+                  (encodeEvalFrames (f :: fs)) padding }
+          refine ⟨0, Nat.zero_le _, cfg, ?_, ?_⟩
+          · simp [cfg, NTM.runBranches]
+          · constructor
+            · exact ⟨consumed, padding, rfl⟩
+            · exact Or.inr ⟨consumed, padding, rfl, hLayout⟩
+      | nil =>
+          obtain ⟨m, hm, hrun⟩ :=
+            checked_empty_frames_reaches_final
+              mode witness consumed padding value
+          let cfg : CheckedConfig :=
+            { state := .final value,
+              tape :=
+                Tape.move none .left
+                  (Tape.move none .left
+                    (evalCursorStackEndTape witness consumed [] [] padding)) }
+          refine ⟨m, Nat.le_trans hm
+              (small_const_le_stepEnvelope n 3 (by omega)),
+            cfg, ?_, ?_⟩
+          · simpa [cfg] using hrun
+          · constructor
+            · exact ⟨cfg.tape, rfl⟩
+            · exact Or.inl ⟨rfl, rfl⟩
+
 theorem nine_le_stepEnvelope (n : Nat) :
     9 ≤ checkedLoopStepEnvelope n :=
   small_const_le_stepEnvelope n 9 (by omega)
@@ -198,6 +263,7 @@ theorem thirteen_le_stepEnvelope (n : Nat) :
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.inputTag_checked_reaches_mode_within_envelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.pushTag_checked_reaches_need_within_envelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.have_reaches_outcome_within_envelope
+#print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.have_reaches_bounded_outcome
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.nine_le_stepEnvelope
 #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.thirteen_le_stepEnvelope
 
