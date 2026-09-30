@@ -247,10 +247,9 @@ theorem prepared_nonempty_reaches_eval_start
       cScanStart =
         scanConfig (some b :: none :: witness.map some) bs := by
     dsimp [cScanStart]
-    simp [P01WitnessPreservingPrep.preparedTape,
-      P01FullVerifierTraversal.sourceEndScanner,
-      P01FullVerifierTraversal.scanConfig,
-      TM.step, Tape.write, Tape.move]
+    rw [preparedTape_eq_scanConfig witness b bs]
+    exact sourceEndScanner_step_cons
+      (none :: witness.map some) b bs
 
   have hScanExact :
       sourceEndScanner.run (bs.length + 1) cScanStart = cScanH := by
@@ -279,7 +278,8 @@ theorem prepared_nonempty_reaches_eval_start
   have hEnterSucc :
       cEnter ∈ checkedVerifierMachine.successors (scanEmbed cScanH) := by
     dsimp [cEnter, scanEmbed]
-    simp [checkedVerifierMachine, NTM.successors, NTM.stepBranch, hScanHalt]
+    simp [checkedVerifierMachine, NTM.successors, NTM.stepBranch,
+      hScanHalt, Tape.move]
 
   have hEnterOne :
       cEnter ∈
