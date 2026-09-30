@@ -17,6 +17,7 @@ on:
       - 'lean/MCore/Real/P01RawTotalizationMinCut.lean'
       - 'lean/MCore/Real/P01RawBaseExact.lean'
       - 'lean/MCore/Real/P01RawSourceSplit.lean'
+      - 'lean/MCore/Real/P01RawDecoderSound.lean'
       - 'lean/MCore/Real/P01RawDeadEnd.lean'
       - 'lean/MCore/Real/P01RawVerifierLift.lean'
       - 'lean/MCore/Real/P01RawMalformedTag.lean'
@@ -60,6 +61,7 @@ jobs:
           lake build MCore.Real.P01ExactVerifierGlobalBudget
           lake build MCore.Real.P01ExactVerifierCanonicalRun
           lake build MCore.Real.P01RawSourceSplit
+          lake build MCore.Real.P01RawDecoderSound
           lake build MCore.Real.P01RawDeadEnd
           lake build MCore.Real.P01RawVerifierLift
           lake build MCore.Real.P01RawMalformedTag
@@ -80,6 +82,7 @@ jobs:
           import MCore.Real.P01ExactVerifierGlobalBudget
           import MCore.Real.P01ExactVerifierCanonicalRun
           import MCore.Real.P01RawSourceSplit
+          import MCore.Real.P01RawDecoderSound
           import MCore.Real.P01RawDeadEnd
           import MCore.Real.P01RawVerifierLift
           import MCore.Real.P01RawMalformedTag
@@ -99,6 +102,8 @@ jobs:
           #print axioms MCore.Real.P01ExactVerifierCanonicalRun.prepared_canonical_halts_within_exact_global
           #print axioms MCore.Real.P01ExactVerifierCanonicalRun.prepared_canonical_accepts_iff_exact_global
           #print axioms MCore.Real.P01RawTotalizationMinCut.RawDecodeNoneFailClosed.toGlobalCore
+          #print axioms MCore.Real.P01RawDecoderSound.decodeCircuitCore_success_sound
+          #print axioms MCore.Real.P01RawDecoderSound.residual_is_canonical_prefix
           #print axioms MCore.Real.P01RawMalformedTag.prepared_truncated_tag_fail_closed
           #print axioms MCore.Real.P01RawMalformedUnary.prepared_truncated_unary_fail_closed
           #print axioms MCore.Real.P01RawResidualReject.canonical_prefix_with_residual_reaches_reject
