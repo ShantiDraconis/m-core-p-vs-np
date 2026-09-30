@@ -41,7 +41,7 @@ jobs:
             MCore.Real.P01CoreDecodeFailureBudget \
             MCore.Real.P01CoreDecodeFailurePhysical \
             MCore.Real.P01RawVerifierFromCoreReject \
-            MCore.Real.P01CheckedVerifierFiniteState \
+            MCore.Real.P01CheckedVerifierStateCodec \
             MCore.Real.P01MaterialInhabitantFrontier \
             MCore.Real.P01GlobalParserBound \
             MCore.Real.CanonicalSATParserNTM \
@@ -59,6 +59,7 @@ jobs:
           import MCore.Real.P01CoreDecodeFailureBudget
           import MCore.Real.P01CoreDecodeFailurePhysical
           import MCore.Real.P01RawVerifierFromCoreReject
+          import MCore.Real.P01CheckedVerifierStateCodec
           import MCore.Real.P01MaterialInhabitantFrontier
           import MCore.Real.P01ParserWitnessComposition
           import MCore.Real.P01ParserFirewall
@@ -73,6 +74,7 @@ jobs:
           #print axioms MCore.Real.P01CoreDecodeFailurePhysical.coreDecodeFailurePhysicalAux
           #print axioms MCore.Real.P01CoreDecodeFailurePhysical.coreDecodeFailurePhysicalReject
           #print axioms MCore.Real.P01RawVerifierFromCoreReject.rawVerifierMaterialCoreOfCoreReject
+          #print axioms MCore.Real.P01CheckedVerifierStateCodec.checkedVerifier_decode_encode
           #print axioms MCore.Real.P01CoreDecodeFailurePhysical.p01ConstructionGap
           #print axioms MCore.Real.P01MaterialInhabitantFrontier.p01_of_raw_material_core
           #print axioms MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate
@@ -98,6 +100,7 @@ jobs:
             lean/MCore/Real/P01CoreDecodeFailureBudget.lean \
             lean/MCore/Real/P01CoreDecodeFailurePhysical.lean \
             lean/MCore/Real/P01RawVerifierFromCoreReject.lean \
+            lean/MCore/Real/P01CheckedVerifierStateCodec.lean \
             lean/MCore/Real/P01MaterialInhabitantFrontier.lean
           do
             if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)|^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"; then
