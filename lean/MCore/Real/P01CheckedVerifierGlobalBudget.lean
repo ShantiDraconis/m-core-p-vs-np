@@ -51,7 +51,7 @@ theorem evalStepCount_mul_checkedEnvelope_le
     calc
       (3 * n) * (128 * (n + 1) ^ 2)
           = 384 * (n * (n + 1) ^ 2) := by
-              ring
+              simp [Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
       _ ≤ 384 * ((n + 1) * (n + 1) ^ 2) := by
               exact Nat.mul_le_mul_left 384
                 (Nat.mul_le_mul_right ((n + 1) ^ 2) hn)
@@ -85,7 +85,7 @@ theorem evaluation_plus_scan_le_global
   have hsum :
       384 * (n + 1) ^ 3 + 128 * (n + 1) ^ 3 =
         512 * (n + 1) ^ 3 := by
-    ring
+    omega
   calc
     evalStepCount phi * checkedStepEnvelope n +
           128 * (n + 1) ^ 2
