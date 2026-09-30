@@ -206,29 +206,25 @@ theorem checkedPushTagFuel_le_envelope
     (hs : source.length ≤ n)
     (hf : frameStack.length ≤ n) :
     checkedPushTagFuel source frameStack ≤ checkedStepEnvelope n := by
-  have hp :=
-    checkedTagPrefixFuel_le_envelope n source frameStack hs hf
   have hdrop : (source.drop 3).length ≤ source.length := by
     simp
-  unfold checkedPushTagFuel checkedStepEnvelope at *
+  unfold checkedPushTagFuel checkedTagPrefixFuel checkedStepEnvelope
   have hlin :
-      checkedTagPrefixFuel source frameStack +
+      frameStack.length + source.length + 3 + 1 + 3 + 1 +
           (source.drop 3).length + frameStack.length + 2 + 1 + 3 + 1
-        ≤ 128 * (n + 1) ^ 2 + 2 * n + 7 := by
+        ≤ 4 * n + 15 := by
     omega
-  have hsmall : 2 * n + 7 ≤ 7 * (n + 1) := by
+  have hlin' : 4 * n + 15 ≤ 19 * (n + 1) := by
     omega
-  have hsmall2 :
-      7 * (n + 1) ≤ 7 * ((n + 1) * (n + 1)) := by
-    exact Nat.mul_le_mul_left 7
+  have hmul :
+      19 * (n + 1) ≤ 19 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 19
       (Nat.le_mul_of_pos_right (n + 1) (by omega))
-  -- Use a slightly larger local checked envelope for the push route.
-  have hfinal :
-      128 * ((n + 1) * (n + 1)) +
-          7 * ((n + 1) * (n + 1))
-        ≤ 256 * ((n + 1) * (n + 1)) := by
-    omega
-  simp [Nat.pow_two] at *
+  have hcoef :
+      19 * ((n + 1) * (n + 1)) ≤
+        128 * ((n + 1) * (n + 1)) :=
+    Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
+  simp [Nat.pow_two]
   omega
 
 /-- Checked 000 input route: checked tag prefix plus the already-bounded fused
