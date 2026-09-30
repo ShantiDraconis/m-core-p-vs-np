@@ -779,6 +779,44 @@ theorem or_certificate
   simpa [finalValue, CheckedLoopOutcome, exitMode, childMode,
     circuitTag, evalCircuit] using hout5
 
+/-- Structural producer for every checked circuit.
+
+This theorem contains no new physical machine.  It closes the syntax recursion
+by composing the already-certified producers for input, constants, negation,
+conjunction, and disjunction. -/
+theorem circuit_certificate
+    (sigma : Assignment)
+    (witness : BitString) :
+    ∀ (phi : Circuit) (mode : SyntaxMode),
+      CheckedCircuitRunCertificate sigma witness mode phi := by
+  intro phi
+  induction phi with
+  | input i =>
+      intro mode
+      exact P01CheckedEvalRunInputTag.input_certificate
+        sigma witness mode i
+  | const v =>
+      intro mode
+      exact P01CheckedEvalRunBaseCases.const_certificate
+        sigma witness mode v
+  | not child ih =>
+      intro mode
+      exact neg_certificate
+        sigma witness mode child
+        (ih (childMode mode .neg))
+  | and left right ihLeft ihRight =>
+      intro mode
+      exact and_certificate
+        sigma witness mode left right
+        (ihLeft .cnf) (ihRight .cnf)
+  | or left right ihLeft ihRight =>
+      intro mode
+      exact or_certificate
+        sigma witness mode left right
+        (ihLeft .clause) (ihRight .clause)
+
+#print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.circuit_certificate
+
 #print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.or_certificate
 
 #print axioms MCore.Real.P01CheckedEvalRunCircuitCertificate.and_certificate
