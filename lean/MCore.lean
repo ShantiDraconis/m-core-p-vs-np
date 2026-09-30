@@ -188,3 +188,5 @@ import MCore.Real.P01RawMalformedUnary
 import MCore.Real.P01RawSourceSplit
 
 import MCore.Real.P01ExactBoundedReject
+
+import MCore.Real.P01RawDecodeClassification
