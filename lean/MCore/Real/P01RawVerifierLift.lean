@@ -10,6 +10,8 @@ open P01NTMRunLaws
 open P01CheckedEvalRunLoopNTM
 open P01CheckedVerifierCompositeNTM
 open P01CheckedVerifierRun
+open P01EvalCursorMachine
+open P01WitnessPreservingPrep
 open P01RawDeadEnd
 
 abbrev EvalConfig :=
