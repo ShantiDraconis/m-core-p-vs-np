@@ -1,6 +1,9 @@
 import MCore.Real.P01EvalStepSemanticRefinement
 import MCore.Real.P01InputNodeCompositeRun
 import MCore.Real.P01EncodedStackEvaluator
+import MCore.Real.P01CheckedEvalRunTagPrefix
+import MCore.Real.P01CheckedEvalRunNeedTags
+import MCore.Real.P01CheckedEvalRunInputTag
 
 namespace MCore
 namespace Real
@@ -10,6 +13,9 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open P01NeedExprCompositeRun
 open P01InputNodeCompositeRun
+open P01CheckedEvalRunTagPrefix
+open P01CheckedEvalRunNeedTags
+open P01CheckedEvalRunInputTag
 
 /-- Exact unary length of the canonical natural-number payload. -/
 theorem encodeNat_length (i : Nat) :
@@ -168,6 +174,99 @@ theorem inputTagCompositeFuel_le_envelope
   simp [Nat.pow_two] at *
   omega
 
+/-- The checked syntax-mode tag prefix is uniformly quadratic (in fact
+linear) in the original source bound. -/
+theorem checkedTagPrefixFuel_le_envelope
+    (n : Nat) (source frameStack : BitString)
+    (hs : source.length ≤ n)
+    (hf : frameStack.length ≤ n) :
+    checkedTagPrefixFuel source frameStack ≤ checkedStepEnvelope n := by
+  unfold checkedTagPrefixFuel checkedStepEnvelope
+  have hlin :
+      frameStack.length + source.length + 3 + 1 + 3 + 1 ≤
+        2 * n + 8 := by
+    omega
+  have hlin' : 2 * n + 8 ≤ 10 * (n + 1) := by
+    omega
+  have hmul :
+      10 * (n + 1) ≤ 10 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 10
+      (Nat.le_mul_of_pos_right (n + 1) (by omega))
+  have hcoef :
+      10 * ((n + 1) * (n + 1)) ≤
+        128 * ((n + 1) * (n + 1)) :=
+    Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
+  simp [Nat.pow_two]
+  omega
+
+/-- The checked continuation-producing tags remain under the same quadratic
+envelope. -/
+theorem checkedPushTagFuel_le_envelope
+    (n : Nat) (source frameStack : BitString)
+    (hs : source.length ≤ n)
+    (hf : frameStack.length ≤ n) :
+    checkedPushTagFuel source frameStack ≤ checkedStepEnvelope n := by
+  have hp :=
+    checkedTagPrefixFuel_le_envelope n source frameStack hs hf
+  have hdrop : (source.drop 3).length ≤ source.length := by
+    simp
+  unfold checkedPushTagFuel checkedStepEnvelope at *
+  have hlin :
+      checkedTagPrefixFuel source frameStack +
+          (source.drop 3).length + frameStack.length + 2 + 1 + 3 + 1
+        ≤ 128 * (n + 1) ^ 2 + 2 * n + 7 := by
+    omega
+  have hsmall : 2 * n + 7 ≤ 7 * (n + 1) := by
+    omega
+  have hsmall2 :
+      7 * (n + 1) ≤ 7 * ((n + 1) * (n + 1)) := by
+    exact Nat.mul_le_mul_left 7
+      (Nat.le_mul_of_pos_right (n + 1) (by omega))
+  -- Use a slightly larger local checked envelope for the push route.
+  have hfinal :
+      128 * ((n + 1) * (n + 1)) +
+          7 * ((n + 1) * (n + 1))
+        ≤ 256 * ((n + 1) * (n + 1)) := by
+    omega
+  simp [Nat.pow_two] at *
+  omega
+
+/-- Checked 000 input route: checked tag prefix plus the already-bounded fused
+input-node primitive. -/
+theorem checkedInputTagFuel_le
+    (n consumed i : Nat)
+    (tail frameStack : BitString)
+    (hsource :
+      (false :: false :: false :: (encodeNat i ++ tail)).length ≤ n)
+    (hc3 : consumed + 3 ≤ n)
+    (hi : i ≤ n)
+    (ht : tail.length ≤ n)
+    (hf : frameStack.length ≤ n) :
+    checkedInputTagFuel consumed i tail frameStack ≤
+      256 * (n + 1) ^ 2 := by
+  let source := false :: false :: false :: (encodeNat i ++ tail)
+  have hp :
+      checkedTagPrefixFuel source frameStack ≤ checkedStepEnvelope n :=
+    checkedTagPrefixFuel_le_envelope n source frameStack
+      (by simpa [source] using hsource) hf
+  have hn :
+      inputNodeCompositeFuel (consumed + 3) i tail frameStack ≤
+        checkedCoreEnvelope n :=
+    inputNodeCompositeFuel_le_envelope
+      n (consumed + 3) i tail frameStack hc3 hi ht hf
+  unfold checkedInputTagFuel checkedStepEnvelope checkedCoreEnvelope at *
+  have hsum :
+      checkedTagPrefixFuel source frameStack +
+          inputNodeCompositeFuel (consumed + 3) i tail frameStack
+        ≤ 192 * ((n + 1) * (n + 1)) := by
+    simp [Nat.pow_two] at hp hn
+    omega
+  have hcoef :
+      192 * ((n + 1) * (n + 1)) ≤
+        256 * ((n + 1) * (n + 1)) :=
+    Nat.mul_le_mul_right ((n + 1) * (n + 1)) (by omega)
+  simpa [source, Nat.pow_two] using Nat.le_trans hsum hcoef
+
 /-- Global candidate budget for the checked physical verifier.  The cubic
 degree is enough for a linear number of semantic steps, each under a quadratic
 physical envelope. -/
@@ -185,6 +284,9 @@ theorem checkedVerifierTimeBound_poly :
 #print axioms MCore.Real.P01CheckedVerifierBudget.pushTagCompositeFuel_le_envelope
 #print axioms MCore.Real.P01CheckedVerifierBudget.inputNodeCompositeFuel_le_envelope
 #print axioms MCore.Real.P01CheckedVerifierBudget.inputTagCompositeFuel_le_envelope
+#print axioms MCore.Real.P01CheckedVerifierBudget.checkedTagPrefixFuel_le_envelope
+#print axioms MCore.Real.P01CheckedVerifierBudget.checkedPushTagFuel_le_envelope
+#print axioms MCore.Real.P01CheckedVerifierBudget.checkedInputTagFuel_le
 #print axioms MCore.Real.P01CheckedVerifierBudget.checkedVerifierTimeBound_poly
 
 end P01CheckedVerifierBudget
