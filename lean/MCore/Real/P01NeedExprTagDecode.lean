@@ -104,6 +104,32 @@ theorem tagDecode_rejects_short
   simp [tagDecodeMachine, evalCursorReadTape, TM.run, TM.step,
     Tape.write, Tape.move]
 
+
+/-- Any source shorter than one complete three-bit tag is rejected by the
+physical decoder within the fixed three-step envelope. -/
+theorem tagDecode_rejects_short_three
+    (witness bits frameStack : BitString)
+    (consumed padding : Nat)
+    (hshort : bits.length < 3) :
+    (tagDecodeMachine.run 3
+      { state := tagDecodeMachine.initial,
+        tape := evalCursorReadTape witness consumed
+          bits frameStack padding }).state = .reject := by
+  rcases bits with _ | ⟨b0, rest⟩
+  · simp [tagDecodeMachine, evalCursorReadTape,
+      TM.run, TM.step, Tape.write, Tape.move]
+  · rcases rest with _ | ⟨b1, rest⟩
+    · cases b0 <;>
+        simp [tagDecodeMachine, evalCursorReadTape,
+          TM.run, TM.step, Tape.write, Tape.move]
+    · rcases rest with _ | ⟨b2, rest⟩
+      · cases b0 <;> cases b1 <;>
+          simp [tagDecodeMachine, evalCursorReadTape,
+            TM.run, TM.step, Tape.write, Tape.move]
+      · simp at hshort
+
+#print axioms MCore.Real.P01NeedExprTagDecode.tagDecode_rejects_short_three
+
 #print axioms MCore.Real.P01NeedExprTagDecode.tagDecode_run_three
 #print axioms MCore.Real.P01NeedExprTagDecode.tagDecode_rejects_short
 
