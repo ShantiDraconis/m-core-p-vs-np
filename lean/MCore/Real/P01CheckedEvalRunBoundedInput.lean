@@ -42,7 +42,7 @@ theorem inputTag_checked_reaches_within_loopEnvelope
       inputCheckedConfig mode
         ({ state :=
              .done (witness.getD i false)
-               (P01InputReturnMode.inputNodeFinalMode tail frameStack),
+               (P01InputNodeCompositeRun.inputNodeFinalMode tail frameStack),
            tape :=
              (inputAfterReadTarget witness
                (consumedAfterInputIndex (consumed + 3) i)
@@ -72,14 +72,18 @@ theorem inputTag_checked_reaches_within_loopEnvelope
     omega
   have hframes : frameStack.length ≤ n :=
     hLayout.frames_le
-  have hfuel :
-      checkedInputTagFuel consumed i tail frameStack ≤
-        checkedLoopStepEnvelope n := by
-    have h :=
+  have h :=
       checkedInputTagFuel_le
         n consumed i tail frameStack
         hsource hc3 hindex htail hframes
-    simpa [checkedLoopStepEnvelope] using h
+  have hstep :
+      checkedStepEnvelope n ≤ checkedLoopStepEnvelope n := by
+    unfold checkedStepEnvelope checkedLoopStepEnvelope
+    exact Nat.mul_le_mul_right ((n + 1) ^ 2) (by omega)
+  have hfuel :
+      checkedInputTagFuel consumed i tail frameStack ≤
+        checkedLoopStepEnvelope n :=
+    Nat.le_trans h hstep
   exact ⟨m, Nat.le_trans hm hfuel, hrun⟩
 
 /-- The input route also fits any larger accumulated budget. -/
@@ -98,7 +102,7 @@ theorem inputTag_checked_reaches_within_accumulated
       inputCheckedConfig mode
         ({ state :=
              .done (witness.getD i false)
-               (P01InputReturnMode.inputNodeFinalMode tail frameStack),
+               (P01InputNodeCompositeRun.inputNodeFinalMode tail frameStack),
            tape :=
              (inputAfterReadTarget witness
                (consumedAfterInputIndex (consumed + 3) i)
