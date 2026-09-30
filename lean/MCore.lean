@@ -174,3 +174,7 @@ import MCore.Real.P01CheckedEvalRunBoundedConst
 import MCore.Real.P01CheckedEvalRunBoundedCertificate
 
 import MCore.Real.P01MaterialInhabitantFrontier
+
+import MCore.Real.P01ExactBoundedAll
+
+import MCore.Real.P01CheckedEvalRejectBounded
