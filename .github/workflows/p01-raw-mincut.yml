@@ -1,0 +1,52 @@
+name: P01 Raw Min-Cut
+
+on:
+  push:
+    branches:
+      - atk/p01-raw-mincut-20260930
+    paths:
+      - 'lean/MCore/Real/P01VerifierPhaseMinCut.lean'
+      - '.github/workflows/p01-raw-mincut.yml'
+      - 'lean-toolchain'
+      - 'lakefile.lean'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  raw-mincut:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build exact raw min-cut
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01VerifierPhaseMinCut
+      - name: Axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P01RawMinCutAxioms.lean <<'EOF'
+          import MCore.Real.P01VerifierPhaseMinCut
+          #print axioms MCore.Real.P01VerifierPhaseMinCut.checked_total_of_raw_source_closure
+          #print axioms MCore.Real.P01VerifierPhaseMinCut.verifierPhaseOfRawSourceClosure
+          #print axioms MCore.Real.P01VerifierPhaseMinCut.p01ConstructionGap_of_rawSourceClosure
+          EOF
+          lake env lean P01RawMinCutAxioms.lean | tee P01RawMinCutAxioms.log
+          ! grep -E 'sorryAx' P01RawMinCutAxioms.log
+      - name: Reject proof escapes
+        run: |
+          set -euo pipefail
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01VerifierPhaseMinCut.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01VerifierPhaseMinCut.lean
