@@ -186,3 +186,4 @@ import MCore.Real.P01ParserFirewall
 import MCore.Real.P01ExactBoundedBinary
 import MCore.Real.P01MaterialGlobalBudget
 import MCore.Real.P01RawVerifierMaterialCore
+import MCore.Real.P01FiniteCodec
