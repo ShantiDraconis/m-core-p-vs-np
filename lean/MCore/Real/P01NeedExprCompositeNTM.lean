@@ -313,6 +313,76 @@ theorem invalid111_rejects
       { state := .decode (.halt .invalid111), tape := tape } = [] := by
   simp [needExprCompositeMachine, NTM.successors]
 
+
+/-- The fused need-expression machine is operationally deterministic: every
+configuration has at most one successor. -/
+theorem needExprComposite_successors_length_le_one
+    (c : Configuration NeedExprCompositeState (Option Bool)) :
+    (needExprCompositeMachine.successors c).length ≤ 1 := by
+  have hlen :
+      (needExprCompositeMachine.successors c).length =
+        (needExprCompositeMachine.transition c.state c.tape.head).length := by
+    simp [NTM.successors]
+  rw [hlen]
+  cases c.state with
+  | seek q =>
+      cases q <;>
+        simp [needExprCompositeMachine]
+  | decode q =>
+      cases q with
+      | halt tag =>
+          cases tag <;>
+            simp [needExprCompositeMachine]
+      | _ =>
+          simp [needExprCompositeMachine]
+  | input qi =>
+      cases qi with
+      | look q =>
+          have h :=
+            P01InputNodeCompositeNTM.inputNodeComposite_successors_length_le_one
+              ({ state := P01InputNodeCompositeNTM.InputNodeCompositeState.look q,
+                 tape := c.tape } :
+                Configuration P01InputNodeCompositeNTM.InputNodeCompositeState
+                  (Option Bool))
+          simpa [NTM.successors, needExprCompositeMachine] using h
+      | read mode q =>
+          have h :=
+            P01InputNodeCompositeNTM.inputNodeComposite_successors_length_le_one
+              ({ state := P01InputNodeCompositeNTM.InputNodeCompositeState.read mode q,
+                 tape := c.tape } :
+                Configuration P01InputNodeCompositeNTM.InputNodeCompositeState
+                  (Option Bool))
+          simpa [NTM.successors, needExprCompositeMachine] using h
+      | ret mode selected q =>
+          have h :=
+            P01InputNodeCompositeNTM.inputNodeComposite_successors_length_le_one
+              ({ state := P01InputNodeCompositeNTM.InputNodeCompositeState.ret mode selected q,
+                 tape := c.tape } :
+                Configuration P01InputNodeCompositeNTM.InputNodeCompositeState
+                  (Option Bool))
+          simpa [NTM.successors, needExprCompositeMachine] using h
+      | done selected mode =>
+          simp [needExprCompositeMachine]
+      | reject =>
+          simp [needExprCompositeMachine]
+  | retValue value q =>
+      cases q <;>
+        simp [needExprCompositeMachine]
+  | retPush frame q =>
+      cases q <;>
+        simp [needExprCompositeMachine]
+  | push frame q =>
+      cases q <;>
+        simp [needExprCompositeMachine]
+  | doneValue v =>
+      simp [needExprCompositeMachine]
+  | doneNeed =>
+      simp [needExprCompositeMachine]
+  | reject =>
+      simp [needExprCompositeMachine]
+
+#print axioms MCore.Real.P01NeedExprCompositeNTM.needExprComposite_successors_length_le_one
+
 #print axioms MCore.Real.P01NeedExprCompositeNTM.seek_handoff_successors
 #print axioms MCore.Real.P01NeedExprCompositeNTM.input_tag_handoff_successors
 #print axioms MCore.Real.P01NeedExprCompositeNTM.constFalse_handoff_successors
