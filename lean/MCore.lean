@@ -188,7 +188,6 @@ import MCore.Real.P01MaterialGlobalBudget
 import MCore.Real.P01RawVerifierMaterialCore
 import MCore.Real.P01FiniteCodec
 import MCore.Real.P01CheckedVerifierStateCodec
-import MCore.Real.P01CheckedVerifierFiniteState
 import MCore.Real.P01MaterialInhabitantFrontier
 import MCore.Real.P01CanonicalWrapperBounded
 import MCore.Real.P01DecodeCoreLaws
