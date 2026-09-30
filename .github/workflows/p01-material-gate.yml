@@ -38,6 +38,9 @@ jobs:
             MCore.Real.P01CheckedEvalRejectBounded \
             MCore.Real.P01MaterialGlobalBudget \
             MCore.Real.P01MalformedRawBoundedReject \
+            MCore.Real.P01CoreDecodeFailureBudget \
+            MCore.Real.P01CoreDecodeFailurePhysical \
+            MCore.Real.P01RawVerifierFromCoreReject \
             MCore.Real.P01CheckedVerifierFiniteState \
             MCore.Real.P01MaterialInhabitantFrontier \
             MCore.Real.P01GlobalParserBound \
@@ -53,6 +56,9 @@ jobs:
           import MCore.Real.P01ExactBoundedAll
           import MCore.Real.P01CheckedEvalRejectBounded
           import MCore.Real.P01MalformedRawBoundedReject
+          import MCore.Real.P01CoreDecodeFailureBudget
+          import MCore.Real.P01CoreDecodeFailurePhysical
+          import MCore.Real.P01RawVerifierFromCoreReject
           import MCore.Real.P01MaterialInhabitantFrontier
           import MCore.Real.P01ParserWitnessComposition
           import MCore.Real.P01ParserFirewall
@@ -63,7 +69,12 @@ jobs:
           #print axioms MCore.Real.P01MalformedRawBoundedReject.core_success_with_trailing_reaches_reject_bounded
           #print axioms MCore.Real.P01MalformedRawBoundedReject.checkedCircuitBudget_plus_loop_le_material
           #print axioms MCore.Real.P01MalformedRawBoundedReject.malformed_raw_reaches_reject_bounded_of_core
-          #print axioms MCore.Real.P01MaterialInhabitantFrontier.p01_of_material_core
+          #print axioms MCore.Real.P01CoreDecodeFailureBudget.root_potential_le_material
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.coreDecodeFailurePhysicalAux
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.coreDecodeFailurePhysicalReject
+          #print axioms MCore.Real.P01RawVerifierFromCoreReject.rawVerifierMaterialCoreOfCoreReject
+          #print axioms MCore.Real.P01CoreDecodeFailurePhysical.p01ConstructionGap
+          #print axioms MCore.Real.P01MaterialInhabitantFrontier.p01_of_raw_material_core
           #print axioms MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate
           #print axioms MCore.Real.P01ParserWitnessComposition.parserPhaseCertificate
           #print axioms MCore.Real.P01ParserFirewall.decode_none_iff_parser_not_accepts
@@ -84,6 +95,9 @@ jobs:
             lean/MCore/Real/P01CheckedEvalRejectBounded.lean \
             lean/MCore/Real/P01MalformedRawBoundedReject.lean \
             lean/MCore/Real/P01MaterialGlobalBudget.lean \
+            lean/MCore/Real/P01CoreDecodeFailureBudget.lean \
+            lean/MCore/Real/P01CoreDecodeFailurePhysical.lean \
+            lean/MCore/Real/P01RawVerifierFromCoreReject.lean \
             lean/MCore/Real/P01MaterialInhabitantFrontier.lean
           do
             if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)|^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"; then
