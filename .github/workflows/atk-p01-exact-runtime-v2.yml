@@ -38,10 +38,10 @@ jobs:
         run: |
           cat > P01ExactConsumptionAxioms.lean <<'EOF'
           import MCore.Real.P01CheckedEvalRunExactCertificate
+          import MCore.Real.P01BinaryLayoutConservation
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_consumed_exact
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.input_exact_bounded_certificate
           #print axioms MCore.Real.P01CheckedEvalRunExactCertificate.exact_to_bounded
-          import MCore.Real.P01BinaryLayoutConservation
           #print axioms MCore.Real.P01BinaryLayoutConservation.and_right_layout
           #print axioms MCore.Real.P01BinaryLayoutConservation.or_right_layout
           #print axioms MCore.Real.P01BinaryLayoutConservation.and_consumed_arithmetic
