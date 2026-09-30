@@ -64,3 +64,5 @@ import MCore.Real.P02UniversalDiagonalFirewall
 import MCore.Real.P02UniversalTheoremAudit
 
 import MCore.Real.P02LiveFrontierAfterFirewall
+
+import MCore.Real.P02DirectExternalPromotion
