@@ -154,11 +154,11 @@ binary-child handoff: the dynamic run only has to identify its output
 `consumed` counter with this exact prefix consumption. -/
 theorem after_encoded_prefix
     (n consumed : Nat)
-    (prefix tail frameStack : BitString)
+    (bits tail frameStack : BitString)
     (h :
       CheckedLayoutBound n consumed
-        (prefix ++ tail) frameStack) :
-    CheckedLayoutBound n (consumed + prefix.length)
+        (bits ++ tail) frameStack) :
+    CheckedLayoutBound n (consumed + bits.length)
       tail frameStack := by
   constructor
   · have hs := h.source_budget
