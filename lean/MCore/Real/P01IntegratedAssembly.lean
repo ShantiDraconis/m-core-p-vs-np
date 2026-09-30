@@ -158,12 +158,20 @@ structure P01PrepPhase where
     ∃ d ∈ machine.runBranches (timeBound bs.length) [initialNTMConfig machine bs],
       machine.accepting d.state = true ∧ d.tape = layout bs w
 
-/-- Physical verifier phase: from the handed-off tape it halts within a
-polynomial bound in the source length, and accepts iff the concrete bit
-relation `VerifyBits bs w` holds. -/
+/-- Physical verifier phase.
+
+The verifier may use any explicit finite-control type `State`; it supplies a
+retraction into `Fin (stateCount + 1)`.  This removes any dependency on
+Mathlib/Fintype while preserving a concrete finite-state machine at the final
+assembly boundary.
+-/
 structure P01VerifierPhase (layout : BitString → BitString → Tape (Option Bool)) where
+  State : Type
   stateCount : Nat
-  machine : NTM (Fin (stateCount + 1)) (Option Bool)
+  encode : State → Fin (stateCount + 1)
+  decode : Fin (stateCount + 1) → State
+  decode_encode : ∀ q : State, decode (encode q) = q
+  machine : NTM State (Option Bool)
   blank_none : machine.blank = none
   timeBound : TimeBound
   time_poly : PolynomialTimeBound timeBound
@@ -179,7 +187,30 @@ section Assembly
 
 variable (P : P01PrepPhase) (V : P01VerifierPhase P.layout)
 
-abbrev seqMachine := seq P.machine V.machine
+/-- Relabel the verifier's explicit finite control to its declared Fin code. -/
+def verifierFinMachine :
+    NTM (Fin (V.stateCount + 1)) (Option Bool) :=
+  relabel V.machine V.encode V.decode
+
+@[simp] theorem verifierFinMachine_blank :
+    (verifierFinMachine V).blank = none := by
+  exact V.blank_none
+
+theorem verifierFinMachine_haltsWithin_iff
+    (n : Nat) (c : Configuration V.State (Option Bool)) :
+    (verifierFinMachine V).HaltsWithin n (liftConfig V.encode c) ↔
+      V.machine.HaltsWithin n c := by
+  exact relabel_haltsWithin_iff
+    V.machine V.encode V.decode V.decode_encode n c
+
+theorem verifierFinMachine_acceptsWithin_iff
+    (n : Nat) (c : Configuration V.State (Option Bool)) :
+    (verifierFinMachine V).AcceptsWithin n (liftConfig V.encode c) ↔
+      V.machine.AcceptsWithin n c := by
+  exact relabel_acceptsWithin_iff
+    V.machine V.encode V.decode V.decode_encode n c
+
+abbrev seqMachine := seq P.machine (verifierFinMachine V)
 
 def integratedMachine :
     NTM (Fin (P.stateCount + V.stateCount + 1 + 1)) (Option Bool) :=
@@ -189,30 +220,35 @@ def integratedMachine :
 def integratedTime : TimeBound :=
   fun n => P.timeBound n + 1 + V.timeBound n
 
-theorem hblank : P.machine.blank = V.machine.blank := by
-  rw [P.blank_none, V.blank_none]
+theorem hblank : P.machine.blank = (verifierFinMachine V).blank := by
+  rw [P.blank_none, verifierFinMachine_blank]
 
 theorem initial_config_eq (bs : BitString) :
     initialNTMConfig (integratedMachine P V) bs =
       liftConfig (sumToFin P.stateCount V.stateCount)
-        (L P.machine V.machine (initialNTMConfig P.machine bs)) := rfl
+        (L P.machine (verifierFinMachine V) (initialNTMConfig P.machine bs)) := rfl
 
 theorem verifier_halts_on_handoffs (bs : BitString) :
     ∀ d ∈ P.machine.runBranches (P.timeBound bs.length)
         [initialNTMConfig P.machine bs],
       P.machine.accepting d.state = true →
-      V.machine.HaltsWithin (V.timeBound bs.length) (handoff P.machine V.machine d) := by
+      (verifierFinMachine V).HaltsWithin (V.timeBound bs.length)
+        (handoff P.machine (verifierFinMachine V) d) := by
   intro d hd hacc
   rcases P.sound bs d hd hacc with ⟨w, hw, htape⟩
-  have := V.halts bs w hw
-  simpa [handoff, htape] using this
+  have hV := V.halts bs w hw
+  have hFin :=
+    (verifierFinMachine_haltsWithin_iff V (V.timeBound bs.length)
+      ({ state := V.machine.initial, tape := P.layout bs w } :
+        Configuration V.State (Option Bool))).2 hV
+  simpa [handoff, htape, verifierFinMachine, relabel, liftConfig] using hFin
 
 theorem integrated_halts (bs : BitString) :
     (integratedMachine P V).HaltsWithin (integratedTime P V bs.length)
       (initialNTMConfig (integratedMachine P V) bs) := by
   rw [initial_config_eq, integratedMachine,
     relabel_haltsWithin_iff _ _ _ (finToSum_sumToFin _ _)]
-  exact seq_haltsWithin P.machine V.machine (hblank P V) P.disjoint
+  exact seq_haltsWithin P.machine (verifierFinMachine V) (hblank P V) P.disjoint
     (V.timeBound bs.length) (P.timeBound bs.length) _ (P.halts bs)
     (verifier_halts_on_handoffs P V bs)
 
@@ -223,20 +259,32 @@ theorem integrated_accepts_iff (bs : BitString) :
   rw [initial_config_eq, integratedMachine,
     relabel_acceptsWithin_iff _ _ _ (finToSum_sumToFin _ _),
     integratedTime,
-    seq_acceptsWithin_iff P.machine V.machine (hblank P V) P.disjoint
+    seq_acceptsWithin_iff P.machine (verifierFinMachine V) (hblank P V) P.disjoint
       (P.timeBound bs.length) (V.timeBound bs.length) _ (P.halts bs)
       (verifier_halts_on_handoffs P V bs),
     satBits_iff_guessed_witness]
   constructor
-  · rintro ⟨d, hd, hacc, hV⟩
+  · rintro ⟨d, hd, hacc, hVFin⟩
     rcases P.sound bs d hd hacc with ⟨w, hw, htape⟩
     refine ⟨w, hw, (V.correct bs w hw).1 ?_⟩
-    simpa [handoff, htape] using hV
+    have hV :
+        V.machine.AcceptsWithin (V.timeBound bs.length)
+          ({ state := V.machine.initial, tape := P.layout bs w } :
+            Configuration V.State (Option Bool)) := by
+      apply (verifierFinMachine_acceptsWithin_iff V (V.timeBound bs.length)
+        ({ state := V.machine.initial, tape := P.layout bs w } :
+          Configuration V.State (Option Bool))).1
+      simpa [handoff, htape, verifierFinMachine, relabel, liftConfig] using hVFin
+    exact hV
   · rintro ⟨w, hw, hver⟩
     rcases P.complete bs w hw with ⟨d, hd, hacc, htape⟩
     refine ⟨d, hd, hacc, ?_⟩
-    have := (V.correct bs w hw).2 hver
-    simpa [handoff, htape] using this
+    have hV := (V.correct bs w hw).2 hver
+    have hVFin :=
+      (verifierFinMachine_acceptsWithin_iff V (V.timeBound bs.length)
+        ({ state := V.machine.initial, tape := P.layout bs w } :
+          Configuration V.State (Option Bool))).2 hV
+    simpa [handoff, htape, verifierFinMachine, relabel, liftConfig] using hVFin
 
 /-- The integrated construction.  Every field is produced from the two phase
 objects; no endpoint proposition is assumed. -/
