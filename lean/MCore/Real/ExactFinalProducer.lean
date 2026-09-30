@@ -23,4 +23,5 @@ theorem FINAL_ROOT_of_sat_inputs
 #print axioms MCore.Real.finalExternal_of_sat_inputs
 #print axioms MCore.Real.FINAL_ROOT_of_sat_inputs
 
+-- ATK exact-final revalidation 2026-10-01
 end MCore.Real
