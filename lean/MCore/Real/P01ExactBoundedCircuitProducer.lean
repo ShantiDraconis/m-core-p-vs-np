@@ -1521,7 +1521,7 @@ theorem or_exact_bounded_certificate
       | nil =>
           obtain ⟨m5, hm5, cfgFinal, h5, hout5⟩ :=
             have_reaches_outcome_within_envelope
-              n mode witness finalValue [] []
+              n .clause witness finalValue [] []
               finalConsumed (padding2 + 3)
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
