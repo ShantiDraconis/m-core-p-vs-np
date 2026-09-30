@@ -37,12 +37,14 @@ theorem genuineUniversalProducer_closes
   rcases h with ⟨⟨a⟩, hmap⟩
   exact hmap a
 
-/-- Firewall summary: a future producer cannot be any of the five already
-refuted diagonal construction classes if it is to remain consistent with the
-proved no-go results. -/
+/-- Firewall summary: the no-go certificate itself is inhabited by the five
+kernel-checked refutations. -/
 def ExistingNoGoFirewall : Prop :=
-  (¬ P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point = False) ∧
-  True
+  Nonempty UniversalDiagonalRouteFirewall
+
+theorem existingNoGoFirewall_closed :
+    ExistingNoGoFirewall :=
+  ⟨universalDiagonalRouteFirewall⟩
 
 /-- The actual universal firewall object remains available as the canonical
 certificate of refuted routes. -/
@@ -52,6 +54,7 @@ def firewallCertificate : UniversalDiagonalRouteFirewall :=
 #print axioms MCore.Real.P02UniversalTheoremAudit.universalWitness_is_exact_G21
 #print axioms MCore.Real.P02UniversalTheoremAudit.universalWitness_is_exact_P02
 #print axioms MCore.Real.P02UniversalTheoremAudit.genuineUniversalProducer_closes
+#print axioms MCore.Real.P02UniversalTheoremAudit.existingNoGoFirewall_closed
 #print axioms MCore.Real.P02UniversalTheoremAudit.firewallCertificate
 
 end P02UniversalTheoremAudit
