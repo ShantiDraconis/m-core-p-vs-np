@@ -17,7 +17,7 @@ jobs:
       - name: Build preserving unary reader boundary
         run: |
           set -euo pipefail
-          lake build MCore.Real.P01PreservingUnaryReadBoundary
+          lake build MCore.Real.P01PreservingUnaryReadMachine MCore.Real.P01PreservingUnaryReadBoundary
 
       - name: Placeholder firewall
         shell: bash
@@ -32,7 +32,11 @@ jobs:
         run: |
           set -euo pipefail
           cat > P01PreservingUnaryReadAudit.lean <<'EOF'
+          import MCore.Real.P01PreservingUnaryReadMachine
           import MCore.Real.P01PreservingUnaryReadBoundary
+          #print axioms MCore.Real.P01PreservingUnaryReadMachine.preservingUnaryReadTimeBound_poly
+          #print axioms MCore.Real.P01PreservingUnaryReadMachine.zero_index_dispatch
+          #print axioms MCore.Real.P01PreservingUnaryReadMachine.succ_index_dispatch
           #print axioms MCore.Real.P01PreservingUnaryReadBoundary.old_reader_consumes_witness_prefix
           #print axioms MCore.Real.P01PreservingUnaryReadBoundary.certificate_refines_input_value
           #print axioms MCore.Real.P01PreservingUnaryReadBoundary.certificate_preserves_global_layout
