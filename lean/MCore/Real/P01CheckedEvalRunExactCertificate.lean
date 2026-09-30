@@ -18,6 +18,7 @@ open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunInputTag
 open P01CheckedEvalRunBoundedInput
 open P01CheckedEvalRunBoundedCertificate
+open P01CheckedEvalRunBaseCases
 open P01CheckedVerifierInvariant
 open P01CNFMode
 
