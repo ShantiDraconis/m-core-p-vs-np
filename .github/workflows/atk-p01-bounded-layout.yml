@@ -1,0 +1,51 @@
+name: atk-p01-bounded-layout
+
+on:
+  push:
+    branches:
+      - atk/p01-exact-consumption-certificate-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-layout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get
+      - name: Build bounded layout certificate
+        run: |
+          lake build MCore.Real.P01CheckedEvalBoundedOutcome
+          lake build MCore.Real.P01CheckedEvalRunBoundedHelpers
+          lake build MCore.Real.P01CheckedEvalRunBoundedConst
+          lake build MCore.Real.P01CheckedEvalRunBoundedCertificate
+      - name: Reject proof placeholders
+        run: |
+          set -euo pipefail
+          FILES="lean/MCore/Real/P01CheckedEvalBoundedOutcome.lean lean/MCore/Real/P01CheckedEvalRunBoundedHelpers.lean lean/MCore/Real/P01CheckedEvalRunBoundedConst.lean lean/MCore/Real/P01CheckedEvalRunBoundedCertificate.lean"
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $FILES
+      - name: Axiom audit
+        run: |
+          cat > P01BoundedLayoutAxioms.lean <<'EOF'
+          import MCore.Real.P01CheckedEvalRunBoundedCertificate
+          #print axioms MCore.Real.P01CheckedEvalBoundedOutcome.layout_of_frames_ne_nil
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedHelpers.have_reaches_bounded_outcome
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedConst.const_checked_run_within_loopEnvelope
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.input_bounded_certificate
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.const_bounded_certificate
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedCertificate.neg_bounded_certificate
+          EOF
+          lake env lean P01BoundedLayoutAxioms.lean | tee p01-bounded-layout-axioms.txt
+          ! grep -E 'sorryAx' p01-bounded-layout-axioms.txt
