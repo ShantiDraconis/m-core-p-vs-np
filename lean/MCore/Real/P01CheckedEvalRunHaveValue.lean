@@ -220,12 +220,22 @@ theorem frame_checked_reaches_popped
         evalCursorStackEndTape witness consumed unread
           frameStack (padding + 3) }
 
+  have h0blank : t0.head = none := by
+    dsimp [t0]
+    simp [evalCursorStackEndTape]
+
   have hStartSucc :
       cPeek ∈ checkedEvalRunLoopMachine.successors c0 := by
-    dsimp [c0, cPeek, tPeek]
-    simp [checkedEvalRunLoopMachine, haveValueCompositeMachine,
-      haveCheckedEmbed, evalCursorStackEndTape, NTM.successors,
-      NTM.stepBranch, Tape.write, Tape.move, List.append_assoc]
+    change
+      cPeek ∈
+        (haveValueCompositeMachine.successors
+          ({ state := .start v, tape := t0 } :
+            Configuration HaveValueCompositeState (Option Bool))).map
+          (fun d =>
+            ({ state := haveCheckedEmbed mode d.state, tape := d.tape } :
+              CheckedConfig))
+    rw [start_successors v t0 h0blank]
+    simp [cPeek, tPeek, haveCheckedEmbed]
   have hStart :
       cPeek ∈ checkedEvalRunLoopMachine.runBranches 1 [c0] :=
     one_step_of_successor c0 cPeek
