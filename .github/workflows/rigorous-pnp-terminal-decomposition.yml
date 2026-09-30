@@ -1,0 +1,44 @@
+name: Rigorous PNP Terminal Decomposition
+
+on:
+  push:
+    branches:
+      - atk/pnp-rigorous-terminal-decomposition-20261001
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rigorous-terminal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Lean
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
+      - name: Build rigorous terminal decomposition
+        run: lake build MCore.Real.RigorousTerminalDecomposition
+      - name: Reject proof placeholders
+        run: |
+          set -euo pipefail
+          FILE=lean/MCore/Real/RigorousTerminalDecomposition.lean
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$FILE"
+      - name: Axiom audit
+        run: |
+          cat > RigorousPNPTerminalAxioms.lean <<'EOF'
+          import MCore.Real.RigorousTerminalDecomposition
+          #print axioms MCore.Real.RigorousTerminalDecomposition.encoded_sat_not_in_p_implies_universal_failure
+          #print axioms MCore.Real.RigorousTerminalDecomposition.encoded_p02_target_iff_sat_not_in_p
+          #print axioms MCore.Real.RigorousTerminalDecomposition.rigorous_residual_to_root
+          EOF
+          lake env lean RigorousPNPTerminalAxioms.lean | tee rigorous-pnp-terminal-axioms.txt
+          ! grep -E 'sorryAx' rigorous-pnp-terminal-axioms.txt
