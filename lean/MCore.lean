@@ -192,3 +192,5 @@ import MCore.Real.P01RawSourceSplit
 import MCore.Real.P01RawResidualReject
 
 import MCore.Real.P01ExactBoundedReject
+
+import MCore.Real.P01RawCoreFailure
