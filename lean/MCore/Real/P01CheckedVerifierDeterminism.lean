@@ -128,20 +128,71 @@ theorem checkedEval_transition_length_le_one
               simpa [checkedEvalRunLoopMachine] using
                 needExpr_transition_length_le_one (.decode (.bit2 b1 b2)) symbol
           | reject =>
-              simpa [checkedEvalRunLoopMachine] using
-                needExpr_transition_length_le_one (.decode .reject) symbol
+              simp [checkedEvalRunLoopMachine]
       | seek qs =>
-          simpa [checkedEvalRunLoopMachine] using
-            needExpr_transition_length_le_one (.seek qs) symbol
+          cases qs with
+          | start =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.seek .start) symbol
+          | scanStack =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.seek .scanStack) symbol
+          | scanUnread =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.seek .scanUnread) symbol
+          | halt =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.seek .halt) symbol
+          | reject =>
+              simp [checkedEvalRunLoopMachine]
       | retValue value qr =>
-          simpa [checkedEvalRunLoopMachine] using
-            needExpr_transition_length_le_one (.retValue value qr) symbol
+          cases qr with
+          | erase =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retValue value .erase) symbol
+          | scanUnread =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retValue value .scanUnread) symbol
+          | scanFrames =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retValue value .scanFrames) symbol
+          | halt =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retValue value .halt) symbol
+          | reject =>
+              simp [checkedEvalRunLoopMachine]
       | retPush frame qr =>
-          simpa [checkedEvalRunLoopMachine] using
-            needExpr_transition_length_le_one (.retPush frame qr) symbol
+          cases qr with
+          | erase =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retPush frame .erase) symbol
+          | scanUnread =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retPush frame .scanUnread) symbol
+          | scanFrames =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retPush frame .scanFrames) symbol
+          | halt =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.retPush frame .halt) symbol
+          | reject =>
+              simp [checkedEvalRunLoopMachine]
       | push frame qp =>
-          simpa [checkedEvalRunLoopMachine] using
-            needExpr_transition_length_le_one (.push frame qp) symbol
+          cases qp with
+          | start f =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.push frame (.start f)) symbol
+          | after1 f =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.push frame (.after1 f)) symbol
+          | after2 f =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.push frame (.after2 f)) symbol
+          | halt =>
+              simpa [checkedEvalRunLoopMachine] using
+                needExpr_transition_length_le_one (.push frame .halt) symbol
+          | reject =>
+              simp [checkedEvalRunLoopMachine]
       | doneValue v =>
           simp [checkedEvalRunLoopMachine]
       | doneNeed =>
