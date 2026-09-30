@@ -90,8 +90,8 @@ theorem haveValue_transition_length_le_one
 theorem checkedEval_transition_length_le_one
     (q : CheckedEvalRunState) (symbol : Option Bool) :
     (checkedEvalRunLoopMachine.transition q symbol).length ≤ 1 := by
-  cases q with
-  | need mode qn =>
+  exact match q with
+  | .need mode qn => by
       cases qn with
       | input qi =>
           cases qi with
@@ -138,10 +138,13 @@ theorem checkedEval_transition_length_le_one
       | push frame qp =>
           simpa [checkedEvalRunLoopMachine] using
             needExpr_transition_length_le_one (.push frame qp) symbol
-      | doneValue v => simp [checkedEvalRunLoopMachine]
-      | doneNeed => simp [checkedEvalRunLoopMachine]
-      | reject => simp [checkedEvalRunLoopMachine]
-  | «have» mode qh =>
+      | doneValue v =>
+          simp [checkedEvalRunLoopMachine]
+      | doneNeed =>
+          simp [checkedEvalRunLoopMachine]
+      | reject =>
+          simp [checkedEvalRunLoopMachine]
+  | .have mode qh => by
       cases qh with
       | peek v =>
           cases symbol <;> simp [checkedEvalRunLoopMachine]
@@ -168,45 +171,48 @@ theorem checkedEval_transition_length_le_one
       | push frame qp =>
           simpa [checkedEvalRunLoopMachine] using
             haveValue_transition_length_le_one (.push frame qp) symbol
-      | doneValue v => simp [checkedEvalRunLoopMachine]
-      | doneNeed => simp [checkedEvalRunLoopMachine]
-      | reject => simp [checkedEvalRunLoopMachine]
-  | checkSource v =>
+      | doneValue v =>
+          simp [checkedEvalRunLoopMachine]
+      | doneNeed =>
+          simp [checkedEvalRunLoopMachine]
+      | reject =>
+          simp [checkedEvalRunLoopMachine]
+  | .checkSource v => by
       cases symbol <;> simp [checkedEvalRunLoopMachine]
-  | final v =>
+  | .final v => by
       simp [checkedEvalRunLoopMachine]
-  | reject =>
+  | .reject => by
       simp [checkedEvalRunLoopMachine]
 
 theorem checkedVerifier_transition_length_le_one
     (q : CheckedVerifierState) (symbol : Option Bool) :
     (checkedVerifierMachine.transition q symbol).length ≤ 1 := by
-  cases q with
-  | start =>
+  exact match q with
+  | .start => by
       cases symbol <;> simp [checkedVerifierMachine]
-  | scan qs =>
+  | .scan qs => by
       by_cases h : P01FullVerifierTraversal.sourceEndScanner.halting qs
       · simp [checkedVerifierMachine, h]
       · simp [checkedVerifierMachine, h]
-  | enter =>
+  | .enter => by
       simp [checkedVerifierMachine]
-  | eval qe =>
-      cases qe with
-      | reject =>
+  | .eval qe => by
+      exact match qe with
+      | .reject => by
           simp [checkedVerifierMachine]
-      | need mode qn =>
+      | .need mode qn => by
           simpa [checkedVerifierMachine] using
             checkedEval_transition_length_le_one (.need mode qn) symbol
-      | «have» mode qh =>
+      | .have mode qh => by
           simpa [checkedVerifierMachine] using
             checkedEval_transition_length_le_one (.have mode qh) symbol
-      | checkSource v =>
+      | .checkSource v => by
           simpa [checkedVerifierMachine] using
             checkedEval_transition_length_le_one (.checkSource v) symbol
-      | final v =>
+      | .final v => by
           simpa [checkedVerifierMachine] using
             checkedEval_transition_length_le_one (.final v) symbol
-  | reject =>
+  | .reject => by
       simp [checkedVerifierMachine]
 
 theorem checkedVerifier_successors_length_le_one
