@@ -211,7 +211,8 @@ theorem unary_reaches_fail_closed
       checkedStepEnvelope_le_loopEnvelope n
     omega
   refine ⟨m, Nat.le_trans hm2
-      (two_Nat.le_trans (loopEnvelope_le_rawMalformedSlice n) (slice_le_rawMalformedBudget fuel n)),
+      (Nat.le_trans (two_loopEnvelope_le_rawMalformedSlice n)
+        (slice_le_rawMalformedBudget fuel n)),
     dead, hmem, Or.inr ⟨hactive, hdead⟩⟩
 
 #print axioms MCore.Real.P01RawMalformedBaseProducer.short_reaches_fail_closed
