@@ -286,7 +286,8 @@ theorem prepared_canonical_accepts_exact_exists
         verifyBits_encode_iff]
       have hcnf : IsCNF phi :=
         (modeCheck_cnf_iff phi).1 hmode
-      simp [checkedVerifierMachine, checkedEvalRunLoopMachine, hcnf]
+      cases hval : evalCircuit (witnessAssignment witness) phi <;>
+        simp [checkedVerifierMachine, checkedEvalRunLoopMachine, hcnf, hval]
 
 #print axioms MCore.Real.P01DirectVerifierInhabitant.circuit_reject_certificate
 #print axioms MCore.Real.P01DirectVerifierInhabitant.prepared_canonical_reaches_reject
