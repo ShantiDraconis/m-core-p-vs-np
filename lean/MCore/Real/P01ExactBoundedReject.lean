@@ -547,8 +547,16 @@ theorem and_exact_bounded_reject
                 (encodeCircuit right ++ tail)
                 (encodeEvalFrames frames)
                 (.andRight (evalCircuit sigma left))
+                (by simp)
               simpa [encodeCircuit, List.append_assoc] using hLayout
-            simpa [afterLeft, leftConsumed] using hp
+            have hidx :
+                consumed +
+                    (true :: false :: false :: encodeCircuit left).length =
+                  afterLeft := by
+              simp [afterLeft, leftConsumed]
+              omega
+            rw [hidx] at hp
+            exact hp
 
           obtain ⟨m3, hm3, cfgReject, h3, hrej⟩ :=
             hrightReject hrightMode tail
@@ -849,8 +857,16 @@ theorem or_exact_bounded_reject
                 (encodeCircuit right ++ tail)
                 (encodeEvalFrames frames)
                 (.orRight (evalCircuit sigma left))
+                (by simp)
               simpa [encodeCircuit, List.append_assoc] using hLayout
-            simpa [afterLeft, leftConsumed] using hp
+            have hidx :
+                consumed +
+                    (true :: false :: true :: encodeCircuit left).length =
+                  afterLeft := by
+              simp [afterLeft, leftConsumed]
+              omega
+            rw [hidx] at hp
+            exact hp
 
           obtain ⟨m3, hm3, cfgReject, h3, hrej⟩ :=
             hrightReject hrightMode tail
