@@ -709,10 +709,9 @@ theorem and_exact_bounded_certificate
             modeCheck .cnf right = true := by
         have h := hmode
         rw [modeCheck_and] at h
-        cases hl : modeCheck .cnf left <;>
-          cases hr : modeCheck .cnf right <;>
-          simp [tagAllowed, hl, hr] at h
-        exact ⟨rfl, rfl⟩
+        have hOuter := (Bool.and_eq_true).mp h
+        have hInner := (Bool.and_eq_true).mp hOuter.1
+        exact ⟨hInner.2, hOuter.2⟩
       have hleftMode := hchildren.1
       have hrightMode := hchildren.2
 
@@ -1162,11 +1161,9 @@ theorem or_exact_bounded_certificate
         modeCheck .clause right = true := by
     have h := hmode
     rw [modeCheck_or] at h
-    cases ha : tagAllowed mode .or <;>
-      cases hl : modeCheck .clause left <;>
-      cases hr : modeCheck .clause right <;>
-      simp [ha, hl, hr] at h
-    exact ⟨⟨rfl, rfl⟩, rfl⟩
+    have hOuter := (Bool.and_eq_true).mp h
+    have hInner := (Bool.and_eq_true).mp hOuter.1
+    exact ⟨⟨hInner.1, hInner.2⟩, hOuter.2⟩
   have hAllowed : tagAllowed mode .or = true := hparts.1.1
   have hleftMode : modeCheck .clause left = true := hparts.1.2
   have hrightMode : modeCheck .clause right = true := hparts.2
@@ -1519,7 +1516,7 @@ theorem or_exact_bounded_certificate
       | nil =>
           obtain ⟨m5, hm5, cfgFinal, h5, hout5⟩ :=
             have_reaches_outcome_within_envelope
-              n mode witness finalValue [] []
+              n .clause witness finalValue [] []
               finalConsumed (padding2 + 3)
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
