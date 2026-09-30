@@ -3,6 +3,8 @@ import MCore.Real.P01ExactVerifierGlobalBudget
 import MCore.Real.P01CheckedVerifierCompositeNTM
 import MCore.Real.P01CheckedVerifierRun
 import MCore.Real.P01CheckedVerifierDeterminism
+import MCore.Real.P01ExactBoundedReject
+import MCore.Real.P01DirectVerifierInhabitant
 
 namespace MCore
 namespace Real
@@ -22,6 +24,8 @@ open P01CheckedVerifierRun
 open P01CheckedVerifierDeterminism
 open P01ExactBoundedCircuitProducer
 open P01ExactVerifierGlobalBudget
+open P01ExactBoundedReject
+open P01DirectVerifierInhabitant
 open P01WitnessPreservingPrep
 open P01NTMRunLaws
 
@@ -146,6 +150,227 @@ theorem prepared_cnf_reaches_semantic_final_within_exact_global
       refine ⟨m0 + m1, ?_, tape1, ?_⟩
       · simpa [n, hsrc] using hbudget
       · simpa [hsrc] using hAll
+
+
+/-- Canonical circuits that fail the CNF grammar reach physical reject under
+the same global cubic envelope. -/
+theorem prepared_invalid_canonical_reaches_reject_within_exact_global
+    (witness : BitString)
+    (phi : Circuit)
+    (hlen : varBound phi ≤ witness.length)
+    (hinvalid : modeCheck .cnf phi = false) :
+    ∃ m ≤ checkedVerifierExactTimeBound (encodeCircuit phi).length,
+      ∃ tape,
+        ({ state := .reject, tape := tape } : CheckedVerifierConfig) ∈
+          checkedVerifierMachine.runBranches m
+            [{ state := checkedVerifierMachine.initial,
+               tape := preparedTape witness (encodeCircuit phi) }] := by
+  have hne : encodeCircuit phi ≠ [] := by
+    cases phi <;> simp [encodeCircuit]
+  cases hsrc : encodeCircuit phi with
+  | nil =>
+      exact False.elim (hne hsrc)
+  | cons b bs =>
+      let n := (b :: bs).length
+      obtain ⟨m0, hm0, h0⟩ :=
+        prepared_nonempty_reaches_eval_start witness b bs
+
+      have hLayout :
+          CheckedLayoutBound n 0
+            (encodeCircuit phi ++ ([] : BitString))
+            (encodeEvalFrames []) := by
+        constructor
+        · simp [n, hsrc]
+        · simp
+
+      have hcert :=
+        circuit_exact_bounded_reject
+          (witnessAssignment witness) witness phi .cnf
+      obtain ⟨m1, hm1, cfg1, h1, hrej⟩ :=
+        hcert hinvalid [] [] 0 0 n hLayout hlen (by
+          intro i hi
+          rfl)
+
+      have h1src :
+          cfg1 ∈
+            checkedEvalRunLoopMachine.runBranches m1
+              [{ state := checkedEvalRunLoopMachine.initial,
+                 tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 }] := by
+        simpa [checkedEvalRunLoopMachine, hsrc] using h1
+
+      have hLift :=
+        checked_eval_mem_lift m1
+          ({ state := checkedEvalRunLoopMachine.initial,
+             tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 } :
+            Configuration CheckedEvalRunState (Option Bool))
+          cfg1 h1src
+
+      rcases cfg1 with ⟨q, tape1⟩
+      change q = .reject at hrej
+      subst q
+
+      have hLift' :
+          ({ state := .reject, tape := tape1 } : CheckedVerifierConfig) ∈
+            checkedVerifierMachine.runBranches m1
+              [({ state := .eval checkedEvalRunLoopMachine.initial,
+                  tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 } :
+                CheckedVerifierConfig)] := by
+        simpa [checkedEvalEmbed, P01NTMRunLaws.liftConfig] using hLift
+
+      have hAll :=
+        mem_runBranches_trans checkedVerifierMachine
+          m0 m1
+          [{ state := checkedVerifierMachine.initial,
+             tape := preparedTape witness (b :: bs) }]
+          ({ state := .eval checkedEvalRunLoopMachine.initial,
+             tape := evalCursorStackEndTape witness 0 (b :: bs) [] 0 } :
+            CheckedVerifierConfig)
+          ({ state := .reject, tape := tape1 } : CheckedVerifierConfig)
+          h0 hLift'
+
+      have hscan :
+          m0 ≤ 256 * (n + 1) ^ 2 :=
+        Nat.le_trans hm0 (scan_entry_le_exact_allowance n)
+
+      have hbudget :
+          m0 + m1 ≤ checkedVerifierExactTimeBound n := by
+        have henc : (encodeCircuit phi).length ≤ n := by
+          simp [n, hsrc]
+        have hcap :=
+          exact_evaluation_plus_scan_le_global n phi henc
+        omega
+
+      refine ⟨m0 + m1, ?_, tape1, ?_⟩
+      · simpa [n, hsrc] using hbudget
+      · simpa [hsrc] using hAll
+
+/-- Every canonical source halts by the single exact global cubic bound. -/
+theorem prepared_canonical_halts_within_exact_global
+    (witness : BitString)
+    (phi : Circuit)
+    (hlen : varBound phi ≤ witness.length) :
+    checkedVerifierMachine.HaltsWithin
+      (checkedVerifierExactTimeBound (encodeCircuit phi).length)
+      { state := checkedVerifierMachine.initial,
+        tape := preparedTape witness (encodeCircuit phi) } := by
+  let T := checkedVerifierExactTimeBound (encodeCircuit phi).length
+  cases hmode : modeCheck .cnf phi with
+  | false =>
+      obtain ⟨m, hm, tape, hreach⟩ :=
+        prepared_invalid_canonical_reaches_reject_within_exact_global
+          witness phi hlen hmode
+      have hhalt :
+          Halted checkedVerifierMachine
+            ({ state := .reject, tape := tape } : CheckedVerifierConfig) := by
+        simp [Halted, checkedVerifierMachine]
+      have hmhalt :=
+        haltsWithin_of_reaches_halted m
+          { state := checkedVerifierMachine.initial,
+            tape := preparedTape witness (encodeCircuit phi) }
+          ({ state := .reject, tape := tape } : CheckedVerifierConfig)
+          hreach hhalt
+      exact haltsWithin_mono_le checkedVerifierMachine m T
+        (by simpa [T] using hm) hmhalt
+  | true =>
+      obtain ⟨m, hm, tape, hreach⟩ :=
+        prepared_cnf_reaches_semantic_final_within_exact_global
+          (witnessAssignment witness) witness phi hmode hlen (by
+            intro i hi
+            rfl)
+      have hhalt :
+          Halted checkedVerifierMachine
+            ({ state :=
+                 .eval (.final
+                   (evalCircuit (witnessAssignment witness) phi)),
+               tape := tape } : CheckedVerifierConfig) := by
+        unfold Halted
+        cases hval : evalCircuit (witnessAssignment witness) phi <;>
+          simp [checkedVerifierMachine, checkedEvalRunLoopMachine, hval]
+      have hmhalt :=
+        haltsWithin_of_reaches_halted m
+          { state := checkedVerifierMachine.initial,
+            tape := preparedTape witness (encodeCircuit phi) }
+          ({ state :=
+               .eval (.final
+                 (evalCircuit (witnessAssignment witness) phi)),
+             tape := tape } : CheckedVerifierConfig)
+          hreach hhalt
+      exact haltsWithin_mono_le checkedVerifierMachine m T
+        (by simpa [T] using hm) hmhalt
+
+/-- Canonical-source correctness at the fixed global fuel, not merely at an
+existentially chosen stopping time. -/
+theorem prepared_canonical_accepts_iff_exact_global
+    (witness : BitString)
+    (phi : Circuit)
+    (hlen : varBound phi ≤ witness.length) :
+    checkedVerifierMachine.AcceptsWithin
+        (checkedVerifierExactTimeBound (encodeCircuit phi).length)
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness (encodeCircuit phi) } ↔
+      P01GuessedWitnessRelation.VerifyBits (encodeCircuit phi) witness := by
+  let T := checkedVerifierExactTimeBound (encodeCircuit phi).length
+  let start : CheckedVerifierConfig :=
+    { state := checkedVerifierMachine.initial,
+      tape := preparedTape witness (encodeCircuit phi) }
+  cases hmode : modeCheck .cnf phi with
+  | false =>
+      obtain ⟨m, hm, tape, hreach⟩ :=
+        prepared_invalid_canonical_reaches_reject_within_exact_global
+          witness phi hlen hmode
+      let terminal : CheckedVerifierConfig :=
+        { state := .reject, tape := tape }
+      have hhalt : Halted checkedVerifierMachine terminal := by
+        simp [terminal, Halted, checkedVerifierMachine]
+      have hreachT :
+          terminal ∈ checkedVerifierMachine.runBranches T [start] := by
+        have hp :=
+          mem_runBranches_persist checkedVerifierMachine
+            m (T - m) [start] terminal
+            (by simpa [start, terminal] using hreach) hhalt
+        have heq : m + (T - m) = T := by
+          have : m ≤ T := by simpa [T] using hm
+          omega
+        simpa [heq] using hp
+      rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
+      have hnotcnf : ¬ IsCNF phi := by
+        intro hcnf
+        have ht := (modeCheck_cnf_iff phi).2 hcnf
+        rw [hmode] at ht
+        contradiction
+      simp [terminal, checkedVerifierMachine, verifyBits_encode_iff,
+        hnotcnf]
+  | true =>
+      obtain ⟨m, hm, tape, hreach⟩ :=
+        prepared_cnf_reaches_semantic_final_within_exact_global
+          (witnessAssignment witness) witness phi hmode hlen (by
+            intro i hi
+            rfl)
+      let value := evalCircuit (witnessAssignment witness) phi
+      let terminal : CheckedVerifierConfig :=
+        { state := .eval (.final value), tape := tape }
+      have hhalt : Halted checkedVerifierMachine terminal := by
+        unfold terminal value Halted
+        cases hval : evalCircuit (witnessAssignment witness) phi <;>
+          simp [checkedVerifierMachine, checkedEvalRunLoopMachine, hval]
+      have hreachT :
+          terminal ∈ checkedVerifierMachine.runBranches T [start] := by
+        have hp :=
+          mem_runBranches_persist checkedVerifierMachine
+            m (T - m) [start] terminal
+            (by simpa [start, terminal, value] using hreach) hhalt
+        have heq : m + (T - m) = T := by
+          have : m ≤ T := by simpa [T] using hm
+          omega
+        simpa [heq] using hp
+      rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
+      have hcnf : IsCNF phi :=
+        (modeCheck_cnf_iff phi).1 hmode
+      cases hval : evalCircuit (witnessAssignment witness) phi <;>
+        simp [terminal, value, checkedVerifierMachine,
+          checkedEvalRunLoopMachine, verifyBits_encode_iff,
+          witnessAssignment, hcnf, hval]
+
 
 #print axioms MCore.Real.P01ExactVerifierCanonicalRun.scan_entry_le_exact_allowance
 #print axioms MCore.Real.P01ExactVerifierCanonicalRun.prepared_cnf_reaches_semantic_final_within_exact_global
