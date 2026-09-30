@@ -138,15 +138,11 @@ source length. -/
 def rawMalformedBudget (fuel n : Nat) : Nat :=
   (fuel + 1) * rawMalformedSlice n
 
-/-- Terminal raw obligation after all reusable circuit-level machinery has been
-factored out: only genuine decoder failure still requires a physical producer.
-
-This type is intentionally not assumed or inhabited here. It is the exact
-object the remaining raw recursion must construct. -/
-def RawMalformedPhysicalProducer : Prop :=
+/-- Raw malformed rejection contract at one fixed decoder fuel. -/
+def RawMalformedAtFuel (fuel : Nat) : Prop :=
   ∀ (witness bits frameStack : BitString)
       (mode : SyntaxMode)
-      (consumed padding n fuel : Nat),
+      (consumed padding n : Nat),
     bits.length < fuel →
     decodeCircuitCore fuel bits = none →
     CheckedLayoutBound n consumed bits frameStack →
@@ -159,6 +155,12 @@ def RawMalformedPhysicalProducer : Prop :=
                evalCursorStackEndTape witness consumed
                  bits frameStack padding }] ∧
         EvalFailClosed cfg
+
+/-- Terminal raw obligation after all reusable circuit-level machinery has been
+factored out: every sufficient-fuel decoder failure must become physical
+fail-closed execution. -/
+def RawMalformedPhysicalProducer : Prop :=
+  ∀ fuel : Nat, RawMalformedAtFuel fuel
 
 /-- Once the raw malformed producer exists, structural raw parsing has no
 remaining case outside the exact positive/negative producers. -/
