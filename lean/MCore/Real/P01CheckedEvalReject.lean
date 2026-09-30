@@ -760,6 +760,40 @@ theorem or_reject_certificate
 
           exact ⟨m0 + m1 + m2 + m3, cfgReject, hAll, hrej⟩
 
+
+/-- Total structural rejection certificate.
+
+Every semantic circuit that fails the selected syntax mode is physically
+driven to the checked evaluator's reject state.  This theorem introduces no
+new hypothesis: it is only the structural induction closing the five local
+rejection producers above. -/
+theorem circuit_reject_certificate
+    (sigma : Assignment)
+    (witness : BitString) :
+    ∀ (phi : Circuit) (mode : SyntaxMode),
+      CheckedCircuitRejectCertificate sigma witness mode phi := by
+  intro phi
+  induction phi with
+  | input i =>
+      intro mode
+      exact input_reject_certificate sigma witness mode i
+  | const v =>
+      intro mode
+      exact const_reject_certificate sigma witness mode v
+  | not child ih =>
+      intro mode
+      exact not_reject_certificate sigma witness mode child
+  | and left right ihLeft ihRight =>
+      intro mode
+      exact and_reject_certificate sigma witness left right
+        (ihLeft .cnf) (ihRight .cnf) mode
+  | or left right ihLeft ihRight =>
+      intro mode
+      exact or_reject_certificate sigma witness left right
+        (ihLeft .clause) (ihRight .clause) mode
+
+#print axioms MCore.Real.P01CheckedEvalReject.circuit_reject_certificate
+
 #print axioms MCore.Real.P01CheckedEvalReject.or_reject_certificate
 
 
