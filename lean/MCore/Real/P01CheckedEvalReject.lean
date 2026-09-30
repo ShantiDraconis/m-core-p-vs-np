@@ -17,6 +17,7 @@ open P01NeedExprCompositeNTM
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunTagPrefix
 open P01CheckedEvalRunNeedTags
+open P01NTMRunLaws
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
