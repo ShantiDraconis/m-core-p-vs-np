@@ -1,0 +1,44 @@
+name: atk-p01-direct-terminal
+
+on:
+  push:
+    branches:
+      - atk/direct-p01-terminal-v2-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-neg:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
+      - name: Source firewall
+        run: |
+          set -euo pipefail
+          FILE=lean/MCore/Real/P01CheckedEvalRunBoundedNeg.lean
+          ! grep -n -E '(^|[^[:alnum:]_])(sorry|admit|sorryAx|unsafe|cheat|bypass|placeholder)([^[:alnum:]_]|$)' "$FILE"
+          ! grep -n -E '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(axiom|constant|constants)[[:space:]]' "$FILE"
+      - name: Build bounded negation certificate
+        run: lake build MCore.Real.P01CheckedEvalRunBoundedNeg
+      - name: Axiom audit
+        run: |
+          cat > P01DirectTerminalAxioms.lean <<'EOF'
+          import MCore.Real.P01CheckedEvalRunBoundedNeg
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedNeg.neg_budget_absorbs
+          #print axioms MCore.Real.P01CheckedEvalRunBoundedNeg.neg_bounded_certificate
+          EOF
+          lake env lean P01DirectTerminalAxioms.lean | tee p01-direct-terminal-axioms.txt
+          ! grep -E 'sorryAx' p01-direct-terminal-axioms.txt
