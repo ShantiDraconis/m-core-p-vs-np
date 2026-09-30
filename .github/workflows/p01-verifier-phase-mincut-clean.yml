@@ -9,6 +9,7 @@ on:
       - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
       - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
       - 'lean/MCore/Real/P01IntegratedAssembly.lean'
+      - 'lean/MCore/Real/P01CheckedVerifierFiniteState.lean'
       - 'lean-toolchain'
       - 'lakefile.lean'
   workflow_dispatch:
