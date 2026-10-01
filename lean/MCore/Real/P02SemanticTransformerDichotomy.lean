@@ -98,7 +98,7 @@ theorem alignment_of_not_constantCorrectPattern
 
 /-- Exact reduced semantic core: after the safe constant transformer handles
 all other candidates, only total-clocked candidates already correct on the two
-constant SAT encodings remain. -/
+fixed SAT encodings remain. -/
 def ConstantPatternSemanticCore : Prop :=
   ∀ M : PolyDTMCandidate,
     DeclaredClockTotal M →
