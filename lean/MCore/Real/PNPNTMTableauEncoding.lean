@@ -519,6 +519,167 @@ def ntmIndexedTransitions
     List (Nat × (State × Symbol × Direction)) :=
   ntmIndexedTransitionsAux 0 ts
 
+
+
+theorem evalNTMClause_append
+    (sigma : Assignment) (c1 c2 : NTMClause) :
+    evalNTMClause sigma (c1 ++ c2) = true <->
+      evalNTMClause sigma c1 = true \/
+      evalNTMClause sigma c2 = true := by
+  induction c1 with
+  | nil =>
+      simp [evalNTMClause]
+  | cons l ls ih =>
+      simp [evalNTMClause, ih, Bool.or_eq_true, or_assoc]
+
+theorem evalNTMClause_map_pos_exists
+    {α : Type}
+    (sigma : Assignment)
+    (xs : List α)
+    (v : α -> Nat) :
+    evalNTMClause sigma (xs.map (fun a => ntmPos (v a))) = true <->
+      ∃ a ∈ xs, sigma (v a) = true := by
+  induction xs with
+  | nil =>
+      simp [evalNTMClause]
+  | cons a as ih =>
+      simp [evalNTMClause, evalNTMLiteral, ntmPos, ih,
+        Bool.or_eq_true, or_assoc]
+
+theorem indexedTransitions_index_lt
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    {j : Nat} {tr : State × Symbol × Direction}
+    (h : (j, tr) ∈ ntmIndexedTransitions ts) :
+    j < ts.length := by
+  unfold ntmIndexedTransitions at h
+  generalize hstart : 0 = start at h
+  clear hstart
+  induction ts generalizing start j tr with
+  | nil =>
+      simp [ntmIndexedTransitionsAux] at h
+  | cons x xs ih =>
+      simp [ntmIndexedTransitionsAux] at h
+      rcases h with h | h
+      · rcases h with ⟨rfl, rfl⟩
+        simp
+      · have hj := ih (start := start + 1) h
+        simp at hj ⊢
+        omega
+
+theorem boundedExec_transitionStep_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t) :
+    evalNTMCNF sigma (ntmTransitionStepCNF M x t s) = true := by
+  have hAll :=
+    (evalNTMCNF_append sigma
+      (ntmInitialCNF M x t)
+      (ntmTransitionsCNF M x t ++ ntmFinalAcceptanceCNF M t)).mp
+      (by simpa [boundedExecTableauCNF_NTM, List.append_assoc] using hSat)
+  have hTransFinal := hAll.2
+  have hTrans :=
+    (evalNTMCNF_append sigma
+      (ntmTransitionsCNF M x t)
+      (ntmFinalAcceptanceCNF M t)).mp hTransFinal
+  exact (evalNTMCNF_flatMap_range sigma t
+    (fun r => ntmTransitionStepCNF M x t r)).mp
+      (by simpa [ntmTransitionsCNF] using hTrans.1) s hs
+
+theorem transitionStep_case_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hStep : evalNTMCNF sigma (ntmTransitionStepCNF M x t s) = true) :
+    evalNTMCNF sigma (ntmTransitionCaseCNF M x t s q a) = true := by
+  have hq :=
+    (evalNTMCNF_map_flatten_ofFn sigma
+      (fun q : Fin (M.stateCount + 1) =>
+        ntmAlphabet.flatMap fun a =>
+          ntmTransitionCaseCNF M x t s q a)).mp
+      (by simpa [ntmTransitionStepCNF] using hStep) q
+  exact (evalNTMCNF_flatMap_list sigma ntmAlphabet
+    (fun a => ntmTransitionCaseCNF M x t s q a)).mp hq a
+      (by cases a <;> simp [ntmAlphabet])
+
+theorem activeChoice_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hCase : evalNTMCNF sigma (ntmTransitionCaseCNF M x t s q a) = true)
+    (hActive :
+      M.machine.accepting q = false ∧
+      M.machine.rejecting q = false) :
+    evalNTMCNF sigma (ntmActiveChoiceCNF M x t s q a) = true := by
+  have hor :
+      M.machine.accepting q || M.machine.rejecting q = false := by
+    simp [hActive.1, hActive.2]
+  simpa [ntmTransitionCaseCNF, hor] using hCase
+
+theorem ntmChoice_exists_nat_of_guard
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hActiveSat :
+      evalNTMCNF sigma (ntmActiveChoiceCNF M x t s q a) = true)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true) :
+    ∃ j tr,
+      (j, tr) ∈ ntmIndexedTransitions (M.machine.transition q a) ∧
+      sigma (ntmChoiceVar M x t s q a j) = true := by
+  have hfirst :=
+    (evalNTMCNF_append sigma
+      [[ntmGuardChoiceClause M x t s q a]]
+      ((ntmIndexedTransitions (M.machine.transition q a)).flatMap
+          (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+       ntmAtMostOneChoiceCNF M x t s q a ++
+       (ntmIndexedTransitions (M.machine.transition q a)).flatMap
+          (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
+      (by simpa [ntmActiveChoiceCNF, List.append_assoc] using hActiveSat)
+  have hclause :
+      evalNTMClause sigma (ntmGuardChoiceClause M x t s q a) = true := by
+    simpa [evalNTMCNF] using hfirst.1
+  have htail :
+      evalNTMClause sigma
+        ((ntmIndexedTransitions (M.machine.transition q a)).map
+          (fun p => ntmPos (ntmChoiceVar M x t s q a p.1))) = true := by
+    have happ :=
+      (evalNTMClause_append sigma
+        [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+        ((ntmIndexedTransitions (M.machine.transition q a)).map
+          (fun p => ntmPos (ntmChoiceVar M x t s q a p.1)))).mp
+        (by simpa [ntmGuardChoiceClause] using hclause)
+    rcases happ with hneg | htail
+    · simp [evalNTMClause, evalNTMLiteral, ntmNeg, hq, ha] at hneg
+    · exact htail
+  rcases (evalNTMClause_map_pos_exists sigma
+    (ntmIndexedTransitions (M.machine.transition q a))
+    (fun p => ntmChoiceVar M x t s q a p.1)).mp htail with
+    ⟨p, hp, hptrue⟩
+  exact ⟨p.1, p.2, hp, hptrue⟩
+
+theorem ntmChoice_exists_of_guard
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hActive :
+      M.machine.accepting q = false ∧ M.machine.rejecting q = false) :
+    ∃ j : Fin (M.machine.transition q a).length,
+      sigma (ntmChoiceVar M x t s q a j.val) = true := by
+  have hStep := boundedExec_transitionStep_sat M x t s sigma hSat hs
+  have hCase := transitionStep_case_sat M x t s q a sigma hStep
+  have hActiveSat := activeChoice_sat M x t s q a sigma hCase hActive
+  rcases ntmChoice_exists_nat_of_guard
+      M x t s q a sigma hActiveSat hq ha with
+    ⟨j, tr, hjmem, hjtrue⟩
+  exact ⟨⟨j, indexedTransitions_index_lt
+    (M.machine.transition q a) hjmem⟩, hjtrue⟩
+
 def ntmChoiceGuardCNF
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (q : Fin (M.stateCount + 1)) (a : Option Bool) (j : Nat) : NTMCNF :=
