@@ -11,11 +11,11 @@ on:
       - 'lean/MCore/Real/P02TotalCandidateSemanticCore.lean'
       - 'lean/MCore/Real/P02SemanticTransformerCore.lean'
       - 'lean/MCore/Real/P02SemanticTransformerDichotomy.lean'
+      - 'lean/MCore/Real/P02SemanticFlipCore.lean'
+      - 'lean/MCore/Real/P02ComplementTableauDiagonal.lean'
       - 'lean/MCore/Real/P02DiagonalOrbitCore.lean'
       - 'lean/MCore/Real/P02SemanticAlignmentCountermodel.lean'
       - 'lean/MCore/Real/P02CookLevinSameInputCore.lean'
-      - 'lean/MCore/Real/P02SemanticFlipCore.lean'
-      - 'lean/MCore/Real/P02ComplementTableauDiagonal.lean'
       - 'audit/ATK_P02_TOTAL_CANDIDATE_SEMANTIC_CORE_V1.json'
       - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
       - 'audit/ATK_P02_KLEENE_PORT_COMPAT_V1.json'
@@ -31,7 +31,12 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
       - name: Resolve dependencies
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
@@ -45,11 +50,11 @@ jobs:
           lake build MCore.Real.P02TotalCandidateSemanticCore
           lake build MCore.Real.P02SemanticTransformerCore
           lake build MCore.Real.P02SemanticTransformerDichotomy
+          lake build MCore.Real.P02SemanticFlipCore
+          lake build MCore.Real.P02ComplementTableauDiagonal
           lake build MCore.Real.P02DiagonalOrbitCore
           lake build MCore.Real.P02SemanticAlignmentCountermodel
           lake build MCore.Real.P02CookLevinSameInputCore
-          lake build MCore.Real.P02SemanticFlipCore
-          lake build MCore.Real.P02ComplementTableauDiagonal
       - name: Exact axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
@@ -60,11 +65,11 @@ jobs:
           import MCore.Real.P02TotalCandidateSemanticCore
           import MCore.Real.P02SemanticTransformerCore
           import MCore.Real.P02SemanticTransformerDichotomy
+          import MCore.Real.P02SemanticFlipCore
+          import MCore.Real.P02ComplementTableauDiagonal
           import MCore.Real.P02DiagonalOrbitCore
           import MCore.Real.P02SemanticAlignmentCountermodel
           import MCore.Real.P02CookLevinSameInputCore
-          import MCore.Real.P02SemanticFlipCore
-          import MCore.Real.P02ComplementTableauDiagonal
           #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_iff_universal_failure
@@ -76,48 +81,26 @@ jobs:
           #print axioms MCore.Real.P02ExplicitClockNormalForm.explicit_clock_producer_implies_universal_failure
           #print axioms MCore.Real.P02FailureNormalForms.semanticDisagreement_iff_not_semantic_correct
           #print axioms MCore.Real.P02FailureNormalForms.normalizedFailure_iff_not_correctAt
-          #print axioms MCore.Real.P02FailureNormalForms.NormalizedCounterexampleProducer.toFailureGenerator
           #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_iff_universal_failure
-          #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_closes_internal_endpoint
-          #print axioms MCore.Real.P02TotalCandidateSemanticCore.exists_timeout_of_not_total
-          #print axioms MCore.Real.P02TotalCandidateSemanticCore.candidate_failure_of_total_semantic
           #print axioms MCore.Real.P02TotalCandidateSemanticCore.total_semantic_core_iff_universal_failure
-          #print axioms MCore.Real.P02TotalCandidateSemanticCore.total_semantic_core_closes_internal_endpoint
-          #print axioms MCore.Real.P02SemanticTransformerCore.semanticNegationBits_valid
           #print axioms MCore.Real.P02SemanticTransformerCore.semanticNegationBits_flip
-          #print axioms MCore.Real.P02SemanticTransformerCore.transformed_output_fails_semantically
-          #print axioms MCore.Real.P02SemanticTransformerCore.semantic_alignment_core_implies_universal_failure
-          #print axioms MCore.Real.P02SemanticTransformerDichotomy.falseBits_not_sat
-          #print axioms MCore.Real.P02SemanticTransformerDichotomy.trueBits_sat
           #print axioms MCore.Real.P02SemanticTransformerDichotomy.alignment_or_constantCorrectPattern
           #print axioms MCore.Real.P02SemanticTransformerDichotomy.constant_pattern_core_iff_universal_failure
-          #print axioms MCore.Real.P02DiagonalOrbitCore.not_alignment_implies_semantic_correct_next
-          #print axioms MCore.Real.P02DiagonalOrbitCore.alignment_or_correctAt_next
-          #print axioms MCore.Real.P02DiagonalOrbitCore.orbit_correct_of_no_alignment
-          #print axioms MCore.Real.P02DiagonalOrbitCore.orbit_alignment_or_constant_orbit_correct
+          #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_iff_universal_failure
+          #print axioms MCore.Real.P02ComplementTableauDiagonal.diagonalBits_sat_iff_not_declaredAccepts
+          #print axioms MCore.Real.P02ComplementTableauDiagonal.alignment_core_implies_universal_failure
           #print axioms MCore.Real.P02DiagonalOrbitCore.orbit_residual_core_iff_universal_failure
-          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.constantPair_declared_total
           #print axioms MCore.Real.P02SemanticAlignmentCountermodel.constantPair_no_output_alignment
           #print axioms MCore.Real.P02SemanticAlignmentCountermodel.semanticAlignmentCore_refuted
           #print axioms MCore.Real.P02CookLevinSameInputCore.rejectTransform_sat_iff_not_accepts
           #print axioms MCore.Real.P02CookLevinSameInputCore.SameInputWitness.semanticFlip
-          #print axioms MCore.Real.P02CookLevinSameInputCore.sameInputCore_implies_semanticFlipCore
           #print axioms MCore.Real.P02CookLevinSameInputCore.sameInputCore_implies_universal_failure
-          #print axioms MCore.Real.P02SemanticFlipCore.semanticFlip_iff_semanticDisagreement
-          #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_iff_total_semantic_core
-          #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_iff_universal_failure
-          #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_closes_internal_endpoint
-          #print axioms MCore.Real.P02ComplementTableauDiagonal.complement_acceptsAtFuel_iff_not
-          #print axioms MCore.Real.P02ComplementTableauDiagonal.diagonalBits_sat_iff_not_declaredAccepts
-          #print axioms MCore.Real.P02ComplementTableauDiagonal.semanticFlip_diagonalBits_of_alignment
-          #print axioms MCore.Real.P02ComplementTableauDiagonal.alignment_core_implies_semantic_flip_core
-          #print axioms MCore.Real.P02ComplementTableauDiagonal.alignment_core_implies_universal_failure
           EOF
           lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
           ! grep -E 'sorryAx' P02UniversalFailureAudit.log
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean"
+          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
