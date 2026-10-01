@@ -1,4 +1,3 @@
-import Mathlib.Tactic
 import MCore.Real.P02SemanticTransformerCore
 import MCore.Real.P02CookLevinSameInputCore
 import MCore.Real.P02BoundedComputationEncoding
