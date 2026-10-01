@@ -5830,6 +5830,151 @@ theorem pathAssignment_case_guard_true_of_mismatch
   · have hh := pathAssignment_head_neg_of_ne M x t path hPath s (by omega) a ha
     simp [evalNTMClause, hh]
 
+
+theorem eval_copyLeftAll_guard_true
+    (sigma : Assignment) (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (hg : evalNTMClause sigma guard = true) :
+    evalNTMCNF sigma (ntmCopyLeftAll guard M x t s) = true := by
+  rw [show ntmCopyLeftAll guard M x t s =
+      (List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmCopySymbolClauses guard
+          (ntmLeftVar M x t s i)
+          (ntmLeftVar M x t (s + 1) i)) by rfl]
+  rw [evalNTMCNF_flatMap_range]
+  intro i hi
+  exact eval_copySymbol_guard_true sigma guard
+    (ntmLeftVar M x t s i) (ntmLeftVar M x t (s + 1) i) hg
+
+theorem eval_copyRightAll_guard_true
+    (sigma : Assignment) (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (hg : evalNTMClause sigma guard = true) :
+    evalNTMCNF sigma (ntmCopyRightAll guard M x t s) = true := by
+  rw [show ntmCopyRightAll guard M x t s =
+      (List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmCopySymbolClauses guard
+          (ntmRightVar M x t s i)
+          (ntmRightVar M x t (s + 1) i)) by rfl]
+  rw [evalNTMCNF_flatMap_range]
+  intro i hi
+  exact eval_copySymbol_guard_true sigma guard
+    (ntmRightVar M x t s i) (ntmRightVar M x t (s + 1) i) hg
+
+theorem eval_stayEffect_guard_true
+    (sigma : Assignment) (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
+    (hg : evalNTMClause sigma guard = true) :
+    evalNTMCNF sigma (ntmStayEffectCNF guard M x t s qNext write) = true := by
+  simp only [ntmStayEffectCNF, evalNTMCNF_append]
+  exact ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg,
+    eval_setSymbol_guard_true sigma guard (ntmHeadVar M t (s + 1)) write hg,
+    eval_copyLeftAll_guard_true sigma guard M x t s hg,
+    eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+
+theorem eval_leftEffect_guard_true
+    (sigma : Assignment) (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
+    (hg : evalNTMClause sigma guard = true) :
+    evalNTMCNF sigma (ntmLeftEffectCNF guard M x t s qNext write) = true := by
+  unfold ntmLeftEffectCNF
+  simp only [evalNTMCNF_append]
+  refine ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg, ?_⟩
+  refine ⟨eval_copySymbol_guard_true sigma guard
+    (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)) hg, ?_⟩
+  refine ⟨?_, ?_⟩
+  · rw [evalNTMCNF_flatMap_range]
+    intro i hi
+    exact eval_copySymbol_guard_true sigma guard
+      (ntmLeftVar M x t s (i + 1))
+      (ntmLeftVar M x t (s + 1) i) hg
+  · refine ⟨eval_setSymbol_guard_true sigma guard
+      (ntmLeftVar M x t (s + 1) (ntmRadius x t - 1))
+      M.machine.blank hg, ?_⟩
+    refine ⟨eval_setSymbol_guard_true sigma guard
+      (ntmRightVar M x t (s + 1) 0) write hg, ?_⟩
+    rw [evalNTMCNF_flatMap_range]
+    intro i hi
+    exact eval_copySymbol_guard_true sigma guard
+      (ntmRightVar M x t s i)
+      (ntmRightVar M x t (s + 1) (i + 1)) hg
+
+theorem eval_rightEffect_guard_true
+    (sigma : Assignment) (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
+    (hg : evalNTMClause sigma guard = true) :
+    evalNTMCNF sigma (ntmRightEffectCNF guard M x t s qNext write) = true := by
+  unfold ntmRightEffectCNF
+  simp only [evalNTMCNF_append]
+  refine ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg, ?_⟩
+  refine ⟨eval_copySymbol_guard_true sigma guard
+    (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1)) hg, ?_⟩
+  refine ⟨eval_setSymbol_guard_true sigma guard
+    (ntmLeftVar M x t (s + 1) 0) write hg, ?_⟩
+  refine ⟨?_, ?_⟩
+  · rw [evalNTMCNF_flatMap_range]
+    intro i hi
+    exact eval_copySymbol_guard_true sigma guard
+      (ntmLeftVar M x t s i)
+      (ntmLeftVar M x t (s + 1) (i + 1)) hg
+  · refine ⟨?_, eval_setSymbol_guard_true sigma guard
+      (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
+      M.machine.blank hg⟩
+    rw [evalNTMCNF_flatMap_range]
+    intro i hi
+    exact eval_copySymbol_guard_true sigma guard
+      (ntmRightVar M x t s (i + 1))
+      (ntmRightVar M x t (s + 1) i) hg
+
+theorem eval_choiceEffect_of_choice_false
+    (sigma : Assignment)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (entry : Nat × (Fin (M.stateCount + 1) × Option Bool × Direction))
+    (hfalse : sigma (ntmChoiceVar M x t s q a entry.1) = false) :
+    evalNTMCNF sigma (ntmChoiceEffectCNF M x t s q a entry) = true := by
+  have hg :
+      evalNTMClause sigma [ntmNeg (ntmChoiceVar M x t s q a entry.1)] = true := by
+    simp [evalNTMClause, evalNTMLiteral, ntmNeg, hfalse]
+  rcases entry with ⟨j, qNext, write, d⟩
+  cases d with
+  | stay =>
+      exact eval_stayEffect_guard_true sigma
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M x t s qNext write hg
+  | left =>
+      exact eval_leftEffect_guard_true sigma
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M x t s qNext write hg
+  | right =>
+      exact eval_rightEffect_guard_true sigma
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M x t s qNext write hg
+
+theorem pathAssignment_choice_false_of_mismatch
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Nat)
+    (hj : j < (M.machine.transition q a).length)
+    (hmismatch :
+      q ≠ (path ⟨s, by omega⟩).state ∨
+      a ≠ (path ⟨s, by omega⟩).tape.head) :
+    pathAssignment M x t path hPath (ntmChoiceVar M x t s q a j) = false := by
+  apply pathAssignment_choice_unselected M x t path hPath s hs q a j
+  · have hb := ntmBranchBound_ge_transition_length M q a
+    omega
+  · intro h
+    rcases h with ⟨hactive, hq, ha, hjEq⟩
+    rcases hmismatch with hqm | ham
+    · exact hqm hq
+    · exact ham ha
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
