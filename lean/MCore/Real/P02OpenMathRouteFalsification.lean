@@ -53,7 +53,18 @@ theorem initialRightPart_length
         ((inputTape x).right.getD i M.machine.blank)).length =
       3 * radius x t := by
   rw [List.length_flatMap]
-  simp [setRightCell_length, Nat.mul_comm]
+  have hsum :
+      ∀ n : Nat,
+        (List.map (fun _ : Nat => 3) (List.range n)).sum = 3 * n := by
+    intro n
+    induction n with
+    | zero =>
+        simp
+    | succ n ih =>
+        rw [List.range_succ, List.map_append, List.sum_append]
+        simp [ih, Nat.mul_succ, Nat.add_assoc, Nat.add_comm,
+          Nat.add_left_comm]
+  simpa [setRightCell_length] using hsum (radius x t)
 
 theorem boundedExecTableauCNF_length_gt_input
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
