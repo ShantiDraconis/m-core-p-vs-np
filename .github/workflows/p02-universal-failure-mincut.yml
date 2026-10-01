@@ -9,7 +9,7 @@ on:
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorReduction.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorResidualCore.lean'
-      - 'lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean lean/MCore/Real/P02FiniteDescriptorInfiniteOrbit.lean'
+      - 'lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorInfiniteOrbit.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorAlternation.lean'
