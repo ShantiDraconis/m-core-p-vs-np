@@ -50,8 +50,46 @@ import re, sys
 
 text = Path("audit/P02-targeted-axioms.log").read_text()
 allowed = {"propext", "Classical.choice", "Quot.sound"}
-bad = set()
+expected = [
+  "MCore.Real.P02OperatorKernel.p02Producer_iff_failureGenerator",
+  "MCore.Real.P02OperatorKernel.p02Producer_iff_universalFailure",
+  "MCore.Real.P02OperatorKernel.canonicalSATProducer_iff_notInP",
+  "MCore.Real.P02FinalCompression.p01_closed",
+  "MCore.Real.P02FinalCompression.canonical_sat_in_np",
+  "MCore.Real.P02FinalCompression.canonical_p02_operator_closes",
+  "MCore.Real.P02FinalCompression.final_open_math_iff_sat_not_in_p",
+  "MCore.Real.P02FinalCompression.final_open_math_closes",
+  "MCore.Real.P02KleeneKernel.kleene_fixed_point",
+  "MCore.Real.P02KleeneKernel.fixed_flip_fails",
+  "MCore.Real.P02KleeneKernel.fixedCode_spec",
+  "MCore.Real.P02KleeneKernel.kleene_bridge_closes_p02",
+  "MCore.Real.P02KleeneKernel.kleene_bridge_closes_not_in_p",
+  "MCore.Real.P02EffectiveAlignment.uniform_effective_coverage_closes_p02",
+  "MCore.Real.P02UniversalLowerBound.correctAt_iff_halts_and_semantics",
+  "MCore.Real.P02UniversalLowerBound.failureAt_iff_nonhalting_or_mismatch",
+  "MCore.Real.P02UniversalLowerBound.semanticMismatch_iff_wrong_yes_or_wrong_no",
+  "MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_universalFailure",
+  "MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_notInP",
+  "MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_operational",
+  "MCore.Real.P02UniversalLowerBound.failureAt_of_totalClocked_iff_mismatch",
+  "MCore.Real.P02UniversalLowerBound.semanticAdversary_closes",
+  "MCore.Real.P02UniversalLowerBound.selector_closes_notInP",
+  "MCore.Real.P02UniversalKernel.SemanticDiagonalWitness.mismatch",
+  "MCore.Real.P02UniversalKernel.SemanticDiagonalWitness.fails",
+  "MCore.Real.P02UniversalKernel.semanticDiagonalFamily_closes_lowerBound",
+  "MCore.Real.P02UniversalKernel.semanticDiagonalFamily_closes_notInP",
+  "MCore.Real.P02UniversalKernel.semanticFamily_iff_pointwise",
+  "MCore.Real.P02UniversalKernel.pointwiseSemanticDiagonal_closes_p02",
+  "MCore.Real.P02UniversalKernel.semanticDiagonalFamily_to_final_open_math",
+  "MCore.Real.P02UniversalKernel.semanticDiagonalFamily_closes_final",
+]
 
+missing = [name for name in expected if name not in text]
+if missing:
+    print("ERROR: missing #print axioms output for:", missing)
+    sys.exit(1)
+
+bad = set()
 for line in text.splitlines():
     m = re.search(r"depends on axioms:\s*\[(.*)\]", line)
     if not m:
