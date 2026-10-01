@@ -6782,6 +6782,193 @@ theorem pathAssignment_selected_effect_sat
                 using hout
             simpa [c', hcell]
 
+
+theorem indexedTransitions_index_value
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (j : Nat) (tr : State × Symbol × Direction)
+    (hmem : (j, tr) ∈ ntmIndexedTransitions ts)
+    (hj : j < ts.length) :
+    tr = ts.get ⟨j, hj⟩ := by
+  unfold ntmIndexedTransitions at hmem
+  generalize hstart : 0 = start at hmem
+  subst start
+  induction ts generalizing j tr with
+  | nil =>
+      simp at hj
+  | cons x xs ih =>
+      cases j with
+      | zero =>
+          simp [ntmIndexedTransitionsAux] at hmem
+          simpa [hmem]
+      | succ j =>
+          simp [ntmIndexedTransitionsAux] at hmem
+          have hj' : j < xs.length := by omega
+          have h := ih j tr hmem hj'
+          simpa using h
+
+theorem pathAssignment_actual_state_true
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (hs : s <= t) :
+    pathAssignment M x t path hPath
+      (ntmStateVar M t s (path ⟨s, by omega⟩).state) = true := by
+  simp [pathAssignment_state M x t path hPath s hs]
+
+theorem pathAssignment_actual_head_true
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (hs : s <= t) :
+    pathAssignment M x t path hPath
+      (ntmHeadVar M t s (path ⟨s, by omega⟩).tape.head) = true := by
+  simp [pathAssignment_head M x t path hPath s hs]
+
+theorem pathAssignment_activeChoice_actual_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hs : s < t)
+    (hActive : NTMActive M (path ⟨s, by omega⟩)) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmActiveChoiceCNF M x t s
+        (path ⟨s, by omega⟩).state
+        (path ⟨s, by omega⟩).tape.head) = true := by
+  let q := (path ⟨s, by omega⟩).state
+  let a := (path ⟨s, by omega⟩).tape.head
+  let sigma := pathAssignment M x t path hPath
+  let entries := ntmIndexedTransitions (M.machine.transition q a)
+  let j := choiceIdxOfStep M t path hPath s hs
+  rcases choiceIdxOfStep_active_spec M t path (by simpa using hPath) s hs hActive with
+    ⟨hj, hget⟩
+  have hjBranch : j < ntmBranchBound M + 1 := by
+    simpa [q, a, j] using
+      choiceIdxOfStep_lt_branchBound_succ M t path (by simpa using hPath) s hs hActive
+  have hjSel :
+      sigma (ntmChoiceVar M x t s q a j) = true := by
+    simpa [sigma, q, a, j] using
+      pathAssignment_choice_selected M x t path hPath s hs hActive
+  have hqTrue :
+      sigma (ntmStateVar M t s q) = true := by
+    simpa [sigma, q] using
+      pathAssignment_actual_state_true M x t s path hPath (by omega)
+  have haTrue :
+      sigma (ntmHeadVar M t s a) = true := by
+    simpa [sigma, a] using
+      pathAssignment_actual_head_true M x t s path hPath (by omega)
+  have hfirst :
+      evalNTMCNF sigma [[ntmGuardChoiceClause M x t s q a]] = true := by
+    have hjmem :
+        (j, (M.machine.transition q a).get ⟨j, by simpa [q, a, j] using hj⟩) ∈ entries := by
+      simpa [entries] using indexedTransitions_get_mem
+        (M.machine.transition q a) j (by simpa [q, a, j] using hj)
+    have htail :
+        evalNTMClause sigma
+          (entries.map (fun p => ntmPos (ntmChoiceVar M x t s q a p.1))) = true := by
+      exact (evalNTMClause_map_pos_exists sigma entries
+        (fun p => ntmChoiceVar M x t s q a p.1)).2
+          ⟨(j, (M.machine.transition q a).get ⟨j, by simpa [q, a, j] using hj⟩),
+            hjmem, by simpa [j] using hjSel⟩
+    have hcl :
+        evalNTMClause sigma (ntmGuardChoiceClause M x t s q a) = true := by
+      unfold ntmGuardChoiceClause
+      have happ := (evalNTMClause_append sigma
+        [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+        (entries.map (fun p => ntmPos (ntmChoiceVar M x t s q a p.1)))).2
+          (Or.inr htail)
+      simpa [entries] using happ
+    simpa [evalNTMCNF] using hcl
+  have hguards :
+      evalNTMCNF sigma
+        (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1)) = true := by
+    apply (evalNTMCNF_flatMap_list sigma entries
+      (fun p => ntmChoiceGuardCNF M x t s q a p.1)).2
+    intro p hp
+    simp [ntmChoiceGuardCNF, evalNTMCNF, evalNTMClause,
+      evalNTMLiteral, ntmPos, hqTrue, haTrue]
+  have hamo :
+      evalNTMCNF sigma (ntmAtMostOneChoiceCNF M x t s q a) = true := by
+    let ids := entries.map Prod.fst
+    unfold ntmAtMostOneChoiceCNF
+    apply (evalNTMCNF_flatMap_list sigma ids
+      (fun r => ids.flatMap fun k =>
+        if r < k then
+          [[ntmNeg (ntmChoiceVar M x t s q a r),
+            ntmNeg (ntmChoiceVar M x t s q a k)]]
+        else [])).2
+    intro r hrmem
+    apply (evalNTMCNF_flatMap_list sigma ids
+      (fun k =>
+        if r < k then
+          [[ntmNeg (ntmChoiceVar M x t s q a r),
+            ntmNeg (ntmChoiceVar M x t s q a k)]]
+        else [])).2
+    intro k hkmem
+    by_cases hrk : r < k
+    · have hrEntry : ∃ tr, (r, tr) ∈ entries := by
+        simpa [ids] using hrmem
+      rcases hrEntry with ⟨trr, hrEntry⟩
+      have hkEntry : ∃ tr, (k, tr) ∈ entries := by
+        simpa [ids] using hkmem
+      rcases hkEntry with ⟨trk, hkEntry⟩
+      have hrlt := indexedTransitions_index_lt (M.machine.transition q a)
+        (by simpa [entries] using hrEntry)
+      have hklt := indexedTransitions_index_lt (M.machine.transition q a)
+        (by simpa [entries] using hkEntry)
+      by_cases hrj : r = j
+      · subst r
+        have hkj : k ≠ j := by omega
+        have hkfalse :
+            sigma (ntmChoiceVar M x t s q a k) = false := by
+          apply pathAssignment_choice_unselected M x t path hPath s hs q a k
+          · have hb := ntmBranchBound_ge_transition_length M q a
+            omega
+          · intro hbad
+            rcases hbad with ⟨_, hqeq, haeq, hkeq⟩
+            exact hkj hkeq
+        simp [hrk, evalNTMCNF, evalNTMClause, evalNTMLiteral, ntmNeg, hkfalse]
+      · have hrfalse :
+            sigma (ntmChoiceVar M x t s q a r) = false := by
+          apply pathAssignment_choice_unselected M x t path hPath s hs q a r
+          · have hb := ntmBranchBound_ge_transition_length M q a
+            omega
+          · intro hbad
+            rcases hbad with ⟨_, hqeq, haeq, hreq⟩
+            exact hrj hreq
+        simp [hrk, evalNTMCNF, evalNTMClause, evalNTMLiteral, ntmNeg, hrfalse]
+    · simp [hrk, evalNTMCNF]
+  have heffects :
+      evalNTMCNF sigma
+        (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)) = true := by
+    apply (evalNTMCNF_flatMap_list sigma entries
+      (fun p => ntmChoiceEffectCNF M x t s q a p)).2
+    intro p hp
+    have hpLt := indexedTransitions_index_lt (M.machine.transition q a)
+      (by simpa [entries] using hp)
+    by_cases hpj : p.1 = j
+    · have hpVal :
+          p.2 = (M.machine.transition q a).get
+            ⟨j, by simpa [hpj] using hpLt⟩ := by
+        apply indexedTransitions_index_value (M.machine.transition q a) j p.2
+        · simpa [entries, hpj] using hp
+        · simpa [hpj] using hpLt
+      subst p
+      simpa [q, a, j, hpVal] using
+        pathAssignment_selected_effect_sat M x t s path hPath hs hActive
+          (by simpa [q, a, j] using hj)
+    · have hpFalse :
+          sigma (ntmChoiceVar M x t s q a p.1) = false := by
+        apply pathAssignment_choice_unselected M x t path hPath s hs q a p.1
+        · have hb := ntmBranchBound_ge_transition_length M q a
+          omega
+        · intro hbad
+          rcases hbad with ⟨_, hqeq, haeq, hpeq⟩
+          exact hpj hpeq
+      exact eval_choiceEffect_of_choice_false sigma M x t s q a p hpFalse
+  simp only [ntmActiveChoiceCNF, evalNTMCNF_append]
+  exact ⟨hfirst, hguards, hamo, heffects⟩
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
