@@ -264,7 +264,6 @@ def inputNodeDecode (n : Nat) : P01InputNodeCompositeNTM.InputNodeCompositeState
   else if n = 168 then .done true .done
   else .reject
 
-set_option maxRecDepth 10000 in
 @[simp] theorem inputNodeDecode_code
     (q : P01InputNodeCompositeNTM.InputNodeCompositeState) :
     inputNodeDecode (inputNodeCode q) = q := by
@@ -294,24 +293,83 @@ set_option maxRecDepth 10000 in
           have hsub : 69 + preservingCode q - 69 = preservingCode q := by omega
           simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, hsub, preservingDecode_code]
   | ret m b q =>
-      cases m <;> cases b <;>
-        cases q with
-        | start r =>
-            cases r <;>
-              simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
-        | seekSource =>
-            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
-        | scanSource =>
-            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
-        | seekFrames =>
-            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
-        | scanFrames =>
-            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
-        | halt r =>
-            cases r <;>
-              simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
-        | reject =>
-            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+      have h := afterReadCode_lt q
+      cases m with
+      | sourceTail =>
+          cases b with
+          | false =>
+              have h13 : ¬ 97 + afterReadCode q < 13 := by omega
+              have h41 : ¬ 97 + afterReadCode q < 41 := by omega
+              have h69 : ¬ 97 + afterReadCode q < 69 := by omega
+              have h97 : ¬ 97 + afterReadCode q < 97 := by omega
+              have h108 : 97 + afterReadCode q < 108 := by omega
+              have hsub : 97 + afterReadCode q - 97 = afterReadCode q := by omega
+              simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, h108, hsub,
+                afterReadDecode_code]
+          | true =>
+              have h13 : ¬ 108 + afterReadCode q < 13 := by omega
+              have h41 : ¬ 108 + afterReadCode q < 41 := by omega
+              have h69 : ¬ 108 + afterReadCode q < 69 := by omega
+              have h97 : ¬ 108 + afterReadCode q < 97 := by omega
+              have h108 : ¬ 108 + afterReadCode q < 108 := by omega
+              have h119 : 108 + afterReadCode q < 119 := by omega
+              have hsub : 108 + afterReadCode q - 108 = afterReadCode q := by omega
+              simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, h108, h119, hsub,
+                afterReadDecode_code]
+      | frameStack =>
+          cases b with
+          | false =>
+              have h13 : ¬ 119 + afterReadCode q < 13 := by omega
+              have h41 : ¬ 119 + afterReadCode q < 41 := by omega
+              have h69 : ¬ 119 + afterReadCode q < 69 := by omega
+              have h97 : ¬ 119 + afterReadCode q < 97 := by omega
+              have h108 : ¬ 119 + afterReadCode q < 108 := by omega
+              have h119 : ¬ 119 + afterReadCode q < 119 := by omega
+              have h130 : 119 + afterReadCode q < 130 := by omega
+              have hsub : 119 + afterReadCode q - 119 = afterReadCode q := by omega
+              simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, h108, h119, h130,
+                hsub, afterReadDecode_code]
+          | true =>
+              have h13 : ¬ 130 + afterReadCode q < 13 := by omega
+              have h41 : ¬ 130 + afterReadCode q < 41 := by omega
+              have h69 : ¬ 130 + afterReadCode q < 69 := by omega
+              have h97 : ¬ 130 + afterReadCode q < 97 := by omega
+              have h108 : ¬ 130 + afterReadCode q < 108 := by omega
+              have h119 : ¬ 130 + afterReadCode q < 119 := by omega
+              have h130 : ¬ 130 + afterReadCode q < 130 := by omega
+              have h141 : 130 + afterReadCode q < 141 := by omega
+              have hsub : 130 + afterReadCode q - 130 = afterReadCode q := by omega
+              simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, h108, h119, h130,
+                h141, hsub, afterReadDecode_code]
+      | done =>
+          cases b with
+          | false =>
+              have h13 : ¬ 141 + afterReadCode q < 13 := by omega
+              have h41 : ¬ 141 + afterReadCode q < 41 := by omega
+              have h69 : ¬ 141 + afterReadCode q < 69 := by omega
+              have h97 : ¬ 141 + afterReadCode q < 97 := by omega
+              have h108 : ¬ 141 + afterReadCode q < 108 := by omega
+              have h119 : ¬ 141 + afterReadCode q < 119 := by omega
+              have h130 : ¬ 141 + afterReadCode q < 130 := by omega
+              have h141 : ¬ 141 + afterReadCode q < 141 := by omega
+              have h152 : 141 + afterReadCode q < 152 := by omega
+              have hsub : 141 + afterReadCode q - 141 = afterReadCode q := by omega
+              simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, h108, h119, h130,
+                h141, h152, hsub, afterReadDecode_code]
+          | true =>
+              have h13 : ¬ 152 + afterReadCode q < 13 := by omega
+              have h41 : ¬ 152 + afterReadCode q < 41 := by omega
+              have h69 : ¬ 152 + afterReadCode q < 69 := by omega
+              have h97 : ¬ 152 + afterReadCode q < 97 := by omega
+              have h108 : ¬ 152 + afterReadCode q < 108 := by omega
+              have h119 : ¬ 152 + afterReadCode q < 119 := by omega
+              have h130 : ¬ 152 + afterReadCode q < 130 := by omega
+              have h141 : ¬ 152 + afterReadCode q < 141 := by omega
+              have h152 : ¬ 152 + afterReadCode q < 152 := by omega
+              have h163 : 152 + afterReadCode q < 163 := by omega
+              have hsub : 152 + afterReadCode q - 152 = afterReadCode q := by omega
+              simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, h108, h119, h130,
+                h141, h152, h163, hsub, afterReadDecode_code]
     | done b m =>
       cases b <;> cases m <;> simp [inputNodeDecode, inputNodeCode]
   | reject =>
