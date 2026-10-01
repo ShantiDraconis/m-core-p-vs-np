@@ -1265,27 +1265,171 @@ theorem ntmChoice_effect_state_exact
 
 
 
-theorem choiceEffect_headBlock_sat
+
+theorem choiceEffect_headBlock_sat_stay
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (entry : Nat × (Fin (M.stateCount + 1) × Option Bool × Direction))
     (sigma : Assignment)
     (hEff :
-      evalNTMCNF sigma (ntmChoiceEffectCNF M x t s q a entry) = true) :
+      evalNTMCNF sigma (ntmChoiceEffectCNF M x t s q a entry) = true)
+    (hDir : entry.2.2.2 = Direction.stay) :
     evalNTMCNF sigma
       (ntmSetSymbolClauses
         [ntmNeg (ntmChoiceVar M x t s q a entry.1)]
         (ntmHeadVar M t (s + 1)) entry.2.2.1) = true := by
   rcases entry with ⟨j, qNext, write, d⟩
-  cases d <;>
-    simp [ntmChoiceEffectCNF, ntmStayEffectCNF,
-      ntmLeftEffectCNF, ntmRightEffectCNF,
-      evalNTMCNF_append, List.append_assoc] at hEff ⊢
-  · exact hEff.2.1
-  · exact hEff.2.1
-  · exact hEff.2.1
+  simp at hDir
+  subst d
+  have h1 :=
+    (evalNTMCNF_append sigma
+      (ntmSetStateClauses
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M t (s + 1) qNext)
+      (ntmSetSymbolClauses
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        (ntmHeadVar M t (s + 1)) write ++
+       ntmCopyLeftAll
+        [ntmNeg (ntmChoiceVar M x t s q a j)] M x t s ++
+       ntmCopyRightAll
+        [ntmNeg (ntmChoiceVar M x t s q a j)] M x t s)).mp
+      (by simpa [ntmChoiceEffectCNF, ntmStayEffectCNF,
+        List.append_assoc] using hEff)
+  exact (evalNTMCNF_append sigma
+    (ntmSetSymbolClauses
+      [ntmNeg (ntmChoiceVar M x t s q a j)]
+      (ntmHeadVar M t (s + 1)) write)
+    (ntmCopyLeftAll
+      [ntmNeg (ntmChoiceVar M x t s q a j)] M x t s ++
+     ntmCopyRightAll
+      [ntmNeg (ntmChoiceVar M x t s q a j)] M x t s)).mp
+    (by simpa [List.append_assoc] using h1.2) |>.1
 
-theorem ntmChoice_effect_head_exact
+theorem choiceEffect_headCopy_sat_left
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (entry : Nat × (Fin (M.stateCount + 1) × Option Bool × Direction))
+    (sigma : Assignment)
+    (hEff :
+      evalNTMCNF sigma (ntmChoiceEffectCNF M x t s q a entry) = true)
+    (hDir : entry.2.2.2 = Direction.left) :
+    evalNTMCNF sigma
+      (ntmCopySymbolClauses
+        [ntmNeg (ntmChoiceVar M x t s q a entry.1)]
+        (ntmLeftVar M x t s 0)
+        (ntmHeadVar M t (s + 1))) = true := by
+  rcases entry with ⟨j, qNext, write, d⟩
+  simp at hDir
+  subst d
+  have h1 :=
+    (evalNTMCNF_append sigma
+      (ntmSetStateClauses
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M t (s + 1) qNext)
+      (ntmCopySymbolClauses
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        (ntmLeftVar M x t s 0)
+        (ntmHeadVar M t (s + 1)) ++
+       (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+         ntmCopyLeftCell
+           [ntmNeg (ntmChoiceVar M x t s q a j)]
+           M x t s (i + 1) (s + 1) i) ++
+       ntmSetLeftCell
+         [ntmNeg (ntmChoiceVar M x t s q a j)]
+         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
+       ntmSetRightCell
+         [ntmNeg (ntmChoiceVar M x t s q a j)]
+         M x t (s + 1) 0 write ++
+       (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+         ntmCopyRightCell
+           [ntmNeg (ntmChoiceVar M x t s q a j)]
+           M x t s i (s + 1) (i + 1)))).mp
+      (by simpa [ntmChoiceEffectCNF, ntmLeftEffectCNF,
+        List.append_assoc] using hEff)
+  exact (evalNTMCNF_append sigma
+    (ntmCopySymbolClauses
+      [ntmNeg (ntmChoiceVar M x t s q a j)]
+      (ntmLeftVar M x t s 0)
+      (ntmHeadVar M t (s + 1)))
+    ((List.range (ntmRadius x t - 1)).flatMap (fun i =>
+      ntmCopyLeftCell
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M x t s (i + 1) (s + 1) i) ++
+     ntmSetLeftCell
+       [ntmNeg (ntmChoiceVar M x t s q a j)]
+       M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
+     ntmSetRightCell
+       [ntmNeg (ntmChoiceVar M x t s q a j)]
+       M x t (s + 1) 0 write ++
+     (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+      ntmCopyRightCell
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M x t s i (s + 1) (i + 1)))).mp
+    (by simpa [List.append_assoc] using h1.2) |>.1
+
+theorem choiceEffect_headCopy_sat_right
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (entry : Nat × (Fin (M.stateCount + 1) × Option Bool × Direction))
+    (sigma : Assignment)
+    (hEff :
+      evalNTMCNF sigma (ntmChoiceEffectCNF M x t s q a entry) = true)
+    (hDir : entry.2.2.2 = Direction.right) :
+    evalNTMCNF sigma
+      (ntmCopySymbolClauses
+        [ntmNeg (ntmChoiceVar M x t s q a entry.1)]
+        (ntmRightVar M x t s 0)
+        (ntmHeadVar M t (s + 1))) = true := by
+  rcases entry with ⟨j, qNext, write, d⟩
+  simp at hDir
+  subst d
+  have h1 :=
+    (evalNTMCNF_append sigma
+      (ntmSetStateClauses
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        M t (s + 1) qNext)
+      (ntmCopySymbolClauses
+        [ntmNeg (ntmChoiceVar M x t s q a j)]
+        (ntmRightVar M x t s 0)
+        (ntmHeadVar M t (s + 1)) ++
+       ntmSetLeftCell
+         [ntmNeg (ntmChoiceVar M x t s q a j)]
+         M x t (s + 1) 0 write ++
+       (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+         ntmCopyLeftCell
+           [ntmNeg (ntmChoiceVar M x t s q a j)]
+           M x t s i (s + 1) (i + 1)) ++
+       (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+         ntmCopyRightCell
+           [ntmNeg (ntmChoiceVar M x t s q a j)]
+           M x t s (i + 1) (s + 1) i) ++
+       ntmSetRightCell
+         [ntmNeg (ntmChoiceVar M x t s q a j)]
+         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank)).mp
+      (by simpa [ntmChoiceEffectCNF, ntmRightEffectCNF,
+        List.append_assoc] using hEff)
+  exact (evalNTMCNF_append sigma
+    (ntmCopySymbolClauses
+      [ntmNeg (ntmChoiceVar M x t s q a j)]
+      (ntmRightVar M x t s 0)
+      (ntmHeadVar M t (s + 1)))
+    (ntmSetLeftCell
+       [ntmNeg (ntmChoiceVar M x t s q a j)]
+       M x t (s + 1) 0 write ++
+     (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+       ntmCopyLeftCell
+         [ntmNeg (ntmChoiceVar M x t s q a j)]
+         M x t s i (s + 1) (i + 1)) ++
+     (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+       ntmCopyRightCell
+         [ntmNeg (ntmChoiceVar M x t s q a j)]
+         M x t s (i + 1) (s + 1) i) ++
+     ntmSetRightCell
+       [ntmNeg (ntmChoiceVar M x t s q a j)]
+       M x t (s + 1) (ntmRadius x t - 1) M.machine.blank)).mp
+    (by simpa [List.append_assoc] using h1.2) |>.1
+
+theorem ntmChoice_effect_head_exact_stay
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (j : Fin (M.machine.transition q a).length)
@@ -1294,6 +1438,7 @@ theorem ntmChoice_effect_head_exact
     (hs : s < t)
     (hActive :
       M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.stay)
     (hj : sigma (ntmChoiceVar M x t s q a j.val) = true) :
     ∀ b : Option Bool,
       sigma (ntmHeadVar M t (s + 1) b) =
@@ -1302,21 +1447,17 @@ theorem ntmChoice_effect_head_exact
   have hCase := transitionStep_case_sat M x t s q a sigma hStep
   have hActiveSat := activeChoice_sat M x t s q a sigma hCase hActive
   have hEffects := activeChoice_choiceEffects_sat M x t s q a sigma hActiveSat
-  have hmemIndexed :
-      (j.val, (M.machine.transition q a).get j) ∈
-        ntmIndexedTransitions (M.machine.transition q a) := by
-    rcases indexedTransitions_index_mem
+  rcases indexedTransitions_index_mem
       (M.machine.transition q a) j.val j.isLt with ⟨tr, hmem⟩
-    have htr : tr = (M.machine.transition q a).get j := by
-      unfold ntmIndexedTransitions at hmem
-      generalize hstart : 0 = start at hmem
-      subst start
-      induction hts : M.machine.transition q a generalizing j.val tr with
-      | nil =>
-          simp at j
-      | cons hd tl ih =>
-          cases j with
-          | mk j hjlt =>
+  have htr : tr = (M.machine.transition q a).get j := by
+    unfold ntmIndexedTransitions at hmem
+    generalize hstart : 0 = start at hmem
+    subst start
+    induction hts : M.machine.transition q a generalizing j.val tr with
+    | nil => simp at j
+    | cons hd tl ih =>
+        cases j with
+        | mk j hjlt =>
             cases j with
             | zero =>
                 simp [ntmIndexedTransitionsAux] at hmem
@@ -1331,18 +1472,18 @@ theorem ntmChoice_effect_head_exact
                   let jk : Fin tl.length := ⟨k, hk⟩
                   have ih' := ih (j := jk) (tr := tr) h
                   simpa using ih'
+  have hmemIndexed :
+      (j.val, (M.machine.transition q a).get j) ∈
+        ntmIndexedTransitions (M.machine.transition q a) := by
     simpa [htr] using hmem
-  have hEff :
-      evalNTMCNF sigma
-        (ntmChoiceEffectCNF M x t s q a
-          (j.val, (M.machine.transition q a).get j)) = true :=
+  have hEff :=
     (evalNTMCNF_flatMap_list sigma
       (ntmIndexedTransitions (M.machine.transition q a))
       (fun p => ntmChoiceEffectCNF M x t s q a p)).mp
       hEffects _ hmemIndexed
   have hHeadGuarded :=
-    choiceEffect_headBlock_sat M x t s q a
-      (j.val, (M.machine.transition q a).get j) sigma hEff
+    choiceEffect_headBlock_sat_stay M x t s q a
+      (j.val, (M.machine.transition q a).get j) sigma hEff hDir
   have hHeadNil :=
     eval_setSymbol_neg_guard_to_nil
       (ntmHeadVar M t (s + 1))
@@ -1350,11 +1491,132 @@ theorem ntmChoice_effect_head_exact
       ((M.machine.transition q a).get j).2.1
       sigma hHeadGuarded hj
   exact (eval_ntmSetSymbolClauses_nil_iff
-    sigma
-    (ntmHeadVar M t (s + 1))
+    sigma (ntmHeadVar M t (s + 1))
     ((M.machine.transition q a).get j).2.1).mp hHeadNil
 
+theorem ntmChoice_effect_head_exact_left
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hActive :
+      M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.left)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true) :
+    ∀ b : Option Bool,
+      sigma (ntmHeadVar M t (s + 1) b) =
+        sigma (ntmLeftVar M x t s 0 b) := by
+  have hStep := boundedExec_transitionStep_sat M x t s sigma hSat hs
+  have hCase := transitionStep_case_sat M x t s q a sigma hStep
+  have hActiveSat := activeChoice_sat M x t s q a sigma hCase hActive
+  have hEffects := activeChoice_choiceEffects_sat M x t s q a sigma hActiveSat
+  rcases indexedTransitions_index_mem
+      (M.machine.transition q a) j.val j.isLt with ⟨tr, hmem⟩
+  have htr : tr = (M.machine.transition q a).get j := by
+    unfold ntmIndexedTransitions at hmem
+    generalize hstart : 0 = start at hmem
+    subst start
+    induction hts : M.machine.transition q a generalizing j.val tr with
+    | nil => simp at j
+    | cons hd tl ih =>
+        cases j with
+        | mk j hjlt =>
+            cases j with
+            | zero =>
+                simp [ntmIndexedTransitionsAux] at hmem
+                rcases hmem with h | h
+                · simpa using congrArg Prod.snd h
+                · omega
+            | succ k =>
+                simp [ntmIndexedTransitionsAux] at hmem
+                rcases hmem with h | h
+                · omega
+                · have hk : k < tl.length := by simpa using hjlt
+                  let jk : Fin tl.length := ⟨k, hk⟩
+                  have ih' := ih (j := jk) (tr := tr) h
+                  simpa using ih'
+  have hmemIndexed :
+      (j.val, (M.machine.transition q a).get j) ∈
+        ntmIndexedTransitions (M.machine.transition q a) := by
+    simpa [htr] using hmem
+  have hEff :=
+    (evalNTMCNF_flatMap_list sigma
+      (ntmIndexedTransitions (M.machine.transition q a))
+      (fun p => ntmChoiceEffectCNF M x t s q a p)).mp
+      hEffects _ hmemIndexed
+  have hCopy :=
+    choiceEffect_headCopy_sat_left M x t s q a
+      (j.val, (M.machine.transition q a).get j) sigma hEff hDir
+  exact eval_copySymbol_neg_guard_of_choice_true
+    sigma
+    (ntmChoiceVar M x t s q a j.val)
+    (ntmLeftVar M x t s 0)
+    (ntmHeadVar M t (s + 1))
+    hCopy hj
 
+theorem ntmChoice_effect_head_exact_right
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hActive :
+      M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.right)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true) :
+    ∀ b : Option Bool,
+      sigma (ntmHeadVar M t (s + 1) b) =
+        sigma (ntmRightVar M x t s 0 b) := by
+  have hStep := boundedExec_transitionStep_sat M x t s sigma hSat hs
+  have hCase := transitionStep_case_sat M x t s q a sigma hStep
+  have hActiveSat := activeChoice_sat M x t s q a sigma hCase hActive
+  have hEffects := activeChoice_choiceEffects_sat M x t s q a sigma hActiveSat
+  rcases indexedTransitions_index_mem
+      (M.machine.transition q a) j.val j.isLt with ⟨tr, hmem⟩
+  have htr : tr = (M.machine.transition q a).get j := by
+    unfold ntmIndexedTransitions at hmem
+    generalize hstart : 0 = start at hmem
+    subst start
+    induction hts : M.machine.transition q a generalizing j.val tr with
+    | nil => simp at j
+    | cons hd tl ih =>
+        cases j with
+        | mk j hjlt =>
+            cases j with
+            | zero =>
+                simp [ntmIndexedTransitionsAux] at hmem
+                rcases hmem with h | h
+                · simpa using congrArg Prod.snd h
+                · omega
+            | succ k =>
+                simp [ntmIndexedTransitionsAux] at hmem
+                rcases hmem with h | h
+                · omega
+                · have hk : k < tl.length := by simpa using hjlt
+                  let jk : Fin tl.length := ⟨k, hk⟩
+                  have ih' := ih (j := jk) (tr := tr) h
+                  simpa using ih'
+  have hmemIndexed :
+      (j.val, (M.machine.transition q a).get j) ∈
+        ntmIndexedTransitions (M.machine.transition q a) := by
+    simpa [htr] using hmem
+  have hEff :=
+    (evalNTMCNF_flatMap_list sigma
+      (ntmIndexedTransitions (M.machine.transition q a))
+      (fun p => ntmChoiceEffectCNF M x t s q a p)).mp
+      hEffects _ hmemIndexed
+  have hCopy :=
+    choiceEffect_headCopy_sat_right M x t s q a
+      (j.val, (M.machine.transition q a).get j) sigma hEff hDir
+  exact eval_copySymbol_neg_guard_of_choice_true
+    sigma
+    (ntmChoiceVar M x t s q a j.val)
+    (ntmRightVar M x t s 0)
+    (ntmHeadVar M t (s + 1))
+    hCopy hj
 
 theorem eval_copySymbol_neg_guard_of_choice_true
     (sigma : Assignment)
