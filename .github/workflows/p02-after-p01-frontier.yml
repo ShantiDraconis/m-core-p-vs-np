@@ -1,0 +1,56 @@
+name: P02 After P01 Frontier
+
+on:
+  push:
+    branches:
+      - atk/p02-after-p01-20261001
+    paths:
+      - 'lean/MCore/Real/P02TerminalFrontier.lean'
+      - 'lean/MCore/Real/P02G21G22Attack.lean'
+      - 'lean/MCore/Real/P02AfterP01Frontier.lean'
+      - 'audit/ATK_P02_AFTER_P01_FRONTIER.json'
+      - '.github/workflows/p02-after-p01-frontier.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontier:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build exact P02 frontier
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P02TerminalFrontier
+          lake build MCore.Real.P02G21G22Attack
+          lake build MCore.Real.P02AfterP01Frontier
+      - name: Axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P02AfterP01Audit.lean <<'EOF'
+          import MCore.Real.P02AfterP01Frontier
+          #print axioms MCore.Real.P02AfterP01Frontier.remaining_material_gap_iff_g21
+          #print axioms MCore.Real.P02AfterP01Frontier.remaining_material_gap_iff_p02
+          #print axioms MCore.Real.P02AfterP01Frontier.p02_closes_internal_after_frozen_p01
+          #print axioms MCore.Real.P02AfterP01Frontier.g21_closes_internal_after_frozen_p01
+          EOF
+          lake env lean P02AfterP01Audit.lean | tee P02AfterP01Audit.log
+          ! grep -E 'sorryAx' P02AfterP01Audit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02AfterP01Frontier.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02AfterP01Frontier.lean
