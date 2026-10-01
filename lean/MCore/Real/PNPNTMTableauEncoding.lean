@@ -6103,6 +6103,199 @@ theorem pathAssignment_activeChoice_sat_of_mismatch
   simp only [ntmActiveChoiceCNF, evalNTMCNF_append]
   exact ⟨hfirst, hguards, hamo, heffects⟩
 
+
+theorem eval_haltedStutter_guard_true
+    (sigma : Assignment)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hg :
+      evalNTMClause sigma
+        [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)] = true) :
+    evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true := by
+  let guard := [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+  simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
+  exact ⟨eval_setState_guard_true sigma guard M t (s + 1) q hg,
+    eval_copySymbol_guard_true sigma guard
+      (ntmHeadVar M t s) (ntmHeadVar M t (s + 1)) hg,
+    eval_copyLeftAll_guard_true sigma guard M x t s hg,
+    eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+
+theorem evalNTMClause_two_neg_prefix_of_tail_true
+    (sigma : Assignment) (c1 c2 : Nat) (cl : NTMClause)
+    (hc1 : sigma c1 = true) (hc2 : sigma c2 = true)
+    (htail : evalNTMClause sigma cl = true) :
+    evalNTMClause sigma (ntmNeg c1 :: ntmNeg c2 :: cl) = true := by
+  simpa [evalNTMClause, evalNTMLiteral, ntmNeg, hc1, hc2] using htail
+
+theorem eval_setState_two_neg_guard_of_exact
+    (sigma : Assignment)
+    (M : PolyNTMCandidate) (t s : Nat)
+    (c1 c2 : Nat)
+    (target : Fin (M.stateCount + 1))
+    (hc1 : sigma c1 = true) (hc2 : sigma c2 = true)
+    (hexact :
+      forall r : Fin (M.stateCount + 1),
+        sigma (ntmStateVar M t s r) = decide (r = target)) :
+    evalNTMCNF sigma
+      (ntmSetStateClauses [ntmNeg c1, ntmNeg c2] M t s target) = true := by
+  unfold ntmSetStateClauses
+  apply (evalNTMCNF_map_flatten_ofFn sigma
+    (fun r : Fin (M.stateCount + 1) =>
+      [[ntmNeg c1, ntmNeg c2] ++
+        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))])).2
+  intro r
+  have hunit :
+      evalNTMClause sigma
+        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))] = true := by
+    exact (evalNTMClause_singleton_litFor
+      sigma (ntmStateVar M t s r) (decide (r = target))).2 (hexact r)
+  simpa [evalNTMCNF] using
+    evalNTMClause_two_neg_prefix_of_tail_true sigma c1 c2 _ hc1 hc2 hunit
+
+theorem eval_copySymbol_two_neg_guard_of_eq
+    (sigma : Assignment)
+    (c1 c2 : Nat)
+    (oldVar newVar : Option Bool -> Nat)
+    (hc1 : sigma c1 = true) (hc2 : sigma c2 = true)
+    (heq : forall b : Option Bool, sigma (newVar b) = sigma (oldVar b)) :
+    evalNTMCNF sigma
+      (ntmCopySymbolClauses [ntmNeg c1, ntmNeg c2] oldVar newVar) = true := by
+  apply (evalNTMCNF_flatMap_list sigma ntmAlphabet
+    (fun b =>
+      [[ntmNeg c1, ntmNeg c2] ++ [ntmNeg (oldVar b), ntmPos (newVar b)],
+       [ntmNeg c1, ntmNeg c2] ++ [ntmPos (oldVar b), ntmNeg (newVar b)]])).2
+  intro b hb
+  cases hold : sigma (oldVar b) <;>
+    have hn := heq b <;>
+    rw [hold] at hn <;>
+    simp [evalNTMCNF, evalNTMClause, evalNTMLiteral, ntmNeg, ntmPos,
+      hc1, hc2, hold, hn]
+
+theorem pathAssignment_haltedStutter_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmHaltedStutterCNF M x t s q a) = true := by
+  by_cases hq : q = (path ⟨s, by omega⟩).state
+  · by_cases ha : a = (path ⟨s, by omega⟩).tape.head
+    · subst q
+      subst a
+      let c := path ⟨s, by omega⟩
+      let c' := path ⟨s + 1, by omega⟩
+      have hStep : NTMTableauStep M c c' := by
+        simpa [c, c'] using hPath.2 ⟨s, hs⟩
+      have hCHalt : NTMHalted M c := by
+        simpa [NTMHalted, c] using hHalt
+      have hEq : c' = c := by
+        rcases hStep with hh | haStep
+        · exact hh.2
+        · exact False.elim (haStep.1 hCHalt)
+      let sigma := pathAssignment M x t path hPath
+      have hstate0 :
+          sigma (ntmStateVar M t s c.state) = true := by
+        simp [sigma, c, pathAssignment_state, hs]
+      have hhead0 :
+          sigma (ntmHeadVar M t s c.tape.head) = true := by
+        simp [sigma, c, pathAssignment_head, hs]
+      have hstateExact :
+          forall r : Fin (M.stateCount + 1),
+            sigma (ntmStateVar M t (s + 1) r) = decide (r = c.state) := by
+        intro r
+        rw [pathAssignment_state M x t path hPath (s + 1) (by omega) r]
+        have hsEq : (path ⟨s + 1, by omega⟩).state = c.state := by
+          simpa [c, c'] using congrArg Configuration.state hEq
+        simpa [hsEq]
+      have hheadEq :
+          forall b : Option Bool,
+            sigma (ntmHeadVar M t (s + 1) b) =
+              sigma (ntmHeadVar M t s b) := by
+        intro b
+        rw [pathAssignment_head M x t path hPath (s + 1) (by omega) b]
+        rw [pathAssignment_head M x t path hPath s (by omega) b]
+        have hhEq :
+            (path ⟨s + 1, by omega⟩).tape.head = c.tape.head := by
+          simpa [c, c'] using congrArg (fun z => z.tape.head) hEq
+        simpa [hhEq]
+      have hleft :
+          evalNTMCNF sigma
+            (ntmCopyLeftAll
+              [ntmNeg (ntmStateVar M t s c.state),
+               ntmNeg (ntmHeadVar M t s c.tape.head)]
+              M x t s) = true := by
+        rw [show ntmCopyLeftAll
+            [ntmNeg (ntmStateVar M t s c.state),
+             ntmNeg (ntmHeadVar M t s c.tape.head)] M x t s =
+          (List.range (ntmRadius x t)).flatMap (fun i =>
+            ntmCopySymbolClauses
+              [ntmNeg (ntmStateVar M t s c.state),
+               ntmNeg (ntmHeadVar M t s c.tape.head)]
+              (ntmLeftVar M x t s i)
+              (ntmLeftVar M x t (s + 1) i)) by rfl]
+        rw [evalNTMCNF_flatMap_range]
+        intro i hi
+        apply eval_copySymbol_two_neg_guard_of_eq sigma
+          (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
+          (ntmLeftVar M x t s i) (ntmLeftVar M x t (s + 1) i)
+          hstate0 hhead0
+        intro b
+        rw [pathAssignment_left M x t path hPath (s + 1) (by omega) i hi b]
+        rw [pathAssignment_left M x t path hPath s (by omega) i hi b]
+        have hlEq :
+            (path ⟨s + 1, by omega⟩).tape.left =
+              c.tape.left := by
+          simpa [c, c'] using congrArg (fun z => z.tape.left) hEq
+        simpa [hlEq]
+      have hright :
+          evalNTMCNF sigma
+            (ntmCopyRightAll
+              [ntmNeg (ntmStateVar M t s c.state),
+               ntmNeg (ntmHeadVar M t s c.tape.head)]
+              M x t s) = true := by
+        rw [show ntmCopyRightAll
+            [ntmNeg (ntmStateVar M t s c.state),
+             ntmNeg (ntmHeadVar M t s c.tape.head)] M x t s =
+          (List.range (ntmRadius x t)).flatMap (fun i =>
+            ntmCopySymbolClauses
+              [ntmNeg (ntmStateVar M t s c.state),
+               ntmNeg (ntmHeadVar M t s c.tape.head)]
+              (ntmRightVar M x t s i)
+              (ntmRightVar M x t (s + 1) i)) by rfl]
+        rw [evalNTMCNF_flatMap_range]
+        intro i hi
+        apply eval_copySymbol_two_neg_guard_of_eq sigma
+          (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
+          (ntmRightVar M x t s i) (ntmRightVar M x t (s + 1) i)
+          hstate0 hhead0
+        intro b
+        rw [pathAssignment_right M x t path hPath (s + 1) (by omega) i hi b]
+        rw [pathAssignment_right M x t path hPath s (by omega) i hi b]
+        have hrEq :
+            (path ⟨s + 1, by omega⟩).tape.right =
+              c.tape.right := by
+          simpa [c, c'] using congrArg (fun z => z.tape.right) hEq
+        simpa [hrEq]
+      simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
+      exact ⟨eval_setState_two_neg_guard_of_exact sigma M t (s + 1)
+          (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
+          c.state hstate0 hhead0 hstateExact,
+        eval_copySymbol_two_neg_guard_of_eq sigma
+          (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
+          (ntmHeadVar M t s) (ntmHeadVar M t (s + 1))
+          hstate0 hhead0 hheadEq,
+        hleft, hright⟩
+    · have hg := pathAssignment_case_guard_true_of_mismatch
+        M x t s path hPath hs q a (Or.inr ha)
+      exact eval_haltedStutter_guard_true
+        (pathAssignment M x t path hPath) M x t s q a hg
+  · have hg := pathAssignment_case_guard_true_of_mismatch
+      M x t s path hPath hs q a (Or.inl hq)
+    exact eval_haltedStutter_guard_true
+      (pathAssignment M x t path hPath) M x t s q a hg
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
