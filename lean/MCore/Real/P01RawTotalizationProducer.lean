@@ -21,6 +21,10 @@ open P01EncodedFrameTape
 open P01WitnessPreservingPrep
 open P01CheckedVerifierInvariant
 open P01CheckedVerifierBudget
+open P01CheckedVerifierGlobalBudget
+open P01CheckedEvalRunBoundedCertificate
+open P01CheckedEvalRunBoundedHelpers
+open P01ExactVerifierGlobalBudget
 open P01CheckedEvalRunLoopNTM
 open P01CheckedVerifierCompositeNTM
 open P01CheckedVerifierDeterminism
@@ -118,8 +122,9 @@ theorem prepared_nonempty_sink_fail_closed_raw
         rw [hstate]
         rfl
       have hhaltLift : P01NTMRunLaws.Halted checkedVerifierMachine lifted := by
+        unfold P01NTMRunLaws.Halted
         rw [hstateV]
-        simp [P01NTMRunLaws.Halted, checkedVerifierMachine]
+        simp [checkedVerifierMachine]
       have hhSmall :
           checkedVerifierMachine.HaltsWithin (m0 + m) start :=
         P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted
@@ -347,11 +352,8 @@ theorem decodeCircuit_none_fail_closed_raw
                       hlen (by intro i hi; rfl)
                   have h3 :
                       3 ≤ checkedLoopStepEnvelope source.length := by
-                    exact Nat.le_trans
-                      (P01CheckedVerifierBudget.small_const_le_stepEnvelope
-                        source.length 3 (by omega))
-                      (P01CheckedVerifierGlobalBudget.checkedStepEnvelope_le_loopEnvelope
-                        source.length)
+                    exact Nat.le_trans (by omega)
+                      (nine_le_stepEnvelope source.length)
                   have hcost :
                       checkedCircuitBudget phi source.length + 3 ≤
                         rawChunk source.length := by
