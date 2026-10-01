@@ -34,7 +34,7 @@ theorem checkedVerifierRawTimeBound_poly :
 theorem square_le_cube (n : Nat) :
     (n + 1) ^ 2 ≤ (n + 1) ^ 3 := by
   rw [show (n + 1) ^ 3 = (n + 1) ^ 2 * (n + 1) by
-    simp [pow_succ]]
+    simp [Nat.pow_succ]]
   exact Nat.le_mul_of_pos_right ((n + 1) ^ 2) (by omega)
 
 theorem stepEnvelope_le_rawChunk (n : Nat) :
@@ -78,7 +78,8 @@ theorem step_plus_linear_le_rawChunk (n : Nat) :
       _ ≤ ((n + 1) * (n + 1)) * (n + 1) :=
         Nat.mul_le_mul_right (n + 1)
           (Nat.le_mul_of_pos_right (n + 1) (by omega))
-      _ = (n + 1) ^ 3 := by ring
+      _ = (n + 1) ^ 3 := by
+          simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
   have hsum :
       checkedStepEnvelope n + (n + 1) ≤
         129 * (n + 1) ^ 3 := by
@@ -142,7 +143,8 @@ theorem exactTimeBound_le_rawTimeBound (n : Nat) :
   calc
     8192 * (n + 1) ^ 3
         ≤ (2 * (n + 1)) * (8192 * (n + 1) ^ 3) := hmul
-    _ = 16384 * (n + 1) ^ 4 := by ring
+    _ = 16384 * (n + 1) ^ 4 := by
+      simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
 
 /-- Root recursive malformed evaluation plus one scanner-sized cubic block fits
 the quartic final bound. -/
@@ -164,7 +166,7 @@ theorem rootFailure_plus_chunk_le_rawTimeBound (n : Nat) :
   exact hmul.trans_eq (by
     dsimp [X, rawChunk]
     unfold checkedVerifierExactTimeBound checkedVerifierRawTimeBound
-    ring)
+    simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm])
 
 /-- Any source scan overhead n+3 itself fits one cubic raw chunk. -/
 theorem scanPlusOne_le_rawChunk (n : Nat) :
@@ -178,7 +180,8 @@ theorem scanPlusOne_le_rawChunk (n : Nat) :
         _ ≤ ((n + 1) * (n + 1)) * (n + 1) :=
           Nat.mul_le_mul_right (n + 1)
             (Nat.le_mul_of_pos_right (n + 1) (by omega))
-        _ = (n + 1) ^ 3 := by ring
+        _ = (n + 1) ^ 3 := by
+          simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
     exact Nat.mul_le_mul_left 4 hp
   have h3 :
       4 * (n + 1) ^ 3 ≤ 8192 * (n + 1) ^ 3 :=
@@ -197,7 +200,8 @@ theorem scanLinear_le_rawChunk (n : Nat) :
         _ ≤ ((n + 1) * (n + 1)) * (n + 1) :=
           Nat.mul_le_mul_right (n + 1)
             (Nat.le_mul_of_pos_right (n + 1) (by omega))
-        _ = (n + 1) ^ 3 := by ring
+        _ = (n + 1) ^ 3 := by
+          simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
     exact Nat.mul_le_mul_left 3 hp
   have h3 :
       3 * (n + 1) ^ 3 ≤ 8192 * (n + 1) ^ 3 :=
