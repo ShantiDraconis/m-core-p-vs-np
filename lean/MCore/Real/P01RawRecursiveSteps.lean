@@ -258,7 +258,7 @@ private theorem or_left_allowed_step
           (((padding - 1) - 1) - 1) }
   have hprefix : mid ∈
       checkedEvalRunLoopMachine.runBranches m0 [start] := by
-    simpa [start, mid, encodeEvalFrames, List.append_assoc] using h0
+    simpa [start, mid, encodeEvalFrames, List.append_assoc, childMode] using h0
   have hrec' :
       ∃ b ≤ rawFailureBudget fuel n, ∃ fin : EvalConfig,
         fin ∈ checkedEvalRunLoopMachine.runBranches b [mid] ∧
@@ -448,7 +448,10 @@ theorem and_right_failure_step
             hreject hmode rightSource (.andLeft :: frames)
               leftConsumed padLeft n
               (by simpa [encodeEvalFrames, List.append_assoc] using hLayoutLeft)
-              hlen (witness_read_agrees witness)
+              hlen (by
+                intro i hi
+                exact witness_read_agrees witness i
+                  (Nat.lt_of_lt_of_le hi hlen))
           have h1' : cfg ∈
               checkedEvalRunLoopMachine.runBranches m1 [cNeedLeft] := by
             simpa [cNeedLeft, encodeEvalFrames,
@@ -473,7 +476,10 @@ theorem and_right_failure_step
             hpositive hmode rightSource (.andLeft :: frames)
               leftConsumed padLeft n
               (by simpa [encodeEvalFrames, List.append_assoc] using hLayoutLeft)
-              hlen (witness_read_agrees witness)
+              hlen (by
+                intro i hi
+                exact witness_read_agrees witness i
+                  (Nat.lt_of_lt_of_le hi hlen))
           have h1' : cfgLeft ∈
               checkedEvalRunLoopMachine.runBranches m1 [cNeedLeft] := by
             simpa [cNeedLeft, encodeEvalFrames,
@@ -535,9 +541,11 @@ theorem and_right_failure_step
                 rightSource (encodeEvalFrames frames)
                 (.andRight
                   (evalCircuit (witnessAssignment witness) left))
+                (by simp)
                 (by simpa [List.append_assoc] using hLayout)
-            simpa [afterLeft, leftConsumed, encodeEvalFrames,
-              List.append_assoc] using hp
+            convert hp using 1 <;>
+              simp [afterLeft, leftConsumed, encodeEvalFrames,
+                List.append_assoc] <;> omega
           have hrec' := hrec padRight hLayoutRight
           have hprefixBudget :
               m0 + m1 + m2 ≤ rawChunk n := by
@@ -640,7 +648,10 @@ private theorem or_right_allowed_step
         hreject hmode rightSource (.orLeft :: frames)
           leftConsumed padLeft n
           (by simpa [encodeEvalFrames, List.append_assoc] using hLayoutLeft)
-          hlen (witness_read_agrees witness)
+          hlen (by
+            intro i hi
+            exact witness_read_agrees witness i
+              (Nat.lt_of_lt_of_le hi hlen))
       have h1' : cfg ∈
           checkedEvalRunLoopMachine.runBranches m1 [cNeedLeft] := by
         simpa [cNeedLeft, encodeEvalFrames, List.append_assoc] using h1
@@ -664,7 +675,10 @@ private theorem or_right_allowed_step
         hpositive hmode rightSource (.orLeft :: frames)
           leftConsumed padLeft n
           (by simpa [encodeEvalFrames, List.append_assoc] using hLayoutLeft)
-          hlen (witness_read_agrees witness)
+          hlen (by
+            intro i hi
+            exact witness_read_agrees witness i
+              (Nat.lt_of_lt_of_le hi hlen))
       have h1' : cfgLeft ∈
           checkedEvalRunLoopMachine.runBranches m1 [cNeedLeft] := by
         simpa [cNeedLeft, encodeEvalFrames, List.append_assoc] using h1
@@ -725,9 +739,11 @@ private theorem or_right_allowed_step
             rightSource (encodeEvalFrames frames)
             (.orRight
               (evalCircuit (witnessAssignment witness) left))
+            (by simp)
             (by simpa [List.append_assoc] using hLayout)
-        simpa [afterLeft, leftConsumed, encodeEvalFrames,
-          List.append_assoc] using hp
+        convert hp using 1 <;>
+          simp [afterLeft, leftConsumed, encodeEvalFrames,
+            List.append_assoc] <;> omega
       have hrec' := hrec padRight hLayoutRight
       have hprefixBudget :
           m0 + m1 + m2 ≤ rawChunk n := by
