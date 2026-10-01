@@ -1,0 +1,13 @@
+{
+  "schema": "ATK_P02_KLEENE_PORT_COMPAT_V1",
+  "current_branch": "atk/p01-post-mincut-advance-20261001",
+  "historical_source": "frozen/p02-kernel-green-fa83d082 and related P02 frozen branches",
+  "historical_module": "P02KleeneUniversalBridge / Mathlib.Computability.PartrecCode",
+  "current_lakefile": "lakefile.toml",
+  "current_external_dependencies": [],
+  "compatibility": "INCOMPATIBLE_AS_IS",
+  "reason": "The current repository has no Mathlib package dependency, so importing Mathlib.Computability.PartrecCode fails with unknown module prefix Mathlib.",
+  "action": "Do not promote or compile the historical Kleene bridge in the current branch. Preserve it only as provenance. Continue with dependency-free P02 min-cut, failure normal forms, explicit clock normal form, and independently portable bounded-execution material.",
+  "epistemic_effect": "none",
+  "lower_bound_status": "OPEN_MATH"
+}
