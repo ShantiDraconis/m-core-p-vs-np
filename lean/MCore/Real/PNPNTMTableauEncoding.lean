@@ -2976,6 +2976,43 @@ theorem ntmUniqueAt_active_step
               ntmRight_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
                 (by simpa [htr]) i hi')
 
+
+theorem ntmUniqueAt_all
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    forall s : Nat, s <= t ->
+      NTMUniqueAt M x t sigma hSat s := by
+  intro s
+  induction s with
+  | zero =>
+      intro _
+      exact ntmUniqueAt_zero M x t sigma hSat
+  | succ s ih =>
+      intro hsle
+      have hslt : s < t := by omega
+      have hU : NTMUniqueAt M x t sigma hSat s :=
+        ih (by omega)
+      rcases hU.hState with ⟨q, hq, hqUnique⟩
+      rcases hU.hHead with ⟨a, ha, haUnique⟩
+      by_cases hHalt :
+          M.machine.accepting q = true ∨
+            M.machine.rejecting q = true
+      · exact ntmUniqueAt_halted_step M x t s sigma hSat hslt hU
+          q a hq ha hHalt
+      · have hAcc : M.machine.accepting q = false := by
+          cases h : M.machine.accepting q with
+          | false => rfl
+          | true =>
+              exact False.elim (hHalt (Or.inl h))
+        have hRej : M.machine.rejecting q = false := by
+          cases h : M.machine.rejecting q with
+          | false => rfl
+          | true =>
+              exact False.elim (hHalt (Or.inr h))
+        exact ntmUniqueAt_active_step M x t s sigma hSat hslt hU
+          q a hq ha ⟨hAcc, hRej⟩
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
