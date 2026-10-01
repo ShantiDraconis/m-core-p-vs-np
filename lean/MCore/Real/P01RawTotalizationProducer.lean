@@ -1,5 +1,6 @@
 import MCore.Real.P01RawTotalizationMinCut
 import MCore.Real.P01RawDecodeInduction
+import MCore.Real.P01RawDecoderSound
 import MCore.Real.P01RawResidualReject
 import MCore.Real.P01ExactBoundedReject
 import MCore.Real.P01RawVerifierLift
@@ -290,7 +291,7 @@ theorem decodeCircuit_none_fail_closed_raw
                 simpa [residual] using hc
               have hsrc :
                   source = encodeCircuit phi ++ residual :=
-                P01GuessedWitnessRelation.decodeCircuitCore_sound
+                P01RawDecoderSound.decodeCircuitCore_success_sound
                   (source.length + 1) source phi residual hcore
               have hLayout :
                   CheckedLayoutBound source.length 0
