@@ -13,8 +13,6 @@ open P02OperatorKernel
 abbrev SATTarget : BitLanguage :=
   SATBits circuitBitEncoding
 
-/-- Acceptance bit used by the canonical deterministic candidate at its
-declared polynomial clock. -/
 def DeclaredAccept
     (M : PolyDTMCandidate)
     (x : BitString) : Prop :=
@@ -23,31 +21,28 @@ def DeclaredAccept
         (M.timeBound x.length)
         (initialTMConfig M.machine x)).state = true
 
-/-- Effective diagonal program family for one deterministic candidate. -/
+/-- Effective code transformer in Mathlib's recursion-theorem universe. -/
 structure EffectiveDiagonalCompiler (M : PolyDTMCandidate) where
-  f : Nat.Partrec.Code → ℕ →. ℕ
-  partrec : Nat.Partrec₂ f
+  compile : Nat.Partrec.Code → Nat.Partrec.Code
+  computable : Computable compile
 
-/-- Canonical-SAT interpretation of recursion-theorem fixed points.
-The field is a semantic flip, not the desired non-P conclusion. -/
+/-- SAT realization of an extensional recursion-theorem fixed point. -/
 structure SATFixedPointRealizer
     (M : PolyDTMCandidate)
     (K : EffectiveDiagonalCompiler M) where
   bitsOf : Nat.Partrec.Code → BitString
   flip_of_fixed :
     ∀ c,
-      Nat.Partrec.Code.eval c = K.f c →
+      (K.compile c).eval = c.eval →
       (SATTarget (bitsOf c) ↔ ¬ DeclaredAccept M (bitsOf c))
 
 theorem kleene_fixed_point
     {M : PolyDTMCandidate}
     (K : EffectiveDiagonalCompiler M) :
     ∃ c : Nat.Partrec.Code,
-      Nat.Partrec.Code.eval c = K.f c :=
-  Nat.Partrec.Code.fixed_point₂ K.partrec
+      (K.compile c).eval = c.eval :=
+  Nat.Partrec.Code.fixed_point K.computable
 
-/-- A semantic flip on the recursion-theorem fixed point forces failure of
-CorrectAt. This is pure downstream logic; no lower-bound premise is added. -/
 theorem fixed_flip_fails
     (M : PolyDTMCandidate)
     (x : BitString)
@@ -67,14 +62,12 @@ theorem fixed_flip_fails
   · have hsat : SATTarget x := hflip.mpr hacc
     exact hacc (hcorr.mpr hsat)
 
-/-- The exact constructive bridge remaining after importing Kleene's theorem. -/
 structure KleeneSATBridge where
   compiler : ∀ M : PolyDTMCandidate, EffectiveDiagonalCompiler M
   realizer :
     ∀ M : PolyDTMCandidate,
       SATFixedPointRealizer M (compiler M)
 
-/-- Canonical fixed code selected from Mathlib's recursion theorem. -/
 noncomputable def fixedCode
     (B : KleeneSATBridge)
     (M : PolyDTMCandidate) :
@@ -84,11 +77,10 @@ noncomputable def fixedCode
 theorem fixedCode_spec
     (B : KleeneSATBridge)
     (M : PolyDTMCandidate) :
-    Nat.Partrec.Code.eval (fixedCode B M) =
-      (B.compiler M).f (fixedCode B M) :=
+    ((B.compiler M).compile (fixedCode B M)).eval =
+      (fixedCode B M).eval :=
   Classical.choose_spec (kleene_fixed_point (B.compiler M))
 
-/-- A Kleene/SAT bridge mechanically produces the terminal P02 operator. -/
 noncomputable def KleeneSATBridge.toP02Producer
     (B : KleeneSATBridge) :
     CanonicalSATP02Producer := by
@@ -101,8 +93,6 @@ noncomputable def KleeneSATBridge.toP02Producer
     ((B.realizer M).bitsOf (fixedCode B M))
     ((B.realizer M).flip_of_fixed (fixedCode B M) (fixedCode_spec B M))
 
-/-- The remaining OPEN_MATH can be attacked through this strictly smaller,
-explicit two-map bridge. -/
 def KleeneSATBridgeGap : Prop :=
   Nonempty KleeneSATBridge
 
