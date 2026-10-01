@@ -16,6 +16,7 @@ open CanonicalCircuitBits
 open CanonicalSATWitness
 open P01CNFMode
 open P01EvalCursorMachine
+open P01EncodedFrameTape
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunBaseCases
 open P01CheckedVerifierInvariant
@@ -44,7 +45,8 @@ theorem scan_entry_le_exact_allowance
       n + 1 = (n + 1) * 1 := by simp
       _ ≤ (n + 1) * (n + 1) :=
         Nat.mul_le_mul_left (n + 1) hpos
-      _ = (n + 1) ^ 2 := by ring
+      _ = (n + 1) ^ 2 := by
+        simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
   have h4 := Nat.mul_le_mul_left 4 hsq
   calc
     n + 3 ≤ 4 * (n + 1) := h1
@@ -72,7 +74,12 @@ theorem prepared_cnf_reaches_semantic_final_within_exact_global
             [{ state := checkedVerifierMachine.initial,
                tape := preparedTape witness (encodeCircuit phi) }] := by
   have hne : encodeCircuit phi ≠ [] := by
-    cases phi <;> simp [encodeCircuit]
+    cases phi with
+    | input i => simp [encodeCircuit]
+    | const b => cases b <;> simp [encodeCircuit]
+    | not child => simp [encodeCircuit]
+    | and a b => simp [encodeCircuit]
+    | or a b => simp [encodeCircuit]
   cases hsrc : encodeCircuit phi with
   | nil =>
       exact False.elim (hne hsrc)
@@ -166,7 +173,12 @@ theorem prepared_invalid_canonical_reaches_reject_within_exact_global
             [{ state := checkedVerifierMachine.initial,
                tape := preparedTape witness (encodeCircuit phi) }] := by
   have hne : encodeCircuit phi ≠ [] := by
-    cases phi <;> simp [encodeCircuit]
+    cases phi with
+    | input i => simp [encodeCircuit]
+    | const b => cases b <;> simp [encodeCircuit]
+    | not child => simp [encodeCircuit]
+    | and a b => simp [encodeCircuit]
+    | or a b => simp [encodeCircuit]
   cases hsrc : encodeCircuit phi with
   | nil =>
       exact False.elim (hne hsrc)
@@ -269,7 +281,9 @@ theorem prepared_canonical_halts_within_exact_global
             tape := preparedTape witness (encodeCircuit phi) }
           ({ state := .reject, tape := tape } : CheckedVerifierConfig)
           hreach hhalt
-      exact haltsWithin_mono_le checkedVerifierMachine m T
+      exact haltsWithin_mono_le m T
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness (encodeCircuit phi) }
         (by simpa [T] using hm) hmhalt
   | true =>
       obtain ⟨m, hm, tape, hreach⟩ :=
@@ -295,7 +309,9 @@ theorem prepared_canonical_halts_within_exact_global
                  (evalCircuit (witnessAssignment witness) phi)),
              tape := tape } : CheckedVerifierConfig)
           hreach hhalt
-      exact haltsWithin_mono_le checkedVerifierMachine m T
+      exact haltsWithin_mono_le m T
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness (encodeCircuit phi) }
         (by simpa [T] using hm) hmhalt
 
 /-- Canonical-source correctness at the fixed global fuel, not merely at an
@@ -338,8 +354,8 @@ theorem prepared_canonical_accepts_iff_exact_global
         have ht := (modeCheck_cnf_iff phi).2 hcnf
         rw [hmode] at ht
         contradiction
-      simp [terminal, checkedVerifierMachine, verifyBits_encode_iff,
-        hnotcnf]
+      simp only [terminal, verifyBits_encode_iff, hnotcnf, iff_false]
+      simp [checkedVerifierMachine]
   | true =>
       obtain ⟨m, hm, tape, hreach⟩ :=
         prepared_cnf_reaches_semantic_final_within_exact_global
