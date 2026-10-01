@@ -7068,6 +7068,114 @@ theorem pathAssignment_transitions_sat
   intro s hs
   exact pathAssignment_transitionStep_sat M x t s path hPath hs
 
+
+theorem evalNTMClause_true_of_mem
+    (sigma : Assignment) (cl : NTMClause) (lit : NTMLiteral)
+    (hmem : lit ∈ cl)
+    (hlit : evalNTMLiteral sigma lit = true) :
+    evalNTMClause sigma cl = true := by
+  induction cl with
+  | nil =>
+      simp at hmem
+  | cons l ls ih =>
+      simp only [List.mem_cons] at hmem
+      simp [evalNTMClause]
+      rcases hmem with rfl | hmem
+      · exact Or.inl hlit
+      · exact Or.inr (ih hmem)
+
+theorem pathAssignment_final_clause_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hAcc : M.machine.accepting (path (Fin.last t)).state = true) :
+    evalNTMClause (pathAssignment M x t path hPath)
+      (ntmAcceptingStateLits M t) = true := by
+  let q : Fin (M.stateCount + 1) := (path (Fin.last t)).state
+  have hqPath :
+      q = (path ⟨t, by omega⟩).state := by
+    rfl
+  have hqAcc : M.machine.accepting q = true := by
+    simpa [q] using hAcc
+  have hmem :
+      ntmPos (ntmStateVar M t t q) ∈ ntmAcceptingStateLits M t := by
+    unfold ntmAcceptingStateLits
+    simp [hqAcc]
+  have hvar :
+      pathAssignment M x t path hPath (ntmStateVar M t t q) = true := by
+    rw [pathAssignment_state M x t path hPath t (by omega) q]
+    simp [hqPath]
+  apply evalNTMClause_true_of_mem
+    (pathAssignment M x t path hPath)
+    (ntmAcceptingStateLits M t)
+    (ntmPos (ntmStateVar M t t q)) hmem
+  simp [evalNTMLiteral, ntmPos, hvar]
+
+theorem pathAssignment_final_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hAcc : M.machine.accepting (path (Fin.last t)).state = true) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmFinalAcceptanceCNF M t) = true := by
+  simpa [ntmFinalAcceptanceCNF, evalNTMCNF] using
+    pathAssignment_final_clause_sat M x t path hPath hAcc
+
+theorem pathAssignment_boundedExec_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hAcc : M.machine.accepting (path (Fin.last t)).state = true) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (boundedExecTableauCNF_NTM M x t) = true := by
+  have hi := pathAssignment_initial_sat M x t path hPath
+  have ht := pathAssignment_transitions_sat M x t path hPath
+  have hf := pathAssignment_final_sat M x t path hPath hAcc
+  rw [show boundedExecTableauCNF_NTM M x t =
+      ntmInitialCNF M x t ++
+      ntmTransitionsCNF M x t ++
+      ntmFinalAcceptanceCNF M t by rfl]
+  rw [evalNTMCNF_append]
+  exact ⟨hi, (evalNTMCNF_append _ _ _).2 ⟨ht, hf⟩⟩
+
+theorem tableau_completeness_assignment
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (hAcc : M.machine.AcceptsWithin t (initialNTMConfig M.machine x)) :
+    ∃ sigma : Assignment,
+      evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true := by
+  rcases acceptsWithin_to_path M t (initialNTMConfig M.machine x) hAcc with
+    ⟨path, hPath, hFinal⟩
+  exact ⟨pathAssignment M x t path hPath,
+    pathAssignment_boundedExec_sat M x t path hPath hFinal⟩
+
+theorem tableau_completeness_to_satLanguage
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (hAcc : M.machine.AcceptsWithin t (initialNTMConfig M.machine x)) :
+    SATLanguage (boundedExecCircuit_NTM M x t) := by
+  rw [show boundedExecCircuit_NTM M x t =
+    ntmCNFCircuit (boundedExecTableauCNF_NTM M x t) by rfl]
+  exact (satLanguage_ntmCNFCircuit_iff
+    (boundedExecTableauCNF_NTM M x t)).2
+      (tableau_completeness_assignment M x t hAcc)
+
+theorem tableau_soundness_from_satLanguage
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (hSat : SATLanguage (boundedExecCircuit_NTM M x t)) :
+    M.machine.AcceptsWithin t (initialNTMConfig M.machine x) := by
+  rw [show boundedExecCircuit_NTM M x t =
+    ntmCNFCircuit (boundedExecTableauCNF_NTM M x t) by rfl] at hSat
+  rcases (satLanguage_ntmCNFCircuit_iff
+    (boundedExecTableauCNF_NTM M x t)).1 hSat with ⟨sigma, hsigma⟩
+  exact tableau_soundness_from_assignment M x t sigma hsigma
+
+theorem tableau_correctness_iff
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    SATLanguage (boundedExecCircuit_NTM M x t) <->
+      M.machine.AcceptsWithin t (initialNTMConfig M.machine x) := by
+  constructor
+  · exact tableau_soundness_from_satLanguage M x t
+  · exact tableau_completeness_to_satLanguage M x t
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
