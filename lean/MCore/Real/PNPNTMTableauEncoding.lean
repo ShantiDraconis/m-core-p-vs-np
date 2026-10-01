@@ -5129,6 +5129,137 @@ theorem ntmChoiceVar_ge_choiceBase
     ntmChoiceBase M x t <= ntmChoiceVar M x t s q a j := by
   simp [ntmChoiceVar]
 
+
+theorem mul_add_encode_injective
+    (stride s k s' k' : Nat)
+    (hstride : 0 < stride)
+    (hk : k < stride)
+    (hk' : k' < stride)
+    (hEq : s * stride + k = s' * stride + k') :
+    s = s' ∧ k = k' := by
+  have hmod := congrArg (fun n => n % stride) hEq
+  have hdiv := congrArg (fun n => n / stride) hEq
+  have hkmod : (s * stride + k) % stride = k := by
+    simp [Nat.add_mod, Nat.mul_mod, hk, Nat.mod_eq_of_lt]
+  have hk'mod : (s' * stride + k') % stride = k' := by
+    simp [Nat.add_mod, Nat.mul_mod, hk', Nat.mod_eq_of_lt]
+  have hkEq : k = k' := by
+    simpa [hkmod, hk'mod] using hmod
+  subst k'
+  have hsdiv : (s * stride + k) / stride = s := by
+    rw [Nat.add_div_of_lt_right hk]
+    simp [hstride]
+  have hs'div : (s' * stride + k) / stride = s' := by
+    rw [Nat.add_div_of_lt_right hk]
+    simp [hstride]
+  simpa [hsdiv, hs'div] using hdiv
+
+theorem ntmStateVar_injective
+    (M : PolyNTMCandidate) (t s s' : Nat)
+    (q q' : Fin (M.stateCount + 1))
+    (hEq : ntmStateVar M t s q = ntmStateVar M t s' q') :
+    s = s' ∧ q = q' := by
+  have hstride : 0 < ntmStateCount M := by
+    simp [ntmStateCount]
+  have h := mul_add_encode_injective (ntmStateCount M) s q.val s' q'.val
+    hstride (by simpa [ntmStateCount] using q.isLt)
+    (by simpa [ntmStateCount] using q'.isLt)
+    (by simpa [ntmStateVar] using hEq)
+  refine ⟨h.1, Fin.ext ?_⟩
+  exact h.2
+
+theorem ntmHeadVar_injective
+    (M : PolyNTMCandidate) (t s s' : Nat)
+    (a a' : Option Bool)
+    (hEq : ntmHeadVar M t s a = ntmHeadVar M t s' a') :
+    s = s' ∧ a = a' := by
+  have hraw :
+      s * 3 + ntmSymbolCode a =
+        s' * 3 + ntmSymbolCode a' := by
+    simpa [ntmHeadVar] using
+      Nat.add_left_cancel hEq
+  have h := mul_add_encode_injective 3 s (ntmSymbolCode a) s' (ntmSymbolCode a')
+    (by decide) (ntmSymbolCode_lt_three a) (ntmSymbolCode_lt_three a') hraw
+  refine ⟨h.1, ?_⟩
+  cases a <;> cases a' <;> simp_all [ntmSymbolCode]
+
+theorem ntmLeftVar_injective
+    (M : PolyNTMCandidate) (x : BitString) (t s s' i i' : Nat)
+    (a a' : Option Bool)
+    (hi : i < ntmRadius x t)
+    (hi' : i' < ntmRadius x t)
+    (hEq : ntmLeftVar M x t s i a = ntmLeftVar M x t s' i' a') :
+    s = s' ∧ i = i' ∧ a = a' := by
+  have hraw :
+      (s * ntmRadius x t + i) * 3 + ntmSymbolCode a =
+        (s' * ntmRadius x t + i') * 3 + ntmSymbolCode a' := by
+    simpa [ntmLeftVar] using Nat.add_left_cancel hEq
+  have h1 := mul_add_encode_injective 3
+    (s * ntmRadius x t + i) (ntmSymbolCode a)
+    (s' * ntmRadius x t + i') (ntmSymbolCode a')
+    (by decide) (ntmSymbolCode_lt_three a) (ntmSymbolCode_lt_three a') hraw
+  have hrpos : 0 < ntmRadius x t := by simp [ntmRadius]
+  have h2 := mul_add_encode_injective (ntmRadius x t)
+    s i s' i' hrpos hi hi' h1.1
+  refine ⟨h2.1, h2.2, ?_⟩
+  cases a <;> cases a' <;> simp_all [ntmSymbolCode]
+
+theorem ntmRightVar_injective
+    (M : PolyNTMCandidate) (x : BitString) (t s s' i i' : Nat)
+    (a a' : Option Bool)
+    (hi : i < ntmRadius x t)
+    (hi' : i' < ntmRadius x t)
+    (hEq : ntmRightVar M x t s i a = ntmRightVar M x t s' i' a') :
+    s = s' ∧ i = i' ∧ a = a' := by
+  have hraw :
+      (s * ntmRadius x t + i) * 3 + ntmSymbolCode a =
+        (s' * ntmRadius x t + i') * 3 + ntmSymbolCode a' := by
+    simpa [ntmRightVar] using Nat.add_left_cancel hEq
+  have h1 := mul_add_encode_injective 3
+    (s * ntmRadius x t + i) (ntmSymbolCode a)
+    (s' * ntmRadius x t + i') (ntmSymbolCode a')
+    (by decide) (ntmSymbolCode_lt_three a) (ntmSymbolCode_lt_three a') hraw
+  have hrpos : 0 < ntmRadius x t := by simp [ntmRadius]
+  have h2 := mul_add_encode_injective (ntmRadius x t)
+    s i s' i' hrpos hi hi' h1.1
+  refine ⟨h2.1, h2.2, ?_⟩
+  cases a <;> cases a' <;> simp_all [ntmSymbolCode]
+
+theorem ntmChoiceVar_injective
+    (M : PolyNTMCandidate) (x : BitString) (t s s' : Nat)
+    (q q' : Fin (M.stateCount + 1))
+    (a a' : Option Bool)
+    (j j' : Nat)
+    (hj : j < ntmBranchBound M + 1)
+    (hj' : j' < ntmBranchBound M + 1)
+    (hEq :
+      ntmChoiceVar M x t s q a j =
+        ntmChoiceVar M x t s' q' a' j') :
+    s = s' ∧ q = q' ∧ a = a' ∧ j = j' := by
+  have hraw :
+      (((s * ntmStateCount M + q.val) * 3 + ntmSymbolCode a) *
+          (ntmBranchBound M + 1)) + j =
+      (((s' * ntmStateCount M + q'.val) * 3 + ntmSymbolCode a') *
+          (ntmBranchBound M + 1)) + j' := by
+    simpa [ntmChoiceVar] using Nat.add_left_cancel hEq
+  have hstride : 0 < ntmBranchBound M + 1 := by omega
+  have h1 := mul_add_encode_injective (ntmBranchBound M + 1)
+    ((s * ntmStateCount M + q.val) * 3 + ntmSymbolCode a) j
+    ((s' * ntmStateCount M + q'.val) * 3 + ntmSymbolCode a') j'
+    hstride hj hj' hraw
+  have h2 := mul_add_encode_injective 3
+    (s * ntmStateCount M + q.val) (ntmSymbolCode a)
+    (s' * ntmStateCount M + q'.val) (ntmSymbolCode a')
+    (by decide) (ntmSymbolCode_lt_three a) (ntmSymbolCode_lt_three a') h1.1
+  have hstate := mul_add_encode_injective (ntmStateCount M)
+    s q.val s' q'.val
+    (by simp [ntmStateCount])
+    (by simpa [ntmStateCount] using q.isLt)
+    (by simpa [ntmStateCount] using q'.isLt)
+    h2.1
+  refine ⟨hstate.1, Fin.ext hstate.2, ?_, h1.2⟩
+  cases a <;> cases a' <;> simp_all [ntmSymbolCode]
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
