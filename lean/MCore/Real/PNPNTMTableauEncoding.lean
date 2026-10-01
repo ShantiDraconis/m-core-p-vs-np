@@ -3415,6 +3415,94 @@ theorem decodeTape_stay
   · simpa [decodeConfig, Tape.write, Tape.move] using
       decodeRightList_stay M x t s sigma hSat hs q a j hActive hj hDir
 
+
+theorem list_getD_eq_default_of_length_le
+    {α : Type} (xs : List α) (d : α) (i : Nat)
+    (h : xs.length <= i) :
+    xs.getD i d = d := by
+  induction xs generalizing i with
+  | nil =>
+      simp
+  | cons a as ih =>
+      cases i with
+      | zero =>
+          simp at h
+      | succ i =>
+          simp [List.getD_cons_succ]
+          apply ih
+          simpa using Nat.succ_le_succ_iff.mp h
+
+structure NTMPaddingAt
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) : Prop where
+  leftBlank :
+    forall i : Nat,
+      x.length + s <= i ->
+      i < ntmRadius x t ->
+      sigma (ntmLeftVar M x t s i M.machine.blank) = true
+  rightBlank :
+    forall i : Nat,
+      x.length + s <= i ->
+      i < ntmRadius x t ->
+      sigma (ntmRightVar M x t s i M.machine.blank) = true
+
+theorem ntmPaddingAt_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    NTMPaddingAt M x t sigma hSat 0 := by
+  refine { leftBlank := ?_, rightBlank := ?_ }
+  · intro i hi hRadius
+    have hExact :=
+      ntmInitial_left_exact M x t sigma hSat i hRadius M.machine.blank
+    have htarget :
+        (inputTape x).left.getD i M.machine.blank = M.machine.blank := by
+      cases x <;> simp [inputTape]
+    simpa [htarget] using hExact
+  · intro i hi hRadius
+    have hExact :=
+      ntmInitial_right_exact M x t sigma hSat i hRadius M.machine.blank
+    have htarget :
+        (inputTape x).right.getD i M.machine.blank = M.machine.blank := by
+      cases x with
+      | nil =>
+          simp [inputTape]
+      | cons b bs =>
+          simp only [inputTape]
+          apply list_getD_eq_default_of_length_le
+          simpa using hi
+    simpa [htarget] using hExact
+
+theorem ntmPaddingAt_halted_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hP : NTMPaddingAt M x t sigma hSat s)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    NTMPaddingAt M x t sigma hSat (s + 1) := by
+  refine { leftBlank := ?_, rightBlank := ?_ }
+  · intro i hi hRadius
+    have hOld : sigma (ntmLeftVar M x t s i M.machine.blank) = true :=
+      hP.leftBlank i (by omega) hRadius
+    have hCopy :=
+      ntmHalted_left_copy M x t s q a sigma hSat hs hq ha hHalt i hRadius
+        M.machine.blank
+    simpa [hCopy] using hOld
+  · intro i hi hRadius
+    have hOld : sigma (ntmRightVar M x t s i M.machine.blank) = true :=
+      hP.rightBlank i (by omega) hRadius
+    have hCopy :=
+      ntmHalted_right_copy M x t s q a sigma hSat hs hq ha hHalt i hRadius
+        M.machine.blank
+    simpa [hCopy] using hOld
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
