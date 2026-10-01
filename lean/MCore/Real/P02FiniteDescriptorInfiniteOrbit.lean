@@ -116,6 +116,59 @@ theorem orbit_index_injective
   intro i j h
   exact orbit_index_eq_of_bitstring_eq M seed h
 
+theorem orbit_succ_valid
+    (M : PolyDTMCandidate)
+    (seed : BitString)
+    (n : Nat) :
+    ∃ phi : Circuit,
+      decodeCircuit (orbit M seed (n + 1)) = some phi := by
+  simpa [orbit] using
+    diagonalBits_valid M (orbit M seed n)
+
+/-- Every step contributes at least one additional bit of encoding length. -/
+theorem orbit_length_lower_bound
+    (M : PolyDTMCandidate)
+    (seed : BitString)
+    (n : Nat) :
+    seed.length + n ≤ (orbit M seed n).length := by
+  induction n with
+  | zero =>
+      simp [orbit]
+  | succ n ih =>
+      have hinc :
+          seed.length + n + 1 ≤
+            (orbit M seed n).length + 1 :=
+        Nat.succ_le_succ ih
+      have hstep :
+          (orbit M seed n).length + 1 ≤
+            (orbit M seed (n + 1)).length :=
+        Nat.succ_le_of_lt (orbit_length_step M seed n)
+      exact Nat.le_trans
+        (by simpa [Nat.add_assoc] using hinc)
+        hstep
+
+theorem orbit_ne_of_index_ne
+    (M : PolyDTMCandidate)
+    (seed : BitString)
+    {i j : Nat}
+    (hij : i ≠ j) :
+    orbit M seed i ≠ orbit M seed j := by
+  intro h
+  exact hij (orbit_index_eq_of_bitstring_eq M seed h)
+
+/-- Unconditional semantic law carried by every diagonal step: the SAT truth
+of the next generated instance is exactly the negation of the candidate's
+declared answer on the current instance. -/
+theorem orbit_next_sat_iff_not_declared_accepts
+    (M : PolyDTMCandidate)
+    (seed : BitString)
+    (n : Nat) :
+    P02UniversalFailureMinCut.CanonicalSAT (orbit M seed (n + 1)) ↔
+      ¬ P02SemanticFlipCore.DeclaredAccepts M (orbit M seed n) := by
+  simpa [orbit] using
+    diagonalBits_sat_iff_not_declaredAccepts
+      M (orbit M seed n)
+
 /-- Surviving residual descriptors therefore carry two infinite, nonrepeating
 diagonal orbits, and correctness on them forces exact Boolean alternation. -/
 structure InfiniteAlternatingOrbitCertificate
@@ -145,6 +198,10 @@ theorem infinite_alternating_certificate
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_le_of_le
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_lt_of_lt
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_index_eq_of_bitstring_eq
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_succ_valid
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_lower_bound
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_ne_of_index_ne
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_next_sat_iff_not_declared_accepts
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.infinite_alternating_certificate
 
 end P02FiniteDescriptorInfiniteOrbit
