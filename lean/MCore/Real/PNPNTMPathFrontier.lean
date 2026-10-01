@@ -79,6 +79,53 @@ theorem mem_runBranches_append
       simp only [ih]
       simpa [or_assoc, or_left_comm, or_comm]
 
+
+
+theorem runBranches_halted_singleton
+    (M : PolyNTMCandidate)
+    (c : NTMConfig M)
+    (fuel : Nat)
+    (h : NTMHalted M c) :
+    M.machine.runBranches fuel [c] = [c] := by
+  have hhalt :
+      M.machine.accepting c.state || M.machine.rejecting c.state = true := by
+    rcases h with ha | hr
+    · simp [ha]
+    · simp [hr]
+  induction fuel with
+  | zero =>
+      rfl
+  | succ fuel ih =>
+      simp [NTM.runBranches, hhalt, ih]
+
+theorem mem_runBranches_flatMap
+    {State Symbol : Type}
+    (M : NTM State Symbol)
+    (fuel : Nat)
+    (xs : List (Configuration State Symbol))
+    (f : Configuration State Symbol -> List (Configuration State Symbol))
+    (z : Configuration State Symbol) :
+    z ∈ M.runBranches fuel (xs.flatMap f) <->
+      ∃ x ∈ xs, z ∈ M.runBranches fuel (f x) := by
+  induction xs with
+  | nil =>
+      simp [NTM.runBranches]
+  | cons x xs ih =>
+      simp only [List.flatMap_cons]
+      rw [mem_runBranches_append M fuel (f x) (xs.flatMap f) z]
+      rw [ih]
+      constructor
+      · intro h
+        rcases h with hx | hrest
+        · exact ⟨x, by simp, hx⟩
+        · rcases hrest with ⟨y, hy, hz⟩
+          exact ⟨y, by simp [hy], hz⟩
+      · rintro ⟨y, hy, hz⟩
+        simp only [List.mem_cons] at hy
+        rcases hy with rfl | hy
+        · exact Or.inl hz
+        · exact Or.inr ⟨y, hy, hz⟩
+
 /--
 Exact target lemma for the tableau.  It is deliberately stated separately:
 the next proof step is the induction relating singleton runBranches membership
