@@ -5116,6 +5116,20 @@ theorem foldl_max_ge_of_mem
           (foldl_max_ge_acc ys (Nat.max acc y))
       · exact ih hx
 
+theorem foldl_max_le_of_all_le
+    (xs : List Nat) (acc cap : Nat)
+    (hacc : acc <= cap)
+    (hall : forall x, x ∈ xs -> x <= cap) :
+    xs.foldl Nat.max acc <= cap := by
+  induction xs generalizing acc with
+  | nil =>
+      simpa using hacc
+  | cons x xs ih =>
+      apply ih (Nat.max acc x)
+      · exact Nat.max_le hacc (hall x (by simp))
+      · intro y hy
+        exact hall y (by simp [hy])
+
 theorem ntmBranchBound_ge_transition_length
     (M : PolyNTMCandidate)
     (q : Fin (M.stateCount + 1))
@@ -7228,45 +7242,16 @@ theorem ntmClauseMaxVar_ge_of_mem
     (hl : l ∈ cl) :
     l.var <= ntmClauseMaxVar cl := by
   unfold ntmClauseMaxVar
-  induction cl generalizing l with
-  | nil =>
-      simp at hl
-  | cons a as ih =>
-      simp only [List.mem_cons] at hl
-      simp only [List.foldl_cons]
-      rcases hl with rfl | hl
-      · exact le_trans (Nat.le_max_right 0 a.var)
-          (foldl_max_ge_acc (as.map NTMLiteral.var)
-            (Nat.max 0 a.var))
-      · have hia := ih l hl
-        clear ih
-        induction as generalizing a with
-        | nil => simp at hl
-        | cons b bs ihbs =>
-            simp only [List.foldl_cons]
-            exact le_trans hia (foldl_max_ge_acc
-              (bs.map NTMLiteral.var)
-              (Nat.max (Nat.max 0 a.var) b.var))
+  apply foldl_max_ge_of_mem (cl.map NTMLiteral.var) l.var 0
+  exact List.mem_map.mpr ⟨l, hl, rfl⟩
 
 theorem ntmCNFMaxVar_ge_clause
     (f : NTMCNF) (cl : NTMClause)
     (hcl : cl ∈ f) :
     ntmClauseMaxVar cl <= ntmCNFMaxVar f := by
   unfold ntmCNFMaxVar
-  induction f generalizing cl with
-  | nil =>
-      simp at hcl
-  | cons c cs ih =>
-      simp only [List.mem_cons] at hcl
-      simp only [List.foldl_cons]
-      rcases hcl with rfl | hcl
-      · exact le_trans (Nat.le_max_right 0 (ntmClauseMaxVar c))
-          (foldl_max_ge_acc (cs.map ntmClauseMaxVar)
-            (Nat.max 0 (ntmClauseMaxVar c)))
-      · have hic := ih cl hcl
-        exact le_trans hic
-          (foldl_max_ge_acc (cs.map ntmClauseMaxVar)
-            (Nat.max 0 (ntmClauseMaxVar c)))
+  apply foldl_max_ge_of_mem (f.map ntmClauseMaxVar) (ntmClauseMaxVar cl) 0
+  exact List.mem_map.mpr ⟨cl, hcl, rfl⟩
 
 theorem ntmClauseCircuit_encoding_le
     (cl : NTMClause) :
@@ -7409,42 +7394,27 @@ theorem CNFVarsLe_append
   · exact ha cl hcl
   · exact hb cl hcl
 
+theorem ntmClauseMaxVar_le_of_varsLe
+    (cap : Nat) (cl : NTMClause)
+    (h : ClauseVarsLe cap cl) :
+    ntmClauseMaxVar cl <= cap := by
+  unfold ntmClauseMaxVar
+  apply foldl_max_le_of_all_le (cl.map NTMLiteral.var) 0 cap (by omega)
+  intro v hv
+  rw [List.mem_map] at hv
+  rcases hv with ⟨l, hl, rfl⟩
+  exact h l hl
+
 theorem ntmCNFMaxVar_le_of_varsLe
     (cap : Nat) (f : NTMCNF)
     (h : CNFVarsLe cap f) :
     ntmCNFMaxVar f <= cap := by
   unfold ntmCNFMaxVar
-  induction f with
-  | nil => simp
-  | cons cl fs ih =>
-      have hcl : ClauseVarsLe cap cl := h cl (by simp)
-      have hfs : CNFVarsLe cap fs := by
-        intro c hc
-        exact h c (by simp [hc])
-      have hclmax : ntmClauseMaxVar cl <= cap := by
-        unfold ntmClauseMaxVar
-        induction cl with
-        | nil => simp
-        | cons l ls ihls =>
-            simp only [List.foldl_cons]
-            have hl : l.var <= cap := hcl l (by simp)
-            have hrest : ClauseVarsLe cap ls := by
-              intro z hz
-              exact hcl z (by simp [hz])
-            have := ihls hrest
-            exact le_trans (Nat.max_le (by omega) hl)
-              (by
-                induction ls with
-                | nil => simp
-                | cons z zs ihz =>
-                    simp only [List.foldl_cons]
-                    exact Nat.max_le
-                      (le_trans (Nat.max_le_iff.mp (by
-                        exact Nat.max_le (by omega) (hrest z (by simp)))).1 (by omega))
-                      (hrest z (by simp)))
-      simp only [List.foldl_cons]
-      have htail := ih hfs
-      exact Nat.max_le hclmax htail
+  apply foldl_max_le_of_all_le (f.map ntmClauseMaxVar) 0 cap (by omega)
+  intro v hv
+  rw [List.mem_map] at hv
+  rcases hv with ⟨cl, hcl, rfl⟩
+  exact ntmClauseMaxVar_le_of_varsLe cap cl (h cl hcl)
 
 theorem literalVar_le_cap_state
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
