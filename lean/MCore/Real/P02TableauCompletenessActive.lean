@@ -61,44 +61,19 @@ theorem inactive_transitionCase_true
   intro clause hclause
   have hprefix : ∃ suffix : Clause, clause = guard ++ suffix := by
     by_cases hhalt : M.machine.halting q = true
-    · simp only [transitionCaseCNF, dif_pos hhalt] at hclause
-      simp only [haltingCaseCNF, List.mem_append] at hclause
-      rcases hclause with hstate | hrest
-      · unfold setStateClauses at hstate
-        rcases List.mem_ofFn.mp hstate with ⟨q', rfl⟩
-        exact ⟨[litFor (stateVar M t (s + 1) q') (decide (q' = q))], rfl⟩
-      · simp only [List.mem_append] at hrest
-        rcases hrest with hhead | hrest
-        · unfold copyHeadCell copySymbolClauses at hhead
-          rcases List.mem_flatMap.mp hhead with ⟨a', _, hmem⟩
-          simp only [List.mem_cons, List.mem_singleton] at hmem
-          rcases hmem with rfl | rfl
-          · exact ⟨[neg (headVar M t s a'), pos (headVar M t (s + 1) a')], rfl⟩
-          · exact ⟨[pos (headVar M t s a'), neg (headVar M t (s + 1) a')], rfl⟩
-        · simp only [List.mem_append] at hrest
-          rcases hrest with hleft | hright
-          · unfold copyLeftAll at hleft
-            rcases List.mem_flatMap.mp hleft with ⟨i, _, hi⟩
-            unfold copySymbolClauses at hi
-            rcases List.mem_flatMap.mp hi with ⟨a', _, hmem⟩
-            simp only [List.mem_cons, List.mem_singleton] at hmem
-            rcases hmem with rfl | rfl
-            · exact ⟨[neg (leftVar M x t s i a'), pos (leftVar M x t (s + 1) i a')], rfl⟩
-            · exact ⟨[pos (leftVar M x t s i a'), neg (leftVar M x t (s + 1) i a')], rfl⟩
-          · unfold copyRightAll at hright
-            rcases List.mem_flatMap.mp hright with ⟨i, _, hi⟩
-            unfold copySymbolClauses at hi
-            rcases List.mem_flatMap.mp hi with ⟨a', _, hmem⟩
-            simp only [List.mem_cons, List.mem_singleton] at hmem
-            rcases hmem with rfl | rfl
-            · exact ⟨[neg (rightVar M x t s i a'), pos (rightVar M x t (s + 1) i a')], rfl⟩
-            · exact ⟨[pos (rightVar M x t s i a'), neg (rightVar M x t (s + 1) i a')], rfl⟩
+    · simp [transitionCaseCNF, hhalt, haltingCaseCNF,
+        setStateClauses, setSymbolClauses, copyHeadCell,
+        copySymbolClauses, copyLeftAll, copyRightAll,
+        copyLeftCell, copyRightCell, guard] at hclause ⊢
+      aesop
     · rcases htrans : M.machine.transition q a with ⟨qNext, write, dir⟩
       cases dir <;>
         simp [transitionCaseCNF, hhalt, htrans, stayCaseCNF,
           leftMoveCaseCNF, rightMoveCaseCNF, setStateClauses,
           setSymbolClauses, copySymbolClauses, copyLeftAll, copyRightAll,
-          copyLeftCell, copyRightCell, guard] at hclause ⊢
+          copyLeftCell, copyRightCell, setLeftCell, setRightCell,
+          copyHeadCell, guard] at hclause ⊢ <;>
+        aesop
   rcases hprefix with ⟨suffix, rfl⟩
   exact evalClause_append_true_of_guard_true sigma guard suffix hguard
 
