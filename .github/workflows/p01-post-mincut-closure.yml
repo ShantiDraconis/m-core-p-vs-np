@@ -1,0 +1,51 @@
+name: P01 Post-MinCut Closure
+
+on:
+  push:
+    branches:
+      - atk/p01-post-mincut-advance-20261001
+    paths:
+      - 'lean/MCore/Real/P01PostMinCutClosure.lean'
+      - 'audit/ATK_P01_POST_MINCUT_FRONTIER_720596c0.json'
+      - '.github/workflows/p01-post-mincut-closure.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  closure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build post-mincut closure
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01PostMinCutClosure
+      - name: Exact axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P01PostMinCutAudit.lean <<'EOF'
+          import MCore.Real.P01PostMinCutClosure
+          #print axioms MCore.Real.P01PostMinCutClosure.canonical_sat_in_np_closed
+          #print axioms MCore.Real.P01PostMinCutClosure.remaining_material_gap_implies_p_ne_np
+          #print axioms MCore.Real.P01PostMinCutClosure.final_residual_iff_remaining_material_gap
+          EOF
+          lake env lean P01PostMinCutAudit.lean | tee P01PostMinCutAudit.log
+          ! grep -E 'sorryAx' P01PostMinCutAudit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01PostMinCutClosure.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01PostMinCutClosure.lean
