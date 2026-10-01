@@ -340,7 +340,10 @@ theorem prepared_canonical_accepts_iff_exact_global
           omega
         rw [heq] at hp
         exact hp
-      rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
+      have hterminal :
+          checkedVerifierMachine.AcceptsWithin T start ↔
+            checkedVerifierMachine.accepting terminal.state = true :=
+        acceptsWithin_iff_of_reached_terminal T start terminal hreachT
       have hnotcnf : ¬ IsCNF phi := by
         intro hcnf
         have ht : modeCheck .cnf phi = true :=
@@ -349,7 +352,8 @@ theorem prepared_canonical_accepts_iff_exact_global
         contradiction
       constructor
       · intro hacc
-        simp [terminal, checkedVerifierMachine] at hacc
+        have htacc := hterminal.mp hacc
+        simp [terminal, checkedVerifierMachine] at htacc
       · intro hv
         have hparts := (verifyBits_encode_iff phi witness).1 hv
         exact False.elim (hnotcnf hparts.1)
@@ -377,27 +381,29 @@ theorem prepared_canonical_accepts_iff_exact_global
           omega
         rw [heq] at hp
         exact hp
-      rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
+      have hterminal :
+          checkedVerifierMachine.AcceptsWithin T start ↔
+            checkedVerifierMachine.accepting terminal.state = true :=
+        acceptsWithin_iff_of_reached_terminal T start terminal hreachT
       have hcnf : IsCNF phi :=
         (modeCheck_cnf_iff phi).1 hmode
-      rw [verifyBits_encode_iff]
-      cases hval : evalCircuit (witnessAssignment witness) phi with
-      | false =>
-          constructor
-          · intro hacc
-            simp [terminal, value, checkedVerifierMachine,
-              checkedEvalRunLoopMachine, hval] at hacc
-          · intro hparts
-            have : False := by
-              simpa [hval] using hparts.2
-            exact False.elim this
-      | true =>
-          constructor
-          · intro _
-            exact ⟨hcnf, rfl⟩
-          · intro _
-            simp [terminal, value, checkedVerifierMachine,
-              checkedEvalRunLoopMachine, hval]
+      constructor
+      · intro hacc
+        have htacc := hterminal.mp hacc
+        have heval : evalCircuit (witnessAssignment witness) phi = true := by
+          cases hval : evalCircuit (witnessAssignment witness) phi with
+          | false =>
+              simp [terminal, value, checkedVerifierMachine,
+                checkedEvalRunLoopMachine, hval] at htacc
+          | true =>
+              exact hval
+        exact (verifyBits_encode_iff phi witness).2 ⟨hcnf, heval⟩
+      · intro hv
+        have hparts := (verifyBits_encode_iff phi witness).1 hv
+        apply hterminal.mpr
+        have heval := hparts.2
+        simp [terminal, value, checkedVerifierMachine,
+          checkedEvalRunLoopMachine, heval]
 
 
 #print axioms MCore.Real.P01ExactVerifierCanonicalRun.scan_entry_le_exact_allowance
