@@ -1,5 +1,6 @@
 import MCore.Real.CanonicalComplexityBridge
 import MCore.Real.FailProofAllGaps
+import MCore.Real.P01RawTotalizationProducer
 import MCore.BackwardAudit.OrientedWitnessBoundary
 
 namespace MCore
@@ -12,6 +13,35 @@ structure CanonicalNotInPWitness where
   not_in_p : ¬ Real.CanonicalComplexityBridge.canonicalInterface.inP language
 
 
+
+/-- The completed P01 machine construction materially closes the NP side for
+the exact canonical SAT bit-language.  No lower-bound hypothesis is used. -/
+theorem canonicalSATInNP_closed :
+    Real.CanonicalComplexityBridge.canonicalInterface.inNP
+      (Real.CanonicalSATBoundary.SATBits
+        Real.CanonicalCircuitBits.circuitBitEncoding) := by
+  change Real.CanonicalFinalProof.InNP
+    (Real.CanonicalSATBoundary.SATBits
+      Real.CanonicalCircuitBits.circuitBitEncoding)
+  exact
+    Real.P01FinalCertificate.construction_closes_p01
+      Real.P01RawTotalizationProducer.p01ConstructionGap_closed
+
+/-- Once the NP side is discharged by P01, the exact remaining material
+producer is only the operational failure generator for the SAME SAT language. -/
+theorem canonicalSAT_failure_generator_closes_separation
+    (G : Real.FailProofAllGaps.FailureGenerator
+      (Real.CanonicalSATBoundary.SATBits
+        Real.CanonicalCircuitBits.circuitBitEncoding)) :
+    ClosedDiscriminant.SeparationFinal
+      Real.CanonicalComplexityBridge.canonicalInterface.inP
+      Real.CanonicalComplexityBridge.canonicalInterface.inNP := by
+  exact canonicalFailureProducer_closes_separation
+    { language :=
+        Real.CanonicalSATBoundary.SATBits
+          Real.CanonicalCircuitBits.circuitBitEncoding
+      in_np := canonicalSATInNP_closed
+      failure_generator := G }
 
 /-- Material terminal producer.  Unlike `CanonicalNotInPWitness`, this object
 does not store the endpoint proposition `¬ inP language`.  It stores an
@@ -69,8 +99,10 @@ theorem canonicalWitness_closes_separation
       not_in_p := w.not_in_p }
 
 def terminalProducerStatus : String :=
-  "OPEN_MATH: construct CanonicalFailureProducer.failure_generator without endpoint-equivalent premises; canonical model matching is already PROVED/REUSE"
+  "OPEN_MATH: canonical SAT InNP is CLOSED by P01; the sole remaining material producer is FailureGenerator (SATBits circuitBitEncoding) without endpoint-equivalent premises"
 
+#print axioms canonicalSATInNP_closed
+#print axioms canonicalSAT_failure_generator_closes_separation
 #print axioms canonicalFailureProducer_not_in_p
 #print axioms canonicalFailureProducer_closes_separation
 #print axioms canonicalModelMatch
