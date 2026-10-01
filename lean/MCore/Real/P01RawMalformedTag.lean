@@ -183,7 +183,7 @@ theorem prepared_truncated_tag_fail_closed
           tape := preparedTape witness source } := by
   cases source with
   | nil =>
-      contradiction
+      exact False.elim (hne rfl)
   | cons b bs =>
       obtain ⟨m1, hm1, dead, hreach, hactive, hdead⟩ :=
         checked_truncated_tag_reaches_dead
