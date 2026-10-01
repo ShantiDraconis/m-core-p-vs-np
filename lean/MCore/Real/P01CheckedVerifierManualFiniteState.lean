@@ -49,9 +49,15 @@ def checkedVerifierDecode (n : Nat) : CheckedVerifierState :=
       simp [checkedVerifierDecode, checkedVerifierCode]
   | eval q =>
       have h := checkedEvalCode_lt q
-      simp [checkedVerifierDecode, checkedVerifierCode, h,
-        checkedEvalDecode_code]
-      omega
+      unfold checkedEvalStateCount at h
+      have h0 : 4 + checkedEvalCode q ≠ 0 := by omega
+      have h1 : 4 + checkedEvalCode q ≠ 1 := by omega
+      have h2 : 4 + checkedEvalCode q ≠ 2 := by omega
+      have h3 : 4 + checkedEvalCode q ≠ 3 := by omega
+      have h1851 : 4 + checkedEvalCode q < 1851 := by omega
+      have hsub : 4 + checkedEvalCode q - 4 = checkedEvalCode q := by omega
+      simp [checkedVerifierDecode, checkedVerifierCode, h0, h1, h2, h3, h1851,
+        hsub, checkedEvalDecode_code]
   | reject =>
       simp [checkedVerifierDecode, checkedVerifierCode]
 
@@ -67,7 +73,8 @@ theorem checkedVerifierCode_lt
   | enter => decide
   | eval q =>
       have h := checkedEvalCode_lt q
-      simp [checkedVerifierCode, checkedVerifierStateCount]
+      unfold checkedEvalStateCount at h
+      unfold checkedVerifierStateCount
       omega
   | reject => decide
 
