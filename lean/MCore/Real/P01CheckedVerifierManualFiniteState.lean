@@ -75,6 +75,7 @@ theorem checkedVerifierCode_lt
       have h := checkedEvalCode_lt q
       unfold checkedEvalStateCount at h
       unfold checkedVerifierStateCount
+      change 4 + checkedEvalCode q < 1852
       omega
   | reject => decide
 
@@ -82,8 +83,7 @@ def checkedVerifierStateEncode
     (q : CheckedVerifierState) :
     Fin (checkedVerifierStateCount + 1) :=
   ⟨checkedVerifierCode q, by
-    have h := checkedVerifierCode_lt q
-    omega⟩
+    exact Nat.lt_succ_of_lt (checkedVerifierCode_lt q)⟩
 
 def checkedVerifierStateDecode
     (q : Fin (checkedVerifierStateCount + 1)) :
