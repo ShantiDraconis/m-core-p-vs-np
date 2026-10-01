@@ -3503,6 +3503,79 @@ theorem ntmPaddingAt_halted_step
         M.machine.blank
     simpa [hCopy] using hOld
 
+
+structure NTMBlankTailAt
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) : Prop where
+  hLeft :
+    forall i : Nat,
+      x.length + s <= i ->
+      i < ntmRadius x t ->
+      sigma (ntmLeftVar M x t s i M.machine.blank) = true
+  hRight :
+    forall i : Nat,
+      x.length + s <= i ->
+      i < ntmRadius x t ->
+      sigma (ntmRightVar M x t s i M.machine.blank) = true
+
+theorem ntmBlankTailAt_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    NTMBlankTailAt M x t sigma hSat 0 := by
+  refine { hLeft := ?_, hRight := ?_ }
+  · intro i hxi hir
+    have hExact := ntmInitial_left_exact M x t sigma hSat i hir M.machine.blank
+    have hget :
+        (inputTape x).left.getD i M.machine.blank = M.machine.blank := by
+      cases x <;> simp [inputTape]
+    simpa [hget] using hExact
+  · intro i hxi hir
+    have hExact := ntmInitial_right_exact M x t sigma hSat i hir M.machine.blank
+    have hget :
+        (inputTape x).right.getD i M.machine.blank = M.machine.blank := by
+      cases x with
+      | nil =>
+          simp [inputTape]
+      | cons b bs =>
+          simp [inputTape]
+          have hi : bs.length <= i := by
+            simpa using hxi
+          exact List.getD_eq_default _ _ hi
+    simpa [hget] using hExact
+
+theorem ntmBlankTail_boundary
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hB : NTMBlankTailAt M x t sigma hSat s) :
+    sigma (ntmLeftVar M x t s (ntmRadius x t - 1) M.machine.blank) = true ∧
+    sigma (ntmRightVar M x t s (ntmRadius x t - 1) M.machine.blank) = true := by
+  have hidx : x.length + s <= ntmRadius x t - 1 := by
+    simp [ntmRadius]
+    omega
+  have hlt : ntmRadius x t - 1 < ntmRadius x t := by
+    simp [ntmRadius]
+  exact ⟨hB.hLeft _ hidx hlt, hB.hRight _ hidx hlt⟩
+
+theorem ntmBlankTail_penultimate
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hB : NTMBlankTailAt M x t sigma hSat s) :
+    sigma (ntmLeftVar M x t s (ntmRadius x t - 2) M.machine.blank) = true ∧
+    sigma (ntmRightVar M x t s (ntmRadius x t - 2) M.machine.blank) = true := by
+  have hidx : x.length + s <= ntmRadius x t - 2 := by
+    simp [ntmRadius]
+    omega
+  have hlt : ntmRadius x t - 2 < ntmRadius x t := by
+    simp [ntmRadius]
+  exact ⟨hB.hLeft _ hidx hlt, hB.hRight _ hidx hlt⟩
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
