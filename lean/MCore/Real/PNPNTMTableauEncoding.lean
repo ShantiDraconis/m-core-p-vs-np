@@ -5631,6 +5631,108 @@ theorem pathAssignment_choice_unselected
     exact ⟨hactive', hinj.2.1, hinj.2.2.1, hinj.2.2.2⟩
   simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice]
 
+
+theorem pathAssignment_initial_state_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmSetStateClauses [] M t 0 M.machine.initial) = true := by
+  rw [eval_ntmSetStateClauses_nil_iff]
+  intro q
+  rw [pathAssignment_state M x t path hPath 0 (by omega) q]
+  have h0 := hPath.1
+  change path 0 = initialNTMConfig M.machine x at h0
+  have hstate : (path 0).state = M.machine.initial := by
+    simpa [initialNTMConfig] using congrArg Configuration.state h0
+  simpa [hstate, eq_comm]
+
+theorem pathAssignment_initial_head_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head) = true := by
+  rw [eval_ntmSetSymbolClauses_nil_iff]
+  intro a
+  rw [pathAssignment_head M x t path hPath 0 (by omega) a]
+  have h0 := hPath.1
+  change path 0 = initialNTMConfig M.machine x at h0
+  have hhead : (path 0).tape.head = (inputTape x).head := by
+    simpa [initialNTMConfig] using congrArg (fun c => c.tape.head) h0
+  simpa [hhead, eq_comm]
+
+theorem pathAssignment_initial_left_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      ((List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmSetLeftCell [] M x t 0 i
+          ((inputTape x).left.getD i M.machine.blank))) = true := by
+  rw [evalNTMCNF_flatMap_range]
+  intro i hi
+  rw [eval_ntmSetLeftCell_nil_iff]
+  intro b
+  rw [pathAssignment_left M x t path hPath 0 (by omega) i hi b]
+  have h0 := hPath.1
+  change path 0 = initialNTMConfig M.machine x at h0
+  have hleft :
+      (path 0).tape.left.getD i M.machine.blank =
+        (inputTape x).left.getD i M.machine.blank := by
+    simpa [initialNTMConfig] using
+      congrArg (fun c => c.tape.left.getD i M.machine.blank) h0
+  simpa [hleft]
+
+theorem pathAssignment_initial_right_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      ((List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmSetRightCell [] M x t 0 i
+          ((inputTape x).right.getD i M.machine.blank))) = true := by
+  rw [evalNTMCNF_flatMap_range]
+  intro i hi
+  rw [eval_ntmSetRightCell_nil_iff]
+  intro b
+  rw [pathAssignment_right M x t path hPath 0 (by omega) i hi b]
+  have h0 := hPath.1
+  change path 0 = initialNTMConfig M.machine x at h0
+  have hright :
+      (path 0).tape.right.getD i M.machine.blank =
+        (inputTape x).right.getD i M.machine.blank := by
+    simpa [initialNTMConfig] using
+      congrArg (fun c => c.tape.right.getD i M.machine.blank) h0
+  simpa [hright]
+
+theorem pathAssignment_initial_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmInitialCNF M x t) = true := by
+  have hs := pathAssignment_initial_state_sat M x t path hPath
+  have hh := pathAssignment_initial_head_sat M x t path hPath
+  have hl := pathAssignment_initial_left_sat M x t path hPath
+  have hr := pathAssignment_initial_right_sat M x t path hPath
+  rw [show ntmInitialCNF M x t =
+      ntmSetStateClauses [] M t 0 M.machine.initial ++
+      ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head ++
+      (List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmSetLeftCell [] M x t 0 i
+          ((inputTape x).left.getD i M.machine.blank)) ++
+      (List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmSetRightCell [] M x t 0 i
+          ((inputTape x).right.getD i M.machine.blank)) by
+        rfl]
+  rw [evalNTMCNF_append]
+  refine ⟨hs, ?_⟩
+  rw [evalNTMCNF_append]
+  refine ⟨hh, ?_⟩
+  rw [evalNTMCNF_append]
+  exact ⟨hl, hr⟩
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
