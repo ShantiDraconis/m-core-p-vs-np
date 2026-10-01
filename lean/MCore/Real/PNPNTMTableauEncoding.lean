@@ -4785,6 +4785,125 @@ theorem ntmDecode_step
         simp [NTM.successors, hstates, hheads, htrmem]
       simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, tr] using hsucc
 
+
+noncomputable def operationalPath
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (i : Fin (t + 1)) : NTMConfig M :=
+  operationalDecodeConfig M x t sigma hSat i.val (by omega)
+
+theorem operationalPath_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    operationalPath M x t sigma hSat 0 =
+      initialNTMConfig M.machine x := by
+  simp [operationalPath, operationalDecodeConfig]
+
+theorem operationalPath_step
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (i : Fin t) :
+    NTMTableauStep M
+      (operationalPath M x t sigma hSat i.castSucc)
+      (operationalPath M x t sigma hSat i.succ) := by
+  simpa [operationalPath] using
+    ntmDecode_step M x t i.val sigma hSat i.isLt
+
+theorem operationalPath_is_tableauPath
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    NTMTableauPath M t (initialNTMConfig M.machine x)
+      (operationalPath M x t sigma hSat) := by
+  constructor
+  · exact operationalPath_zero M x t sigma hSat
+  · intro i
+    exact operationalPath_step M x t sigma hSat i
+
+theorem boundedExec_final_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    evalNTMCNF sigma (ntmFinalAcceptanceCNF M t) = true := by
+  have hAll :=
+    (evalNTMCNF_append sigma
+      (ntmInitialCNF M x t)
+      (ntmTransitionsCNF M x t ++ ntmFinalAcceptanceCNF M t)).mp
+      (by simpa [boundedExecTableauCNF_NTM, List.append_assoc] using hSat)
+  exact (evalNTMCNF_append sigma
+    (ntmTransitionsCNF M x t)
+    (ntmFinalAcceptanceCNF M t)).mp hAll.2 |>.2
+
+theorem acceptingStateLits_sat_exists
+    (M : PolyNTMCandidate) (t : Nat) (sigma : Assignment)
+    (h :
+      evalNTMClause sigma (ntmAcceptingStateLits M t) = true) :
+    ∃ q : Fin (M.stateCount + 1),
+      M.machine.accepting q = true ∧
+      sigma (ntmStateVar M t t q) = true := by
+  unfold ntmAcceptingStateLits at h
+  let qs := List.ofFn (fun q : Fin (M.stateCount + 1) => q)
+  induction qs with
+  | nil =>
+      simp [evalNTMClause] at h
+  | cons q qs ih =>
+      by_cases hacc : M.machine.accepting q = true
+      · simp [List.filterMap_cons, hacc, evalNTMClause, evalNTMLiteral, ntmPos,
+          Bool.or_eq_true] at h
+        rcases h with hq | hrest
+        · exact ⟨q, hacc, hq⟩
+        · rcases ih hrest with ⟨r, hracc, hrsig⟩
+          exact ⟨r, hracc, hrsig⟩
+      · have haccf : M.machine.accepting q = false := by
+          cases hq : M.machine.accepting q <;> simp_all
+        simp [List.filterMap_cons, haccf] at h
+        exact ih h
+
+theorem decode_accepting
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    M.machine.accepting
+      (decodeState M x t sigma hSat t (by omega)) = true := by
+  have hFinal := boundedExec_final_sat M x t sigma hSat
+  have hClause :
+      evalNTMClause sigma (ntmAcceptingStateLits M t) = true := by
+    simpa [ntmFinalAcceptanceCNF, evalNTMCNF] using hFinal
+  rcases acceptingStateLits_sat_exists M t sigma hClause with
+    ⟨q, hqacc, hqtrue⟩
+  have hqeq := decodeState_unique M x t sigma hSat t (by omega) q hqtrue
+  simpa [hqeq] using hqacc
+
+theorem operationalPath_accepting
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    M.machine.accepting
+      (operationalPath M x t sigma hSat (Fin.last t)).state = true := by
+  have hA := operationalDecodeAgrees_all M x t sigma hSat t (by omega)
+  have hacc := decode_accepting M x t sigma hSat
+  simpa [operationalPath, hA.hState] using hacc
+
+theorem operationalTableauAcceptingPath
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    NTMTableauAcceptingPath M t (initialNTMConfig M.machine x) := by
+  refine ⟨operationalPath M x t sigma hSat, ?_, ?_⟩
+  · exact operationalPath_is_tableauPath M x t sigma hSat
+  · exact operationalPath_accepting M x t sigma hSat
+
+theorem tableau_soundness_from_assignment
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    M.machine.AcceptsWithin t (initialNTMConfig M.machine x) := by
+  exact path_to_acceptsWithin M t (initialNTMConfig M.machine x)
+    (operationalTableauAcceptingPath M x t sigma hSat)
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
