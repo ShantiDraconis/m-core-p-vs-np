@@ -179,19 +179,61 @@ def needExprDecode (n : Nat) : P01NeedExprCompositeNTM.NeedExprCompositeState :=
       simp [needExprDecode, needExprCode, h, cursorSeekDecode_code]
   | decode q =>
       have h := tagDecodeStateCode_lt q
-      simp [needExprDecode, needExprCode, h, tagDecodeStateDecode_code, Nat.add_sub_cancel_left] <;> omega
+      have h5 : ¬ 5 + tagDecodeStateCode q < 5 := by omega
+      have h21 : 5 + tagDecodeStateCode q < 21 := by omega
+      have hsub : 5 + tagDecodeStateCode q - 5 = tagDecodeStateCode q := by omega
+      simp [needExprDecode, needExprCode, h5, h21, hsub, tagDecodeStateDecode_code]
   | input q =>
       have h := inputNodeCode_lt q
-      simp [needExprDecode, needExprCode, inputNodeStateCount, h, inputNodeDecode_code, Nat.add_sub_cancel_left] <;> omega
+      unfold inputNodeStateCount at h
+      have h5 : ¬ 21 + inputNodeCode q < 5 := by omega
+      have h21 : ¬ 21 + inputNodeCode q < 21 := by omega
+      have h191 : 21 + inputNodeCode q < 191 := by omega
+      have hsub : 21 + inputNodeCode q - 21 = inputNodeCode q := by omega
+      simp [needExprDecode, needExprCode, h5, h21, h191, hsub, inputNodeDecode_code]
   | retValue b q =>
       have h := cursorReturnCode_lt q
-      cases b <;> simp [needExprDecode, needExprCode, h, cursorReturnDecode_code, Nat.add_sub_cancel_left] <;> omega
+      cases b with
+      | false =>
+          have h5 : ¬ 191 + cursorReturnCode q < 5 := by omega
+          have h21 : ¬ 191 + cursorReturnCode q < 21 := by omega
+          have h191 : ¬ 191 + cursorReturnCode q < 191 := by omega
+          have h196 : 191 + cursorReturnCode q < 196 := by omega
+          have hsub : 191 + cursorReturnCode q - 191 = cursorReturnCode q := by omega
+          simp [needExprDecode, needExprCode, h5, h21, h191, h196, hsub,
+            cursorReturnDecode_code]
+      | true =>
+          have h5 : ¬ 196 + cursorReturnCode q < 5 := by omega
+          have h21 : ¬ 196 + cursorReturnCode q < 21 := by omega
+          have h191 : ¬ 196 + cursorReturnCode q < 191 := by omega
+          have h196 : ¬ 196 + cursorReturnCode q < 196 := by omega
+          have h201 : 196 + cursorReturnCode q < 201 := by omega
+          have hsub : 196 + cursorReturnCode q - 196 = cursorReturnCode q := by omega
+          simp [needExprDecode, needExprCode, h5, h21, h191, h196, h201, hsub,
+            cursorReturnDecode_code]
   | retPush f q =>
       have h := frameCursorCode_lt f q
-      simp [needExprDecode, needExprCode, h, frameCursorDecode_code, Nat.add_sub_cancel_left] <;> omega
+      have h5 : ¬ 201 + frameCursorCode f q < 5 := by omega
+      have h21 : ¬ 201 + frameCursorCode f q < 21 := by omega
+      have h191 : ¬ 201 + frameCursorCode f q < 191 := by omega
+      have h196 : ¬ 201 + frameCursorCode f q < 196 := by omega
+      have h201 : ¬ 201 + frameCursorCode f q < 201 := by omega
+      have h236 : 201 + frameCursorCode f q < 236 := by omega
+      have hsub : 201 + frameCursorCode f q - 201 = frameCursorCode f q := by omega
+      simp [needExprDecode, needExprCode, h5, h21, h191, h196, h201, h236, hsub,
+        frameCursorDecode_code]
   | push f q =>
       have h := framePushPairCode_lt f q
-      simp [needExprDecode, needExprCode, h, framePushPairDecode_code, Nat.add_sub_cancel_left] <;> omega
+      have h5 : ¬ 236 + framePushPairCode f q < 5 := by omega
+      have h21 : ¬ 236 + framePushPairCode f q < 21 := by omega
+      have h191 : ¬ 236 + framePushPairCode f q < 191 := by omega
+      have h196 : ¬ 236 + framePushPairCode f q < 196 := by omega
+      have h201 : ¬ 236 + framePushPairCode f q < 201 := by omega
+      have h236 : ¬ 236 + framePushPairCode f q < 236 := by omega
+      have h397 : 236 + framePushPairCode f q < 397 := by omega
+      have hsub : 236 + framePushPairCode f q - 236 = framePushPairCode f q := by omega
+      simp [needExprDecode, needExprCode, h5, h21, h191, h196, h201, h236, h397, hsub,
+        framePushPairDecode_code]
   | doneValue b => cases b <;> simp [needExprDecode, needExprCode]
   | doneNeed => simp [needExprDecode, needExprCode]
   | reject => simp [needExprDecode, needExprCode]
@@ -266,10 +308,38 @@ def haveValueDecode (n : Nat) : P01HaveValueCompositeNTM.HaveValueCompositeState
   | peek b => cases b <;> simp [haveValueDecode, haveValueCode]
   | pop b q =>
       have h := framePopCode_lt q
-      cases b <;> simp [haveValueDecode, haveValueCode, h, framePopDecode_code, Nat.add_sub_cancel_left] <;> omega
+      cases b with
+      | false =>
+          have h0 : 4 + framePopCode q ≠ 0 := by omega
+          have h1 : 4 + framePopCode q ≠ 1 := by omega
+          have h2 : 4 + framePopCode q ≠ 2 := by omega
+          have h3 : 4 + framePopCode q ≠ 3 := by omega
+          have h26 : 4 + framePopCode q < 26 := by omega
+          have hsub : 4 + framePopCode q - 4 = framePopCode q := by omega
+          simp [haveValueDecode, haveValueCode, h0, h1, h2, h3, h26, hsub,
+            framePopDecode_code]
+      | true =>
+          have h0 : 26 + framePopCode q ≠ 0 := by omega
+          have h1 : 26 + framePopCode q ≠ 1 := by omega
+          have h2 : 26 + framePopCode q ≠ 2 := by omega
+          have h3 : 26 + framePopCode q ≠ 3 := by omega
+          have h26 : ¬ 26 + framePopCode q < 26 := by omega
+          have h48 : 26 + framePopCode q < 48 := by omega
+          have hsub : 26 + framePopCode q - 26 = framePopCode q := by omega
+          simp [haveValueDecode, haveValueCode, h0, h1, h2, h3, h26, h48, hsub,
+            framePopDecode_code]
   | push f q =>
       have h := framePushPairCode_lt f q
-      simp [haveValueDecode, haveValueCode, h, framePushPairDecode_code, Nat.add_sub_cancel_left] <;> omega
+      have h0 : 48 + framePushPairCode f q ≠ 0 := by omega
+      have h1 : 48 + framePushPairCode f q ≠ 1 := by omega
+      have h2 : 48 + framePushPairCode f q ≠ 2 := by omega
+      have h3 : 48 + framePushPairCode f q ≠ 3 := by omega
+      have h26 : ¬ 48 + framePushPairCode f q < 26 := by omega
+      have h48 : ¬ 48 + framePushPairCode f q < 48 := by omega
+      have h209 : 48 + framePushPairCode f q < 209 := by omega
+      have hsub : 48 + framePushPairCode f q - 48 = framePushPairCode f q := by omega
+      simp [haveValueDecode, haveValueCode, h0, h1, h2, h3, h26, h48, h209, hsub,
+        framePushPairDecode_code]
   | doneValue b => cases b <;> simp [haveValueDecode, haveValueCode]
   | doneNeed => simp [haveValueDecode, haveValueCode]
   | reject => simp [haveValueDecode, haveValueCode]
@@ -325,12 +395,54 @@ def checkedEvalDecode (n : Nat) : P01CheckedEvalRunLoopNTM.CheckedEvalRunState :
   cases q with
   | need m q =>
       have h := needExprCode_lt q
-      cases m <;>
-        simp [checkedEvalDecode, checkedEvalCode, needExprStateCount, h, needExprDecode_code, Nat.add_sub_cancel_left] <;> omega
+      unfold needExprStateCount at h
+      cases m with
+      | cnf =>
+          have h401 : needExprCode q < 401 := h
+          simp [checkedEvalDecode, checkedEvalCode, h401, needExprDecode_code]
+      | clause =>
+          have h401 : ¬ 401 + needExprCode q < 401 := by omega
+          have h802 : 401 + needExprCode q < 802 := by omega
+          have hsub : 401 + needExprCode q - 401 = needExprCode q := by omega
+          simp [checkedEvalDecode, checkedEvalCode, h401, h802, hsub, needExprDecode_code]
+      | mustInput =>
+          have h401 : ¬ 802 + needExprCode q < 401 := by omega
+          have h802 : ¬ 802 + needExprCode q < 802 := by omega
+          have h1203 : 802 + needExprCode q < 1203 := by omega
+          have hsub : 802 + needExprCode q - 802 = needExprCode q := by omega
+          simp [checkedEvalDecode, checkedEvalCode, h401, h802, h1203, hsub,
+            needExprDecode_code]
   | «have» m q =>
       have h := haveValueCode_lt q
-      cases m <;>
-        simp [checkedEvalDecode, checkedEvalCode, haveValueStateCount, h, haveValueDecode_code, Nat.add_sub_cancel_left] <;> omega
+      unfold haveValueStateCount at h
+      cases m with
+      | cnf =>
+          have h401 : ¬ 1203 + haveValueCode q < 401 := by omega
+          have h802 : ¬ 1203 + haveValueCode q < 802 := by omega
+          have h1203 : ¬ 1203 + haveValueCode q < 1203 := by omega
+          have h1416 : 1203 + haveValueCode q < 1416 := by omega
+          have hsub : 1203 + haveValueCode q - 1203 = haveValueCode q := by omega
+          simp [checkedEvalDecode, checkedEvalCode, h401, h802, h1203, h1416, hsub,
+            haveValueDecode_code]
+      | clause =>
+          have h401 : ¬ 1416 + haveValueCode q < 401 := by omega
+          have h802 : ¬ 1416 + haveValueCode q < 802 := by omega
+          have h1203 : ¬ 1416 + haveValueCode q < 1203 := by omega
+          have h1416 : ¬ 1416 + haveValueCode q < 1416 := by omega
+          have h1629 : 1416 + haveValueCode q < 1629 := by omega
+          have hsub : 1416 + haveValueCode q - 1416 = haveValueCode q := by omega
+          simp [checkedEvalDecode, checkedEvalCode, h401, h802, h1203, h1416, h1629,
+            hsub, haveValueDecode_code]
+      | mustInput =>
+          have h401 : ¬ 1629 + haveValueCode q < 401 := by omega
+          have h802 : ¬ 1629 + haveValueCode q < 802 := by omega
+          have h1203 : ¬ 1629 + haveValueCode q < 1203 := by omega
+          have h1416 : ¬ 1629 + haveValueCode q < 1416 := by omega
+          have h1629 : ¬ 1629 + haveValueCode q < 1629 := by omega
+          have h1842 : 1629 + haveValueCode q < 1842 := by omega
+          have hsub : 1629 + haveValueCode q - 1629 = haveValueCode q := by omega
+          simp [checkedEvalDecode, checkedEvalCode, h401, h802, h1203, h1416, h1629,
+            h1842, hsub, haveValueDecode_code]
   | checkSource b => cases b <;> simp [checkedEvalDecode, checkedEvalCode]
   | final b => cases b <;> simp [checkedEvalDecode, checkedEvalCode]
   | reject => simp [checkedEvalDecode, checkedEvalCode]
