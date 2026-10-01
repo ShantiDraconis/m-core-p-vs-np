@@ -339,14 +339,12 @@ theorem prepared_invalid_terminal_tag_fail_closed_exact
                P01EvalCursorMachine.evalCursorStackEndTape
                  witness 0 source [] 0 }] := by
     simpa [source, checkedEvalRunLoopMachine] using hreach
-  cases source with
-  | nil => contradiction
-  | cons b bs =>
-      exact prepared_eval_reject_within_step_fail_closed_exact
-        witness b bs m
-        (P01EvalCursorMachine.evalCursorReadTape witness 3 rest [] 0)
-        (by simpa [source] using hm')
-        (by simpa [source] using hreach')
+  simpa [source] using
+    (prepared_eval_reject_within_step_fail_closed_exact
+      witness true (true :: b2 :: rest) m
+      (P01EvalCursorMachine.evalCursorReadTape witness 3 rest [] 0)
+      (by simpa [source] using hm')
+      (by simpa [source] using hreach'))
 
 #print axioms MCore.Real.P01RawBaseExact.prepared_empty_fail_closed_exact
 #print axioms MCore.Real.P01RawBaseExact.prepared_truncated_tag_fail_closed_exact
