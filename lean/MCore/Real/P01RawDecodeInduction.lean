@@ -1,5 +1,6 @@
 import MCore.Real.P01RawRecursiveSteps
 import MCore.Real.P01RawDecodeFailureShape
+import MCore.Real.P01RawDecoderSound
 
 namespace MCore
 namespace Real
@@ -14,6 +15,7 @@ open P01CheckedVerifierInvariant
 open P01RawEvalSink
 open P01RawRecursiveBudget
 open P01RawRecursiveSteps
+open P01RawDecoderSound
 
 /-- Physical completeness of raw decoder failure.
 
@@ -173,7 +175,7 @@ theorem decodeCore_none_reaches_sink :
                                       have hrestEq :
                                           rest =
                                             encodeCircuit left ++ rightSource :=
-                                        P01GuessedWitnessRelation.decodeCircuitCore_sound
+                                        P01RawDecoderSound.decodeCircuitCore_success_sound
                                           fuel rest left rightSource
                                           (by simpa using hl)
                                       have hrightLen :
@@ -197,13 +199,13 @@ theorem decodeCore_none_reaches_sink :
                                               rightSource
                                               (encodeEvalFrames
                                                 (.andRight
-                                                  (CircuitK1.evalCircuit
+                                                  (evalCircuit
                                                     (P01RawRecursiveSteps.witnessAssignment witness)
                                                     left) :: frames)) →
                                             RawSinkCertificate fuel n .cnf
                                               witness rightSource
                                               (.andRight
-                                                (CircuitK1.evalCircuit
+                                                (evalCircuit
                                                   (P01RawRecursiveSteps.witnessAssignment witness)
                                                   left) :: frames)
                                               (consumed + 3 +
@@ -214,7 +216,7 @@ theorem decodeCore_none_reaches_sink :
                                           (by simpa using hr)
                                           .cnf witness
                                           (.andRight
-                                            (CircuitK1.evalCircuit
+                                            (evalCircuit
                                               (P01RawRecursiveSteps.witnessAssignment witness)
                                               left) :: frames)
                                           (consumed + 3 +
@@ -264,7 +266,7 @@ theorem decodeCore_none_reaches_sink :
                                       have hrestEq :
                                           rest =
                                             encodeCircuit left ++ rightSource :=
-                                        P01GuessedWitnessRelation.decodeCircuitCore_sound
+                                        P01RawDecoderSound.decodeCircuitCore_success_sound
                                           fuel rest left rightSource
                                           (by simpa using hl)
                                       have hrightLen :
@@ -288,13 +290,13 @@ theorem decodeCore_none_reaches_sink :
                                               rightSource
                                               (encodeEvalFrames
                                                 (.orRight
-                                                  (CircuitK1.evalCircuit
+                                                  (evalCircuit
                                                     (P01RawRecursiveSteps.witnessAssignment witness)
                                                     left) :: frames)) →
                                             RawSinkCertificate fuel n .clause
                                               witness rightSource
                                               (.orRight
-                                                (CircuitK1.evalCircuit
+                                                (evalCircuit
                                                   (P01RawRecursiveSteps.witnessAssignment witness)
                                                   left) :: frames)
                                               (consumed + 3 +
@@ -305,7 +307,7 @@ theorem decodeCore_none_reaches_sink :
                                           (by simpa using hr)
                                           .clause witness
                                           (.orRight
-                                            (CircuitK1.evalCircuit
+                                            (evalCircuit
                                               (P01RawRecursiveSteps.witnessAssignment witness)
                                               left) :: frames)
                                           (consumed + 3 +
@@ -322,20 +324,30 @@ theorem decodeCore_none_reaches_sink :
                           cases b2 with
                           | false =>
                               -- 110 is structurally invalid in every syntax mode.
+                              have hdis :
+                                  tagAllowed mode
+                                      (P01NeedExprTagDecode.decodeTagBits
+                                        true true false) = false := by
+                                cases mode <;> rfl
                               have hlocal :=
                                 disallowed_tag_reaches_sink
                                   n mode witness rest frames consumed padding
-                                  true true false rfl hLayout
+                                  true true false hdis hLayout
                               simpa [Nat.succ_eq_add_one] using
                                 (chunk_sink_to_succ fuel n mode witness
                                   (true :: true :: false :: rest)
                                   frames consumed padding hlocal)
                           | true =>
                               -- 111 is structurally invalid in every syntax mode.
+                              have hdis :
+                                  tagAllowed mode
+                                      (P01NeedExprTagDecode.decodeTagBits
+                                        true true true) = false := by
+                                cases mode <;> rfl
                               have hlocal :=
                                 disallowed_tag_reaches_sink
                                   n mode witness rest frames consumed padding
-                                  true true true rfl hLayout
+                                  true true true hdis hLayout
                               simpa [Nat.succ_eq_add_one] using
                                 (chunk_sink_to_succ fuel n mode witness
                                   (true :: true :: true :: rest)
