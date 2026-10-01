@@ -206,8 +206,8 @@ theorem decodeNat_none_eq_replicate_true
     bits = List.replicate bits.length true := by
   rcases P01RawDecodeFailureDescent.decodeNat_none_replicate_true bits h with
     ⟨k, hk⟩
-  subst bits
-  simp
+  rw [hk]
+  simp only [List.length_replicate]
 
 /-- A malformed unary input payload is fail-closed at exact global fuel. -/
 theorem prepared_input_unary_none_fail_closed_exact
