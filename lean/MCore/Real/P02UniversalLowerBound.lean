@@ -1,5 +1,4 @@
 import MCore.Real.P02FinalCompression
-import MCore.Real.P02KleeneKernel
 
 namespace MCore
 namespace Real
