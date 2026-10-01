@@ -68,14 +68,15 @@ theorem decodeNat_eq_none_eq_replicate_true :
           simp [decodeNat] at h
       | true =>
           intro h
-          simp only [decodeNat] at h
           cases hrest : decodeNat bs with
           | none =>
               have hrs : bs = List.replicate bs.length true :=
                 ih hrest
-              simp [hrs, List.replicate_succ]
+              rw [hrs]
+              rfl
           | some p =>
-              simp [hrest] at h
+              rcases p with ⟨n, tail⟩
+              simp [decodeNat, hrest] at h
 
 theorem one_loop_le_rawCoreBudget
     (sourceLen n : Nat) :
@@ -163,9 +164,13 @@ theorem truncated_unary_reaches_raw_failure
         RawFailEndpoint cfg := by
   have hrep := decodeNat_eq_none_eq_replicate_true rest hrest
   let k := rest.length
+  have hsource0 :
+      (false :: false :: false :: rest).length ≤ n :=
+    hLayout.source_le
   have hsource :
       (false :: false :: false :: List.replicate k true).length ≤ n := by
-    simpa [k, hrep] using hLayout.source_le
+    rw [hrep] at hsource0
+    simpa only [k] using hsource0
   have hframes : (encodeEvalFrames frames).length ≤ n :=
     hLayout.frames_le
   obtain ⟨m, hm, dead, hreach, hactive, hdead⟩ :=
@@ -208,7 +213,8 @@ theorem truncated_unary_reaches_raw_failure
       (two_loop_le_rawCoreBudget
         (false :: false :: false :: rest).length n),
     dead, ?_, ?_⟩
-  · simpa [k, hrep] using hreach
+  · rw [hrep]
+    simpa only [k] using hreach
   · exact Or.inr ⟨hactive, hdead⟩
 
 /-- Any syntactically forbidden complete tag reaches the explicit reject
