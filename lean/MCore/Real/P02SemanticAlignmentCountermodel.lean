@@ -110,7 +110,7 @@ theorem semanticNegationBits_eq_true_of_rejects
   have hb :
       declaredAcceptBit constantPairCandidate x = false := by
     cases hv : declaredAcceptBit constantPairCandidate x with
-    | false => exact hv
+    | false => rfl
     | true =>
         exfalso
         exact h ((declaredAcceptBit_true_iff constantPairCandidate x).mp hv)
