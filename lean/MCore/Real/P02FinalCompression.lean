@@ -1,6 +1,5 @@
 import MCore.Real.P01RawClosureFinal
 import MCore.Real.P02OperatorKernel
-import MCore.Real.P02TerminalFrontier
 
 namespace MCore
 namespace Real
@@ -12,7 +11,6 @@ open CanonicalCircuitBits
 open P01FinalCertificate
 open P01RawClosureFinal
 open P02OperatorKernel
-open P02TerminalFrontier
 
 /-- Recovered no-hypothesis P01 inhabitant. -/
 theorem p01_closed :
