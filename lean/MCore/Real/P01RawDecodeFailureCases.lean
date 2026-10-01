@@ -52,7 +52,7 @@ inductive RawFailureCase : Nat → BitString → Type
       RawFailureCase (fuel + 1) (true :: false :: true :: rest)
 
 /-- Decoder failure has exactly one of the structural causes above. -/
-theorem decodeCircuitCore_none_cases
+def decodeCircuitCore_none_cases
     (fuel : Nat) (bits : BitString)
     (h : decodeCircuitCore fuel bits = none) :
     RawFailureCase fuel bits := by
