@@ -1,0 +1,66 @@
+name: P02 Bounded Execution Recovery
+
+on:
+  push:
+    branches:
+      - atk/p01-post-mincut-advance-20261001
+    paths:
+      - 'lean/MCore/Real/P02BoundedComputationEncoding.lean'
+      - 'lean/MCore/Real/P02BoundedComputationLogic.lean'
+      - 'lean/MCore/Real/P02BoundedComputationTape.lean'
+      - 'lean/MCore/Real/P02BoundedComputationSoundness.lean'
+      - 'lean/MCore/Real/P02BoundedComputationClose.lean'
+      - 'lean/MCore/Real/P02TableauCompletenessActive.lean'
+      - 'lean/MCore/Real/P02TableauCompletenessClose.lean'
+      - 'audit/ATK_P02_BOUNDED_EXEC_RECOVERY_V1.json'
+      - '.github/workflows/p02-bounded-execution-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-exec:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build bounded execution chain
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P02BoundedComputationEncoding
+          lake build MCore.Real.P02BoundedComputationLogic
+          lake build MCore.Real.P02BoundedComputationTape
+          lake build MCore.Real.P02BoundedComputationSoundness
+          lake build MCore.Real.P02BoundedComputationClose
+          lake build MCore.Real.P02TableauCompletenessActive
+          lake build MCore.Real.P02TableauCompletenessClose
+      - name: Exact axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P02BoundedExecAudit.lean <<'EOF'
+          import MCore.Real.P02TableauCompletenessClose
+          #print axioms MCore.Real.P02BoundedComputationClose.transitionSoundnessCertificate
+          #print axioms MCore.Real.P02BoundedComputationClose.certificates_close_boundedExecCorrectness
+          #print axioms MCore.Real.P02TableauCompletenessClose.executionAssignment_transitionsCNF
+          #print axioms MCore.Real.P02TableauCompletenessClose.tableauCompletenessCertificate
+          #print axioms MCore.Real.P02TableauCompletenessClose.boundedExecCorrectness_closed
+          EOF
+          lake env lean P02BoundedExecAudit.lean | tee P02BoundedExecAudit.log
+          ! grep -E 'sorryAx' P02BoundedExecAudit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          files="lean/MCore/Real/P02BoundedComputationEncoding.lean lean/MCore/Real/P02BoundedComputationLogic.lean lean/MCore/Real/P02BoundedComputationTape.lean lean/MCore/Real/P02BoundedComputationSoundness.lean lean/MCore/Real/P02BoundedComputationClose.lean lean/MCore/Real/P02TableauCompletenessActive.lean lean/MCore/Real/P02TableauCompletenessClose.lean"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files

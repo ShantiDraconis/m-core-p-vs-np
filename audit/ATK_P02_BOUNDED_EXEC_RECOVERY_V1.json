@@ -1,0 +1,24 @@
+{
+  "schema": "ATK_P02_BOUNDED_EXEC_RECOVERY_V1",
+  "source_branch": "atk/p02-tableau-completeness-close-20260923",
+  "source_status": "HISTORICAL_GREEN_MATERIAL",
+  "target_branch": "atk/p01-post-mincut-advance-20261001",
+  "ported_modules": [
+    "P02BoundedComputationEncoding",
+    "P02BoundedComputationLogic",
+    "P02BoundedComputationTape",
+    "P02BoundedComputationSoundness",
+    "P02BoundedComputationClose",
+    "P02TableauCompletenessActive",
+    "P02TableauCompletenessClose"
+  ],
+  "terminal_theorem": "MCore.Real.P02TableauCompletenessClose.boundedExecCorrectness_closed",
+  "claim_scope": "bounded deterministic execution tableau correctness only",
+  "does_not_certify": [
+    "UniversalFailure (SATBits circuitBitEncoding)",
+    "same-input/self-reference",
+    "candidate coding",
+    "P != NP"
+  ],
+  "promotion_rule": "GREEN only after build + exact axiom audit + placeholder firewall on the current branch"
+}
