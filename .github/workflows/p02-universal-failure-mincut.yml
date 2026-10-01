@@ -9,7 +9,8 @@ on:
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorReduction.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorResidualCore.lean'
-      - 'lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean'
+      - 'lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean lean/MCore/Real/P02FiniteDescriptorInfiniteOrbit.lean'
+      - 'lean/MCore/Real/P02FiniteDescriptorInfiniteOrbit.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorAlternation.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
@@ -55,6 +56,7 @@ jobs:
           lake build MCore.Real.P02FiniteDescriptorReduction
           lake build MCore.Real.P02FiniteDescriptorResidualCore
           lake build MCore.Real.P02FiniteDescriptorStructuralLaws
+          lake build MCore.Real.P02FiniteDescriptorInfiniteOrbit
           lake build MCore.Real.P02FiniteDescriptorOrbitResidual
           lake build MCore.Real.P02FiniteDescriptorAlternation
           lake build MCore.Real.P02FailureNormalForms
@@ -76,6 +78,7 @@ jobs:
           import MCore.Real.P02FiniteDescriptorReduction
           import MCore.Real.P02FiniteDescriptorResidualCore
           import MCore.Real.P02FiniteDescriptorStructuralLaws
+          import MCore.Real.P02FiniteDescriptorInfiniteOrbit
           import MCore.Real.P02FiniteDescriptorOrbitResidual
           import MCore.Real.P02FiniteDescriptorAlternation
           import MCore.Real.P02FailureNormalForms
@@ -126,6 +129,10 @@ jobs:
           #print axioms MCore.Real.P02CookLevinSameInputCore.rejectTransform_sat_iff_not_accepts
           #print axioms MCore.Real.P02CookLevinSameInputCore.SameInputWitness.semanticFlip
           #print axioms MCore.Real.P02CookLevinSameInputCore.sameInputCore_implies_universal_failure
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.diagonalBits_strict_growth
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_strictMono
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_injective
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.infinite_alternating_certificate
           EOF
           lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
           ! grep -E 'sorryAx' P02UniversalFailureAudit.log
