@@ -7304,6 +7304,146 @@ theorem ntmCNFCircuit_encoding_le
       simp [ntmCNFCircuit, encodeCircuit, ntmCNFWeight, ntmClauseWeight] at ih ⊢
       nlinarith
 
+
+def tableauVarCap
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
+  ntmChoiceBase M x t +
+    ((((t * ntmStateCount M + M.stateCount) * 3 + 2) *
+      (ntmBranchBound M + 1)) + ntmBranchBound M)
+
+theorem ntmStateVar_lt_tableauVarCap
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1))
+    (hs : s <= t) :
+    ntmStateVar M t s q < tableauVarCap M x t := by
+  have h1 := ntmStateVar_lt_headBase M t s q hs
+  have h2 : ntmHeadBase M t <= ntmChoiceBase M x t := by
+    simp [ntmChoiceBase, ntmRightBase, ntmLeftBase]
+  unfold tableauVarCap
+  omega
+
+theorem ntmHeadVar_lt_tableauVarCap
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (a : Option Bool) (hs : s <= t) :
+    ntmHeadVar M t s a < tableauVarCap M x t := by
+  have h1 := (ntmHeadVar_range M x t s a hs).2
+  have h2 : ntmLeftBase M x t <= ntmChoiceBase M x t := by
+    simp [ntmChoiceBase, ntmRightBase]
+  unfold tableauVarCap
+  omega
+
+theorem ntmLeftVar_lt_tableauVarCap
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool) (hs : s <= t) (hi : i < ntmRadius x t) :
+    ntmLeftVar M x t s i a < tableauVarCap M x t := by
+  have h1 := (ntmLeftVar_range M x t s i a hs hi).2
+  have h2 : ntmRightBase M x t <= ntmChoiceBase M x t := by
+    simp [ntmChoiceBase]
+  unfold tableauVarCap
+  omega
+
+theorem ntmRightVar_lt_tableauVarCap
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool) (hs : s <= t) (hi : i < ntmRadius x t) :
+    ntmRightVar M x t s i a < tableauVarCap M x t := by
+  have h1 := (ntmRightVar_range M x t s i a hs hi).2
+  unfold tableauVarCap
+  omega
+
+theorem ntmChoiceVar_le_tableauVarCap
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool) (j : Nat)
+    (hs : s <= t)
+    (hj : j <= ntmBranchBound M) :
+    ntmChoiceVar M x t s q a j <= tableauVarCap M x t := by
+  have hq : q.val <= M.stateCount := by
+    omega
+  have ha : ntmSymbolCode a <= 2 := by
+    have := ntmSymbolCode_lt_three a
+    omega
+  simp [ntmChoiceVar, tableauVarCap, ntmStateCount]
+  nlinarith
+
+def ClauseVarsLe (cap : Nat) (cl : NTMClause) : Prop :=
+  forall l, l ∈ cl -> l.var <= cap
+
+def CNFVarsLe (cap : Nat) (f : NTMCNF) : Prop :=
+  forall cl, cl ∈ f -> ClauseVarsLe cap cl
+
+theorem ClauseVarsLe_append
+    {cap : Nat} {a b : NTMClause}
+    (ha : ClauseVarsLe cap a)
+    (hb : ClauseVarsLe cap b) :
+    ClauseVarsLe cap (a ++ b) := by
+  intro l hl
+  rw [List.mem_append] at hl
+  rcases hl with hl | hl
+  · exact ha l hl
+  · exact hb l hl
+
+theorem CNFVarsLe_append
+    {cap : Nat} {a b : NTMCNF}
+    (ha : CNFVarsLe cap a)
+    (hb : CNFVarsLe cap b) :
+    CNFVarsLe cap (a ++ b) := by
+  intro cl hcl
+  rw [List.mem_append] at hcl
+  rcases hcl with hcl | hcl
+  · exact ha cl hcl
+  · exact hb cl hcl
+
+theorem ntmCNFMaxVar_le_of_varsLe
+    (cap : Nat) (f : NTMCNF)
+    (h : CNFVarsLe cap f) :
+    ntmCNFMaxVar f <= cap := by
+  unfold ntmCNFMaxVar
+  induction f with
+  | nil => simp
+  | cons cl fs ih =>
+      have hcl : ClauseVarsLe cap cl := h cl (by simp)
+      have hfs : CNFVarsLe cap fs := by
+        intro c hc
+        exact h c (by simp [hc])
+      have hclmax : ntmClauseMaxVar cl <= cap := by
+        unfold ntmClauseMaxVar
+        induction cl with
+        | nil => simp
+        | cons l ls ihls =>
+            simp only [List.foldl_cons]
+            have hl : l.var <= cap := hcl l (by simp)
+            have hrest : ClauseVarsLe cap ls := by
+              intro z hz
+              exact hcl z (by simp [hz])
+            have := ihls hrest
+            exact le_trans (Nat.max_le (by omega) hl)
+              (by
+                induction ls with
+                | nil => simp
+                | cons z zs ihz =>
+                    simp only [List.foldl_cons]
+                    exact Nat.max_le
+                      (le_trans (Nat.max_le_iff.mp (by
+                        exact Nat.max_le (by omega) (hrest z (by simp)))).1 (by omega))
+                      (hrest z (by simp)))
+      simp only [List.foldl_cons]
+      have htail := ih hfs
+      exact Nat.max_le hclmax htail
+
+theorem literalVar_le_cap_state
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (hs : s <= t) :
+    (ntmPos (ntmStateVar M t s q)).var <= tableauVarCap M x t := by
+  simp [ntmPos]
+  exact Nat.le_of_lt (ntmStateVar_lt_tableauVarCap M x t s q hs)
+
+theorem literalVar_le_cap_head
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (a : Option Bool) (hs : s <= t) :
+    (ntmPos (ntmHeadVar M t s a)).var <= tableauVarCap M x t := by
+  simp [ntmPos]
+  exact Nat.le_of_lt (ntmHeadVar_lt_tableauVarCap M x t s a hs)
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
