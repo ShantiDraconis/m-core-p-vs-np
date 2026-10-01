@@ -1,0 +1,43 @@
+{
+  "schema": "atk-p02-targeted-validation-manifest.v1",
+  "state": "READY_TO_RUN",
+  "branch": "atk/p02-only-20261001",
+  "workflow": ".github/workflows/p02-targeted-certify.yml",
+  "validator": "audit/p02_targeted_validate.sh",
+  "axiom_audit": "audit/P02TargetedAxiomAudit.lean",
+  "targets": [
+    "MCore.Real.P02OperatorKernel",
+    "MCore.Real.P02FinalCompression",
+    "MCore.Real.P02KleeneKernel",
+    "MCore.Real.P02EffectiveAlignment",
+    "MCore.Real.P02UniversalLowerBound",
+    "MCore.Real.P02UniversalKernel"
+  ],
+  "required_checks": [
+    "targeted lake build",
+    "sorry/admit source scan",
+    "explicit axiom/constant source scan",
+    "kernel #print axioms audit",
+    "unexpected axiom rejection",
+    "generated certificate JSON validation"
+  ],
+  "allowed_kernel_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "certificate_output": "audit/P02_TARGETED_CERTIFICATE.generated.json",
+  "certification_rule": "CERTIFIED only after validator exits 0 on the exact HEAD SHA",
+  "does_not_certify": [
+    "D3 semantic diagonal family inhabitant",
+    "FINAL_OPEN_MATH inhabitant",
+    "unconditional P != NP"
+  ],
+  "actions_policy": {
+    "trigger": "workflow_dispatch only",
+    "scheduled": false,
+    "repository_write": false,
+    "automatic_push": false,
+    "timeout_minutes": 10
+  }
+}
