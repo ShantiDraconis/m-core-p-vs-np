@@ -2357,6 +2357,269 @@ theorem ntmRight_blankRight_exact
   exact (eval_ntmSetRightCell_nil_iff M x t sigma (ntmRadius x t - 1)
     M.machine.blank).mp hnil
 
+
+theorem haltedCase_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true := by
+  have hStep := boundedExec_transitionStep_sat M x t s sigma hSat hs
+  have hCase := transitionStep_case_sat M x t s q a sigma hStep
+  have hor : M.machine.accepting q || M.machine.rejecting q = true := by
+    rcases hHalt with ha | hr
+    · simp [ha]
+    · simp [hr]
+  simpa [ntmTransitionCaseCNF, hor] using hCase
+
+theorem evalNTMClause_two_neg_prefix_true
+    (sigma : Assignment) (c1 c2 : Nat) (cl : NTMClause)
+    (h : evalNTMClause sigma (ntmNeg c1 :: ntmNeg c2 :: cl) = true)
+    (hc1 : sigma c1 = true)
+    (hc2 : sigma c2 = true) :
+    evalNTMClause sigma cl = true := by
+  simpa [evalNTMClause, evalNTMLiteral, ntmNeg, hc1, hc2] using h
+
+theorem eval_setState_two_neg_guard_to_nil
+    (M : PolyNTMCandidate) (t s : Nat)
+    (c1 c2 : Nat)
+    (target : Fin (M.stateCount + 1))
+    (sigma : Assignment)
+    (h :
+      evalNTMCNF sigma
+        (ntmSetStateClauses [ntmNeg c1, ntmNeg c2] M t s target) = true)
+    (hc1 : sigma c1 = true)
+    (hc2 : sigma c2 = true) :
+    evalNTMCNF sigma (ntmSetStateClauses [] M t s target) = true := by
+  rw [eval_ntmSetStateClauses_nil_iff]
+  intro r
+  have hguarded :
+      evalNTMClause sigma
+        ([ntmNeg c1, ntmNeg c2] ++
+          [ntmLitFor (ntmStateVar M t s r) (decide (r = target))]) = true := by
+    apply evalNTMCNF_of_mem sigma
+      (ntmSetStateClauses [ntmNeg c1, ntmNeg c2] M t s target) _
+      h
+    simp [ntmSetStateClauses]
+  have hunit :
+      evalNTMClause sigma
+        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))] = true := by
+    exact evalNTMClause_two_neg_prefix_true sigma c1 c2 _
+      (by simpa using hguarded) hc1 hc2
+  exact (evalNTMClause_singleton_litFor
+    sigma (ntmStateVar M t s r) (decide (r = target))).mp hunit
+
+theorem eval_copySymbol_two_neg_guard_true
+    (sigma : Assignment)
+    (c1 c2 : Nat)
+    (oldVar newVar : Option Bool -> Nat)
+    (h :
+      evalNTMCNF sigma
+        (ntmCopySymbolClauses [ntmNeg c1, ntmNeg c2] oldVar newVar) = true)
+    (hc1 : sigma c1 = true)
+    (hc2 : sigma c2 = true) :
+    forall b : Option Bool, sigma (newVar b) = sigma (oldVar b) := by
+  intro b
+  have hfwd :
+      evalNTMClause sigma
+        ([ntmNeg c1, ntmNeg c2] ++
+          [ntmNeg (oldVar b), ntmPos (newVar b)]) = true := by
+    apply evalNTMCNF_of_mem sigma
+      (ntmCopySymbolClauses [ntmNeg c1, ntmNeg c2] oldVar newVar) _
+      h
+    cases b <;> simp [ntmCopySymbolClauses, ntmAlphabet]
+  have hbwd :
+      evalNTMClause sigma
+        ([ntmNeg c1, ntmNeg c2] ++
+          [ntmPos (oldVar b), ntmNeg (newVar b)]) = true := by
+    apply evalNTMCNF_of_mem sigma
+      (ntmCopySymbolClauses [ntmNeg c1, ntmNeg c2] oldVar newVar) _
+      h
+    cases b <;> simp [ntmCopySymbolClauses, ntmAlphabet]
+  have hf :
+      evalNTMClause sigma [ntmNeg (oldVar b), ntmPos (newVar b)] = true :=
+    evalNTMClause_two_neg_prefix_true sigma c1 c2 _
+      (by simpa using hfwd) hc1 hc2
+  have hb :
+      evalNTMClause sigma [ntmPos (oldVar b), ntmNeg (newVar b)] = true :=
+    evalNTMClause_two_neg_prefix_true sigma c1 c2 _
+      (by simpa using hbwd) hc1 hc2
+  cases ho : sigma (oldVar b) <;>
+    cases hn : sigma (newVar b) <;>
+    simp [evalNTMClause, evalNTMLiteral, ntmNeg, ntmPos, ho, hn] at hf hb ⊢
+
+theorem halted_stateBlock_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hHaltedSat : evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true) :
+    evalNTMCNF sigma
+      (ntmSetStateClauses
+        [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+        M t (s + 1) q) = true := by
+  exact (evalNTMCNF_append sigma
+    (ntmSetStateClauses
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M t (s + 1) q)
+    (ntmCopyHeadCell
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M t s (s + 1) ++
+     ntmCopyLeftAll
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M x t s ++
+     ntmCopyRightAll
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M x t s)).mp
+    (by simpa [ntmHaltedStutterCNF, List.append_assoc] using hHaltedSat) |>.1
+
+theorem ntmHalted_state_exact
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    forall r : Fin (M.stateCount + 1),
+      sigma (ntmStateVar M t (s + 1) r) = decide (r = q) := by
+  have hh := haltedCase_sat M x t s q a sigma hSat hs hHalt
+  have hb := halted_stateBlock_sat M x t s q a sigma hh
+  have hnil := eval_setState_two_neg_guard_to_nil M t (s + 1)
+    (ntmStateVar M t s q) (ntmHeadVar M t s a) q sigma hb hq ha
+  exact (eval_ntmSetStateClauses_nil_iff sigma M t (s + 1) q).mp hnil
+
+theorem halted_headBlock_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hHaltedSat : evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true) :
+    evalNTMCNF sigma
+      (ntmCopyHeadCell
+        [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+        M t s (s + 1)) = true := by
+  have h1 := (evalNTMCNF_append sigma
+    (ntmSetStateClauses
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M t (s + 1) q)
+    (ntmCopyHeadCell
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M t s (s + 1) ++
+     ntmCopyLeftAll
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M x t s ++
+     ntmCopyRightAll
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M x t s)).mp
+    (by simpa [ntmHaltedStutterCNF, List.append_assoc] using hHaltedSat)
+  exact (evalNTMCNF_append sigma
+    (ntmCopyHeadCell
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M t s (s + 1))
+    (ntmCopyLeftAll
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M x t s ++
+     ntmCopyRightAll
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      M x t s)).mp h1.2 |>.1
+
+theorem ntmHalted_head_copy
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    forall b : Option Bool,
+      sigma (ntmHeadVar M t (s + 1) b) =
+        sigma (ntmHeadVar M t s b) := by
+  have hh := haltedCase_sat M x t s q a sigma hSat hs hHalt
+  have hb := halted_headBlock_sat M x t s q a sigma hh
+  exact eval_copySymbol_two_neg_guard_true sigma
+    (ntmStateVar M t s q) (ntmHeadVar M t s a)
+    (ntmHeadVar M t s) (ntmHeadVar M t (s + 1))
+    (by simpa [ntmCopyHeadCell] using hb) hq ha
+
+theorem halted_leftAll_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hHaltedSat : evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true) :
+    evalNTMCNF sigma
+      (ntmCopyLeftAll
+        [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+        M x t s) = true := by
+  simp [ntmHaltedStutterCNF, evalNTMCNF_append, List.append_assoc] at hHaltedSat
+  exact hHaltedSat.2.2.1
+
+theorem halted_rightAll_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hHaltedSat : evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true) :
+    evalNTMCNF sigma
+      (ntmCopyRightAll
+        [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+        M x t s) = true := by
+  simp [ntmHaltedStutterCNF, evalNTMCNF_append, List.append_assoc] at hHaltedSat
+  exact hHaltedSat.2.2.2
+
+theorem ntmHalted_left_copy
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    forall b : Option Bool,
+      sigma (ntmLeftVar M x t (s + 1) i b) =
+        sigma (ntmLeftVar M x t s i b) := by
+  have hh := haltedCase_sat M x t s q a sigma hSat hs hHalt
+  have hall := halted_leftAll_sat M x t s q a sigma hh
+  have hiSat := (evalNTMCNF_flatMap_range sigma (ntmRadius x t)
+    (fun k => ntmCopySymbolClauses
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      (ntmLeftVar M x t s k)
+      (ntmLeftVar M x t (s + 1) k))).mp
+    (by simpa [ntmCopyLeftAll] using hall) i hi
+  exact eval_copySymbol_two_neg_guard_true sigma
+    (ntmStateVar M t s q) (ntmHeadVar M t s a)
+    (ntmLeftVar M x t s i) (ntmLeftVar M x t (s + 1) i)
+    hiSat hq ha
+
+theorem ntmHalted_right_copy
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    forall b : Option Bool,
+      sigma (ntmRightVar M x t (s + 1) i b) =
+        sigma (ntmRightVar M x t s i b) := by
+  have hh := haltedCase_sat M x t s q a sigma hSat hs hHalt
+  have hall := halted_rightAll_sat M x t s q a sigma hh
+  have hiSat := (evalNTMCNF_flatMap_range sigma (ntmRadius x t)
+    (fun k => ntmCopySymbolClauses
+      [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+      (ntmRightVar M x t s k)
+      (ntmRightVar M x t (s + 1) k))).mp
+    (by simpa [ntmCopyRightAll] using hall) i hi
+  exact eval_copySymbol_two_neg_guard_true sigma
+    (ntmStateVar M t s q) (ntmHeadVar M t s a)
+    (ntmRightVar M x t s i) (ntmRightVar M x t (s + 1) i)
+    hiSat hq ha
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
