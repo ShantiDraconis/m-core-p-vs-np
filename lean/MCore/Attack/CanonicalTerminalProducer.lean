@@ -1,4 +1,5 @@
 import MCore.Real.CanonicalComplexityBridge
+import MCore.Real.FailProofAllGaps
 import MCore.BackwardAudit.OrientedWitnessBoundary
 
 namespace MCore
@@ -9,6 +10,39 @@ structure CanonicalNotInPWitness where
   language : Real.CanonicalFinalProof.BitLanguage
   in_np : Real.CanonicalComplexityBridge.canonicalInterface.inNP language
   not_in_p : ¬ Real.CanonicalComplexityBridge.canonicalInterface.inP language
+
+
+
+/-- Material terminal producer.  Unlike `CanonicalNotInPWitness`, this object
+does not store the endpoint proposition `¬ inP language`.  It stores an
+operational counterexample generator: for every deterministic polynomial-time
+candidate it returns a concrete input on which that candidate is incorrect. -/
+structure CanonicalFailureProducer where
+  language : Real.CanonicalFinalProof.BitLanguage
+  in_np : Real.CanonicalComplexityBridge.canonicalInterface.inNP language
+  failure_generator : Real.FailProofAllGaps.FailureGenerator language
+
+/-- A material failure producer derives the endpoint rather than receiving it
+as an assumption or structure field. -/
+theorem canonicalFailureProducer_not_in_p
+    (w : CanonicalFailureProducer) :
+    ¬ Real.CanonicalComplexityBridge.canonicalInterface.inP w.language := by
+  have hFail : Real.CanonicalFinalProof.UniversalFailure w.language :=
+    Real.FailProofAllGaps.failure_generator_implies_universal_failure
+      w.failure_generator
+  exact Real.CanonicalFinalProof.universal_failure_implies_not_in_p hFail
+
+/-- Producer-first terminal closure: the separation theorem consumes only the
+operational generator and the independently constructed NP witness. -/
+theorem canonicalFailureProducer_closes_separation
+    (w : CanonicalFailureProducer) :
+    ClosedDiscriminant.SeparationFinal
+      Real.CanonicalComplexityBridge.canonicalInterface.inP
+      Real.CanonicalComplexityBridge.canonicalInterface.inNP := by
+  exact BackwardAudit.typeB_closes_separation
+    { language := w.language
+      in_np := w.in_np
+      not_in_p := canonicalFailureProducer_not_in_p w }
 
 /-- The canonical interface already matches the repository's official InP/InNP predicates by rfl. -/
 theorem canonicalModelMatch :
@@ -35,8 +69,10 @@ theorem canonicalWitness_closes_separation
       not_in_p := w.not_in_p }
 
 def terminalProducerStatus : String :=
-  "OPEN_MATH: construct CanonicalNotInPWitness; canonical model matching is already PROVED/REUSE"
+  "OPEN_MATH: construct CanonicalFailureProducer.failure_generator without endpoint-equivalent premises; canonical model matching is already PROVED/REUSE"
 
+#print axioms canonicalFailureProducer_not_in_p
+#print axioms canonicalFailureProducer_closes_separation
 #print axioms canonicalModelMatch
 #print axioms canonicalWitness_closes_separation
 
