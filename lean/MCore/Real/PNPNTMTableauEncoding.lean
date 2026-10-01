@@ -387,6 +387,55 @@ theorem evalNTMCNF_flatMap_range
           exact h i (by omega)
         · simpa using h n (by omega)
 
+
+theorem evalNTMCNF_flatMap_list
+    {α : Type}
+    (sigma : Assignment)
+    (xs : List α)
+    (f : α -> NTMCNF) :
+    evalNTMCNF sigma (xs.flatMap f) = true <->
+      forall a, a ∈ xs -> evalNTMCNF sigma (f a) = true := by
+  induction xs with
+  | nil =>
+      simp [evalNTMCNF]
+  | cons a as ih =>
+      rw [List.flatMap_cons]
+      rw [evalNTMCNF_append]
+      rw [ih]
+      constructor
+      · rintro ⟨ha, has⟩ x hx
+        simp only [List.mem_cons] at hx
+        rcases hx with rfl | hx
+        · exact ha
+        · exact has x hx
+      · intro h
+        constructor
+        · exact h a (by simp)
+        · intro x hx
+          exact h x (by simp [hx])
+
+theorem evalNTMCNF_flatten
+    (sigma : Assignment)
+    (xss : List NTMCNF) :
+    evalNTMCNF sigma xss.flatten = true <->
+      forall xs, xs ∈ xss -> evalNTMCNF sigma xs = true := by
+  simpa [List.flatten] using
+    (evalNTMCNF_flatMap_list sigma xss (fun xs => xs))
+
+theorem evalNTMCNF_map_flatten_ofFn
+    {n : Nat}
+    (sigma : Assignment)
+    (f : Fin n -> NTMCNF) :
+    evalNTMCNF sigma (List.ofFn f).flatten = true <->
+      forall i : Fin n, evalNTMCNF sigma (f i) = true := by
+  rw [evalNTMCNF_flatten]
+  constructor
+  · intro h i
+    exact h (f i) (List.mem_ofFn.mpr ⟨i, rfl⟩)
+  · intro h xs hxs
+    rcases List.mem_ofFn.mp hxs with ⟨i, rfl⟩
+    exact h i
+
 def ntmCopySymbolClauses
     (guard : NTMClause)
     (oldVar newVar : Option Bool -> Nat) : NTMCNF :=
