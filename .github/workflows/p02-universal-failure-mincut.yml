@@ -9,6 +9,7 @@ on:
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
       - 'lean/MCore/Real/P02TotalCandidateSemanticCore.lean'
+      - 'lean/MCore/Real/P02SemanticTransformerCore.lean'
       - 'lean/MCore/Real/P02SemanticFlipCore.lean'
       - 'audit/ATK_P02_TOTAL_CANDIDATE_SEMANTIC_CORE_V1.json'
       - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
@@ -42,6 +43,7 @@ jobs:
           lake build MCore.Real.P02ExplicitClockNormalForm
           lake build MCore.Real.P02FailureNormalForms
           lake build MCore.Real.P02TotalCandidateSemanticCore
+          lake build MCore.Real.P02SemanticTransformerCore
           lake build MCore.Real.P02SemanticFlipCore
       - name: Exact axiom audit
         run: |
@@ -51,6 +53,7 @@ jobs:
           import MCore.Real.P02ExplicitClockNormalForm
           import MCore.Real.P02FailureNormalForms
           import MCore.Real.P02TotalCandidateSemanticCore
+          import MCore.Real.P02SemanticTransformerCore
           import MCore.Real.P02SemanticFlipCore
           #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
@@ -70,6 +73,10 @@ jobs:
           #print axioms MCore.Real.P02TotalCandidateSemanticCore.candidate_failure_of_total_semantic
           #print axioms MCore.Real.P02TotalCandidateSemanticCore.total_semantic_core_iff_universal_failure
           #print axioms MCore.Real.P02TotalCandidateSemanticCore.total_semantic_core_closes_internal_endpoint
+          #print axioms MCore.Real.P02SemanticTransformerCore.semanticNegationBits_valid
+          #print axioms MCore.Real.P02SemanticTransformerCore.semanticNegationBits_flip
+          #print axioms MCore.Real.P02SemanticTransformerCore.transformed_output_fails_semantically
+          #print axioms MCore.Real.P02SemanticTransformerCore.semantic_alignment_core_implies_universal_failure
           #print axioms MCore.Real.P02SemanticFlipCore.semanticFlip_iff_semanticDisagreement
           #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_iff_total_semantic_core
           #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_iff_universal_failure
@@ -80,5 +87,5 @@ jobs:
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticFlipCore.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticFlipCore.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean
