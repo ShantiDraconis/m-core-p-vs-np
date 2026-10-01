@@ -32,6 +32,57 @@ def ntmCNFCircuit : NTMCNF -> Circuit
   | [] => .const true
   | c :: cs => .and (ntmClauseCircuit c) (ntmCNFCircuit cs)
 
+
+
+def evalNTMLiteral (sigma : Assignment) (l : NTMLiteral) : Bool :=
+  if l.positive then sigma l.var else !(sigma l.var)
+
+def evalNTMClause (sigma : Assignment) : NTMClause -> Bool
+  | [] => false
+  | l :: ls => Bool.or (evalNTMLiteral sigma l) (evalNTMClause sigma ls)
+
+def evalNTMCNF (sigma : Assignment) : NTMCNF -> Bool
+  | [] => true
+  | c :: cs => Bool.and (evalNTMClause sigma c) (evalNTMCNF sigma cs)
+
+theorem eval_ntmLiteralCircuit
+    (sigma : Assignment) (l : NTMLiteral) :
+    evalCircuit sigma (ntmLiteralCircuit l) = evalNTMLiteral sigma l := by
+  cases l with
+  | mk v p =>
+      cases p <;> rfl
+
+theorem eval_ntmClauseCircuit
+    (sigma : Assignment) (c : NTMClause) :
+    evalCircuit sigma (ntmClauseCircuit c) = evalNTMClause sigma c := by
+  induction c with
+  | nil =>
+      rfl
+  | cons l ls ih =>
+      simp [ntmClauseCircuit, evalCircuit, evalNTMClause,
+        eval_ntmLiteralCircuit, ih]
+
+theorem eval_ntmCNFCircuit
+    (sigma : Assignment) (f : NTMCNF) :
+    evalCircuit sigma (ntmCNFCircuit f) = evalNTMCNF sigma f := by
+  induction f with
+  | nil =>
+      rfl
+  | cons c cs ih =>
+      simp [ntmCNFCircuit, evalCircuit, evalNTMCNF,
+        eval_ntmClauseCircuit, ih]
+
+theorem satLanguage_ntmCNFCircuit_iff
+    (f : NTMCNF) :
+    SATLanguage (ntmCNFCircuit f) <->
+      ∃ sigma : Assignment, evalNTMCNF sigma f = true := by
+  constructor
+  · rintro ⟨_hcnf, sigma, hsat⟩
+    exact ⟨sigma, by simpa [eval_ntmCNFCircuit] using hsat⟩
+  · rintro ⟨sigma, hsat⟩
+    refine ⟨ntmCNFCircuit_isCNF f, sigma, ?_⟩
+    simpa [eval_ntmCNFCircuit] using hsat
+
 theorem ntmLiteralCircuit_isClause (l : NTMLiteral) :
     IsClause (ntmLiteralCircuit l) := by
   cases l with
