@@ -270,7 +270,17 @@ theorem neg_exact_bounded_reject
               checkedCircuitBudget (.not child) n := by
           unfold checkedCircuitBudget
           dsimp [E] at hmul ⊢
-          omega
+          calc
+            checkedLoopStepEnvelope n +
+                8 * (evalStepCount child + 1) * checkedLoopStepEnvelope n
+                =
+              (1 + 8 * (evalStepCount child + 1)) *
+                checkedLoopStepEnvelope n := by
+                  simp only [Nat.add_mul, Nat.one_mul]
+            _ ≤
+              8 * (evalStepCount child.not + 1) *
+                checkedLoopStepEnvelope n := hmul
+        exact Nat.le_trans hraw hcap
         exact Nat.le_trans hraw hcap
 
       exact ⟨m0 + m1, hbudget, cfg1, hAll, hrej⟩
@@ -388,7 +398,7 @@ theorem and_exact_bounded_reject
                      (encodeCircuit (.and left right) ++ tail)
                      (encodeEvalFrames frames) padding }] := by
         simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-          List.append_assoc] using h0
+          childMode, List.append_assoc] using h0
 
       have hLayoutLeft :
           CheckedLayoutBound n leftConsumed
@@ -436,6 +446,13 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
+            have hshape :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n =
+                  (1 + 8 * (evalStepCount left + 1)) *
+                    checkedLoopStepEnvelope n := by
+              simp only [Nat.add_mul, Nat.one_mul]
+            rw [hshape] at hraw
             exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
@@ -605,6 +622,17 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
+            have hshape :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n +
+                    checkedLoopStepEnvelope n +
+                    8 * (evalStepCount right + 1) * checkedLoopStepEnvelope n =
+                  (8 * (evalStepCount left + 1) +
+                    8 * (evalStepCount right + 1) + 2) *
+                    checkedLoopStepEnvelope n := by
+              simp only [Nat.add_mul, Nat.one_mul]
+              omega
+            rw [hshape] at hraw
             exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
@@ -750,6 +778,13 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
+            have hshape :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n =
+                  (1 + 8 * (evalStepCount left + 1)) *
+                    checkedLoopStepEnvelope n := by
+              simp only [Nat.add_mul, Nat.one_mul]
+            rw [hshape] at hraw
             exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
@@ -919,6 +954,17 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
+            have hshape :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n +
+                    checkedLoopStepEnvelope n +
+                    8 * (evalStepCount right + 1) * checkedLoopStepEnvelope n =
+                  (8 * (evalStepCount left + 1) +
+                    8 * (evalStepCount right + 1) + 2) *
+                    checkedLoopStepEnvelope n := by
+              simp only [Nat.add_mul, Nat.one_mul]
+              omega
+            rw [hshape] at hraw
             exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
