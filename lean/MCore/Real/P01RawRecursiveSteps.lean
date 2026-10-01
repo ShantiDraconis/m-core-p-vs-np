@@ -546,10 +546,12 @@ theorem and_right_failure_step
             constructor
             · have hs := hp.source_budget
               dsimp [afterLeft, leftConsumed]
-              simpa using hs
+              simp [encodeEvalFrames, List.length_append] at hs
+              omega
             · have hf := hp.frames_paid
               dsimp [afterLeft, leftConsumed]
-              simpa [encodeEvalFrames, List.length_append] using hf
+              simp [encodeEvalFrames, List.length_append] at hf
+              omega
           have hrec' := hrec padRight hLayoutRight
           have hprefixBudget :
               m0 + m1 + m2 ≤ rawChunk n := by
@@ -748,10 +750,12 @@ private theorem or_right_allowed_step
         constructor
         · have hs := hp.source_budget
           dsimp [afterLeft, leftConsumed]
-          simpa using hs
+          simp [encodeEvalFrames, List.length_append] at hs
+          omega
         · have hf := hp.frames_paid
           dsimp [afterLeft, leftConsumed]
-          simpa [encodeEvalFrames, List.length_append] using hf
+          simp [encodeEvalFrames, List.length_append] at hf
+          omega
       have hrec' := hrec padRight hLayoutRight
       have hprefixBudget :
           m0 + m1 + m2 ≤ rawChunk n := by
