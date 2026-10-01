@@ -6990,6 +6990,84 @@ theorem pathAssignment_activeChoice_actual_sat
   simp only [ntmActiveChoiceCNF, evalNTMCNF_append]
   exact ⟨hfirst, hguards, hamo, heffects⟩
 
+
+theorem pathAssignment_transitionCase_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmTransitionCaseCNF M x t s q a) = true := by
+  by_cases hhaltBool :
+      M.machine.accepting q || M.machine.rejecting q = true
+  · have hHalt :
+        M.machine.accepting q = true ∨ M.machine.rejecting q = true := by
+      exact Bool.or_eq_true.mp hhaltBool
+    simpa [ntmTransitionCaseCNF, hhaltBool] using
+      pathAssignment_haltedStutter_sat M x t s path hPath hs q a hHalt
+  · have hfalse :
+        M.machine.accepting q || M.machine.rejecting q = false := by
+      cases h :
+          M.machine.accepting q || M.machine.rejecting q <;> simp_all
+    by_cases hq : q = (path ⟨s, by omega⟩).state
+    · by_cases ha : a = (path ⟨s, by omega⟩).tape.head
+      · subst q
+        subst a
+        have hActive :
+            NTMActive M (path ⟨s, by omega⟩) := by
+          intro hhalt
+          rcases hhalt with hacc | hrej
+          · have : M.machine.accepting (path ⟨s, by omega⟩).state = false := by
+              have hor := hfalse
+              cases ha0 : M.machine.accepting (path ⟨s, by omega⟩).state <;>
+                simp_all
+            simp [hacc] at this
+          · have : M.machine.rejecting (path ⟨s, by omega⟩).state = false := by
+              have hor := hfalse
+              cases hr0 : M.machine.rejecting (path ⟨s, by omega⟩).state <;>
+                simp_all
+            simp [hrej] at this
+        simpa [ntmTransitionCaseCNF, hfalse] using
+          pathAssignment_activeChoice_actual_sat M x t s path hPath hs hActive
+      · simpa [ntmTransitionCaseCNF, hfalse] using
+          pathAssignment_activeChoice_sat_of_mismatch
+            M x t s path hPath hs q a (Or.inr ha)
+    · simpa [ntmTransitionCaseCNF, hfalse] using
+        pathAssignment_activeChoice_sat_of_mismatch
+          M x t s path hPath hs q a (Or.inl hq)
+
+theorem pathAssignment_transitionStep_sat
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hs : s < t) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmTransitionStepCNF M x t s) = true := by
+  apply (evalNTMCNF_map_flatten_ofFn
+    (pathAssignment M x t path hPath)
+    (fun q : Fin (M.stateCount + 1) =>
+      ntmAlphabet.flatMap fun a =>
+        ntmTransitionCaseCNF M x t s q a)).2
+  intro q
+  apply (evalNTMCNF_flatMap_list
+    (pathAssignment M x t path hPath) ntmAlphabet
+    (fun a => ntmTransitionCaseCNF M x t s q a)).2
+  intro a ha
+  exact pathAssignment_transitionCase_sat M x t s path hPath hs q a
+
+theorem pathAssignment_transitions_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmTransitionsCNF M x t) = true := by
+  rw [show ntmTransitionsCNF M x t =
+    (List.range t).flatMap (fun s => ntmTransitionStepCNF M x t s) by rfl]
+  rw [evalNTMCNF_flatMap_range]
+  intro s hs
+  exact pathAssignment_transitionStep_sat M x t s path hPath hs
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
