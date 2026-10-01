@@ -18,6 +18,13 @@ jobs:
         run: |
           set -euo pipefail
           lake update
+          lake exe cache get
+      - name: Build final P01 closure root
+        run: |
+          set -euo pipefail
+          mkdir -p audit
+          lake build MCore.Real.P01RawClosureFinal 2>&1 | tee audit/P01-RawClosureFinal-targeted.log
+
       - name: Build canonical P subset NP and interface bridge
         run: |
           set -euo pipefail
