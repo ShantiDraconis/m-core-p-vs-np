@@ -8,6 +8,8 @@ on:
       - 'lean/MCore/Real/P02UniversalFailureMinCut.lean'
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
+      - 'lean/MCore/Real/P02TotalCandidateSemanticCore.lean'
+      - 'audit/ATK_P02_TOTAL_CANDIDATE_SEMANTIC_CORE_V1.json'
       - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
       - 'audit/ATK_P02_KLEENE_PORT_COMPAT_V1.json'
       - '.github/workflows/p02-universal-failure-mincut.yml'
@@ -38,6 +40,7 @@ jobs:
           lake build MCore.Real.P02UniversalFailureMinCut
           lake build MCore.Real.P02ExplicitClockNormalForm
           lake build MCore.Real.P02FailureNormalForms
+          lake build MCore.Real.P02TotalCandidateSemanticCore
       - name: Exact axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
@@ -45,6 +48,7 @@ jobs:
           import MCore.Real.P02UniversalFailureMinCut
           import MCore.Real.P02ExplicitClockNormalForm
           import MCore.Real.P02FailureNormalForms
+          import MCore.Real.P02TotalCandidateSemanticCore
           #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_iff_universal_failure
@@ -59,11 +63,15 @@ jobs:
           #print axioms MCore.Real.P02FailureNormalForms.NormalizedCounterexampleProducer.toFailureGenerator
           #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_iff_universal_failure
           #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_closes_internal_endpoint
+          #print axioms MCore.Real.P02TotalCandidateSemanticCore.exists_timeout_of_not_total
+          #print axioms MCore.Real.P02TotalCandidateSemanticCore.candidate_failure_of_total_semantic
+          #print axioms MCore.Real.P02TotalCandidateSemanticCore.total_semantic_core_iff_universal_failure
+          #print axioms MCore.Real.P02TotalCandidateSemanticCore.total_semantic_core_closes_internal_endpoint
           EOF
           lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
           ! grep -E 'sorryAx' P02UniversalFailureAudit.log
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean
-          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean

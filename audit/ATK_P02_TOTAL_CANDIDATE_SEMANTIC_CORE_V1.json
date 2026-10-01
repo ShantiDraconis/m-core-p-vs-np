@@ -1,0 +1,26 @@
+{
+  "schema": "ATK_P02_TOTAL_CANDIDATE_SEMANTIC_CORE_V1",
+  "canonical_language": "SATBits circuitBitEncoding",
+  "dependency_policy": {
+    "current_lake_packages": 0,
+    "mathlib_available": false,
+    "historical_kleene_source": "frozen/p02-kleene-green-5f8a0aa2",
+    "historical_status": "GREEN_IN_OLD_DEPENDENCY_ENVIRONMENT",
+    "current_disposition": "PROVENANCE_ONLY_NOT_IMPORTED"
+  },
+  "exact_reduction": {
+    "source": "UniversalFailure (SATBits circuitBitEncoding)",
+    "target": "forall M, DeclaredClockTotal M -> exists x, SemanticDisagreement M x",
+    "relation": "IFF_KERNEL_TARGET"
+  },
+  "automatic_branch": "not DeclaredClockTotal M -> concrete timeout witness -> candidate failure",
+  "material_open_core": "for every declared-clock-total PolyDTMCandidate, construct one SAT bitstring with false-positive or false-negative semantic disagreement",
+  "forbidden_shortcuts": [
+    "literal string fixed point from the two-constant semantic transformer",
+    "finite sampled evidence promoted to universal failure",
+    "LowerBoundWitness.not_in_p supplied as data",
+    "universal-failure oracle",
+    "adding an unavailable external dependency and treating its theorem as current-kernel evidence"
+  ],
+  "status": "EXACT_REDUCTION_OPEN_MATH_REMAINS"
+}
