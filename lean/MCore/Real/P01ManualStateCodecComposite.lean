@@ -453,12 +453,35 @@ theorem checkedEvalCode_lt
   cases q with
   | need m q =>
       have h := needExprCode_lt q
-      cases m <;>
-        simp [checkedEvalCode, checkedEvalStateCount, needExprStateCount] <;> omega
+      unfold needExprStateCount at h
+      cases m with
+      | cnf =>
+          unfold checkedEvalStateCount
+          simpa [checkedEvalCode] using Nat.lt_trans h (by decide : 401 < 1847)
+      | clause =>
+          unfold checkedEvalStateCount
+          have : 401 + needExprCode q < 802 := by omega
+          exact Nat.lt_trans this (by decide : 802 < 1847)
+      | mustInput =>
+          unfold checkedEvalStateCount
+          have : 802 + needExprCode q < 1203 := by omega
+          exact Nat.lt_trans this (by decide : 1203 < 1847)
   | «have» m q =>
       have h := haveValueCode_lt q
-      cases m <;>
-        simp [checkedEvalCode, checkedEvalStateCount, haveValueStateCount] <;> omega
+      unfold haveValueStateCount at h
+      cases m with
+      | cnf =>
+          unfold checkedEvalStateCount
+          have : 1203 + haveValueCode q < 1416 := by omega
+          exact Nat.lt_trans this (by decide : 1416 < 1847)
+      | clause =>
+          unfold checkedEvalStateCount
+          have : 1416 + haveValueCode q < 1629 := by omega
+          exact Nat.lt_trans this (by decide : 1629 < 1847)
+      | mustInput =>
+          unfold checkedEvalStateCount
+          have : 1629 + haveValueCode q < 1842 := by omega
+          exact Nat.lt_trans this (by decide : 1842 < 1847)
   | checkSource b => cases b <;> decide
   | final b => cases b <;> decide
   | reject => decide
