@@ -4286,6 +4286,138 @@ theorem operationalDecodeAgrees_halted_step
       exact hn
     simpa [operationalDecodeConfig, hHalt, hnext] using hA.hRight i hi
 
+
+structure OperationalTapeBoundAt
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : Prop where
+  left_len :
+    (operationalDecodeConfig M x t sigma hSat s hs).tape.left.length <= x.length + s
+  right_len :
+    (operationalDecodeConfig M x t sigma hSat s hs).tape.right.length <= x.length + s
+
+theorem operationalTapeBound_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    OperationalTapeBoundAt M x t sigma hSat 0 (by omega) := by
+  refine { left_len := ?_, right_len := ?_ }
+  · cases x <;> simp [operationalDecodeConfig, initialNTMConfig, inputTape]
+  · cases x <;> simp [operationalDecodeConfig, initialNTMConfig, inputTape]
+
+theorem tapeMove_left_lengths
+    (blank write : Option Bool) (tape : Tape (Option Bool)) :
+    (Tape.move blank Direction.left (tape.write write)).left.length <= tape.left.length ∧
+    (Tape.move blank Direction.left (tape.write write)).right.length <= tape.right.length + 1 := by
+  cases tape with
+  | mk left head right =>
+      cases left <;> simp [Tape.write, Tape.move]
+
+theorem tapeMove_right_lengths
+    (blank write : Option Bool) (tape : Tape (Option Bool)) :
+    (Tape.move blank Direction.right (tape.write write)).left.length <= tape.left.length + 1 ∧
+    (Tape.move blank Direction.right (tape.write write)).right.length <= tape.right.length := by
+  cases tape with
+  | mk left head right =>
+      cases right <;> simp [Tape.write, Tape.move]
+
+theorem operationalTapeBound_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hB : OperationalTapeBoundAt M x t sigma hSat s (by omega)) :
+    OperationalTapeBoundAt M x t sigma hSat (s + 1) (by omega) := by
+  let q := decodeState M x t sigma hSat s (by omega)
+  let a := decodeHead M x t sigma hSat s (by omega)
+  by_cases hHalt :
+      M.machine.accepting q = true ∨ M.machine.rejecting q = true
+  · refine { left_len := ?_, right_len := ?_ }
+    · simpa [operationalDecodeConfig, q, a, hHalt] using
+        le_trans hB.left_len (by omega : x.length + s <= x.length + (s + 1))
+    · simpa [operationalDecodeConfig, q, a, hHalt] using
+        le_trans hB.right_len (by omega : x.length + s <= x.length + (s + 1))
+  · have hActive :
+        M.machine.accepting q = false ∧ M.machine.rejecting q = false := by
+      constructor
+      · cases h : M.machine.accepting q with
+        | false => rfl
+        | true => exact False.elim (hHalt (Or.inl h))
+      · cases h : M.machine.rejecting q with
+        | false => rfl
+        | true => exact False.elim (hHalt (Or.inr h))
+    let hq := decodeState_true M x t sigma hSat s (by omega)
+    let ha := decodeHead_true M x t sigma hSat s (by omega)
+    let j := decodeChoiceIndex M x t s sigma hSat hs q a hq ha hActive
+    rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
+    cases d with
+    | stay =>
+        refine { left_len := ?_, right_len := ?_ }
+        · simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j,
+            htr, Tape.write, Tape.move] using
+            le_trans hB.left_len (by omega : x.length + s <= x.length + (s + 1))
+        · simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j,
+            htr, Tape.write, Tape.move] using
+            le_trans hB.right_len (by omega : x.length + s <= x.length + (s + 1))
+    | left =>
+        have hlr := tapeMove_left_lengths M.machine.blank write
+          (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
+        refine { left_len := ?_, right_len := ?_ }
+        · have := le_trans hlr.1 hB.left_len
+          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr] using
+            le_trans this (by omega : x.length + s <= x.length + (s + 1))
+        · have := le_trans hlr.2 (Nat.add_le_add_right hB.right_len 1)
+          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
+            Nat.add_assoc] using this
+    | right =>
+        have hlr := tapeMove_right_lengths M.machine.blank write
+          (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
+        refine { left_len := ?_, right_len := ?_ }
+        · have := le_trans hlr.1 (Nat.add_le_add_right hB.left_len 1)
+          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
+            Nat.add_assoc] using this
+        · have := le_trans hlr.2 hB.right_len
+          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr] using
+            le_trans this (by omega : x.length + s <= x.length + (s + 1))
+
+theorem operationalTapeBound_all
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    forall s : Nat, s <= t ->
+      OperationalTapeBoundAt M x t sigma hSat s (by assumption) := by
+  intro s
+  induction s with
+  | zero =>
+      intro _
+      simpa using operationalTapeBound_zero M x t sigma hSat
+  | succ s ih =>
+      intro hsle
+      exact operationalTapeBound_step M x t s sigma hSat (by omega) (ih (by omega))
+
+theorem operational_left_getD_outside
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s <= t)
+    (hi : x.length + s <= i) :
+    (operationalDecodeConfig M x t sigma hSat s hs).tape.left.getD i M.machine.blank =
+      M.machine.blank := by
+  apply List.getD_eq_default
+  exact le_trans (operationalTapeBound_all M x t sigma hSat s hs).left_len hi
+
+theorem operational_right_getD_outside
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s <= t)
+    (hi : x.length + s <= i) :
+    (operationalDecodeConfig M x t sigma hSat s hs).tape.right.getD i M.machine.blank =
+      M.machine.blank := by
+  apply List.getD_eq_default
+  exact le_trans (operationalTapeBound_all M x t sigma hSat s hs).right_len hi
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
