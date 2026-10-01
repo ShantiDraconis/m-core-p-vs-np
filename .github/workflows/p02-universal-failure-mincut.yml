@@ -10,6 +10,7 @@ on:
       - 'lean/MCore/Real/P02FiniteDescriptorReduction.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorResidualCore.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean'
+      - 'lean/MCore/Real/P02FiniteDescriptorLocality.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorInfiniteOrbit.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorAlternation.lean'
@@ -54,6 +55,7 @@ jobs:
           lake build MCore.Real.P02UniversalFailureMinCut
           lake build MCore.Real.P02ExplicitClockNormalForm
           lake build MCore.Real.P02FiniteDescriptorReduction
+          lake build MCore.Real.P02FiniteDescriptorLocality
           lake build MCore.Real.P02FiniteDescriptorResidualCore
           lake build MCore.Real.P02FiniteDescriptorStructuralLaws
           lake build MCore.Real.P02FiniteDescriptorInfiniteOrbit
@@ -76,6 +78,7 @@ jobs:
           import MCore.Real.P02UniversalFailureMinCut
           import MCore.Real.P02ExplicitClockNormalForm
           import MCore.Real.P02FiniteDescriptorReduction
+          import MCore.Real.P02FiniteDescriptorLocality
           import MCore.Real.P02FiniteDescriptorResidualCore
           import MCore.Real.P02FiniteDescriptorStructuralLaws
           import MCore.Real.P02FiniteDescriptorInfiniteOrbit
@@ -103,6 +106,9 @@ jobs:
           #print axioms MCore.Real.P02FiniteDescriptorReduction.descriptorOf_toCandidate
           #print axioms MCore.Real.P02FiniteDescriptorReduction.finiteDescriptorFailure_iff_universalFailure
           #print axioms MCore.Real.P02FiniteDescriptorReduction.finiteDescriptorFailure_closes_internal_endpoint
+          #print axioms MCore.Real.P02FiniteDescriptorLocality.step_windowEq
+          #print axioms MCore.Real.P02FiniteDescriptorLocality.run_state_eq_of_windowEq
+          #print axioms MCore.Real.P02FiniteDescriptorLocality.canonical_run_state_eq_of_right_window
           #print axioms MCore.Real.P02FiniteDescriptorResidualCore.failure_of_not_total
           #print axioms MCore.Real.P02FiniteDescriptorResidualCore.failure_of_not_constant_correct
           #print axioms MCore.Real.P02FiniteDescriptorResidualCore.residual_iff_finiteDescriptorFailure
