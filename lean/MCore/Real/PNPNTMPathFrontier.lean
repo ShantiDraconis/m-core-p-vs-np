@@ -186,6 +186,72 @@ def RunBranchesPathEquivalence : Prop :=
     z ∈ M.machine.runBranches fuel [c] <->
       NTMRunPath M fuel c z
 
+
+theorem mem_runBranches_list_iff_exists_singleton
+    {State Symbol : Type}
+    (M : NTM State Symbol)
+    (fuel : Nat)
+    (xs : List (Configuration State Symbol))
+    (z : Configuration State Symbol) :
+    z ∈ M.runBranches fuel xs <->
+      ∃ x ∈ xs, z ∈ M.runBranches fuel [x] := by
+  have hflat :
+      xs.flatMap (fun x => [x]) = xs := by
+    induction xs with
+    | nil => rfl
+    | cons x xs ih =>
+        simp [ih]
+  rw [← hflat]
+  exact mem_runBranches_flatMap M fuel xs (fun x => [x]) z
+
+theorem runBranches_iff_runPath
+    (M : PolyNTMCandidate)
+    (fuel : Nat)
+    (c z : NTMConfig M) :
+    z ∈ M.machine.runBranches fuel [c] <->
+      NTMRunPath M fuel c z := by
+  induction fuel generalizing c z with
+  | zero =>
+      constructor
+      · intro h
+        simp [NTM.runBranches] at h
+        subst z
+        exact NTMRunPath.zero c
+      · intro h
+        cases h with
+        | zero =>
+            simp [NTM.runBranches]
+  | succ fuel ih =>
+      by_cases hh : NTMHalted M c
+      · rw [runBranches_singleton_succ_halted M fuel c hh]
+        constructor
+        · intro hz
+          exact NTMRunPath.halted hh ((ih c z).mp hz)
+        · intro hp
+          cases hp with
+          | halted _ tail =>
+              exact (ih c z).mpr tail
+          | active hactive _ _ =>
+              exact False.elim (hactive hh)
+      · have ha : NTMActive M c := hh
+        rw [runBranches_singleton_succ_active M fuel c ha]
+        rw [mem_runBranches_list_iff_exists_singleton
+              M.machine fuel (M.machine.successors c) z]
+        constructor
+        · rintro ⟨c1, hc1, hz⟩
+          exact NTMRunPath.active ha hc1 ((ih c1 z).mp hz)
+        · intro hp
+          cases hp with
+          | halted hhalt _ =>
+              exact False.elim (ha hhalt)
+          | active _ hc1 tail =>
+              exact ⟨_, hc1, (ih _ _).mpr tail⟩
+
+theorem runBranchesPathEquivalence_closed :
+    RunBranchesPathEquivalence := by
+  intro M fuel c z
+  exact runBranches_iff_runPath M fuel c z
+
 /--
 Exact target lemma for the tableau.  It is deliberately stated separately:
 the next proof step is the induction relating singleton runBranches membership
