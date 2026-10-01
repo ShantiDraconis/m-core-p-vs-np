@@ -1,0 +1,68 @@
+name: P02 Kernel Port Audit
+
+on:
+  push:
+    branches:
+      - atk/p02-kernel-port-audit-20261001
+    paths:
+      - 'lean/MCore/Real/P02OperatorKernel.lean'
+      - 'lean/MCore/Real/P02UniversalLowerBound.lean'
+      - 'lean/MCore/Real/P02KleeneKernel.lean'
+      - 'lean/MCore/Real/P02CandidateCodingFrontier.lean'
+      - '.github/workflows/p02-kernel-port-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kernel-port:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          for i in 1 2 3; do
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none && break
+            sleep 5
+          done
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build kernel port
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P02OperatorKernel
+          lake build MCore.Real.P02UniversalLowerBound
+          lake build MCore.Real.P02KleeneKernel
+          lake build MCore.Real.P02CandidateCodingFrontier
+      - name: Exact axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P02KernelPortAudit.lean <<'EOF'
+          import MCore.Real.P02OperatorKernel
+          import MCore.Real.P02UniversalLowerBound
+          import MCore.Real.P02KleeneKernel
+          import MCore.Real.P02CandidateCodingFrontier
+          #print axioms MCore.Real.P02OperatorKernel.p02Producer_iff_universalFailure
+          #print axioms MCore.Real.P02OperatorKernel.canonicalSATProducer_iff_notInP
+          #print axioms MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_operational
+          #print axioms MCore.Real.P02UniversalLowerBound.semanticAdversary_closes
+          #print axioms MCore.Real.P02KleeneKernel.kleene_fixed_point
+          #print axioms MCore.Real.P02KleeneKernel.fixed_flip_fails
+          #print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_not_in_p
+          #print axioms MCore.Real.P02CandidateCodingFrontier.encode_injective
+          EOF
+          lake env lean P02KernelPortAudit.lean | tee P02KernelPortAudit.log
+          ! grep -E 'sorryAx' P02KernelPortAudit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          files="lean/MCore/Real/P02OperatorKernel.lean lean/MCore/Real/P02UniversalLowerBound.lean lean/MCore/Real/P02KleeneKernel.lean lean/MCore/Real/P02CandidateCodingFrontier.lean"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
