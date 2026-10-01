@@ -87,9 +87,8 @@ theorem semanticFamily_iff_pointwise :
   · intro h
     classical
     refine ⟨{ witness := fun M => ?_ }⟩
-    let x := Classical.choose (h M)
-    have hx := Classical.choose_spec (h M)
-    exact { bits := x, valid := hx.1, flip := hx.2 }
+    rcases h M with ⟨x, hxValid, hxFlip⟩
+    exact { bits := x, valid := hxValid, flip := hxFlip }
 
 /-- Pointwise semantic diagonalization is sufficient for the exact P02
 operator, with no additional endpoint hypothesis. -/
