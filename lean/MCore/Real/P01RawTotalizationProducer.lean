@@ -115,9 +115,9 @@ theorem prepared_nonempty_sink_fail_closed_raw
         dsimp [lifted, P01NTMRunLaws.liftConfig]
         rw [hstate]
         rfl
-      have hhaltLift : Halted checkedVerifierMachine lifted := by
+      have hhaltLift : P01NTMRunLaws.Halted checkedVerifierMachine lifted := by
         rw [hstateV]
-        simp [Halted, checkedVerifierMachine]
+        simp [P01NTMRunLaws.Halted, checkedVerifierMachine]
       have hhSmall :
           checkedVerifierMachine.HaltsWithin (m0 + m) start :=
         P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted

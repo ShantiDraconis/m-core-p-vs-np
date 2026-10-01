@@ -33,7 +33,7 @@ verifier. -/
 inductive EvalFailureSink (cfg : EvalConfig) : Prop
   | reject (h : cfg.state = .reject) : EvalFailureSink cfg
   | dead
-      (hactive : ¬ Halted checkedEvalRunLoopMachine cfg)
+      (hactive : ¬ P01NTMRunLaws.Halted checkedEvalRunLoopMachine cfg)
       (hdead : checkedEvalRunLoopMachine.successors cfg = []) :
       EvalFailureSink cfg
 
