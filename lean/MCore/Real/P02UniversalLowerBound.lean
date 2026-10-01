@@ -1,4 +1,4 @@
-import MCore.Real.P02FinalCompression
+import MCore.Real.P02OperatorKernel
 
 namespace MCore
 namespace Real
