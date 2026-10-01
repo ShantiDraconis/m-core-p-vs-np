@@ -15,8 +15,10 @@ open P01CNFMode
 open P01NeedExprTagDecode
 open P01EncodedStackEvaluator
 open P01EvalCursorMachine
+open P01EncodedFrameTape
 open P01CheckedVerifierInvariant
 open P01CheckedEvalRunLoopNTM
+open P01CheckedEvalRunBaseCases
 open P01CheckedEvalRunBoundedHelpers
 open P01ExactBoundedCircuitProducer
 open P01ExactBoundedReject
