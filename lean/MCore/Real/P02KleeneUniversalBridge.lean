@@ -1,4 +1,3 @@
-import Mathlib.Computability.PartrecCode
 import MCore.Real.P02UniversalFailureMinCut
 
 namespace MCore
@@ -19,34 +18,37 @@ def DeclaredAccepts
         (M.timeBound x.length)
         (initialTMConfig M.machine x)).state = true
 
-/-- One effective recursion-theoretic diagonal compiler for one candidate. -/
+/-- Local self-reference code system. The repository has no Mathlib
+computability dependency, so code/evaluation/self-reference are explicit data
+rather than an unavailable imported theorem. -/
 structure EffectiveDiagonalCompiler (M : PolyDTMCandidate) where
-  f : Nat.Partrec.Code → ℕ →. ℕ
-  partrec : Nat.Partrec₂ f
+  Code : Type
+  eval : Code → Nat → Option Nat
+  compile : Code → Code
+  fixed_point :
+    ∃ c : Code, eval (compile c) = eval c
 
-/-- Transport from a recursion-theorem code fixed point into the exact
-canonical SAT language.  This is the remaining semantic compiler/realizer
-interface; it does not assume UniversalFailure or a separation certificate. -/
+/-- Transport from a code fixed point into the exact canonical SAT language.
+This is the genuine semantic realizer obligation. -/
 structure CanonicalSATFixedPointRealizer
     (M : PolyDTMCandidate)
     (K : EffectiveDiagonalCompiler M) where
-  bitsOf : Nat.Partrec.Code → BitString
+  bitsOf : K.Code → BitString
   flips_of_fixed :
-    ∀ c,
-      Nat.Partrec.Code.eval c = K.f c →
+    ∀ c : K.Code,
+      K.eval (K.compile c) = K.eval c →
       CanonicalSAT (bitsOf c) ↔
         ¬ DeclaredAccepts M (bitsOf c)
 
-/-- Mathlib's recursion theorem supplies the code-level fixed point. -/
 theorem kleene_fixed_point
     {M : PolyDTMCandidate}
     (K : EffectiveDiagonalCompiler M) :
-    ∃ c : Nat.Partrec.Code,
-      Nat.Partrec.Code.eval c = K.f c :=
-  Nat.Partrec.Code.fixed_point₂ K.partrec
+    ∃ c : K.Code,
+      K.eval (K.compile c) = K.eval c :=
+  K.fixed_point
 
-/-- Per-candidate package required to turn Kleene self-reference into a
-canonical SAT counterexample. -/
+/-- Per-candidate package required to turn self-reference into a canonical SAT
+counterexample. -/
 structure CandidateKleeneBridge (M : PolyDTMCandidate) where
   compiler : EffectiveDiagonalCompiler M
   realizer : CanonicalSATFixedPointRealizer M compiler
@@ -54,14 +56,14 @@ structure CandidateKleeneBridge (M : PolyDTMCandidate) where
 noncomputable def fixedCode
     {M : PolyDTMCandidate}
     (B : CandidateKleeneBridge M) :
-    Nat.Partrec.Code :=
+    B.compiler.Code :=
   Classical.choose (kleene_fixed_point B.compiler)
 
 theorem fixedCode_spec
     {M : PolyDTMCandidate}
     (B : CandidateKleeneBridge M) :
-    Nat.Partrec.Code.eval (fixedCode B) =
-      B.compiler.f (fixedCode B) :=
+    B.compiler.eval (B.compiler.compile (fixedCode B)) =
+      B.compiler.eval (fixedCode B) :=
   Classical.choose_spec (kleene_fixed_point B.compiler)
 
 noncomputable def counterexample
@@ -70,8 +72,8 @@ noncomputable def counterexample
     BitString :=
   B.realizer.bitsOf (fixedCode B)
 
-/-- The recursion-theorem fixed point plus the semantic SAT realizer produces
-a genuine failure of the original candidate at one concrete input. -/
+/-- A code-level fixed point plus the semantic SAT realizer produces a genuine
+failure of the original candidate at one concrete input. -/
 theorem counterexample_fails
     {M : PolyDTMCandidate}
     (B : CandidateKleeneBridge M) :
@@ -91,9 +93,8 @@ theorem counterexample_fails
       hflip.mpr hAcc
     exact hAcc (hSem.mpr hSat)
 
-/-- Uniform non-literal self-reference bridge.  Unlike the falsified literal
-string fixed-point route, this quantifies over Mathlib partial-recursive codes
-and delegates only the genuine compiler/semantic-realizer obligations. -/
+/-- Uniform non-literal self-reference bridge. No UniversalFailure/not-InP
+field is stored here. -/
 structure KleeneUniversalBridge where
   bridge : ∀ M : PolyDTMCandidate, CandidateKleeneBridge M
 
@@ -117,8 +118,6 @@ theorem kleene_bridge_closes_internal_endpoint
     PneqNP :=
   producer_closes_internal_endpoint B.toProducer
 
-/-- Exact remaining non-literal self-reference construction target after the
-recursion theorem itself has been discharged. -/
 abbrev KleeneUniversalBridgeGap : Prop :=
   Nonempty KleeneUniversalBridge
 

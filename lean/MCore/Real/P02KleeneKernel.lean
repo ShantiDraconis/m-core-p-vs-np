@@ -1,5 +1,5 @@
-import Mathlib.Computability.PartrecCode
 import MCore.Real.P02OperatorKernel
+import MCore.Real.P02KleeneUniversalBridge
 
 namespace MCore
 namespace Real
@@ -21,27 +21,21 @@ def DeclaredAccept
         (M.timeBound x.length)
         (initialTMConfig M.machine x)).state = true
 
-/-- Effective code transformer in Mathlib's recursion-theorem universe. -/
-structure EffectiveDiagonalCompiler (M : PolyDTMCandidate) where
-  compile : Nat.Partrec.Code → Nat.Partrec.Code
-  computable : Computable compile
+/-- Reuse the repository-local self-reference code system. -/
+abbrev EffectiveDiagonalCompiler (M : PolyDTMCandidate) :=
+  P02KleeneUniversalBridge.EffectiveDiagonalCompiler M
 
-/-- SAT realization of an extensional recursion-theorem fixed point. -/
-structure SATFixedPointRealizer
+abbrev SATFixedPointRealizer
     (M : PolyDTMCandidate)
-    (K : EffectiveDiagonalCompiler M) where
-  bitsOf : Nat.Partrec.Code → BitString
-  flip_of_fixed :
-    ∀ c,
-      (K.compile c).eval = c.eval →
-      (SATTarget (bitsOf c) ↔ ¬ DeclaredAccept M (bitsOf c))
+    (K : EffectiveDiagonalCompiler M) :=
+  P02KleeneUniversalBridge.CanonicalSATFixedPointRealizer M K
 
 theorem kleene_fixed_point
     {M : PolyDTMCandidate}
     (K : EffectiveDiagonalCompiler M) :
-    ∃ c : Nat.Partrec.Code,
-      (K.compile c).eval = c.eval :=
-  Nat.Partrec.Code.fixed_point K.computable
+    ∃ c : K.Code,
+      K.eval (K.compile c) = K.eval c :=
+  P02KleeneUniversalBridge.kleene_fixed_point K
 
 theorem fixed_flip_fails
     (M : PolyDTMCandidate)
@@ -71,14 +65,15 @@ structure KleeneSATBridge where
 noncomputable def fixedCode
     (B : KleeneSATBridge)
     (M : PolyDTMCandidate) :
-    Nat.Partrec.Code :=
+    (B.compiler M).Code :=
   Classical.choose (kleene_fixed_point (B.compiler M))
 
 theorem fixedCode_spec
     (B : KleeneSATBridge)
     (M : PolyDTMCandidate) :
-    ((B.compiler M).compile (fixedCode B M)).eval =
-      (fixedCode B M).eval :=
+    (B.compiler M).eval
+        ((B.compiler M).compile (fixedCode B M)) =
+      (B.compiler M).eval (fixedCode B M) :=
   Classical.choose_spec (kleene_fixed_point (B.compiler M))
 
 noncomputable def KleeneSATBridge.toP02Producer
@@ -89,9 +84,11 @@ noncomputable def KleeneSATBridge.toP02Producer
         (B.realizer M).bitsOf (fixedCode B M)
       sound := ?_ }
   intro M
-  exact fixed_flip_fails M
+  apply fixed_flip_fails M
     ((B.realizer M).bitsOf (fixedCode B M))
-    ((B.realizer M).flip_of_fixed (fixedCode B M) (fixedCode_spec B M))
+  simpa [DeclaredAccept, P02KleeneUniversalBridge.DeclaredAccepts] using
+    (B.realizer M).flips_of_fixed
+      (fixedCode B M) (fixedCode_spec B M)
 
 def KleeneSATBridgeGap : Prop :=
   Nonempty KleeneSATBridge
@@ -107,6 +104,12 @@ theorem kleene_bridge_closes_not_in_p
     ¬ InP SATTarget := by
   exact canonicalSATProducer_iff_notInP.mp
     (kleene_bridge_closes_p02 h)
+
+#print axioms MCore.Real.P02KleeneKernel.kleene_fixed_point
+#print axioms MCore.Real.P02KleeneKernel.fixed_flip_fails
+#print axioms MCore.Real.P02KleeneKernel.fixedCode_spec
+#print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_p02
+#print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_not_in_p
 
 end P02KleeneKernel
 end Real
