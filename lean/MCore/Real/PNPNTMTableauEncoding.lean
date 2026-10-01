@@ -5025,7 +5025,8 @@ noncomputable def choiceIdxOfStep
     (M : PolyNTMCandidate)
     (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s < t) : Nat :=
   let c := path ⟨s, by omega⟩
   let c' := path ⟨s + 1, by omega⟩
@@ -5042,7 +5043,8 @@ theorem choiceIdxOfStep_active_spec
     (M : PolyNTMCandidate)
     (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s < t)
     (hActive : NTMActive M (path ⟨s, by omega⟩)) :
     ∃ hj :
@@ -5111,7 +5113,8 @@ theorem choiceIdxOfStep_lt_branchBound_succ
     (M : PolyNTMCandidate)
     (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s < t)
     (hActive : NTMActive M (path ⟨s, by omega⟩)) :
     choiceIdxOfStep M t path hPath s hs < ntmBranchBound M + 1 := by
@@ -5294,7 +5297,8 @@ def PathAssignmentRightTrue
 def PathAssignmentChoiceTrue
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (v : Nat) : Prop :=
   ∃ s : Nat, ∃ hs : s < t,
     NTMActive M (path ⟨s, by omega⟩) ∧
@@ -5306,7 +5310,8 @@ def PathAssignmentChoiceTrue
 noncomputable def pathAssignment
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path) :
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path) :
     Assignment :=
   fun v =>
     decide (
@@ -5319,7 +5324,8 @@ noncomputable def pathAssignment
 theorem pathAssignment_state
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s <= t)
     (q : Fin (M.stateCount + 1)) :
     pathAssignment M x t path hPath (ntmStateVar M t s q) =
@@ -5377,7 +5383,8 @@ theorem pathAssignment_state
 theorem pathAssignment_head
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s <= t)
     (a : Option Bool) :
     pathAssignment M x t path hPath (ntmHeadVar M t s a) =
@@ -5433,7 +5440,8 @@ theorem pathAssignment_head
 theorem pathAssignment_left
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s <= t)
     (i : Nat) (hi : i < ntmRadius x t)
     (a : Option Bool) :
@@ -5492,7 +5500,8 @@ theorem pathAssignment_left
 theorem pathAssignment_right
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s <= t)
     (i : Nat) (hi : i < ntmRadius x t)
     (a : Option Bool) :
@@ -5553,7 +5562,8 @@ theorem pathAssignment_right
 theorem pathAssignment_choice_selected
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s < t)
     (hActive : NTMActive M (path ⟨s, by omega⟩)) :
     pathAssignment M x t path hPath
@@ -5566,7 +5576,8 @@ theorem pathAssignment_choice_selected
 theorem pathAssignment_choice_unselected
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s < t)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (j : Nat)
@@ -5788,7 +5799,8 @@ theorem eval_copySymbol_guard_true
 theorem pathAssignment_state_neg_of_ne
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s <= t)
     (q : Fin (M.stateCount + 1))
     (hne : q ≠ (path ⟨s, by omega⟩).state) :
@@ -5802,7 +5814,8 @@ theorem pathAssignment_state_neg_of_ne
 theorem pathAssignment_head_neg_of_ne
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (s : Nat) (hs : s <= t)
     (a : Option Bool)
     (hne : a ≠ (path ⟨s, by omega⟩).tape.head) :
@@ -5816,7 +5829,8 @@ theorem pathAssignment_head_neg_of_ne
 theorem pathAssignment_case_guard_true_of_mismatch
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (hs : s < t)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (hmismatch :
@@ -5957,7 +5971,8 @@ theorem eval_choiceEffect_of_choice_false
 theorem pathAssignment_choice_false_of_mismatch
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (hs : s < t)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (j : Nat)
@@ -5979,7 +5994,8 @@ theorem pathAssignment_choice_false_of_mismatch
 theorem pathAssignment_choiceGuard_sat_of_false
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (j : Nat)
     (hfalse : pathAssignment M x t path hPath
@@ -5992,7 +6008,8 @@ theorem pathAssignment_choiceGuard_sat_of_false
 theorem pathAssignment_guardChoiceClause_sat_of_mismatch
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (hs : s < t)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (hmismatch :
@@ -6013,7 +6030,8 @@ theorem pathAssignment_guardChoiceClause_sat_of_mismatch
 theorem pathAssignment_atMostOne_sat_of_mismatch
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (hs : s < t)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (hmismatch :
@@ -6060,7 +6078,8 @@ theorem pathAssignment_atMostOne_sat_of_mismatch
 theorem pathAssignment_activeChoice_sat_of_mismatch
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (hs : s < t)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
     (hmismatch :
@@ -6810,7 +6829,8 @@ theorem indexedTransitions_index_value
 theorem pathAssignment_actual_state_true
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (hs : s <= t) :
     pathAssignment M x t path hPath
       (ntmStateVar M t s (path ⟨s, by omega⟩).state) = true := by
@@ -6819,7 +6839,8 @@ theorem pathAssignment_actual_state_true
 theorem pathAssignment_actual_head_true
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
-    (hPath : NTMTableauPath M t (path 0) path)
+    {c0 : NTMConfig M}
+    (hPath : NTMTableauPath M t c0 path)
     (hs : s <= t) :
     pathAssignment M x t path hPath
       (ntmHeadVar M t s (path ⟨s, by omega⟩).tape.head) = true := by
