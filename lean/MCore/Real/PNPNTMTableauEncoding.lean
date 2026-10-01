@@ -16,9 +16,11 @@ structure NTMLiteral where
   deriving DecidableEq, Repr
 
 abbrev NTMClause := List NTMLiteral
+
 abbrev NTMCNF := List NTMClause
 
 def ntmPos (v : Nat) : NTMLiteral := { var := v, positive := true }
+
 def ntmNeg (v : Nat) : NTMLiteral := { var := v, positive := false }
 
 def ntmLiteralCircuit (l : NTMLiteral) : Circuit :=
@@ -32,8 +34,6 @@ def ntmCNFCircuit : NTMCNF -> Circuit
   | [] => .const true
   | c :: cs => .and (ntmClauseCircuit c) (ntmCNFCircuit cs)
 
-
-
 def evalNTMLiteral (sigma : Assignment) (l : NTMLiteral) : Bool :=
   if l.positive then sigma l.var else !(sigma l.var)
 
@@ -44,118 +44,6 @@ def evalNTMClause (sigma : Assignment) : NTMClause -> Bool
 def evalNTMCNF (sigma : Assignment) : NTMCNF -> Bool
   | [] => true
   | c :: cs => Bool.and (evalNTMClause sigma c) (evalNTMCNF sigma cs)
-
-
-
-theorem evalNTMCNF_append
-    (sigma : Assignment) (l1 l2 : NTMCNF) :
-    evalNTMCNF sigma (l1 ++ l2) = true <->
-      evalNTMCNF sigma l1 = true ∧
-      evalNTMCNF sigma l2 = true := by
-  induction l1 with
-  | nil =>
-      simp [evalNTMCNF]
-  | cons c cs ih =>
-      simp [evalNTMCNF, ih, Bool.and_eq_true]
-
-theorem evalNTMCNF_cons_iff
-    (sigma : Assignment) (c : NTMClause) (cs : NTMCNF) :
-    evalNTMCNF sigma (c :: cs) = true <->
-      evalNTMClause sigma c = true ∧
-      evalNTMCNF sigma cs = true := by
-  simp [evalNTMCNF, Bool.and_eq_true]
-
-theorem evalNTMCNF_of_mem
-    (sigma : Assignment) (f : NTMCNF) (c : NTMClause)
-    (hSat : evalNTMCNF sigma f = true)
-    (hc : c ∈ f) :
-    evalNTMClause sigma c = true := by
-  induction f with
-  | nil =>
-      simp at hc
-  | cons d ds ih =>
-      have hsplit :
-          evalNTMClause sigma d = true ∧
-          evalNTMCNF sigma ds = true :=
-        (evalNTMCNF_cons_iff sigma d ds).mp hSat
-      simp only [List.mem_cons] at hc
-      rcases hc with rfl | hc
-      · exact hsplit.1
-      · exact ih hsplit.2 hc
-
-@[simp] theorem evalNTMClause_singleton_pos
-    (sigma : Assignment) (v : Nat) :
-    evalNTMClause sigma [ntmPos v] = true <->
-      sigma v = true := by
-  cases h : sigma v <;>
-    simp [evalNTMClause, evalNTMLiteral, ntmPos, h]
-
-@[simp] theorem evalNTMClause_singleton_neg
-    (sigma : Assignment) (v : Nat) :
-    evalNTMClause sigma [ntmNeg v] = true <->
-      sigma v = false := by
-  cases h : sigma v <;>
-    simp [evalNTMClause, evalNTMLiteral, ntmNeg, h]
-
-theorem eval_ntmLiteralCircuit
-    (sigma : Assignment) (l : NTMLiteral) :
-    evalCircuit sigma (ntmLiteralCircuit l) = evalNTMLiteral sigma l := by
-  cases l with
-  | mk v p =>
-      cases p <;> rfl
-
-theorem eval_ntmClauseCircuit
-    (sigma : Assignment) (c : NTMClause) :
-    evalCircuit sigma (ntmClauseCircuit c) = evalNTMClause sigma c := by
-  induction c with
-  | nil =>
-      rfl
-  | cons l ls ih =>
-      simp [ntmClauseCircuit, evalCircuit, evalNTMClause,
-        eval_ntmLiteralCircuit, ih]
-
-theorem eval_ntmCNFCircuit
-    (sigma : Assignment) (f : NTMCNF) :
-    evalCircuit sigma (ntmCNFCircuit f) = evalNTMCNF sigma f := by
-  induction f with
-  | nil =>
-      rfl
-  | cons c cs ih =>
-      simp [ntmCNFCircuit, evalCircuit, evalNTMCNF,
-        eval_ntmClauseCircuit, ih]
-
-
-theorem ntmLiteralCircuit_isClause (l : NTMLiteral) :
-    IsClause (ntmLiteralCircuit l) := by
-  cases l with
-  | mk v p =>
-      cases p <;> simp [ntmLiteralCircuit, IsClause]
-
-theorem ntmClauseCircuit_isClause (c : NTMClause) :
-    IsClause (ntmClauseCircuit c) := by
-  induction c with
-  | nil => exact emptyClause_isClause
-  | cons l ls ih =>
-      exact IsClause_or (ntmLiteralCircuit_isClause l) ih
-
-theorem ntmCNFCircuit_isCNF (f : NTMCNF) :
-    IsCNF (ntmCNFCircuit f) := by
-  induction f with
-  | nil => exact emptyCNF_isCNF
-  | cons c cs ih =>
-      exact IsCNF_and (isClause_isCNF (ntmClauseCircuit_isClause c)) ih
-
-theorem satLanguage_ntmCNFCircuit_iff
-    (f : NTMCNF) :
-    SATLanguage (ntmCNFCircuit f) <->
-      ∃ sigma : Assignment, evalNTMCNF sigma f = true := by
-  constructor
-  · rintro ⟨_hcnf, sigma, hsat⟩
-    exact ⟨sigma, by simpa [eval_ntmCNFCircuit] using hsat⟩
-  · rintro ⟨sigma, hsat⟩
-    refine ⟨ntmCNFCircuit_isCNF f, sigma, ?_⟩
-    simpa [eval_ntmCNFCircuit] using hsat
-
 
 def ntmAlphabet : List (Option Bool) :=
   [none, some false, some true]
@@ -223,112 +111,6 @@ def ntmChoiceVar
 def ntmLitFor (v : Nat) (value : Bool) : NTMLiteral :=
   if value then ntmPos v else ntmNeg v
 
-
-@[simp] theorem evalNTMClause_singleton_litFor
-    (sigma : Assignment) (v : Nat) (b : Bool) :
-    evalNTMClause sigma [ntmLitFor v b] = true <->
-      sigma v = b := by
-  cases b <;>
-    simp [ntmLitFor]
-
-theorem evalNTMCNF_ofFn_litFor_iff
-    {n : Nat}
-    (sigma : Assignment)
-    (v : Fin n -> Nat)
-    (b : Fin n -> Bool) :
-    evalNTMCNF sigma
-        (List.ofFn fun i : Fin n => [ntmLitFor (v i) (b i)]) = true <->
-      forall i : Fin n, sigma (v i) = b i := by
-  induction n with
-  | zero =>
-      simp [evalNTMCNF]
-  | succ n ih =>
-      rw [List.ofFn_succ]
-      rw [evalNTMCNF_cons_iff]
-      rw [evalNTMClause_singleton_litFor]
-      constructor
-      · rintro ⟨h0, hs⟩ i
-        refine Fin.cases h0 ?_ i
-        intro j
-        exact (ih
-          (fun k => v k.succ)
-          (fun k => b k.succ)).mp hs j
-      · intro h
-        constructor
-        · exact h 0
-        · exact (ih
-            (fun k => v k.succ)
-            (fun k => b k.succ)).mpr
-            (fun j => h j.succ)
-
-theorem eval_ntmSetStateClauses_nil_iff
-    (sigma : Assignment)
-    (M : PolyNTMCandidate)
-    (t s : Nat)
-    (target : Fin (M.stateCount + 1)) :
-    evalNTMCNF sigma (ntmSetStateClauses [] M t s target) = true <->
-      forall q : Fin (M.stateCount + 1),
-        sigma (ntmStateVar M t s q) = decide (q = target) := by
-  simpa [ntmSetStateClauses] using
-    (evalNTMCNF_ofFn_litFor_iff
-      sigma
-      (fun q : Fin (M.stateCount + 1) => ntmStateVar M t s q)
-      (fun q : Fin (M.stateCount + 1) => decide (q = target)))
-
-
-theorem eval_ntmSetSymbolClauses_nil_iff
-    (sigma : Assignment)
-    (varAt : Option Bool -> Nat)
-    (target : Option Bool) :
-    evalNTMCNF sigma (ntmSetSymbolClauses [] varAt target) = true <->
-      forall a : Option Bool,
-        sigma (varAt a) = decide (a = target) := by
-  cases target with
-  | none =>
-      constructor
-      · intro h a
-        rcases (evalNTMCNF_append sigma
-          [[ntmLitFor (varAt none) true]]
-          [[ntmLitFor (varAt (some false)) false],
-           [ntmLitFor (varAt (some true)) false]]).mp
-          (by simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF] using h) with
-          ⟨h0, hrest⟩
-        have hn : sigma (varAt none) = true := by
-          simpa [evalNTMCNF] using h0
-        have hr := hrest
-        cases a with
-        | none => simpa using hn
-        | some b =>
-            cases b <;>
-              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
-      · intro h
-        have hnone := h none
-        have hf := h (some false)
-        have ht := h (some true)
-        simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-          evalNTMClause, evalNTMLiteral, ntmLitFor] using
-          And.intro hnone (And.intro hf ht)
-  | some targetBool =>
-      cases targetBool <;>
-        constructor
-        · intro h a
-          cases a with
-          | none =>
-              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
-          | some b =>
-              cases b <;>
-                simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-                  evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
-        · intro h
-          have hnone := h none
-          have hf := h (some false)
-          have ht := h (some true)
-          simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-            evalNTMClause, evalNTMLiteral, ntmLitFor] using
-            And.intro hnone (And.intro hf ht)
-
 def ntmSetStateClauses
     (guard : NTMClause)
     (M : PolyNTMCandidate)
@@ -343,98 +125,6 @@ def ntmSetSymbolClauses
     (target : Option Bool) : NTMCNF :=
   ntmAlphabet.map fun a =>
     guard ++ [ntmLitFor (varAt a) (decide (a = target))]
-
-
-theorem eval_ntmSetLeftCell_nil_iff
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment) (i : Nat) (a : Option Bool) :
-    evalNTMCNF sigma (ntmSetLeftCell [] M x t 0 i a) = true <->
-      forall b : Option Bool,
-        sigma (ntmLeftVar M x t 0 i b) = decide (b = a) := by
-  exact eval_ntmSetSymbolClauses_nil_iff
-    sigma (ntmLeftVar M x t 0 i) a
-
-theorem eval_ntmSetRightCell_nil_iff
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment) (i : Nat) (a : Option Bool) :
-    evalNTMCNF sigma (ntmSetRightCell [] M x t 0 i a) = true <->
-      forall b : Option Bool,
-        sigma (ntmRightVar M x t 0 i b) = decide (b = a) := by
-  exact eval_ntmSetSymbolClauses_nil_iff
-    sigma (ntmRightVar M x t 0 i) a
-
-theorem evalNTMCNF_flatMap_range
-    (sigma : Assignment) (n : Nat) (f : Nat -> NTMCNF) :
-    evalNTMCNF sigma ((List.range n).flatMap f) = true <->
-      forall i : Nat, i < n -> evalNTMCNF sigma (f i) = true := by
-  induction n with
-  | zero =>
-      simp [evalNTMCNF]
-  | succ n ih =>
-      rw [List.range_succ]
-      rw [List.flatMap_append]
-      rw [evalNTMCNF_append]
-      rw [ih]
-      constructor
-      · rintro ⟨hprev, hlast⟩ i hi
-        by_cases hEq : i = n
-        · subst i
-          simpa using hlast
-        · exact hprev i (by omega)
-      · intro h
-        constructor
-        · intro i hi
-          exact h i (by omega)
-        · simpa using h n (by omega)
-
-
-theorem evalNTMCNF_flatMap_list
-    {α : Type}
-    (sigma : Assignment)
-    (xs : List α)
-    (f : α -> NTMCNF) :
-    evalNTMCNF sigma (xs.flatMap f) = true <->
-      forall a, a ∈ xs -> evalNTMCNF sigma (f a) = true := by
-  induction xs with
-  | nil =>
-      simp [evalNTMCNF]
-  | cons a as ih =>
-      rw [List.flatMap_cons]
-      rw [evalNTMCNF_append]
-      rw [ih]
-      constructor
-      · rintro ⟨ha, has⟩ x hx
-        simp only [List.mem_cons] at hx
-        rcases hx with rfl | hx
-        · exact ha
-        · exact has x hx
-      · intro h
-        constructor
-        · exact h a (by simp)
-        · intro x hx
-          exact h x (by simp [hx])
-
-theorem evalNTMCNF_flatten
-    (sigma : Assignment)
-    (xss : List NTMCNF) :
-    evalNTMCNF sigma xss.flatten = true <->
-      forall xs, xs ∈ xss -> evalNTMCNF sigma xs = true := by
-  simpa [List.flatten] using
-    (evalNTMCNF_flatMap_list sigma xss (fun xs => xs))
-
-theorem evalNTMCNF_map_flatten_ofFn
-    {n : Nat}
-    (sigma : Assignment)
-    (f : Fin n -> NTMCNF) :
-    evalNTMCNF sigma (List.ofFn f).flatten = true <->
-      forall i : Fin n, evalNTMCNF sigma (f i) = true := by
-  rw [evalNTMCNF_flatten]
-  constructor
-  · intro h i
-    exact h (f i) (List.mem_ofFn.mpr ⟨i, rfl⟩)
-  · intro h xs hxs
-    rcases List.mem_ofFn.mp hxs with ⟨i, rfl⟩
-    exact h i
 
 def ntmCopySymbolClauses
     (guard : NTMClause)
@@ -519,7 +209,457 @@ def ntmIndexedTransitions
     List (Nat × (State × Symbol × Direction)) :=
   ntmIndexedTransitionsAux 0 ts
 
+def ntmChoiceGuardCNF
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) (j : Nat) : NTMCNF :=
+  let c := ntmChoiceVar M x t s q a j
+  [ [ntmNeg c, ntmPos (ntmStateVar M t s q)]
+  , [ntmNeg c, ntmPos (ntmHeadVar M t s a)] ]
 
+def ntmGuardChoiceClause
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMClause :=
+  [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)] ++
+    (ntmIndexedTransitions (M.machine.transition q a)).map
+      (fun p => ntmPos (ntmChoiceVar M x t s q a p.1))
+
+def ntmAtMostOneChoiceCNF
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
+  let ids := (ntmIndexedTransitions (M.machine.transition q a)).map Prod.fst
+  ids.flatMap fun j =>
+    ids.flatMap fun k =>
+      if j < k then
+        [[ntmNeg (ntmChoiceVar M x t s q a j),
+          ntmNeg (ntmChoiceVar M x t s q a k)]]
+      else []
+
+def ntmStayEffectCNF
+    (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (qNext : Fin (M.stateCount + 1))
+    (write : Option Bool) : NTMCNF :=
+  ntmSetStateClauses guard M t (s + 1) qNext ++
+  ntmSetSymbolClauses guard (ntmHeadVar M t (s + 1)) write ++
+  ntmCopyLeftAll guard M x t s ++
+  ntmCopyRightAll guard M x t s
+
+def ntmLeftEffectCNF
+    (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (qNext : Fin (M.stateCount + 1))
+    (write : Option Bool) : NTMCNF :=
+  let r := ntmRadius x t
+  let shiftedLeft :=
+    (List.range (r - 1)).flatMap fun i =>
+      ntmCopyLeftCell guard M x t s (i + 1) (s + 1) i
+  let shiftedRight :=
+    (List.range (r - 1)).flatMap fun i =>
+      ntmCopyRightCell guard M x t s i (s + 1) (i + 1)
+  ntmSetStateClauses guard M t (s + 1) qNext ++
+  ntmCopySymbolClauses guard
+    (ntmLeftVar M x t s 0)
+    (ntmHeadVar M t (s + 1)) ++
+  shiftedLeft ++
+  ntmSetLeftCell guard M x t (s + 1) (r - 1) M.machine.blank ++
+  ntmSetRightCell guard M x t (s + 1) 0 write ++
+  shiftedRight
+
+def ntmRightEffectCNF
+    (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (qNext : Fin (M.stateCount + 1))
+    (write : Option Bool) : NTMCNF :=
+  let r := ntmRadius x t
+  let shiftedLeft :=
+    (List.range (r - 1)).flatMap fun i =>
+      ntmCopyLeftCell guard M x t s i (s + 1) (i + 1)
+  let shiftedRight :=
+    (List.range (r - 1)).flatMap fun i =>
+      ntmCopyRightCell guard M x t s (i + 1) (s + 1) i
+  ntmSetStateClauses guard M t (s + 1) qNext ++
+  ntmCopySymbolClauses guard
+    (ntmRightVar M x t s 0)
+    (ntmHeadVar M t (s + 1)) ++
+  ntmSetLeftCell guard M x t (s + 1) 0 write ++
+  shiftedLeft ++
+  shiftedRight ++
+  ntmSetRightCell guard M x t (s + 1) (r - 1) M.machine.blank
+
+def ntmChoiceEffectCNF
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (entry : Nat × (Fin (M.stateCount + 1) × Option Bool × Direction)) : NTMCNF :=
+  let j := entry.1
+  let tr := entry.2
+  let guard := [ntmNeg (ntmChoiceVar M x t s q a j)]
+  match tr with
+  | (qNext, write, .stay) =>
+      ntmStayEffectCNF guard M x t s qNext write
+  | (qNext, write, .left) =>
+      ntmLeftEffectCNF guard M x t s qNext write
+  | (qNext, write, .right) =>
+      ntmRightEffectCNF guard M x t s qNext write
+
+def ntmHaltedStutterCNF
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
+  let guard := [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+  ntmSetStateClauses guard M t (s + 1) q ++
+  ntmCopyHeadCell guard M t s (s + 1) ++
+  ntmCopyLeftAll guard M x t s ++
+  ntmCopyRightAll guard M x t s
+
+def ntmActiveChoiceCNF
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
+  let entries := ntmIndexedTransitions (M.machine.transition q a)
+  [ntmGuardChoiceClause M x t s q a] ++
+  entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+  ntmAtMostOneChoiceCNF M x t s q a ++
+  entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)
+
+def ntmTransitionCaseCNF
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
+  if M.machine.accepting q || M.machine.rejecting q then
+    ntmHaltedStutterCNF M x t s q a
+  else
+    ntmActiveChoiceCNF M x t s q a
+
+def ntmTransitionStepCNF
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat) : NTMCNF :=
+  (List.ofFn fun q : Fin (M.stateCount + 1) =>
+    ntmAlphabet.flatMap fun a =>
+      ntmTransitionCaseCNF M x t s q a).flatten
+
+def ntmTransitionsCNF
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : NTMCNF :=
+  (List.range t).flatMap fun s =>
+    ntmTransitionStepCNF M x t s
+
+def ntmAcceptingStateLits
+    (M : PolyNTMCandidate) (t : Nat) : NTMClause :=
+  (List.ofFn fun q : Fin (M.stateCount + 1) => q).filterMap fun q =>
+    if M.machine.accepting q = true then
+      some (ntmPos (ntmStateVar M t t q))
+    else none
+
+def ntmFinalAcceptanceCNF
+    (M : PolyNTMCandidate) (t : Nat) : NTMCNF :=
+  [ntmAcceptingStateLits M t]
+
+def boundedExecTableauCNF_NTM
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : NTMCNF :=
+  ntmInitialCNF M x t ++
+  ntmTransitionsCNF M x t ++
+  ntmFinalAcceptanceCNF M t
+
+def boundedExecCircuit_NTM
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Circuit :=
+  ntmCNFCircuit (boundedExecTableauCNF_NTM M x t)
+
+theorem evalNTMCNF_append
+    (sigma : Assignment) (l1 l2 : NTMCNF) :
+    evalNTMCNF sigma (l1 ++ l2) = true <->
+      evalNTMCNF sigma l1 = true ∧
+      evalNTMCNF sigma l2 = true := by
+  induction l1 with
+  | nil =>
+      simp [evalNTMCNF]
+  | cons c cs ih =>
+      simp [evalNTMCNF, ih, Bool.and_eq_true]
+
+theorem evalNTMCNF_cons_iff
+    (sigma : Assignment) (c : NTMClause) (cs : NTMCNF) :
+    evalNTMCNF sigma (c :: cs) = true <->
+      evalNTMClause sigma c = true ∧
+      evalNTMCNF sigma cs = true := by
+  simp [evalNTMCNF, Bool.and_eq_true]
+
+theorem evalNTMCNF_of_mem
+    (sigma : Assignment) (f : NTMCNF) (c : NTMClause)
+    (hSat : evalNTMCNF sigma f = true)
+    (hc : c ∈ f) :
+    evalNTMClause sigma c = true := by
+  induction f with
+  | nil =>
+      simp at hc
+  | cons d ds ih =>
+      have hsplit :
+          evalNTMClause sigma d = true ∧
+          evalNTMCNF sigma ds = true :=
+        (evalNTMCNF_cons_iff sigma d ds).mp hSat
+      simp only [List.mem_cons] at hc
+      rcases hc with rfl | hc
+      · exact hsplit.1
+      · exact ih hsplit.2 hc
+
+@[simp] theorem evalNTMClause_singleton_pos
+    (sigma : Assignment) (v : Nat) :
+    evalNTMClause sigma [ntmPos v] = true <->
+      sigma v = true := by
+  cases h : sigma v <;>
+    simp [evalNTMClause, evalNTMLiteral, ntmPos, h]
+
+@[simp] theorem evalNTMClause_singleton_neg
+    (sigma : Assignment) (v : Nat) :
+    evalNTMClause sigma [ntmNeg v] = true <->
+      sigma v = false := by
+  cases h : sigma v <;>
+    simp [evalNTMClause, evalNTMLiteral, ntmNeg, h]
+
+theorem eval_ntmLiteralCircuit
+    (sigma : Assignment) (l : NTMLiteral) :
+    evalCircuit sigma (ntmLiteralCircuit l) = evalNTMLiteral sigma l := by
+  cases l with
+  | mk v p =>
+      cases p <;> rfl
+
+theorem eval_ntmClauseCircuit
+    (sigma : Assignment) (c : NTMClause) :
+    evalCircuit sigma (ntmClauseCircuit c) = evalNTMClause sigma c := by
+  induction c with
+  | nil =>
+      rfl
+  | cons l ls ih =>
+      simp [ntmClauseCircuit, evalCircuit, evalNTMClause,
+        eval_ntmLiteralCircuit, ih]
+
+theorem eval_ntmCNFCircuit
+    (sigma : Assignment) (f : NTMCNF) :
+    evalCircuit sigma (ntmCNFCircuit f) = evalNTMCNF sigma f := by
+  induction f with
+  | nil =>
+      rfl
+  | cons c cs ih =>
+      simp [ntmCNFCircuit, evalCircuit, evalNTMCNF,
+        eval_ntmClauseCircuit, ih]
+
+theorem ntmLiteralCircuit_isClause (l : NTMLiteral) :
+    IsClause (ntmLiteralCircuit l) := by
+  cases l with
+  | mk v p =>
+      cases p <;> simp [ntmLiteralCircuit, IsClause]
+
+theorem ntmClauseCircuit_isClause (c : NTMClause) :
+    IsClause (ntmClauseCircuit c) := by
+  induction c with
+  | nil => exact emptyClause_isClause
+  | cons l ls ih =>
+      exact IsClause_or (ntmLiteralCircuit_isClause l) ih
+
+theorem ntmCNFCircuit_isCNF (f : NTMCNF) :
+    IsCNF (ntmCNFCircuit f) := by
+  induction f with
+  | nil => exact emptyCNF_isCNF
+  | cons c cs ih =>
+      exact IsCNF_and (isClause_isCNF (ntmClauseCircuit_isClause c)) ih
+
+theorem satLanguage_ntmCNFCircuit_iff
+    (f : NTMCNF) :
+    SATLanguage (ntmCNFCircuit f) <->
+      ∃ sigma : Assignment, evalNTMCNF sigma f = true := by
+  constructor
+  · rintro ⟨_hcnf, sigma, hsat⟩
+    exact ⟨sigma, by simpa [eval_ntmCNFCircuit] using hsat⟩
+  · rintro ⟨sigma, hsat⟩
+    refine ⟨ntmCNFCircuit_isCNF f, sigma, ?_⟩
+    simpa [eval_ntmCNFCircuit] using hsat
+
+@[simp] theorem evalNTMClause_singleton_litFor
+    (sigma : Assignment) (v : Nat) (b : Bool) :
+    evalNTMClause sigma [ntmLitFor v b] = true <->
+      sigma v = b := by
+  cases b <;>
+    simp [ntmLitFor]
+
+theorem evalNTMCNF_ofFn_litFor_iff
+    {n : Nat}
+    (sigma : Assignment)
+    (v : Fin n -> Nat)
+    (b : Fin n -> Bool) :
+    evalNTMCNF sigma
+        (List.ofFn fun i : Fin n => [ntmLitFor (v i) (b i)]) = true <->
+      forall i : Fin n, sigma (v i) = b i := by
+  induction n with
+  | zero =>
+      simp [evalNTMCNF]
+  | succ n ih =>
+      rw [List.ofFn_succ]
+      rw [evalNTMCNF_cons_iff]
+      rw [evalNTMClause_singleton_litFor]
+      constructor
+      · rintro ⟨h0, hs⟩ i
+        refine Fin.cases h0 ?_ i
+        intro j
+        exact (ih
+          (fun k => v k.succ)
+          (fun k => b k.succ)).mp hs j
+      · intro h
+        constructor
+        · exact h 0
+        · exact (ih
+            (fun k => v k.succ)
+            (fun k => b k.succ)).mpr
+            (fun j => h j.succ)
+
+theorem eval_ntmSetStateClauses_nil_iff
+    (sigma : Assignment)
+    (M : PolyNTMCandidate)
+    (t s : Nat)
+    (target : Fin (M.stateCount + 1)) :
+    evalNTMCNF sigma (ntmSetStateClauses [] M t s target) = true <->
+      forall q : Fin (M.stateCount + 1),
+        sigma (ntmStateVar M t s q) = decide (q = target) := by
+  simpa [ntmSetStateClauses] using
+    (evalNTMCNF_ofFn_litFor_iff
+      sigma
+      (fun q : Fin (M.stateCount + 1) => ntmStateVar M t s q)
+      (fun q : Fin (M.stateCount + 1) => decide (q = target)))
+
+theorem eval_ntmSetSymbolClauses_nil_iff
+    (sigma : Assignment)
+    (varAt : Option Bool -> Nat)
+    (target : Option Bool) :
+    evalNTMCNF sigma (ntmSetSymbolClauses [] varAt target) = true <->
+      forall a : Option Bool,
+        sigma (varAt a) = decide (a = target) := by
+  cases target with
+  | none =>
+      constructor
+      · intro h a
+        rcases (evalNTMCNF_append sigma
+          [[ntmLitFor (varAt none) true]]
+          [[ntmLitFor (varAt (some false)) false],
+           [ntmLitFor (varAt (some true)) false]]).mp
+          (by simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF] using h) with
+          ⟨h0, hrest⟩
+        have hn : sigma (varAt none) = true := by
+          simpa [evalNTMCNF] using h0
+        have hr := hrest
+        cases a with
+        | none => simpa using hn
+        | some b =>
+            cases b <;>
+              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
+      · intro h
+        have hnone := h none
+        have hf := h (some false)
+        have ht := h (some true)
+        simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+          evalNTMClause, evalNTMLiteral, ntmLitFor] using
+          And.intro hnone (And.intro hf ht)
+  | some targetBool =>
+      cases targetBool <;>
+        constructor
+        · intro h a
+          cases a with
+          | none =>
+              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
+          | some b =>
+              cases b <;>
+                simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                  evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
+        · intro h
+          have hnone := h none
+          have hf := h (some false)
+          have ht := h (some true)
+          simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+            evalNTMClause, evalNTMLiteral, ntmLitFor] using
+            And.intro hnone (And.intro hf ht)
+
+theorem eval_ntmSetLeftCell_nil_iff
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment) (i : Nat) (a : Option Bool) :
+    evalNTMCNF sigma (ntmSetLeftCell [] M x t 0 i a) = true <->
+      forall b : Option Bool,
+        sigma (ntmLeftVar M x t 0 i b) = decide (b = a) := by
+  exact eval_ntmSetSymbolClauses_nil_iff
+    sigma (ntmLeftVar M x t 0 i) a
+
+theorem eval_ntmSetRightCell_nil_iff
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment) (i : Nat) (a : Option Bool) :
+    evalNTMCNF sigma (ntmSetRightCell [] M x t 0 i a) = true <->
+      forall b : Option Bool,
+        sigma (ntmRightVar M x t 0 i b) = decide (b = a) := by
+  exact eval_ntmSetSymbolClauses_nil_iff
+    sigma (ntmRightVar M x t 0 i) a
+
+theorem evalNTMCNF_flatMap_range
+    (sigma : Assignment) (n : Nat) (f : Nat -> NTMCNF) :
+    evalNTMCNF sigma ((List.range n).flatMap f) = true <->
+      forall i : Nat, i < n -> evalNTMCNF sigma (f i) = true := by
+  induction n with
+  | zero =>
+      simp [evalNTMCNF]
+  | succ n ih =>
+      rw [List.range_succ]
+      rw [List.flatMap_append]
+      rw [evalNTMCNF_append]
+      rw [ih]
+      constructor
+      · rintro ⟨hprev, hlast⟩ i hi
+        by_cases hEq : i = n
+        · subst i
+          simpa using hlast
+        · exact hprev i (by omega)
+      · intro h
+        constructor
+        · intro i hi
+          exact h i (by omega)
+        · simpa using h n (by omega)
+
+theorem evalNTMCNF_flatMap_list
+    {α : Type}
+    (sigma : Assignment)
+    (xs : List α)
+    (f : α -> NTMCNF) :
+    evalNTMCNF sigma (xs.flatMap f) = true <->
+      forall a, a ∈ xs -> evalNTMCNF sigma (f a) = true := by
+  induction xs with
+  | nil =>
+      simp [evalNTMCNF]
+  | cons a as ih =>
+      rw [List.flatMap_cons]
+      rw [evalNTMCNF_append]
+      rw [ih]
+      constructor
+      · rintro ⟨ha, has⟩ x hx
+        simp only [List.mem_cons] at hx
+        rcases hx with rfl | hx
+        · exact ha
+        · exact has x hx
+      · intro h
+        constructor
+        · exact h a (by simp)
+        · intro x hx
+          exact h x (by simp [hx])
+
+theorem evalNTMCNF_flatten
+    (sigma : Assignment)
+    (xss : List NTMCNF) :
+    evalNTMCNF sigma xss.flatten = true <->
+      forall xs, xs ∈ xss -> evalNTMCNF sigma xs = true := by
+  simpa [List.flatten] using
+    (evalNTMCNF_flatMap_list sigma xss (fun xs => xs))
+
+theorem evalNTMCNF_map_flatten_ofFn
+    {n : Nat}
+    (sigma : Assignment)
+    (f : Fin n -> NTMCNF) :
+    evalNTMCNF sigma (List.ofFn f).flatten = true <->
+      forall i : Fin n, evalNTMCNF sigma (f i) = true := by
+  rw [evalNTMCNF_flatten]
+  constructor
+  · intro h i
+    exact h (f i) (List.mem_ofFn.mpr ⟨i, rfl⟩)
+  · intro h xs hxs
+    rcases List.mem_ofFn.mp hxs with ⟨i, rfl⟩
+    exact h i
 
 theorem evalNTMClause_append
     (sigma : Assignment) (c1 c2 : NTMClause) :
@@ -680,161 +820,10 @@ theorem ntmChoice_exists_of_guard
   exact ⟨⟨j, indexedTransitions_index_lt
     (M.machine.transition q a) hjmem⟩, hjtrue⟩
 
-def ntmChoiceGuardCNF
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (q : Fin (M.stateCount + 1)) (a : Option Bool) (j : Nat) : NTMCNF :=
-  let c := ntmChoiceVar M x t s q a j
-  [ [ntmNeg c, ntmPos (ntmStateVar M t s q)]
-  , [ntmNeg c, ntmPos (ntmHeadVar M t s a)] ]
-
-def ntmGuardChoiceClause
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMClause :=
-  [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)] ++
-    (ntmIndexedTransitions (M.machine.transition q a)).map
-      (fun p => ntmPos (ntmChoiceVar M x t s q a p.1))
-
-def ntmAtMostOneChoiceCNF
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
-  let ids := (ntmIndexedTransitions (M.machine.transition q a)).map Prod.fst
-  ids.flatMap fun j =>
-    ids.flatMap fun k =>
-      if j < k then
-        [[ntmNeg (ntmChoiceVar M x t s q a j),
-          ntmNeg (ntmChoiceVar M x t s q a k)]]
-      else []
-
-def ntmStayEffectCNF
-    (guard : NTMClause)
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (qNext : Fin (M.stateCount + 1))
-    (write : Option Bool) : NTMCNF :=
-  ntmSetStateClauses guard M t (s + 1) qNext ++
-  ntmSetSymbolClauses guard (ntmHeadVar M t (s + 1)) write ++
-  ntmCopyLeftAll guard M x t s ++
-  ntmCopyRightAll guard M x t s
-
-def ntmLeftEffectCNF
-    (guard : NTMClause)
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (qNext : Fin (M.stateCount + 1))
-    (write : Option Bool) : NTMCNF :=
-  let r := ntmRadius x t
-  let shiftedLeft :=
-    (List.range (r - 1)).flatMap fun i =>
-      ntmCopyLeftCell guard M x t s (i + 1) (s + 1) i
-  let shiftedRight :=
-    (List.range (r - 1)).flatMap fun i =>
-      ntmCopyRightCell guard M x t s i (s + 1) (i + 1)
-  ntmSetStateClauses guard M t (s + 1) qNext ++
-  ntmCopySymbolClauses guard
-    (ntmLeftVar M x t s 0)
-    (ntmHeadVar M t (s + 1)) ++
-  shiftedLeft ++
-  ntmSetLeftCell guard M x t (s + 1) (r - 1) M.machine.blank ++
-  ntmSetRightCell guard M x t (s + 1) 0 write ++
-  shiftedRight
-
-def ntmRightEffectCNF
-    (guard : NTMClause)
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (qNext : Fin (M.stateCount + 1))
-    (write : Option Bool) : NTMCNF :=
-  let r := ntmRadius x t
-  let shiftedLeft :=
-    (List.range (r - 1)).flatMap fun i =>
-      ntmCopyLeftCell guard M x t s i (s + 1) (i + 1)
-  let shiftedRight :=
-    (List.range (r - 1)).flatMap fun i =>
-      ntmCopyRightCell guard M x t s (i + 1) (s + 1) i
-  ntmSetStateClauses guard M t (s + 1) qNext ++
-  ntmCopySymbolClauses guard
-    (ntmRightVar M x t s 0)
-    (ntmHeadVar M t (s + 1)) ++
-  ntmSetLeftCell guard M x t (s + 1) 0 write ++
-  shiftedLeft ++
-  shiftedRight ++
-  ntmSetRightCell guard M x t (s + 1) (r - 1) M.machine.blank
-
-def ntmChoiceEffectCNF
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (q : Fin (M.stateCount + 1)) (a : Option Bool)
-    (entry : Nat × (Fin (M.stateCount + 1) × Option Bool × Direction)) : NTMCNF :=
-  let j := entry.1
-  let tr := entry.2
-  let guard := [ntmNeg (ntmChoiceVar M x t s q a j)]
-  match tr with
-  | (qNext, write, .stay) =>
-      ntmStayEffectCNF guard M x t s qNext write
-  | (qNext, write, .left) =>
-      ntmLeftEffectCNF guard M x t s qNext write
-  | (qNext, write, .right) =>
-      ntmRightEffectCNF guard M x t s qNext write
-
-def ntmHaltedStutterCNF
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
-  let guard := [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
-  ntmSetStateClauses guard M t (s + 1) q ++
-  ntmCopyHeadCell guard M t s (s + 1) ++
-  ntmCopyLeftAll guard M x t s ++
-  ntmCopyRightAll guard M x t s
-
-def ntmActiveChoiceCNF
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
-  let entries := ntmIndexedTransitions (M.machine.transition q a)
-  [ntmGuardChoiceClause M x t s q a] ++
-  entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
-  ntmAtMostOneChoiceCNF M x t s q a ++
-  entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)
-
-def ntmTransitionCaseCNF
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
-    (q : Fin (M.stateCount + 1)) (a : Option Bool) : NTMCNF :=
-  if M.machine.accepting q || M.machine.rejecting q then
-    ntmHaltedStutterCNF M x t s q a
-  else
-    ntmActiveChoiceCNF M x t s q a
-
-def ntmTransitionStepCNF
-    (M : PolyNTMCandidate) (x : BitString) (t s : Nat) : NTMCNF :=
-  (List.ofFn fun q : Fin (M.stateCount + 1) =>
-    ntmAlphabet.flatMap fun a =>
-      ntmTransitionCaseCNF M x t s q a).flatten
-
-def ntmTransitionsCNF
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : NTMCNF :=
-  (List.range t).flatMap fun s =>
-    ntmTransitionStepCNF M x t s
-
-def ntmAcceptingStateLits
-    (M : PolyNTMCandidate) (t : Nat) : NTMClause :=
-  (List.ofFn fun q : Fin (M.stateCount + 1) => q).filterMap fun q =>
-    if M.machine.accepting q = true then
-      some (ntmPos (ntmStateVar M t t q))
-    else none
-
-def ntmFinalAcceptanceCNF
-    (M : PolyNTMCandidate) (t : Nat) : NTMCNF :=
-  [ntmAcceptingStateLits M t]
-
-def boundedExecTableauCNF_NTM
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : NTMCNF :=
-  ntmInitialCNF M x t ++
-  ntmTransitionsCNF M x t ++
-  ntmFinalAcceptanceCNF M t
-
-def boundedExecCircuit_NTM
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Circuit :=
-  ntmCNFCircuit (boundedExecTableauCNF_NTM M x t)
-
 theorem boundedExecCircuit_NTM_isCNF
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
     IsCNF (boundedExecCircuit_NTM M x t) := by
   exact ntmCNFCircuit_isCNF _
-
 
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -930,7 +919,6 @@ theorem ntmInitial_head_exists_unique
     have hdec : decide (a = (inputTape x).head) = true := by
       simpa [ha] using hExact.symm
     exact of_decide_eq_true hdec
-
 
 theorem ntmInitial_left_exact
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
