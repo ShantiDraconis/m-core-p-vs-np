@@ -7,6 +7,7 @@ on:
     paths:
       - 'lean/MCore/Real/P02UniversalFailureMinCut.lean'
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
+      - 'lean/MCore/Real/P02KleeneUniversalBridge.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
       - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
       - '.github/workflows/p02-universal-failure-mincut.yml'
@@ -36,6 +37,7 @@ jobs:
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P02UniversalFailureMinCut
           lake build MCore.Real.P02ExplicitClockNormalForm
+          lake build MCore.Real.P02KleeneUniversalBridge
           lake build MCore.Real.P02FailureNormalForms
       - name: Exact axiom audit
         run: |
@@ -43,6 +45,7 @@ jobs:
           cat > P02UniversalFailureAudit.lean <<'EOF'
           import MCore.Real.P02UniversalFailureMinCut
           import MCore.Real.P02ExplicitClockNormalForm
+          import MCore.Real.P02KleeneUniversalBridge
           import MCore.Real.P02FailureNormalForms
           #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
@@ -53,6 +56,11 @@ jobs:
           #print axioms MCore.Real.P02ExplicitClockNormalForm.normalized_correctAt_of_correctAt
           #print axioms MCore.Real.P02ExplicitClockNormalForm.original_failure_of_normalized_failure
           #print axioms MCore.Real.P02ExplicitClockNormalForm.explicit_clock_producer_implies_universal_failure
+          #print axioms MCore.Real.P02KleeneUniversalBridge.kleene_fixed_point
+          #print axioms MCore.Real.P02KleeneUniversalBridge.counterexample_fails
+          #print axioms MCore.Real.P02KleeneUniversalBridge.KleeneUniversalBridge.toProducer
+          #print axioms MCore.Real.P02KleeneUniversalBridge.kleene_bridge_implies_universal_failure
+          #print axioms MCore.Real.P02KleeneUniversalBridge.kleene_bridge_closes_internal_endpoint
           #print axioms MCore.Real.P02FailureNormalForms.semanticDisagreement_iff_not_semantic_correct
           #print axioms MCore.Real.P02FailureNormalForms.normalizedFailure_iff_not_correctAt
           #print axioms MCore.Real.P02FailureNormalForms.NormalizedCounterexampleProducer.toFailureGenerator
@@ -64,7 +72,7 @@ jobs:
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02KleeneUniversalBridge.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02FailureNormalForms.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02FailureNormalForms.lean
