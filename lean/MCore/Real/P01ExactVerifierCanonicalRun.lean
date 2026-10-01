@@ -355,7 +355,15 @@ theorem prepared_canonical_accepts_iff_exact_global
         have ht := (modeCheck_cnf_iff phi).2 hcnf
         rw [hmode] at ht
         contradiction
-      simp [terminal, checkedVerifierMachine, hnotcnf]
+      constructor
+      · intro hacc
+        have hrejt :
+            checkedVerifierMachine.accepting terminal.state = false := by
+          simp [terminal, checkedVerifierMachine]
+        rw [hrejt] at hacc
+        contradiction
+      · rintro ⟨hcnf, heval⟩
+        exact False.elim (hnotcnf hcnf)
   | true =>
       obtain ⟨m, hm, tape, hreach⟩ :=
         prepared_cnf_reaches_semantic_final_within_exact_global
