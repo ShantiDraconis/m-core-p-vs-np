@@ -36,6 +36,30 @@ def UniformEffectiveCoverage.toKleeneSATBridge
   { compiler := fun M => (U.presentation M).compiler
     realizer := fun M => (U.realization M).realizer }
 
+
+/-- The effective-coverage package is not an additional mathematical burden:
+it is exactly a repackaging of the Kleene/SAT bridge fields. -/
+def UniformEffectiveCoverage.ofKleeneSATBridge
+    (B : KleeneSATBridge) :
+    UniformEffectiveCoverage :=
+  { presentation := fun M =>
+      { compiler := B.compiler M }
+    realization := fun M =>
+      { realizer := B.realizer M } }
+
+/-- Exact adapter closure between the two constructive formulations.  Hence
+there is no independent OPEN_MATH gap between UniformEffectiveCoverage and
+KleeneSATBridge; the genuine content is the per-candidate SAT fixed-point
+realizer itself. -/
+theorem uniformEffectiveCoverage_iff_kleeneSATBridge :
+    Nonempty UniformEffectiveCoverage ↔
+      Nonempty KleeneSATBridge := by
+  constructor
+  · rintro ⟨U⟩
+    exact ⟨U.toKleeneSATBridge⟩
+  · rintro ⟨B⟩
+    exact ⟨UniformEffectiveCoverage.ofKleeneSATBridge B⟩
+
 /-- Therefore no further logical or endpoint bridge is required after uniform
 effective coverage is constructed. -/
 theorem uniform_effective_coverage_closes_p02
@@ -43,6 +67,8 @@ theorem uniform_effective_coverage_closes_p02
     ¬ InP (SATBits circuitBitEncoding) := by
   exact kleene_bridge_closes_not_in_p
     ⟨U.toKleeneSATBridge⟩
+
+#print axioms MCore.Real.P02EffectiveAlignment.uniformEffectiveCoverage_iff_kleeneSATBridge
 
 end P02EffectiveAlignment
 end Real
