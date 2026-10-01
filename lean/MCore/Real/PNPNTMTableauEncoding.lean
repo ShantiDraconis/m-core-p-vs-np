@@ -7444,6 +7444,252 @@ theorem literalVar_le_cap_head
   simp [ntmPos]
   exact Nat.le_of_lt (ntmHeadVar_lt_tableauVarCap M x t s a hs)
 
+
+theorem ntmClauseWeight_append
+    (a b : NTMClause) :
+    ntmClauseWeight (a ++ b) =
+      ntmClauseWeight a + b.length := by
+  simp [ntmClauseWeight]
+
+theorem ntmCNFWeight_append
+    (a b : NTMCNF) :
+    ntmCNFWeight (a ++ b) = ntmCNFWeight a + ntmCNFWeight b := by
+  unfold ntmCNFWeight
+  induction a with
+  | nil => simp
+  | cons c cs ih =>
+      simp only [List.foldl_cons, List.cons_append]
+      simpa [Nat.add_assoc] using ih
+
+theorem ntmCNFWeight_flatMap_range_le
+    (n K : Nat) (f : Nat -> NTMCNF)
+    (h : forall i < n, ntmCNFWeight (f i) <= K) :
+    ntmCNFWeight ((List.range n).flatMap f) <= n * K := by
+  induction n with
+  | zero => simp [ntmCNFWeight]
+  | succ n ih =>
+      rw [List.range_succ, List.flatMap_append, ntmCNFWeight_append]
+      have hprev := ih (fun i hi => h i (by omega))
+      have hlast := h n (by omega)
+      nlinarith
+
+theorem ntmCNFWeight_flatMap_list_le
+    {α : Type}
+    (xs : List α) (K : Nat) (f : α -> NTMCNF)
+    (h : forall a, a ∈ xs -> ntmCNFWeight (f a) <= K) :
+    ntmCNFWeight (xs.flatMap f) <= xs.length * K := by
+  induction xs with
+  | nil => simp [ntmCNFWeight]
+  | cons a as ih =>
+      rw [List.flatMap_cons, ntmCNFWeight_append]
+      have ha := h a (by simp)
+      have ht := ih (fun z hz => h z (by simp [hz]))
+      simp at *
+      nlinarith
+
+theorem ntmSetState_weight
+    (guard : NTMClause)
+    (M : PolyNTMCandidate) (t s : Nat)
+    (target : Fin (M.stateCount + 1)) :
+    ntmCNFWeight (ntmSetStateClauses guard M t s target) =
+      ntmStateCount M * (guard.length + 2) := by
+  unfold ntmSetStateClauses ntmCNFWeight ntmClauseWeight ntmStateCount
+  simp
+
+theorem ntmSetSymbol_weight
+    (guard : NTMClause)
+    (varAt : Option Bool -> Nat) (target : Option Bool) :
+    ntmCNFWeight (ntmSetSymbolClauses guard varAt target) =
+      3 * (guard.length + 2) := by
+  cases target <;>
+    simp [ntmSetSymbolClauses, ntmAlphabet, ntmCNFWeight, ntmClauseWeight]
+
+theorem ntmCopySymbol_weight
+    (guard : NTMClause)
+    (oldVar newVar : Option Bool -> Nat) :
+    ntmCNFWeight (ntmCopySymbolClauses guard oldVar newVar) =
+      6 * (guard.length + 3) := by
+  simp [ntmCopySymbolClauses, ntmAlphabet, ntmCNFWeight, ntmClauseWeight]
+  ring
+
+theorem ntmCopyLeftAll_weight
+    (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat) :
+    ntmCNFWeight (ntmCopyLeftAll guard M x t s) =
+      ntmRadius x t * (6 * (guard.length + 3)) := by
+  unfold ntmCopyLeftAll
+  have hconst :
+      forall i < ntmRadius x t,
+        ntmCNFWeight
+          (ntmCopySymbolClauses guard
+            (ntmLeftVar M x t s i)
+            (ntmLeftVar M x t (s + 1) i)) =
+          6 * (guard.length + 3) := by
+    intro i hi
+    exact ntmCopySymbol_weight guard _ _
+  induction ntmRadius x t with
+  | zero => simp [ntmCNFWeight]
+  | succ n ih =>
+      rw [List.range_succ, List.flatMap_append, ntmCNFWeight_append]
+      simp only [List.flatMap_singleton]
+      rw [ntmCopySymbol_weight]
+      have := ih
+      nlinarith
+
+theorem ntmCopyRightAll_weight
+    (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat) :
+    ntmCNFWeight (ntmCopyRightAll guard M x t s) =
+      ntmRadius x t * (6 * (guard.length + 3)) := by
+  unfold ntmCopyRightAll
+  induction ntmRadius x t with
+  | zero => simp [ntmCNFWeight]
+  | succ n ih =>
+      rw [List.range_succ, List.flatMap_append, ntmCNFWeight_append]
+      simp only [List.flatMap_singleton]
+      rw [ntmCopySymbol_weight]
+      nlinarith
+
+theorem ntmInitial_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    ntmCNFWeight (ntmInitialCNF M x t) <=
+      2 * ntmStateCount M + 6 + 12 * ntmRadius x t := by
+  unfold ntmInitialCNF
+  repeat' rw [ntmCNFWeight_append]
+  rw [ntmSetState_weight, ntmSetSymbol_weight]
+  have hl := ntmCNFWeight_flatMap_range_le
+    (ntmRadius x t) 6
+    (fun i => ntmSetLeftCell [] M x t 0 i
+      ((inputTape x).left.getD i M.machine.blank))
+    (by
+      intro i hi
+      simpa [ntmSetLeftCell] using
+        ntmSetSymbol_weight ([] : NTMClause)
+          (ntmLeftVar M x t 0 i)
+          ((inputTape x).left.getD i M.machine.blank))
+  have hr := ntmCNFWeight_flatMap_range_le
+    (ntmRadius x t) 6
+    (fun i => ntmSetRightCell [] M x t 0 i
+      ((inputTape x).right.getD i M.machine.blank))
+    (by
+      intro i hi
+      simpa [ntmSetRightCell] using
+        ntmSetSymbol_weight ([] : NTMClause)
+          (ntmRightVar M x t 0 i)
+          ((inputTape x).right.getD i M.machine.blank))
+  nlinarith
+
+theorem ntmHaltedStutter_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) :
+    ntmCNFWeight (ntmHaltedStutterCNF M x t s q a) <=
+      4 * ntmStateCount M + 30 + 60 * ntmRadius x t := by
+  let guard : NTMClause :=
+    [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+  simp only [ntmHaltedStutterCNF, ntmCNFWeight_append]
+  rw [ntmSetState_weight, ntmCopySymbol_weight,
+      ntmCopyLeftAll_weight, ntmCopyRightAll_weight]
+  simp [guard]
+  ring_nf
+  omega
+
+def ntmEffectWeightCap
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
+  3 * ntmStateCount M + 50 + 48 * ntmRadius x t
+
+theorem ntmChoiceEffect_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (entry : Nat × (Fin (M.stateCount + 1) × Option Bool × Direction)) :
+    ntmCNFWeight (ntmChoiceEffectCNF M x t s q a entry) <=
+      ntmEffectWeightCap M x t := by
+  rcases entry with ⟨j, qNext, write, d⟩
+  cases d with
+  | stay =>
+      simp [ntmChoiceEffectCNF, ntmStayEffectCNF,
+        ntmEffectWeightCap, ntmCNFWeight_append,
+        ntmSetState_weight, ntmSetSymbol_weight,
+        ntmCopyLeftAll_weight, ntmCopyRightAll_weight]
+      nlinarith
+  | left =>
+      unfold ntmChoiceEffectCNF ntmLeftEffectCNF ntmEffectWeightCap
+      simp only [ntmCNFWeight_append]
+      rw [ntmSetState_weight, ntmCopySymbol_weight]
+      have hsl := ntmCNFWeight_flatMap_range_le
+        (ntmRadius x t - 1) 24
+        (fun i => ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+          M x t s (i + 1) (s + 1) i)
+        (by
+          intro i hi
+          simpa [ntmCopyLeftCell] using
+            ntmCopySymbol_weight
+              [ntmNeg (ntmChoiceVar M x t s q a j)]
+              (ntmLeftVar M x t s (i+1))
+              (ntmLeftVar M x t (s+1) i))
+      have hsr := ntmCNFWeight_flatMap_range_le
+        (ntmRadius x t - 1) 24
+        (fun i => ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+          M x t s i (s + 1) (i + 1))
+        (by
+          intro i hi
+          simpa [ntmCopyRightCell] using
+            ntmCopySymbol_weight
+              [ntmNeg (ntmChoiceVar M x t s q a j)]
+              (ntmRightVar M x t s i)
+              (ntmRightVar M x t (s+1) (i+1)))
+      rw [show ntmCNFWeight
+          (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+            M x t (s + 1) (ntmRadius x t - 1) M.machine.blank) = 9 by
+        simpa [ntmSetLeftCell] using
+          ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
+            (ntmLeftVar M x t (s+1) (ntmRadius x t - 1)) M.machine.blank]
+      rw [show ntmCNFWeight
+          (ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+            M x t (s + 1) 0 write) = 9 by
+        simpa [ntmSetRightCell] using
+          ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
+            (ntmRightVar M x t (s+1) 0) write]
+      nlinarith
+  | right =>
+      unfold ntmChoiceEffectCNF ntmRightEffectCNF ntmEffectWeightCap
+      simp only [ntmCNFWeight_append]
+      rw [ntmSetState_weight, ntmCopySymbol_weight]
+      have hsl := ntmCNFWeight_flatMap_range_le
+        (ntmRadius x t - 1) 24
+        (fun i => ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+          M x t s i (s + 1) (i + 1))
+        (by
+          intro i hi
+          simpa [ntmCopyLeftCell] using
+            ntmCopySymbol_weight
+              [ntmNeg (ntmChoiceVar M x t s q a j)]
+              (ntmLeftVar M x t s i)
+              (ntmLeftVar M x t (s+1) (i+1)))
+      have hsr := ntmCNFWeight_flatMap_range_le
+        (ntmRadius x t - 1) 24
+        (fun i => ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+          M x t s (i + 1) (s + 1) i)
+        (by
+          intro i hi
+          simpa [ntmCopyRightCell] using
+            ntmCopySymbol_weight
+              [ntmNeg (ntmChoiceVar M x t s q a j)]
+              (ntmRightVar M x t s (i+1))
+              (ntmRightVar M x t (s+1) i))
+      rw [show ntmCNFWeight
+          (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+            M x t (s + 1) 0 write) = 9 by
+        simpa [ntmSetLeftCell] using
+          ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
+            (ntmLeftVar M x t (s+1) 0) write]
+      rw [show ntmCNFWeight
+          (ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
+            M x t (s + 1) (ntmRadius x t - 1) M.machine.blank) = 9 by
+        simpa [ntmSetRightCell] using
+          ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
+            (ntmRightVar M x t (s+1) (ntmRadius x t - 1)) M.machine.blank]
+      nlinarith
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
