@@ -5,7 +5,9 @@ namespace MCore
 namespace Real
 namespace P02FiniteDescriptorInfiniteOrbit
 
+open CircuitK1
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P02BoundedComputationEncoding
 open P02OpenMathRouteFalsification
 open P02ComplementTableauDiagonal
@@ -15,7 +17,7 @@ open P02FiniteDescriptorOrbitResidual
 open P02FiniteDescriptorAlternation
 
 /-- The canonical complement-tableau diagonal transform strictly increases
-bitstring length.  This is a structural fact about the current encoding. -/
+bitstring length. This is a structural theorem about the concrete encoding. -/
 theorem diagonalBits_strict_growth
     (M : PolyDTMCandidate)
     (x : BitString) :
@@ -47,25 +49,49 @@ theorem orbit_length_step
   simpa [orbit] using
     diagonalBits_strict_growth M (orbit M seed n)
 
-/-- Orbit lengths are strictly monotone. -/
-theorem orbit_length_strictMono
+/-- Monotonicity of orbit length, proved only from the concrete one-step
+growth law. -/
+theorem orbit_length_le_of_le
     (M : PolyDTMCandidate)
-    (seed : BitString) :
-    StrictMono (fun n => (orbit M seed n).length) := by
-  exact strictMono_nat_of_lt_succ
-    (fun n => orbit_length_step M seed n)
+    (seed : BitString)
+    {i j : Nat}
+    (hij : i ≤ j) :
+    (orbit M seed i).length ≤ (orbit M seed j).length := by
+  induction hij with
+  | refl =>
+      exact Nat.le_refl _
+  | @step j hij ih =>
+      exact Nat.le_trans ih
+        (Nat.le_of_lt (orbit_length_step M seed j))
 
-/-- Hence the diagonal orbit contains no repeated bitstring. -/
-theorem orbit_injective
+theorem orbit_length_lt_of_lt
     (M : PolyDTMCandidate)
-    (seed : BitString) :
-    Function.Injective (orbit M seed) := by
-  intro i j hij
-  have hlen :
-      (orbit M seed i).length =
-        (orbit M seed j).length :=
-    congrArg List.length hij
-  exact (orbit_length_strictMono M seed).injective hlen
+    (seed : BitString)
+    {i j : Nat}
+    (hij : i < j) :
+    (orbit M seed i).length < (orbit M seed j).length := by
+  have hsucc : i + 1 ≤ j := hij
+  exact Nat.lt_of_lt_of_le
+    (orbit_length_step M seed i)
+    (orbit_length_le_of_le M seed hsucc)
+
+/-- No two different orbit indices can carry the same bitstring. -/
+theorem orbit_index_eq_of_bitstring_eq
+    (M : PolyDTMCandidate)
+    (seed : BitString)
+    {i j : Nat}
+    (hEq : orbit M seed i = orbit M seed j) :
+    i = j := by
+  by_cases hij : i = j
+  · exact hij
+  · have hcases : i < j ∨ j < i := Nat.lt_or_gt_of_ne hij
+    rcases hcases with hlt | hgt
+    · have hlen := congrArg List.length hEq
+      have hgrow := orbit_length_lt_of_lt M seed hlt
+      exact False.elim ((Nat.ne_of_lt hgrow) hlen)
+    · have hlen := congrArg List.length hEq
+      have hgrow := orbit_length_lt_of_lt M seed hgt
+      exact False.elim ((Nat.ne_of_lt hgrow) hlen.symm)
 
 theorem orbit_ne_next
     (M : PolyDTMCandidate)
@@ -73,17 +99,31 @@ theorem orbit_ne_next
     (n : Nat) :
     orbit M seed n ≠ orbit M seed (n + 1) := by
   intro h
-  exact Nat.ne_of_lt (orbit_length_step M seed n)
-    (congrArg List.length h)
+  have hlen := congrArg List.length h
+  exact (Nat.ne_of_lt (orbit_length_step M seed n)) hlen
 
-/-- Surviving residual descriptors therefore carry two infinite injective
+/-- Local, dependency-free notion of an injective orbit. -/
+def OrbitIndexInjective
+    (M : PolyDTMCandidate)
+    (seed : BitString) : Prop :=
+  ∀ i j : Nat,
+    orbit M seed i = orbit M seed j → i = j
+
+theorem orbit_index_injective
+    (M : PolyDTMCandidate)
+    (seed : BitString) :
+    OrbitIndexInjective M seed := by
+  intro i j h
+  exact orbit_index_eq_of_bitstring_eq M seed h
+
+/-- Surviving residual descriptors therefore carry two infinite, nonrepeating
 diagonal orbits, and correctness on them forces exact Boolean alternation. -/
 structure InfiniteAlternatingOrbitCertificate
     (D : FiniteDTMDescriptor) : Prop where
   false_injective :
-    Function.Injective (orbit D.toCandidate falseBits)
+    OrbitIndexInjective D.toCandidate falseBits
   true_injective :
-    Function.Injective (orbit D.toCandidate trueBits)
+    OrbitIndexInjective D.toCandidate trueBits
   false_alternates :
     AlternatingOrbit D.toCandidate falseBits
   true_alternates :
@@ -96,14 +136,15 @@ theorem infinite_alternating_certificate
   have hAlt :=
     residual_descriptor_has_two_alternating_orbits D hOrbit
   exact
-    { false_injective := orbit_injective D.toCandidate falseBits
-      true_injective := orbit_injective D.toCandidate trueBits
+    { false_injective := orbit_index_injective D.toCandidate falseBits
+      true_injective := orbit_index_injective D.toCandidate trueBits
       false_alternates := hAlt.1
       true_alternates := hAlt.2 }
 
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.diagonalBits_strict_growth
-#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_strictMono
-#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_injective
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_le_of_le
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_lt_of_lt
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_index_eq_of_bitstring_eq
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.infinite_alternating_certificate
 
 end P02FiniteDescriptorInfiniteOrbit
