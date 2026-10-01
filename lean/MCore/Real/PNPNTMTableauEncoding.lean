@@ -72,16 +72,6 @@ theorem eval_ntmCNFCircuit
       simp [ntmCNFCircuit, evalCircuit, evalNTMCNF,
         eval_ntmClauseCircuit, ih]
 
-theorem satLanguage_ntmCNFCircuit_iff
-    (f : NTMCNF) :
-    SATLanguage (ntmCNFCircuit f) <->
-      ∃ sigma : Assignment, evalNTMCNF sigma f = true := by
-  constructor
-  · rintro ⟨_hcnf, sigma, hsat⟩
-    exact ⟨sigma, by simpa [eval_ntmCNFCircuit] using hsat⟩
-  · rintro ⟨sigma, hsat⟩
-    refine ⟨ntmCNFCircuit_isCNF f, sigma, ?_⟩
-    simpa [eval_ntmCNFCircuit] using hsat
 
 theorem ntmLiteralCircuit_isClause (l : NTMLiteral) :
     IsClause (ntmLiteralCircuit l) := by
@@ -102,6 +92,18 @@ theorem ntmCNFCircuit_isCNF (f : NTMCNF) :
   | nil => exact emptyCNF_isCNF
   | cons c cs ih =>
       exact IsCNF_and (isClause_isCNF (ntmClauseCircuit_isClause c)) ih
+
+theorem satLanguage_ntmCNFCircuit_iff
+    (f : NTMCNF) :
+    SATLanguage (ntmCNFCircuit f) <->
+      ∃ sigma : Assignment, evalNTMCNF sigma f = true := by
+  constructor
+  · rintro ⟨_hcnf, sigma, hsat⟩
+    exact ⟨sigma, by simpa [eval_ntmCNFCircuit] using hsat⟩
+  · rintro ⟨sigma, hsat⟩
+    refine ⟨ntmCNFCircuit_isCNF f, sigma, ?_⟩
+    simpa [eval_ntmCNFCircuit] using hsat
+
 
 def ntmAlphabet : List (Option Bool) :=
   [none, some false, some true]
