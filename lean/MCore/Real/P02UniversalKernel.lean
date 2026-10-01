@@ -31,7 +31,7 @@ theorem SemanticDiagonalWitness.mismatch
     (M : PolyDTMCandidate)
     (W : SemanticDiagonalWitness M) :
     SemanticMismatch M W.bits := by
-  unfold SemanticMismatch
+  apply (semanticMismatch_iff_wrong_yes_or_wrong_no M W.bits).mpr
   by_cases hA : AcceptsAtDeclaredBound M W.bits
   · left
     refine ⟨hA, ?_⟩
