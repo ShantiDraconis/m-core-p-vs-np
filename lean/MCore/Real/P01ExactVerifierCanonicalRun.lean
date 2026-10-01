@@ -337,7 +337,8 @@ theorem prepared_canonical_accepts_iff_exact_global
         have heq : m + (T - m) = T := by
           have : m ≤ T := by simpa [T] using hm
           omega
-        simpa [heq] using hp
+        rw [heq] at hp
+        exact hp
       rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
       have hnotcnf : ¬ IsCNF phi := by
         intro hcnf
@@ -372,7 +373,8 @@ theorem prepared_canonical_accepts_iff_exact_global
         have heq : m + (T - m) = T := by
           have : m ≤ T := by simpa [T] using hm
           omega
-        simpa [heq] using hp
+        rw [heq] at hp
+        exact hp
       rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
       have hcnf : IsCNF phi :=
         (modeCheck_cnf_iff phi).1 hmode
