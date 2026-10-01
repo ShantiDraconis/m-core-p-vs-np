@@ -172,3 +172,4 @@ jobs:
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P01ManualStateCodecBase.lean lean/MCore/Real/P01ManualStateCodecComposite.lean lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean lean/MCore/Real/P01CheckedVerifierGlobalCoreV2.lean lean/MCore/Real/P01RawBaseExact.lean lean/MCore/Real/P01RawEvalSink.lean lean/MCore/Real/P01RawRecursiveSteps.lean lean/MCore/Real/P01RawDecodeInduction.lean lean/MCore/Real/P01RawTotalizationProducer.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P01ManualStateCodecBase.lean lean/MCore/Real/P01ManualStateCodecComposite.lean lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean
+# recheck-trigger 2026-10-01
