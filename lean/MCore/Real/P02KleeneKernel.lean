@@ -74,22 +74,32 @@ structure KleeneSATBridge where
     ∀ M : PolyDTMCandidate,
       SATFixedPointRealizer M (compiler M)
 
+/-- Canonical fixed code selected from Mathlib's recursion theorem. -/
+noncomputable def fixedCode
+    (B : KleeneSATBridge)
+    (M : PolyDTMCandidate) :
+    Nat.Partrec.Code :=
+  Classical.choose (kleene_fixed_point (B.compiler M))
+
+theorem fixedCode_spec
+    (B : KleeneSATBridge)
+    (M : PolyDTMCandidate) :
+    Nat.Partrec.Code.eval (fixedCode B M) =
+      (B.compiler M).f (fixedCode B M) :=
+  Classical.choose_spec (kleene_fixed_point (B.compiler M))
+
 /-- A Kleene/SAT bridge mechanically produces the terminal P02 operator. -/
-def KleeneSATBridge.toP02Producer
+noncomputable def KleeneSATBridge.toP02Producer
     (B : KleeneSATBridge) :
     CanonicalSATP02Producer := by
   refine
     { counterexample := fun M =>
-        let c := Classical.choose (kleene_fixed_point (B.compiler M))
-        (B.realizer M).bitsOf c
+        (B.realizer M).bitsOf (fixedCode B M)
       sound := ?_ }
   intro M
-  let c := Classical.choose (kleene_fixed_point (B.compiler M))
-  have hc :
-      Nat.Partrec.Code.eval c = (B.compiler M).f c :=
-    Classical.choose_spec (kleene_fixed_point (B.compiler M))
-  exact fixed_flip_fails M ((B.realizer M).bitsOf c)
-    ((B.realizer M).flip_of_fixed c hc)
+  exact fixed_flip_fails M
+    ((B.realizer M).bitsOf (fixedCode B M))
+    ((B.realizer M).flip_of_fixed (fixedCode B M) (fixedCode_spec B M))
 
 /-- The remaining OPEN_MATH can be attacked through this strictly smaller,
 explicit two-map bridge. -/
