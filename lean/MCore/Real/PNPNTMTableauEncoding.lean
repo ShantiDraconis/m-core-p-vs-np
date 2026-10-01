@@ -4126,6 +4126,166 @@ theorem tapeMove_right_right_getD
   | mk left head right =>
       cases right <;> simp [Tape.write, Tape.move, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
 
+
+structure OperationalDecodeAgreesAt
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : Prop where
+  hState :
+    (operationalDecodeConfig M x t sigma hSat s hs).state =
+      decodeState M x t sigma hSat s hs
+  hHead :
+    (operationalDecodeConfig M x t sigma hSat s hs).tape.head =
+      decodeHead M x t sigma hSat s hs
+  hLeft :
+    forall i : Nat, i < ntmRadius x t ->
+      (operationalDecodeConfig M x t sigma hSat s hs).tape.left.getD
+          i M.machine.blank =
+        decodeLeftCell M x t sigma hSat s hs i (by assumption)
+  hRight :
+    forall i : Nat, i < ntmRadius x t ->
+      (operationalDecodeConfig M x t sigma hSat s hs).tape.right.getD
+          i M.machine.blank =
+        decodeRightCell M x t sigma hSat s hs i (by assumption)
+
+theorem decodeInitial_state
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    M.machine.initial = decodeState M x t sigma hSat 0 (by omega) := by
+  apply decodeState_unique M x t sigma hSat 0 (by omega)
+  have hExact := ntmInitial_state_exact M x t sigma hSat M.machine.initial
+  simpa using hExact
+
+theorem decodeInitial_head
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    (inputTape x).head = decodeHead M x t sigma hSat 0 (by omega) := by
+  apply decodeHead_unique M x t sigma hSat 0 (by omega)
+  have hExact := ntmInitial_head_exact M x t sigma hSat (inputTape x).head
+  simpa using hExact
+
+theorem decodeInitial_leftCell
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    (inputTape x).left.getD i M.machine.blank =
+      decodeLeftCell M x t sigma hSat 0 (by omega) i hi := by
+  apply decodeLeftCell_unique M x t sigma hSat 0 (by omega) i hi
+  have hExact := ntmInitial_left_exact M x t sigma hSat i hi
+    ((inputTape x).left.getD i M.machine.blank)
+  simpa using hExact
+
+theorem decodeInitial_rightCell
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    (inputTape x).right.getD i M.machine.blank =
+      decodeRightCell M x t sigma hSat 0 (by omega) i hi := by
+  apply decodeRightCell_unique M x t sigma hSat 0 (by omega) i hi
+  have hExact := ntmInitial_right_exact M x t sigma hSat i hi
+    ((inputTape x).right.getD i M.machine.blank)
+  simpa using hExact
+
+theorem operationalDecodeAgrees_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    OperationalDecodeAgreesAt M x t sigma hSat 0 (by omega) := by
+  refine { hState := ?_, hHead := ?_, hLeft := ?_, hRight := ?_ }
+  · simpa [operationalDecodeConfig, initialNTMConfig] using
+      decodeInitial_state M x t sigma hSat
+  · simpa [operationalDecodeConfig, initialNTMConfig] using
+      decodeInitial_head M x t sigma hSat
+  · intro i hi
+    simpa [operationalDecodeConfig, initialNTMConfig] using
+      decodeInitial_leftCell M x t sigma hSat i hi
+  · intro i hi
+    simpa [operationalDecodeConfig, initialNTMConfig] using
+      decodeInitial_rightCell M x t sigma hSat i hi
+
+theorem operationalDecodeAgrees_halted_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hA : OperationalDecodeAgreesAt M x t sigma hSat s (by omega))
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hqdec : q = decodeState M x t sigma hSat s (by omega))
+    (hadec : a = decodeHead M x t sigma hSat s (by omega))
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    OperationalDecodeAgreesAt M x t sigma hSat (s + 1) (by omega) := by
+  subst q
+  subst a
+  have hq := decodeState_true M x t sigma hSat s (by omega)
+  have ha := decodeHead_true M x t sigma hSat s (by omega)
+  refine { hState := ?_, hHead := ?_, hLeft := ?_, hRight := ?_ }
+  · have hExact := ntmHalted_state_exact M x t s
+      (decodeState M x t sigma hSat s (by omega))
+      (decodeHead M x t sigma hSat s (by omega))
+      sigma hSat hs hq ha hHalt
+    have hnext :
+        decodeState M x t sigma hSat (s + 1) (by omega) =
+          decodeState M x t sigma hSat s (by omega) := by
+      apply decodeState_unique M x t sigma hSat (s + 1) (by omega)
+      have h := hExact (decodeState M x t sigma hSat s (by omega))
+      simpa using h
+    simpa [operationalDecodeConfig, hHalt, hnext] using hA.hState
+  · have hcopy := ntmHalted_head_copy M x t s
+      (decodeState M x t sigma hSat s (by omega))
+      (decodeHead M x t sigma hSat s (by omega))
+      sigma hSat hs hq ha hHalt
+    have hnext :
+        decodeHead M x t sigma hSat (s + 1) (by omega) =
+          decodeHead M x t sigma hSat s (by omega) := by
+      apply decodeHead_unique M x t sigma hSat (s + 1) (by omega)
+      have hold := decodeHead_true M x t sigma hSat s (by omega)
+      have hn :
+          sigma (ntmHeadVar M t (s + 1)
+            (decodeHead M x t sigma hSat s (by omega))) = true := by
+        rw [hcopy]
+        exact hold
+      exact hn
+    simpa [operationalDecodeConfig, hHalt, hnext] using hA.hHead
+  · intro i hi
+    have hcopy := ntmHalted_left_copy M x t s
+      (decodeState M x t sigma hSat s (by omega))
+      (decodeHead M x t sigma hSat s (by omega))
+      sigma hSat hs hq ha hHalt i hi
+    have hnext :
+        decodeLeftCell M x t sigma hSat (s + 1) (by omega) i hi =
+          decodeLeftCell M x t sigma hSat s (by omega) i hi := by
+      apply decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega) i hi
+      have hold := decodeLeftCell_true M x t sigma hSat s (by omega) i hi
+      have hn :
+          sigma (ntmLeftVar M x t (s + 1) i
+            (decodeLeftCell M x t sigma hSat s (by omega) i hi)) = true := by
+        rw [hcopy]
+        exact hold
+      exact hn
+    simpa [operationalDecodeConfig, hHalt, hnext] using hA.hLeft i hi
+  · intro i hi
+    have hcopy := ntmHalted_right_copy M x t s
+      (decodeState M x t sigma hSat s (by omega))
+      (decodeHead M x t sigma hSat s (by omega))
+      sigma hSat hs hq ha hHalt i hi
+    have hnext :
+        decodeRightCell M x t sigma hSat (s + 1) (by omega) i hi =
+          decodeRightCell M x t sigma hSat s (by omega) i hi := by
+      apply decodeRightCell_unique M x t sigma hSat (s + 1) (by omega) i hi
+      have hold := decodeRightCell_true M x t sigma hSat s (by omega) i hi
+      have hn :
+          sigma (ntmRightVar M x t (s + 1) i
+            (decodeRightCell M x t sigma hSat s (by omega) i hi)) = true := by
+        rw [hcopy]
+        exact hold
+      exact hn
+    simpa [operationalDecodeConfig, hHalt, hnext] using hA.hRight i hi
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
