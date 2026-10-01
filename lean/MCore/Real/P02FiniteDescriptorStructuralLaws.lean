@@ -66,9 +66,10 @@ theorem stateCount_pos
       have hEq :
           finalState D falseBits = finalState D trueBits := by
         apply Fin.ext
-        have hFalse := (finalState D falseBits).isLt
-        have hTrue := (finalState D trueBits).isLt
-        rw [hsc] at hFalse hTrue
+        have hFalse : (finalState D falseBits).val < 1 := by
+          simpa [hsc] using (finalState D falseBits).isLt
+        have hTrue : (finalState D trueBits).val < 1 := by
+          simpa [hsc] using (finalState D trueBits).isLt
         omega
       exact False.elim (constant_final_states_distinct D hPattern hEq)
   | succ n =>
