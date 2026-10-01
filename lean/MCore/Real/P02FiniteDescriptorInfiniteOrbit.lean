@@ -169,6 +169,51 @@ theorem orbit_next_sat_iff_not_declared_accepts
     diagonalBits_sat_iff_not_declaredAccepts
       M (orbit M seed n)
 
+/-- At every concrete diagonal step, either semantic failure is already present
+at the next generated SAT instance, or the candidate's declared Boolean answer
+must flip relative to the current orbit point. No global lower-bound hypothesis
+is used. -/
+theorem semantic_disagreement_or_acceptance_flip_step
+    (M : PolyDTMCandidate)
+    (seed : BitString)
+    (n : Nat) :
+    P02FailureNormalForms.SemanticDisagreement
+        M (orbit M seed (n + 1)) ∨
+      (P02SemanticFlipCore.DeclaredAccepts M (orbit M seed (n + 1)) ↔
+        ¬ P02SemanticFlipCore.DeclaredAccepts M (orbit M seed n)) := by
+  classical
+  by_cases hDis :
+      P02FailureNormalForms.SemanticDisagreement
+        M (orbit M seed (n + 1))
+  · exact Or.inl hDis
+  · right
+    have hSem :
+        P02SemanticFlipCore.DeclaredAccepts M (orbit M seed (n + 1)) ↔
+          P02UniversalFailureMinCut.CanonicalSAT (orbit M seed (n + 1)) := by
+      apply Classical.byContradiction
+      intro hNot
+      exact hDis
+        ((P02FailureNormalForms.semanticDisagreement_iff_not_semantic_correct
+          M (orbit M seed (n + 1))).mpr hNot)
+    exact hSem.trans
+      (orbit_next_sat_iff_not_declared_accepts M seed n)
+
+/-- Conversely, failure of the forced Boolean flip is already a concrete
+semantic counterexample at the next orbit point. -/
+theorem semantic_disagreement_of_no_acceptance_flip
+    (M : PolyDTMCandidate)
+    (seed : BitString)
+    (n : Nat)
+    (hNoFlip :
+      ¬ (P02SemanticFlipCore.DeclaredAccepts M (orbit M seed (n + 1)) ↔
+          ¬ P02SemanticFlipCore.DeclaredAccepts M (orbit M seed n))) :
+    P02FailureNormalForms.SemanticDisagreement
+      M (orbit M seed (n + 1)) := by
+  rcases semantic_disagreement_or_acceptance_flip_step M seed n with
+      hDis | hFlip
+  · exact hDis
+  · exact False.elim (hNoFlip hFlip)
+
 /-- Surviving residual descriptors therefore carry two infinite, nonrepeating
 diagonal orbits, and correctness on them forces exact Boolean alternation. -/
 structure InfiniteAlternatingOrbitCertificate
@@ -202,6 +247,8 @@ theorem infinite_alternating_certificate
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_lower_bound
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_ne_of_index_ne
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_next_sat_iff_not_declared_accepts
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.semantic_disagreement_or_acceptance_flip_step
+#print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.semantic_disagreement_of_no_acceptance_flip
 #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.infinite_alternating_certificate
 
 end P02FiniteDescriptorInfiniteOrbit
