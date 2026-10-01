@@ -649,6 +649,7 @@ theorem layout_after_prefix_with_frame
     (n consumed : Nat)
     (bitsPrefix rest frameStack : BitString)
     (frame : EvalFrame)
+    (hprefix : 3 ≤ bitsPrefix.length)
     (h :
       CheckedLayoutBound n consumed
         (bitsPrefix ++ rest) frameStack) :
@@ -793,7 +794,12 @@ theorem and_exact_bounded_certificate
         intro hnil
         have henc : encodeCircuit right = [] :=
           (List.append_eq_nil_iff.mp hnil).1
-        cases right <;> simp [encodeCircuit] at henc
+        cases right with
+        | input i => simp [encodeCircuit] at henc
+        | const b => cases b <;> simp [encodeCircuit] at henc
+        | not child => simp [encodeCircuit] at henc
+        | and a b => simp [encodeCircuit] at henc
+        | or a b => simp [encodeCircuit] at henc
 
       obtain ⟨padding1, hcfgLeft⟩ :=
         exact_outcome_have_of_tail_ne_nil
@@ -868,7 +874,8 @@ theorem and_exact_bounded_certificate
             (encodeCircuit right ++ tail)
             (encodeEvalFrames frames)
             (.andRight (evalCircuit sigma left))
-          simpa [encodeCircuit, List.append_assoc] using hLayout
+          · simp
+          · simpa [encodeCircuit, List.append_assoc] using hLayout
         simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
@@ -998,7 +1005,7 @@ theorem and_exact_bounded_certificate
                 8 * (evalStepCount right + 1) + 3) * E := by
                   unfold checkedCircuitBudget
                   dsimp [E]
-                  omega
+                  ring
             _ ≤
               8 * (evalStepCount left + evalStepCount right + 4) * E :=
                 hmul
@@ -1093,7 +1100,7 @@ theorem and_exact_bounded_certificate
                         8 * (evalStepCount right + 1) + 4) * E := by
                           unfold checkedCircuitBudget
                           dsimp [E]
-                          omega
+                          ring
                     _ ≤
                       8 * (evalStepCount left + evalStepCount right + 4) * E :=
                         hmul
@@ -1190,7 +1197,7 @@ theorem or_exact_bounded_certificate
   have h0' :
       cNeedLeft ∈
         checkedEvalRunLoopMachine.runBranches m0
-          [{ state := .need .clause needExprCompositeMachine.initial,
+          [{ state := .need mode needExprCompositeMachine.initial,
              tape :=
                evalCursorStackEndTape witness consumed
                  (encodeCircuit (.or left right) ++ tail)
@@ -1311,7 +1318,8 @@ theorem or_exact_bounded_certificate
         (encodeCircuit right ++ tail)
         (encodeEvalFrames frames)
         (.orRight (evalCircuit sigma left))
-      simpa [encodeCircuit, List.append_assoc] using hLayout
+      · simp
+      · simpa [encodeCircuit, List.append_assoc] using hLayout
     simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
@@ -1441,7 +1449,7 @@ theorem or_exact_bounded_certificate
             8 * (evalStepCount right + 1) + 3) * E := by
               unfold checkedCircuitBudget
               dsimp [E]
-              omega
+              ring
         _ ≤
           8 * (evalStepCount left + evalStepCount right + 4) * E :=
             hmul
@@ -1536,7 +1544,7 @@ theorem or_exact_bounded_certificate
                     8 * (evalStepCount right + 1) + 4) * E := by
                       unfold checkedCircuitBudget
                       dsimp [E]
-                      omega
+                      ring
                 _ ≤
                   8 * (evalStepCount left + evalStepCount right + 4) * E :=
                     hmul
