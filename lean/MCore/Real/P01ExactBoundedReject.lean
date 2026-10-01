@@ -13,6 +13,7 @@ open P01EncodedFrameTape
 open P01EvalCursorMachine
 open P01NeedExprCompositeNTM
 open P01CheckedEvalRunLoopNTM
+open P01CheckedEvalRunBaseCases
 open P01CheckedEvalRunBoundedHelpers
 open P01CheckedEvalRunBoundedCertificate
 open P01CheckedEvalReject
@@ -435,7 +436,7 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .cnf right = false := by
@@ -472,7 +473,12 @@ theorem and_exact_bounded_reject
             intro hnil
             have henc : encodeCircuit right = [] :=
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
+            cases right with
+            | input i => simp [encodeCircuit] at henc
+            | const b => cases b <;> simp [encodeCircuit] at henc
+            | not child => simp [encodeCircuit] at henc
+            | and a b => simp [encodeCircuit] at henc
+            | or a b => simp [encodeCircuit] at henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
@@ -547,8 +553,15 @@ theorem and_exact_bounded_reject
                 (encodeCircuit right ++ tail)
                 (encodeEvalFrames frames)
                 (.andRight (evalCircuit sigma left))
-              simpa [encodeCircuit, List.append_assoc] using hLayout
-            simpa [afterLeft, leftConsumed] using hp
+              · simp
+              · simpa [encodeCircuit, List.append_assoc] using hLayout
+            have hoff :
+                consumed + (true :: false :: false :: encodeCircuit left).length =
+                  afterLeft := by
+              simp [afterLeft, leftConsumed]
+              omega
+            rw [← hoff]
+            exact hp
 
           obtain ⟨m3, hm3, cfgReject, h3, hrej⟩ :=
             hrightReject hrightMode tail
@@ -592,7 +605,7 @@ theorem and_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 
@@ -737,7 +750,7 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .clause right = false := by
@@ -774,7 +787,12 @@ theorem or_exact_bounded_reject
             intro hnil
             have henc : encodeCircuit right = [] :=
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
+            cases right with
+            | input i => simp [encodeCircuit] at henc
+            | const b => cases b <;> simp [encodeCircuit] at henc
+            | not child => simp [encodeCircuit] at henc
+            | and a b => simp [encodeCircuit] at henc
+            | or a b => simp [encodeCircuit] at henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
@@ -849,8 +867,15 @@ theorem or_exact_bounded_reject
                 (encodeCircuit right ++ tail)
                 (encodeEvalFrames frames)
                 (.orRight (evalCircuit sigma left))
-              simpa [encodeCircuit, List.append_assoc] using hLayout
-            simpa [afterLeft, leftConsumed] using hp
+              · simp
+              · simpa [encodeCircuit, List.append_assoc] using hLayout
+            have hoff :
+                consumed + (true :: false :: false :: encodeCircuit left).length =
+                  afterLeft := by
+              simp [afterLeft, leftConsumed]
+              omega
+            rw [← hoff]
+            exact hp
 
           obtain ⟨m3, hm3, cfgReject, h3, hrej⟩ :=
             hrightReject hrightMode tail
@@ -894,7 +919,7 @@ theorem or_exact_bounded_reject
             have hmul := Nat.mul_le_mul_right E hcoef
             unfold checkedCircuitBudget at hraw ⊢
             dsimp [E] at hmul
-            omega
+            exact Nat.le_trans hraw hmul
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 /-- Exact bounded negative structural producer for every canonical circuit. -/
