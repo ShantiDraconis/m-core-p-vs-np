@@ -3177,6 +3177,101 @@ theorem decodeRightCell_unique
       decodeHead M x t sigma hSat s hs := by
   rfl
 
+
+theorem trimTrailingBlank_append_blank
+    (blank : Option Bool) (xs : List (Option Bool)) :
+    trimTrailingBlank blank (xs ++ [blank]) =
+      trimTrailingBlank blank xs := by
+  simp [trimTrailingBlank, List.reverse_append]
+
+theorem trimTrailingBlank_nil
+    (blank : Option Bool) :
+    trimTrailingBlank blank [] = [] := by
+  simp [trimTrailingBlank]
+
+theorem trimTrailingBlank_all_blank
+    (blank : Option Bool) (n : Nat) :
+    trimTrailingBlank blank (List.replicate n blank) = [] := by
+  induction n with
+  | zero =>
+      simp [trimTrailingBlank]
+  | succ n ih =>
+      rw [List.replicate_succ]
+      rw [trimTrailingBlank_append_blank]
+      exact ih
+
+noncomputable def rawLeftList
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : List (Option Bool) :=
+  List.ofFn (fun i : Fin (ntmRadius x t) =>
+    decodeLeftCell M x t sigma hSat s hs i.val i.isLt)
+
+noncomputable def rawRightList
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : List (Option Bool) :=
+  List.ofFn (fun i : Fin (ntmRadius x t) =>
+    decodeRightCell M x t sigma hSat s hs i.val i.isLt)
+
+theorem decodeLeftList_eq_trim_raw
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    decodeLeftList M x t sigma hSat s hs =
+      trimTrailingBlank M.machine.blank
+        (rawLeftList M x t sigma hSat s hs) := by
+  rfl
+
+theorem decodeRightList_eq_trim_raw
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    decodeRightList M x t sigma hSat s hs =
+      trimTrailingBlank M.machine.blank
+        (rawRightList M x t sigma hSat s hs) := by
+  rfl
+
+theorem rawLeftList_length
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    (rawLeftList M x t sigma hSat s hs).length = ntmRadius x t := by
+  simp [rawLeftList]
+
+theorem rawRightList_length
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    (rawRightList M x t sigma hSat s hs).length = ntmRadius x t := by
+  simp [rawRightList]
+
+theorem rawLeftList_get
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Fin (ntmRadius x t)) :
+    (rawLeftList M x t sigma hSat s hs).get i =
+      decodeLeftCell M x t sigma hSat s hs i.val i.isLt := by
+  simp [rawLeftList]
+
+theorem rawRightList_get
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Fin (ntmRadius x t)) :
+    (rawRightList M x t sigma hSat s hs).get i =
+      decodeRightCell M x t sigma hSat s hs i.val i.isLt := by
+  simp [rawRightList]
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
