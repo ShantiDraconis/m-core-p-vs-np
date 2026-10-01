@@ -48,10 +48,22 @@ structure ReductionComputationCertificate
     {L : BitLanguage}
     {R : PolyNTMRealization L}
     (S : NTMToCanonicalSATSemanticReduction R) where
+  stateCount : Nat
+  machine : TM (Fin (stateCount + 1)) (Option Bool)
+  blank_none : machine.blank = none
   timeBound : TimeBound
   time_poly : PolynomialTimeBound timeBound
-  computesWithin :
-    forall x : BitString, Prop
+  halts :
+    forall x : BitString,
+      machine.HaltsWithin
+        (timeBound x.length)
+        (initialTMConfig machine x)
+  computes :
+    forall x : BitString,
+      (machine.run
+        (timeBound x.length)
+        (initialTMConfig machine x)).tape =
+          inputTape (S.reduce x)
 
 /--
 Exact Cook--Levin material package for one NP realization.
