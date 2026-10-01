@@ -1,0 +1,55 @@
+name: P02 Semantic Alignment Countermodel
+
+on:
+  push:
+    branches:
+      - atk/p02-semantic-alignment-countermodel-20261001
+    paths:
+      - 'lean/MCore/Real/P02SemanticAlignmentCountermodel.lean'
+      - '.github/workflows/p02-semantic-alignment-countermodel.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  countermodel:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          for i in 1 2 3; do
+            curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none && break
+            sleep 5
+          done
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build countermodel
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P02SemanticAlignmentCountermodel
+      - name: Exact axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P02SemanticAlignmentCountermodelAudit.lean <<'EOF'
+          import MCore.Real.P02SemanticAlignmentCountermodel
+          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.discriminator_halts_two
+          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.discriminator_clock_total
+          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.discriminator_no_output_alignment
+          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.semanticAlignmentCore_refuted
+          EOF
+          lake env lean P02SemanticAlignmentCountermodelAudit.lean | tee P02SemanticAlignmentCountermodelAudit.log
+          ! grep -E 'sorryAx' P02SemanticAlignmentCountermodelAudit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          f=lean/MCore/Real/P02SemanticAlignmentCountermodel.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' "$f"
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' "$f"
