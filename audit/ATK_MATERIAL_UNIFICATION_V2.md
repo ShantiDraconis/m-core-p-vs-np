@@ -1,7 +1,16 @@
 # ATK Material Unification V2 — P vs NP
 
-Authoritative terminal shape: a concrete language `L` with `NP L ∧ ¬ P L`.
+Authoritative material terminal shape: a concrete canonical-model language `L`
+with an independently constructed `InNP L` witness and an operational
+`FailureGenerator L`.
 
-The abstract type alone is not material. Promotion additionally requires binding to the repository's canonical complexity model and deriving `¬ P L` without reading it from `LowerBoundWitness.not_in_p`.
+`¬ InP L` is a theorem derived from the generator via
+`failure_generator_implies_universal_failure` and
+`universal_failure_implies_not_in_p`; it is not permitted as an input field.
 
-Current state: OPEN_MATH.
+Transport types such as `LowerBoundWitness` and `CanonicalNotInPWitness` remain
+valid downstream adapters but cannot count as material producers.
+
+Current exact residue: construct
+`CanonicalFailureProducer.failure_generator` without endpoint-equivalent
+premises. Status: OPEN_MATH.
