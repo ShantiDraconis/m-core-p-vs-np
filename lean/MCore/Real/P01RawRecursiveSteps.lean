@@ -534,24 +534,31 @@ theorem and_right_failure_step
                 (encodeEvalFrames
                   (.andRight
                     (evalCircuit (witnessAssignment witness) left) :: frames)) := by
-            have hp :=
-              layout_after_prefix_with_frame
+            have hp :
+                CheckedLayoutBound n
+                  (consumed +
+                    (true :: false :: false :: encodeCircuit left).length)
+                  rightSource
+                  (encodeEvalFrame
+                    (.andRight
+                      (evalCircuit (witnessAssignment witness) left)) ++
+                    encodeEvalFrames frames) := by
+              apply layout_after_prefix_with_frame
                 n consumed
                 (true :: false :: false :: encodeCircuit left)
                 rightSource (encodeEvalFrames frames)
                 (.andRight
                   (evalCircuit (witnessAssignment witness) left))
-                (by simp)
-                (by simpa [List.append_assoc] using hLayout)
-            constructor
-            · have hs := hp.source_budget
-              dsimp [afterLeft, leftConsumed]
-              simp [encodeEvalFrames, List.length_append] at hs
+              · simp
+              · simpa [List.append_assoc] using hLayout
+            have hoff :
+                consumed +
+                    (true :: false :: false :: encodeCircuit left).length =
+                  afterLeft := by
+              simp [afterLeft, leftConsumed]
               omega
-            · have hf := hp.frames_paid
-              dsimp [afterLeft, leftConsumed]
-              simp [encodeEvalFrames, List.length_append] at hf
-              omega
+            rw [← hoff]
+            simpa [encodeEvalFrames, List.append_assoc] using hp
           have hrec' := hrec padRight hLayoutRight
           have hprefixBudget :
               m0 + m1 + m2 ≤ rawChunk n := by
@@ -738,24 +745,31 @@ private theorem or_right_allowed_step
             (encodeEvalFrames
               (.orRight
                 (evalCircuit (witnessAssignment witness) left) :: frames)) := by
-        have hp :=
-          layout_after_prefix_with_frame
+        have hp :
+            CheckedLayoutBound n
+              (consumed +
+                (true :: false :: true :: encodeCircuit left).length)
+              rightSource
+              (encodeEvalFrame
+                (.orRight
+                  (evalCircuit (witnessAssignment witness) left)) ++
+                encodeEvalFrames frames) := by
+          apply layout_after_prefix_with_frame
             n consumed
             (true :: false :: true :: encodeCircuit left)
             rightSource (encodeEvalFrames frames)
             (.orRight
               (evalCircuit (witnessAssignment witness) left))
-            (by simp)
-            (by simpa [List.append_assoc] using hLayout)
-        constructor
-        · have hs := hp.source_budget
-          dsimp [afterLeft, leftConsumed]
-          simp [encodeEvalFrames, List.length_append] at hs
+          · simp
+          · simpa [List.append_assoc] using hLayout
+        have hoff :
+            consumed +
+                (true :: false :: true :: encodeCircuit left).length =
+              afterLeft := by
+          simp [afterLeft, leftConsumed]
           omega
-        · have hf := hp.frames_paid
-          dsimp [afterLeft, leftConsumed]
-          simp [encodeEvalFrames, List.length_append] at hf
-          omega
+        rw [← hoff]
+        simpa [encodeEvalFrames, List.append_assoc] using hp
       have hrec' := hrec padRight hLayoutRight
       have hprefixBudget :
           m0 + m1 + m2 ≤ rawChunk n := by
