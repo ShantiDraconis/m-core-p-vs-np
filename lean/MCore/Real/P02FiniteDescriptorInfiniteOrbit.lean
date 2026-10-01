@@ -15,6 +15,7 @@ open P02DiagonalOrbitCore
 open P02FiniteDescriptorReduction
 open P02FiniteDescriptorOrbitResidual
 open P02FiniteDescriptorAlternation
+open P02SemanticTransformerDichotomy
 
 /-- The canonical complement-tableau diagonal transform strictly increases
 bitstring length. This is a structural theorem about the concrete encoding. -/
