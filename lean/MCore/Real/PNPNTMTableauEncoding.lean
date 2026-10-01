@@ -7690,6 +7690,167 @@ theorem ntmChoiceEffect_weight_le
             (ntmRightVar M x t (s+1) (ntmRadius x t - 1)) M.machine.blank]
       nlinarith
 
+
+theorem ntmIndexedTransitions_length
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction)) :
+    (ntmIndexedTransitions ts).length = ts.length := by
+  unfold ntmIndexedTransitions
+  generalize hstart : 0 = start
+  subst start
+  induction ts with
+  | nil => rfl
+  | cons tr rest ih =>
+      simp [ntmIndexedTransitionsAux, ih]
+
+theorem ntmGuardChoiceClause_weight
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) :
+    ntmClauseWeight (ntmGuardChoiceClause M x t s q a) =
+      (M.machine.transition q a).length + 3 := by
+  simp [ntmGuardChoiceClause, ntmClauseWeight, ntmIndexedTransitions_length]
+
+theorem ntmChoiceGuard_weight
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) (j : Nat) :
+    ntmCNFWeight (ntmChoiceGuardCNF M x t s q a j) = 6 := by
+  simp [ntmChoiceGuardCNF, ntmCNFWeight, ntmClauseWeight]
+
+theorem ntmAtMostOne_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) :
+    ntmCNFWeight (ntmAtMostOneChoiceCNF M x t s q a) <=
+      3 * (M.machine.transition q a).length ^ 2 := by
+  let ids := (ntmIndexedTransitions (M.machine.transition q a)).map Prod.fst
+  unfold ntmAtMostOneChoiceCNF
+  have houter := ntmCNFWeight_flatMap_list_le ids
+    (3 * ids.length)
+    (fun j => ids.flatMap fun k =>
+      if j < k then
+        [[ntmNeg (ntmChoiceVar M x t s q a j),
+          ntmNeg (ntmChoiceVar M x t s q a k)]]
+      else [])
+    (by
+      intro j hj
+      apply le_trans
+        (ntmCNFWeight_flatMap_list_le ids 3
+          (fun k =>
+            if j < k then
+              [[ntmNeg (ntmChoiceVar M x t s q a j),
+                ntmNeg (ntmChoiceVar M x t s q a k)]]
+            else [])
+          (by
+            intro k hk
+            by_cases h : j < k
+            · simp [h, ntmCNFWeight, ntmClauseWeight]
+            · simp [h, ntmCNFWeight]))
+      simp)
+  simpa [ids, ntmIndexedTransitions_length, pow_two] using houter
+
+def ntmActiveChoiceWeightCap
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
+  3 +
+  7 * ntmBranchBound M +
+  3 * (ntmBranchBound M)^2 +
+  ntmBranchBound M * ntmEffectWeightCap M x t
+
+theorem ntmActiveChoice_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) :
+    ntmCNFWeight (ntmActiveChoiceCNF M x t s q a) <=
+      ntmActiveChoiceWeightCap M x t := by
+  let m := (M.machine.transition q a).length
+  let entries := ntmIndexedTransitions (M.machine.transition q a)
+  have hm : m <= ntmBranchBound M :=
+    ntmBranchBound_ge_transition_length M q a
+  have hfirst :
+      ntmCNFWeight [[ntmGuardChoiceClause M x t s q a]] = m + 3 := by
+    simp [ntmCNFWeight, ntmGuardChoiceClause_weight, m]
+  have hguards :
+      ntmCNFWeight
+        (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
+        <= m * 6 := by
+    simpa [entries, m, ntmIndexedTransitions_length] using
+      ntmCNFWeight_flatMap_list_le entries 6
+        (fun p => ntmChoiceGuardCNF M x t s q a p.1)
+        (by
+          intro p hp
+          simpa using ntmChoiceGuard_weight M x t s q a p.1)
+  have hamo := ntmAtMostOne_weight_le M x t s q a
+  have heffects :
+      ntmCNFWeight
+        (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))
+        <= m * ntmEffectWeightCap M x t := by
+    simpa [entries, m, ntmIndexedTransitions_length] using
+      ntmCNFWeight_flatMap_list_le entries (ntmEffectWeightCap M x t)
+        (fun p => ntmChoiceEffectCNF M x t s q a p)
+        (by
+          intro p hp
+          exact ntmChoiceEffect_weight_le M x t s q a p)
+  simp only [ntmActiveChoiceCNF, ntmCNFWeight_append]
+  unfold ntmActiveChoiceWeightCap
+  nlinarith [hm]
+
+def ntmHaltedWeightCap
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
+  4 * ntmStateCount M + 30 + 60 * ntmRadius x t
+
+def ntmTransitionCaseWeightCap
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
+  ntmHaltedWeightCap M x t + ntmActiveChoiceWeightCap M x t
+
+theorem ntmTransitionCase_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool) :
+    ntmCNFWeight (ntmTransitionCaseCNF M x t s q a) <=
+      ntmTransitionCaseWeightCap M x t := by
+  unfold ntmTransitionCaseCNF ntmTransitionCaseWeightCap
+  split
+  · have h := ntmHaltedStutter_weight_le M x t s q a
+    unfold ntmHaltedWeightCap
+    omega
+  · have h := ntmActiveChoice_weight_le M x t s q a
+    omega
+
+def ntmTransitionStepWeightCap
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
+  ntmStateCount M * 3 * ntmTransitionCaseWeightCap M x t
+
+theorem ntmTransitionStep_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat) :
+    ntmCNFWeight (ntmTransitionStepCNF M x t s) <=
+      ntmTransitionStepWeightCap M x t := by
+  unfold ntmTransitionStepCNF ntmTransitionStepWeightCap
+  let qs := List.ofFn (fun q : Fin (M.stateCount + 1) => q)
+  have hq :
+      ntmCNFWeight
+        (qs.flatMap (fun q =>
+          ntmAlphabet.flatMap fun a =>
+            ntmTransitionCaseCNF M x t s q a))
+      <= qs.length * (3 * ntmTransitionCaseWeightCap M x t) := by
+    apply ntmCNFWeight_flatMap_list_le
+    intro q hqmem
+    have ha := ntmCNFWeight_flatMap_list_le ntmAlphabet
+      (ntmTransitionCaseWeightCap M x t)
+      (fun a => ntmTransitionCaseCNF M x t s q a)
+      (by
+        intro a ha
+        exact ntmTransitionCase_weight_le M x t s q a)
+    simpa [ntmAlphabet] using ha
+  simpa [qs, ntmStateCount] using hq
+
+theorem ntmTransitions_weight_le
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    ntmCNFWeight (ntmTransitionsCNF M x t) <=
+      t * ntmTransitionStepWeightCap M x t := by
+  unfold ntmTransitionsCNF
+  exact ntmCNFWeight_flatMap_range_le t
+    (ntmTransitionStepWeightCap M x t)
+    (fun s => ntmTransitionStepCNF M x t s)
+    (by
+      intro s hs
+      exact ntmTransitionStep_weight_le M x t s)
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
