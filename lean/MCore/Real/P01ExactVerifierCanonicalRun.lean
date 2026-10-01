@@ -16,6 +16,7 @@ open CanonicalFinalProof
 open CircuitK1
 open CanonicalCircuitBits
 open CanonicalSATWitness
+open P01EncodedFrameTape
 open P01CNFMode
 open P01EvalCursorMachine
 open P01CheckedEvalRunLoopNTM
@@ -167,8 +168,8 @@ theorem prepared_invalid_canonical_reaches_reject_within_exact_global
           checkedVerifierMachine.runBranches m
             [{ state := checkedVerifierMachine.initial,
                tape := preparedTape witness (encodeCircuit phi) }] := by
-  have hne : encodeCircuit phi ≠ [] := by
-    cases phi <;> simp [encodeCircuit]
+  have hne : encodeCircuit phi ≠ [] :=
+    P01ExactBoundedCircuitProducer.encodeCircuit_ne_nil phi
   cases hsrc : encodeCircuit phi with
   | nil =>
       exact False.elim (hne hsrc)
@@ -342,7 +343,8 @@ theorem prepared_canonical_accepts_iff_exact_global
       rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
       have hnotcnf : ¬ IsCNF phi := by
         intro hcnf
-        have ht := (modeCheck_cnf_iff phi).2 hcnf
+        have ht : modeCheck .cnf phi = true :=
+          (modeCheck_cnf_iff phi).2 hcnf
         rw [hmode] at ht
         contradiction
       constructor
@@ -392,7 +394,7 @@ theorem prepared_canonical_accepts_iff_exact_global
       | true =>
           constructor
           · intro _
-            exact ⟨hcnf, hval⟩
+            exact ⟨hcnf, rfl⟩
           · intro _
             simp [terminal, value, checkedVerifierMachine,
               checkedEvalRunLoopMachine, hval]
