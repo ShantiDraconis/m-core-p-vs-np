@@ -46,36 +46,56 @@ theorem setRightCell_length
     (setRightCell [] M x t s i target).length = 3 := by
   simp [setRightCell, setSymbolClauses, alphabet]
 
-theorem initialRightPart_length
+theorem length_le_flatMap_of_one_le
+    {α β : Type}
+    (xs : List α)
+    (f : α → List β)
+    (h : ∀ a ∈ xs, 1 ≤ (f a).length) :
+    xs.length ≤ (xs.flatMap f).length := by
+  induction xs with
+  | nil =>
+      simp
+  | cons a as ih =>
+      have ha : 1 ≤ (f a).length := h a (by simp)
+      have htail : ∀ b ∈ as, 1 ≤ (f b).length := by
+        intro b hb
+        exact h b (by simp [hb])
+      have hi := ih htail
+      simp only [List.length_cons, List.flatMap_cons, List.length_append]
+      omega
+
+theorem radius_le_initialRightPart_length
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
-    ((List.range (radius x t)).flatMap fun i =>
-      setRightCell [] M x t 0 i
-        ((inputTape x).right.getD i M.machine.blank)).length =
-      3 * radius x t := by
-  rw [List.length_flatMap]
-  have hsum :
-      ∀ n : Nat,
-        (List.map (fun _ : Nat => 3) (List.range n)).sum = 3 * n := by
-    intro n
-    induction n with
-    | zero =>
-        simp
-    | succ n ih =>
-        simp [List.range_succ, ih, Nat.mul_succ, Nat.add_assoc,
-          Nat.add_comm, Nat.add_left_comm]
-  simpa [setRightCell_length] using hsum (radius x t)
+    radius x t ≤
+      ((List.range (radius x t)).flatMap fun i =>
+        setRightCell [] M x t 0 i
+          ((inputTape x).right.getD i M.machine.blank)).length := by
+  have h :=
+    length_le_flatMap_of_one_le
+      (List.range (radius x t))
+      (fun i =>
+        setRightCell [] M x t 0 i
+          ((inputTape x).right.getD i M.machine.blank))
+      (by
+        intro i hi
+        rw [setRightCell_length]
+        decide)
+  simpa using h
 
 theorem boundedExecTableauCNF_length_gt_input
     (M : PolyDTMCandidate) (x : BitString) (t : Nat) :
     x.length < (boundedExecTableauCNF M x t).length := by
+  have hradius : x.length < radius x t := by
+    simp [radius]
+    omega
+  have hpart :=
+    radius_le_initialRightPart_length M x t
   have hright :
       x.length <
         ((List.range (radius x t)).flatMap fun i =>
           setRightCell [] M x t 0 i
-            ((inputTape x).right.getD i M.machine.blank)).length := by
-    rw [initialRightPart_length]
-    simp [radius]
-    omega
+            ((inputTape x).right.getD i M.machine.blank)).length :=
+    Nat.lt_of_lt_of_le hradius hpart
   unfold boundedExecTableauCNF initialCNF
   simp only [List.length_append]
   omega
