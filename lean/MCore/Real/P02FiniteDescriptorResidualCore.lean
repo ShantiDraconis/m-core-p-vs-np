@@ -74,7 +74,15 @@ theorem residual_implies_finiteDescriptorFailure
     · rcases H D hTotal hPattern with ⟨x, hx⟩
       refine ⟨x, ?_⟩
       intro hCorrect
-      exact hx hCorrect.2
+      have hBad :
+          ¬ (D.toCandidate.accepting
+              (D.toCandidate.machine.run
+                (D.toCandidate.timeBound x.length)
+                (initialTMConfig D.toCandidate.machine x)).state = true ↔
+            SATTarget x) :=
+        (semanticDisagreement_iff_not_semantic_correct
+          D.toCandidate x).mp hx
+      exact hBad hCorrect.2
     · exact failure_of_not_constant_correct D hTotal hPattern
   · exact failure_of_not_total D hTotal
 
