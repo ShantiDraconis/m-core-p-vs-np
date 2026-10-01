@@ -2,6 +2,7 @@ import MCore.Real.P01RawMalformedTag
 import MCore.Real.P01RawMalformedUnary
 import MCore.Real.P01RawVerifierLift
 import MCore.Real.P01RawDecodeFailureShape
+import MCore.Real.P01RawDecodeFailureDescent
 import MCore.Real.P01ExactVerifierGlobalBudget
 import MCore.Real.P01CheckedEvalRunTagPrefix
 
@@ -153,13 +154,13 @@ theorem prepared_empty_fail_closed_exact
       terminal ∈ checkedVerifierMachine.runBranches 1 [start] := by
     dsimp [start, terminal]
     simp [NTM.runBranches, NTM.successors, NTM.stepBranch,
-      checkedVerifierMachine, preparedTape, Halted,
+      checkedVerifierMachine, preparedTape, P01NTMRunLaws.Halted,
       Tape.write, Tape.move]
-  have hhaltTerminal : Halted checkedVerifierMachine terminal := by
-    simp [terminal, Halted, checkedVerifierMachine]
+  have hhaltTerminal : P01NTMRunLaws.Halted checkedVerifierMachine terminal := by
+    simp [terminal, P01NTMRunLaws.Halted, checkedVerifierMachine]
   have hhalt1 :
       checkedVerifierMachine.HaltsWithin 1 start :=
-    haltsWithin_of_reaches_halted 1 start terminal hreach hhaltTerminal
+    P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted 1 start terminal hreach hhaltTerminal
   have hnot1 :
       ¬ checkedVerifierMachine.AcceptsWithin 1 start := by
     intro h
@@ -199,24 +200,14 @@ theorem prepared_truncated_tag_fail_closed_exact
     hh hn
 
 /-- decodeNat can fail only by exhausting a string of ones. -/
-theorem decodeNat_none_eq_replicate_true :
-    ∀ bits : BitString,
-      decodeNat bits = none →
-      bits = List.replicate bits.length true
-  | [], _ => by simp
-  | false :: rest, h => by
-      simp [decodeNat] at h
-  | true :: rest, h => by
-      have hr : decodeNat rest = none := by
-        cases hd : decodeNat rest with
-        | none =>
-            exact hd
-        | some p =>
-            rcases p with ⟨n, tail⟩
-            simp [decodeNat, hd] at h
-      have ih := decodeNat_none_eq_replicate_true rest hr
-      simpa only [List.length_cons, List.replicate_succ] using
-        congrArg (List.cons true) ih
+theorem decodeNat_none_eq_replicate_true
+    (bits : BitString)
+    (h : decodeNat bits = none) :
+    bits = List.replicate bits.length true := by
+  rcases P01RawDecodeFailureDescent.decodeNat_none_replicate_true bits h with
+    ⟨k, hk⟩
+  subst bits
+  simp
 
 /-- A malformed unary input payload is fail-closed at exact global fuel. -/
 theorem prepared_input_unary_none_fail_closed_exact
@@ -281,11 +272,11 @@ theorem prepared_eval_reject_within_step_fail_closed_exact
       terminal ∈ checkedVerifierMachine.runBranches (m0 + m) [start] := by
     simpa [start, terminal, P01NTMRunLaws.liftConfig,
       P01CheckedVerifierCompositeNTM.checkedEvalEmbed] using hfull
-  have hhaltTerminal : Halted checkedVerifierMachine terminal := by
-    simp [terminal, Halted, checkedVerifierMachine]
+  have hhaltTerminal : P01NTMRunLaws.Halted checkedVerifierMachine terminal := by
+    simp [terminal, P01NTMRunLaws.Halted, checkedVerifierMachine]
   have hh :
       checkedVerifierMachine.HaltsWithin (m0 + m) start :=
-    haltsWithin_of_reaches_halted (m0 + m) start terminal
+    P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted (m0 + m) start terminal
       hreachV hhaltTerminal
   have hn :
       ¬ checkedVerifierMachine.AcceptsWithin (m0 + m) start := by
