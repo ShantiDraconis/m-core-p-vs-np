@@ -6296,6 +6296,124 @@ theorem pathAssignment_haltedStutter_sat
     exact eval_haltedStutter_guard_true
       (pathAssignment M x t path hPath) M x t s q a hg
 
+
+structure PathTapeBoundAt
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (s : Nat) (hs : s <= t) : Prop where
+  left_len : (path ⟨s, by omega⟩).tape.left.length <= x.length + s
+  right_len : (path ⟨s, by omega⟩).tape.right.length <= x.length + s
+
+theorem pathTapeBound_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    PathTapeBoundAt M x t path 0 (by omega) := by
+  have h0 := hPath.1
+  change path 0 = initialNTMConfig M.machine x at h0
+  refine { left_len := ?_, right_len := ?_ }
+  · have hl := congrArg (fun c => c.tape.left.length) h0
+    cases x <;> simpa [initialNTMConfig, inputTape] using hl
+  · have hr := congrArg (fun c => c.tape.right.length) h0
+    cases x <;> simpa [initialNTMConfig, inputTape] using hr
+
+theorem pathTapeBound_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hs : s < t)
+    (hB : PathTapeBoundAt M x t path s (by omega)) :
+    PathTapeBoundAt M x t path (s + 1) (by omega) := by
+  let c := path ⟨s, by omega⟩
+  let c' := path ⟨s + 1, by omega⟩
+  have hStep : NTMTableauStep M c c' := by
+    simpa [c, c'] using hPath.2 ⟨s, hs⟩
+  rcases hStep with hhalt | hactive
+  · have heq := hhalt.2
+    refine { left_len := ?_, right_len := ?_ }
+    · have hlen : c'.tape.left.length = c.tape.left.length := by
+        simpa using congrArg (fun z => z.tape.left.length) heq
+      rw [hlen]
+      exact le_trans hB.left_len (by omega)
+    · have hlen : c'.tape.right.length = c.tape.right.length := by
+        simpa using congrArg (fun z => z.tape.right.length) heq
+      rw [hlen]
+      exact le_trans hB.right_len (by omega)
+  · rcases active_step_transition_witness M c c' (Or.inr hactive)
+      hactive.1 with ⟨tr, hmem, heq⟩
+    rcases tr with ⟨qNext, write, d⟩
+    cases d with
+    | stay =>
+        have heq' :
+            c' = M.machine.stepBranch c (qNext, write, Direction.stay) := heq
+        refine { left_len := ?_, right_len := ?_ }
+        · have hl := congrArg (fun z => z.tape.left.length) heq'
+          simp [NTM.stepBranch, Tape.write, Tape.move] at hl
+          rw [hl]
+          exact le_trans hB.left_len (by omega)
+        · have hr := congrArg (fun z => z.tape.right.length) heq'
+          simp [NTM.stepBranch, Tape.write, Tape.move] at hr
+          rw [hr]
+          exact le_trans hB.right_len (by omega)
+    | left =>
+        have heq' :
+            c' = M.machine.stepBranch c (qNext, write, Direction.left) := heq
+        have hlen := tapeMove_left_lengths M.machine.blank write c.tape
+        refine { left_len := ?_, right_len := ?_ }
+        · have hlEq := congrArg (fun z => z.tape.left.length) heq'
+          simp [NTM.stepBranch] at hlEq
+          rw [hlEq]
+          exact le_trans hlen.1 (le_trans hB.left_len (by omega))
+        · have hrEq := congrArg (fun z => z.tape.right.length) heq'
+          simp [NTM.stepBranch] at hrEq
+          rw [hrEq]
+          exact le_trans hlen.2 (by omega)
+    | right =>
+        have heq' :
+            c' = M.machine.stepBranch c (qNext, write, Direction.right) := heq
+        have hlen := tapeMove_right_lengths M.machine.blank write c.tape
+        refine { left_len := ?_, right_len := ?_ }
+        · have hlEq := congrArg (fun z => z.tape.left.length) heq'
+          simp [NTM.stepBranch] at hlEq
+          rw [hlEq]
+          exact le_trans hlen.1 (by omega)
+        · have hrEq := congrArg (fun z => z.tape.right.length) heq'
+          simp [NTM.stepBranch] at hrEq
+          rw [hrEq]
+          exact le_trans hlen.2 (le_trans hB.right_len (by omega))
+
+theorem pathTapeBound_all
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
+    forall s : Nat, s <= t -> PathTapeBoundAt M x t path s (by assumption) := by
+  intro s
+  induction s with
+  | zero =>
+      intro _
+      simpa using pathTapeBound_zero M x t path hPath
+  | succ s ih =>
+      intro hsle
+      exact pathTapeBound_step M x t s path hPath (by omega) (ih (by omega))
+
+theorem path_left_getD_outside
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hs : s <= t) (hi : x.length + s <= i) :
+    (path ⟨s, by omega⟩).tape.left.getD i M.machine.blank = M.machine.blank := by
+  apply List.getD_eq_default
+  exact le_trans (pathTapeBound_all M x t path hPath s hs).left_len hi
+
+theorem path_right_getD_outside
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
+    (hs : s <= t) (hi : x.length + s <= i) :
+    (path ⟨s, by omega⟩).tape.right.getD i M.machine.blank = M.machine.blank := by
+  apply List.getD_eq_default
+  exact le_trans (pathTapeBound_all M x t path hPath s hs).right_len hi
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
