@@ -262,6 +262,178 @@ def AcceptsWithinPathEquivalence : Prop :=
     M.machine.AcceptsWithin t c0 <->
       NTMTableauAcceptingPath M t c0
 
+
+
+/--
+Prepend one configuration to a Fin-indexed path.
+Index 0 is the new head; successor indices are read from the tail path.
+-/
+def prependFinPath
+    {n : Nat} {α : Type}
+    (head : α)
+    (tail : Fin (n + 1) -> α) :
+    Fin (n + 2) -> α :=
+  Fin.cases head tail
+
+@[simp] theorem prependFinPath_zero
+    {n : Nat} {α : Type}
+    (head : α) (tail : Fin (n + 1) -> α) :
+    prependFinPath head tail 0 = head := by
+  rfl
+
+@[simp] theorem prependFinPath_succ
+    {n : Nat} {α : Type}
+    (head : α) (tail : Fin (n + 1) -> α)
+    (i : Fin (n + 1)) :
+    prependFinPath head tail i.succ = tail i := by
+  rfl
+
+@[simp] theorem prependFinPath_last
+    {n : Nat} {α : Type}
+    (head : α) (tail : Fin (n + 1) -> α) :
+    prependFinPath head tail (Fin.last (n + 1)) =
+      tail (Fin.last n) := by
+  rfl
+
+theorem runPath_to_finPath
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (c z : NTMConfig M)
+    (h : NTMRunPath M t c z) :
+    ∃ path : Fin (t + 1) -> NTMConfig M,
+      NTMTableauPath M t c path ∧
+      path (Fin.last t) = z := by
+  induction h with
+  | zero c =>
+      refine ⟨fun _ => c, ?_, rfl⟩
+      constructor
+      · rfl
+      · intro i
+        exact Fin.elim0 i
+  | @halted fuel c z hhalt tail ih =>
+      rcases ih with ⟨path, hpath, hlast⟩
+      let path' : Fin (fuel + 2) -> NTMConfig M :=
+        prependFinPath c path
+      refine ⟨path', ?_, ?_⟩
+      · constructor
+        · simp [path', prependFinPath]
+        · intro i
+          refine Fin.cases ?_ (fun j => ?_) i
+          · left
+            refine ⟨hhalt, ?_⟩
+            simp [path', prependFinPath, hpath.1]
+          · simpa [path', prependFinPath] using hpath.2 j
+      · simpa [path', prependFinPath] using hlast
+  | @active fuel c c1 z hactive hstep tail ih =>
+      rcases ih with ⟨path, hpath, hlast⟩
+      let path' : Fin (fuel + 2) -> NTMConfig M :=
+        prependFinPath c path
+      refine ⟨path', ?_, ?_⟩
+      · constructor
+        · simp [path', prependFinPath]
+        · intro i
+          refine Fin.cases ?_ (fun j => ?_) i
+          · right
+            refine ⟨hactive, ?_⟩
+            simpa [path', prependFinPath, hpath.1] using hstep
+          · simpa [path', prependFinPath] using hpath.2 j
+      · simpa [path', prependFinPath] using hlast
+
+/--
+Tail of a nonempty Fin-indexed tableau path.
+-/
+def tailFinPath
+    {n : Nat} {α : Type}
+    (path : Fin (n + 2) -> α) :
+    Fin (n + 1) -> α :=
+  fun i => path i.succ
+
+theorem tailFinPath_isPath
+    (M : PolyNTMCandidate)
+    (fuel : Nat)
+    (c : NTMConfig M)
+    (path : Fin (fuel + 2) -> NTMConfig M)
+    (h : NTMTableauPath M (fuel + 1) c path) :
+    NTMTableauPath M fuel (path 1) (tailFinPath path) := by
+  constructor
+  · rfl
+  · intro i
+    simpa [tailFinPath] using h.2 i.succ
+
+theorem finPath_to_runPath
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (c : NTMConfig M)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (h : NTMTableauPath M t c path) :
+    NTMRunPath M t c (path (Fin.last t)) := by
+  induction t generalizing c path with
+  | zero =>
+      have h0 : path 0 = c := h.1
+      simpa [h0] using NTMRunPath.zero c
+  | succ fuel ih =>
+      let c1 : NTMConfig M := path 1
+      let tail : Fin (fuel + 1) -> NTMConfig M :=
+        tailFinPath path
+      have htail :
+          NTMTableauPath M fuel c1 tail := by
+        simpa [c1, tail] using
+          tailFinPath_isPath M fuel c path h
+      have hrun :
+          NTMRunPath M fuel c1 (tail (Fin.last fuel)) :=
+        ih c1 tail htail
+      have hfirst :
+          NTMTableauStep M c c1 := by
+        have hs := h.2 (0 : Fin (fuel + 1))
+        simpa [c1, h.1] using hs
+      rcases hfirst with hhalt | hactive
+      · rcases hhalt with ⟨hcHalt, hc1⟩
+        subst c1
+        have hout :
+            NTMRunPath M (fuel + 1) c
+              (tail (Fin.last fuel)) :=
+          NTMRunPath.halted hcHalt hrun
+        simpa [tail, tailFinPath] using hout
+      · rcases hactive with ⟨hcActive, hc1mem⟩
+        have hout :
+            NTMRunPath M (fuel + 1) c
+              (tail (Fin.last fuel)) :=
+          NTMRunPath.active hcActive hc1mem hrun
+        simpa [tail, tailFinPath] using hout
+
+theorem acceptsWithin_to_path
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (c0 : NTMConfig M)
+    (h : M.machine.AcceptsWithin t c0) :
+    NTMTableauAcceptingPath M t c0 := by
+  rcases h with ⟨z, hzrun, hzacc⟩
+  have hr : NTMRunPath M t c0 z :=
+    (runBranches_iff_runPath M t c0 z).mp hzrun
+  rcases runPath_to_finPath M t c0 z hr with
+    ⟨path, hpath, hlast⟩
+  refine ⟨path, hpath, ?_⟩
+  simpa [hlast] using hzacc
+
+theorem path_to_acceptsWithin
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (c0 : NTMConfig M)
+    (h : NTMTableauAcceptingPath M t c0) :
+    M.machine.AcceptsWithin t c0 := by
+  rcases h with ⟨path, hpath, hacc⟩
+  refine ⟨path (Fin.last t), ?_, hacc⟩
+  exact (runBranches_iff_runPath M t c0
+    (path (Fin.last t))).mpr
+      (finPath_to_runPath M t c0 path hpath)
+
+theorem acceptsWithin_iff_path :
+    AcceptsWithinPathEquivalence := by
+  intro M t c0
+  constructor
+  · exact acceptsWithin_to_path M t c0
+  · exact path_to_acceptsWithin M t c0
+
 def PNP_NTM_PATH_OPEN_MATH : Prop :=
   AcceptsWithinPathEquivalence
 
