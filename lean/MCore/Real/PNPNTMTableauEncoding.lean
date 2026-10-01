@@ -8374,6 +8374,156 @@ theorem boundedExec_maxVar_le
       tableauVarCap M x t :=
   ntmCNFMaxVar_le_of_varsLe _ _ (boundedExec_varsLe M x t)
 
+
+theorem ntmFinal_weight_le
+    (M : PolyNTMCandidate) (t : Nat) :
+    ntmCNFWeight (ntmFinalAcceptanceCNF M t) <=
+      ntmStateCount M + 1 := by
+  unfold ntmFinalAcceptanceCNF ntmAcceptingStateLits ntmCNFWeight ntmClauseWeight
+  simp
+  have hlen :
+      ((List.ofFn fun q : Fin (M.stateCount + 1) => q).filterMap fun q =>
+        if M.machine.accepting q = true then
+          some (ntmPos (ntmStateVar M t t q))
+        else none).length
+      <= M.stateCount + 1 := by
+    exact le_trans (List.length_filterMap_le _ _)
+      (by simp)
+  omega
+
+def tableauCaseConst (M : PolyNTMCandidate) : Nat :=
+  4 * ntmStateCount M + 30 +
+  3 + 7 * ntmBranchBound M +
+  3 * (ntmBranchBound M)^2 +
+  ntmBranchBound M * (3 * ntmStateCount M + 50)
+
+def tableauCaseLinear (M : PolyNTMCandidate) : Nat :=
+  60 + 48 * ntmBranchBound M
+
+theorem transitionCaseCap_linear
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    ntmTransitionCaseWeightCap M x t =
+      tableauCaseConst M +
+      tableauCaseLinear M * ntmRadius x t := by
+  unfold ntmTransitionCaseWeightCap ntmHaltedWeightCap
+    ntmActiveChoiceWeightCap ntmEffectWeightCap
+    tableauCaseConst tableauCaseLinear
+  ring
+
+def tableauWeightCoeff (M : PolyNTMCandidate) : Nat :=
+  (2 * ntmStateCount M + 18) +
+  (3 * ntmStateCount M *
+    (tableauCaseConst M + tableauCaseLinear M)) +
+  (ntmStateCount M + 1)
+
+theorem boundedExec_weight_poly
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    ntmCNFWeight (boundedExecTableauCNF_NTM M x t) <=
+      tableauWeightCoeff M * (ntmRadius x t)^2 := by
+  let r := ntmRadius x t
+  have hr : 1 <= r := by
+    simp [r, ntmRadius]
+  have ht : t <= r := by
+    simp [r, ntmRadius]
+    omega
+  have hi := ntmInitial_weight_le M x t
+  have htr := ntmTransitions_weight_le M x t
+  have hf := ntmFinal_weight_le M t
+  have hcase := transitionCaseCap_linear M x t
+  have hstep :
+      ntmTransitionStepWeightCap M x t =
+        ntmStateCount M * 3 *
+          (tableauCaseConst M + tableauCaseLinear M * r) := by
+    simp [ntmTransitionStepWeightCap, hcase, r]
+  have hi' :
+      ntmCNFWeight (ntmInitialCNF M x t) <=
+        (2 * ntmStateCount M + 18) * r := by
+    nlinarith
+  have htr' :
+      ntmCNFWeight (ntmTransitionsCNF M x t) <=
+        (3 * ntmStateCount M *
+          (tableauCaseConst M + tableauCaseLinear M)) * r^2 := by
+    rw [hstep] at htr
+    have hlin :
+        tableauCaseConst M + tableauCaseLinear M * r <=
+          (tableauCaseConst M + tableauCaseLinear M) * r := by
+      nlinarith
+    nlinarith
+  have hf' :
+      ntmCNFWeight (ntmFinalAcceptanceCNF M t) <=
+        (ntmStateCount M + 1) * r^2 := by
+    nlinarith
+  unfold boundedExecTableauCNF_NTM
+  rw [ntmCNFWeight_append, ntmCNFWeight_append]
+  unfold tableauWeightCoeff
+  nlinarith
+
+def tableauVarCoeff (M : PolyNTMCandidate) : Nat :=
+  (ntmStateCount M + 9) +
+  ((3 * ntmStateCount M + 2) * (ntmBranchBound M + 1) +
+    ntmBranchBound M) + 1
+
+theorem tableauVarCap_poly
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    tableauVarCap M x t + 1 <=
+      tableauVarCoeff M * (ntmRadius x t)^2 := by
+  let r := ntmRadius x t
+  let Q := ntmStateCount M
+  let B := ntmBranchBound M
+  have hr : 1 <= r := by simp [r, ntmRadius]
+  have ht1 : t + 1 <= r := by
+    simp [r, ntmRadius]
+  have hstate : M.stateCount + 1 = Q := by
+    simp [Q, ntmStateCount]
+  have hbase :
+      ntmChoiceBase M x t <= (Q + 9) * r^2 := by
+    unfold ntmChoiceBase ntmRightBase ntmLeftBase ntmHeadBase ntmStateSlots
+    simp [Q, r]
+    nlinarith
+  have hinner :
+      (((t * Q + M.stateCount) * 3 + 2) * (B + 1) + B)
+      <= (((3 * Q + 2) * (B + 1) + B) * r) := by
+    have hsq : t * Q + M.stateCount <= r * Q := by
+      rw [← hstate]
+      nlinarith
+    nlinarith
+  unfold tableauVarCap tableauVarCoeff
+  simp [Q, B] at *
+  nlinarith
+
+theorem boundedExec_maxVar_poly
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    ntmCNFMaxVar (boundedExecTableauCNF_NTM M x t) + 1 <=
+      tableauVarCoeff M * (ntmRadius x t)^2 := by
+  have hmax := boundedExec_maxVar_le M x t
+  have hcap := tableauVarCap_poly M x t
+  omega
+
+def tableauEncodingCoeff (M : PolyNTMCandidate) : Nat :=
+  16 * tableauWeightCoeff M * tableauVarCoeff M + 3
+
+theorem boundedExec_encoded_length_poly
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    (encodeCircuit (boundedExecCircuit_NTM M x t)).length <=
+      tableauEncodingCoeff M * (x.length + t + 1)^4 := by
+  let f := boundedExecTableauCNF_NTM M x t
+  let r := ntmRadius x t
+  have hr : 1 <= r := by simp [r, ntmRadius]
+  have hw := boundedExec_weight_poly M x t
+  have hv := boundedExec_maxVar_poly M x t
+  have henc := ntmCNFCircuit_encoding_le f
+  have hcirc :
+      boundedExecCircuit_NTM M x t = ntmCNFCircuit f := by
+    rfl
+  rw [hcirc]
+  have hmain :
+      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) + 3 <=
+        tableauEncodingCoeff M * r^4 := by
+    unfold tableauEncodingCoeff
+    nlinarith
+  exact le_trans henc (by
+    simpa [f, r, ntmRadius, pow_succ, pow_two] using hmain)
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
