@@ -2686,6 +2686,109 @@ theorem ntmLeft_writeRight0_exact
   exact (eval_ntmSetRightCell_nil_iff M x t sigma 0
     ((M.machine.transition q a).get j).2.1).mp hnil
 
+
+structure NTMUniqueAt
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) : Prop where
+  hState :
+    ∃! q : Fin (M.stateCount + 1),
+      sigma (ntmStateVar M t s q) = true
+  hHead :
+    ∃! a : Option Bool,
+      sigma (ntmHeadVar M t s a) = true
+  hLeft :
+    forall i : Nat, i < ntmRadius x t ->
+      ∃! b : Option Bool,
+        sigma (ntmLeftVar M x t s i b) = true
+  hRight :
+    forall i : Nat, i < ntmRadius x t ->
+      ∃! b : Option Bool,
+        sigma (ntmRightVar M x t s i b) = true
+
+theorem existsUnique_of_exact_decide
+    {α : Type}
+    [DecidableEq α]
+    (f : α -> Bool)
+    (target : α)
+    (h : forall a : α, f a = decide (a = target)) :
+    ∃! a : α, f a = true := by
+  refine ⟨target, ?_, ?_⟩
+  · simpa using h target
+  · intro a ha
+    have hd : decide (a = target) = true := by
+      simpa [ha] using (h a).symm
+    exact of_decide_eq_true hd
+
+theorem existsUnique_transport
+    {α : Type}
+    (old new : α -> Bool)
+    (hOld : ∃! a : α, old a = true)
+    (hEq : forall a : α, new a = old a) :
+    ∃! a : α, new a = true := by
+  rcases hOld with ⟨a, ha, huniq⟩
+  refine ⟨a, ?_, ?_⟩
+  · simpa [hEq a] using ha
+  · intro b hb
+    apply huniq b
+    simpa [hEq b] using hb
+
+theorem ntmUniqueAt_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    NTMUniqueAt M x t sigma hSat 0 := by
+  refine {
+    hState := ntmInitial_state_exists_unique M x t sigma hSat
+    hHead := ntmInitial_head_exists_unique M x t sigma hSat
+    hLeft := ?_
+    hRight := ?_
+  }
+  · intro i hi
+    exact ntmInitial_left_exists_unique M x t sigma hSat i hi
+  · intro i hi
+    exact ntmInitial_right_exists_unique M x t sigma hSat i hi
+
+theorem ntmUniqueAt_halted_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hU : NTMUniqueAt M x t sigma hSat s)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    NTMUniqueAt M x t sigma hSat (s + 1) := by
+  refine {
+    hState := ?_
+    hHead := ?_
+    hLeft := ?_
+    hRight := ?_
+  }
+  · exact existsUnique_of_exact_decide
+      (fun r => sigma (ntmStateVar M t (s + 1) r)) q
+      (ntmHalted_state_exact M x t s q a sigma hSat hs hq ha hHalt)
+  · exact existsUnique_transport
+      (fun b => sigma (ntmHeadVar M t s b))
+      (fun b => sigma (ntmHeadVar M t (s + 1) b))
+      hU.hHead
+      (ntmHalted_head_copy M x t s q a sigma hSat hs hq ha hHalt)
+  · intro i hi
+    exact existsUnique_transport
+      (fun b => sigma (ntmLeftVar M x t s i b))
+      (fun b => sigma (ntmLeftVar M x t (s + 1) i b))
+      (hU.hLeft i hi)
+      (ntmHalted_left_copy M x t s q a sigma hSat hs hq ha hHalt i hi)
+  · intro i hi
+    exact existsUnique_transport
+      (fun b => sigma (ntmRightVar M x t s i b))
+      (fun b => sigma (ntmRightVar M x t (s + 1) i b))
+      (hU.hRight i hi)
+      (ntmHalted_right_copy M x t s q a sigma hSat hs hq ha hHalt i hi)
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
