@@ -6,6 +6,8 @@ namespace Real
 namespace P02ComplementTableauDiagonal
 
 open CanonicalFinalProof
+open CanonicalSATBoundary
+open CanonicalCircuitBits
 open P02UniversalFailureMinCut
 open P02TotalCandidateSemanticCore
 open P02SemanticFlipCore
@@ -43,19 +45,7 @@ theorem complement_acceptsAtFuel_iff_not
       ¬ M.accepting
           (M.machine.run t
             (initialTMConfig M.machine x)).state = true := by
-  unfold AcceptsAtFuel complementCandidate
-  change
-    (! M.accepting
-        (M.machine.run t
-          (initialTMConfig M.machine x)).state = true) ↔
-      ¬ M.accepting
-          (M.machine.run t
-            (initialTMConfig M.machine x)).state = true
-  cases h :
-      M.accepting
-        (M.machine.run t
-          (initialTMConfig M.machine x)).state <;>
-    simp [h]
+  simp [AcceptsAtFuel, complementCandidate]
 
 /-- Canonical SAT instance encoding the bounded execution of the complemented
 candidate on x at M's own declared clock. -/
@@ -82,14 +72,17 @@ theorem diagonalBits_sat_iff_not_declaredAccepts
     (x : BitString) :
     SATTarget (diagonalBits M x) ↔
       ¬ DeclaredAccepts M x := by
-  rw [show SATTarget (diagonalBits M x) =
-      SATBits CanonicalCircuitBits.circuitBitEncoding (diagonalBits M x) by rfl]
-  rw [boundedExecCorrectness_to_bits
+  have hExec :=
+    boundedExecCorrectness_to_bits
       boundedExecCorrectness_closed
       (complementCandidate M) x
-      (M.timeBound x.length)]
-  exact complement_acceptsAtFuel_iff_not
-    M x (M.timeBound x.length)
+      (M.timeBound x.length)
+  have hComp :=
+    complement_acceptsAtFuel_iff_not
+      M x (M.timeBound x.length)
+  exact by
+    simpa [SATTarget, P02UniversalFailureMinCut.CanonicalSAT,
+      diagonalBits, DeclaredAccepts] using hExec.trans hComp
 
 /-- The extensional same-answer condition is strictly weaker than requiring
 literal bitstring fixed points. -/
@@ -104,13 +97,21 @@ theorem semanticFlip_diagonalBits_of_alignment
     (x : BitString)
     (hAlign : AcceptanceAligned M x) :
     SemanticFlip M (diagonalBits M x) := by
+  have hDiag :
+      P02SemanticFlipCore.SATTarget (diagonalBits M x) ↔
+        ¬ DeclaredAccepts M x := by
+    simpa [P02SemanticFlipCore.SATTarget, SATTarget,
+      P02UniversalFailureMinCut.CanonicalSAT] using
+      diagonalBits_sat_iff_not_declaredAccepts M x
   unfold SemanticFlip
-  rw [diagonalBits_sat_iff_not_declaredAccepts M x]
   constructor
-  · intro hNotX hDiag
-    exact hNotX (hAlign.mp hDiag)
-  · intro hNotDiag hX
-    exact hNotDiag (hAlign.mpr hX)
+  · intro hSat hAcceptDiag
+    have hNotX : ¬ DeclaredAccepts M x := hDiag.mp hSat
+    exact hNotX (hAlign.mp hAcceptDiag)
+  · intro hNotAcceptDiag
+    apply hDiag.mpr
+    intro hAcceptX
+    exact hNotAcceptDiag (hAlign.mpr hAcceptX)
 
 /-- Exact post-tableau open core: for every candidate already known to respect
 its declared clock, find one input whose answer is preserved by diagonalBits.
