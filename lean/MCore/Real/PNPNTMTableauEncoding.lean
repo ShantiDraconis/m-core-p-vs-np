@@ -8041,6 +8041,35 @@ theorem initial_varsLe
             (ntmRightVar_lt_tableauVarCap M x t 0 i a (by omega) hir))
           cl hcl
 
+theorem filterMap_mem_exists
+    {α β : Type} (f : α -> Option β) (xs : List α) (y : β)
+    (hy : y ∈ xs.filterMap f) :
+    ∃ x, x ∈ xs ∧ f x = some y := by
+  induction xs with
+  | nil =>
+      simp at hy
+  | cons x xs ih =>
+      simp only [List.filterMap_cons] at hy
+      cases hfx : f x with
+      | none =>
+          simp [hfx] at hy
+          rcases ih hy with ⟨z, hz, hfz⟩
+          exact ⟨z, by simp [hz], hfz⟩
+      | some z =>
+          simp [hfx] at hy
+          rcases hy with rfl | hy
+          · exact ⟨x, by simp, hfx⟩
+          · rcases ih hy with ⟨w, hw, hfw⟩
+            exact ⟨w, by simp [hw], hfw⟩
+
+theorem filterMap_length_le
+    {α β : Type} (f : α -> Option β) (xs : List α) :
+    (xs.filterMap f).length <= xs.length := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+      cases hfx : f x <;> simp [List.filterMap_cons, hfx, ih]
+
 theorem final_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
     CNFVarsLe (tableauVarCap M x t) (ntmFinalAcceptanceCNF M t) := by
@@ -8049,14 +8078,19 @@ theorem final_varsLe
   subst cl
   intro l hl
   unfold ntmAcceptingStateLits at hl
-  rw [List.mem_filterMap] at hl
-  rcases hl with ⟨q, hqmem, hsome⟩
-  split at hsome
-  · simp at hsome
+  rcases filterMap_mem_exists
+      (fun q : Fin (M.stateCount + 1) =>
+        if M.machine.accepting q = true then
+          some (ntmPos (ntmStateVar M t t q))
+        else none)
+      (List.ofFn fun q : Fin (M.stateCount + 1) => q) l hl with
+    ⟨q, hqmem, hq⟩
+  by_cases hacc : M.machine.accepting q = true
+  · simp [hacc] at hq
     subst l
     exact Nat.le_of_lt
       (ntmStateVar_lt_tableauVarCap M x t t q (by omega))
-  · simp at hsome
+  · simp [hacc] at hq
 
 
 theorem stateHeadGuard_varsLe
@@ -8425,7 +8459,13 @@ theorem ntmFinal_weight_le
           some (ntmPos (ntmStateVar M t t q))
         else none).length
       <= M.stateCount + 1 := by
-    exact le_trans (List.length_filterMap_le _ _)
+    exact le_trans
+      (filterMap_length_le
+        (fun q : Fin (M.stateCount + 1) =>
+          if M.machine.accepting q = true then
+            some (ntmPos (ntmStateVar M t t q))
+          else none)
+        (List.ofFn fun q : Fin (M.stateCount + 1) => q))
       (by simp)
   omega
 
