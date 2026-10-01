@@ -75,9 +75,15 @@ theorem SameInputWitness.semanticFlip
     (W : SameInputWitness M) :
     SemanticFlip M W.input := by
   unfold SemanticFlip
+  have hProp :
+      SATTarget W.input =
+        SATTarget (rejectTransform M W.input) :=
+    congrArg SATTarget W.fixed
   calc
     SATTarget W.input ↔ SATTarget (rejectTransform M W.input) := by
-      rw [W.fixed]
+      constructor
+      · exact Eq.mp hProp
+      · exact Eq.mpr hProp
     _ ↔ ¬ DeclaredAccepts M W.input :=
       rejectTransform_sat_iff_not_accepts M W.input
 
