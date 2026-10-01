@@ -220,13 +220,13 @@ diagonal orbits, and correctness on them forces exact Boolean alternation. -/
 structure InfiniteAlternatingOrbitCertificate
     (D : FiniteDTMDescriptor) : Prop where
   false_injective :
-    OrbitIndexInjective D.toCandidate falseBits
+    OrbitIndexInjective D.toCandidate P02SemanticTransformerDichotomy.falseBits
   true_injective :
-    OrbitIndexInjective D.toCandidate trueBits
+    OrbitIndexInjective D.toCandidate P02SemanticTransformerDichotomy.trueBits
   false_alternates :
-    AlternatingOrbit D.toCandidate falseBits
+    AlternatingOrbit D.toCandidate P02SemanticTransformerDichotomy.falseBits
   true_alternates :
-    AlternatingOrbit D.toCandidate trueBits
+    AlternatingOrbit D.toCandidate P02SemanticTransformerDichotomy.trueBits
 
 theorem infinite_alternating_certificate
     (D : FiniteDTMDescriptor)
@@ -235,8 +235,8 @@ theorem infinite_alternating_certificate
   have hAlt :=
     residual_descriptor_has_two_alternating_orbits D hOrbit
   exact
-    { false_injective := orbit_index_injective D.toCandidate falseBits
-      true_injective := orbit_index_injective D.toCandidate trueBits
+    { false_injective := orbit_index_injective D.toCandidate P02SemanticTransformerDichotomy.falseBits
+      true_injective := orbit_index_injective D.toCandidate P02SemanticTransformerDichotomy.trueBits
       false_alternates := hAlt.1
       true_alternates := hAlt.2 }
 
