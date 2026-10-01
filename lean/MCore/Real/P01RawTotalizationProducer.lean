@@ -309,7 +309,7 @@ theorem decodeCircuit_none_fail_closed_raw
               | false =>
                   have hreject :=
                     circuit_exact_bounded_reject
-                      (witnessAssignment witness) witness phi .cnf
+                      (CanonicalSATWitness.witnessAssignment witness) witness phi .cnf
                   obtain ⟨m, hm, cfg, hreach, hstate⟩ :=
                     hreject hmode residual [] 0 0 source.length
                       (by simpa [encodeEvalFrames] using hLayout)
@@ -340,7 +340,7 @@ theorem decodeCircuit_none_fail_closed_raw
               | true =>
                   obtain ⟨m, hm, cfg, hreach, hstate⟩ :=
                     canonical_prefix_with_residual_reaches_reject
-                      (witnessAssignment witness) witness phi residual
+                      (CanonicalSATWitness.witnessAssignment witness) witness phi residual
                       (by simp [residual]) hmode source.length
                       (by simpa [encodeEvalFrames] using hLayout)
                       hlen (by intro i hi; rfl)
