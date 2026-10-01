@@ -27,22 +27,6 @@ theorem canonicalSATInNP_closed :
     Real.P01FinalCertificate.construction_closes_p01
       Real.P01RawTotalizationProducer.p01ConstructionGap_closed
 
-/-- Once the NP side is discharged by P01, the exact remaining material
-producer is only the operational failure generator for the SAME SAT language. -/
-theorem canonicalSAT_failure_generator_closes_separation
-    (G : Real.FailProofAllGaps.FailureGenerator
-      (Real.CanonicalSATBoundary.SATBits
-        Real.CanonicalCircuitBits.circuitBitEncoding)) :
-    ClosedDiscriminant.SeparationFinal
-      Real.CanonicalComplexityBridge.canonicalInterface.inP
-      Real.CanonicalComplexityBridge.canonicalInterface.inNP := by
-  exact canonicalFailureProducer_closes_separation
-    { language :=
-        Real.CanonicalSATBoundary.SATBits
-          Real.CanonicalCircuitBits.circuitBitEncoding
-      in_np := canonicalSATInNP_closed
-      failure_generator := G }
-
 /-- Material terminal producer.  Unlike `CanonicalNotInPWitness`, this object
 does not store the endpoint proposition `¬ inP language`.  It stores an
 operational counterexample generator: for every deterministic polynomial-time
@@ -73,6 +57,22 @@ theorem canonicalFailureProducer_closes_separation
     { language := w.language
       in_np := w.in_np
       not_in_p := canonicalFailureProducer_not_in_p w }
+
+/-- Once the NP side is discharged by P01, the exact remaining material
+producer is only the operational failure generator for the SAME SAT language. -/
+theorem canonicalSAT_failure_generator_closes_separation
+    (G : Real.FailProofAllGaps.FailureGenerator
+      (Real.CanonicalSATBoundary.SATBits
+        Real.CanonicalCircuitBits.circuitBitEncoding)) :
+    ClosedDiscriminant.SeparationFinal
+      Real.CanonicalComplexityBridge.canonicalInterface.inP
+      Real.CanonicalComplexityBridge.canonicalInterface.inNP := by
+  exact canonicalFailureProducer_closes_separation
+    { language :=
+        Real.CanonicalSATBoundary.SATBits
+          Real.CanonicalCircuitBits.circuitBitEncoding
+      in_np := canonicalSATInNP_closed
+      failure_generator := G }
 
 /-- The canonical interface already matches the repository's official InP/InNP predicates by rfl. -/
 theorem canonicalModelMatch :
