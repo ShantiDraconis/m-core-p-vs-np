@@ -275,6 +275,60 @@ theorem eval_ntmSetStateClauses_nil_iff
       (fun q : Fin (M.stateCount + 1) => ntmStateVar M t s q)
       (fun q : Fin (M.stateCount + 1) => decide (q = target)))
 
+
+theorem eval_ntmSetSymbolClauses_nil_iff
+    (sigma : Assignment)
+    (varAt : Option Bool -> Nat)
+    (target : Option Bool) :
+    evalNTMCNF sigma (ntmSetSymbolClauses [] varAt target) = true <->
+      forall a : Option Bool,
+        sigma (varAt a) = decide (a = target) := by
+  cases target with
+  | none =>
+      constructor
+      · intro h a
+        rcases (evalNTMCNF_append sigma
+          [[ntmLitFor (varAt none) true]]
+          [[ntmLitFor (varAt (some false)) false],
+           [ntmLitFor (varAt (some true)) false]]).mp
+          (by simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF] using h) with
+          ⟨h0, hrest⟩
+        have hn : sigma (varAt none) = true := by
+          simpa [evalNTMCNF] using h0
+        have hr := hrest
+        cases a with
+        | none => simpa using hn
+        | some b =>
+            cases b <;>
+              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
+      · intro h
+        have hnone := h none
+        have hf := h (some false)
+        have ht := h (some true)
+        simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+          evalNTMClause, evalNTMLiteral, ntmLitFor] using
+          And.intro hnone (And.intro hf ht)
+  | some targetBool =>
+      cases targetBool <;>
+        constructor
+        · intro h a
+          cases a with
+          | none =>
+              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
+          | some b =>
+              cases b <;>
+                simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                  evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
+        · intro h
+          have hnone := h none
+          have hf := h (some false)
+          have ht := h (some true)
+          simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+            evalNTMClause, evalNTMLiteral, ntmLitFor] using
+            And.intro hnone (And.intro hf ht)
+
 def ntmSetStateClauses
     (guard : NTMClause)
     (M : PolyNTMCandidate)
@@ -527,6 +581,102 @@ theorem boundedExecCircuit_NTM_isCNF
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
     IsCNF (boundedExecCircuit_NTM M x t) := by
   exact ntmCNFCircuit_isCNF _
+
+
+theorem boundedExec_initial_sat
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    evalNTMCNF sigma (ntmInitialCNF M x t) = true := by
+  have h :=
+    (evalNTMCNF_append sigma
+      (ntmInitialCNF M x t)
+      (ntmTransitionsCNF M x t ++ ntmFinalAcceptanceCNF M t)).mp
+      (by simpa [boundedExecTableauCNF_NTM, List.append_assoc] using hSat)
+  exact h.1
+
+theorem ntmInitial_state_exact
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    forall q : Fin (M.stateCount + 1),
+      sigma (ntmStateVar M t 0 q) = decide (q = M.machine.initial) := by
+  have hInit := boundedExec_initial_sat M x t sigma hSat
+  have hparts :=
+    (evalNTMCNF_append sigma
+      (ntmSetStateClauses [] M t 0 M.machine.initial)
+      (ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head ++
+        (List.range (ntmRadius x t)).flatMap (fun i =>
+          ntmSetLeftCell [] M x t 0 i
+            ((inputTape x).left.getD i M.machine.blank)) ++
+        (List.range (ntmRadius x t)).flatMap (fun i =>
+          ntmSetRightCell [] M x t 0 i
+            ((inputTape x).right.getD i M.machine.blank)))).mp
+      (by simpa [ntmInitialCNF, List.append_assoc] using hInit)
+  exact (eval_ntmSetStateClauses_nil_iff
+    sigma M t 0 M.machine.initial).mp hparts.1
+
+theorem ntmInitial_state_exists_unique
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    ∃! q : Fin (M.stateCount + 1),
+      sigma (ntmStateVar M t 0 q) = true := by
+  refine ⟨M.machine.initial, ?_, ?_⟩
+  · simpa using
+      ntmInitial_state_exact M x t sigma hSat M.machine.initial
+  · intro q hq
+    have hExact := ntmInitial_state_exact M x t sigma hSat q
+    have hdec : decide (q = M.machine.initial) = true := by
+      simpa [hq] using hExact.symm
+    exact of_decide_eq_true hdec
+
+theorem ntmInitial_head_exact
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    forall a : Option Bool,
+      sigma (ntmHeadVar M t 0 a) =
+        decide (a = (inputTape x).head) := by
+  have hInit := boundedExec_initial_sat M x t sigma hSat
+  have h1 :=
+    (evalNTMCNF_append sigma
+      (ntmSetStateClauses [] M t 0 M.machine.initial)
+      (ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head ++
+        (List.range (ntmRadius x t)).flatMap (fun i =>
+          ntmSetLeftCell [] M x t 0 i
+            ((inputTape x).left.getD i M.machine.blank)) ++
+        (List.range (ntmRadius x t)).flatMap (fun i =>
+          ntmSetRightCell [] M x t 0 i
+            ((inputTape x).right.getD i M.machine.blank)))).mp
+      (by simpa [ntmInitialCNF, List.append_assoc] using hInit)
+  have h2 :=
+    (evalNTMCNF_append sigma
+      (ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head)
+      ((List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmSetLeftCell [] M x t 0 i
+          ((inputTape x).left.getD i M.machine.blank)) ++
+       (List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmSetRightCell [] M x t 0 i
+          ((inputTape x).right.getD i M.machine.blank)))).mp
+      (by simpa [List.append_assoc] using h1.2)
+  exact (eval_ntmSetSymbolClauses_nil_iff
+    sigma (ntmHeadVar M t 0) (inputTape x).head).mp h2.1
+
+theorem ntmInitial_head_exists_unique
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    ∃! a : Option Bool,
+      sigma (ntmHeadVar M t 0 a) = true := by
+  refine ⟨(inputTape x).head, ?_, ?_⟩
+  · simpa using
+      ntmInitial_head_exact M x t sigma hSat (inputTape x).head
+  · intro a ha
+    have hExact := ntmInitial_head_exact M x t sigma hSat a
+    have hdec : decide (a = (inputTape x).head) = true := by
+      simpa [ha] using hExact.symm
+    exact of_decide_eq_true hdec
 
 end PNPNTMTableauEncoding
 end Real
