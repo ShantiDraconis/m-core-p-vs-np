@@ -227,9 +227,11 @@ theorem copySymbolClauses_guarded
   unfold copySymbolClauses at h
   rcases List.mem_flatMap.mp h with ⟨a, _, h⟩
   simp only [List.mem_cons, List.mem_singleton] at h
-  rcases h with rfl | rfl
-  · exact ⟨[neg (oldVar a), pos (newVar a)], rfl⟩
-  · exact ⟨[pos (oldVar a), neg (newVar a)], rfl⟩
+  rcases h with h | h
+  · exact ⟨[neg (oldVar a), pos (newVar a)], h⟩
+  · rcases h with h | h
+    · exact ⟨[pos (oldVar a), neg (newVar a)], h⟩
+    · cases h
 
 theorem copyLeftAll_guarded
     (guard : Clause)
