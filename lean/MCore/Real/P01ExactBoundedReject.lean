@@ -281,7 +281,6 @@ theorem neg_exact_bounded_reject
               8 * (evalStepCount child.not + 1) *
                 checkedLoopStepEnvelope n := hmul
         exact Nat.le_trans hraw hcap
-        exact Nat.le_trans hraw hcap
 
       exact ⟨m0 + m1, hbudget, cfg1, hAll, hrej⟩
 
@@ -730,7 +729,7 @@ theorem or_exact_bounded_reject
                      (encodeCircuit (.or left right) ++ tail)
                      (encodeEvalFrames frames) padding }] := by
         simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-          List.append_assoc] using h0
+          childMode, List.append_assoc] using h0
 
       have hLayoutLeft :
           CheckedLayoutBound n leftConsumed
