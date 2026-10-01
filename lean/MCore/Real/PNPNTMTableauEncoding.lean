@@ -2620,6 +2620,72 @@ theorem ntmHalted_right_copy
     (ntmRightVar M x t s i) (ntmRightVar M x t (s + 1) i)
     hiSat hq ha
 
+
+theorem ntmLeft_shiftedLeft_exact
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.left)
+    (i : Nat) (hi : i < ntmRadius x t - 1) :
+    forall b : Option Bool,
+      sigma (ntmLeftVar M x t (s + 1) i b) =
+        sigma (ntmLeftVar M x t s (i + 1) b) := by
+  have hEff := selectedChoiceEffect_sat M x t s q a j sigma hSat hs hActive
+  have hcopy := leftEffect_shiftedLeft_sat M x t s q a
+    (j.val, (M.machine.transition q a).get j) sigma hEff hDir i hi
+  exact eval_copySymbol_neg_guard_of_choice_true sigma
+    (ntmChoiceVar M x t s q a j.val)
+    (ntmLeftVar M x t s (i + 1))
+    (ntmLeftVar M x t (s + 1) i) hcopy hj
+
+theorem ntmLeft_blankLeft_exact
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.left) :
+    forall b : Option Bool,
+      sigma (ntmLeftVar M x t (s + 1) (ntmRadius x t - 1) b) =
+        decide (b = M.machine.blank) := by
+  have hEff := selectedChoiceEffect_sat M x t s q a j sigma hSat hs hActive
+  have hset := leftEffect_blankLeft_sat M x t s q a
+    (j.val, (M.machine.transition q a).get j) sigma hEff hDir
+  have hnil := eval_setLeft_neg_guard_to_nil M x t (s + 1) (ntmRadius x t - 1)
+    (ntmChoiceVar M x t s q a j.val) M.machine.blank sigma hset hj
+  exact (eval_ntmSetLeftCell_nil_iff M x t sigma (ntmRadius x t - 1)
+    M.machine.blank).mp hnil
+
+theorem ntmLeft_writeRight0_exact
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.left) :
+    forall b : Option Bool,
+      sigma (ntmRightVar M x t (s + 1) 0 b) =
+        decide (b = ((M.machine.transition q a).get j).2.1) := by
+  have hEff := selectedChoiceEffect_sat M x t s q a j sigma hSat hs hActive
+  have hset := leftEffect_writeRight0_sat M x t s q a
+    (j.val, (M.machine.transition q a).get j) sigma hEff hDir
+  have hnil := eval_setRight_neg_guard_to_nil M x t (s + 1) 0
+    (ntmChoiceVar M x t s q a j.val)
+    ((M.machine.transition q a).get j).2.1 sigma hset hj
+  exact (eval_ntmSetRightCell_nil_iff M x t sigma 0
+    ((M.machine.transition q a).get j).2.1).mp hnil
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
