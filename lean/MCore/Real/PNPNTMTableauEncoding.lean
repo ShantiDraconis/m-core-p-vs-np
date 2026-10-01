@@ -7176,6 +7176,134 @@ theorem tableau_correctness_iff
   · exact tableau_soundness_from_satLanguage M x t
   · exact tableau_completeness_to_satLanguage M x t
 
+
+def ntmClauseWeight (cl : NTMClause) : Nat :=
+  cl.length + 1
+
+def ntmCNFWeight (f : NTMCNF) : Nat :=
+  f.foldl (fun acc cl => acc + ntmClauseWeight cl) 0
+
+def ntmClauseMaxVar (cl : NTMClause) : Nat :=
+  cl.foldl (fun acc l => Nat.max acc l.var) 0
+
+def ntmCNFMaxVar (f : NTMCNF) : Nat :=
+  f.foldl (fun acc cl => Nat.max acc (ntmClauseMaxVar cl)) 0
+
+theorem encodeNat_length_exact
+    (n : Nat) :
+    (encodeNat n).length = n + 1 := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp [encodeNat, ih, Nat.add_assoc]
+
+theorem ntmLiteralCircuit_encoding_le
+    (l : NTMLiteral) :
+    (encodeCircuit (ntmLiteralCircuit l)).length <=
+      7 * (l.var + 1) := by
+  cases l with
+  | mk v p =>
+      cases p <;>
+        simp [ntmLiteralCircuit, encodeCircuit, encodeNat_length_exact] <;>
+        omega
+
+theorem ntmClauseMaxVar_ge_of_mem
+    (cl : NTMClause) (l : NTMLiteral)
+    (hl : l ∈ cl) :
+    l.var <= ntmClauseMaxVar cl := by
+  unfold ntmClauseMaxVar
+  induction cl generalizing l with
+  | nil =>
+      simp at hl
+  | cons a as ih =>
+      simp only [List.mem_cons] at hl
+      simp only [List.foldl_cons]
+      rcases hl with rfl | hl
+      · exact le_trans (Nat.le_max_right 0 a.var)
+          (foldl_max_ge_acc (as.map NTMLiteral.var)
+            (Nat.max 0 a.var))
+      · have hia := ih l hl
+        clear ih
+        induction as generalizing a with
+        | nil => simp at hl
+        | cons b bs ihbs =>
+            simp only [List.foldl_cons]
+            exact le_trans hia (foldl_max_ge_acc
+              (bs.map NTMLiteral.var)
+              (Nat.max (Nat.max 0 a.var) b.var))
+
+theorem ntmCNFMaxVar_ge_clause
+    (f : NTMCNF) (cl : NTMClause)
+    (hcl : cl ∈ f) :
+    ntmClauseMaxVar cl <= ntmCNFMaxVar f := by
+  unfold ntmCNFMaxVar
+  induction f generalizing cl with
+  | nil =>
+      simp at hcl
+  | cons c cs ih =>
+      simp only [List.mem_cons] at hcl
+      simp only [List.foldl_cons]
+      rcases hcl with rfl | hcl
+      · exact le_trans (Nat.le_max_right 0 (ntmClauseMaxVar c))
+          (foldl_max_ge_acc (cs.map ntmClauseMaxVar)
+            (Nat.max 0 (ntmClauseMaxVar c)))
+      · have hic := ih cl hcl
+        exact le_trans hic
+          (foldl_max_ge_acc (cs.map ntmClauseMaxVar)
+            (Nat.max 0 (ntmClauseMaxVar c)))
+
+theorem ntmClauseCircuit_encoding_le
+    (cl : NTMClause) :
+    (encodeCircuit (ntmClauseCircuit cl)).length <=
+      10 * ntmClauseWeight cl * (ntmClauseMaxVar cl + 1) := by
+  induction cl with
+  | nil =>
+      simp [ntmClauseCircuit, ntmClauseWeight, encodeCircuit]
+  | cons l ls ih =>
+      have hlmax : l.var <= ntmClauseMaxVar (l :: ls) := by
+        unfold ntmClauseMaxVar
+        simp only [List.foldl_cons]
+        exact Nat.le_max_right _ _
+      have htail :
+          ntmClauseMaxVar ls <= ntmClauseMaxVar (l :: ls) := by
+        unfold ntmClauseMaxVar
+        simp only [List.foldl_cons]
+        induction ls with
+        | nil => simp
+        | cons a as ihls =>
+            simp only [List.foldl_cons]
+            exact foldl_max_ge_acc (as.map NTMLiteral.var)
+              (Nat.max (Nat.max 0 l.var) a.var)
+      have hlit := ntmLiteralCircuit_encoding_le l
+      simp [ntmClauseCircuit, encodeCircuit, ntmClauseWeight] at ih ⊢
+      nlinarith
+
+theorem ntmCNFCircuit_encoding_le
+    (f : NTMCNF) :
+    (encodeCircuit (ntmCNFCircuit f)).length <=
+      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) + 3 := by
+  induction f with
+  | nil =>
+      simp [ntmCNFCircuit, ntmCNFWeight, encodeCircuit]
+  | cons cl fs ih =>
+      have hclmax :
+          ntmClauseMaxVar cl <= ntmCNFMaxVar (cl :: fs) := by
+        apply ntmCNFMaxVar_ge_clause
+        simp
+      have htailmax :
+          ntmCNFMaxVar fs <= ntmCNFMaxVar (cl :: fs) := by
+        unfold ntmCNFMaxVar
+        simp only [List.foldl_cons]
+        induction fs with
+        | nil => simp
+        | cons a as as ihfs =>
+            simp only [List.foldl_cons]
+            exact foldl_max_ge_acc (as.map ntmClauseMaxVar)
+              (Nat.max (Nat.max 0 (ntmClauseMaxVar cl)) (ntmClauseMaxVar a))
+      have hcl := ntmClauseCircuit_encoding_le cl
+      simp [ntmCNFCircuit, encodeCircuit, ntmCNFWeight, ntmClauseWeight] at ih ⊢
+      nlinarith
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
