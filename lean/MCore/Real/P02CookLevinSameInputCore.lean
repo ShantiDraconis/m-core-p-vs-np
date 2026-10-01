@@ -75,8 +75,11 @@ theorem SameInputWitness.semanticFlip
     (W : SameInputWitness M) :
     SemanticFlip M W.input := by
   unfold SemanticFlip
-  rw [W.fixed]
-  exact rejectTransform_sat_iff_not_accepts M W.input
+  calc
+    SATTarget W.input ↔ SATTarget (rejectTransform M W.input) := by
+      rw [W.fixed]
+    _ ↔ ¬ DeclaredAccepts M W.input :=
+      rejectTransform_sat_iff_not_accepts M W.input
 
 /-- The remaining material same-input producer, restricted to candidates that
 halt within their own declared clocks. -/
