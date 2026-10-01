@@ -17,6 +17,7 @@ import MCore.Real.P02UniversalKernel
 
 #print axioms MCore.Real.P02KleeneKernel.kleene_fixed_point
 #print axioms MCore.Real.P02KleeneKernel.fixed_flip_fails
+#print axioms MCore.Real.P02KleeneKernel.fixedCode_spec
 #print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_p02
 #print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_not_in_p
 
