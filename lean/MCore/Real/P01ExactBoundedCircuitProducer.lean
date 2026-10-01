@@ -94,6 +94,21 @@ theorem layout_consume_prefix
   · have hf := h.frames_paid
     omega
 
+/-- Every canonical circuit encoding contains a three-bit root tag. -/
+theorem encodeCircuit_ne_nil (phi : CircuitK1.Circuit) :
+    encodeCircuit phi ≠ [] := by
+  cases phi with
+  | input i =>
+      simp [encodeCircuit]
+  | const b =>
+      cases b <;> simp [encodeCircuit]
+  | not child =>
+      simp [encodeCircuit]
+  | and left right =>
+      simp [encodeCircuit]
+  | or left right =>
+      simp [encodeCircuit]
+
 /-- Exact bounded leaf producer for input nodes. -/
 theorem input_exact_bounded_certificate
     (sigma : Assignment)
@@ -795,9 +810,7 @@ theorem and_exact_bounded_certificate
         intro hnil
         have henc : encodeCircuit right = [] :=
           (List.append_eq_nil_iff.mp hnil).1
-        have hdec := decodeCircuit_encode right
-        rw [henc] at hdec
-        simp [decodeCircuit] at hdec
+        exact encodeCircuit_ne_nil right henc
 
       obtain ⟨padding1, hcfgLeft⟩ :=
         exact_outcome_have_of_tail_ne_nil
@@ -1201,7 +1214,7 @@ theorem or_exact_bounded_certificate
                  (encodeCircuit (.or left right) ++ tail)
                  (encodeEvalFrames frames) padding }] := by
     simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-      List.append_assoc] using h0
+      childMode, List.append_assoc] using h0
 
   have hLayoutLeft :
       CheckedLayoutBound n leftConsumed
@@ -1241,9 +1254,7 @@ theorem or_exact_bounded_certificate
     intro hnil
     have henc : encodeCircuit right = [] :=
       (List.append_eq_nil_iff.mp hnil).1
-    have hdec := decodeCircuit_encode right
-    rw [henc] at hdec
-    simp [decodeCircuit] at hdec
+    exact encodeCircuit_ne_nil right henc
 
   obtain ⟨padding1, hcfgLeft⟩ :=
     exact_outcome_have_of_tail_ne_nil
