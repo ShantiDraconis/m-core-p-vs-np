@@ -13,6 +13,7 @@ on:
       - 'lean/MCore/Real/P02SemanticTransformerCore.lean'
       - 'lean/MCore/Real/P02SemanticTransformerDichotomy.lean'
       - 'lean/MCore/Real/P02SemanticFlipCore.lean'
+      - 'lean/MCore/Real/P02OpenMathRouteFalsification.lean'
       - 'lean/MCore/Real/P02ComplementTableauDiagonal.lean'
       - 'lean/MCore/Real/P02DiagonalOrbitCore.lean'
       - 'lean/MCore/Real/P02SemanticAlignmentCountermodel.lean'
@@ -53,6 +54,7 @@ jobs:
           lake build MCore.Real.P02SemanticTransformerCore
           lake build MCore.Real.P02SemanticTransformerDichotomy
           lake build MCore.Real.P02SemanticFlipCore
+          lake build MCore.Real.P02OpenMathRouteFalsification
           lake build MCore.Real.P02ComplementTableauDiagonal
           lake build MCore.Real.P02DiagonalOrbitCore
           lake build MCore.Real.P02SemanticAlignmentCountermodel
@@ -69,6 +71,7 @@ jobs:
           import MCore.Real.P02SemanticTransformerCore
           import MCore.Real.P02SemanticTransformerDichotomy
           import MCore.Real.P02SemanticFlipCore
+          import MCore.Real.P02OpenMathRouteFalsification
           import MCore.Real.P02ComplementTableauDiagonal
           import MCore.Real.P02DiagonalOrbitCore
           import MCore.Real.P02SemanticAlignmentCountermodel
@@ -107,6 +110,6 @@ jobs:
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean lean/MCore/Real/P02FiniteDescriptorReduction.lean"
+          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02CookLevinSameInputCore.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02OpenMathRouteFalsification.lean"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
