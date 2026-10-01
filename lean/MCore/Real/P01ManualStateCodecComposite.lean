@@ -29,27 +29,23 @@ def frameCursorDecode (n : Nat) :
     (f : P01EncodedStackEvaluator.EvalFrame)
     (q : P01EvalCursorRoundTrip.CursorReturnState) :
     frameCursorDecode (frameCursorCode f q) = (f, q) := by
-  have h := cursorReturnCode_lt q
   cases f with
-  | neg => simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left]; omega
-  | andLeft => simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left]; omega
-  | andRight b =>
-      cases b <;> simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left] <;> omega
-  | orLeft => simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left]; omega
-  | orRight b =>
-      cases b <;> simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left] <;> omega
+  | neg => cases q <;> rfl
+  | andLeft => cases q <;> rfl
+  | andRight b => cases b <;> cases q <;> rfl
+  | orLeft => cases q <;> rfl
+  | orRight b => cases b <;> cases q <;> rfl
 
 theorem frameCursorCode_lt
     (f : P01EncodedStackEvaluator.EvalFrame)
     (q : P01EvalCursorRoundTrip.CursorReturnState) :
     frameCursorCode f q < 35 := by
-  have h := cursorReturnCode_lt q
   cases f with
-  | neg => simp [frameCursorCode, evalFrameCode]; omega
-  | andLeft => simp [frameCursorCode, evalFrameCode]; omega
-  | andRight b => cases b <;> simp [frameCursorCode, evalFrameCode] <;> omega
-  | orLeft => simp [frameCursorCode, evalFrameCode]; omega
-  | orRight b => cases b <;> simp [frameCursorCode, evalFrameCode] <;> omega
+  | neg => cases q <;> decide
+  | andLeft => cases q <;> decide
+  | andRight b => cases b <;> cases q <;> decide
+  | orLeft => cases q <;> decide
+  | orRight b => cases b <;> cases q <;> decide
 
 def framePushPairCode
     (f : P01EncodedStackEvaluator.EvalFrame)
@@ -72,13 +68,63 @@ def framePushPairDecode (n : Nat) :
     framePushPairDecode (framePushPairCode f q) = (f, q) := by
   have h := framePushCode_lt q
   cases f with
-  | neg => simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left]; omega
-  | andLeft => simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left]; omega
+  | neg =>
+      have h23 : framePushCode q < 23 := h
+      simp [framePushPairDecode, framePushPairCode, evalFrameCode, h23, framePushDecode_code]
+  | andLeft =>
+      have h23 : ¬ 23 + framePushCode q < 23 := by omega
+      have h46 : 23 + framePushCode q < 46 := by omega
+      have hsub : 23 + framePushCode q - 23 = framePushCode q := by omega
+      simp [framePushPairDecode, framePushPairCode, evalFrameCode, h23, h46, hsub,
+        framePushDecode_code]
   | andRight b =>
-      cases b <;> simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left] <;> omega
-  | orLeft => simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left]; omega
+      cases b with
+      | false =>
+          have h23 : ¬ 46 + framePushCode q < 23 := by omega
+          have h46 : ¬ 46 + framePushCode q < 46 := by omega
+          have h69 : 46 + framePushCode q < 69 := by omega
+          have hsub : 46 + framePushCode q - 46 = framePushCode q := by omega
+          simp [framePushPairDecode, framePushPairCode, evalFrameCode, h23, h46, h69,
+            hsub, framePushDecode_code]
+      | true =>
+          have h23 : ¬ 69 + framePushCode q < 23 := by omega
+          have h46 : ¬ 69 + framePushCode q < 46 := by omega
+          have h69 : ¬ 69 + framePushCode q < 69 := by omega
+          have h92 : 69 + framePushCode q < 92 := by omega
+          have hsub : 69 + framePushCode q - 69 = framePushCode q := by omega
+          simp [framePushPairDecode, framePushPairCode, evalFrameCode, h23, h46, h69,
+            h92, hsub, framePushDecode_code]
+  | orLeft =>
+      have h23 : ¬ 92 + framePushCode q < 23 := by omega
+      have h46 : ¬ 92 + framePushCode q < 46 := by omega
+      have h69 : ¬ 92 + framePushCode q < 69 := by omega
+      have h92 : ¬ 92 + framePushCode q < 92 := by omega
+      have h115 : 92 + framePushCode q < 115 := by omega
+      have hsub : 92 + framePushCode q - 92 = framePushCode q := by omega
+      simp [framePushPairDecode, framePushPairCode, evalFrameCode, h23, h46, h69,
+        h92, h115, hsub, framePushDecode_code]
   | orRight b =>
-      cases b <;> simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left] <;> omega
+      cases b with
+      | false =>
+          have h23 : ¬ 115 + framePushCode q < 23 := by omega
+          have h46 : ¬ 115 + framePushCode q < 46 := by omega
+          have h69 : ¬ 115 + framePushCode q < 69 := by omega
+          have h92 : ¬ 115 + framePushCode q < 92 := by omega
+          have h115 : ¬ 115 + framePushCode q < 115 := by omega
+          have h138 : 115 + framePushCode q < 138 := by omega
+          have hsub : 115 + framePushCode q - 115 = framePushCode q := by omega
+          simp [framePushPairDecode, framePushPairCode, evalFrameCode, h23, h46, h69,
+            h92, h115, h138, hsub, framePushDecode_code]
+      | true =>
+          have h23 : ¬ 138 + framePushCode q < 23 := by omega
+          have h46 : ¬ 138 + framePushCode q < 46 := by omega
+          have h69 : ¬ 138 + framePushCode q < 69 := by omega
+          have h92 : ¬ 138 + framePushCode q < 92 := by omega
+          have h115 : ¬ 138 + framePushCode q < 115 := by omega
+          have h138 : ¬ 138 + framePushCode q < 138 := by omega
+          have hsub : 138 + framePushCode q - 138 = framePushCode q := by omega
+          simp [framePushPairDecode, framePushPairCode, evalFrameCode, h23, h46, h69,
+            h92, h115, h138, hsub, framePushDecode_code]
 
 theorem framePushPairCode_lt
     (f : P01EncodedStackEvaluator.EvalFrame)
@@ -164,7 +210,8 @@ theorem needExprCode_lt
       omega
   | input q =>
       have h := inputNodeCode_lt q
-      simp [needExprCode, needExprStateCount, inputNodeStateCount] at *
+      unfold inputNodeStateCount at h
+      simp [needExprCode, needExprStateCount]
       omega
   | retValue b q =>
       have h := cursorReturnCode_lt q
@@ -295,11 +342,11 @@ theorem checkedEvalCode_lt
   | need m q =>
       have h := needExprCode_lt q
       cases m <;>
-        simp [checkedEvalCode, checkedEvalStateCount, needExprStateCount] at * <;> omega
+        simp [checkedEvalCode, checkedEvalStateCount, needExprStateCount] <;> omega
   | «have» m q =>
       have h := haveValueCode_lt q
       cases m <;>
-        simp [checkedEvalCode, checkedEvalStateCount, haveValueStateCount] at * <;> omega
+        simp [checkedEvalCode, checkedEvalStateCount, haveValueStateCount] <;> omega
   | checkSource b => cases b <;> decide
   | final b => cases b <;> decide
   | reject => decide
