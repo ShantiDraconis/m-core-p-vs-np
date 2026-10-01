@@ -148,7 +148,7 @@ theorem canonical_prefix_with_residual_reaches_reject
       (by simpa using hout0)
   subst cfg0
   cases tail with
-  | nil => contradiction
+  | nil => exact False.elim (hne rfl)
   | cons b bs =>
       obtain ⟨m1, hm1, h1⟩ :=
         nonempty_tail_empty_frames_reaches_reject
