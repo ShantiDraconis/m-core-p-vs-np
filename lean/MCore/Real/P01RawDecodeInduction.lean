@@ -198,13 +198,13 @@ theorem decodeCore_none_reaches_sink :
                                               (encodeEvalFrames
                                                 (.andRight
                                                   (CircuitK1.evalCircuit
-                                                    (CanonicalSATWitness.witnessAssignment witness)
+                                                    (P01RawRecursiveSteps.witnessAssignment witness)
                                                     left) :: frames)) →
                                             RawSinkCertificate fuel n .cnf
                                               witness rightSource
                                               (.andRight
                                                 (CircuitK1.evalCircuit
-                                                  (CanonicalSATWitness.witnessAssignment witness)
+                                                  (P01RawRecursiveSteps.witnessAssignment witness)
                                                   left) :: frames)
                                               (consumed + 3 +
                                                 (encodeCircuit left).length)
@@ -215,7 +215,7 @@ theorem decodeCore_none_reaches_sink :
                                           .cnf witness
                                           (.andRight
                                             (CircuitK1.evalCircuit
-                                              (CanonicalSATWitness.witnessAssignment witness)
+                                              (P01RawRecursiveSteps.witnessAssignment witness)
                                               left) :: frames)
                                           (consumed + 3 +
                                             (encodeCircuit left).length)
@@ -289,13 +289,13 @@ theorem decodeCore_none_reaches_sink :
                                               (encodeEvalFrames
                                                 (.orRight
                                                   (CircuitK1.evalCircuit
-                                                    (CanonicalSATWitness.witnessAssignment witness)
+                                                    (P01RawRecursiveSteps.witnessAssignment witness)
                                                     left) :: frames)) →
                                             RawSinkCertificate fuel n .clause
                                               witness rightSource
                                               (.orRight
                                                 (CircuitK1.evalCircuit
-                                                  (CanonicalSATWitness.witnessAssignment witness)
+                                                  (P01RawRecursiveSteps.witnessAssignment witness)
                                                   left) :: frames)
                                               (consumed + 3 +
                                                 (encodeCircuit left).length)
@@ -306,7 +306,7 @@ theorem decodeCore_none_reaches_sink :
                                           .clause witness
                                           (.orRight
                                             (CircuitK1.evalCircuit
-                                              (CanonicalSATWitness.witnessAssignment witness)
+                                              (P01RawRecursiveSteps.witnessAssignment witness)
                                               left) :: frames)
                                           (consumed + 3 +
                                             (encodeCircuit left).length)
