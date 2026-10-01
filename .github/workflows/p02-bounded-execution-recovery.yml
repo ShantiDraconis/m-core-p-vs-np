@@ -12,6 +12,7 @@ on:
       - 'lean/MCore/Real/P02BoundedComputationClose.lean'
       - 'lean/MCore/Real/P02TableauCompletenessActive.lean'
       - 'lean/MCore/Real/P02TableauCompletenessClose.lean'
+      - 'lean/MCore/Real/P02AntiTableau.lean'
       - 'audit/ATK_P02_BOUNDED_EXEC_RECOVERY_V1.json'
       - '.github/workflows/p02-bounded-execution-recovery.yml'
   workflow_dispatch:
@@ -38,22 +39,29 @@ jobs:
           lake build MCore.Real.P02BoundedComputationClose
           lake build MCore.Real.P02TableauCompletenessActive
           lake build MCore.Real.P02TableauCompletenessClose
+          lake build MCore.Real.P02AntiTableau
       - name: Exact axiom audit
         run: |
           cat > P02BoundedExecAudit.lean <<'EOF'
           import MCore.Real.P02TableauCompletenessClose
+          import MCore.Real.P02AntiTableau
           #print axioms MCore.Real.P02BoundedComputationClose.transitionSoundnessCertificate
           #print axioms MCore.Real.P02BoundedComputationClose.certificates_close_boundedExecCorrectness
           #print axioms MCore.Real.P02TableauCompletenessClose.executionAssignment_transitionsCNF
           #print axioms MCore.Real.P02TableauCompletenessClose.tableauCompletenessCertificate
           #print axioms MCore.Real.P02TableauCompletenessClose.boundedExecCorrectness_closed
+          #print axioms MCore.Real.P02AntiTableau.complement_acceptsAtFuel_iff
+          #print axioms MCore.Real.P02AntiTableau.antiTableauBits_sat_iff_not_acceptsAtFuel
+          #print axioms MCore.Real.P02AntiTableau.antiDeclaredBits_flip_source
+          #print axioms MCore.Real.P02AntiTableau.SameInputTransport.semanticFlip
+          #print axioms MCore.Real.P02AntiTableau.same_input_transport_implies_total_semantic_flip_core
           EOF
           lake env lean P02BoundedExecAudit.lean | tee P02BoundedExecAudit.log
           ! grep -E 'sorryAx' P02BoundedExecAudit.log
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          files="lean/MCore/Real/P02BoundedComputationEncoding.lean lean/MCore/Real/P02BoundedComputationLogic.lean lean/MCore/Real/P02BoundedComputationTape.lean lean/MCore/Real/P02BoundedComputationSoundness.lean lean/MCore/Real/P02BoundedComputationClose.lean lean/MCore/Real/P02TableauCompletenessActive.lean lean/MCore/Real/P02TableauCompletenessClose.lean"
+          files="lean/MCore/Real/P02BoundedComputationEncoding.lean lean/MCore/Real/P02BoundedComputationLogic.lean lean/MCore/Real/P02BoundedComputationTape.lean lean/MCore/Real/P02BoundedComputationSoundness.lean lean/MCore/Real/P02BoundedComputationClose.lean lean/MCore/Real/P02TableauCompletenessActive.lean lean/MCore/Real/P02TableauCompletenessClose.lean lean/MCore/Real/P02AntiTableau.lean"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
 
