@@ -9,6 +9,8 @@ namespace P01CheckedVerifierFiniteState
 open P01IntegratedAssembly
 open P01CheckedVerifierCompositeNTM
 
+set_option maxRecDepth 100000
+
 deriving instance Fintype for P01EncodedStackEvaluator.EvalFrame
 deriving instance Fintype for P01InputReturnMode.InputReturnMode
 deriving instance Fintype for P01InputReturnMode.InputReturnClassifyState
