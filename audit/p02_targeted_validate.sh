@@ -54,8 +54,6 @@ expected = [
   "MCore.Real.P02OperatorKernel.p02Producer_iff_failureGenerator",
   "MCore.Real.P02OperatorKernel.p02Producer_iff_universalFailure",
   "MCore.Real.P02OperatorKernel.canonicalSATProducer_iff_notInP",
-  "MCore.Real.P02FinalCompression.p01_closed",
-  "MCore.Real.P02FinalCompression.canonical_sat_in_np",
   "MCore.Real.P02FinalCompression.canonical_p02_operator_closes",
   "MCore.Real.P02FinalCompression.final_open_math_iff_sat_not_in_p",
   "MCore.Real.P02FinalCompression.final_open_math_closes",
