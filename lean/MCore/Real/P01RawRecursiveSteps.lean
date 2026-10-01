@@ -543,9 +543,13 @@ theorem and_right_failure_step
                   (evalCircuit (witnessAssignment witness) left))
                 (by simp)
                 (by simpa [List.append_assoc] using hLayout)
-            convert hp using 1 <;>
-              simp [afterLeft, leftConsumed, encodeEvalFrames,
-                List.append_assoc] <;> omega
+            constructor
+            · have hs := hp.source_budget
+              dsimp [afterLeft, leftConsumed]
+              simpa using hs
+            · have hf := hp.frames_paid
+              dsimp [afterLeft, leftConsumed]
+              simpa [encodeEvalFrames, List.length_append] using hf
           have hrec' := hrec padRight hLayoutRight
           have hprefixBudget :
               m0 + m1 + m2 ≤ rawChunk n := by
@@ -741,9 +745,13 @@ private theorem or_right_allowed_step
               (evalCircuit (witnessAssignment witness) left))
             (by simp)
             (by simpa [List.append_assoc] using hLayout)
-        convert hp using 1 <;>
-          simp [afterLeft, leftConsumed, encodeEvalFrames,
-            List.append_assoc] <;> omega
+        constructor
+        · have hs := hp.source_budget
+          dsimp [afterLeft, leftConsumed]
+          simpa using hs
+        · have hf := hp.frames_paid
+          dsimp [afterLeft, leftConsumed]
+          simpa [encodeEvalFrames, List.length_append] using hf
       have hrec' := hrec padRight hLayoutRight
       have hprefixBudget :
           m0 + m1 + m2 ≤ rawChunk n := by
