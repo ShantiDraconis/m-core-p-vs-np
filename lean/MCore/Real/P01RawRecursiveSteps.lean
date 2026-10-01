@@ -30,7 +30,7 @@ open P01NTMRunLaws
 abbrev EvalConfig :=
   Configuration CheckedEvalRunState (Option Bool)
 
-private def witnessAssignment (witness : BitString) : Assignment :=
+def witnessAssignment (witness : BitString) : Assignment :=
   fun i => witness.getD i false
 
 /-- Standard recursive sink certificate at a fixed global source bound n. -/
