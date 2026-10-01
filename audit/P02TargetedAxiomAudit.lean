@@ -1,0 +1,42 @@
+import MCore.Real.P02OperatorKernel
+import MCore.Real.P02FinalCompression
+import MCore.Real.P02KleeneKernel
+import MCore.Real.P02EffectiveAlignment
+import MCore.Real.P02UniversalLowerBound
+import MCore.Real.P02UniversalKernel
+
+#print axioms MCore.Real.P02OperatorKernel.p02Producer_iff_failureGenerator
+#print axioms MCore.Real.P02OperatorKernel.p02Producer_iff_universalFailure
+#print axioms MCore.Real.P02OperatorKernel.canonicalSATProducer_iff_notInP
+
+#print axioms MCore.Real.P02FinalCompression.p01_closed
+#print axioms MCore.Real.P02FinalCompression.canonical_sat_in_np
+#print axioms MCore.Real.P02FinalCompression.canonical_p02_operator_closes
+#print axioms MCore.Real.P02FinalCompression.final_open_math_iff_sat_not_in_p
+#print axioms MCore.Real.P02FinalCompression.final_open_math_closes
+
+#print axioms MCore.Real.P02KleeneKernel.kleene_fixed_point
+#print axioms MCore.Real.P02KleeneKernel.fixed_flip_fails
+#print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_p02
+#print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_not_in_p
+
+#print axioms MCore.Real.P02EffectiveAlignment.uniform_effective_coverage_closes_p02
+
+#print axioms MCore.Real.P02UniversalLowerBound.correctAt_iff_halts_and_semantics
+#print axioms MCore.Real.P02UniversalLowerBound.failureAt_iff_nonhalting_or_mismatch
+#print axioms MCore.Real.P02UniversalLowerBound.semanticMismatch_iff_wrong_yes_or_wrong_no
+#print axioms MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_universalFailure
+#print axioms MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_notInP
+#print axioms MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_operational
+#print axioms MCore.Real.P02UniversalLowerBound.failureAt_of_totalClocked_iff_mismatch
+#print axioms MCore.Real.P02UniversalLowerBound.semanticAdversary_closes
+#print axioms MCore.Real.P02UniversalLowerBound.selector_closes_notInP
+
+#print axioms MCore.Real.P02UniversalKernel.SemanticDiagonalWitness.mismatch
+#print axioms MCore.Real.P02UniversalKernel.SemanticDiagonalWitness.fails
+#print axioms MCore.Real.P02UniversalKernel.semanticDiagonalFamily_closes_lowerBound
+#print axioms MCore.Real.P02UniversalKernel.semanticDiagonalFamily_closes_notInP
+#print axioms MCore.Real.P02UniversalKernel.semanticFamily_iff_pointwise
+#print axioms MCore.Real.P02UniversalKernel.pointwiseSemanticDiagonal_closes_p02
+#print axioms MCore.Real.P02UniversalKernel.semanticDiagonalFamily_to_final_open_math
+#print axioms MCore.Real.P02UniversalKernel.semanticDiagonalFamily_closes_final
