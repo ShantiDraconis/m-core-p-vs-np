@@ -13,7 +13,7 @@ def falseBits : BitString := encodeCircuit (.const false)
 def trueBits : BitString := encodeCircuit (.const true)
 
 /-- Tiny total deterministic candidate which rejects the canonical false
-constant and accepts the canonical true constant. -/
+Boolean encoding and accepts the canonical true Boolean encoding. -/
 def constantPairMachine : TM (Fin 4) (Option Bool) :=
   { initial := 0
     blank := none
