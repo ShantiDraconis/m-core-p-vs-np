@@ -19,6 +19,7 @@ open P01EvalCursorMachine
 open P01EncodedFrameTape
 open P01WitnessPreservingPrep
 open P01CheckedVerifierInvariant
+open P01CheckedVerifierBudget
 open P01CheckedEvalRunLoopNTM
 open P01CheckedVerifierCompositeNTM
 open P01CheckedVerifierDeterminism
