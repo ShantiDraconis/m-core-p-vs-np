@@ -3954,6 +3954,36 @@ theorem rawRightList_left_shape
             (k + 1) hir _ hNew).symm
         simp [rawRightList, hcell, hk, ntmRadius]
 
+
+/-- Structural warning: canonical trimming is not equal to the concrete Tape
+    representation after a move.  A written blank is still an explicit list
+    cell in Model.Tape.move, whereas trimTrailingBlank removes it. -/
+theorem trimTrailingBlank_does_not_preserve_explicit_blank :
+    trimTrailingBlank none [none] = [] := by
+  simp [trimTrailingBlank]
+
+/-- Concrete witness for the failed canonical-tape route:
+    moving left after writing blank can leave one explicit blank on the right. -/
+theorem tapeMove_left_can_create_explicit_blank :
+    (Tape.move none Direction.left
+      (({ left := [some true], head := some false, right := [] } :
+          Tape (Option Bool)).write none)).right = [none] := by
+  rfl
+
+/-- Therefore the trimmed representation of the same right-cell values is
+    structurally different from the Tape.move result. -/
+theorem trim_route_left_counterexample :
+    trimTrailingBlank none
+      (Tape.move none Direction.left
+        (({ left := [some true], head := some false, right := [] } :
+            Tape (Option Bool)).write none)).right
+      ≠
+    (Tape.move none Direction.left
+      (({ left := [some true], head := some false, right := [] } :
+          Tape (Option Bool)).write none)).right := by
+  simp [trimTrailingBlank, Tape.write, Tape.move]
+
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
