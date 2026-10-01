@@ -18,7 +18,7 @@ theorem exact_encoding_or_decode_none
       decodeCircuit bs = none := by
   cases hdec : decodeCircuit bs with
   | none =>
-      exact Or.inr hdec
+      exact Or.inr rfl
   | some phi =>
       have hdec' : decodeCircuit bs = some phi := by simpa using hdec
       exact Or.inl ⟨phi, decodeCircuit_sound bs phi hdec'⟩
