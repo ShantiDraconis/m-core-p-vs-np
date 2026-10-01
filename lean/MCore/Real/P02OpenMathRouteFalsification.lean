@@ -1,3 +1,4 @@
+import Mathlib.Tactic
 import MCore.Real.P02SemanticTransformerCore
 import MCore.Real.P02CookLevinSameInputCore
 import MCore.Real.P02BoundedComputationEncoding
@@ -55,8 +56,11 @@ def constantPairCandidate : PolyDTMCandidate :=
 
 theorem constantPair_declared_total :
     DeclaredClockTotal constantPairCandidate := by
+  change ∀ x : BitString,
+    constantPairCandidate.machine.HaltsWithin
+      (constantPairCandidate.timeBound x.length)
+      (initialTMConfig constantPairCandidate.machine x)
   intro x
-  unfold DeclaredClockTotal DeclaredHalts
   simp [constantPairCandidate, constantPairTimeBound,
     constantPairMachine, TM.HaltsWithin, initialTMConfig,
     inputTape, TM.run, TM.step, Tape.write, Tape.move]
@@ -138,7 +142,7 @@ theorem encodeCircuit_length_pos
     0 < (encodeCircuit c).length := by
   have hsize : 0 < CircuitK1.size c := by
     cases c <;> simp [CircuitK1.size]
-  exact lt_of_lt_of_le hsize (size_le_encodeCircuit_length c)
+  exact Nat.lt_of_lt_of_le hsize (size_le_encodeCircuit_length c)
 
 /-- CNF syntax contributes at least one encoding unit per clause. -/
 theorem cnfCircuit_encode_length_ge_clause_count
@@ -197,7 +201,7 @@ theorem rejectTransform_strict_growth
             (boundedExecTableauCNF (complementCandidate M) x t))).length :=
     cnfCircuit_encode_length_ge_clause_count _
   unfold rejectTransform rejectCircuit boundedExecCircuit
-  exact lt_of_lt_of_le hcnf henc
+  exact Nat.lt_of_lt_of_le hcnf henc
 
 theorem no_SameInputWitness
     (M : PolyDTMCandidate) :
