@@ -10,10 +10,12 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open P01CNFMode
 open P01NeedExprTagDecode
+open P01NeedExprCompositeNTM
 open P01EncodedStackEvaluator
 open P01EvalCursorMachine
 open P01EncodedFrameTape
 open P01CheckedVerifierInvariant
+open P01CheckedVerifierBudget
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunTagPrefix
 open P01CheckedEvalRunBoundedHelpers
@@ -190,7 +192,8 @@ theorem unary_none_reaches_sink
              evalCursorStackEndTape witness consumed
                (false :: false :: false :: rest)
                (encodeEvalFrames frames) padding }] := by
-    simpa [hrest] using hreach
+    rw [hrest]
+    exact hreach
   exact ⟨m, hbudget, dead, hreach', .dead hactive hdead⟩
 
 /-- One already-bounded prefix plus a recursively reached sink composes without
