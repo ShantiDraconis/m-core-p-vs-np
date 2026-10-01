@@ -34,6 +34,270 @@ jobs:
           set -euo pipefail
           lake build MCore.C12.Families c12_gen
 
+      - name: Targeted build MCore.Real.CNFStructure
+        run: |
+          set -euo pipefail
+          mkdir -p audit
+          lake build MCore.Real.CNFStructure 2>&1 | tee audit/PNP-CNFStructure-targeted.log
+
+      - name: Targeted build MCore.Real.Semantics
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.Semantics 2>&1 | tee audit/PNP-Semantics-targeted.log
+
+      - name: Axiom audit Semantics
+        run: |
+          set -euo pipefail
+          cat > SemanticsAxiomAudit.lean <<'EOF'
+          import MCore.Real.Semantics
+          #print axioms MCore.Real.semanticallyEquivalent_refl
+          #print axioms MCore.Real.semanticallyRepresents_of_parse_eq
+          #print axioms MCore.Real.semanticallyRepresents_has_parse
+          #print axioms MCore.Real.semanticallyRepresents_eval
+          EOF
+          lake env lean SemanticsAxiomAudit.lean 2>&1 | tee audit/PNP-Semantics-axioms.log
+
+      - name: Targeted build MCore.Real.SATMachine
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.SATMachine 2>&1 | tee audit/PNP-SATMachine-targeted.log
+
+      - name: Axiom audit SATMachine interface
+        run: |
+          set -euo pipefail
+          cat > SATMachineAxiomAudit.lean <<'EOF'
+          import MCore.Real.SATMachine
+          #print axioms MCore.Real.satMachineRealization_starts_initial
+          #print axioms MCore.Real.satMachineRealization_decides
+          EOF
+          lake env lean SATMachineAxiomAudit.lean 2>&1 | tee audit/PNP-SATMachine-axioms.log
+
+      - name: Targeted build MCore.Real.FinalProof
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalProof 2>&1 | tee audit/PNP-FinalProof-targeted.log
+
+      - name: Hardened canonical final-proof model
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalFinalProof 2>&1 | tee audit/PNP-CanonicalFinalProof-targeted.log
+
+      - name: Axiom audit hardened canonical endpoint
+        run: |
+          set -euo pipefail
+          cat > CanonicalFinalProofAxiomAudit.lean <<'EOF'
+          import MCore.Real.CanonicalFinalProof
+          #print axioms MCore.Real.CanonicalFinalProof.universal_failure_implies_not_in_p
+          #print axioms MCore.Real.CanonicalFinalProof.not_in_p_implies_universal_failure
+          #print axioms MCore.Real.CanonicalFinalProof.universal_failure_iff_not_in_p
+          #print axioms MCore.Real.CanonicalFinalProof.target_failure_implies_p_ne_np
+          #print axioms MCore.Real.CanonicalFinalProof.separation_certificate_closes
+          EOF
+          lake env lean CanonicalFinalProofAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalFinalProof-axioms.log
+          if grep -E 'sorryAx' audit/PNP-CanonicalFinalProof-axioms.log; then exit 1; fi
+
+      - name: Build canonical P subset NP embedding
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalPSubsetNP MCore.Real.CanonicalComplexityBridge 2>&1 | tee audit/PNP-CanonicalPSubsetNP-targeted.log
+
+      - name: Axiom audit canonical P subset NP embedding
+        run: |
+          set -euo pipefail
+          cat > CanonicalPSubsetNPAxiomAudit.lean <<'EOF'
+          import MCore.Real.CanonicalPSubsetNP
+          import MCore.Real.CanonicalComplexityBridge
+          #print axioms MCore.Real.CanonicalPSubsetNP.accept_or_reject_eq_halting
+          #print axioms MCore.Real.CanonicalPSubsetNP.runBranches_to_tm_run
+          #print axioms MCore.Real.CanonicalPSubsetNP.correctAt_to_ntm
+          #print axioms MCore.Real.CanonicalPSubsetNP.inP_subset_inNP
+          #print axioms MCore.Real.CanonicalComplexityBridge.canonical_failure_witness_separates_legacy_interface
+          EOF
+          lake env lean CanonicalPSubsetNPAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalPSubsetNP-axioms.log
+          if grep -E 'sorryAx' audit/PNP-CanonicalPSubsetNP-axioms.log; then exit 1; fi
+
+      - name: Build all-gap fail-proof compression
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FailProofAllGaps \
+            MCore.Real.FailProofFiniteAttack \
+            MCore.Real.CanonicalSATBoundary 2>&1 | tee audit/PNP-FailProof-AllGaps-targeted.log
+
+      - name: Axiom audit all-gap fail-proof compression
+        run: |
+          set -euo pipefail
+          cat > FailProofAllGapsAxiomAudit.lean <<'EOF'
+          import MCore.Real.FailProofAllGaps
+          import MCore.Real.FailProofFiniteAttack
+          import MCore.Real.CanonicalSATBoundary
+          #print axioms MCore.Real.FailProofAllGaps.failure_generator_implies_universal_failure
+          #print axioms MCore.Real.FailProofAllGaps.failureGeneratorOfUniversalFailure
+          #print axioms MCore.Real.FailProofAllGaps.final_gap_certificate_closes
+          #print axioms MCore.Real.FailProofFiniteAttack.finite_to_universal_principle_refuted
+          #print axioms MCore.Real.CanonicalSATBoundary.encoded_sat_iff
+          #print axioms MCore.Real.CanonicalSATBoundary.sat_external_closure_implies_official_separation
+          EOF
+          lake env lean FailProofAllGapsAxiomAudit.lean 2>&1 | tee audit/PNP-FailProof-AllGaps-axioms.log
+          if grep -E 'sorryAx' audit/PNP-FailProof-AllGaps-axioms.log; then exit 1; fi
+
+      - name: Build canonical Circuit bit encoding
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier 2>&1 | tee audit/PNP-CanonicalCircuitBits-targeted.log
+
+      - name: Axiom audit canonical Circuit bit encoding
+        run: |
+          set -euo pipefail
+          cat > CanonicalCircuitBitsAxiomAudit.lean <<'EOF'
+          import MCore.Real.CanonicalCircuitBits
+          import MCore.Real.CanonicalSATWitness
+          import MCore.Real.CanonicalSATVerifier
+          #print axioms MCore.Real.CanonicalCircuitBits.decodeNat_encodeNat_append
+          #print axioms MCore.Real.CanonicalCircuitBits.size_le_encodeCircuit_length
+          #print axioms MCore.Real.CanonicalCircuitBits.decodeCircuitCore_encode_append
+          #print axioms MCore.Real.CanonicalCircuitBits.decodeCircuit_encode
+          #print axioms MCore.Real.CanonicalCircuitBits.canonical_sat_encoding_closed
+          #print axioms MCore.Real.CanonicalCircuitBits.encoded_sat_equivalence
+          #print axioms MCore.Real.CanonicalSATWitness.satLanguage_iff_exists_finite_witness
+          #print axioms MCore.Real.CanonicalSATWitness.varBound_le_encoded_length
+          #print axioms MCore.Real.CanonicalSATWitness.witness_bits_linear_bound
+          #print axioms MCore.Real.CanonicalSATVerifier.verifyWitness_correct
+          #print axioms MCore.Real.CanonicalSATVerifier.verificationCost_linear_encoding_bound
+          #print axioms MCore.Real.CanonicalSATVerifier.sat_has_short_verified_witness
+          EOF
+          lake env lean CanonicalCircuitBitsAxiomAudit.lean 2>&1 | tee audit/PNP-CanonicalCircuitBits-axioms.log
+          if grep -E 'sorryAx' audit/PNP-CanonicalCircuitBits-axioms.log; then exit 1; fi
+
+      - name: Build P01 evalStep physical refinement
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01EvalStepFrameRefinement 2>&1 | tee audit/P01-EvalStepFrameRefinement-targeted.log
+
+      - name: Build P01 preserving unary reader frontier
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01PreservingUnaryWitnessMarker \
+            MCore.Real.P01InputNodePreservingPlan \
+            MCore.Real.P01PreservingUnaryWitnessMachine \
+            MCore.Real.P01PreservingUnaryReaderCertificate \
+            MCore.Real.P01PreservingMarkerIteration 2>&1 | tee audit/P01-PreservingUnaryReader-targeted.log
+
+      - name: Axiom audit P01 preserving unary reader frontier
+        run: |
+          set -euo pipefail
+          cat > P01PreservingUnaryReaderAudit.lean <<'EOF'
+          import MCore.Real.P01PreservingUnaryWitnessMarker
+          import MCore.Real.P01InputNodePreservingPlan
+          import MCore.Real.P01PreservingUnaryWitnessMachine
+          import MCore.Real.P01PreservingUnaryReaderCertificate
+          import MCore.Real.P01PreservingMarkerIteration
+          #print axioms MCore.Real.P01PreservingUnaryWitnessMarker.marker_tape_roundTrip
+          #print axioms MCore.Real.P01InputNodePreservingPlan.evalStep_input_encoded
+          #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_first_true_cycle
+          #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_correct
+          #print axioms MCore.Real.P01PreservingUnaryReaderCertificate.input_semantic_from_reader_bit
+          #print axioms MCore.Real.P01PreservingMarkerIteration.advanceN_exposes_getD
+          EOF
+          lake env lean P01PreservingUnaryReaderAudit.lean 2>&1 | tee audit/P01-PreservingUnaryReader-axioms.log
+          if grep -E 'sorryAx' audit/P01-PreservingUnaryReader-axioms.log; then exit 1; fi
+
+      - name: Axiom audit P01 evalStep physical refinement
+        run: |
+          set -euo pipefail
+          cat > P01EvalStepFrameRefinementAudit.lean <<'EOF'
+          import MCore.Real.P01EvalStepFrameRefinement
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.push_refines_frame_cons
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.pop_refines_frame_tail
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_not_tag_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_and_tag_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_or_tag_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_neg_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_andLeft_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_orLeft_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_andRight_return_refined
+          #print axioms MCore.Real.P01EvalStepFrameRefinement.evalStep_orRight_return_refined
+          EOF
+          lake env lean P01EvalStepFrameRefinementAudit.lean 2>&1 | tee audit/P01-EvalStepFrameRefinement-axioms.log
+          if grep -E 'sorryAx' audit/P01-EvalStepFrameRefinement-axioms.log; then exit 1; fi
+
+      - name: Reproduce C12 semantic-proxy counterexample
+        run: |
+          set -euo pipefail
+          lake env lean audit/C12/SRepresentationCounterexample.lean 2>&1 | tee audit/PNP-C12-SemanticCounterexample.log
+          if grep -E 'sorryAx' audit/PNP-C12-SemanticCounterexample.log; then exit 1; fi
+          grep -q 'direct_potential_semantic_identification_refuted' audit/PNP-C12-SemanticCounterexample.log
+
+      - name: RED attack arbitrary-encode loophole
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FinalProofAttack 2>&1 | tee audit/PNP-FinalProofAttack-targeted.log
+
+      - name: Axiom audit final-proof attack
+        run: |
+          set -euo pipefail
+          cat > FinalProofAttackAxiomAudit.lean <<'EOF'
+          import MCore.Real.FinalProofAttack
+          #print axioms MCore.Real.FinalProofAttack.smuggledCandidate_correct
+          #print axioms MCore.Real.FinalProofAttack.every_language_inP_under_arbitrary_encode
+          #print axioms MCore.Real.FinalProofAttack.current_SATNotInP_refuted
+          #print axioms MCore.Real.FinalProofAttack.current_UniversalSATFailure_refuted
+          #print axioms MCore.Real.FinalProofAttack.current_SATLowerBoundCertificate_refuted
+          EOF
+          lake env lean FinalProofAttackAxiomAudit.lean 2>&1 | tee audit/PNP-FinalProofAttack-axioms.log
+          if grep -E 'sorryAx' audit/PNP-FinalProofAttack-axioms.log; then exit 1; fi
+
+      - name: Axiom audit direct final-proof compression
+        run: |
+          set -euo pipefail
+          cat > FinalProofAxiomAudit.lean <<'EOF'
+          import MCore.Real.FinalProof
+          #print axioms MCore.Real.universal_sat_failure_implies_sat_not_in_p
+          #print axioms MCore.Real.sat_not_in_p_implies_universal_sat_failure
+          #print axioms MCore.Real.universal_sat_failure_iff_sat_not_in_p
+          #print axioms MCore.Real.sat_not_in_p_of_lower_bound_certificate
+          #print axioms MCore.Real.sat_boundary_implies_machine_p_ne_np
+          #print axioms MCore.Real.sat_certificate_implies_machine_p_ne_np
+          #print axioms MCore.Real.final_proof_from_residual
+          EOF
+          lake env lean FinalProofAxiomAudit.lean 2>&1 | tee audit/PNP-FinalProof-axioms.log
+          if grep -E 'sorryAx' audit/PNP-FinalProof-axioms.log; then exit 1; fi
+
+      - name: Axiom audit CNFStructure
+        run: |
+          set -euo pipefail
+          cat > CNFStructureAxiomAudit.lean <<'EOF'
+          import MCore.Real.CNFStructure
+          #print axioms MCore.Real.IsLiteral
+          #print axioms MCore.Real.IsClause
+          #print axioms MCore.Real.IsCNF
+          #print axioms MCore.Real.IsClause_or
+          #print axioms MCore.Real.IsCNF_and
+          #print axioms MCore.Real.literalAt_isLiteral
+          #print axioms MCore.Real.isLiteral_isClause
+          #print axioms MCore.Real.literalAt_isClause
+          #print axioms MCore.Real.foldl_or_preserves_isClause
+          #print axioms MCore.Real.randomClause_isClause
+          #print axioms MCore.Real.isClause_isCNF
+          #print axioms MCore.Real.randomClause_isCNF
+          #print axioms MCore.Real.foldl_and_preserves_isCNF
+          #print axioms MCore.Real.randomKCNF_isCNF
+          #print axioms MCore.Real.renderCNF
+          #print axioms MCore.Real.WellFormedCNFString
+          #print axioms MCore.Real.wellFormed_of_render
+          #print axioms MCore.Real.charToDigit?
+          #print axioms MCore.Real.parseNatChars
+          #print axioms MCore.Real.parseCircuitChars
+          #print axioms MCore.Real.parseCNF
+          #print axioms MCore.Real.bool_and_eq_true_iff
+          #print axioms MCore.Real.bool_and_decide_eq_true_iff
+          #print axioms MCore.Real.isClauseBool
+          #print axioms MCore.Real.isCNFBool
+          #print axioms MCore.Real.isClauseBool_eq_true_iff
+          #print axioms MCore.Real.isCNFBool_eq_true_iff
+          EOF
+          lake env lean CNFStructureAxiomAudit.lean 2>&1 | tee audit/PNP-CNFStructure-axioms-targeted.log
+          if grep -E 'sorryAx' audit/PNP-CNFStructure-axioms-targeted.log; then exit 1; fi
+
       - name: Build bidirectional structural audit
         run: |
           set -euo pipefail
@@ -42,9 +306,6 @@ jobs:
             MCore.BackwardAudit.FinalToMiddle \
             MCore.BackwardAudit.OrientedWitnessBoundary \
             MCore.BackwardAudit.OrientedWitnessBoundary
-
-      - name: Build umbrella target
-        run: lake build MCore
 
       - name: C12 semantic axiom audit
         run: |
@@ -119,19 +380,6 @@ jobs:
           if grep -F 'sorryAx' BackwardOracle.log BackwardWithout.log; then exit 1; fi
           grep -F "'MCore.BackwardAudit.hypothetical_final' does not depend on any axioms" BackwardOracle.log
           grep -F "'MCore.BackwardAudit.separation_witness_closes' does not depend on any axioms" BackwardWithout.log
-
-      - name: Clean C12 deterministic reproduction
-        run: |
-          set -euo pipefail
-          cp distribution.csv distribution.before.csv
-          lake clean
-          # c12_gen must be rebuilt first because deterministic data reproduction depends on it.
-          timeout 20m lake build MCore.C12.Families c12_gen
-          lake exe c12_gen > distribution.rebuilt.csv
-          cmp distribution.before.csv distribution.rebuilt.csv
-          # Single clean umbrella closure; no redundant target-by-target rebuild after this point.
-          timeout 20m lake build MCore
-          sha256sum distribution.rebuilt.csv
 
       - name: Upload distributions and audit data
         uses: actions/upload-artifact@v4

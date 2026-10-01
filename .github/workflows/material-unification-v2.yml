@@ -1,0 +1,41 @@
+name: material-unification-v2
+on:
+  push:
+    branches: ['atk/p01-indexed-read-global-20260928']
+  workflow_dispatch:
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+      - run: lake update
+      - run: lake exe cache get || true
+      - run: lake build MCore.BackwardAudit.OrientedWitnessBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalFinalProof MCore.Real.CanonicalFinalProof MCore.Real.CanonicalSATBoundary MCore.Real.CanonicalCircuitBits MCore.Real.CanonicalSATWitness MCore.Real.CanonicalSATVerifier MCore.Real.P01FinalCertificate MCore.Real.CanonicalSATWitnessGuessNTM MCore.Real.P01WitnessGuessExecution MCore.Real.P01IntegrationFence MCore.Real.MachineRunLemmas MCore.Real.CanonicalSATFrameMachineV2 MCore.Real.P01WitnessPreservingPrep MCore.Real.P01VerifierGateMachine MCore.Real.P01VerifierComposition MCore.Real.P01FullVerifierTraversal MCore.Real.P01FullVerifierStackSemantics MCore.Real.P01FullVerifierMachine MCore.Real.P01FullVerifierPhysical MCore.Real.P01FullVerifierPhysicalControl MCore.Real.P01FullVerifierPhysicalMoves MCore.Real.P01FullVerifierPhysicalShuttles MCore.Real.P01FullVerifierPhysicalStackV2 MCore.Real.P01FullVerifierStackPrimitiveMachine MCore.Real.P01FullVerifierInputShuttleV2 MCore.Real.P01FullVerifierSourceRewind MCore.Real.P01WitnessIndexedRead MCore.Real.P01WitnessIndexedReadMachine MCore.Real.P01WitnessIndexedReadProof MCore.Real.P01WitnessIndexedReadGlobal
+      - run: lake env lean lean/MCore/MinimalInhabitant.lean
+      - run: lake env lean lean/MCore/BackwardAudit/MaterialProducerGate.lean
+      - name: Expected P01 integrated-machine failure
+        run: |
+          if lake env lean probe/P01MachineConstructionExpectedFailure.lean > /tmp/p01-material.log 2>&1; then
+            echo "UNEXPECTED_P01_CONSTRUCTION_PASS"
+            cat /tmp/p01-material.log
+            exit 1
+          else
+            cat /tmp/p01-material.log
+            echo "EXPECTED_P01_FAIL_CONFIRMED"
+          fi
+      - name: Expected canonical SAT material failure
+        run: |
+          if lake env lean probe/PNPMaterialExpectedFailure.lean > /tmp/pnp-material.log 2>&1; then
+            echo "UNEXPECTED_MATERIAL_PASS"
+            cat /tmp/pnp-material.log
+            exit 1
+          else
+            cat /tmp/pnp-material.log
+            echo "EXPECTED_FAIL_CONFIRMED"
+          fi

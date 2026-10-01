@@ -1,0 +1,95 @@
+{
+  "schema": "ATK_P01_MATERIAL_FRONTIER_V1",
+  "canonical_target": "Nonempty P01MachineConstruction",
+  "provenance": {
+    "parser": {
+      "status": "MATERIAL_GREEN_FROZEN_REUSE",
+      "branch": "frozen/p01-global-parser-simulation-prefix-green-eaf1a3af",
+      "theorem": "MCore.Real.P01GlobalParserBound.slot_parser_machine_simulation_certificate",
+      "content": "no-hypothesis global Fin-25 parser simulation; polynomial halting and exact slotAccept semantics"
+    },
+    "witness_preserving_prep": {
+      "status": "PARTIAL_CONCRETE",
+      "branch": "attack/t1d-global-physical-20260922",
+      "object": "MCore.Real.P01WitnessPreservingPrep.witnessPreservingPrep",
+      "proved": [
+        "fixed Fin 12 NTM",
+        "blank_none",
+        "polynomial cubic time-bound function",
+        "local transition/branching lemmas",
+        "never rejects"
+      ],
+      "open": [
+        "global HaltsWithin theorem for every source",
+        "global reached-layout theorem preserving source and producing witness"
+      ]
+    },
+    "verifier": {
+      "status": "PARTIAL_CONCRETE",
+      "branch": "attack/t1d-global-physical-20260922",
+      "proved": [
+        "source-end scan",
+        "physical move sequences",
+        "witness shuttles",
+        "physicalWitnessRead_correct",
+        "local neg/and/or semantics",
+        "functional reverse decoder"
+      ],
+      "open": [
+        "Nonempty PhysicalVerifierRealization",
+        "single fixed finite-control TM with polynomial halting and physical_eq_logical for every circuit/witness"
+      ]
+    },
+    "integration": {
+      "status": "OPEN_MATERIAL",
+      "type": "MCore.Real.P01FinalCertificate.P01MachineConstruction",
+      "open": [
+        "single integrated NTM",
+        "blank_none",
+        "polynomial bound",
+        "total halting",
+        "accepts_iff SATBits circuitBitEncoding"
+      ]
+    },
+    "witness_guess": {
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "source_branch": "atk/p01-terminal-sprint-v1",
+      "object": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessMachine",
+      "theorems": [
+        "MCore.Real.P01WitnessGuessExecution.witnessGuess_complete",
+        "MCore.Real.P01WitnessGuessExecution.witnessGuess_halts"
+      ],
+      "content": "fixed finite-control NTM; every source-length Boolean witness is reachable; every branch halts within source.length+1"
+    },
+    "source_rewind": {
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI_HEAD",
+      "theorem": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear",
+      "content": "real three-state TM halts from canonical source-end tape in source.length + 2"
+    },
+    "indexed_witness_read": {
+      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "machine": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine",
+      "theorems": [
+        "MCore.Real.P01WitnessIndexedReadMachine.read_zero_false",
+        "MCore.Real.P01WitnessIndexedReadMachine.read_zero_true",
+        "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_state",
+        "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_halts"
+      ],
+      "content": "fixed Fin-6 TM reads selected witness cell without storing i in finite control; arbitrary blank seek padding halts and classifies bit"
+    }
+  },
+  "permanent_fences": [
+    "DecoderEvaluatorLocalCertificate: under-specified; nonterminal transition fields do not prove decode/eval semantics",
+    "legacy ParserMachineCertificate/WitnessGuessMachineCertificate/VerifierMachineCertificate: trivially inhabitable component shells",
+    "abstract LowerBoundWitness.not_in_p",
+    "alternate language/model substitution",
+    "IntegratedPhaseBridgeCertificate: state-disjointness only; no tape/config transition or semantic preservation; not material integration"
+  ],
+  "next_exact_attack": [
+    "complete full indexed-read certificate from unary index consumption plus witnessSeek_run_halts",
+    "construct one fixed physical verifier TM that composes indexed read with stack primitives and source rewind",
+    "compose certified parser + guess + verifier into P01MachineConstruction"
+  ],
+  "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
+  "material_status": "OPEN_MATH"
+}

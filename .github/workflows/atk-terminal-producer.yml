@@ -1,0 +1,35 @@
+name: atk-terminal-producer
+
+on:
+  push:
+    branches: [attack/terminal-producer-20260921]
+  workflow_dispatch:
+
+jobs:
+  pnp-terminal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+      - name: Compile canonical terminal producer
+        run: lake build MCore.Attack.CanonicalTerminalProducer
+      - name: Axiom audit
+        run: |
+          cat >/tmp/PNPTerminalAudit.lean <<'EOF'
+          import MCore.Attack.CanonicalTerminalProducer
+          #print axioms MCore.Attack.canonicalModelMatch
+          #print axioms MCore.Attack.canonicalWitness_closes_separation
+          EOF
+          lake env lean /tmp/PNPTerminalAudit.lean 2>&1 | tee /tmp/pnp-terminal.log
+          if grep -E 'sorryAx' /tmp/pnp-terminal.log; then exit 1; fi
+      - name: Keep endpoint open
+        run: |
+          grep -q 'OPEN_MATH: construct CanonicalNotInPWitness' lean/MCore/Attack/CanonicalTerminalProducer.lean
+          echo "PNP_TERMINAL_REDUCTION=GREEN"
+          echo "PNP_PROOF=OPEN"
+
+# retrigger after canonical type qualification

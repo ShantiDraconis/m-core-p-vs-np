@@ -1,0 +1,48 @@
+name: ATK P01 Preserving Unary Reader
+
+on:
+  push:
+    branches:
+      - atk/p01-preserving-unary-reader-20261001
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get
+      - name: Build preserving marker primitive
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01PreservingUnaryWitnessMarker
+          lake build MCore.Real.P01InputNodePreservingPlan
+          lake build MCore.Real.P01PreservingUnaryWitnessMachine
+          lake build MCore.Real.P01PreservingUnaryReaderCertificate
+          lake build MCore.Real.P01PreservingMarkerIteration
+      - name: Axiom / placeholder hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '\b(sorry|admit|sorryAx)\b' --include='*.lean' lean/MCore/Real/P01PreservingUnaryWitnessMarker.lean; then
+            exit 1
+          fi
+          echo HYGIENE_GREEN
