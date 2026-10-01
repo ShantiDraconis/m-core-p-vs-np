@@ -7851,6 +7851,197 @@ theorem ntmTransitions_weight_le
       intro s hs
       exact ntmTransitionStep_weight_le M x t s)
 
+
+theorem ClauseVarsLe_nil
+    (cap : Nat) :
+    ClauseVarsLe cap [] := by
+  intro l hl
+  simp at hl
+
+theorem ClauseVarsLe_singleton
+    (cap : Nat) (l : NTMLiteral)
+    (hl : l.var <= cap) :
+    ClauseVarsLe cap [l] := by
+  intro z hz
+  simp at hz
+  simpa [hz] using hl
+
+theorem CNFVarsLe_nil
+    (cap : Nat) :
+    CNFVarsLe cap [] := by
+  intro cl hcl
+  simp at hcl
+
+theorem CNFVarsLe_cons
+    {cap : Nat} {cl : NTMClause} {f : NTMCNF}
+    (hcl : ClauseVarsLe cap cl)
+    (hf : CNFVarsLe cap f) :
+    CNFVarsLe cap (cl :: f) := by
+  intro c hc
+  simp at hc
+  rcases hc with rfl | hc
+  · exact hcl
+  · exact hf c hc
+
+theorem ntmPos_var (v : Nat) : (ntmPos v).var = v := rfl
+theorem ntmNeg_var (v : Nat) : (ntmNeg v).var = v := rfl
+
+theorem ntmLitFor_var
+    (v : Nat) (b : Bool) :
+    (ntmLitFor v b).var = v := by
+  cases b <;> rfl
+
+theorem setState_varsLe
+    (cap : Nat) (guard : NTMClause)
+    (M : PolyNTMCandidate) (t s : Nat)
+    (target : Fin (M.stateCount + 1))
+    (hg : ClauseVarsLe cap guard)
+    (hv : forall q : Fin (M.stateCount + 1),
+      ntmStateVar M t s q <= cap) :
+    CNFVarsLe cap (ntmSetStateClauses guard M t s target) := by
+  intro cl hcl
+  unfold ntmSetStateClauses at hcl
+  rw [List.mem_ofFn] at hcl
+  rcases hcl with ⟨q, rfl⟩
+  apply ClauseVarsLe_append hg
+  apply ClauseVarsLe_singleton
+  simpa [ntmLitFor_var] using hv q
+
+theorem setSymbol_varsLe
+    (cap : Nat) (guard : NTMClause)
+    (varAt : Option Bool -> Nat) (target : Option Bool)
+    (hg : ClauseVarsLe cap guard)
+    (hv : forall a : Option Bool, varAt a <= cap) :
+    CNFVarsLe cap (ntmSetSymbolClauses guard varAt target) := by
+  intro cl hcl
+  unfold ntmSetSymbolClauses at hcl
+  rw [List.mem_map] at hcl
+  rcases hcl with ⟨a, ha, rfl⟩
+  apply ClauseVarsLe_append hg
+  apply ClauseVarsLe_singleton
+  simpa [ntmLitFor_var] using hv a
+
+theorem copySymbol_varsLe
+    (cap : Nat) (guard : NTMClause)
+    (oldVar newVar : Option Bool -> Nat)
+    (hg : ClauseVarsLe cap guard)
+    (hold : forall a, oldVar a <= cap)
+    (hnew : forall a, newVar a <= cap) :
+    CNFVarsLe cap (ntmCopySymbolClauses guard oldVar newVar) := by
+  intro cl hcl
+  unfold ntmCopySymbolClauses at hcl
+  rw [List.mem_flatMap] at hcl
+  rcases hcl with ⟨a, ha, hcl⟩
+  simp at hcl
+  rcases hcl with rfl | rfl
+  · apply ClauseVarsLe_append hg
+    intro l hl
+    simp at hl
+    rcases hl with rfl | rfl
+    · simpa using hold a
+    · simpa using hnew a
+  · apply ClauseVarsLe_append hg
+    intro l hl
+    simp at hl
+    rcases hl with rfl | rfl
+    · simpa using hold a
+    · simpa using hnew a
+
+theorem copyLeftAll_varsLe
+    (cap : Nat) (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (hs : s + 1 <= t)
+    (hg : ClauseVarsLe cap guard)
+    (hleft :
+      forall u i a, u <= t -> i < ntmRadius x t ->
+        ntmLeftVar M x t u i a <= cap) :
+    CNFVarsLe cap (ntmCopyLeftAll guard M x t s) := by
+  intro cl hcl
+  unfold ntmCopyLeftAll at hcl
+  rw [List.mem_flatMap] at hcl
+  rcases hcl with ⟨i, hi, hcl⟩
+  have hir : i < ntmRadius x t := by
+    simpa using List.mem_range.mp hi
+  exact copySymbol_varsLe cap guard
+    (ntmLeftVar M x t s i) (ntmLeftVar M x t (s+1) i)
+    hg
+    (fun a => hleft s i a (by omega) hir)
+    (fun a => hleft (s+1) i a hs hir) cl hcl
+
+theorem copyRightAll_varsLe
+    (cap : Nat) (guard : NTMClause)
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (hs : s + 1 <= t)
+    (hg : ClauseVarsLe cap guard)
+    (hright :
+      forall u i a, u <= t -> i < ntmRadius x t ->
+        ntmRightVar M x t u i a <= cap) :
+    CNFVarsLe cap (ntmCopyRightAll guard M x t s) := by
+  intro cl hcl
+  unfold ntmCopyRightAll at hcl
+  rw [List.mem_flatMap] at hcl
+  rcases hcl with ⟨i, hi, hcl⟩
+  have hir : i < ntmRadius x t := by
+    simpa using List.mem_range.mp hi
+  exact copySymbol_varsLe cap guard
+    (ntmRightVar M x t s i) (ntmRightVar M x t (s+1) i)
+    hg
+    (fun a => hright s i a (by omega) hir)
+    (fun a => hright (s+1) i a hs hir) cl hcl
+
+theorem initial_varsLe
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    CNFVarsLe (tableauVarCap M x t) (ntmInitialCNF M x t) := by
+  unfold ntmInitialCNF
+  apply CNFVarsLe_append
+  · apply setState_varsLe
+    · exact ClauseVarsLe_nil _
+    · intro q
+      exact Nat.le_of_lt (ntmStateVar_lt_tableauVarCap M x t 0 q (by omega))
+  · apply CNFVarsLe_append
+    · apply setSymbol_varsLe
+      · exact ClauseVarsLe_nil _
+      · intro a
+        exact Nat.le_of_lt (ntmHeadVar_lt_tableauVarCap M x t 0 a (by omega))
+    · apply CNFVarsLe_append
+      · intro cl hcl
+        rw [List.mem_flatMap] at hcl
+        rcases hcl with ⟨i, hi, hcl⟩
+        have hir : i < ntmRadius x t := List.mem_range.mp hi
+        exact setSymbol_varsLe _ [] (ntmLeftVar M x t 0 i)
+          ((inputTape x).left.getD i M.machine.blank)
+          (ClauseVarsLe_nil _)
+          (fun a => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t 0 i a (by omega) hir))
+          cl hcl
+      · intro cl hcl
+        rw [List.mem_flatMap] at hcl
+        rcases hcl with ⟨i, hi, hcl⟩
+        have hir : i < ntmRadius x t := List.mem_range.mp hi
+        exact setSymbol_varsLe _ [] (ntmRightVar M x t 0 i)
+          ((inputTape x).right.getD i M.machine.blank)
+          (ClauseVarsLe_nil _)
+          (fun a => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t 0 i a (by omega) hir))
+          cl hcl
+
+theorem final_varsLe
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
+    CNFVarsLe (tableauVarCap M x t) (ntmFinalAcceptanceCNF M t) := by
+  intro cl hcl
+  simp [ntmFinalAcceptanceCNF] at hcl
+  subst cl
+  intro l hl
+  unfold ntmAcceptingStateLits at hl
+  rw [List.mem_filterMap] at hl
+  rcases hl with ⟨q, hqmem, hsome⟩
+  split at hsome
+  · simp at hsome
+    subst l
+    exact Nat.le_of_lt
+      (ntmStateVar_lt_tableauVarCap M x t t q (by omega))
+  · simp at hsome
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
