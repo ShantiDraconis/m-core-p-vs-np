@@ -12,6 +12,7 @@ open P02FiniteDescriptorOrbitResidual
 open P02SemanticTransformerDichotomy
 open P02ComplementTableauDiagonal
 open P02DiagonalOrbitCore
+open P02SemanticFlipCore
 
 abbrev SATTarget : BitLanguage :=
   P02UniversalFailureMinCut.CanonicalSAT
