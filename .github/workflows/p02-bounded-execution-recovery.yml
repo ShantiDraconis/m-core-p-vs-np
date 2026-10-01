@@ -25,24 +25,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Install Lean
-        run: |
-          curl --retry 5 --retry-delay 2 --retry-all-errors -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
-          sh /tmp/elan-init.sh -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          for i in 1 2 3 4 5; do
-            $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)" && break
-            test "$i" = 5 && exit 1
-            sleep $((i * 3))
-          done
-          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - uses: leanprover/lean-action@v1
       - name: Resolve dependencies
         run: |
-          export PATH="$HOME/.elan/bin:$PATH"
           lake update
       - name: Build bounded execution chain
         run: |
-          export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P02BoundedComputationEncoding
           lake build MCore.Real.P02BoundedComputationLogic
           lake build MCore.Real.P02BoundedComputationTape
@@ -52,7 +40,6 @@ jobs:
           lake build MCore.Real.P02TableauCompletenessClose
       - name: Exact axiom audit
         run: |
-          export PATH="$HOME/.elan/bin:$PATH"
           cat > P02BoundedExecAudit.lean <<'EOF'
           import MCore.Real.P02TableauCompletenessClose
           #print axioms MCore.Real.P02BoundedComputationClose.transitionSoundnessCertificate
@@ -69,3 +56,5 @@ jobs:
           files="lean/MCore/Real/P02BoundedComputationEncoding.lean lean/MCore/Real/P02BoundedComputationLogic.lean lean/MCore/Real/P02BoundedComputationTape.lean lean/MCore/Real/P02BoundedComputationSoundness.lean lean/MCore/Real/P02BoundedComputationClose.lean lean/MCore/Real/P02TableauCompletenessActive.lean lean/MCore/Real/P02TableauCompletenessClose.lean"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
+
+# recheck-lean-action 2026-10-01
