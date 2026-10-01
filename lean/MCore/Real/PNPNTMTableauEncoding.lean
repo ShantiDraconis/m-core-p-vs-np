@@ -3057,18 +3057,16 @@ noncomputable def decodeLeftList
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) (hs : s <= t) : List (Option Bool) :=
-  trimTrailingBlank M.machine.blank <|
-    List.ofFn (fun i : Fin (ntmRadius x t) =>
-      decodeLeftCell M x t sigma hSat s hs i.val i.isLt)
+  trimTrailingBlank M.machine.blank
+    (rawLeftList M x t sigma hSat s hs)
 
 noncomputable def decodeRightList
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) (hs : s <= t) : List (Option Bool) :=
-  trimTrailingBlank M.machine.blank <|
-    List.ofFn (fun i : Fin (ntmRadius x t) =>
-      decodeRightCell M x t sigma hSat s hs i.val i.isLt)
+  trimTrailingBlank M.machine.blank
+    (rawRightList M x t sigma hSat s hs)
 
 noncomputable def decodeConfig
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
