@@ -73,8 +73,8 @@ theorem prepared_cnf_reaches_semantic_final_within_exact_global
           checkedVerifierMachine.runBranches m
             [{ state := checkedVerifierMachine.initial,
                tape := preparedTape witness (encodeCircuit phi) }] := by
-  have hne : encodeCircuit phi ≠ [] := by
-    cases phi <;> simp [encodeCircuit]
+  have hne : encodeCircuit phi ≠ [] :=
+    P01ExactBoundedCircuitProducer.encodeCircuit_ne_nil phi
   cases hsrc : encodeCircuit phi with
   | nil =>
       exact False.elim (hne hsrc)
