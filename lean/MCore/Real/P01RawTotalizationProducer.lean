@@ -120,14 +120,14 @@ theorem prepared_nonempty_sink_fail_closed_raw
         simp [Halted, checkedVerifierMachine]
       have hhSmall :
           checkedVerifierMachine.HaltsWithin (m0 + m) start :=
-        haltsWithin_of_reaches_halted
+        P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted
           (m0 + m) start lifted hfull' hhaltLift
       have hnSmall :
           ¬ checkedVerifierMachine.AcceptsWithin (m0 + m) start := by
         intro hacc
         rcases hacc with ⟨z, hz, hzacc⟩
         have heq :=
-          runBranches_eq_singleton_of_mem
+          P01CheckedVerifierDeterminism.runBranches_eq_singleton_of_mem
             (m0 + m) start lifted hfull'
         rw [heq] at hz
         simp only [List.mem_singleton] at hz
