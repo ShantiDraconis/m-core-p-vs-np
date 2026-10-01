@@ -130,8 +130,15 @@ jobs:
           #print axioms MCore.Real.P02CookLevinSameInputCore.SameInputWitness.semanticFlip
           #print axioms MCore.Real.P02CookLevinSameInputCore.sameInputCore_implies_universal_failure
           #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.diagonalBits_strict_growth
-          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_strictMono
-          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_injective
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_le_of_le
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_lt_of_lt
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_index_eq_of_bitstring_eq
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_succ_valid
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_length_lower_bound
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_ne_of_index_ne
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.orbit_next_sat_iff_not_declared_accepts
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.semantic_disagreement_or_acceptance_flip_step
+          #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.semantic_disagreement_of_no_acceptance_flip
           #print axioms MCore.Real.P02FiniteDescriptorInfiniteOrbit.infinite_alternating_certificate
           EOF
           lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
@@ -139,6 +146,6 @@ jobs:
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FiniteDescriptorReduction.lean lean/MCore/Real/P02FiniteDescriptorResidualCore.lean lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean lean/MCore/Real/P02FiniteDescriptorAlternation.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02OpenMathRouteFalsification.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean"
+          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FiniteDescriptorReduction.lean lean/MCore/Real/P02FiniteDescriptorResidualCore.lean lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean lean/MCore/Real/P02FiniteDescriptorInfiniteOrbit.lean lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean lean/MCore/Real/P02FiniteDescriptorAlternation.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02OpenMathRouteFalsification.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
