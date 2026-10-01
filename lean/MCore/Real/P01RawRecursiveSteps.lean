@@ -91,10 +91,10 @@ theorem prefix_chunk_then_recursive
 
 private theorem not_allowed_post
     (mode : SyntaxMode)
-    (h : tagAllowed mode .neg = true) :
+    (_h : tagAllowed mode .neg = true) :
     P01CheckedEvalRunTagPrefix.postTagState mode .neg =
       .need (childMode mode .neg) (.retPush .neg .scanUnread) := by
-  cases mode <;> simp [tagAllowed] at h ⊢
+  rfl
 
 /-- Propagate a malformed NOT child. -/
 theorem not_child_failure_step
@@ -143,7 +143,7 @@ theorem not_child_failure_step
               (((padding - 1) - 1) - 1) }
       have hprefix : mid ∈
           checkedEvalRunLoopMachine.runBranches m0 [start] := by
-        simpa [start, mid, encodeEvalFrames, List.append_assoc] using h0
+        simpa [start, mid, encodeEvalFrames, List.append_assoc, childMode] using h0
       have hrec' :
           ∃ b ≤ rawFailureBudget fuel n, ∃ fin : EvalConfig,
             fin ∈ checkedEvalRunLoopMachine.runBranches b [mid] ∧
@@ -334,7 +334,7 @@ private theorem varBound_le_witness_of_binary_layout
 private theorem witness_read_agrees
     (witness : BitString) :
     ∀ i, i < witness.length →
-      witness.getD i false = witnessAssignment witness i := by
+      witness.getD i false = CanonicalSATWitness.witnessAssignment witness i := by
   intro i hi
   rfl
 
@@ -362,10 +362,10 @@ theorem and_right_failure_step
           rightSource
           (encodeEvalFrames
             (.andRight
-              (evalCircuit (witnessAssignment witness) left) :: frames)) →
+              (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)) →
         RawSinkCertificate fuel n .cnf witness rightSource
           (.andRight
-            (evalCircuit (witnessAssignment witness) left) :: frames)
+            (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)
           (consumed + 3 + (encodeCircuit left).length)
           padRight) :
     RawSinkCertificate (fuel + 1) n mode witness
@@ -440,7 +440,7 @@ theorem and_right_failure_step
       | false =>
           have hreject :=
             circuit_exact_bounded_reject
-              (witnessAssignment witness) witness left .cnf
+              (CanonicalSATWitness.witnessAssignment witness) witness left .cnf
           obtain ⟨m1, hm1, cfg, h1, hstate⟩ :=
             hreject hmode rightSource (.andLeft :: frames)
               leftConsumed padLeft n
@@ -465,7 +465,7 @@ theorem and_right_failure_step
       | true =>
           have hpositive :=
             circuit_exact_bounded_certificate
-              (witnessAssignment witness) witness left .cnf
+              (CanonicalSATWitness.witnessAssignment witness) witness left .cnf
           obtain ⟨m1, hm1, cfgLeft, h1, hout1⟩ :=
             hpositive hmode rightSource (.andLeft :: frames)
               leftConsumed padLeft n
@@ -480,7 +480,7 @@ theorem and_right_failure_step
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_frames_ne_nil
               witness (exitMode .cnf left)
-              (evalCircuit (witnessAssignment witness) left)
+              (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)
               rightSource (.andLeft :: frames)
               afterLeft cfgLeft (by simp)
               (by simpa [afterLeft] using hout1)
@@ -490,7 +490,7 @@ theorem and_right_failure_step
               n (exitMode .cnf left)
               witness rightSource (encodeEvalFrames frames)
               afterLeft padding1
-              (evalCircuit (witnessAssignment witness) left)
+              (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)
           let padRight := ((((padding1 + 3) - 1) - 1) - 1)
           let cNeedRight : EvalConfig :=
             { state := .need .cnf needExprCompositeMachine.initial,
@@ -498,14 +498,14 @@ theorem and_right_failure_step
                 evalCursorStackEndTape witness afterLeft rightSource
                   (encodeEvalFrame
                     (.andRight
-                      (evalCircuit (witnessAssignment witness) left)) ++
+                      (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)) ++
                     encodeEvalFrames frames)
                   padRight }
           have h01 :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               m0 m1 [start] cNeedLeft
               ({ state := .have (exitMode .cnf left)
-                   (.start (evalCircuit (witnessAssignment witness) left)),
+                   (.start (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)),
                  tape :=
                    evalCursorStackEndTape witness afterLeft rightSource
                      (encodeEvalFrames (.andLeft :: frames)) padding1 } :
@@ -515,7 +515,7 @@ theorem and_right_failure_step
           have h2' : cNeedRight ∈
               checkedEvalRunLoopMachine.runBranches m2
                 [({ state := .have (exitMode .cnf left)
-                     (.start (evalCircuit (witnessAssignment witness) left)),
+                     (.start (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)),
                    tape :=
                      evalCursorStackEndTape witness afterLeft rightSource
                        (encodeEvalFrames (.andLeft :: frames)) padding1 } :
@@ -526,7 +526,7 @@ theorem and_right_failure_step
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + m1) m2 [start]
               ({ state := .have (exitMode .cnf left)
-                   (.start (evalCircuit (witnessAssignment witness) left)),
+                   (.start (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)),
                  tape :=
                    evalCursorStackEndTape witness afterLeft rightSource
                      (encodeEvalFrames (.andLeft :: frames)) padding1 } :
@@ -536,14 +536,14 @@ theorem and_right_failure_step
               CheckedLayoutBound n afterLeft rightSource
                 (encodeEvalFrames
                   (.andRight
-                    (evalCircuit (witnessAssignment witness) left) :: frames)) := by
+                    (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)) := by
             have hp :=
               layout_after_prefix_with_frame
                 n consumed
                 (true :: false :: false :: encodeCircuit left)
                 rightSource (encodeEvalFrames frames)
                 (.andRight
-                  (evalCircuit (witnessAssignment witness) left))
+                  (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left))
                 (by simpa [List.append_assoc] using hLayout)
             simpa [afterLeft, leftConsumed, encodeEvalFrames,
               List.append_assoc] using hp
@@ -584,10 +584,10 @@ private theorem or_right_allowed_step
           rightSource
           (encodeEvalFrames
             (.orRight
-              (evalCircuit (witnessAssignment witness) left) :: frames)) →
+              (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)) →
         RawSinkCertificate fuel n .clause witness rightSource
           (.orRight
-            (evalCircuit (witnessAssignment witness) left) :: frames)
+            (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)
           (consumed + 3 + (encodeCircuit left).length)
           padRight) :
     RawSinkCertificate (fuel + 1) n mode witness
@@ -620,7 +620,7 @@ private theorem or_right_allowed_step
   have h0' : cNeedLeft ∈
       checkedEvalRunLoopMachine.runBranches m0 [start] := by
     simpa [start, cNeedLeft, padLeft, leftConsumed,
-      encodeEvalFrames, List.append_assoc] using h0
+      encodeEvalFrames, List.append_assoc, childMode] using h0
   have hLayoutLeft :
       CheckedLayoutBound n leftConsumed
         (encodeCircuit left ++ rightSource)
@@ -645,7 +645,7 @@ private theorem or_right_allowed_step
   | false =>
       have hreject :=
         circuit_exact_bounded_reject
-          (witnessAssignment witness) witness left .clause
+          (CanonicalSATWitness.witnessAssignment witness) witness left .clause
       obtain ⟨m1, hm1, cfg, h1, hstate⟩ :=
         hreject hmode rightSource (.orLeft :: frames)
           leftConsumed padLeft n
@@ -669,7 +669,7 @@ private theorem or_right_allowed_step
   | true =>
       have hpositive :=
         circuit_exact_bounded_certificate
-          (witnessAssignment witness) witness left .clause
+          (CanonicalSATWitness.witnessAssignment witness) witness left .clause
       obtain ⟨m1, hm1, cfgLeft, h1, hout1⟩ :=
         hpositive hmode rightSource (.orLeft :: frames)
           leftConsumed padLeft n
@@ -683,7 +683,7 @@ private theorem or_right_allowed_step
       obtain ⟨padding1, hcfgLeft⟩ :=
         exact_outcome_have_of_frames_ne_nil
           witness (exitMode .clause left)
-          (evalCircuit (witnessAssignment witness) left)
+          (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)
           rightSource (.orLeft :: frames)
           afterLeft cfgLeft (by simp)
           (by simpa [afterLeft] using hout1)
@@ -693,7 +693,7 @@ private theorem or_right_allowed_step
           n (exitMode .clause left)
           witness rightSource (encodeEvalFrames frames)
           afterLeft padding1
-          (evalCircuit (witnessAssignment witness) left)
+          (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)
       let padRight := ((((padding1 + 3) - 1) - 1) - 1)
       let cNeedRight : EvalConfig :=
         { state := .need .clause needExprCompositeMachine.initial,
@@ -701,14 +701,14 @@ private theorem or_right_allowed_step
             evalCursorStackEndTape witness afterLeft rightSource
               (encodeEvalFrame
                 (.orRight
-                  (evalCircuit (witnessAssignment witness) left)) ++
+                  (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)) ++
                 encodeEvalFrames frames)
               padRight }
       have h01 :=
         mem_runBranches_trans checkedEvalRunLoopMachine
           m0 m1 [start] cNeedLeft
           ({ state := .have (exitMode .clause left)
-               (.start (evalCircuit (witnessAssignment witness) left)),
+               (.start (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)),
              tape :=
                evalCursorStackEndTape witness afterLeft rightSource
                  (encodeEvalFrames (.orLeft :: frames)) padding1 } :
@@ -718,7 +718,7 @@ private theorem or_right_allowed_step
       have h2' : cNeedRight ∈
           checkedEvalRunLoopMachine.runBranches m2
             [({ state := .have (exitMode .clause left)
-                 (.start (evalCircuit (witnessAssignment witness) left)),
+                 (.start (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)),
                tape :=
                  evalCursorStackEndTape witness afterLeft rightSource
                    (encodeEvalFrames (.orLeft :: frames)) padding1 } :
@@ -729,7 +729,7 @@ private theorem or_right_allowed_step
         mem_runBranches_trans checkedEvalRunLoopMachine
           (m0 + m1) m2 [start]
           ({ state := .have (exitMode .clause left)
-               (.start (evalCircuit (witnessAssignment witness) left)),
+               (.start (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left)),
              tape :=
                evalCursorStackEndTape witness afterLeft rightSource
                  (encodeEvalFrames (.orLeft :: frames)) padding1 } :
@@ -739,14 +739,14 @@ private theorem or_right_allowed_step
           CheckedLayoutBound n afterLeft rightSource
             (encodeEvalFrames
               (.orRight
-                (evalCircuit (witnessAssignment witness) left) :: frames)) := by
+                (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)) := by
         have hp :=
           layout_after_prefix_with_frame
             n consumed
             (true :: false :: true :: encodeCircuit left)
             rightSource (encodeEvalFrames frames)
             (.orRight
-              (evalCircuit (witnessAssignment witness) left))
+              (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left))
             (by simpa [List.append_assoc] using hLayout)
         simpa [afterLeft, leftConsumed, encodeEvalFrames,
           List.append_assoc] using hp
@@ -787,10 +787,10 @@ theorem or_right_failure_step
           rightSource
           (encodeEvalFrames
             (.orRight
-              (evalCircuit (witnessAssignment witness) left) :: frames)) →
+              (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)) →
         RawSinkCertificate fuel n .clause witness rightSource
           (.orRight
-            (evalCircuit (witnessAssignment witness) left) :: frames)
+            (evalCircuit (CanonicalSATWitness.witnessAssignment witness) left) :: frames)
           (consumed + 3 + (encodeCircuit left).length)
           padRight) :
     RawSinkCertificate (fuel + 1) n mode witness
