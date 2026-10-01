@@ -4729,6 +4729,62 @@ theorem operationalDecodeAgrees_all
         exact operationalDecodeAgrees_active_step M x t s sigma hSat hslt hA
           (by simpa [q] using hActive)
 
+
+theorem ntmDecode_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t) :
+    NTMTableauStep M
+      (operationalDecodeConfig M x t sigma hSat s (by omega))
+      (operationalDecodeConfig M x t sigma hSat (s + 1) (by omega)) := by
+  let q := decodeState M x t sigma hSat s (by omega)
+  let a := decodeHead M x t sigma hSat s (by omega)
+  have hA := operationalDecodeAgrees_all M x t sigma hSat s (by omega)
+  by_cases hHalt :
+      M.machine.accepting q = true ∨ M.machine.rejecting q = true
+  · left
+    constructor
+    · simpa [NTMHalted, hA.hState, q] using hHalt
+    · simp [operationalDecodeConfig, q, a, hHalt]
+  · have hActive :
+        M.machine.accepting q = false ∧ M.machine.rejecting q = false := by
+      constructor
+      · cases h : M.machine.accepting q with
+        | false => rfl
+        | true => exact False.elim (hHalt (Or.inl h))
+      · cases h : M.machine.rejecting q with
+        | false => rfl
+        | true => exact False.elim (hHalt (Or.inr h))
+    let hq := decodeState_true M x t sigma hSat s (by omega)
+    let ha := decodeHead_true M x t sigma hSat s (by omega)
+    let j := decodeChoiceIndex M x t s sigma hSat hs q a hq ha hActive
+    let tr := (M.machine.transition q a).get j
+    right
+    constructor
+    · intro hh
+      have hh' :
+          M.machine.accepting q = true ∨ M.machine.rejecting q = true := by
+        simpa [NTMHalted, hA.hState, q] using hh
+      exact hHalt hh'
+    · have htrmem : tr ∈ M.machine.transition q a := by
+        dsimp [tr]
+        exact List.get_mem _ _
+      have hstates :
+          (operationalDecodeConfig M x t sigma hSat s (by omega)).state = q := by
+        simpa [q] using hA.hState
+      have hheads :
+          (operationalDecodeConfig M x t sigma hSat s (by omega)).tape.head = a := by
+        simpa [a] using hA.hHead
+      have hsucc :
+          M.machine.stepBranch
+              (operationalDecodeConfig M x t sigma hSat s (by omega)) tr
+            ∈
+          M.machine.successors
+              (operationalDecodeConfig M x t sigma hSat s (by omega)) := by
+        simp [NTM.successors, hstates, hheads, htrmem]
+      simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, tr] using hsucc
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
