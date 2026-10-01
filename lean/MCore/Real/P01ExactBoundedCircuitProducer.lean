@@ -216,7 +216,7 @@ theorem const_exact_bounded_certificate
   intro hmode tail frames consumed padding n hLayout hlen hread
 
   obtain ⟨m0, hm0, h0⟩ :=
-    const_checked_reaches_have_within_loopEnvelope
+    const_checked_run_within_loopEnvelope
       n sigma witness tail frames mode consumed padding v hmode hLayout
 
   let finalConsumed := consumed + 3
@@ -1223,7 +1223,7 @@ theorem or_exact_bounded_certificate
   have h01 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       m0 m1
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1280,7 +1280,7 @@ theorem or_exact_bounded_certificate
   have h012 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1) m2
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1330,7 +1330,7 @@ theorem or_exact_bounded_certificate
   have h0123 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2) m3
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1379,7 +1379,7 @@ theorem or_exact_bounded_certificate
   have h01234 :=
     mem_runBranches_trans checkedEvalRunLoopMachine
       (m0 + m1 + m2 + m3) m4
-      [{ state := .need .clause needExprCompositeMachine.initial,
+      [{ state := .need mode needExprCompositeMachine.initial,
          tape :=
            evalCursorStackEndTape witness consumed
              (encodeCircuit (.or left right) ++ tail)
@@ -1486,7 +1486,7 @@ theorem or_exact_bounded_certificate
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + m1 + m2 + m3 + m4) m5
-              [{ state := .need .clause needExprCompositeMachine.initial,
+              [{ state := .need mode needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right))
