@@ -26,7 +26,7 @@ noncomputable def clockWitness
   rcases candidate.time_poly with ⟨c, e, h⟩
   exact ⟨c, e, h⟩
 
-def polynomialEnvelope
+noncomputable def polynomialEnvelope
     (candidate : PolyDTMCandidate) : TimeBound :=
   let W := clockWitness candidate
   fun n => W.coefficient * (n + 1) ^ W.exponent
