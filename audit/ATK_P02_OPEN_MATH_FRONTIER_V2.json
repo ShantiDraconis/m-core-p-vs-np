@@ -1,0 +1,58 @@
+{
+  "schema": "ATK_P02_OPEN_MATH_FRONTIER_V2",
+  "date": "2026-10-01",
+  "canonical_language": "SATBits circuitBitEncoding",
+  "frozen_reuse": {
+    "p01_mechanical": {
+      "sha": "720596c0bd3900b5de25eab57b7b979d2a6aaf68",
+      "status": "GREEN_FROZEN_CERTIFIED"
+    },
+    "semantic_flip_core": {
+      "sha": "4bf2c6885c088392e0d19c7f464df07ab285305e",
+      "status": "GREEN_FROZEN_CERTIFIED",
+      "run": 36868230303
+    },
+    "bounded_execution_tableau": {
+      "sha": "c0487b52d998ff7c04fa3de28965dcfa9ed8db7a",
+      "status": "GREEN_FROZEN_CERTIFIED",
+      "run": 36870171746
+    }
+  },
+  "closed_by_falsification": [
+    "universal literal bitstring fixed point",
+    "bounded same-input equation based on literal encoding equality",
+    "constant semantic-negation output-acceptance alignment as a universal producer"
+  ],
+  "exact_equivalent_open_cores": [
+    "UniversalFailure (SATBits circuitBitEncoding)",
+    "TotalCandidateSemanticCore",
+    "TotalCandidateSemanticFlipCore",
+    "ConstantPatternSemanticCore",
+    "OrbitResidualCore"
+  ],
+  "current_smallest_operational_frontier": {
+    "name": "OrbitResidualCore",
+    "quantifiers": "for every PolyDTMCandidate M",
+    "premises": [
+      "DeclaredClockTotal M",
+      "ConstantCorrectPattern M",
+      "ConstantOrbitCorrectPattern M"
+    ],
+    "required_output": "exists x : BitString, SemanticDisagreement M x"
+  },
+  "meaning": "All current structural reductions, tableau encodings, clock normalizations, constant transformers, and diagonal-orbit decompositions are downstream-equivalent to the same universal SAT lower-bound obligation. No current theorem manufactures the residual semantic counterexample.",
+  "forbidden_promotions": [
+    "finite tests -> universal lower bound",
+    "literal fixed point route",
+    "same-input encoding equality route",
+    "SemanticAlignmentCore after its countermodel",
+    "an interface containing the target lower bound as a field",
+    "a new axiom/constant/sorry/admit"
+  ],
+  "next_material_attack": [
+    "audit effective coding only for finite normalized candidate data, not arbitrary function-valued timeBound",
+    "prove or falsify any proposed recurrence/self-reference bridge before promotion",
+    "require the final producer to output a concrete SemanticDisagreement for every residual candidate"
+  ],
+  "status": "OPEN_MATH"
+}
