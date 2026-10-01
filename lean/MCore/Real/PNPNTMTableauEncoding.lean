@@ -3272,6 +3272,151 @@ theorem rawRightList_get
       decodeRightCell M x t sigma hSat s hs i.val i.isLt := by
   simp [rawRightList]
 
+
+theorem rawLeftList_stay
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.stay) :
+    rawLeftList M x t sigma hSat (s + 1) (by omega) =
+      rawLeftList M x t sigma hSat s (by omega) := by
+  unfold rawLeftList
+  apply congrArg List.ofFn
+  funext i
+  have hOld := decodeLeftCell_true M x t sigma hSat s (by omega) i.val i.isLt
+  have hEq := ntmStay_left_copy_exact M x t s q a j sigma hSat hs hActive hj hDir i.val i.isLt
+  have hNew :
+      sigma (ntmLeftVar M x t (s + 1) i.val
+        (decodeLeftCell M x t sigma hSat s (by omega) i.val i.isLt)) = true := by
+    rw [hEq]
+    exact hOld
+  exact (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
+    i.val i.isLt
+    (decodeLeftCell M x t sigma hSat s (by omega) i.val i.isLt)
+    hNew).symm
+
+theorem rawRightList_stay
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.stay) :
+    rawRightList M x t sigma hSat (s + 1) (by omega) =
+      rawRightList M x t sigma hSat s (by omega) := by
+  unfold rawRightList
+  apply congrArg List.ofFn
+  funext i
+  have hOld := decodeRightCell_true M x t sigma hSat s (by omega) i.val i.isLt
+  have hEq := ntmStay_right_copy_exact M x t s q a j sigma hSat hs hActive hj hDir i.val i.isLt
+  have hNew :
+      sigma (ntmRightVar M x t (s + 1) i.val
+        (decodeRightCell M x t sigma hSat s (by omega) i.val i.isLt)) = true := by
+    rw [hEq]
+    exact hOld
+  exact (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
+    i.val i.isLt
+    (decodeRightCell M x t sigma hSat s (by omega) i.val i.isLt)
+    hNew).symm
+
+theorem decodeLeftList_stay
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.stay) :
+    decodeLeftList M x t sigma hSat (s + 1) (by omega) =
+      decodeLeftList M x t sigma hSat s (by omega) := by
+  simp only [decodeLeftList_eq_trim_raw]
+  rw [rawLeftList_stay M x t s sigma hSat hs q a j hActive hj hDir]
+
+theorem decodeRightList_stay
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.stay) :
+    decodeRightList M x t sigma hSat (s + 1) (by omega) =
+      decodeRightList M x t sigma hSat s (by omega) := by
+  simp only [decodeRightList_eq_trim_raw]
+  rw [rawRightList_stay M x t s sigma hSat hs q a j hActive hj hDir]
+
+theorem decodeHead_stay
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.stay) :
+    decodeHead M x t sigma hSat (s + 1) (by omega) =
+      ((M.machine.transition q a).get j).2.1 := by
+  let write := ((M.machine.transition q a).get j).2.1
+  have hExact := ntmChoice_effect_head_exact_stay M x t s q a j sigma
+    hSat hs hActive hDir hj
+  have htrue :
+      sigma (ntmHeadVar M t (s + 1) write) = true := by
+    simpa [write] using hExact write
+  exact (decodeHead_unique M x t sigma hSat (s + 1) (by omega) write htrue).symm
+
+theorem decodeState_choice
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true) :
+    decodeState M x t sigma hSat (s + 1) (by omega) =
+      ((M.machine.transition q a).get j).1 := by
+  let qNext := ((M.machine.transition q a).get j).1
+  have hExact := ntmChoice_effect_state_exact M x t s q a j sigma hSat hs hActive hj
+  have htrue :
+      sigma (ntmStateVar M t (s + 1) qNext) = true := by
+    simpa [qNext] using hExact qNext
+  exact (decodeState_unique M x t sigma hSat (s + 1) (by omega) qNext htrue).symm
+
+theorem decodeTape_stay
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Fin (M.machine.transition q a).length)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false)
+    (hj : sigma (ntmChoiceVar M x t s q a j.val) = true)
+    (hDir : ((M.machine.transition q a).get j).2.2 = Direction.stay) :
+    (decodeConfig M x t sigma hSat (s + 1) (by omega)).tape =
+      Tape.move M.machine.blank Direction.stay
+        ((decodeConfig M x t sigma hSat s (by omega)).tape.write
+          ((M.machine.transition q a).get j).2.1) := by
+  apply Tape.ext
+  · simpa [decodeConfig, Tape.write, Tape.move] using
+      decodeLeftList_stay M x t s sigma hSat hs q a j hActive hj hDir
+  · simpa [decodeConfig, Tape.write, Tape.move] using
+      decodeHead_stay M x t s sigma hSat hs q a j hActive hj hDir
+  · simpa [decodeConfig, Tape.write, Tape.move] using
+      decodeRightList_stay M x t s sigma hSat hs q a j hActive hj hDir
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
