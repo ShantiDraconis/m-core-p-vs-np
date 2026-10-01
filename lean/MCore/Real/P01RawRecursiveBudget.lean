@@ -120,7 +120,7 @@ theorem rawFailureBudget_succ
     rawFailureBudget (fuel + 1) n =
       rawFailureBudget fuel n + rawChunk n := by
   unfold rawFailureBudget
-  omega
+  simp [Nat.add_mul, Nat.one_mul]
 
 theorem rawChunk_le_failureBudget
     (fuel n : Nat)
@@ -159,14 +159,16 @@ theorem rootFailure_plus_chunk_le_rawTimeBound (n : Nat) :
   have hleft :
       rawFailureBudget (n + 1) n + rawChunk n =
         (n + 2) * X := by
-    dsimp [X]
     unfold rawFailureBudget
-    omega
+    dsimp [X]
+    simp [Nat.add_mul, Nat.one_mul, Nat.add_assoc]
   rw [hleft]
-  exact hmul.trans_eq (by
-    dsimp [X, rawChunk]
-    unfold checkedVerifierExactTimeBound checkedVerifierRawTimeBound
-    simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm])
+  calc
+    (n + 2) * X ≤ (2 * (n + 1)) * X := hmul
+    _ = checkedVerifierRawTimeBound n := by
+      dsimp [X, rawChunk]
+      unfold checkedVerifierExactTimeBound checkedVerifierRawTimeBound
+      simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
 
 /-- Any source scan overhead n+3 itself fits one cubic raw chunk. -/
 theorem scanPlusOne_le_rawChunk (n : Nat) :
