@@ -19,12 +19,27 @@ structure PolynomialClockWitness (candidate : PolyDTMCandidate) where
     ∀ n : Nat,
       candidate.timeBound n ≤ coefficient * (n + 1) ^ exponent
 
+noncomputable def clockCoefficient
+    (candidate : PolyDTMCandidate) : Nat :=
+  Classical.choose candidate.time_poly
+
+noncomputable def clockExponent
+    (candidate : PolyDTMCandidate) : Nat :=
+  Classical.choose (Classical.choose_spec candidate.time_poly)
+
+theorem clockDominates
+    (candidate : PolyDTMCandidate) :
+    ∀ n : Nat,
+      candidate.timeBound n ≤
+        clockCoefficient candidate * (n + 1) ^ clockExponent candidate := by
+  exact Classical.choose_spec (Classical.choose_spec candidate.time_poly)
+
 noncomputable def clockWitness
     (candidate : PolyDTMCandidate) :
-    PolynomialClockWitness candidate := by
-  classical
-  rcases candidate.time_poly with ⟨c, e, h⟩
-  exact ⟨c, e, h⟩
+    PolynomialClockWitness candidate :=
+  { coefficient := clockCoefficient candidate
+    exponent := clockExponent candidate
+    dominates := clockDominates candidate }
 
 noncomputable def polynomialEnvelope
     (candidate : PolyDTMCandidate) : TimeBound :=
