@@ -9,8 +9,6 @@ import MCore.Real.P02UniversalKernel
 #print axioms MCore.Real.P02OperatorKernel.p02Producer_iff_universalFailure
 #print axioms MCore.Real.P02OperatorKernel.canonicalSATProducer_iff_notInP
 
-#print axioms MCore.Real.P02FinalCompression.p01_closed
-#print axioms MCore.Real.P02FinalCompression.canonical_sat_in_np
 #print axioms MCore.Real.P02FinalCompression.canonical_p02_operator_closes
 #print axioms MCore.Real.P02FinalCompression.final_open_math_iff_sat_not_in_p
 #print axioms MCore.Real.P02FinalCompression.final_open_math_closes
