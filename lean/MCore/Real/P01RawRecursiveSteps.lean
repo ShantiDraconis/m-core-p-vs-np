@@ -13,6 +13,7 @@ open CanonicalCircuitBits
 open CanonicalSATWitness
 open P01CNFMode
 open P01NeedExprTagDecode
+open P01NeedExprCompositeNTM
 open P01EncodedStackEvaluator
 open P01EvalCursorMachine
 open P01EncodedFrameTape
