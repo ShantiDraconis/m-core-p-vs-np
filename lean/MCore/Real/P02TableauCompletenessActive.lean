@@ -282,6 +282,265 @@ theorem guarded_transitionCaseCNF
         simp only [transitionCaseCNF, dif_neg hhalt, htrans]
         exact guarded_rightMoveCaseCNF M x t s q a qNext write
 
+def GuardedCNF (guard : Clause) (f : CNF) : Prop :=
+  ∀ clause ∈ f, ∃ suffix : Clause, clause = guard ++ suffix
+
+theorem guardedCNF_append
+    (guard : Clause) (a b : CNF)
+    (ha : GuardedCNF guard a)
+    (hb : GuardedCNF guard b) :
+    GuardedCNF guard (a ++ b) := by
+  intro clause hclause
+  rcases List.mem_append.mp hclause with h | h
+  · exact ha clause h
+  · exact hb clause h
+
+theorem guardedCNF_flatMap
+    {α : Type}
+    (guard : Clause) (xs : List α) (F : α → CNF)
+    (hF : ∀ x ∈ xs, GuardedCNF guard (F x)) :
+    GuardedCNF guard (xs.flatMap F) := by
+  intro clause hclause
+  rcases List.mem_flatMap.mp hclause with ⟨x, hx, hc⟩
+  exact hF x hx clause hc
+
+theorem setStateClauses_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate)
+    (t s : Nat)
+    (target : Fin (M.stateCount + 1)) :
+    GuardedCNF guard (setStateClauses guard M t s target) := by
+  intro clause hclause
+  unfold setStateClauses at hclause
+  rcases List.mem_ofFn.mp hclause with ⟨q, rfl⟩
+  exact ⟨[litFor (stateVar M t s q) (decide (q = target))], rfl⟩
+
+theorem setSymbolClauses_guarded
+    (guard : Clause)
+    (varAt : Option Bool → Nat)
+    (target : Option Bool) :
+    GuardedCNF guard (setSymbolClauses guard varAt target) := by
+  intro clause hclause
+  unfold setSymbolClauses at hclause
+  rcases List.mem_map.mp hclause with ⟨a, _, rfl⟩
+  exact ⟨[litFor (varAt a) (decide (a = target))], rfl⟩
+
+theorem copySymbolClauses_guarded
+    (guard : Clause)
+    (oldVar newVar : Option Bool → Nat) :
+    GuardedCNF guard (copySymbolClauses guard oldVar newVar) := by
+  intro clause hclause
+  unfold copySymbolClauses at hclause
+  rcases List.mem_flatMap.mp hclause with ⟨a, _, ha⟩
+  simp only [List.mem_cons, List.mem_singleton] at ha
+  rcases ha with rfl | rfl
+  · exact ⟨[neg (oldVar a), pos (newVar a)], rfl⟩
+  · exact ⟨[pos (oldVar a), neg (newVar a)], rfl⟩
+
+theorem copyLeftAll_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat) :
+    GuardedCNF guard (copyLeftAll guard M x t s) := by
+  unfold copyLeftAll
+  apply guardedCNF_flatMap
+  intro i _
+  exact copySymbolClauses_guarded guard
+    (leftVar M x t s i) (leftVar M x t (s + 1) i)
+
+theorem copyRightAll_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat) :
+    GuardedCNF guard (copyRightAll guard M x t s) := by
+  unfold copyRightAll
+  apply guardedCNF_flatMap
+  intro i _
+  exact copySymbolClauses_guarded guard
+    (rightVar M x t s i) (rightVar M x t (s + 1) i)
+
+theorem haltingCaseCNF_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hguard :
+      guard = [neg (stateVar M t s q), neg (headVar M t s a)]) :
+    GuardedCNF guard (haltingCaseCNF M x t s q a) := by
+  subst guard
+  unfold haltingCaseCNF
+  let g : Clause := [neg (stateVar M t s q), neg (headVar M t s a)]
+  change GuardedCNF g
+    (setStateClauses g M t (s + 1) q ++
+      copyHeadCell g M t s (s + 1) ++
+      copyLeftAll g M x t s ++
+      copyRightAll g M x t s)
+  apply guardedCNF_append
+  · exact setStateClauses_guarded g M t (s + 1) q
+  · apply guardedCNF_append
+    · unfold copyHeadCell
+      exact copySymbolClauses_guarded g (headVar M t s) (headVar M t (s + 1))
+    · apply guardedCNF_append
+      · exact copyLeftAll_guarded g M x t s
+      · exact copyRightAll_guarded g M x t s
+
+theorem stayCaseCNF_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
+    (hguard :
+      guard = [neg (stateVar M t s q), neg (headVar M t s a)]) :
+    GuardedCNF guard (stayCaseCNF M x t s q a qNext write) := by
+  subst guard
+  unfold stayCaseCNF
+  let g : Clause := [neg (stateVar M t s q), neg (headVar M t s a)]
+  change GuardedCNF g
+    (setStateClauses g M t (s + 1) qNext ++
+      setSymbolClauses g (headVar M t (s + 1)) write ++
+      copyLeftAll g M x t s ++
+      copyRightAll g M x t s)
+  apply guardedCNF_append
+  · exact setStateClauses_guarded g M t (s + 1) qNext
+  · apply guardedCNF_append
+    · exact setSymbolClauses_guarded g (headVar M t (s + 1)) write
+    · apply guardedCNF_append
+      · exact copyLeftAll_guarded g M x t s
+      · exact copyRightAll_guarded g M x t s
+
+theorem leftMoveCaseCNF_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
+    (hguard :
+      guard = [neg (stateVar M t s q), neg (headVar M t s a)]) :
+    GuardedCNF guard (leftMoveCaseCNF M x t s q a qNext write) := by
+  subst guard
+  unfold leftMoveCaseCNF
+  let g : Clause := [neg (stateVar M t s q), neg (headVar M t s a)]
+  let r := radius x t
+  let shiftedLeft :=
+    (List.range (r - 1)).flatMap fun i =>
+      copyLeftCell g M x t s (i + 1) (s + 1) i
+  let shiftedRight :=
+    (List.range (r - 1)).flatMap fun i =>
+      copyRightCell g M x t s i (s + 1) (i + 1)
+  change GuardedCNF g
+    (setStateClauses g M t (s + 1) qNext ++
+      copySymbolClauses g (leftVar M x t s 0) (headVar M t (s + 1)) ++
+      shiftedLeft ++
+      setLeftCell g M x t (s + 1) (r - 1) M.machine.blank ++
+      setRightCell g M x t (s + 1) 0 write ++
+      shiftedRight)
+  have hSL : GuardedCNF g shiftedLeft := by
+    dsimp [shiftedLeft]
+    apply guardedCNF_flatMap
+    intro i _
+    unfold copyLeftCell
+    exact copySymbolClauses_guarded g
+      (leftVar M x t s (i + 1)) (leftVar M x t (s + 1) i)
+  have hSR : GuardedCNF g shiftedRight := by
+    dsimp [shiftedRight]
+    apply guardedCNF_flatMap
+    intro i _
+    unfold copyRightCell
+    exact copySymbolClauses_guarded g
+      (rightVar M x t s i) (rightVar M x t (s + 1) (i + 1))
+  apply guardedCNF_append
+  · exact setStateClauses_guarded g M t (s + 1) qNext
+  · apply guardedCNF_append
+    · exact copySymbolClauses_guarded g
+        (leftVar M x t s 0) (headVar M t (s + 1))
+    · apply guardedCNF_append
+      · exact hSL
+      · apply guardedCNF_append
+        · unfold setLeftCell
+          exact setSymbolClauses_guarded g
+            (leftVar M x t (s + 1) (r - 1)) M.machine.blank
+        · apply guardedCNF_append
+          · unfold setRightCell
+            exact setSymbolClauses_guarded g
+              (rightVar M x t (s + 1) 0) write
+          · exact hSR
+
+theorem rightMoveCaseCNF_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
+    (hguard :
+      guard = [neg (stateVar M t s q), neg (headVar M t s a)]) :
+    GuardedCNF guard (rightMoveCaseCNF M x t s q a qNext write) := by
+  subst guard
+  unfold rightMoveCaseCNF
+  let g : Clause := [neg (stateVar M t s q), neg (headVar M t s a)]
+  let r := radius x t
+  let shiftedLeft :=
+    (List.range (r - 1)).flatMap fun i =>
+      copyLeftCell g M x t s i (s + 1) (i + 1)
+  let shiftedRight :=
+    (List.range (r - 1)).flatMap fun i =>
+      copyRightCell g M x t s (i + 1) (s + 1) i
+  change GuardedCNF g
+    (setStateClauses g M t (s + 1) qNext ++
+      copySymbolClauses g (rightVar M x t s 0) (headVar M t (s + 1)) ++
+      setLeftCell g M x t (s + 1) 0 write ++
+      shiftedLeft ++ shiftedRight ++
+      setRightCell g M x t (s + 1) (r - 1) M.machine.blank)
+  have hSL : GuardedCNF g shiftedLeft := by
+    dsimp [shiftedLeft]
+    apply guardedCNF_flatMap
+    intro i _
+    unfold copyLeftCell
+    exact copySymbolClauses_guarded g
+      (leftVar M x t s i) (leftVar M x t (s + 1) (i + 1))
+  have hSR : GuardedCNF g shiftedRight := by
+    dsimp [shiftedRight]
+    apply guardedCNF_flatMap
+    intro i _
+    unfold copyRightCell
+    exact copySymbolClauses_guarded g
+      (rightVar M x t s (i + 1)) (rightVar M x t (s + 1) i)
+  apply guardedCNF_append
+  · exact setStateClauses_guarded g M t (s + 1) qNext
+  · apply guardedCNF_append
+    · exact copySymbolClauses_guarded g
+        (rightVar M x t s 0) (headVar M t (s + 1))
+    · apply guardedCNF_append
+      · unfold setLeftCell
+        exact setSymbolClauses_guarded g
+          (leftVar M x t (s + 1) 0) write
+      · apply guardedCNF_append
+        · exact hSL
+        · apply guardedCNF_append
+          · exact hSR
+          · unfold setRightCell
+            exact setSymbolClauses_guarded g
+              (rightVar M x t (s + 1) (r - 1)) M.machine.blank
+
+theorem transitionCaseCNF_guarded
+    (guard : Clause)
+    (M : PolyDTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hguard :
+      guard = [neg (stateVar M t s q), neg (headVar M t s a)]) :
+    GuardedCNF guard (transitionCaseCNF M x t s q a) := by
+  by_cases hhalt : M.machine.halting q = true
+  · rw [transitionCaseCNF]
+    simp only [dif_pos hhalt]
+    exact haltingCaseCNF_guarded guard M x t s q a hguard
+  · rw [transitionCaseCNF]
+    simp only [dif_neg hhalt]
+    rcases htrans : M.machine.transition q a with ⟨qNext, write, dir⟩
+    cases dir with
+    | stay =>
+        rw [htrans]
+        exact stayCaseCNF_guarded guard M x t s q a qNext write hguard
+    | left =>
+        rw [htrans]
+        exact leftMoveCaseCNF_guarded guard M x t s q a qNext write hguard
+    | right =>
+        rw [htrans]
+        exact rightMoveCaseCNF_guarded guard M x t s q a qNext write hguard
+
 theorem inactive_transitionCase_true
     (sigma : Assignment)
     (M : PolyDTMCandidate)
@@ -299,10 +558,8 @@ theorem inactive_transitionCase_true
     simpa [guard] using inactive_guard_true sigma M x t s config hmatch q a hinactive
   apply evalCNF_true_of_forall_mem
   intro clause hclause
-  have hprefix :
-      ∃ suffix : Clause, clause = guard ++ suffix :=
-    guarded_transitionCaseCNF M x t s q a clause hclause
-  rcases hprefix with ⟨suffix, rfl⟩
+  have hp := transitionCaseCNF_guarded guard M x t s q a (by rfl)
+  rcases hp clause hclause with ⟨suffix, rfl⟩
   exact evalClause_append_true_of_guard_true sigma guard suffix hguard
 
 #print axioms MCore.Real.P02TableauCompletenessActive.inactive_guard_true
