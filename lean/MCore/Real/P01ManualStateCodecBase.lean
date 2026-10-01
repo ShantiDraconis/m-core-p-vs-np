@@ -295,8 +295,23 @@ set_option maxRecDepth 10000 in
           simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, hsub, preservingDecode_code]
   | ret m b q =>
       cases m <;> cases b <;>
-        cases q <;>
-          simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+        cases q with
+        | start r =>
+            cases r <;>
+              simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+        | seekSource =>
+            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+        | scanSource =>
+            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+        | seekFrames =>
+            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+        | scanFrames =>
+            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+        | halt r =>
+            cases r <;>
+              simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
+        | reject =>
+            simp [inputNodeDecode, inputNodeCode, afterReadCode, afterReadDecode]
     | done b m =>
       cases b <;> cases m <;> simp [inputNodeDecode, inputNodeCode]
   | reject =>
