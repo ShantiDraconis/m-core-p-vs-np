@@ -279,7 +279,7 @@ theorem decodeCircuit_none_fail_closed_raw
                   decodeCircuit source = some phi := by
                 simp [decodeCircuit, hc]
               rw [hdec] at hsome
-              contradiction
+              cases hsome
           | cons rb rtail =>
               let residual : BitString := rb :: rtail
               have hcore :
