@@ -1,0 +1,48 @@
+name: P02 targeted certify one-shot
+
+on:
+  push:
+    branches:
+      - atk/p02-only-20261001
+    paths:
+      - audit/P02_RUN_ONCE
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p02-targeted-run-once
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          use-mathlib-cache: true
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake exe cache get
+
+      - name: Run targeted P02 validator
+        run: |
+          set -euo pipefail
+          bash audit/p02_targeted_validate.sh
+
+      - name: Upload targeted certificate and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p02-targeted-one-shot-${{ github.sha }}
+          path: |
+            audit/P02_TARGETED_CERTIFICATE.generated.json
+            audit/P02-targeted-build.log
+            audit/P02-targeted-axioms.log
+          if-no-files-found: warn
