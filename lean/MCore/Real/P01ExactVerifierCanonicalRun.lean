@@ -344,8 +344,12 @@ theorem prepared_canonical_accepts_iff_exact_global
         have ht := (modeCheck_cnf_iff phi).2 hcnf
         rw [hmode] at ht
         contradiction
-      simp [terminal, checkedVerifierMachine, verifyBits_encode_iff,
-        hnotcnf]
+      constructor
+      · intro hacc
+        simp [terminal, checkedVerifierMachine] at hacc
+      · intro hv
+        have hparts := (verifyBits_encode_iff phi witness).1 hv
+        exact False.elim (hnotcnf hparts.1)
   | true =>
       obtain ⟨m, hm, tape, hreach⟩ :=
         prepared_cnf_reaches_semantic_final_within_exact_global
@@ -372,10 +376,24 @@ theorem prepared_canonical_accepts_iff_exact_global
       rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
       have hcnf : IsCNF phi :=
         (modeCheck_cnf_iff phi).1 hmode
-      cases hval : evalCircuit (witnessAssignment witness) phi <;>
-        simp [terminal, value, checkedVerifierMachine,
-          checkedEvalRunLoopMachine, verifyBits_encode_iff,
-          witnessAssignment, hcnf, hval]
+      rw [verifyBits_encode_iff]
+      cases hval : evalCircuit (witnessAssignment witness) phi with
+      | false =>
+          constructor
+          · intro hacc
+            simp [terminal, value, checkedVerifierMachine,
+              checkedEvalRunLoopMachine, hval] at hacc
+          · intro hparts
+            have : False := by
+              simpa [hval] using hparts.2
+            exact False.elim this
+      | true =>
+          constructor
+          · intro _
+            exact ⟨hcnf, hval⟩
+          · intro _
+            simp [terminal, value, checkedVerifierMachine,
+              checkedEvalRunLoopMachine, hval]
 
 
 #print axioms MCore.Real.P01ExactVerifierCanonicalRun.scan_entry_le_exact_allowance
