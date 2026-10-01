@@ -405,7 +405,7 @@ theorem inactive_transitionCase_true
                 copyRightCell guard M x t s (i + 1) (s + 1) i) ++
               setRightCell guard M x t (s + 1) (radius x t - 1)
                 M.machine.blank)
-            hh htail3
+            hh (by simpa [List.append_assoc] using htail3)
         have hall :=
           evalCNF_append_true_local sigma
             (setStateClauses guard M t (s + 1) qNext)
