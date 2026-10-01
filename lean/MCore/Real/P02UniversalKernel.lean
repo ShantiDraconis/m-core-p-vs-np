@@ -46,7 +46,7 @@ theorem SemanticDiagonalWitness.fails
     (W : SemanticDiagonalWitness M) :
     FailureAt M W.bits := by
   exact (failureAt_iff_nonhalting_or_mismatch M W.bits).mpr
-    (Or.inr (W.mismatch M))
+    (Or.inr (SemanticDiagonalWitness.mismatch M W))
 
 /-- Uniform semantic diagonalization family. This is the exact D3-style
 mathematical producer; no endpoint theorem is stored as a field. -/
@@ -57,14 +57,14 @@ def SemanticDiagonalFamily.toP02Producer
     (D : SemanticDiagonalFamily) :
     CanonicalSATP02Producer :=
   { counterexample := fun M => (D.witness M).bits
-    sound := fun M => (D.witness M).fails M }
+    sound := fun M => SemanticDiagonalWitness.fails M (D.witness M) }
 
 /-- A semantic family closes the universal lower bound. -/
 theorem semanticDiagonalFamily_closes_lowerBound
     (D : SemanticDiagonalFamily) :
     UniversalSATLowerBound := by
   intro M
-  exact ⟨(D.witness M).bits, (D.witness M).fails M⟩
+  exact ⟨(D.witness M).bits, SemanticDiagonalWitness.fails M (D.witness M)⟩
 
 theorem semanticDiagonalFamily_closes_notInP
     (D : SemanticDiagonalFamily) :
