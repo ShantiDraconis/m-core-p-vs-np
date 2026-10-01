@@ -1,0 +1,989 @@
+# ATK Global Historical SUCCESS Freeze — 2026-10-01
+
+STATUS: FROZEN_HISTORICAL_SUCCESS_ARCHIVE
+SOURCE: GitHub Actions recent history scan, up to 200 runs per central repository.
+RULE: Every entry below is an actual `completed/success` workflow run and is frozen as evidence for its exact workflow scope at its exact SHA. Workflow names do not expand the mathematical meaning of what was proved.
+
+Total SUCCESS runs archived in this scan: 946
+
+## ShantiDraconis/M-Core
+
+- run 36791591399 | Universal Terminal Closure | SHA 42ea94939dad4f2cd351fe1bf40a4e46d8ea9f9b | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:32:16Z | FROZEN_SUCCESS
+- run 36791316749 | Universal Terminal Closure | SHA 0f6dac3b4a2e676cff0e13a267200d07dd195f2c | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:29:05Z | FROZEN_SUCCESS
+- run 36791305797 | Universal Terminal Closure | SHA f4e6b118d429e03375d97e55566870e7230ff98a | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:28:58Z | FROZEN_SUCCESS
+- run 36791290095 | Material Only Final Root | SHA b46dbc6b9373b318eb50c08c9bb775d0ec94762a | branch atk/material-only-final-root-20260930 | 2026-09-30T23:28:46Z | FROZEN_SUCCESS
+- run 36791250815 | Universal Terminal Closure | SHA 9cea7b17388161384b6a0cfee25ee28e517a76de | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:28:18Z | FROZEN_SUCCESS
+- run 36791214975 | Universal Terminal Closure | SHA 523c1fc13cf30812379448b472378be426f2ccaa | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:27:54Z | FROZEN_SUCCESS
+- run 36791152697 | Universal Terminal Closure | SHA ee9538d4193697ec8ba64a5a03c600e70d8d3903 | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:27:10Z | FROZEN_SUCCESS
+- run 36791142527 | Universal Terminal Closure | SHA 554247da6b137d45fab743c4e7bd2d125729959c | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:27:02Z | FROZEN_SUCCESS
+- run 36791139424 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T23:27:00Z | FROZEN_SUCCESS
+- run 36791120564 | Universal Terminal Closure | SHA b81245c4562351c0fec617528fccf82f0298b72a | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:26:47Z | FROZEN_SUCCESS
+- run 36791034308 | Universal Terminal Closure | SHA 3bb0aa02808e4da3952b3a6e8b89465aa1f0849b | branch atk/universal-terminal-closure-20260930 | 2026-09-30T23:25:47Z | FROZEN_SUCCESS
+- run 36790654706 | FINAL_FAIL closed-center HARD | SHA bdce5b1dd5f564eb4a3542df5defa27053fc24d0 | branch atk/universal-terminal-closure-20261001 | 2026-09-30T23:21:26Z | FROZEN_SUCCESS
+- run 36790612659 | FINAL_FAIL closed-center HARD | SHA b544805490bbb4cf96221971e03257a874e9af78 | branch atk/universal-terminal-closure-20261001 | 2026-09-30T23:20:58Z | FROZEN_SUCCESS
+- run 36790548276 | Material Only Final Root | SHA 984b5b871b95919439fe8e977e66c7d6fafe4292 | branch atk/material-only-final-root-20260930 | 2026-09-30T23:20:15Z | FROZEN_SUCCESS
+- run 36790336532 | Material Only Final Root | SHA c2f9ed784ba7a9c4d9a6fd9673a2ccb866695daa | branch atk/material-only-final-root-20260930 | 2026-09-30T23:17:50Z | FROZEN_SUCCESS
+- run 36790260881 | atk-universal-producer | SHA 509d6f1fd841e0fd6fc6f91750070777958b93fd | branch atk/universal-producer-theorem-20260930 | 2026-09-30T23:16:58Z | FROZEN_SUCCESS
+- run 36790250630 | atk-universal-producer | SHA a46d31bfc39866e81775295a170ec703f0e7ce4a | branch atk/universal-producer-theorem-20260930 | 2026-09-30T23:16:51Z | FROZEN_SUCCESS
+- run 36790016167 | atk-universal-producer | SHA 5e053b0b3ec580b37f9e34b14b831aa4d7c8b112 | branch atk/universal-producer-theorem-20260930 | 2026-09-30T23:14:15Z | FROZEN_SUCCESS
+- run 36789335525 | Material Only Final Root | SHA 92d4c35e7787c9046ed51ed69d602166d09e26d4 | branch atk/material-only-final-root-20260930 | 2026-09-30T23:06:38Z | FROZEN_SUCCESS
+- run 36785925054 | Material Only Final Root | SHA 7db2f0d7d439e052d77252b5aff975eed7e7537f | branch atk/material-only-final-root-20260930 | 2026-09-30T22:30:05Z | FROZEN_SUCCESS
+- run 36785855003 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T22:29:22Z | FROZEN_SUCCESS
+- run 36785775504 | Material Only Final Root | SHA 3404baed3c3054f62cdd855add2ef469c17d8b10 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:28:31Z | FROZEN_SUCCESS
+- run 36785772132 | Material Only Final Root | SHA 33205c6281c83397c7d0a39dc9b1e62350bd8266 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:28:29Z | FROZEN_SUCCESS
+- run 36785764264 | Material Only Final Root | SHA 07a8488c1d4bf63554f8d3b20c3996c4f03edf76 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:28:24Z | FROZEN_SUCCESS
+- run 36785559039 | Material Only Final Root | SHA cac3892bf274c84d86d3a6373f1b5b0b51b2b143 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:26:15Z | FROZEN_SUCCESS
+- run 36785553571 | Material Only Final Root | SHA 31473be05d79636e0b9bf2ff09c000a600636511 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:26:12Z | FROZEN_SUCCESS
+- run 36785550190 | Material Only Final Root | SHA 8222f5e75a9f93848108641e1e8aeb619c7880fb | branch atk/material-only-final-root-20260930 | 2026-09-30T22:26:10Z | FROZEN_SUCCESS
+- run 36785525260 | Material Only Final Root | SHA d3d5953d9c5fc15fa8b9a1fae8d07d631941ccab | branch atk/material-only-final-root-20260930 | 2026-09-30T22:25:55Z | FROZEN_SUCCESS
+- run 36785520185 | Material Only Final Root | SHA 56b1213a709c9eca99b660a8ab9f517cafeff7c4 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:25:52Z | FROZEN_SUCCESS
+- run 36785516353 | Material Only Final Root | SHA 4f5c95c9c6e8362dc53fce9afe80f8dd9961123d | branch atk/material-only-final-root-20260930 | 2026-09-30T22:25:49Z | FROZEN_SUCCESS
+- run 36785375984 | Material Only Final Root | SHA d77ba64f3d8790640f282ab5712cd2021f99b1db | branch atk/material-only-final-root-20260930 | 2026-09-30T22:24:22Z | FROZEN_SUCCESS
+- run 36785369744 | Material Only Final Root | SHA 377f31072128497c780eeebb9acacf914b61ce5a | branch atk/material-only-final-root-20260930 | 2026-09-30T22:24:18Z | FROZEN_SUCCESS
+- run 36785346649 | Material Only Final Root | SHA 8c9c8864f9fb21fa72862ff530795345ed7e5898 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:24:03Z | FROZEN_SUCCESS
+- run 36784935821 | Material Only Final Root | SHA 3bc33be7b6f02bef408c714a7cfb6cdfa948f595 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:19:54Z | FROZEN_SUCCESS
+- run 36784932023 | Material Only Final Root | SHA 699703808513cfca473a5e9a4ba1c345827994c0 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:19:52Z | FROZEN_SUCCESS
+- run 36784920783 | Material Only Final Root | SHA 01f41553ff24f2650a2a451fb37b6d8de602be2f | branch atk/material-only-final-root-20260930 | 2026-09-30T22:19:45Z | FROZEN_SUCCESS
+- run 36784912766 | Material Only Final Root | SHA 15a0a4750a5112af8c67395979cb338c570c223b | branch atk/material-only-final-root-20260930 | 2026-09-30T22:19:40Z | FROZEN_SUCCESS
+- run 36784186539 | Material Only Final Root | SHA caa22ff3fdf83757f5d6bdb583576ce2ecfbaeef | branch atk/material-only-final-root-20260930 | 2026-09-30T22:12:18Z | FROZEN_SUCCESS
+- run 36783886511 | Material Only Final Root | SHA 0e4a9daf61f7046531fa448fe1cdb168436b6e8d | branch atk/material-only-final-root-20260930 | 2026-09-30T22:09:17Z | FROZEN_SUCCESS
+- run 36783882280 | Material Only Final Root | SHA 895d34de340d4cc416cabd91a7b7170cdb678ca1 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:09:15Z | FROZEN_SUCCESS
+- run 36783837821 | Material Only Final Root | SHA 9421d47d00d520430945b6221530e83c01ae0cc2 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:08:49Z | FROZEN_SUCCESS
+- run 36783330363 | Material Only Final Root | SHA 7520acb20a117087636cdf8da23d8f0f54a9d269 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:03:50Z | FROZEN_SUCCESS
+- run 36783315379 | Material Only Final Root | SHA 751441405c56c150cbb5ce48456d52c93670e0a0 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:03:41Z | FROZEN_SUCCESS
+- run 36783156093 | Material Only Final Root | SHA 372ffeeb69a3b9042104c8641e9e7970c2c363b2 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:02:06Z | FROZEN_SUCCESS
+- run 36783152518 | Material Only Final Root | SHA 12a0d8a05d4fe795e5267d87808462bc658e4e65 | branch atk/material-only-final-root-20260930 | 2026-09-30T22:02:04Z | FROZEN_SUCCESS
+- run 36779718196 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T21:29:08Z | FROZEN_SUCCESS
+- run 36773061661 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T20:30:05Z | FROZEN_SUCCESS
+- run 36765730088 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T19:26:52Z | FROZEN_SUCCESS
+- run 36759589723 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T18:34:52Z | FROZEN_SUCCESS
+- run 36751589052 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T17:28:09Z | FROZEN_SUCCESS
+- run 36745034251 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T16:33:09Z | FROZEN_SUCCESS
+- run 36737429952 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T15:31:47Z | FROZEN_SUCCESS
+- run 36729990613 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T14:33:19Z | FROZEN_SUCCESS
+- run 36722380795 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T13:32:31Z | FROZEN_SUCCESS
+- run 36716845985 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T12:45:28Z | FROZEN_SUCCESS
+- run 36708583439 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T11:26:46Z | FROZEN_SUCCESS
+- run 36702880755 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T10:30:48Z | FROZEN_SUCCESS
+- run 36698379351 | Master Terminal Manifest | SHA 7fee3b4276af4d87665971bfa8c871532e593b88 | branch atk/master-terminal-manifest-20260930 | 2026-09-30T09:47:43Z | FROZEN_SUCCESS
+- run 36698373216 | Master Terminal Manifest | SHA 7fee3b4276af4d87665971bfa8c871532e593b88 | branch atk/master-terminal-manifest-20260930 | 2026-09-30T09:47:40Z | FROZEN_SUCCESS
+- run 36698265063 | Master Terminal Manifest | SHA a77fa20695ef89599b62997e91520acd0fe16654 | branch atk/master-terminal-manifest-20260930 | 2026-09-30T09:46:39Z | FROZEN_SUCCESS
+- run 36698257982 | Master Terminal Manifest | SHA a77fa20695ef89599b62997e91520acd0fe16654 | branch atk/master-terminal-manifest-20260930 | 2026-09-30T09:46:35Z | FROZEN_SUCCESS
+- run 36696794723 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T09:32:43Z | FROZEN_SUCCESS
+- run 36691021294 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T08:39:03Z | FROZEN_SUCCESS
+- run 36690549480 | Running Copilot Code Review | SHA 2376a72a3ee2d0a18ab10486e086d7716075aea6 | branch atk/master-terminal-manifest-20260930 | 2026-09-30T08:34:29Z | FROZEN_SUCCESS
+- run 36690538233 | Master Terminal Manifest | SHA 2376a72a3ee2d0a18ab10486e086d7716075aea6 | branch atk/master-terminal-manifest-20260930 | 2026-09-30T08:34:23Z | FROZEN_SUCCESS
+- run 36690409034 | Master Terminal Manifest | SHA 2376a72a3ee2d0a18ab10486e086d7716075aea6 | branch atk/master-terminal-manifest-20260930 | 2026-09-30T08:33:10Z | FROZEN_SUCCESS
+- run 36684948944 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T07:39:20Z | FROZEN_SUCCESS
+- run 36679996220 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T06:46:26Z | FROZEN_SUCCESS
+- run 36673734782 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T05:30:37Z | FROZEN_SUCCESS
+- run 36669471810 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T04:34:44Z | FROZEN_SUCCESS
+- run 36665116301 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T03:35:50Z | FROZEN_SUCCESS
+- run 36661061198 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T02:42:22Z | FROZEN_SUCCESS
+- run 36656635488 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T01:45:29Z | FROZEN_SUCCESS
+- run 36653665858 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-30T01:08:15Z | FROZEN_SUCCESS
+- run 36645167714 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T23:25:59Z | FROZEN_SUCCESS
+- run 36639753509 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T22:28:16Z | FROZEN_SUCCESS
+- run 36633439318 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T21:27:56Z | FROZEN_SUCCESS
+- run 36626903801 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T20:31:09Z | FROZEN_SUCCESS
+- run 36619383404 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T19:27:34Z | FROZEN_SUCCESS
+- run 36613186101 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T18:35:52Z | FROZEN_SUCCESS
+- run 36605080009 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T17:27:41Z | FROZEN_SUCCESS
+- run 36598555370 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T16:33:14Z | FROZEN_SUCCESS
+- run 36590749697 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T15:30:42Z | FROZEN_SUCCESS
+- run 36583214060 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T14:30:43Z | FROZEN_SUCCESS
+- run 36576076127 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T13:34:22Z | FROZEN_SUCCESS
+- run 36569976951 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T12:43:01Z | FROZEN_SUCCESS
+- run 36561908477 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T11:27:57Z | FROZEN_SUCCESS
+- run 36556074002 | Final Proof Miner | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T10:31:14Z | FROZEN_SUCCESS
+- run 36555912285 | ATK Two-Sided Boundary | SHA 89c3819be9f2e5928ba107c2c77ca559cf90f750 | branch atk/two-sided-boundary-meet-20260929 | 2026-09-29T10:29:45Z | FROZEN_SUCCESS
+- run 36554949875 | M-Core Proposed Hypothesis | SHA 27876381ea09f7e2547189bb0309636b88568a04 | branch attack/proposed-hypothesis-20260929 | 2026-09-29T10:20:26Z | FROZEN_SUCCESS
+- run 36553172871 | M-Core Full Chain Archive Audit | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T10:03:37Z | FROZEN_SUCCESS
+- run 36553172864 | M-Core Final Proof Integrated | SHA 6fcd8c9c9155d6f1f94d9ef91063a9707b7ff312 | branch main | 2026-09-29T10:03:37Z | FROZEN_SUCCESS
+- run 36549944245 | Final Proof Miner | SHA 1029174ba9ec70c2fd458f45d248aa539f5c6208 | branch main | 2026-09-29T09:33:32Z | FROZEN_SUCCESS
+- run 36543983889 | Final Proof Miner | SHA 1029174ba9ec70c2fd458f45d248aa539f5c6208 | branch main | 2026-09-29T08:38:17Z | FROZEN_SUCCESS
+- run 36537821699 | Final Proof Miner | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T07:38:15Z | FROZEN_SUCCESS
+- run 36532812587 | Final Proof Miner | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T06:46:07Z | FROZEN_SUCCESS
+- run 36526506957 | Final Proof Miner | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T05:30:39Z | FROZEN_SUCCESS
+- run 36522194981 | Final Proof Miner | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T04:33:58Z | FROZEN_SUCCESS
+- run 36517782522 | Final Proof Miner | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T03:35:04Z | FROZEN_SUCCESS
+- run 36513556030 | Final Proof Miner | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T02:38:39Z | FROZEN_SUCCESS
+- run 36509171161 | Final Proof Miner | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T01:42:35Z | FROZEN_SUCCESS
+- run 36509081340 | M-Core Full Chain Archive Audit | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T01:41:23Z | FROZEN_SUCCESS
+- run 36509081078 | M-Core Final Proof Integrated | SHA 78fd757141dca6097aea169a3e22d2fd7c210edf | branch main | 2026-09-29T01:41:23Z | FROZEN_SUCCESS
+- run 36507918317 | M-Core Full Chain Archive Audit | SHA 25a439497e05582c054648efabc664131fba771a | branch main | 2026-09-29T01:26:37Z | FROZEN_SUCCESS
+- run 36507918240 | M-Core Final Proof Integrated | SHA 25a439497e05582c054648efabc664131fba771a | branch main | 2026-09-29T01:26:37Z | FROZEN_SUCCESS
+- run 36506343078 | Final Proof Miner | SHA ea89ad168cb9f36ca01c4a9907d73933e100fe66 | branch main | 2026-09-29T01:06:51Z | FROZEN_SUCCESS
+- run 36498056415 | Final Proof Miner | SHA ea89ad168cb9f36ca01c4a9907d73933e100fe66 | branch main | 2026-09-28T23:26:57Z | FROZEN_SUCCESS
+- run 36497421598 | M-Core Final Proof Integrated | SHA a2a9ddc3f385c1c579c47a34103f2f81e3b5bbd4 | branch main | 2026-09-28T23:19:57Z | FROZEN_SUCCESS
+- run 36497095520 | M-Core Full Chain Archive Audit | SHA d5f0fbcb4583068a7c304128c6d029c1430dc8f6 | branch main | 2026-09-28T23:16:15Z | FROZEN_SUCCESS
+- run 36496549788 | M-Core Full Chain Archive Audit | SHA c79f024022ae636516852b6bba96a36ff0092d05 | branch main | 2026-09-28T23:10:15Z | FROZEN_SUCCESS
+- run 36496245647 | BSD Mathlib v4.34 Probe | SHA b920643e18dcdec64a1a4c1a50383846879b20ef | branch atk/bsd-mathlib-v434-probe | 2026-09-28T23:06:55Z | FROZEN_SUCCESS
+- run 36495735351 | M-Core Full Chain Archive Audit | SHA d1ed2594908e6d5d86c789928211db7f40003c56 | branch main | 2026-09-28T23:01:25Z | FROZEN_SUCCESS
+- run 36494374716 | M-Core Full Chain Archive Audit | SHA 47a0368e7d0777ef80c44f40ef806f110ab0d011 | branch main | 2026-09-28T22:46:46Z | FROZEN_SUCCESS
+- run 36493785323 | M-Core Full Chain Archive Audit | SHA 58a4db3d5fc3837981320c4f47682181738c044f | branch main | 2026-09-28T22:40:31Z | FROZEN_SUCCESS
+- run 36493785302 | M-Core Final Proof Integrated | SHA 58a4db3d5fc3837981320c4f47682181738c044f | branch main | 2026-09-28T22:40:31Z | FROZEN_SUCCESS
+
+## ShantiDraconis/m-core-p-vs-np
+
+- run 36793219387 | certificate | SHA 5866dbefc58db33a1bd04cd45924a99444e113b5 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:51:21Z | FROZEN_SUCCESS
+- run 36793219377 | fail-proof-all-gaps | SHA 5866dbefc58db33a1bd04cd45924a99444e113b5 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:51:21Z | FROZEN_SUCCESS
+- run 36793121102 | certificate | SHA fce084db2732093eba3de30686f2e835c26ec313 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:50:10Z | FROZEN_SUCCESS
+- run 36793121035 | fail-proof-all-gaps | SHA fce084db2732093eba3de30686f2e835c26ec313 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:50:10Z | FROZEN_SUCCESS
+- run 36792966912 | certificate | SHA 5ef98cdf6551836f656291254eb5486c1d2107a2 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:48:18Z | FROZEN_SUCCESS
+- run 36792966894 | fail-proof-all-gaps | SHA 5ef98cdf6551836f656291254eb5486c1d2107a2 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:48:18Z | FROZEN_SUCCESS
+- run 36792830690 | fail-proof-all-gaps | SHA 0f09a3f08af112a033bf09adc8b3c378f16c9744 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:41Z | FROZEN_SUCCESS
+- run 36792830464 | certificate | SHA 0f09a3f08af112a033bf09adc8b3c378f16c9744 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:41Z | FROZEN_SUCCESS
+- run 36792811950 | certificate | SHA 74c78cee6e5ebf04236e7d586debaab390b03977 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:27Z | FROZEN_SUCCESS
+- run 36792811883 | fail-proof-all-gaps | SHA 74c78cee6e5ebf04236e7d586debaab390b03977 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:27Z | FROZEN_SUCCESS
+- run 36792790480 | certificate | SHA 1b801d24673c9cbfb8f88b559568863a09978b8b | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:12Z | FROZEN_SUCCESS
+- run 36792790411 | fail-proof-all-gaps | SHA 1b801d24673c9cbfb8f88b559568863a09978b8b | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:12Z | FROZEN_SUCCESS
+- run 36792786224 | fail-proof-all-gaps | SHA 10e09673c376672714055c22877c790e471799fa | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:09Z | FROZEN_SUCCESS
+- run 36792786099 | certificate | SHA 10e09673c376672714055c22877c790e471799fa | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:46:09Z | FROZEN_SUCCESS
+- run 36792757656 | ATK FINAL ROOT | SHA 63ad057d1bcbad46ab537e0a2dcf8b863322e7ac | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:45:49Z | FROZEN_SUCCESS
+- run 36792647643 | certificate | SHA 12f47f6d17e87c91e03cbdc1dcafb0c985b9b5ee | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:44:35Z | FROZEN_SUCCESS
+- run 36792647615 | fail-proof-all-gaps | SHA 12f47f6d17e87c91e03cbdc1dcafb0c985b9b5ee | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:44:35Z | FROZEN_SUCCESS
+- run 36792619400 | certificate | SHA ebdd898381a7bf377aa0c517422b57d356f20702 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:44:15Z | FROZEN_SUCCESS
+- run 36792619360 | fail-proof-all-gaps | SHA ebdd898381a7bf377aa0c517422b57d356f20702 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:44:15Z | FROZEN_SUCCESS
+- run 36792476285 | fail-proof-all-gaps | SHA 40b91dee842cf7c7862865733c7c46739c8b1726 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:42:36Z | FROZEN_SUCCESS
+- run 36792476276 | certificate | SHA 40b91dee842cf7c7862865733c7c46739c8b1726 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:42:36Z | FROZEN_SUCCESS
+- run 36792442744 | certificate | SHA 5cef6c542b22fce6352521b73373c6c95ef4f0ae | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:42:13Z | FROZEN_SUCCESS
+- run 36792442737 | fail-proof-all-gaps | SHA 5cef6c542b22fce6352521b73373c6c95ef4f0ae | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:42:13Z | FROZEN_SUCCESS
+- run 36792396737 | certificate | SHA 3f70ff9dfd8e1b9736c304a1a43fc362a90db3bc | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:41:41Z | FROZEN_SUCCESS
+- run 36792396720 | fail-proof-all-gaps | SHA 3f70ff9dfd8e1b9736c304a1a43fc362a90db3bc | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:41:41Z | FROZEN_SUCCESS
+- run 36792394281 | fail-proof-all-gaps | SHA 8a80c4914d366ae0c4314ad7a21c4db48bc16522 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:41:39Z | FROZEN_SUCCESS
+- run 36792394236 | certificate | SHA 8a80c4914d366ae0c4314ad7a21c4db48bc16522 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:41:39Z | FROZEN_SUCCESS
+- run 36792382708 | fail-proof-all-gaps | SHA ea61bfc6c31c087e4bf6b86bcc05696a2b4baae3 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:41:31Z | FROZEN_SUCCESS
+- run 36792382701 | certificate | SHA ea61bfc6c31c087e4bf6b86bcc05696a2b4baae3 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:41:31Z | FROZEN_SUCCESS
+- run 36792378527 | certificate | SHA 6fd9609f1a26a93155b8baf290f7cb79a250db3b | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:41:28Z | FROZEN_SUCCESS
+- run 36792378486 | fail-proof-all-gaps | SHA 6fd9609f1a26a93155b8baf290f7cb79a250db3b | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:41:28Z | FROZEN_SUCCESS
+- run 36792372676 | fail-proof-all-gaps | SHA 8b0242c39dd61b91c621cb4d21534fdefab9ba45 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:41:24Z | FROZEN_SUCCESS
+- run 36792372660 | certificate | SHA 8b0242c39dd61b91c621cb4d21534fdefab9ba45 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:41:24Z | FROZEN_SUCCESS
+- run 36792339768 | Rigorous PNP Terminal Decomposition | SHA 2d635dc40008d5af58886fb7587798f4ab9fc27d | branch atk/pnp-rigorous-terminal-decomposition-20261001 | 2026-09-30T23:41:00Z | FROZEN_SUCCESS
+- run 36792329076 | certificate | SHA d0b92a52949a92c248ce595f5777bd3a22662ad2 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:40:52Z | FROZEN_SUCCESS
+- run 36792329070 | fail-proof-all-gaps | SHA d0b92a52949a92c248ce595f5777bd3a22662ad2 | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:40:52Z | FROZEN_SUCCESS
+- run 36792322743 | fail-proof-all-gaps | SHA 245ca9d0ebeac6d8c85265273d8783aa35e52bbb | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:40:47Z | FROZEN_SUCCESS
+- run 36792322686 | certificate | SHA 245ca9d0ebeac6d8c85265273d8783aa35e52bbb | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:40:47Z | FROZEN_SUCCESS
+- run 36792310373 | ATK hardened final external | SHA b6d085fc483bf221f0ae544d8d9f9ad52a03b981 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:40:39Z | FROZEN_SUCCESS
+- run 36792297812 | certificate | SHA 3daa4462632b3915322f04fcc507143f4daffa8d | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:40:30Z | FROZEN_SUCCESS
+- run 36792297777 | fail-proof-all-gaps | SHA 3daa4462632b3915322f04fcc507143f4daffa8d | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:40:30Z | FROZEN_SUCCESS
+- run 36792286685 | ATK FINAL ROOT | SHA 516ab60a9a4abb16d1e54f6be3023de5c0c6f5e6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:40:23Z | FROZEN_SUCCESS
+- run 36792286519 | ATK FinalExternal root | SHA 516ab60a9a4abb16d1e54f6be3023de5c0c6f5e6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:40:23Z | FROZEN_SUCCESS
+- run 36792286257 | fail-proof-all-gaps | SHA 6d0de82ee7e912732302a3a98129c4fd7b742487 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:40:23Z | FROZEN_SUCCESS
+- run 36792286251 | certificate | SHA 6d0de82ee7e912732302a3a98129c4fd7b742487 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:40:23Z | FROZEN_SUCCESS
+- run 36792284113 | certificate | SHA 47d73b4b01ac183d2f850599a6e998a7af5c786a | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:40:21Z | FROZEN_SUCCESS
+- run 36792284066 | fail-proof-all-gaps | SHA 47d73b4b01ac183d2f850599a6e998a7af5c786a | branch atk/p01-material-inhabitant-frontier-20260930 | 2026-09-30T23:40:21Z | FROZEN_SUCCESS
+- run 36792271035 | fail-proof-all-gaps | SHA 86df61b23f1c824c4388991ead79393739d985ce | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:40:12Z | FROZEN_SUCCESS
+- run 36792271022 | certificate | SHA 86df61b23f1c824c4388991ead79393739d985ce | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:40:12Z | FROZEN_SUCCESS
+- run 36792236431 | certificate | SHA 4c546f5168745daa9efae16d5efb19e4bbdb83fa | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:39:49Z | FROZEN_SUCCESS
+- run 36792236326 | fail-proof-all-gaps | SHA 4c546f5168745daa9efae16d5efb19e4bbdb83fa | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:39:49Z | FROZEN_SUCCESS
+- run 36792134709 | fail-proof-all-gaps | SHA 693d9219b548d437e3919bc481c97122ea70069c | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:38:37Z | FROZEN_SUCCESS
+- run 36792134398 | certificate | SHA 693d9219b548d437e3919bc481c97122ea70069c | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:38:36Z | FROZEN_SUCCESS
+- run 36792131315 | ATK FINAL ROOT | SHA c6fffec9ecf0f3e892801a0b818fbcfadd1e9aaf | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:38:35Z | FROZEN_SUCCESS
+- run 36792117523 | ATK FINAL ROOT | SHA 2f4a053835bc38bb52be054fa63d59fd4325da1d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:38:25Z | FROZEN_SUCCESS
+- run 36792115575 | fail-proof-all-gaps | SHA 72940a6a7bef701b316b894846168f21988f7c75 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:38:23Z | FROZEN_SUCCESS
+- run 36792115450 | certificate | SHA 72940a6a7bef701b316b894846168f21988f7c75 | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:38:23Z | FROZEN_SUCCESS
+- run 36792096551 | ATK FINAL ROOT | SHA 3d02fa09b577e4da400bc4866ad4d1499ce00227 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:38:09Z | FROZEN_SUCCESS
+- run 36792084112 | certificate | SHA 643e8af6d134c30118feb6ded45f4c339370ec0b | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:38:00Z | FROZEN_SUCCESS
+- run 36792084108 | fail-proof-all-gaps | SHA 643e8af6d134c30118feb6ded45f4c339370ec0b | branch atk/p01-verifier-phase-mincut-clean-20260930 | 2026-09-30T23:38:00Z | FROZEN_SUCCESS
+- run 36792032170 | ATK current model collapse | SHA c6e39adfce1c8378c8c1d5bbc87195c7a445f6f6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:37:23Z | FROZEN_SUCCESS
+- run 36792021432 | ATK FINAL ROOT | SHA caf37d6a69449af5d177dcdd37fbbc2d3280b73a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:37:15Z | FROZEN_SUCCESS
+
+## ShantiDraconis/m-core-riemann
+
+- run 36789912106 | ATK exact final producer | SHA 37d459b5181057a479f4ecb9d5cc4b23ef76b263 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:13:05Z | FROZEN_SUCCESS
+- run 36789911952 | ATK terminal auto-compose | SHA 37d459b5181057a479f4ecb9d5cc4b23ef76b263 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:13:05Z | FROZEN_SUCCESS
+- run 36789559313 | ATK terminal auto-compose | SHA 2a92c63e2582fb9d30675d64103405c4e37957fc | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:09:07Z | FROZEN_SUCCESS
+- run 36789559222 | ATK exact final producer | SHA 2a92c63e2582fb9d30675d64103405c4e37957fc | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:09:07Z | FROZEN_SUCCESS
+- run 36789537854 | ATK terminal auto-compose | SHA 60f561845a36a08a8ba020f5dc6700e34e15a9d9 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:08:52Z | FROZEN_SUCCESS
+- run 36789526020 | ATK terminal auto-compose | SHA 85cba25c718c71e4483558f87ac6fb0f138888a3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:08:45Z | FROZEN_SUCCESS
+- run 36789515383 | ATK terminal auto-compose | SHA ba223592d18573015da4eb53bdf355392f993382 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:08:38Z | FROZEN_SUCCESS
+- run 36789507829 | ATK terminal auto-compose | SHA 227270822d41188521c082cce7de5c3c712272b1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:08:32Z | FROZEN_SUCCESS
+- run 36789498637 | ATK terminal auto-compose | SHA e6a5bb13e243d0c50f8d0915cc9a2014580f5a30 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:08:26Z | FROZEN_SUCCESS
+- run 36789185081 | ATK terminal auto-compose | SHA 30f00646e5845c650b3e2fe08b4ebd5294ac53df | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:03Z | FROZEN_SUCCESS
+- run 36789185015 | ATK exact final producer | SHA 30f00646e5845c650b3e2fe08b4ebd5294ac53df | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:03Z | FROZEN_SUCCESS
+- run 36784528008 | certificate | SHA 7611f8095c6d9568bf2bb267b7d2b6234197e34e | branch atk-rh-gram-terminal-link-20260930 | 2026-09-30T22:15:43Z | FROZEN_SUCCESS
+- run 36784512102 | certificate | SHA 96b1deac794e38b0a16d584f06f0804db9a72d2d | branch atk-rh-gram-terminal-link-20260930 | 2026-09-30T22:15:33Z | FROZEN_SUCCESS
+- run 36782902039 | ATK FINAL_ROOT | SHA e8923371f45452804be0fe3d645ba0b0d0ac68cb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:59:41Z | FROZEN_SUCCESS
+- run 36782901943 | ATK terminal auto-compose | SHA e8923371f45452804be0fe3d645ba0b0d0ac68cb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:59:41Z | FROZEN_SUCCESS
+- run 36782901941 | certificate | SHA e8923371f45452804be0fe3d645ba0b0d0ac68cb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:59:41Z | FROZEN_SUCCESS
+- run 36782863071 | ATK terminal auto-compose | SHA 619227bd8be2dd8dc920f63c9379d70c13554269 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:59:16Z | FROZEN_SUCCESS
+- run 36781771359 | ATK terminal auto-compose | SHA ddec5f940df9f17a3d6082cc5f423fa59ffc3a20 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:48:34Z | FROZEN_SUCCESS
+- run 36781464369 | ATK terminal auto-compose | SHA 7edf5cf121f714accd269e3d037eb1f6c2e05f98 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:45:38Z | FROZEN_SUCCESS
+- run 36781391696 | ATK terminal auto-compose | SHA 9b4948d0fb2e7c1d046b0e71df95882a01e9b0b5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:44:58Z | FROZEN_SUCCESS
+- run 36781383162 | ATK terminal auto-compose | SHA d57c51bb5417d8f163c6f2d271e14ea3406e34c0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:44:53Z | FROZEN_SUCCESS
+- run 36781023910 | ATK terminal auto-compose | SHA d8a0180e96ba5265c6f58e552f0238a31ae06eb6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:41:24Z | FROZEN_SUCCESS
+- run 36780980197 | ATK terminal auto-compose | SHA 7bac008ff6ca4bec788d2be71c0419e56512806a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:59Z | FROZEN_SUCCESS
+- run 36780980006 | certificate | SHA 7bac008ff6ca4bec788d2be71c0419e56512806a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:59Z | FROZEN_SUCCESS
+- run 36780963488 | certificate | SHA c846c486f0513340383ffb773017252978e830d8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:50Z | FROZEN_SUCCESS
+- run 36780963456 | ATK terminal auto-compose | SHA c846c486f0513340383ffb773017252978e830d8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:50Z | FROZEN_SUCCESS
+- run 36780952183 | certificate | SHA 514e05ea733bd956eea7bac32a76d8633fd17b35 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:43Z | FROZEN_SUCCESS
+- run 36780952179 | ATK terminal auto-compose | SHA 514e05ea733bd956eea7bac32a76d8633fd17b35 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:43Z | FROZEN_SUCCESS
+- run 36780938747 | ATK terminal auto-compose | SHA 4b685c2dee84b55f042adc8bff82b4f7d6dfbc29 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:36Z | FROZEN_SUCCESS
+- run 36780938408 | certificate | SHA 4b685c2dee84b55f042adc8bff82b4f7d6dfbc29 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:40:36Z | FROZEN_SUCCESS
+- run 36780699473 | ATK FINAL_ROOT | SHA 80e58a4b7c94da552984acd1659468433a29899e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:16Z | FROZEN_SUCCESS
+- run 36780699369 | ATK terminal auto-compose | SHA 80e58a4b7c94da552984acd1659468433a29899e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:16Z | FROZEN_SUCCESS
+- run 36780699367 | certificate | SHA 80e58a4b7c94da552984acd1659468433a29899e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:16Z | FROZEN_SUCCESS
+- run 36776117891 | ATK RH log majorant | SHA 1682f2b5d83fc45a7ddeedebfed9db9bc674c6bf | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:56:31Z | FROZEN_SUCCESS
+- run 36776117860 | ATK terminal auto-compose | SHA 1682f2b5d83fc45a7ddeedebfed9db9bc674c6bf | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:56:31Z | FROZEN_SUCCESS
+- run 36776117812 | certificate | SHA 1682f2b5d83fc45a7ddeedebfed9db9bc674c6bf | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:56:31Z | FROZEN_SUCCESS
+- run 36775474725 | ATK terminal auto-compose | SHA a2688ee1ab7a701ab58dc8f6838b326e1e262482 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:50:51Z | FROZEN_SUCCESS
+- run 36775474692 | certificate | SHA a2688ee1ab7a701ab58dc8f6838b326e1e262482 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:50:51Z | FROZEN_SUCCESS
+- run 36775070866 | certificate | SHA c1b589616326f5bee80628dd085960c5eae5d0c5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:47:21Z | FROZEN_SUCCESS
+- run 36775070862 | ATK terminal auto-compose | SHA c1b589616326f5bee80628dd085960c5eae5d0c5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:47:21Z | FROZEN_SUCCESS
+- run 36774579897 | ATK terminal auto-compose | SHA 1f7516a49cf9a8d82fe5c73e4ac4eb2cdcca7d17 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:43:10Z | FROZEN_SUCCESS
+- run 36774579859 | certificate | SHA 1f7516a49cf9a8d82fe5c73e4ac4eb2cdcca7d17 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:43:10Z | FROZEN_SUCCESS
+- run 36774223172 | ATK terminal auto-compose | SHA 0b45ad45f73a2f287bcb881a6fab96d5dc5f9daa | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:40:04Z | FROZEN_SUCCESS
+- run 36774223105 | certificate | SHA 0b45ad45f73a2f287bcb881a6fab96d5dc5f9daa | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:40:04Z | FROZEN_SUCCESS
+- run 36774102564 | ATK terminal auto-compose | SHA e907797e8e3e50edd8436a9d2d565b39e8636a46 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:39:01Z | FROZEN_SUCCESS
+- run 36774102447 | certificate | SHA e907797e8e3e50edd8436a9d2d565b39e8636a46 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:39:01Z | FROZEN_SUCCESS
+- run 36774028413 | ATK terminal auto-compose | SHA c6cb48c919ea1541a5f117e94418121e1d111b00 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:38:23Z | FROZEN_SUCCESS
+- run 36774028292 | ATK exact final producer | SHA c6cb48c919ea1541a5f117e94418121e1d111b00 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:38:23Z | FROZEN_SUCCESS
+- run 36773809002 | ATK exact final producer | SHA 39a8fe855827d753c30b0e0f5a0900677eb2b330 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:27Z | FROZEN_SUCCESS
+- run 36773808914 | certificate | SHA 39a8fe855827d753c30b0e0f5a0900677eb2b330 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:27Z | FROZEN_SUCCESS
+- run 36773808848 | ATK terminal auto-compose | SHA 39a8fe855827d753c30b0e0f5a0900677eb2b330 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:27Z | FROZEN_SUCCESS
+- run 36770558414 | certificate | SHA bf1c5d2223ddb7a20a38a9cc97987c57aa20a716 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:45Z | FROZEN_SUCCESS
+- run 36770558373 | ATK terminal auto-compose | SHA bf1c5d2223ddb7a20a38a9cc97987c57aa20a716 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:45Z | FROZEN_SUCCESS
+- run 36770558241 | ATK FINAL_ROOT | SHA bf1c5d2223ddb7a20a38a9cc97987c57aa20a716 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:45Z | FROZEN_SUCCESS
+- run 36766864367 | ATK terminal auto-compose | SHA 8e652004c322d4e2b9f1205906d0288c280fe2cb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:36:37Z | FROZEN_SUCCESS
+- run 36766864189 | certificate | SHA 8e652004c322d4e2b9f1205906d0288c280fe2cb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:36:37Z | FROZEN_SUCCESS
+- run 36765662431 | certificate | SHA 7c778314e6eefca23336d67f37282bbd22ba4c6c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:26:17Z | FROZEN_SUCCESS
+- run 36765662424 | ATK FINAL_ROOT | SHA 7c778314e6eefca23336d67f37282bbd22ba4c6c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:26:17Z | FROZEN_SUCCESS
+- run 36765662406 | ATK terminal auto-compose | SHA 7c778314e6eefca23336d67f37282bbd22ba4c6c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:26:17Z | FROZEN_SUCCESS
+- run 36765407571 | certificate | SHA 77f94718e97e090a6fb464217aa874b64f09478b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:06Z | FROZEN_SUCCESS
+- run 36765407488 | ATK terminal auto-compose | SHA 77f94718e97e090a6fb464217aa874b64f09478b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:06Z | FROZEN_SUCCESS
+- run 36765303766 | ATK terminal auto-compose | SHA a2734d02a13f14991e5d299d6a19c2c755dc6973 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:13Z | FROZEN_SUCCESS
+- run 36765303731 | certificate | SHA a2734d02a13f14991e5d299d6a19c2c755dc6973 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:13Z | FROZEN_SUCCESS
+- run 36765303730 | ATK FINAL ROOT | SHA a2734d02a13f14991e5d299d6a19c2c755dc6973 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:13Z | FROZEN_SUCCESS
+- run 36760916182 | certificate | SHA 2197c510d32f512e4f2a0c0af24ddea39ed0095c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:45:57Z | FROZEN_SUCCESS
+- run 36760916122 | ATK FINAL ROOT | SHA 2197c510d32f512e4f2a0c0af24ddea39ed0095c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:45:57Z | FROZEN_SUCCESS
+- run 36760916037 | ATK terminal auto-compose | SHA 2197c510d32f512e4f2a0c0af24ddea39ed0095c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:45:57Z | FROZEN_SUCCESS
+- run 36760514196 | certificate | SHA 750b09fb55bba050568d0f66049f2487575aebb9 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:42:36Z | FROZEN_SUCCESS
+- run 36760514102 | ATK terminal auto-compose | SHA 750b09fb55bba050568d0f66049f2487575aebb9 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:42:36Z | FROZEN_SUCCESS
+- run 36760493965 | certificate | SHA 94ffacf14aa0ee367e5a46c0100d3dcd0cf605b4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:42:25Z | FROZEN_SUCCESS
+- run 36760493801 | ATK terminal auto-compose | SHA 94ffacf14aa0ee367e5a46c0100d3dcd0cf605b4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:42:25Z | FROZEN_SUCCESS
+- run 36759890306 | ATK terminal auto-compose | SHA a1d3f9065a94c4d13a9cb5d00f0125934c345a3a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:21Z | FROZEN_SUCCESS
+- run 36759890254 | certificate | SHA a1d3f9065a94c4d13a9cb5d00f0125934c345a3a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:21Z | FROZEN_SUCCESS
+- run 36759656109 | ATK terminal auto-compose | SHA 403305f5d4e519a51fe7837c0b8a56d1da211f4d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:25Z | FROZEN_SUCCESS
+- run 36759656077 | certificate | SHA 403305f5d4e519a51fe7837c0b8a56d1da211f4d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:25Z | FROZEN_SUCCESS
+- run 36759240391 | ATK terminal auto-compose | SHA 52e994ad4cf0407e8ae79f18e7c94ebcb7aa726d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:31:53Z | FROZEN_SUCCESS
+- run 36759240312 | certificate | SHA 52e994ad4cf0407e8ae79f18e7c94ebcb7aa726d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:31:53Z | FROZEN_SUCCESS
+- run 36758738250 | ATK terminal auto-compose | SHA 4c3c6b13d6017eda440f2159016cfd4cf50f13b4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:27:44Z | FROZEN_SUCCESS
+- run 36758738214 | certificate | SHA 4c3c6b13d6017eda440f2159016cfd4cf50f13b4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:27:44Z | FROZEN_SUCCESS
+- run 36758664164 | ATK terminal auto-compose | SHA d8b2a5d5f7b931d2584d370f5c86b09963dc74ae | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:27:08Z | FROZEN_SUCCESS
+- run 36758664046 | certificate | SHA d8b2a5d5f7b931d2584d370f5c86b09963dc74ae | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:27:08Z | FROZEN_SUCCESS
+- run 36736045967 | ATK terminal auto-compose | SHA 18f264bd877b7f004b9a2f6e28070999d1b18688 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:21:00Z | FROZEN_SUCCESS
+- run 36736045918 | certificate | SHA 18f264bd877b7f004b9a2f6e28070999d1b18688 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:21:00Z | FROZEN_SUCCESS
+- run 36736045827 | ATK RH majorant producer | SHA 18f264bd877b7f004b9a2f6e28070999d1b18688 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:21:00Z | FROZEN_SUCCESS
+- run 36735635436 | ATK terminal auto-compose | SHA af5a00bbef51592b8947ddf56307c855093e9fc3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:17:49Z | FROZEN_SUCCESS
+- run 36735635316 | certificate | SHA af5a00bbef51592b8947ddf56307c855093e9fc3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:17:49Z | FROZEN_SUCCESS
+- run 36735608476 | ATK terminal auto-compose | SHA b6cbbee55fcb4493f36baa75e30deac85839ea68 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:17:36Z | FROZEN_SUCCESS
+- run 36735608390 | certificate | SHA b6cbbee55fcb4493f36baa75e30deac85839ea68 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:17:36Z | FROZEN_SUCCESS
+- run 36734724935 | FALSIFIED terminal smoke | SHA cada2a2a12af29c5f9e0cae126399ea8810b3362 | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:10:40Z | FROZEN_SUCCESS
+- run 36734090143 | certificate | SHA d173967fd13bdeefa37f93e9693b3f9afd69db25 | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:05:40Z | FROZEN_SUCCESS
+- run 36718582548 | ATK terminal auto-compose | SHA d173967fd13bdeefa37f93e9693b3f9afd69db25 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:00:40Z | FROZEN_SUCCESS
+- run 36718582302 | certificate | SHA d173967fd13bdeefa37f93e9693b3f9afd69db25 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:00:39Z | FROZEN_SUCCESS
+- run 36718574480 | certificate | SHA b15f5351e92e335871120aa0709ff968b8ad3e27 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:00:36Z | FROZEN_SUCCESS
+- run 36713316340 | certificate | SHA c84ea11e547ffbd1c9f96ce6d642199d8a33f384 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T12:12:34Z | FROZEN_SUCCESS
+- run 36711724076 | certificate | SHA a6cb7a19702941f07f49e5cb76aabc614d1b5e7f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:57:27Z | FROZEN_SUCCESS
+- run 36711512972 | certificate | SHA cea82dbe69ab6d1b53e3875bfbbb19f79cde6c0f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:25Z | FROZEN_SUCCESS
+- run 36711509054 | certificate | SHA 85754bc8a1489463bf3275d03e2a1d9655ac1f4e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:22Z | FROZEN_SUCCESS
+- run 36711431564 | certificate | SHA 5c66f8dca03834f24a61a9b1219e7af9d4892dd6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:54:38Z | FROZEN_SUCCESS
+- run 36711159074 | certificate | SHA 8303c75b0c0fdb87a7888c12b55ecb863f812129 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:00Z | FROZEN_SUCCESS
+- run 36711155798 | certificate | SHA d8eb9f1008e0e85b1f973f5aa1ae0d19563c6cd4 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:51:58Z | FROZEN_SUCCESS
+- run 36711034541 | certificate | SHA b239b00cec143f0259eaeb92068dee63474ed177 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:50:48Z | FROZEN_SUCCESS
+- run 36702470850 | certificate | SHA 305fd7dea65d01ca1b129acb9554c81c4fb9a8f9 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:50Z | FROZEN_SUCCESS
+- run 36702436382 | certificate | SHA b239b00cec143f0259eaeb92068dee63474ed177 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:30Z | FROZEN_SUCCESS
+- run 36699914028 | atk-rh-concrete-gram-scalar | SHA 96b1deac794e38b0a16d584f06f0804db9a72d2d | branch atk/rh-concrete-gram-scalar-20260930 | 2026-09-30T10:02:15Z | FROZEN_SUCCESS
+- run 36699914009 | certificate | SHA 96b1deac794e38b0a16d584f06f0804db9a72d2d | branch atk/rh-concrete-gram-scalar-20260930 | 2026-09-30T10:02:15Z | FROZEN_SUCCESS
+- run 36699548942 | certificate | SHA cad04adb7f75188727e19d4a381a04a5c91054a1 | branch atk/rh-concrete-gram-scalar-20260930 | 2026-09-30T09:58:50Z | FROZEN_SUCCESS
+- run 36699126006 | certificate | SHA 3eda566e18258c3e77453112d72059c54278ee27 | branch atk/rh-concrete-gram-scalar-20260930 | 2026-09-30T09:54:48Z | FROZEN_SUCCESS
+- run 36699101907 | certificate | SHA 97c887b65010a7e2aa983f7015fecde5d143ee8b | branch atk/rh-concrete-gram-scalar-20260930 | 2026-09-30T09:54:34Z | FROZEN_SUCCESS
+- run 36699098540 | certificate | SHA b0f890bb3421358b44eab68e5e865c282b986097 | branch atk/rh-concrete-gram-scalar-20260930 | 2026-09-30T09:54:32Z | FROZEN_SUCCESS
+- run 36699027912 | certificate | SHA ac8ba3b8e51363d431ade14c94e1092e1a3b326d | branch atk/rh-concrete-gram-scalar-20260930 | 2026-09-30T09:53:53Z | FROZEN_SUCCESS
+- run 36698960723 | certificate | SHA ac8ba3b8e51363d431ade14c94e1092e1a3b326d | branch frozen/rh-gram-energy-endpoint-green-ac8ba3b8 | 2026-09-30T09:53:15Z | FROZEN_SUCCESS
+- run 36698560415 | Running Copilot Code Review | SHA 7fc4acbea946f809343ed8b475d6d8195de3e543 | branch atk/master-rh-gram-repair-20260930 | 2026-09-30T09:49:28Z | FROZEN_SUCCESS
+- run 36698549685 | certificate | SHA 7fc4acbea946f809343ed8b475d6d8195de3e543 | branch atk/master-rh-gram-repair-20260930 | 2026-09-30T09:49:22Z | FROZEN_SUCCESS
+- run 36698545596 | atk-rh-gram-energy-endpoint | SHA ac8ba3b8e51363d431ade14c94e1092e1a3b326d | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:49:19Z | FROZEN_SUCCESS
+- run 36698545568 | certificate | SHA ac8ba3b8e51363d431ade14c94e1092e1a3b326d | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:49:19Z | FROZEN_SUCCESS
+- run 36698526176 | atk-rh-gram-energy-endpoint | SHA a3169b465b16d3df7b0dbbceee147a90d6720dc9 | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:49:08Z | FROZEN_SUCCESS
+- run 36698526090 | certificate | SHA a3169b465b16d3df7b0dbbceee147a90d6720dc9 | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:49:08Z | FROZEN_SUCCESS
+- run 36698154868 | certificate | SHA a501a4bdb261206490cb9fc16d3a28b7ffcad546 | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:45:39Z | FROZEN_SUCCESS
+- run 36698154857 | atk-rh-gram-energy-endpoint | SHA a501a4bdb261206490cb9fc16d3a28b7ffcad546 | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:45:39Z | FROZEN_SUCCESS
+- run 36698030526 | certificate | SHA 7fc4acbea946f809343ed8b475d6d8195de3e543 | branch atk/master-rh-gram-repair-20260930 | 2026-09-30T09:44:31Z | FROZEN_SUCCESS
+- run 36698030525 | atk-rh-gram-quadratic-master | SHA 7fc4acbea946f809343ed8b475d6d8195de3e543 | branch atk/master-rh-gram-repair-20260930 | 2026-09-30T09:44:31Z | FROZEN_SUCCESS
+- run 36697799608 | certificate | SHA e64c87a2f5198acbcd3d1cfcc151b4f3379d5e56 | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:42:17Z | FROZEN_SUCCESS
+- run 36697645315 | certificate | SHA a3fb238eb045b2bba2d991054e2e7cf685da3541 | branch atk/master-rh-gram-repair-20260930 | 2026-09-30T09:40:50Z | FROZEN_SUCCESS
+- run 36697449796 | certificate | SHA 7b151d2842766f721ec4dedc32d30c4409e74d5b | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:39:00Z | FROZEN_SUCCESS
+- run 36697422296 | certificate | SHA f1490f5bfb4d279e5cfe25f9f1c6d54b4670af22 | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:38:44Z | FROZEN_SUCCESS
+- run 36697228444 | certificate | SHA 0b2720d2928fa0828ee3d3870fb2884f2d160433 | branch atk/rh-gram-energy-endpoint-20260930 | 2026-09-30T09:36:54Z | FROZEN_SUCCESS
+- run 36696984636 | certificate | SHA 0b2720d2928fa0828ee3d3870fb2884f2d160433 | branch frozen/rh-direct-coefficient-endpoint-green-0b2720d | 2026-09-30T09:34:31Z | FROZEN_SUCCESS
+- run 36696360158 | certificate | SHA 6742ca3161e7055ac6fce13b9b1354972d489589 | branch atk/master-rh-gram-repair-20260930 | 2026-09-30T09:28:40Z | FROZEN_SUCCESS
+- run 36696336051 | certificate | SHA 265fc5966da8e5723bb967decf219f5c1de4701b | branch atk/master-rh-gram-repair-20260930 | 2026-09-30T09:28:27Z | FROZEN_SUCCESS
+- run 36640049611 | certificate | SHA 265fc5966da8e5723bb967decf219f5c1de4701b | branch atk/rh-gram-quadratic-identity-20260929 | 2026-09-29T22:31:14Z | FROZEN_SUCCESS
+- run 36640028944 | certificate | SHA 825e2e30355a9bf77c10b4a3385bee493486a918 | branch atk/rh-gram-quadratic-identity-20260929 | 2026-09-29T22:31:02Z | FROZEN_SUCCESS
+- run 36639978635 | certificate | SHA 0b2720d2928fa0828ee3d3870fb2884f2d160433 | branch atk/rh-gram-quadratic-identity-20260929 | 2026-09-29T22:30:32Z | FROZEN_SUCCESS
+- run 36639913231 | certificate | SHA 0b2720d2928fa0828ee3d3870fb2884f2d160433 | branch frozen/rh-coefficient-gram-reduction-green-0b2720d2 | 2026-09-29T22:29:55Z | FROZEN_SUCCESS
+- run 36639570582 | atk-rh-direct-mobius-residual | SHA 0b2720d2928fa0828ee3d3870fb2884f2d160433 | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:26:22Z | FROZEN_SUCCESS
+- run 36639570572 | certificate | SHA 0b2720d2928fa0828ee3d3870fb2884f2d160433 | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:26:22Z | FROZEN_SUCCESS
+- run 36639371034 | atk-rh-direct-mobius-residual | SHA 83ea9a57e1a5343f4e1ed23704914c8455df693f | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:24:22Z | FROZEN_SUCCESS
+- run 36639371006 | certificate | SHA 83ea9a57e1a5343f4e1ed23704914c8455df693f | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:24:22Z | FROZEN_SUCCESS
+- run 36639345130 | certificate | SHA 20d9af62618a1ec236967783f5546f1bbf1b5bf9 | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:24:06Z | FROZEN_SUCCESS
+- run 36639061892 | certificate | SHA 80ce199afe65f939e443ac7da032b7f2d12f2953 | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:21:15Z | FROZEN_SUCCESS
+- run 36638928267 | certificate | SHA 50545833e5e1116d96b4ea856a7e3238c93c1697 | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:19:56Z | FROZEN_SUCCESS
+- run 36638913722 | certificate | SHA ed4d6ff37113aa58161e917c54ae0817912ed8bf | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:19:48Z | FROZEN_SUCCESS
+- run 36638845007 | certificate | SHA e4008b3f6b6ecf19ac9eed927dd356cc47f01de7 | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:19:05Z | FROZEN_SUCCESS
+- run 36638820495 | certificate | SHA 0ac0f91178e544d85ebce476efa79b725ce8ec43 | branch atk/rh-direct-mobius-residual-20260929 | 2026-09-29T22:18:51Z | FROZEN_SUCCESS
+
+## ShantiDraconis/m-core-beal
+
+- run 36790807463 | ATK terminal auto-compose | SHA c5ea75fe20596c10dd378147d7c6a2bc7b2fa2c8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:23:12Z | FROZEN_SUCCESS
+- run 36790807456 | ATK exact final producer | SHA c5ea75fe20596c10dd378147d7c6a2bc7b2fa2c8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:23:12Z | FROZEN_SUCCESS
+- run 36790807454 | ATK FINAL_ROOT | SHA c5ea75fe20596c10dd378147d7c6a2bc7b2fa2c8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:23:12Z | FROZEN_SUCCESS
+- run 36790628243 | ATK exact final producer | SHA 3e1d9d094ab1f968964b49afc67087a0fcb47aec | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:21:09Z | FROZEN_SUCCESS
+- run 36790628236 | ATK FINAL_ROOT | SHA 3e1d9d094ab1f968964b49afc67087a0fcb47aec | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:21:09Z | FROZEN_SUCCESS
+- run 36790628223 | ATK terminal auto-compose | SHA 3e1d9d094ab1f968964b49afc67087a0fcb47aec | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:21:09Z | FROZEN_SUCCESS
+- run 36790010086 | ATK terminal auto-compose | SHA a2abcc78706095b83b858ba10482a66ff5a60473 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:14:11Z | FROZEN_SUCCESS
+- run 36789271667 | ATK exact final producer | SHA a92ccc7a948ce9b11c7c1089f5abb088421f9b17 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:58Z | FROZEN_SUCCESS
+- run 36789271635 | ATK terminal auto-compose | SHA a92ccc7a948ce9b11c7c1089f5abb088421f9b17 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:58Z | FROZEN_SUCCESS
+- run 36789102660 | ATK exact final producer | SHA 8f223a395f6f70897dc46dd90cd33fdd95e4d5ea | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:04:08Z | FROZEN_SUCCESS
+- run 36789102655 | ATK FINAL_ROOT | SHA 8f223a395f6f70897dc46dd90cd33fdd95e4d5ea | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:04:08Z | FROZEN_SUCCESS
+- run 36789102604 | ATK terminal auto-compose | SHA 8f223a395f6f70897dc46dd90cd33fdd95e4d5ea | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:04:08Z | FROZEN_SUCCESS
+- run 36780745252 | ATK FINAL_ROOT | SHA 323d4f3deb5f92a4298892b7ef70b60acd482036 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:43Z | FROZEN_SUCCESS
+- run 36780745162 | ATK terminal auto-compose | SHA 323d4f3deb5f92a4298892b7ef70b60acd482036 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:43Z | FROZEN_SUCCESS
+- run 36780611990 | ATK terminal auto-compose | SHA 087b2387eeafc72ff6a99109c760012960f51a0e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:37:25Z | FROZEN_SUCCESS
+- run 36780611880 | ATK exact final producer | SHA 087b2387eeafc72ff6a99109c760012960f51a0e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:37:25Z | FROZEN_SUCCESS
+- run 36780611862 | ATK FINAL_ROOT | SHA 087b2387eeafc72ff6a99109c760012960f51a0e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:37:25Z | FROZEN_SUCCESS
+- run 36773911265 | ATK FINAL_ROOT | SHA fc664704ac13fe9c50e9546616d951c66c1ec8be | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:37:22Z | FROZEN_SUCCESS
+- run 36773911102 | ATK terminal auto-compose | SHA fc664704ac13fe9c50e9546616d951c66c1ec8be | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:37:21Z | FROZEN_SUCCESS
+- run 36773911081 | ATK exact final producer | SHA fc664704ac13fe9c50e9546616d951c66c1ec8be | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:37:21Z | FROZEN_SUCCESS
+- run 36773867947 | ATK exact final producer | SHA e4bf4365eebe94a5ee68045ab5929e0b68c8b7bc | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:58Z | FROZEN_SUCCESS
+- run 36773867825 | ATK terminal auto-compose | SHA e4bf4365eebe94a5ee68045ab5929e0b68c8b7bc | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:58Z | FROZEN_SUCCESS
+- run 36773562657 | ATK terminal auto-compose | SHA 3efce5b73909865613e54437d55f162e618a63eb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:34:20Z | FROZEN_SUCCESS
+- run 36773562075 | ATK FINAL_ROOT | SHA 3efce5b73909865613e54437d55f162e618a63eb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:34:20Z | FROZEN_SUCCESS
+- run 36773541216 | ATK terminal auto-compose | SHA 991551289c426faeb76cd934ec6528fe9c472992 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:34:09Z | FROZEN_SUCCESS
+- run 36771444678 | ATK FINAL_ROOT | SHA d9aef2258821ce69fa223bf61186b54e1fcc3d13 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:16:22Z | FROZEN_SUCCESS
+- run 36771444665 | ATK terminal auto-compose | SHA d9aef2258821ce69fa223bf61186b54e1fcc3d13 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:16:22Z | FROZEN_SUCCESS
+- run 36770628075 | ATK terminal auto-compose | SHA 67a842d4f83938b383cfa27203be14dacdf647cd | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:09:22Z | FROZEN_SUCCESS
+- run 36770457724 | ATK terminal auto-compose | SHA 37ff48f6a9a0fd13224c759e03b42ea9271c5d2b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:07:50Z | FROZEN_SUCCESS
+- run 36770421118 | ATK terminal auto-compose | SHA 58d1a2723df36de75c131d31c2d519ed898ff3cb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:07:31Z | FROZEN_SUCCESS
+- run 36765479010 | ATK terminal auto-compose | SHA be841e7e8d78be23ec5f3aa46b4ca64eac2fe69b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:44Z | FROZEN_SUCCESS
+- run 36765325031 | ATK FINAL ROOT | SHA b160c9bf10137b9a3ed3d6d930df50cb88d1cc44 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:24Z | FROZEN_SUCCESS
+- run 36765324796 | ATK terminal auto-compose | SHA b160c9bf10137b9a3ed3d6d930df50cb88d1cc44 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:24Z | FROZEN_SUCCESS
+- run 36760294714 | ATK terminal auto-compose | SHA f90f4dfbe962e8070b3dda1f634d033e51e49e85 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:40:43Z | FROZEN_SUCCESS
+- run 36760294667 | ATK FINAL ROOT | SHA f90f4dfbe962e8070b3dda1f634d033e51e49e85 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:40:43Z | FROZEN_SUCCESS
+- run 36759803842 | ATK terminal auto-compose | SHA 266219aaf029e19c200eee8c09b7665c3dde7963 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:36:39Z | FROZEN_SUCCESS
+- run 36759678890 | ATK terminal auto-compose | SHA 39b74e65ccdeb246dd49059190325f3d3ef5dde3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:37Z | FROZEN_SUCCESS
+- run 36759260083 | ATK terminal auto-compose | SHA f245cf82f4d9e4c907a68fa81df07a7914f12d45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:32:04Z | FROZEN_SUCCESS
+- run 36738319835 | ATK terminal auto-compose | SHA 91013253c5559d1c74eaf4a24140b7ffd23bcf9c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:47Z | FROZEN_SUCCESS
+- run 36738319681 | ATK Beal inhabitation mining | SHA 91013253c5559d1c74eaf4a24140b7ffd23bcf9c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:47Z | FROZEN_SUCCESS
+- run 36738000282 | ATK Beal inhabitation mining | SHA cef0902d98b3e4581e6d4566663bd9e317eb3152 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:15Z | FROZEN_SUCCESS
+- run 36738000217 | ATK terminal auto-compose | SHA cef0902d98b3e4581e6d4566663bd9e317eb3152 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:15Z | FROZEN_SUCCESS
+- run 36737810115 | ATK terminal auto-compose | SHA d1982a2bfaccbc73406e356c9cbf5d6713e54e1e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:48Z | FROZEN_SUCCESS
+- run 36737810047 | ATK Beal inhabitation mining | SHA d1982a2bfaccbc73406e356c9cbf5d6713e54e1e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:48Z | FROZEN_SUCCESS
+- run 36737593201 | ATK Beal inhabitation mining | SHA 0a1b076a3c8bfc34fbdf818d364ed0cf569e2507 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:33:05Z | FROZEN_SUCCESS
+- run 36737592812 | ATK terminal auto-compose | SHA 0a1b076a3c8bfc34fbdf818d364ed0cf569e2507 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:33:05Z | FROZEN_SUCCESS
+- run 36737330119 | ATK terminal auto-compose | SHA 3a7760aafbfe3e85494dbac7b0d3663944b0e98a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:59Z | FROZEN_SUCCESS
+- run 36737330067 | ATK Beal inhabitation mining | SHA 3a7760aafbfe3e85494dbac7b0d3663944b0e98a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:59Z | FROZEN_SUCCESS
+- run 36736963817 | ATK terminal auto-compose | SHA da5f9fa335d3c647e1d737257e9dc9f9ccf2c04b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:28:11Z | FROZEN_SUCCESS
+- run 36736621170 | ATK terminal auto-compose | SHA b88c187aa2096dd6c3b8fff1271154b218545295 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:25:30Z | FROZEN_SUCCESS
+- run 36736354549 | ATK terminal auto-compose | SHA 6b400969ac1d4f81a5764fb04abe097badc6c440 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:23:24Z | FROZEN_SUCCESS
+- run 36735956153 | ATK terminal auto-compose | SHA 5beba6bf0cb68047c4ad3511794c181d9da11a5b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:20:18Z | FROZEN_SUCCESS
+- run 36735512899 | ATK terminal auto-compose | SHA a4ad329e526ef7aa38cc0df0350b30f98999bdaa | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:16:51Z | FROZEN_SUCCESS
+- run 36735463953 | ATK terminal auto-compose | SHA 10e1338b015ccdc85263e8d464512119e89cfd3a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:16:27Z | FROZEN_SUCCESS
+- run 36734542678 | FALSIFIED terminal smoke | SHA 47fbe7271fa9e481d3b9895dd1dd251dbb8f0db6 | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:09:15Z | FROZEN_SUCCESS
+- run 36722830916 | ATK terminal auto-compose | SHA cf219be37c1ccee8bdbf2f9ac53baa7d25043759 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:36:12Z | FROZEN_SUCCESS
+- run 36718640012 | certificate | SHA 3621bb0df8508f189486a1c13e0e6f578868183b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:01:08Z | FROZEN_SUCCESS
+- run 36718634925 | certificate | SHA b693c7ff533c3d1eda2f823485c501547ac0c089 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:01:05Z | FROZEN_SUCCESS
+- run 36713329826 | certificate | SHA a2880a49a65a15a9e76cab3596dbcf49305f1f33 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T12:12:42Z | FROZEN_SUCCESS
+- run 36711731772 | certificate | SHA 9cf835af7c5e12cad93ddca3e94d121cf3a7b7bc | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:57:32Z | FROZEN_SUCCESS
+- run 36711572043 | certificate | SHA 3c8fba106ed50bfbd70f51254b85870a92fdc36b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:58Z | FROZEN_SUCCESS
+- run 36711568372 | certificate | SHA c624763eb863e350c309238d19a4e718fcd442c7 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:56Z | FROZEN_SUCCESS
+- run 36711486034 | certificate | SHA 5507b02eeb54e4a77111b7bd1868d8350f7589da | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:09Z | FROZEN_SUCCESS
+- run 36711456289 | certificate | SHA 5507b02eeb54e4a77111b7bd1868d8350f7589da | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:54:52Z | FROZEN_SUCCESS
+- run 36711224107 | certificate | SHA 85a4c6fb556e322ec1872a72ac86f9255cb11389 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:37Z | FROZEN_SUCCESS
+- run 36711224040 | Direct Endpoint Rule Guard | SHA 85a4c6fb556e322ec1872a72ac86f9255cb11389 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:37Z | FROZEN_SUCCESS
+- run 36711220362 | Direct Endpoint Rule Guard | SHA 1b14efa8793c39a0ab8c2836db00429475959d28 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:35Z | FROZEN_SUCCESS
+- run 36711220321 | certificate | SHA 1b14efa8793c39a0ab8c2836db00429475959d28 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:35Z | FROZEN_SUCCESS
+- run 36711051739 | Direct Endpoint Rule Guard | SHA dc84a96f744a8f209ce323c9d956420f67add854 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:50:58Z | FROZEN_SUCCESS
+- run 36711051630 | certificate | SHA dc84a96f744a8f209ce323c9d956420f67add854 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:50:58Z | FROZEN_SUCCESS
+- run 36702475177 | certificate | SHA b339f0432a7ca9ee4770c5c1786a8bb20472ad14 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:52Z | FROZEN_SUCCESS
+- run 36702475143 | Direct Endpoint Rule Guard | SHA b339f0432a7ca9ee4770c5c1786a8bb20472ad14 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:52Z | FROZEN_SUCCESS
+- run 36702438797 | Direct Endpoint Rule Guard | SHA dc84a96f744a8f209ce323c9d956420f67add854 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:32Z | FROZEN_SUCCESS
+- run 36702438785 | certificate | SHA dc84a96f744a8f209ce323c9d956420f67add854 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:32Z | FROZEN_SUCCESS
+- run 36494980993 | certificate | SHA dc84a96f744a8f209ce323c9d956420f67add854 | branch main | 2026-09-28T22:53:16Z | FROZEN_SUCCESS
+- run 36494980854 | Direct Endpoint Rule Guard | SHA dc84a96f744a8f209ce323c9d956420f67add854 | branch main | 2026-09-28T22:53:16Z | FROZEN_SUCCESS
+- run 36494340037 | certificate | SHA 13e21390e111eb89009a5ddab6080b0a419c4a62 | branch main | 2026-09-28T22:46:24Z | FROZEN_SUCCESS
+- run 36494339973 | Direct Endpoint Rule Guard | SHA 13e21390e111eb89009a5ddab6080b0a419c4a62 | branch main | 2026-09-28T22:46:24Z | FROZEN_SUCCESS
+- run 36494169549 | certificate | SHA 8b584f421782fb6fa0db95082600054c78c620f4 | branch main | 2026-09-28T22:44:38Z | FROZEN_SUCCESS
+- run 36494169494 | Direct Endpoint Rule Guard | SHA 8b584f421782fb6fa0db95082600054c78c620f4 | branch main | 2026-09-28T22:44:38Z | FROZEN_SUCCESS
+- run 36494151300 | Direct Endpoint Rule Guard | SHA d6fe130c44ef91e0f8ceb6b15a6548f186e381fd | branch frozen/gcd-lower-bound-producer-green-d6fe130c | 2026-09-28T22:44:27Z | FROZEN_SUCCESS
+- run 36494151188 | certificate | SHA d6fe130c44ef91e0f8ceb6b15a6548f186e381fd | branch frozen/gcd-lower-bound-producer-green-d6fe130c | 2026-09-28T22:44:26Z | FROZEN_SUCCESS
+- run 36493946605 | certificate | SHA a21076d07221a21e229056c0b0dfa2a8a53927ba | branch atk/beal-direct-rule-lock-repair-20260928 | 2026-09-28T22:42:15Z | FROZEN_SUCCESS
+- run 36493946600 | Direct Endpoint Rule Guard | SHA a21076d07221a21e229056c0b0dfa2a8a53927ba | branch atk/beal-direct-rule-lock-repair-20260928 | 2026-09-28T22:42:15Z | FROZEN_SUCCESS
+- run 36493742928 | Direct Endpoint Rule Guard | SHA d6fe130c44ef91e0f8ceb6b15a6548f186e381fd | branch main | 2026-09-28T22:40:06Z | FROZEN_SUCCESS
+- run 36493742792 | certificate | SHA d6fe130c44ef91e0f8ceb6b15a6548f186e381fd | branch main | 2026-09-28T22:40:06Z | FROZEN_SUCCESS
+- run 36493663320 | certificate | SHA 95df3b7d9a146d6d5af53e22c5717a26da59e70f | branch atk/beal-direct-rule-lock-repair-20260928 | 2026-09-28T22:39:16Z | FROZEN_SUCCESS
+- run 36493645746 | certificate | SHA d99dc0e061965a6d19a5a0a8b4de127e5de8c5f2 | branch atk/beal-direct-rule-lock-repair-20260928 | 2026-09-28T22:39:05Z | FROZEN_SUCCESS
+- run 36493602110 | certificate | SHA d99dc0e061965a6d19a5a0a8b4de127e5de8c5f2 | branch main | 2026-09-28T22:38:38Z | FROZEN_SUCCESS
+- run 36493585963 | certificate | SHA e65aff90df71a42e8864d9f770ef4a0ce00e5cc3 | branch main | 2026-09-28T22:38:28Z | FROZEN_SUCCESS
+- run 36493581231 | certificate | SHA 730278e7a5eeadc889e36bb032dc77142746c6dd | branch main | 2026-09-28T22:38:25Z | FROZEN_SUCCESS
+- run 36493577935 | certificate | SHA ac1b50bf1c42c2e79ddac519ec84322a0210583c | branch main | 2026-09-28T22:38:23Z | FROZEN_SUCCESS
+- run 36492795659 | certificate | SHA aaa5fcf40b15189e110ab0682ff1ad6547393c8e | branch main | 2026-09-28T22:30:26Z | FROZEN_SUCCESS
+- run 36492742993 | certificate | SHA 51de3aa044ac45da1e15f26557446d6a60af6d96 | branch frozen/beal-direct-common-divisor-green-51de3aa0 | 2026-09-28T22:29:58Z | FROZEN_SUCCESS
+- run 36492633205 | certificate | SHA 51de3aa044ac45da1e15f26557446d6a60af6d96 | branch main | 2026-09-28T22:28:50Z | FROZEN_SUCCESS
+- run 36492622657 | certificate | SHA df70cd7323ee267accd15b2ded777c294486b8af | branch main | 2026-09-28T22:28:44Z | FROZEN_SUCCESS
+- run 36484656520 | certificate | SHA cbbdfabf4abdccf72631a89acb28c7e0da565951 | branch atk/material-unification-v2-20260928 | 2026-09-28T21:13:37Z | FROZEN_SUCCESS
+- run 36484656481 | material-unification-v2 | SHA cbbdfabf4abdccf72631a89acb28c7e0da565951 | branch atk/material-unification-v2-20260928 | 2026-09-28T21:13:37Z | FROZEN_SUCCESS
+- run 36482919789 | certificate | SHA 4a0efc269c5652211eb4f3422bc422084d4fc560 | branch frozen/canonical-stable-hole-v1-green-4a0efc26 | 2026-09-28T20:58:17Z | FROZEN_SUCCESS
+- run 36482832349 | material-unification-v2 | SHA 4a0efc269c5652211eb4f3422bc422084d4fc560 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:57:30Z | FROZEN_SUCCESS
+- run 36482832191 | certificate | SHA 4a0efc269c5652211eb4f3422bc422084d4fc560 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:57:30Z | FROZEN_SUCCESS
+- run 36481169109 | certificate | SHA 021311a89528494e1fca527585e00716e6f6f32b | branch frozen/material-producer-refined-green-021311a8 | 2026-09-28T20:43:07Z | FROZEN_SUCCESS
+- run 36480841478 | material-unification-v2 | SHA 021311a89528494e1fca527585e00716e6f6f32b | branch atk/material-unification-v2-20260928 | 2026-09-28T20:40:17Z | FROZEN_SUCCESS
+- run 36480841291 | certificate | SHA 021311a89528494e1fca527585e00716e6f6f32b | branch atk/material-unification-v2-20260928 | 2026-09-28T20:40:17Z | FROZEN_SUCCESS
+- run 36480819981 | certificate | SHA f1e11f246ec414257f68d7d8602926cf488420e1 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:40:06Z | FROZEN_SUCCESS
+- run 36480819979 | material-unification-v2 | SHA f1e11f246ec414257f68d7d8602926cf488420e1 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:40:06Z | FROZEN_SUCCESS
+- run 36480795480 | material-unification-v2 | SHA c28601a4fc5b54682c7a75e6d95de6f08d0aa0c7 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:39:53Z | FROZEN_SUCCESS
+- run 36480795454 | certificate | SHA c28601a4fc5b54682c7a75e6d95de6f08d0aa0c7 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:39:53Z | FROZEN_SUCCESS
+- run 36480696605 | certificate | SHA a73413b99348e2b34fb82a6de4068476782c876a | branch atk/material-unification-v2-20260928 | 2026-09-28T20:39:01Z | FROZEN_SUCCESS
+- run 36480696603 | material-unification-v2 | SHA a73413b99348e2b34fb82a6de4068476782c876a | branch atk/material-unification-v2-20260928 | 2026-09-28T20:39:01Z | FROZEN_SUCCESS
+- run 36480690848 | material-unification-v2 | SHA b4eaaa8063fbd23705ed9eb2970c1ecf32240409 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:38:58Z | FROZEN_SUCCESS
+- run 36480690770 | certificate | SHA b4eaaa8063fbd23705ed9eb2970c1ecf32240409 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:38:58Z | FROZEN_SUCCESS
+- run 36479891006 | certificate | SHA 4231b50fe9daa1c05485e2b051090b569c8da5e4 | branch frozen/material-producer-common-divisor-green-4231b50f | 2026-09-28T20:32:11Z | FROZEN_SUCCESS
+- run 36479658542 | material-unification-v2 | SHA 4231b50fe9daa1c05485e2b051090b569c8da5e4 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:30:16Z | FROZEN_SUCCESS
+- run 36479656823 | certificate | SHA 4231b50fe9daa1c05485e2b051090b569c8da5e4 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:30:15Z | FROZEN_SUCCESS
+- run 36479560659 | certificate | SHA e2f6e648ef59f7655b6a053a18c6e6964c35c4e8 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:29:29Z | FROZEN_SUCCESS
+- run 36479551046 | certificate | SHA 1a663e207e873039428f3eed457fe6867320acd8 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:29:24Z | FROZEN_SUCCESS
+- run 36479544522 | certificate | SHA 4eff4905f76af55dbdc895bb61105edda09ccba3 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:29:20Z | FROZEN_SUCCESS
+- run 36479544513 | material-unification-v2 | SHA 4eff4905f76af55dbdc895bb61105edda09ccba3 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:29:20Z | FROZEN_SUCCESS
+- run 36478347421 | certificate | SHA 5b72e821f0305b3671b75a28a2415e6b98cdfb62 | branch frozen/inhabitant-arsenal-v1-green-5b72e821 | 2026-09-28T20:19:15Z | FROZEN_SUCCESS
+- run 36478073024 | material-unification-v2 | SHA 5b72e821f0305b3671b75a28a2415e6b98cdfb62 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:16:55Z | FROZEN_SUCCESS
+- run 36478072978 | certificate | SHA 5b72e821f0305b3671b75a28a2415e6b98cdfb62 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:16:55Z | FROZEN_SUCCESS
+- run 36475966299 | certificate | SHA 120931bc08d877e61f8279e8ecfb38d96e1a6f45 | branch frozen/material-unification-v2-green-120931bc | 2026-09-28T19:58:56Z | FROZEN_SUCCESS
+- run 36475849218 | certificate | SHA 120931bc08d877e61f8279e8ecfb38d96e1a6f45 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:57:53Z | FROZEN_SUCCESS
+- run 36475849046 | material-unification-v2 | SHA 120931bc08d877e61f8279e8ecfb38d96e1a6f45 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:57:53Z | FROZEN_SUCCESS
+- run 36475743453 | certificate | SHA 31922422cf767dfe35745ccdc14c71a845411770 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:56:56Z | FROZEN_SUCCESS
+- run 36475560359 | certificate | SHA 78734818c8c83f9bb951d6def3d3e04f8a5aa872 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:55:17Z | FROZEN_SUCCESS
+- run 36475553933 | certificate | SHA 318b0871d0f84e87a6ed56d4d4f5eeb1e4dcbf9f | branch atk/material-unification-v2-20260928 | 2026-09-28T19:55:14Z | FROZEN_SUCCESS
+
+## ShantiDraconis/m-core-bsd
+
+- run 36792231590 | ATK BSD current model collapse | SHA f75f4842d35db30e07ff8c9b2a91258510c8ad34 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:39:45Z | FROZEN_SUCCESS
+- run 36792184695 | ATK terminal auto-compose | SHA 2711622c34efba0d5875ecedfe6245e960d1e252 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:39:12Z | FROZEN_SUCCESS
+- run 36791939255 | ATK terminal auto-compose | SHA bd39ff3203b8755acb9db920d2cb6d98e17dbdf2 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:36:17Z | FROZEN_SUCCESS
+- run 36791927865 | certificate | SHA bb46170e3da4f919e693898f2d5cf664b98dfc9c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:36:08Z | FROZEN_SUCCESS
+- run 36791927863 | ATK terminal auto-compose | SHA bb46170e3da4f919e693898f2d5cf664b98dfc9c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:36:08Z | FROZEN_SUCCESS
+- run 36789244630 | certificate | SHA 43cec95c23c7c8c515d8fd47c5cdd23fa3903355 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:40Z | FROZEN_SUCCESS
+- run 36789244600 | ATK terminal auto-compose | SHA 43cec95c23c7c8c515d8fd47c5cdd23fa3903355 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:40Z | FROZEN_SUCCESS
+- run 36780722099 | ATK terminal auto-compose | SHA beac885ed859f79670d4ef4509b4218399286a2f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:30Z | FROZEN_SUCCESS
+- run 36780722023 | ATK FINAL_ROOT | SHA beac885ed859f79670d4ef4509b4218399286a2f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:30Z | FROZEN_SUCCESS
+- run 36780721999 | certificate | SHA beac885ed859f79670d4ef4509b4218399286a2f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:30Z | FROZEN_SUCCESS
+- run 36774712134 | certificate | SHA 7a6bdf57de22b1a2e593f802c74bdecd72d38143 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:44:17Z | FROZEN_SUCCESS
+- run 36774712079 | ATK terminal auto-compose | SHA 7a6bdf57de22b1a2e593f802c74bdecd72d38143 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:44:17Z | FROZEN_SUCCESS
+- run 36774374382 | ATK terminal auto-compose | SHA 538c5e1363536d38d958901354c3a3f89e4df08d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:41:22Z | FROZEN_SUCCESS
+- run 36774374261 | ATK FINAL_ROOT | SHA 538c5e1363536d38d958901354c3a3f89e4df08d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:41:22Z | FROZEN_SUCCESS
+- run 36774374234 | certificate | SHA 538c5e1363536d38d958901354c3a3f89e4df08d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:41:22Z | FROZEN_SUCCESS
+- run 36774374190 | ATK exact final producer | SHA 538c5e1363536d38d958901354c3a3f89e4df08d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:41:22Z | FROZEN_SUCCESS
+- run 36774162856 | ATK terminal auto-compose | SHA f6a219e04eb7e4a0818fcf76195f23d060f66007 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:39:33Z | FROZEN_SUCCESS
+- run 36774162824 | certificate | SHA f6a219e04eb7e4a0818fcf76195f23d060f66007 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:39:33Z | FROZEN_SUCCESS
+- run 36773843838 | ATK exact final producer | SHA 9a8537fe80e4bd8eda7071d8f382819aa7361e94 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:45Z | FROZEN_SUCCESS
+- run 36773843686 | certificate | SHA 9a8537fe80e4bd8eda7071d8f382819aa7361e94 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:45Z | FROZEN_SUCCESS
+- run 36773843646 | ATK terminal auto-compose | SHA 9a8537fe80e4bd8eda7071d8f382819aa7361e94 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:45Z | FROZEN_SUCCESS
+- run 36773381381 | ATK terminal auto-compose | SHA fee679a797a094393bb35461d4e8e9919bdb2de4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:32:47Z | FROZEN_SUCCESS
+- run 36773381314 | ATK FINAL_ROOT | SHA fee679a797a094393bb35461d4e8e9919bdb2de4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:32:47Z | FROZEN_SUCCESS
+- run 36773381234 | certificate | SHA fee679a797a094393bb35461d4e8e9919bdb2de4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:32:47Z | FROZEN_SUCCESS
+- run 36771242443 | certificate | SHA 5378b4bf4ad9c1d2e74c760b2d0c4039a5017d52 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:14:42Z | FROZEN_SUCCESS
+- run 36771242371 | ATK FINAL_ROOT | SHA 5378b4bf4ad9c1d2e74c760b2d0c4039a5017d52 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:14:42Z | FROZEN_SUCCESS
+- run 36771242358 | ATK terminal auto-compose | SHA 5378b4bf4ad9c1d2e74c760b2d0c4039a5017d52 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:14:42Z | FROZEN_SUCCESS
+- run 36771190803 | certificate | SHA b91666fb99e54b637d74d2f8b320bcb6d22e2d3e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:14:14Z | FROZEN_SUCCESS
+- run 36771190782 | ATK terminal auto-compose | SHA b91666fb99e54b637d74d2f8b320bcb6d22e2d3e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:14:14Z | FROZEN_SUCCESS
+- run 36770599930 | certificate | SHA 5779a220dc9bb0bc9983bb5099cdbce969a0a478 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:09:07Z | FROZEN_SUCCESS
+- run 36770599916 | ATK FINAL_ROOT | SHA 5779a220dc9bb0bc9983bb5099cdbce969a0a478 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:09:07Z | FROZEN_SUCCESS
+- run 36770599852 | ATK terminal auto-compose | SHA 5779a220dc9bb0bc9983bb5099cdbce969a0a478 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:09:07Z | FROZEN_SUCCESS
+- run 36770172027 | certificate | SHA bfe480a1e3c8362d73c5c33ce892f92206d3d853 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:05:23Z | FROZEN_SUCCESS
+- run 36770171839 | ATK terminal auto-compose | SHA bfe480a1e3c8362d73c5c33ce892f92206d3d853 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:05:23Z | FROZEN_SUCCESS
+- run 36766936643 | certificate | SHA b3556b96895f4b49215ae353fd574768f26ca6c1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:37:15Z | FROZEN_SUCCESS
+- run 36766936488 | ATK terminal auto-compose | SHA b3556b96895f4b49215ae353fd574768f26ca6c1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:37:15Z | FROZEN_SUCCESS
+- run 36765591011 | certificate | SHA 1775db835129a6e879f2a01138b55013a34e9ae8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:25:41Z | FROZEN_SUCCESS
+- run 36765590995 | ATK FINAL_ROOT | SHA 1775db835129a6e879f2a01138b55013a34e9ae8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:25:41Z | FROZEN_SUCCESS
+- run 36765590918 | ATK terminal auto-compose | SHA 1775db835129a6e879f2a01138b55013a34e9ae8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:25:41Z | FROZEN_SUCCESS
+- run 36765445725 | certificate | SHA 35fac4315839c3f453b5a34306ad726387356137 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:27Z | FROZEN_SUCCESS
+- run 36765445720 | ATK terminal auto-compose | SHA 35fac4315839c3f453b5a34306ad726387356137 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:27Z | FROZEN_SUCCESS
+- run 36765331866 | ATK FINAL ROOT | SHA d05493b0ef8954e27e700e003c215fa6aa182911 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:28Z | FROZEN_SUCCESS
+- run 36765331842 | ATK terminal auto-compose | SHA d05493b0ef8954e27e700e003c215fa6aa182911 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:28Z | FROZEN_SUCCESS
+- run 36765331771 | certificate | SHA d05493b0ef8954e27e700e003c215fa6aa182911 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:28Z | FROZEN_SUCCESS
+- run 36759906862 | ATK FINAL ROOT | SHA f3ad9fd331006a42d3e9d7905849def3c41e06ac | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:29Z | FROZEN_SUCCESS
+- run 36759906827 | ATK terminal auto-compose | SHA f3ad9fd331006a42d3e9d7905849def3c41e06ac | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:29Z | FROZEN_SUCCESS
+- run 36759906617 | certificate | SHA f3ad9fd331006a42d3e9d7905849def3c41e06ac | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:29Z | FROZEN_SUCCESS
+- run 36759675554 | certificate | SHA a0fbb995f6e2b8c3b91bba7d767aaf7b0245c7f0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:35Z | FROZEN_SUCCESS
+- run 36759675553 | ATK terminal auto-compose | SHA a0fbb995f6e2b8c3b91bba7d767aaf7b0245c7f0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:35Z | FROZEN_SUCCESS
+- run 36759255335 | ATK terminal auto-compose | SHA 206c01a92f60153418181ed648bdcee43771fef4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:32:01Z | FROZEN_SUCCESS
+- run 36759255070 | certificate | SHA 206c01a92f60153418181ed648bdcee43771fef4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:32:01Z | FROZEN_SUCCESS
+- run 36746213320 | certificate | SHA 415c892f106922e84b0f36a371ea4607156a58aa | branch atk-missing-material-types-20260930 | 2026-09-30T16:42:52Z | FROZEN_SUCCESS
+- run 36746162706 | certificate | SHA ed28a02170001a4afb0b3230e1bda238dcb5fa9f | branch atk-missing-material-types-20260930 | 2026-09-30T16:42:28Z | FROZEN_SUCCESS
+- run 36738760934 | ATK terminal auto-compose | SHA e6a109dc05b1de76f1bb329b77dbbe3f9358b800 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:42:17Z | FROZEN_SUCCESS
+- run 36738760710 | ATK BSD inhabitation mining | SHA e6a109dc05b1de76f1bb329b77dbbe3f9358b800 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:42:17Z | FROZEN_SUCCESS
+- run 36738760614 | certificate | SHA e6a109dc05b1de76f1bb329b77dbbe3f9358b800 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:42:17Z | FROZEN_SUCCESS
+- run 36738301039 | certificate | SHA b0d440cc5e6db2b33831a3b144d38794ecda122e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:38Z | FROZEN_SUCCESS
+- run 36738300938 | ATK terminal auto-compose | SHA b0d440cc5e6db2b33831a3b144d38794ecda122e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:38Z | FROZEN_SUCCESS
+- run 36738300937 | ATK BSD inhabitation mining | SHA b0d440cc5e6db2b33831a3b144d38794ecda122e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:38Z | FROZEN_SUCCESS
+- run 36737983342 | certificate | SHA 3599da55b20a45a3eea3363c43bb0bfdb53f9c2f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:07Z | FROZEN_SUCCESS
+- run 36737983184 | ATK BSD inhabitation mining | SHA 3599da55b20a45a3eea3363c43bb0bfdb53f9c2f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:07Z | FROZEN_SUCCESS
+- run 36737983175 | ATK terminal auto-compose | SHA 3599da55b20a45a3eea3363c43bb0bfdb53f9c2f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:07Z | FROZEN_SUCCESS
+- run 36737785559 | ATK terminal auto-compose | SHA f461039a1d08e42522b15d78494eee6a73ef02ad | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:36Z | FROZEN_SUCCESS
+- run 36737785530 | certificate | SHA f461039a1d08e42522b15d78494eee6a73ef02ad | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:36Z | FROZEN_SUCCESS
+- run 36737576801 | ATK terminal auto-compose | SHA 832261870a4e4710b20f7a50a4ca63dded530dcf | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:32:57Z | FROZEN_SUCCESS
+- run 36737576796 | certificate | SHA 832261870a4e4710b20f7a50a4ca63dded530dcf | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:32:57Z | FROZEN_SUCCESS
+- run 36737312195 | ATK BSD inhabitation mining | SHA 36d3fd91b5da12ed745858350fe80c76b6d72966 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:51Z | FROZEN_SUCCESS
+- run 36737312088 | certificate | SHA 36d3fd91b5da12ed745858350fe80c76b6d72966 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:51Z | FROZEN_SUCCESS
+- run 36737311958 | ATK terminal auto-compose | SHA 36d3fd91b5da12ed745858350fe80c76b6d72966 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:51Z | FROZEN_SUCCESS
+- run 36736946633 | ATK terminal auto-compose | SHA 20bc3debfc5c81ba65bbb8cf2193d027d23920d8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:28:03Z | FROZEN_SUCCESS
+- run 36736946366 | certificate | SHA 20bc3debfc5c81ba65bbb8cf2193d027d23920d8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:28:03Z | FROZEN_SUCCESS
+- run 36736602304 | certificate | SHA b75421399b8d34a6bb699e94c6a18a00409adb3c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:25:20Z | FROZEN_SUCCESS
+- run 36736602044 | ATK terminal auto-compose | SHA b75421399b8d34a6bb699e94c6a18a00409adb3c | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:25:20Z | FROZEN_SUCCESS
+- run 36736336800 | certificate | SHA 7d2d095be75a58384ca821c122fcb662349ccd36 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:23:16Z | FROZEN_SUCCESS
+- run 36736336777 | ATK terminal auto-compose | SHA 7d2d095be75a58384ca821c122fcb662349ccd36 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:23:16Z | FROZEN_SUCCESS
+- run 36735941752 | certificate | SHA 2d1a51c508ba69e9d7467e4db0e93d07fc04eb30 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:20:11Z | FROZEN_SUCCESS
+- run 36735941618 | ATK terminal auto-compose | SHA 2d1a51c508ba69e9d7467e4db0e93d07fc04eb30 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:20:11Z | FROZEN_SUCCESS
+- run 36735312224 | ATK terminal auto-compose | SHA feb6e6ae47c367a2e7a9170183812e2291a03460 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:17Z | FROZEN_SUCCESS
+- run 36735312174 | certificate | SHA feb6e6ae47c367a2e7a9170183812e2291a03460 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:17Z | FROZEN_SUCCESS
+- run 36735279421 | certificate | SHA 92fc8c4cc6f1ae66ff09df7d9e92d28451e418f5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:03Z | FROZEN_SUCCESS
+- run 36735279276 | ATK terminal auto-compose | SHA 92fc8c4cc6f1ae66ff09df7d9e92d28451e418f5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:03Z | FROZEN_SUCCESS
+- run 36734489103 | FALSIFIED terminal smoke | SHA 23fa13d7a614e1a341a26e4979363e4ae8ad575a | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:08:49Z | FROZEN_SUCCESS
+- run 36734120306 | certificate | SHA 0e7366fa22db88b3d54efa5a7b37390119d4f538 | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:05:53Z | FROZEN_SUCCESS
+- run 36719033430 | ATK terminal auto-compose | SHA 0e7366fa22db88b3d54efa5a7b37390119d4f538 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:04:26Z | FROZEN_SUCCESS
+- run 36719033339 | certificate | SHA 0e7366fa22db88b3d54efa5a7b37390119d4f538 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:04:26Z | FROZEN_SUCCESS
+- run 36711215867 | certificate | SHA 485d28176a939ff675e9cc1ee3d7e9bc98f208a9 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:32Z | FROZEN_SUCCESS
+- run 36711212681 | certificate | SHA b63caecca1542b8eddb05fc4d856ee5e82060d27 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:30Z | FROZEN_SUCCESS
+- run 36711048810 | certificate | SHA ed28a02170001a4afb0b3230e1bda238dcb5fa9f | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:50:56Z | FROZEN_SUCCESS
+- run 36702484242 | certificate | SHA d703c37702f58f68942cea04f79a39b123b42093 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:58Z | FROZEN_SUCCESS
+- run 36702444627 | certificate | SHA ed28a02170001a4afb0b3230e1bda238dcb5fa9f | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:35Z | FROZEN_SUCCESS
+- run 36500591219 | certificate | SHA 01e1e33c7e4bcc7cc05cc87fef5012ff3d4d8693 | branch atk/next-bsd-two-descent-finite-quotient-20260929 | 2026-09-28T23:56:28Z | FROZEN_SUCCESS
+- run 36500227516 | certificate | SHA 01e1e33c7e4bcc7cc05cc87fef5012ff3d4d8693 | branch frozen/bsd-weak-mordell-weil-reduction-green-01e1e33c | 2026-09-28T23:52:13Z | FROZEN_SUCCESS
+- run 36498644191 | certificate | SHA 01e1e33c7e4bcc7cc05cc87fef5012ff3d4d8693 | branch atk/next-bsd-weak-mordell-weil-quotient-20260929 | 2026-09-28T23:33:36Z | FROZEN_SUCCESS
+- run 36498638202 | certificate | SHA 1212796e41166312ead4a77ea413a703cee82df5 | branch atk/next-bsd-weak-mordell-weil-quotient-20260929 | 2026-09-28T23:33:32Z | FROZEN_SUCCESS
+- run 36492912310 | certificate | SHA ed28a02170001a4afb0b3230e1bda238dcb5fa9f | branch main | 2026-09-28T22:31:37Z | FROZEN_SUCCESS
+- run 36487136988 | certificate | SHA 1212796e41166312ead4a77ea413a703cee82df5 | branch atk/next-bsd-double-index-finite-20260928 | 2026-09-28T21:35:40Z | FROZEN_SUCCESS
+- run 36487122590 | certificate | SHA 1212796e41166312ead4a77ea413a703cee82df5 | branch frozen/bsd-mordell-weil-descent-reduction-green-1212796e | 2026-09-28T21:35:32Z | FROZEN_SUCCESS
+- run 36486542259 | material-unification-v2 | SHA 1212796e41166312ead4a77ea413a703cee82df5 | branch atk/next-bsd-finite-generation-descent-20260928 | 2026-09-28T21:30:25Z | FROZEN_SUCCESS
+- run 36486542104 | certificate | SHA 1212796e41166312ead4a77ea413a703cee82df5 | branch atk/next-bsd-finite-generation-descent-20260928 | 2026-09-28T21:30:25Z | FROZEN_SUCCESS
+- run 36485858458 | certificate | SHA 380f25abc90fdf5de004d43434ab474aa71cccff | branch atk/next-bsd-finite-generation-descent-20260928 | 2026-09-28T21:24:18Z | FROZEN_SUCCESS
+- run 36485804994 | certificate | SHA 92e93a040e764d076221c2a9e6989a8b07d614af | branch atk/next-bsd-finite-generation-descent-20260928 | 2026-09-28T21:23:49Z | FROZEN_SUCCESS
+- run 36485773926 | certificate | SHA 07aeac0068d6467a96f616a8415866b366dad497 | branch atk/next-bsd-finite-generation-descent-20260928 | 2026-09-28T21:23:32Z | FROZEN_SUCCESS
+- run 36485088433 | material-unification-v2 | SHA 47a79386d64d4b160f22deb7d79155c76e599174 | branch atk/bsd-doubling-descent-20260928 | 2026-09-28T21:17:21Z | FROZEN_SUCCESS
+- run 36483525634 | certificate | SHA 07aeac0068d6467a96f616a8415866b366dad497 | branch atk/cert-repair-bsd-250d128a | 2026-09-28T21:03:39Z | FROZEN_SUCCESS
+- run 36482817258 | material-unification-v2 | SHA 250d128a15d31d8c87268aafcbbc2cf8476a1ab2 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:57:22Z | FROZEN_SUCCESS
+- run 36482785107 | certificate | SHA 8980241a80e3353f828aec5f6cfaa4cc14344565 | branch frozen/bsd-arsenal-certified-8980241a | 2026-09-28T20:57:05Z | FROZEN_SUCCESS
+- run 36482271913 | certificate | SHA 4e97a11a49c91e1a100ccc46de03024ebad5eb24 | branch atk/cert-repair-bsd-437e15a0 | 2026-09-28T20:52:40Z | FROZEN_SUCCESS
+- run 36481921094 | certificate | SHA 8980241a80e3353f828aec5f6cfaa4cc14344565 | branch atk/cert-repair-bsd-437e15a0 | 2026-09-28T20:49:37Z | FROZEN_SUCCESS
+- run 36481863422 | material-unification-v2 | SHA bf78df36c0571da058685ef252e30fbbbb599776 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:49:06Z | FROZEN_SUCCESS
+- run 36478003265 | material-unification-v2 | SHA 437e15a0983d922056d9eb05b05d180982bcbff1 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:16:18Z | FROZEN_SUCCESS
+- run 36475708507 | material-unification-v2 | SHA 4dd241a976a866c481e11d71b5d668219890f543 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:56:36Z | FROZEN_SUCCESS
+- run 36475389708 | material-unification-v2 | SHA cddc1b1be08cabde8631258bbdcdb4f22cc3df38 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:53:50Z | FROZEN_SUCCESS
+- run 36469526589 | bsd-algebraic-anchor-probe | SHA 3986281102cf8b013f6458ba9c3736e3e7f178d8 | branch atk/bsd-algebraic-anchor-probe-20260928 | 2026-09-28T19:03:13Z | FROZEN_SUCCESS
+- run 36469521248 | bsd-algebraic-anchor-probe | SHA b52f8f36afcc385e171401392378b6a5b19ddef9 | branch atk/bsd-algebraic-anchor-probe-20260928 | 2026-09-28T19:03:10Z | FROZEN_SUCCESS
+- run 36469510814 | bsd-algebraic-anchor-probe | SHA b24f9d804e7785830fde98ba0343fd091a5c4e74 | branch atk/bsd-algebraic-anchor-probe-20260928 | 2026-09-28T19:03:06Z | FROZEN_SUCCESS
+- run 36468406915 | bsd-algebraic-anchor-probe | SHA 75c285a5277bdbc62911d8752be51a3a1cc7853e | branch atk/bsd-algebraic-anchor-probe-20260928 | 2026-09-28T18:53:42Z | FROZEN_SUCCESS
+- run 36467204637 | certificate | SHA 28ad829a8c6a6ac93af0bd47365cd0965c21c910 | branch atk/bsd-algebraic-anchor-probe-20260928 | 2026-09-28T18:43:27Z | FROZEN_SUCCESS
+- run 36464381297 | bsd-third-party-verification | SHA 28ad829a8c6a6ac93af0bd47365cd0965c21c910 | branch frozen/bsd-manifest-green-ebd88b2f | 2026-09-28T18:19:29Z | FROZEN_SUCCESS
+- run 36464381211 | certificate | SHA 28ad829a8c6a6ac93af0bd47365cd0965c21c910 | branch frozen/bsd-manifest-green-ebd88b2f | 2026-09-28T18:19:28Z | FROZEN_SUCCESS
+- run 36463775650 | certificate | SHA 648cd1b790545ea9b9951ad771f0fed07ab25a90 | branch frozen/bsd-manifest-green-ebd88b2f | 2026-09-28T18:14:21Z | FROZEN_SUCCESS
+- run 36463627344 | bsd-manifest-freeze | SHA 648cd1b790545ea9b9951ad771f0fed07ab25a90 | branch atk/bsd-manifest-freeze-20260928 | 2026-09-28T18:13:06Z | FROZEN_SUCCESS
+- run 36463627230 | certificate | SHA 648cd1b790545ea9b9951ad771f0fed07ab25a90 | branch atk/bsd-manifest-freeze-20260928 | 2026-09-28T18:13:06Z | FROZEN_SUCCESS
+- run 36463521723 | certificate | SHA 7f4fe94a1021969e9ebdcc3b8d7d5586f74341dd | branch atk/bsd-manifest-freeze-20260928 | 2026-09-28T18:12:12Z | FROZEN_SUCCESS
+- run 36463422425 | certificate | SHA d134cc7e09361837290c30f5f8a5717366575d4e | branch atk/bsd-manifest-freeze-20260928 | 2026-09-28T18:11:21Z | FROZEN_SUCCESS
+- run 36463342615 | certificate | SHA eb4f64a9b2d21f6505e00cb9a9a6f51727758526 | branch atk/bsd-manifest-freeze-20260928 | 2026-09-28T18:10:40Z | FROZEN_SUCCESS
+
+## ShantiDraconis/m-core-hodge
+
+- run 36790575753 | certificate | SHA 24ad16154d913041c5dc8f77d8cc66611a5c07d6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:20:31Z | FROZEN_SUCCESS
+- run 36790575496 | ATK exact final producer | SHA 24ad16154d913041c5dc8f77d8cc66611a5c07d6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:20:31Z | FROZEN_SUCCESS
+- run 36790575476 | ATK terminal auto-compose | SHA 24ad16154d913041c5dc8f77d8cc66611a5c07d6 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:20:31Z | FROZEN_SUCCESS
+- run 36789233200 | certificate | SHA fe96115a58c7c0908fb8dd6c5583f4a07096d0ad | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:33Z | FROZEN_SUCCESS
+- run 36789233153 | ATK terminal auto-compose | SHA fe96115a58c7c0908fb8dd6c5583f4a07096d0ad | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:33Z | FROZEN_SUCCESS
+- run 36784753366 | certificate | SHA fcb501e41ce111b858442766a2b21facd29c6984 | branch atk-hodge-h01-terminal-link-20260930 | 2026-09-30T22:18:02Z | FROZEN_SUCCESS
+- run 36784731331 | certificate | SHA 42eaf7d4d639871f82eceb121ee525a6c4f30d84 | branch atk-hodge-h01-terminal-link-20260930 | 2026-09-30T22:17:49Z | FROZEN_SUCCESS
+- run 36781692610 | ATK terminal auto-compose | SHA 97e0bad2c0dba1265283a53f8d1842ff554e1a7d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:47:50Z | FROZEN_SUCCESS
+- run 36781692574 | certificate | SHA 97e0bad2c0dba1265283a53f8d1842ff554e1a7d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:47:50Z | FROZEN_SUCCESS
+- run 36781692538 | ATK FINAL_ROOT | SHA 97e0bad2c0dba1265283a53f8d1842ff554e1a7d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:47:50Z | FROZEN_SUCCESS
+- run 36781540011 | certificate | SHA 310111f1bb0c03f32f8dcf7c838f9c1f82c1c2d1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:46:21Z | FROZEN_SUCCESS
+- run 36781539997 | ATK terminal auto-compose | SHA 310111f1bb0c03f32f8dcf7c838f9c1f82c1c2d1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:46:21Z | FROZEN_SUCCESS
+- run 36781517099 | certificate | SHA 3b7380d58dff37c1c1ce107e7a0a9d7e4150d526 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:46:08Z | FROZEN_SUCCESS
+- run 36781517048 | ATK terminal auto-compose | SHA 3b7380d58dff37c1c1ce107e7a0a9d7e4150d526 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:46:08Z | FROZEN_SUCCESS
+- run 36780716479 | certificate | SHA 680f09ced39529e82ff6aa75ee4af00f7f6a9912 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:26Z | FROZEN_SUCCESS
+- run 36780716454 | ATK FINAL_ROOT | SHA 680f09ced39529e82ff6aa75ee4af00f7f6a9912 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:26Z | FROZEN_SUCCESS
+- run 36780716393 | ATK terminal auto-compose | SHA 680f09ced39529e82ff6aa75ee4af00f7f6a9912 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:26Z | FROZEN_SUCCESS
+- run 36774145491 | ATK terminal auto-compose | SHA d0a1bf9dc2834997d85c7042a0fdb6c7136e9063 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:39:23Z | FROZEN_SUCCESS
+- run 36774145467 | certificate | SHA d0a1bf9dc2834997d85c7042a0fdb6c7136e9063 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:39:23Z | FROZEN_SUCCESS
+- run 36773838577 | certificate | SHA 51f42db90c80ef68a9314b65392013edbaf358d3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:43Z | FROZEN_SUCCESS
+- run 36773838498 | ATK terminal auto-compose | SHA 51f42db90c80ef68a9314b65392013edbaf358d3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:43Z | FROZEN_SUCCESS
+- run 36773838332 | ATK exact final producer | SHA 51f42db90c80ef68a9314b65392013edbaf358d3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:42Z | FROZEN_SUCCESS
+- run 36773371213 | certificate | SHA b1b0c3e9127974049fdc63ef1f0f9a3ce5d33ce5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:32:42Z | FROZEN_SUCCESS
+- run 36773371182 | ATK terminal auto-compose | SHA b1b0c3e9127974049fdc63ef1f0f9a3ce5d33ce5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:32:42Z | FROZEN_SUCCESS
+- run 36773371128 | ATK FINAL_ROOT | SHA b1b0c3e9127974049fdc63ef1f0f9a3ce5d33ce5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:32:42Z | FROZEN_SUCCESS
+- run 36770581846 | ATK FINAL_ROOT | SHA e51e97716ee28919a1724378af44f602f9534e18 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:57Z | FROZEN_SUCCESS
+- run 36770581840 | certificate | SHA e51e97716ee28919a1724378af44f602f9534e18 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:57Z | FROZEN_SUCCESS
+- run 36770581752 | ATK terminal auto-compose | SHA e51e97716ee28919a1724378af44f602f9534e18 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:57Z | FROZEN_SUCCESS
+- run 36770164723 | certificate | SHA f663b0f289ed211d3ccb4ecb4bb6ec0c82da280b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:05:19Z | FROZEN_SUCCESS
+- run 36770164544 | ATK terminal auto-compose | SHA f663b0f289ed211d3ccb4ecb4bb6ec0c82da280b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:05:19Z | FROZEN_SUCCESS
+- run 36766908969 | ATK terminal auto-compose | SHA 4a943c5201ade59bc1e1377f11ea21d72be3a49a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:37:00Z | FROZEN_SUCCESS
+- run 36766908838 | certificate | SHA 4a943c5201ade59bc1e1377f11ea21d72be3a49a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:37:00Z | FROZEN_SUCCESS
+- run 36765585257 | ATK terminal auto-compose | SHA 4be9e0e2d32ae3f762007357b8fcf31e00ee0917 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:25:38Z | FROZEN_SUCCESS
+- run 36765585241 | ATK FINAL_ROOT | SHA 4be9e0e2d32ae3f762007357b8fcf31e00ee0917 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:25:38Z | FROZEN_SUCCESS
+- run 36765585168 | certificate | SHA 4be9e0e2d32ae3f762007357b8fcf31e00ee0917 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:25:38Z | FROZEN_SUCCESS
+- run 36765429737 | ATK terminal auto-compose | SHA eebd740698a46548ed4fee6ad4c8d813ff503f45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:18Z | FROZEN_SUCCESS
+- run 36765429570 | certificate | SHA eebd740698a46548ed4fee6ad4c8d813ff503f45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:18Z | FROZEN_SUCCESS
+- run 36765320516 | certificate | SHA 78f795ed218ae32401baedc44e26f820f01aeb9b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:22Z | FROZEN_SUCCESS
+- run 36765320483 | ATK FINAL ROOT | SHA 78f795ed218ae32401baedc44e26f820f01aeb9b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:22Z | FROZEN_SUCCESS
+- run 36765320454 | ATK terminal auto-compose | SHA 78f795ed218ae32401baedc44e26f820f01aeb9b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:22Z | FROZEN_SUCCESS
+- run 36759796580 | ATK FINAL ROOT | SHA 950a4a01f62bbba2dcbbc5065a1dbeaf59725c11 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:36:35Z | FROZEN_SUCCESS
+- run 36759796554 | ATK terminal auto-compose | SHA 950a4a01f62bbba2dcbbc5065a1dbeaf59725c11 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:36:35Z | FROZEN_SUCCESS
+- run 36759796463 | certificate | SHA 950a4a01f62bbba2dcbbc5065a1dbeaf59725c11 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:36:35Z | FROZEN_SUCCESS
+- run 36759669106 | certificate | SHA 9671483374603968cb8da9d9aa57f892da3ba2b2 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:32Z | FROZEN_SUCCESS
+- run 36759669087 | ATK terminal auto-compose | SHA 9671483374603968cb8da9d9aa57f892da3ba2b2 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:32Z | FROZEN_SUCCESS
+- run 36759250759 | certificate | SHA e1bcb94432b8e6384e3274eded405d9af5098464 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:31:59Z | FROZEN_SUCCESS
+- run 36757207404 | ATK terminal auto-compose | SHA 8883081221482bea1dde62f00100c7532223ff31 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:14:57Z | FROZEN_SUCCESS
+- run 36757207220 | certificate | SHA 8883081221482bea1dde62f00100c7532223ff31 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:14:57Z | FROZEN_SUCCESS
+- run 36738708121 | ATK Hodge inhabitation mining | SHA 2a8a0c329bd65835e48d627822f8886a72c5e017 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:41:54Z | FROZEN_SUCCESS
+- run 36738707791 | ATK terminal auto-compose | SHA 2a8a0c329bd65835e48d627822f8886a72c5e017 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:41:54Z | FROZEN_SUCCESS
+- run 36738707743 | certificate | SHA 2a8a0c329bd65835e48d627822f8886a72c5e017 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:41:54Z | FROZEN_SUCCESS
+- run 36738290432 | certificate | SHA 8696ce7640df5afef4095866081bb6d39af53e45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:33Z | FROZEN_SUCCESS
+- run 36738290414 | ATK Hodge inhabitation mining | SHA 8696ce7640df5afef4095866081bb6d39af53e45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:33Z | FROZEN_SUCCESS
+- run 36738290293 | ATK terminal auto-compose | SHA 8696ce7640df5afef4095866081bb6d39af53e45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:33Z | FROZEN_SUCCESS
+- run 36737971834 | ATK terminal auto-compose | SHA 171075c7ca3912b4493b198195cc047f56837396 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:02Z | FROZEN_SUCCESS
+- run 36737971808 | certificate | SHA 171075c7ca3912b4493b198195cc047f56837396 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:02Z | FROZEN_SUCCESS
+- run 36737971745 | ATK Hodge inhabitation mining | SHA 171075c7ca3912b4493b198195cc047f56837396 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:36:02Z | FROZEN_SUCCESS
+- run 36737778874 | certificate | SHA 6824feb892f0fd8d09067b4cb494a7d7c3d709fd | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:33Z | FROZEN_SUCCESS
+- run 36737778716 | ATK terminal auto-compose | SHA 6824feb892f0fd8d09067b4cb494a7d7c3d709fd | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:33Z | FROZEN_SUCCESS
+- run 36737568936 | certificate | SHA 11e03cb36b400064bb59c6f43adca47f342b43ed | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:32:54Z | FROZEN_SUCCESS
+- run 36737568755 | ATK terminal auto-compose | SHA 11e03cb36b400064bb59c6f43adca47f342b43ed | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:32:53Z | FROZEN_SUCCESS
+- run 36737305702 | certificate | SHA 62d16fee06c2c85c2a6ff009c36f0b4eaa453275 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:48Z | FROZEN_SUCCESS
+- run 36737305690 | ATK Hodge inhabitation mining | SHA 62d16fee06c2c85c2a6ff009c36f0b4eaa453275 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:48Z | FROZEN_SUCCESS
+- run 36737305639 | ATK terminal auto-compose | SHA 62d16fee06c2c85c2a6ff009c36f0b4eaa453275 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:48Z | FROZEN_SUCCESS
+- run 36736939066 | certificate | SHA 3a9a1f6eb89b4404f6fce57f073a7b9d6f032f5e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:27:59Z | FROZEN_SUCCESS
+- run 36736939014 | ATK terminal auto-compose | SHA 3a9a1f6eb89b4404f6fce57f073a7b9d6f032f5e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:27:59Z | FROZEN_SUCCESS
+- run 36736594939 | certificate | SHA bab5cd62fb7ecae8fd36026dce69323c43e66815 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:25:17Z | FROZEN_SUCCESS
+- run 36736594683 | ATK terminal auto-compose | SHA bab5cd62fb7ecae8fd36026dce69323c43e66815 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:25:17Z | FROZEN_SUCCESS
+- run 36736313817 | ATK terminal auto-compose | SHA d4b75227dd8813da5c7042c5d3f7abf4447f7946 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:23:06Z | FROZEN_SUCCESS
+- run 36736313639 | certificate | SHA d4b75227dd8813da5c7042c5d3f7abf4447f7946 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:23:06Z | FROZEN_SUCCESS
+- run 36735934044 | certificate | SHA 2e2d466170dc553fbdc16b8fc6c5b35a8987e2b4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:20:08Z | FROZEN_SUCCESS
+- run 36735933891 | ATK terminal auto-compose | SHA 2e2d466170dc553fbdc16b8fc6c5b35a8987e2b4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:20:07Z | FROZEN_SUCCESS
+- run 36735304088 | certificate | SHA 1ade8f8eb61b16a5e280919bcda07198a29e0086 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:14Z | FROZEN_SUCCESS
+- run 36735303854 | ATK terminal auto-compose | SHA 1ade8f8eb61b16a5e280919bcda07198a29e0086 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:13Z | FROZEN_SUCCESS
+- run 36735273745 | ATK terminal auto-compose | SHA c3dbb2d7a5fe851c9bb6247103c391f170c872a1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:00Z | FROZEN_SUCCESS
+- run 36735273595 | certificate | SHA c3dbb2d7a5fe851c9bb6247103c391f170c872a1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:15:00Z | FROZEN_SUCCESS
+- run 36734485795 | FALSIFIED terminal smoke | SHA 216db33461c855f249c1d0189922f70b45581c0a | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:08:47Z | FROZEN_SUCCESS
+- run 36734115343 | certificate | SHA a0dc9feb4034d852693f961d80a97c0eb904e945 | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:05:51Z | FROZEN_SUCCESS
+- run 36719023352 | certificate | SHA a0dc9feb4034d852693f961d80a97c0eb904e945 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:04:20Z | FROZEN_SUCCESS
+- run 36719023351 | ATK terminal auto-compose | SHA a0dc9feb4034d852693f961d80a97c0eb904e945 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T13:04:20Z | FROZEN_SUCCESS
+- run 36711207940 | certificate | SHA c756e78104ff36fc2729b7c9028ba1bee409737e | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:27Z | FROZEN_SUCCESS
+- run 36711204480 | certificate | SHA 8305a78945633ca0043db250a64e3b7af7f988e6 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:25Z | FROZEN_SUCCESS
+- run 36711044786 | certificate | SHA a994aebb57a3032f3c6c99d785b19aa650392630 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:50:54Z | FROZEN_SUCCESS
+- run 36702489659 | certificate | SHA 0600485e962c27e3993dfb771239fb2de6400ec5 | branch atk/direct-terminal-20260930 | 2026-09-30T10:27:01Z | FROZEN_SUCCESS
+- run 36702448572 | certificate | SHA a994aebb57a3032f3c6c99d785b19aa650392630 | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:37Z | FROZEN_SUCCESS
+- run 36500238126 | certificate | SHA e459840e7b4742415fd956dfd3fa069474635650 | branch atk/next-hodge-genuine-geometry-binding-20260929 | 2026-09-28T23:52:21Z | FROZEN_SUCCESS
+- run 36493888418 | certificate | SHA e459840e7b4742415fd956dfd3fa069474635650 | branch frozen/concrete-payload-model-binding-green-e459840e | 2026-09-28T22:41:38Z | FROZEN_SUCCESS
+- run 36493536443 | certificate | SHA e459840e7b4742415fd956dfd3fa069474635650 | branch atk/concrete-payload-model-binding-audit | 2026-09-28T22:37:57Z | FROZEN_SUCCESS
+- run 36493505091 | certificate | SHA 0e4b4a045fd51b0458e410c2bea2d045a3dcb815 | branch atk/concrete-payload-model-binding-audit | 2026-09-28T22:37:39Z | FROZEN_SUCCESS
+- run 36493492762 | certificate | SHA 42eaf7d4d639871f82eceb121ee525a6c4f30d84 | branch atk/concrete-payload-model-binding-audit | 2026-09-28T22:37:31Z | FROZEN_SUCCESS
+- run 36492903641 | certificate | SHA a994aebb57a3032f3c6c99d785b19aa650392630 | branch main | 2026-09-28T22:31:31Z | FROZEN_SUCCESS
+- run 36484604673 | certificate | SHA c7a9b46b7a71c4a0f39bf50bb8821088ea270dda | branch atk/h01-trivial-qbar-reduction | 2026-09-28T21:13:10Z | FROZEN_SUCCESS
+- run 36484520051 | certificate | SHA e19446a1b2909c5f4895d897efd7dc353b34ae90 | branch atk/h01-trivial-qbar-reduction | 2026-09-28T21:12:25Z | FROZEN_SUCCESS
+- run 36484430317 | certificate | SHA 42eaf7d4d639871f82eceb121ee525a6c4f30d84 | branch atk/h01-trivial-qbar-reduction | 2026-09-28T21:11:36Z | FROZEN_SUCCESS
+- run 36482954485 | certificate | SHA 77acfa5678ffe7eff0b89dd13a046f7a18ba3a6c | branch frozen/canonical-stable-hole-v1-green-77acfa56 | 2026-09-28T20:58:37Z | FROZEN_SUCCESS
+- run 36482824959 | certificate | SHA 77acfa5678ffe7eff0b89dd13a046f7a18ba3a6c | branch atk/material-unification-v2-20260928 | 2026-09-28T20:57:26Z | FROZEN_SUCCESS
+- run 36482824943 | material-unification-v2 | SHA 77acfa5678ffe7eff0b89dd13a046f7a18ba3a6c | branch atk/material-unification-v2-20260928 | 2026-09-28T20:57:26Z | FROZEN_SUCCESS
+- run 36482758458 | certificate | SHA 63be76191caf35c637e77fe6558994832a5bf8c2 | branch frozen/stable-hole-final-green-63be7619 | 2026-09-28T20:56:50Z | FROZEN_SUCCESS
+- run 36481827997 | certificate | SHA 63be76191caf35c637e77fe6558994832a5bf8c2 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:48:47Z | FROZEN_SUCCESS
+- run 36481827956 | material-unification-v2 | SHA 63be76191caf35c637e77fe6558994832a5bf8c2 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:48:47Z | FROZEN_SUCCESS
+- run 36478308918 | certificate | SHA 771e1780b02f32bc1f4b3c066c3d9feb0287fd4d | branch frozen/inhabitant-arsenal-v1-green-771e1780 | 2026-09-28T20:18:56Z | FROZEN_SUCCESS
+- run 36478031623 | certificate | SHA 771e1780b02f32bc1f4b3c066c3d9feb0287fd4d | branch atk/material-unification-v2-20260928 | 2026-09-28T20:16:34Z | FROZEN_SUCCESS
+- run 36478031508 | material-unification-v2 | SHA 771e1780b02f32bc1f4b3c066c3d9feb0287fd4d | branch atk/material-unification-v2-20260928 | 2026-09-28T20:16:34Z | FROZEN_SUCCESS
+- run 36475959376 | certificate | SHA ac0d8356ad9f9a984caf6f138f781e8ac2e4abac | branch frozen/material-unification-v2-green-ac0d8356 | 2026-09-28T19:58:52Z | FROZEN_SUCCESS
+- run 36475720057 | certificate | SHA ac0d8356ad9f9a984caf6f138f781e8ac2e4abac | branch atk/material-unification-v2-20260928 | 2026-09-28T19:56:42Z | FROZEN_SUCCESS
+- run 36475720052 | material-unification-v2 | SHA ac0d8356ad9f9a984caf6f138f781e8ac2e4abac | branch atk/material-unification-v2-20260928 | 2026-09-28T19:56:42Z | FROZEN_SUCCESS
+- run 36475473863 | certificate | SHA 871cbe825c41667163f443d8fa2a266792b6c9d9 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:33Z | FROZEN_SUCCESS
+- run 36475468423 | certificate | SHA ead5fbd6ef27b4e7b63b078ac6380bcd8677c516 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:30Z | FROZEN_SUCCESS
+- run 36475463701 | certificate | SHA 7bf1364dec8aecaaad19a78890cede43df7cd7ba | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:28Z | FROZEN_SUCCESS
+- run 36475457673 | certificate | SHA 4e406a17148db1ea928bdb7c6ca5f26fc4b76782 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:25Z | FROZEN_SUCCESS
+- run 36475140017 | certificate | SHA 3a869be98e53577d7d00c30e9b46531336d8fee2 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:51:37Z | FROZEN_SUCCESS
+- run 36470740152 | certificate | SHA 3a869be98e53577d7d00c30e9b46531336d8fee2 | branch frozen/hodge-material-gate-green-3a869be9 | 2026-09-28T19:13:35Z | FROZEN_SUCCESS
+- run 36470213510 | certificate | SHA 3a869be98e53577d7d00c30e9b46531336d8fee2 | branch atk/hodge-material-producer-gate-20260928 | 2026-09-28T19:09:03Z | FROZEN_SUCCESS
+- run 36470209367 | certificate | SHA 2b5fee049a574058ba23d12aeacee238a2e7b7fb | branch atk/hodge-material-producer-gate-20260928 | 2026-09-28T19:09:01Z | FROZEN_SUCCESS
+- run 36470203969 | certificate | SHA 4372e01c677fdc5e5a4617cef503a0dc81cb31dd | branch atk/hodge-material-producer-gate-20260928 | 2026-09-28T19:08:58Z | FROZEN_SUCCESS
+- run 36470200012 | certificate | SHA 5cb30e4d2c44ae87f22043c6e577e1b2d5d8f19f | branch atk/hodge-material-producer-gate-20260928 | 2026-09-28T19:08:56Z | FROZEN_SUCCESS
+- run 36462437230 | certificate | SHA 4f8f7a46ac1b763e6475de0f490ab96e251cc264 | branch atk/hodge-r3-universal-family-compat-20260927 | 2026-09-28T18:02:54Z | FROZEN_SUCCESS
+- run 36457625587 | certificate | SHA 96504a1e0e2cfe95c2e9b2e771ead299a3108225 | branch frozen/hodge-minimal-r3-h01-reuse-green-96504a1e | 2026-09-28T17:22:10Z | FROZEN_SUCCESS
+- run 36455978259 | certificate | SHA 96504a1e0e2cfe95c2e9b2e771ead299a3108225 | branch atk/hodge-r3-universal-family-compat-20260927 | 2026-09-28T17:08:05Z | FROZEN_SUCCESS
+- run 36455949880 | certificate | SHA 89f6a98f4552ce01876782926a972b9eb8df06c0 | branch atk/hodge-r3-universal-family-compat-20260927 | 2026-09-28T17:07:51Z | FROZEN_SUCCESS
+- run 36455944377 | certificate | SHA 3eaa4c1351cd6baa4a0495ec5f7f6f867de65715 | branch atk/hodge-r3-universal-family-compat-20260927 | 2026-09-28T17:07:48Z | FROZEN_SUCCESS
+- run 36442220551 | ATK HODGE producer kernel | SHA 837a01507ccf7ac6e3685f6742b181247dac949b | branch atk/next-hodge-bridge-pullback-20260928 | 2026-09-28T15:15:42Z | FROZEN_SUCCESS
+- run 36442220408 | certificate | SHA 837a01507ccf7ac6e3685f6742b181247dac949b | branch atk/next-hodge-bridge-pullback-20260928 | 2026-09-28T15:15:42Z | FROZEN_SUCCESS
+- run 36440440677 | ATK HODGE producer kernel | SHA b8f09b0f34fb44c41e63ec2390d34ed5b9688165 | branch atk/producer-hodge-20260928 | 2026-09-28T15:01:40Z | FROZEN_SUCCESS
+- run 36440440467 | certificate | SHA b8f09b0f34fb44c41e63ec2390d34ed5b9688165 | branch atk/producer-hodge-20260928 | 2026-09-28T15:01:40Z | FROZEN_SUCCESS
+- run 36439863028 | ATK HODGE producer kernel | SHA 13ecdbb5f64aee9ef827a14451fd6f064d2cf711 | branch atk/producer-hodge-20260928 | 2026-09-28T14:57:13Z | FROZEN_SUCCESS
+- run 36439862974 | certificate | SHA 13ecdbb5f64aee9ef827a14451fd6f064d2cf711 | branch atk/producer-hodge-20260928 | 2026-09-28T14:57:13Z | FROZEN_SUCCESS
+- run 36438711723 | certificate | SHA bd0ed937b9c386222006d40cbcb97022bf8214c0 | branch atk/next-hodge-bridge-pullback-20260928 | 2026-09-28T14:48:07Z | FROZEN_SUCCESS
+- run 36435059497 | certificate | SHA bd0ed937b9c386222006d40cbcb97022bf8214c0 | branch frozen/next-universal-family-kernel-green-bd0ed937 | 2026-09-28T14:19:05Z | FROZEN_SUCCESS
+- run 36434247693 | certificate | SHA bd0ed937b9c386222006d40cbcb97022bf8214c0 | branch atk/next-hodge-universal-family-20260928 | 2026-09-28T14:12:38Z | FROZEN_SUCCESS
+- run 36434246982 | ATK HODGE producer kernel | SHA bd0ed937b9c386222006d40cbcb97022bf8214c0 | branch atk/next-hodge-universal-family-20260928 | 2026-09-28T14:12:38Z | FROZEN_SUCCESS
+- run 36430947530 | certificate | SHA af262f2f85e37396808a0fb1b5bc037b8ffd38de | branch atk/next-hodge-universal-family-20260928 | 2026-09-28T13:45:57Z | FROZEN_SUCCESS
+- run 36430943812 | certificate | SHA af262f2f85e37396808a0fb1b5bc037b8ffd38de | branch frozen/producer-frontier-green-af262f2f | 2026-09-28T13:45:55Z | FROZEN_SUCCESS
+- run 36426174597 | certificate | SHA af262f2f85e37396808a0fb1b5bc037b8ffd38de | branch atk/producer-hodge-20260928 | 2026-09-28T13:05:48Z | FROZEN_SUCCESS
+- run 36426174522 | ATK HODGE producer kernel | SHA af262f2f85e37396808a0fb1b5bc037b8ffd38de | branch atk/producer-hodge-20260928 | 2026-09-28T13:05:48Z | FROZEN_SUCCESS
+- run 36424084926 | certificate | SHA f526fb94df1850be6a608420a06a56e264191cdd | branch atk/producer-hodge-20260928 | 2026-09-28T12:47:17Z | FROZEN_SUCCESS
+- run 36424084785 | ATK HODGE producer kernel | SHA f526fb94df1850be6a608420a06a56e264191cdd | branch atk/producer-hodge-20260928 | 2026-09-28T12:47:17Z | FROZEN_SUCCESS
+- run 36422678654 | certificate | SHA 8ccf5819e750f4322b5544b42cc8c85c0c401f6b | branch frozen/kernel-r3-basepoint-green-8ccf5819 | 2026-09-28T12:34:19Z | FROZEN_SUCCESS
+- run 36422458283 | certificate | SHA 8ccf5819e750f4322b5544b42cc8c85c0c401f6b | branch atk/kernel-r3-basepoint-20260928 | 2026-09-28T12:32:15Z | FROZEN_SUCCESS
+- run 36422450641 | certificate | SHA 8ccf5819e750f4322b5544b42cc8c85c0c401f6b | branch atk/kernel-r3-basepoint-20260928 | 2026-09-28T12:32:11Z | FROZEN_SUCCESS
+- run 36422449776 | certificate | SHA e4d0b2cf6ad0fe28d54d80f829a7201226e4e6c9 | branch atk/kernel-r3-basepoint-20260928 | 2026-09-28T12:32:10Z | FROZEN_SUCCESS
+- run 36422444231 | certificate | SHA e4d0b2cf6ad0fe28d54d80f829a7201226e4e6c9 | branch atk/kernel-r3-basepoint-20260928 | 2026-09-28T12:32:07Z | FROZEN_SUCCESS
+- run 36421965038 | certificate | SHA 42eaf7d4d639871f82eceb121ee525a6c4f30d84 | branch atk/kernel-r3-basepoint-20260928 | 2026-09-28T12:27:37Z | FROZEN_SUCCESS
+- run 36420220099 | certificate | SHA 5be22d39a16d2f1979892bada0008f277833f169 | branch atk/producer-hodge-20260928 | 2026-09-28T12:11:18Z | FROZEN_SUCCESS
+- run 36420220097 | ATK HODGE producer kernel | SHA 5be22d39a16d2f1979892bada0008f277833f169 | branch atk/producer-hodge-20260928 | 2026-09-28T12:11:18Z | FROZEN_SUCCESS
+- run 36420104403 | certificate | SHA 42eaf7d4d639871f82eceb121ee525a6c4f30d84 | branch atk/producer-hodge-20260928 | 2026-09-28T12:10:14Z | FROZEN_SUCCESS
+- run 36405304252 | certificate | SHA 3b2a54faf8fe2b00920a33fe3e34126adb14a9d6 | branch atk/structural-cleanup-20260927 | 2026-09-28T09:43:29Z | FROZEN_SUCCESS
+- run 36397035584 | certificate | SHA 42eaf7d4d639871f82eceb121ee525a6c4f30d84 | branch atk/kernel-integrated-20260928 | 2026-09-28T08:23:06Z | FROZEN_SUCCESS
+- run 36396984975 | certificate | SHA c3a6371496f3f09810a4f771c6f25d1f6d18edc3 | branch atk/structural-cleanup-20260927 | 2026-09-28T08:22:35Z | FROZEN_SUCCESS
+- run 36354545564 | certificate | SHA 84541370bb7f2b49e857bf901fc385d36d0b104f | branch atk/structural-cleanup-20260927 | 2026-09-27T22:13:45Z | FROZEN_SUCCESS
+- run 36354543391 | certificate | SHA c0764f339e9e75eaf2d87c4e1381fcd3f4e4aef6 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:13:43Z | FROZEN_SUCCESS
+- run 36354540256 | certificate | SHA 7dc22a5c4c2c1da4da55b721e3c459c559ccbf1f | branch atk/structural-cleanup-20260927 | 2026-09-27T22:13:40Z | FROZEN_SUCCESS
+- run 36354470095 | certificate | SHA 3852aa82508387cac08b3ba81c56a4f87e5902d4 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:12:28Z | FROZEN_SUCCESS
+- run 36354457534 | certificate | SHA 2d18077bb9e41701cc13b617da9a0ff21e656fa5 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:12:15Z | FROZEN_SUCCESS
+- run 36354446162 | certificate | SHA 5706e808f161cb1651b257e36c74504949f241ec | branch atk/structural-cleanup-20260927 | 2026-09-27T22:12:02Z | FROZEN_SUCCESS
+- run 36354408209 | certificate | SHA 5cb30e4d2c44ae87f22043c6e577e1b2d5d8f19f | branch atk/structural-cleanup-20260927 | 2026-09-27T22:11:25Z | FROZEN_SUCCESS
+- run 36344934895 | atk-hodge-tension-closure | SHA f7e7d93f110ca38cc0590fd633bb733605dcae98 | branch attack/h01-public-reuse-compression-20260926 | 2026-09-27T19:35:50Z | FROZEN_SUCCESS
+- run 36344934893 | certificate | SHA f7e7d93f110ca38cc0590fd633bb733605dcae98 | branch attack/h01-public-reuse-compression-20260926 | 2026-09-27T19:35:50Z | FROZEN_SUCCESS
+- run 36344934886 | atk-h01-direct-core-compression | SHA f7e7d93f110ca38cc0590fd633bb733605dcae98 | branch attack/h01-public-reuse-compression-20260926 | 2026-09-27T19:35:50Z | FROZEN_SUCCESS
+- run 36344934885 | atk-h01-public-reuse-compression | SHA f7e7d93f110ca38cc0590fd633bb733605dcae98 | branch attack/h01-public-reuse-compression-20260926 | 2026-09-27T19:35:50Z | FROZEN_SUCCESS
+- run 36344922313 | atk-h01-public-reuse-compression | SHA 14b9bb5b7ad8aa943c9ef05acb94c5bac9aa19ad | branch attack/h01-public-reuse-compression-20260926 | 2026-09-27T19:35:37Z | FROZEN_SUCCESS
+
+## ShantiDraconis/m-core-yang-mills
+
+- run 36792908121 | certificate | SHA 80fd51f5ed50b495539b30e78fa7143a5532f8d3 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:47:37Z | FROZEN_SUCCESS
+- run 36792578722 | certificate | SHA b2e18a1ff6860932b0ced5d6e29af8ac9e3d86b2 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:43:46Z | FROZEN_SUCCESS
+- run 36792541132 | certificate | SHA 36c8dd427b9c759cfe62e1e413f594a22e554a4a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:43:20Z | FROZEN_SUCCESS
+- run 36789922334 | ATK terminal auto-compose | SHA 752d3b6b01df2c812ff12a71229d4c7ee6a86809 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:13:12Z | FROZEN_SUCCESS
+- run 36789922284 | certificate | SHA 752d3b6b01df2c812ff12a71229d4c7ee6a86809 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:13:12Z | FROZEN_SUCCESS
+- run 36789218683 | certificate | SHA 3a141c2a9974f46418bdf8f93997550e9e863b45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:23Z | FROZEN_SUCCESS
+- run 36789218645 | ATK terminal auto-compose | SHA 3a141c2a9974f46418bdf8f93997550e9e863b45 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:05:23Z | FROZEN_SUCCESS
+- run 36789111313 | ATK terminal auto-compose | SHA 5c236fb9fd7566321474b7211e4e3765f9a6b5fa | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:04:14Z | FROZEN_SUCCESS
+- run 36789110726 | certificate | SHA 5c236fb9fd7566321474b7211e4e3765f9a6b5fa | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:04:13Z | FROZEN_SUCCESS
+- run 36789110672 | ATK FINAL_ROOT | SHA 5c236fb9fd7566321474b7211e4e3765f9a6b5fa | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:04:13Z | FROZEN_SUCCESS
+- run 36789110658 | ATK exact final producer | SHA 5c236fb9fd7566321474b7211e4e3765f9a6b5fa | branch atk/auto-compose-terminal-20260930 | 2026-09-30T23:04:13Z | FROZEN_SUCCESS
+- run 36784824042 | certificate | SHA 9f2e2a6d0d417225150a318fa71b4bc8ed635707 | branch atk-ym-b60-terminal-link-20260930 | 2026-09-30T22:18:46Z | FROZEN_SUCCESS
+- run 36784804936 | certificate | SHA 1019f8810369af19147c4bd35540a087e89265e8 | branch atk-ym-b60-terminal-link-20260930 | 2026-09-30T22:18:34Z | FROZEN_SUCCESS
+- run 36780711280 | ATK FINAL_ROOT | SHA d64a7b2a8effb7a67adfc6bb36e5cb782f44e3ef | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:23Z | FROZEN_SUCCESS
+- run 36780711203 | ATK terminal auto-compose | SHA d64a7b2a8effb7a67adfc6bb36e5cb782f44e3ef | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:23Z | FROZEN_SUCCESS
+- run 36780711177 | certificate | SHA d64a7b2a8effb7a67adfc6bb36e5cb782f44e3ef | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:38:23Z | FROZEN_SUCCESS
+- run 36780670802 | ATK FINAL_ROOT | SHA 73777d6f83988481ddefea6657b0d660a4c603a1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:37:59Z | FROZEN_SUCCESS
+- run 36780670759 | ATK terminal auto-compose | SHA 73777d6f83988481ddefea6657b0d660a4c603a1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:37:59Z | FROZEN_SUCCESS
+- run 36780670732 | certificate | SHA 73777d6f83988481ddefea6657b0d660a4c603a1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:37:59Z | FROZEN_SUCCESS
+- run 36780670731 | ATK exact final producer | SHA 73777d6f83988481ddefea6657b0d660a4c603a1 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T21:37:59Z | FROZEN_SUCCESS
+- run 36774530938 | ATK exact final producer | SHA 1d147a450e0ca14c5462a5305025570e246e0c44 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:44Z | FROZEN_SUCCESS
+- run 36774530900 | ATK terminal auto-compose | SHA 1d147a450e0ca14c5462a5305025570e246e0c44 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:44Z | FROZEN_SUCCESS
+- run 36774530677 | ATK FINAL_ROOT | SHA 1d147a450e0ca14c5462a5305025570e246e0c44 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:44Z | FROZEN_SUCCESS
+- run 36774530651 | certificate | SHA 1d147a450e0ca14c5462a5305025570e246e0c44 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:44Z | FROZEN_SUCCESS
+- run 36774512934 | certificate | SHA 1ac532dd9ef3ca6fd961946ab0941e4db5c2b956 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:34Z | FROZEN_SUCCESS
+- run 36774512783 | ATK terminal auto-compose | SHA 1ac532dd9ef3ca6fd961946ab0941e4db5c2b956 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:34Z | FROZEN_SUCCESS
+- run 36774504812 | ATK FINAL_ROOT | SHA 47f9c4d92bda3bed7dae87cb4c5466bcda5c6e18 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:30Z | FROZEN_SUCCESS
+- run 36774504776 | ATK exact final producer | SHA 47f9c4d92bda3bed7dae87cb4c5466bcda5c6e18 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:30Z | FROZEN_SUCCESS
+- run 36774504702 | certificate | SHA 47f9c4d92bda3bed7dae87cb4c5466bcda5c6e18 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:30Z | FROZEN_SUCCESS
+- run 36774504658 | ATK terminal auto-compose | SHA 47f9c4d92bda3bed7dae87cb4c5466bcda5c6e18 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:42:30Z | FROZEN_SUCCESS
+- run 36774000824 | ATK terminal auto-compose | SHA dc94f884ff611464c69e89f8ceb47c8ac265c6d0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:38:08Z | FROZEN_SUCCESS
+- run 36774000722 | certificate | SHA dc94f884ff611464c69e89f8ceb47c8ac265c6d0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:38:08Z | FROZEN_SUCCESS
+- run 36773830264 | ATK exact final producer | SHA 325c729e1ef72b87d3e317d473ff3c748cc3eaf5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:38Z | FROZEN_SUCCESS
+- run 36773830240 | ATK terminal auto-compose | SHA 325c729e1ef72b87d3e317d473ff3c748cc3eaf5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:38Z | FROZEN_SUCCESS
+- run 36773830164 | certificate | SHA 325c729e1ef72b87d3e317d473ff3c748cc3eaf5 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:36:38Z | FROZEN_SUCCESS
+- run 36773466608 | ATK FINAL_ROOT | SHA cd98518b290b9e4af009989d39b06b87dfc6f26e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:33:30Z | FROZEN_SUCCESS
+- run 36773466591 | ATK terminal auto-compose | SHA cd98518b290b9e4af009989d39b06b87dfc6f26e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:33:30Z | FROZEN_SUCCESS
+- run 36773466588 | certificate | SHA cd98518b290b9e4af009989d39b06b87dfc6f26e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:33:30Z | FROZEN_SUCCESS
+- run 36770572295 | ATK FINAL_ROOT | SHA 69bd6dbb393718d2616a96736bfbc9101e56e7ae | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:52Z | FROZEN_SUCCESS
+- run 36770571405 | ATK terminal auto-compose | SHA 69bd6dbb393718d2616a96736bfbc9101e56e7ae | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:52Z | FROZEN_SUCCESS
+- run 36770571370 | certificate | SHA 69bd6dbb393718d2616a96736bfbc9101e56e7ae | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:52Z | FROZEN_SUCCESS
+- run 36770483802 | certificate | SHA 4727d3078164ee188c05db1c978d6cb701e942ea | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:04Z | FROZEN_SUCCESS
+- run 36770483789 | ATK terminal auto-compose | SHA 4727d3078164ee188c05db1c978d6cb701e942ea | branch atk/auto-compose-terminal-20260930 | 2026-09-30T20:08:04Z | FROZEN_SUCCESS
+- run 36766984280 | ATK terminal auto-compose | SHA 6fcc1608031c944c14ea79b6f62ca688e1e66cc2 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:37:41Z | FROZEN_SUCCESS
+- run 36766984261 | certificate | SHA 6fcc1608031c944c14ea79b6f62ca688e1e66cc2 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:37:41Z | FROZEN_SUCCESS
+- run 36765698826 | certificate | SHA 94f632407b451ed2907b698ce5aa9e4343218c17 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:26:36Z | FROZEN_SUCCESS
+- run 36765698823 | ATK terminal auto-compose | SHA 94f632407b451ed2907b698ce5aa9e4343218c17 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:26:36Z | FROZEN_SUCCESS
+- run 36765698808 | ATK FINAL_ROOT | SHA 94f632407b451ed2907b698ce5aa9e4343218c17 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:26:36Z | FROZEN_SUCCESS
+- run 36765418914 | ATK terminal auto-compose | SHA c5a02802c481c13d2439797c6b8e34f3ad931a5b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:12Z | FROZEN_SUCCESS
+- run 36765418849 | certificate | SHA c5a02802c481c13d2439797c6b8e34f3ad931a5b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:12Z | FROZEN_SUCCESS
+- run 36765418847 | ATK FINAL_ROOT | SHA c5a02802c481c13d2439797c6b8e34f3ad931a5b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:24:12Z | FROZEN_SUCCESS
+- run 36765311695 | certificate | SHA c329c5e02be5e74f2190cc36d00c436935a0131f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:17Z | FROZEN_SUCCESS
+- run 36765311576 | ATK FINAL ROOT | SHA c329c5e02be5e74f2190cc36d00c436935a0131f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:17Z | FROZEN_SUCCESS
+- run 36765311537 | ATK terminal auto-compose | SHA c329c5e02be5e74f2190cc36d00c436935a0131f | branch atk/auto-compose-terminal-20260930 | 2026-09-30T19:23:17Z | FROZEN_SUCCESS
+- run 36759898305 | ATK FINAL ROOT | SHA 3026d028eb19d77a4029447566368260f519fab0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:25Z | FROZEN_SUCCESS
+- run 36759898113 | ATK terminal auto-compose | SHA 3026d028eb19d77a4029447566368260f519fab0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:25Z | FROZEN_SUCCESS
+- run 36759898093 | certificate | SHA 3026d028eb19d77a4029447566368260f519fab0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:37:25Z | FROZEN_SUCCESS
+- run 36759665032 | ATK FINAL ROOT | SHA a060913b602d380a78ed60c6c9233168a95c5dcb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:30Z | FROZEN_SUCCESS
+- run 36759664899 | ATK terminal auto-compose | SHA a060913b602d380a78ed60c6c9233168a95c5dcb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:30Z | FROZEN_SUCCESS
+- run 36759664814 | certificate | SHA a060913b602d380a78ed60c6c9233168a95c5dcb | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:35:30Z | FROZEN_SUCCESS
+- run 36759246153 | ATK terminal auto-compose | SHA d1b457b17f0325b5571aa1eef709947874eb0f31 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:31:56Z | FROZEN_SUCCESS
+- run 36759246148 | certificate | SHA d1b457b17f0325b5571aa1eef709947874eb0f31 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:31:56Z | FROZEN_SUCCESS
+- run 36757157683 | ATK terminal auto-compose | SHA 3ea43a113a9fdf32189f1e9c3fda72391c15810e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:14:31Z | FROZEN_SUCCESS
+- run 36757157663 | certificate | SHA 3ea43a113a9fdf32189f1e9c3fda72391c15810e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:14:31Z | FROZEN_SUCCESS
+- run 36757157574 | ATK B60 inhabitation mining | SHA 3ea43a113a9fdf32189f1e9c3fda72391c15810e | branch atk/auto-compose-terminal-20260930 | 2026-09-30T18:14:31Z | FROZEN_SUCCESS
+- run 36738281098 | ATK terminal auto-compose | SHA 7e7f834bc57cd15e346297885a11bfc1360ad7dc | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:29Z | FROZEN_SUCCESS
+- run 36738280937 | certificate | SHA 7e7f834bc57cd15e346297885a11bfc1360ad7dc | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:38:29Z | FROZEN_SUCCESS
+- run 36737962983 | ATK terminal auto-compose | SHA a8eb0e19697c754dc68214c3525d3b5ff0dee90a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:35:58Z | FROZEN_SUCCESS
+- run 36737962825 | certificate | SHA a8eb0e19697c754dc68214c3525d3b5ff0dee90a | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:35:58Z | FROZEN_SUCCESS
+- run 36737768685 | certificate | SHA 609e69f77d8d8925a88d02ea90a82f81210ed70b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:28Z | FROZEN_SUCCESS
+- run 36737767267 | ATK terminal auto-compose | SHA 609e69f77d8d8925a88d02ea90a82f81210ed70b | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:34:28Z | FROZEN_SUCCESS
+- run 36737559032 | certificate | SHA 25f27dac686685ce427c88e93a8236c66604df5d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:32:49Z | FROZEN_SUCCESS
+- run 36737558606 | ATK terminal auto-compose | SHA 25f27dac686685ce427c88e93a8236c66604df5d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:32:49Z | FROZEN_SUCCESS
+- run 36737298025 | ATK terminal auto-compose | SHA 7a074f8f1414ea13d8885b29a214e6a25d2beed0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:45Z | FROZEN_SUCCESS
+- run 36737298005 | certificate | SHA 7a074f8f1414ea13d8885b29a214e6a25d2beed0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:45Z | FROZEN_SUCCESS
+- run 36737297989 | ATK B60 inhabitation mining | SHA 7a074f8f1414ea13d8885b29a214e6a25d2beed0 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:30:45Z | FROZEN_SUCCESS
+- run 36736925920 | ATK terminal auto-compose | SHA d35f440aba104eaa1cbb77c7db0f3f121ced0b87 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:27:53Z | FROZEN_SUCCESS
+- run 36736925915 | certificate | SHA d35f440aba104eaa1cbb77c7db0f3f121ced0b87 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:27:53Z | FROZEN_SUCCESS
+- run 36736587698 | certificate | SHA 24e68c5e99d16ea3b0fa934c5417619239d1aa0d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:25:13Z | FROZEN_SUCCESS
+- run 36736587491 | ATK terminal auto-compose | SHA 24e68c5e99d16ea3b0fa934c5417619239d1aa0d | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:25:13Z | FROZEN_SUCCESS
+- run 36736302202 | certificate | SHA 92b610c867160c3fd53ff7e1937c41399f7b8833 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:23:01Z | FROZEN_SUCCESS
+- run 36736302025 | ATK terminal auto-compose | SHA 92b610c867160c3fd53ff7e1937c41399f7b8833 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:23:00Z | FROZEN_SUCCESS
+- run 36735925638 | ATK terminal auto-compose | SHA e93559cfd11030b3f82f860a8af82578520df1c8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:20:04Z | FROZEN_SUCCESS
+- run 36735925595 | certificate | SHA e93559cfd11030b3f82f860a8af82578520df1c8 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:20:04Z | FROZEN_SUCCESS
+- run 36735151073 | ATK terminal auto-compose | SHA 7abd66f13988a9f1df89a41a30224197b3956fd9 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:14:03Z | FROZEN_SUCCESS
+- run 36735150983 | certificate | SHA 7abd66f13988a9f1df89a41a30224197b3956fd9 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:14:03Z | FROZEN_SUCCESS
+- run 36735124743 | certificate | SHA 99b76a8822534601e517b229cd93ea8fdce331b7 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:13:51Z | FROZEN_SUCCESS
+- run 36735124621 | ATK terminal auto-compose | SHA 99b76a8822534601e517b229cd93ea8fdce331b7 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T15:13:51Z | FROZEN_SUCCESS
+- run 36734475591 | FALSIFIED terminal smoke | SHA d17a7605a9fbd51a70b4311182c8f3a3c14e9dfa | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:08:43Z | FROZEN_SUCCESS
+- run 36734103892 | certificate | SHA f63ea46755fdf47a7610ca38b52aa2c05e632d29 | branch atk/falsified-terminal-inhabitants-20260930 | 2026-09-30T15:05:46Z | FROZEN_SUCCESS
+- run 36711527673 | ATK terminal auto-compose | SHA f63ea46755fdf47a7610ca38b52aa2c05e632d29 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:33Z | FROZEN_SUCCESS
+- run 36711527590 | certificate | SHA f63ea46755fdf47a7610ca38b52aa2c05e632d29 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:33Z | FROZEN_SUCCESS
+- run 36711523974 | certificate | SHA cc0f20521ec0fe2b0af9eb4d64b3a27ba26eff37 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:55:31Z | FROZEN_SUCCESS
+- run 36711439029 | certificate | SHA a6950ed66403034fdd0cba903f7b71460666c8d4 | branch atk/auto-compose-terminal-20260930 | 2026-09-30T11:54:42Z | FROZEN_SUCCESS
+- run 36711174716 | certificate | SHA 680b4ac0e78e9cf388d7e897132105214e58085f | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:08Z | FROZEN_SUCCESS
+- run 36711170756 | certificate | SHA 017e1419b9495626f475f280e8a876e43e0fc795 | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:52:06Z | FROZEN_SUCCESS
+- run 36711041575 | certificate | SHA 489947a9a9c7b51bd57c61fd7fd0699cb4a750db | branch atk/auto-compose-cleanup-20260930 | 2026-09-30T11:50:52Z | FROZEN_SUCCESS
+- run 36702493694 | certificate | SHA 34ce6be901a84686c957b2c5877ac0053de0aaf0 | branch atk/direct-terminal-20260930 | 2026-09-30T10:27:03Z | FROZEN_SUCCESS
+- run 36702452267 | certificate | SHA 489947a9a9c7b51bd57c61fd7fd0699cb4a750db | branch atk/direct-terminal-20260930 | 2026-09-30T10:26:39Z | FROZEN_SUCCESS
+- run 36497349406 | certificate | SHA eb2f1b242fcb6719c370d1f0f36deb2e5494d818 | branch atk/next-ym-canonical-physical-inhabitant-20260928 | 2026-09-28T23:19:07Z | FROZEN_SUCCESS
+- run 36497325029 | certificate | SHA eb2f1b242fcb6719c370d1f0f36deb2e5494d818 | branch atk/next-ym-genuine-physical-binding-20260928 | 2026-09-28T23:18:50Z | FROZEN_SUCCESS
+- run 36497315974 | certificate | SHA eb2f1b242fcb6719c370d1f0f36deb2e5494d818 | branch frozen/ym-canonical-physical-binding-green-eb2f1b24 | 2026-09-28T23:18:44Z | FROZEN_SUCCESS
+- run 36496682831 | certificate | SHA eb2f1b242fcb6719c370d1f0f36deb2e5494d818 | branch atk/ym-canonical-physical-binding-20260928 | 2026-09-28T23:11:47Z | FROZEN_SUCCESS
+- run 36494422904 | certificate | SHA bb2b5c47385f2d024e2c4a20bd09719b5389a8af | branch atk/ym-canonical-physical-binding-20260928 | 2026-09-28T22:47:17Z | FROZEN_SUCCESS
+- run 36494399567 | certificate | SHA 418dceac48f19df59fb0ac8417d69a074f71d320 | branch atk/ym-canonical-physical-binding-20260928 | 2026-09-28T22:47:02Z | FROZEN_SUCCESS
+- run 36493969663 | certificate | SHA 418dceac48f19df59fb0ac8417d69a074f71d320 | branch atk/next-ym-canonical-physical-binding-20260928 | 2026-09-28T22:42:30Z | FROZEN_SUCCESS
+- run 36493965580 | certificate | SHA 418dceac48f19df59fb0ac8417d69a074f71d320 | branch frozen/ym-b60-triviality-firewall-green-418dceac | 2026-09-28T22:42:27Z | FROZEN_SUCCESS
+- run 36493885586 | certificate | SHA 418dceac48f19df59fb0ac8417d69a074f71d320 | branch frozen/b60-triviality-green-418dceac | 2026-09-28T22:41:36Z | FROZEN_SUCCESS
+- run 36493055781 | certificate | SHA 418dceac48f19df59fb0ac8417d69a074f71d320 | branch atk/b60-triviality-audit | 2026-09-28T22:33:05Z | FROZEN_SUCCESS
+- run 36493021361 | certificate | SHA ae89587c50d8eb0a05bb67ab9e5db2fcc905a773 | branch atk/b60-triviality-audit | 2026-09-28T22:32:44Z | FROZEN_SUCCESS
+- run 36492997672 | certificate | SHA cd4bbfd348b607bd24ed0c6d605207b764286f58 | branch atk/b60-triviality-audit | 2026-09-28T22:32:29Z | FROZEN_SUCCESS
+- run 36492916089 | certificate | SHA 489947a9a9c7b51bd57c61fd7fd0699cb4a750db | branch main | 2026-09-28T22:31:39Z | FROZEN_SUCCESS
+- run 36482916795 | certificate | SHA 3a458e0a5aa6af0b63bc27c6e23a2bb20dad0dd5 | branch frozen/canonical-stable-hole-v1-green-3a458e0a | 2026-09-28T20:58:16Z | FROZEN_SUCCESS
+- run 36482829159 | material-unification-v2 | SHA 3a458e0a5aa6af0b63bc27c6e23a2bb20dad0dd5 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:57:28Z | FROZEN_SUCCESS
+- run 36482829132 | certificate | SHA 3a458e0a5aa6af0b63bc27c6e23a2bb20dad0dd5 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:57:28Z | FROZEN_SUCCESS
+- run 36480236467 | certificate | SHA 0a15294325aefb5be5ffae60ef63dc0e764975b4 | branch frozen/ym-typed-endpoint-binding-residue-green-0a152943 | 2026-09-28T20:35:05Z | FROZEN_SUCCESS
+- run 36480155816 | certificate | SHA 0a15294325aefb5be5ffae60ef63dc0e764975b4 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:34:25Z | FROZEN_SUCCESS
+- run 36480155675 | material-unification-v2 | SHA 0a15294325aefb5be5ffae60ef63dc0e764975b4 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:34:25Z | FROZEN_SUCCESS
+- run 36480124007 | certificate | SHA baa06261033d1e15a6d801633a642823c49980e0 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:34:09Z | FROZEN_SUCCESS
+- run 36480113491 | certificate | SHA 6f588d09da048703381af67c70aa854fac0dfa29 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:34:04Z | FROZEN_SUCCESS
+- run 36480105889 | material-unification-v2 | SHA 3ab04e47220b9b1eabacddc60cc7b128cf552f06 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:34:00Z | FROZEN_SUCCESS
+- run 36480105869 | certificate | SHA 3ab04e47220b9b1eabacddc60cc7b128cf552f06 | branch atk/material-unification-v2-20260928 | 2026-09-28T20:34:00Z | FROZEN_SUCCESS
+- run 36478565096 | certificate | SHA a1a04873b0bc46dd7084ba0805e29a0b9a1d65fc | branch frozen/inhabitant-arsenal-v1-green-a1a04873 | 2026-09-28T20:21:07Z | FROZEN_SUCCESS
+- run 36478068850 | material-unification-v2 | SHA a1a04873b0bc46dd7084ba0805e29a0b9a1d65fc | branch atk/material-unification-v2-20260928 | 2026-09-28T20:16:53Z | FROZEN_SUCCESS
+- run 36478068714 | certificate | SHA a1a04873b0bc46dd7084ba0805e29a0b9a1d65fc | branch atk/material-unification-v2-20260928 | 2026-09-28T20:16:53Z | FROZEN_SUCCESS
+- run 36475962950 | certificate | SHA 9d5f99c5b4001c9a74f38a84c2b8f77310af0acf | branch frozen/material-unification-v2-green-9d5f99c5 | 2026-09-28T19:58:54Z | FROZEN_SUCCESS
+- run 36475725671 | certificate | SHA 9d5f99c5b4001c9a74f38a84c2b8f77310af0acf | branch atk/material-unification-v2-20260928 | 2026-09-28T19:56:45Z | FROZEN_SUCCESS
+- run 36475725620 | material-unification-v2 | SHA 9d5f99c5b4001c9a74f38a84c2b8f77310af0acf | branch atk/material-unification-v2-20260928 | 2026-09-28T19:56:45Z | FROZEN_SUCCESS
+- run 36475520617 | certificate | SHA 0158c029754b6f40d53b6a22c8888f4c94cf3c26 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:57Z | FROZEN_SUCCESS
+- run 36475515555 | certificate | SHA 7e4f06e181575c3b249a7fdff338db60922f1993 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:55Z | FROZEN_SUCCESS
+- run 36475511861 | certificate | SHA 0dcc4685c39f675cc709d2d340b3b955e359d2b9 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:53Z | FROZEN_SUCCESS
+- run 36475507086 | certificate | SHA db5e9c09dd45e4f64b385de309753a6779b4dda9 | branch atk/material-unification-v2-20260928 | 2026-09-28T19:54:50Z | FROZEN_SUCCESS
+- run 36475143604 | certificate | SHA 8f571fe81d54b572d6424c3b735ab79189db86fb | branch atk/material-unification-v2-20260928 | 2026-09-28T19:51:38Z | FROZEN_SUCCESS
+- run 36471182363 | certificate | SHA 8f571fe81d54b572d6424c3b735ab79189db86fb | branch frozen/ym-material-gate-green-8f571fe8 | 2026-09-28T19:17:16Z | FROZEN_SUCCESS
+- run 36470807065 | certificate | SHA 8f571fe81d54b572d6424c3b735ab79189db86fb | branch atk/ym-material-producer-gate-20260928 | 2026-09-28T19:14:09Z | FROZEN_SUCCESS
+- run 36470802584 | certificate | SHA 4a9d57711aa52844ffcb5a1a547c3513751078aa | branch atk/ym-material-producer-gate-20260928 | 2026-09-28T19:14:07Z | FROZEN_SUCCESS
+- run 36470797063 | certificate | SHA bc8b969ffe76ddba073cb965ca1724df28ec19da | branch atk/ym-material-producer-gate-20260928 | 2026-09-28T19:14:04Z | FROZEN_SUCCESS
+- run 36470791882 | certificate | SHA b1c0406985fc707e393519759abe31970c9039e0 | branch atk/ym-material-producer-gate-20260928 | 2026-09-28T19:14:02Z | FROZEN_SUCCESS
+- run 36470787657 | certificate | SHA 97a566dad680be3de5fbde11b1b71e4bebc88193 | branch atk/ym-material-producer-gate-20260928 | 2026-09-28T19:14:00Z | FROZEN_SUCCESS
+- run 36459029084 | certificate | SHA a4c79cfde5273ed1cdea82d99530ff7999048677 | branch frozen/ym-uniform-gap-to-mass-green-a4c79cfd | 2026-09-28T17:34:02Z | FROZEN_SUCCESS
+- run 36458830854 | certificate | SHA ecf745b23ff2c030a634742fdabb2a051d207795 | branch frozen/ym-physical-inhabitant-frontier-green-ecf745b2 | 2026-09-28T17:32:22Z | FROZEN_SUCCESS
+- run 36442228816 | ATK YM producer kernel | SHA ecf745b23ff2c030a634742fdabb2a051d207795 | branch atk/next-ym-physical-inhabitant-20260928 | 2026-09-28T15:15:46Z | FROZEN_SUCCESS
+- run 36442228479 | certificate | SHA ecf745b23ff2c030a634742fdabb2a051d207795 | branch atk/next-ym-physical-inhabitant-20260928 | 2026-09-28T15:15:46Z | FROZEN_SUCCESS
+- run 36440138785 | certificate | SHA a4c79cfde5273ed1cdea82d99530ff7999048677 | branch atk/next-ym-b60-inhabitant-20260928 | 2026-09-28T14:59:24Z | FROZEN_SUCCESS
+- run 36440103092 | certificate | SHA a4c79cfde5273ed1cdea82d99530ff7999048677 | branch frozen/physical-gap-propagation-green-a4c79cfd | 2026-09-28T14:59:06Z | FROZEN_SUCCESS
+- run 36439555216 | ATK YM producer kernel | SHA a4c79cfde5273ed1cdea82d99530ff7999048677 | branch atk/producer-ym-20260928 | 2026-09-28T14:54:50Z | FROZEN_SUCCESS
+- run 36439555135 | certificate | SHA a4c79cfde5273ed1cdea82d99530ff7999048677 | branch atk/producer-ym-20260928 | 2026-09-28T14:54:50Z | FROZEN_SUCCESS
+- run 36438726847 | certificate | SHA 1019f8810369af19147c4bd35540a087e89265e8 | branch atk/next-ym-physical-inhabitant-20260928 | 2026-09-28T14:48:15Z | FROZEN_SUCCESS
+- run 36435100463 | certificate | SHA 1019f8810369af19147c4bd35540a087e89265e8 | branch frozen/next-b60-k30-kernel-green-1019f881 | 2026-09-28T14:19:24Z | FROZEN_SUCCESS
+- run 36434295305 | ATK YM producer kernel | SHA 1019f8810369af19147c4bd35540a087e89265e8 | branch atk/next-ym-b60-k30-20260928 | 2026-09-28T14:13:01Z | FROZEN_SUCCESS
+- run 36434294245 | certificate | SHA 1019f8810369af19147c4bd35540a087e89265e8 | branch atk/next-ym-b60-k30-20260928 | 2026-09-28T14:13:00Z | FROZEN_SUCCESS
+- run 36430972278 | certificate | SHA 4f6681605f38c91e15539049cfb04c885bb7a19b | branch atk/next-ym-b60-k30-20260928 | 2026-09-28T13:46:09Z | FROZEN_SUCCESS
+- run 36430968611 | certificate | SHA 4f6681605f38c91e15539049cfb04c885bb7a19b | branch frozen/producer-frontier-green-4f668160 | 2026-09-28T13:46:07Z | FROZEN_SUCCESS
+- run 36426195838 | certificate | SHA 4f6681605f38c91e15539049cfb04c885bb7a19b | branch atk/producer-ym-20260928 | 2026-09-28T13:06:00Z | FROZEN_SUCCESS
+- run 36426195789 | ATK YM producer kernel | SHA 4f6681605f38c91e15539049cfb04c885bb7a19b | branch atk/producer-ym-20260928 | 2026-09-28T13:06:00Z | FROZEN_SUCCESS
+- run 36424091639 | certificate | SHA ed00566a2dea071ba7e7d4f70c0d4d36c0442610 | branch atk/producer-ym-20260928 | 2026-09-28T12:47:20Z | FROZEN_SUCCESS
+- run 36424091498 | ATK YM producer kernel | SHA ed00566a2dea071ba7e7d4f70c0d4d36c0442610 | branch atk/producer-ym-20260928 | 2026-09-28T12:47:20Z | FROZEN_SUCCESS
+- run 36420224885 | ATK YM producer kernel | SHA 91a2b4609beaba7bafe6e614c7005c127cd6633a | branch atk/producer-ym-20260928 | 2026-09-28T12:11:20Z | FROZEN_SUCCESS
+- run 36420224832 | certificate | SHA 91a2b4609beaba7bafe6e614c7005c127cd6633a | branch atk/producer-ym-20260928 | 2026-09-28T12:11:20Z | FROZEN_SUCCESS
+- run 36420107773 | certificate | SHA cd4bbfd348b607bd24ed0c6d605207b764286f58 | branch atk/producer-ym-20260928 | 2026-09-28T12:10:16Z | FROZEN_SUCCESS
+- run 36405313891 | certificate | SHA 85f73493567019954f97c68215605a25c1a5dc8e | branch atk/structural-cleanup-20260927 | 2026-09-28T09:43:35Z | FROZEN_SUCCESS
+- run 36397042338 | certificate | SHA cd4bbfd348b607bd24ed0c6d605207b764286f58 | branch atk/kernel-integrated-20260928 | 2026-09-28T08:23:10Z | FROZEN_SUCCESS
+- run 36396990073 | certificate | SHA 099621299befebd2ea5f0842415305dfc3cae1f9 | branch atk/structural-cleanup-20260927 | 2026-09-28T08:22:38Z | FROZEN_SUCCESS
+- run 36354556846 | certificate | SHA 4b66a505bc4128bde20770d1b0a64dcd3b7c6491 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:13:56Z | FROZEN_SUCCESS
+- run 36354555243 | certificate | SHA 51c9983e19aa8bf834c0de7c73d9de10c9a01239 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:13:54Z | FROZEN_SUCCESS
+- run 36354553557 | certificate | SHA 891f09d5175a23b9419a51b6801c291030434717 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:13:53Z | FROZEN_SUCCESS
+- run 36354471864 | certificate | SHA d485a8864d6b9fea1ff3232700dbd3371390ba0b | branch atk/structural-cleanup-20260927 | 2026-09-27T22:12:30Z | FROZEN_SUCCESS
+- run 36354459104 | certificate | SHA d5b930a47dda69a61675ee2206cb8c247a8ee5c5 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:12:17Z | FROZEN_SUCCESS
+- run 36354448081 | certificate | SHA dc967472e1421d8c712e82a78779c544cf8537c9 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:12:04Z | FROZEN_SUCCESS
+- run 36354410173 | certificate | SHA 97a566dad680be3de5fbde11b1b71e4bebc88193 | branch atk/structural-cleanup-20260927 | 2026-09-27T22:11:27Z | FROZEN_SUCCESS
+- run 36344607120 | certificate | SHA a6950ed66403034fdd0cba903f7b71460666c8d4 | branch atk/ym-b60-concrete-physical-producer-20260927 | 2026-09-27T19:30:38Z | FROZEN_SUCCESS
+
+## ShantiDraconis/M-Navier-Stokes
+
+- run 35622774444 | certify-g5-direct-source | SHA 3a46cb7efb7aee0659ea6035116df8772cac7673 | branch attack/g5-direct-full-20260921 | 2026-09-21T16:00:34Z | FROZEN_SUCCESS
+- run 35430047181 | no-umbrella-fast-ci | SHA 386c2d9e98309f1396df0b34a6ac85d09a0d9fcc | branch audit/multistate-proof-refutation-v1 | 2026-09-19T07:42:17Z | FROZEN_SUCCESS
+- run 35404586632 | gen-lock-audit-writer-v4321 | SHA 2e6e37dc03e543f2f7ce89181234093c87c94d2c | branch audit/multistate-proof-refutation-v1 | 2026-09-18T23:09:47Z | FROZEN_SUCCESS
+- run 35403852621 | check-a2-2 | SHA 0cc8b80c6f11485ad5ecb18fc95c35ad927980db | branch audit/ns-ab-semantic-firewall | 2026-09-18T22:59:06Z | FROZEN_SUCCESS
+- run 35403852562 | check-a2-1 | SHA 0cc8b80c6f11485ad5ecb18fc95c35ad927980db | branch audit/ns-ab-semantic-firewall | 2026-09-18T22:59:06Z | FROZEN_SUCCESS
+- run 35403371340 | gen-s1-lock-v4-32-1 | SHA a6022f128d87103c4045d893b68471f05def316f | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:51:50Z | FROZEN_SUCCESS
+- run 35403371338 | certify-s1-successor | SHA a6022f128d87103c4045d893b68471f05def316f | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:51:50Z | FROZEN_SUCCESS
+- run 35403371308 | check-a2-1 | SHA a6022f128d87103c4045d893b68471f05def316f | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:51:50Z | FROZEN_SUCCESS
+- run 35403371305 | check-a2-2 | SHA a6022f128d87103c4045d893b68471f05def316f | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:51:50Z | FROZEN_SUCCESS
+- run 35403367641 | certify-s1-successor | SHA a6022f128d87103c4045d893b68471f05def316f | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:51:47Z | FROZEN_SUCCESS
+- run 35403367612 | gen-s1-lock-v4-32-1 | SHA a6022f128d87103c4045d893b68471f05def316f | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:51:47Z | FROZEN_SUCCESS
+- run 35402955136 | check-a2-1 | SHA 90d09301edfc0aef9bc83946c3da5b0ebbab0040 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:45:44Z | FROZEN_SUCCESS
+- run 35402955127 | check-a2-2 | SHA 90d09301edfc0aef9bc83946c3da5b0ebbab0040 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:45:44Z | FROZEN_SUCCESS
+- run 35402954990 | gen-s1-lock-v4-32-1 | SHA 90d09301edfc0aef9bc83946c3da5b0ebbab0040 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:45:44Z | FROZEN_SUCCESS
+- run 35402949875 | gen-s1-lock-v4-32-1 | SHA 90d09301edfc0aef9bc83946c3da5b0ebbab0040 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:45:40Z | FROZEN_SUCCESS
+- run 35402902081 | gen-s1-lock-v4-32-1 | SHA 009e7690a850ee7f62f1206117e960a994ec7757 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:45:01Z | FROZEN_SUCCESS
+- run 35402902077 | check-a2-2 | SHA 009e7690a850ee7f62f1206117e960a994ec7757 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:45:01Z | FROZEN_SUCCESS
+- run 35402902071 | check-a2-1 | SHA 009e7690a850ee7f62f1206117e960a994ec7757 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:45:01Z | FROZEN_SUCCESS
+- run 35402899622 | gen-s1-lock-v4-32-1 | SHA 009e7690a850ee7f62f1206117e960a994ec7757 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:44:59Z | FROZEN_SUCCESS
+- run 35402843022 | check-a2-2 | SHA 8dd75f0c31385d77d6360029d1c3a3b020ddbdf6 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:44:09Z | FROZEN_SUCCESS
+- run 35402843015 | check-a2-1 | SHA 8dd75f0c31385d77d6360029d1c3a3b020ddbdf6 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:44:09Z | FROZEN_SUCCESS
+- run 35402715819 | gen-s1-lock-v4-32-1 | SHA 6825fdad3257cd65a38a286856b739fe08810754 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:42:21Z | FROZEN_SUCCESS
+- run 35402572749 | gen-s1-lock-v4-32-1 | SHA 9e8c685c9b431d97d19a38b4ed28db6816666544 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:40:17Z | FROZEN_SUCCESS
+- run 35402565466 | gen-s1-lock-v4-32-1 | SHA 9e8c685c9b431d97d19a38b4ed28db6816666544 | branch infra/s1-real-lock-v4.32.1 | 2026-09-18T22:40:12Z | FROZEN_SUCCESS
+- run 35332836485 | certify-ns-maximal-frontier | SHA c56d9632facf96e0a5d834b987b30df5fe2563a1 | branch audit/ns-maximal-frontier-20260918 | 2026-09-18T10:04:37Z | FROZEN_SUCCESS
+- run 35332549714 | certify-ns-maximal-frontier | SHA 57136d8a7a702ac28abbbdd9d376becad8709c7e | branch audit/ns-maximal-frontier-20260918 | 2026-09-18T10:01:21Z | FROZEN_SUCCESS
+- run 35332024106 | certify-ns-maximal-frontier | SHA a64dca39cdba2000fab90bce44e0d6f81577fe38 | branch audit/ns-maximal-frontier-20260918 | 2026-09-18T09:55:10Z | FROZEN_SUCCESS
+- run 35298156970 | check-a2-2-math | SHA 823be9b2e6c722fd4a664493c4c53553071192ff | branch advance/k4-signed-cz | 2026-09-18T02:08:17Z | FROZEN_SUCCESS
+- run 35294885844 | check-a2-2-math | SHA ca3225d55426dbe4ffaaad1a26cc4f19605a0a19 | branch advance/k4-signed-cz | 2026-09-18T01:20:02Z | FROZEN_SUCCESS
+- run 35271220724 | check-a2-2-math | SHA 7366c8b9a223f92e45cec295fb97e765f892fb34 | branch advance/k4-signed-cz | 2026-09-17T20:30:32Z | FROZEN_SUCCESS
+- run 35269179322 | check-a2-2-math | SHA 49ed2ca1b52e7e99805ade73ab79538e338552f9 | branch advance/k4-signed-cz | 2026-09-17T20:10:09Z | FROZEN_SUCCESS
+- run 35266007166 | check-a2-2-math | SHA ff6fbc1fcb293a5afc5f28ff6ae47eb0ba4217a5 | branch advance/k4-signed-cz | 2026-09-17T19:37:46Z | FROZEN_SUCCESS
+- run 35264989667 | check-a2-2-math | SHA 9ca0e8fd50e5b7c793c4af5c79eae40983a49dd0 | branch advance/k4-signed-cz | 2026-09-17T19:27:25Z | FROZEN_SUCCESS
+- run 35232497182 | check-a2-2-math | SHA b99786a701fd08dd247d1ef3d7f6e63796b0062e | branch next/a2-2-signed-cz | 2026-09-17T14:16:44Z | FROZEN_SUCCESS
+- run 35229853305 | check-a2-2-math | SHA b0d2dc64ec6f939c349b19cb5598682c3282f6ce | branch next/a2-2-signed-cz | 2026-09-17T13:52:23Z | FROZEN_SUCCESS
+- run 35198847438 | check-a2-2-math | SHA d02880e59af14430feaf411ad613e07d259d9e08 | branch next/a2-2-budget | 2026-09-17T08:17:02Z | FROZEN_SUCCESS
+- run 35194638873 | check-a2-2-math | SHA 7c6e4f0e00275225aed9a1c16ff63c0a98e8b1e6 | branch next/a2-2-math | 2026-09-17T07:27:42Z | FROZEN_SUCCESS
+- run 35175384517 | check-a2-2-math | SHA 82799845504653252e2a688ffd917aa9822485e1 | branch next/a2-2-math | 2026-09-17T02:41:43Z | FROZEN_SUCCESS
+- run 35175297549 | check-a2-2-math | SHA e2b874664f696b150599c850f2a5cfdd564e01c2 | branch next/a2-2-math | 2026-09-17T02:40:19Z | FROZEN_SUCCESS
+- run 35173196584 | check-a2-2 | SHA fd4b41c7efd5c0de85e17795bff9a920c166b113 | branch next/a2-2 | 2026-09-17T02:07:29Z | FROZEN_SUCCESS
+- run 35145389851 | check-a2-1 | SHA c73dc1fabda7487bbd43d66d83d69f1aafe4d243 | branch a2.1-weightedIBP | 2026-09-16T20:14:50Z | FROZEN_SUCCESS
+
+## ShantiDraconis/m-core-openai-ns-audit
+
+No SUCCESS runs returned in the scanned history.
+
+## Interpretation
+
+- These are immutable historical GREEN checkpoints for the exact workflow scope that succeeded.
+- A later failure/cancellation does not erase an earlier SUCCESS.
+- A SUCCESS workflow does not by itself certify a broader theorem than the workflow actually checked.
+- Falsification/smoke/audit workflows are frozen as successful audits/falsifications, not as proofs of the target conjecture.
+- Current unverified deltas remain open until separately validated.
