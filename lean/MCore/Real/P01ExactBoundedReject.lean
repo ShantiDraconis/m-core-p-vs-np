@@ -489,7 +489,7 @@ theorem and_exact_bounded_reject
             intro hnil
             have henc : encodeCircuit right = [] :=
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
+            exact encodeCircuit_ne_nil right henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
@@ -721,7 +721,7 @@ theorem or_exact_bounded_reject
                      (encodeCircuit (.or left right) ++ tail)
                      (encodeEvalFrames frames) padding }] := by
         simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-          List.append_assoc] using h0
+          childMode, List.append_assoc] using h0
 
       have hLayoutLeft :
           CheckedLayoutBound n leftConsumed
@@ -816,7 +816,7 @@ theorem or_exact_bounded_reject
             intro hnil
             have henc : encodeCircuit right = [] :=
               (List.append_eq_nil_iff.mp hnil).1
-            cases right <;> simp [encodeCircuit] at henc
+            exact encodeCircuit_ne_nil right henc
 
           obtain ⟨padding1, hcfgLeft⟩ :=
             exact_outcome_have_of_tail_ne_nil
