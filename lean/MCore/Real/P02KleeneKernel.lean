@@ -54,7 +54,13 @@ theorem fixed_flip_fails
     (hflip : SATTarget x ↔ ¬ DeclaredAccept M x) :
     ¬ M.CorrectAt SATTarget x := by
   intro hCorrect
-  have hcorr := hCorrect.2
+  change
+    M.machine.HaltsWithin
+        (M.timeBound x.length)
+        (initialTMConfig M.machine x) ∧
+      (DeclaredAccept M x ↔ SATTarget x)
+    at hCorrect
+  rcases hCorrect with ⟨_, hcorr⟩
   by_cases hacc : DeclaredAccept M x
   · have hsat : SATTarget x := hcorr.mp hacc
     exact (hflip.mp hsat) hacc
