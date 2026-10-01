@@ -21,6 +21,7 @@ open P01CheckedVerifierGlobalBudget
 open P01ExactVerifierGlobalBudget
 open P01RawDeadEnd
 open P01RawVerifierLift
+open P01NTMRunLaws
 
 abbrev VerifierConfig :=
   Configuration CheckedVerifierState (Option Bool)
@@ -207,9 +208,15 @@ theorem decodeNat_none_eq_replicate_true :
       simp [decodeNat] at h
   | true :: rest, h => by
       have hr : decodeNat rest = none := by
-        simpa [decodeNat] using h
+        cases hd : decodeNat rest with
+        | none =>
+            exact hd
+        | some p =>
+            rcases p with ⟨n, tail⟩
+            simp [decodeNat, hd] at h
       have ih := decodeNat_none_eq_replicate_true rest hr
-      simp [ih]
+      simpa only [List.length_cons, List.replicate_succ] using
+        congrArg (List.cons true) ih
 
 /-- A malformed unary input payload is fail-closed at exact global fuel. -/
 theorem prepared_input_unary_none_fail_closed_exact
@@ -327,7 +334,7 @@ theorem prepared_invalid_terminal_tag_fail_closed_exact
   have hm' : m ≤ checkedStepEnvelope source.length := by
     exact Nat.le_trans hm
       (checkedTagPrefixFuel_le_envelope source.length source []
-        (by rfl) (by simp))
+        (Nat.le_refl _) (by simp))
   have hreach' :
       ({ state := .reject,
          tape :=
