@@ -6,6 +6,8 @@ on:
       - atk/p01-post-mincut-advance-20261001
     paths:
       - 'lean/MCore/Real/P02UniversalFailureMinCut.lean'
+      - 'lean/MCore/Real/P02FailureNormalForms.lean'
+      - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
       - '.github/workflows/p02-universal-failure-mincut.yml'
   workflow_dispatch:
 
@@ -32,15 +34,22 @@ jobs:
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P02UniversalFailureMinCut
+          lake build MCore.Real.P02FailureNormalForms
       - name: Exact axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
           cat > P02UniversalFailureAudit.lean <<'EOF'
           import MCore.Real.P02UniversalFailureMinCut
+          import MCore.Real.P02FailureNormalForms
           #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_iff_universal_failure
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_closes_internal_endpoint
+          #print axioms MCore.Real.P02FailureNormalForms.semanticDisagreement_iff_not_semantic_correct
+          #print axioms MCore.Real.P02FailureNormalForms.normalizedFailure_iff_not_correctAt
+          #print axioms MCore.Real.P02FailureNormalForms.NormalizedCounterexampleProducer.toFailureGenerator
+          #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_iff_universal_failure
+          #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_closes_internal_endpoint
           EOF
           lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
           ! grep -E 'sorryAx' P02UniversalFailureAudit.log
@@ -49,3 +58,5 @@ jobs:
           set -euo pipefail
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02FailureNormalForms.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02FailureNormalForms.lean

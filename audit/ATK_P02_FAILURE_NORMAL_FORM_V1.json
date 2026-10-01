@@ -1,0 +1,17 @@
+{
+  "schema": "ATK_P02_FAILURE_NORMAL_FORM_V1",
+  "base_sha": "b3546285754fcafa39195a72e1aa3800eb24555f",
+  "canonical_language": "SATBits circuitBitEncoding",
+  "per_input_failure_normal_form": [
+    "timeout",
+    "false_positive",
+    "false_negative"
+  ],
+  "equivalences": [
+    "SemanticDisagreement candidate x <-> not semantic correctness at x",
+    "NormalizedFailure candidate x <-> not candidate.CorrectAt CanonicalSAT x",
+    "Nonempty NormalizedCounterexampleProducer <-> UniversalFailure CanonicalSAT"
+  ],
+  "material_open_core": "construct one NormalizedCounterexampleProducer without assuming UniversalFailure, not-InP, SeparationCertificate, or any universal-failure oracle",
+  "status": "STRUCTURAL_REDUCTION_ONLY_OPEN_MATH_REMAINS"
+}
