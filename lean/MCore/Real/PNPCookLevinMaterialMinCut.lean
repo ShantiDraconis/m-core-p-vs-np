@@ -1,6 +1,5 @@
 
 import MCore.Real.PNPEqualityBranchMinCut
-import MCore.Real.P02TableauCompletenessClose
 
 namespace MCore
 namespace Real
