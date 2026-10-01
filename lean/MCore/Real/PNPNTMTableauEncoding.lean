@@ -97,13 +97,6 @@ theorem evalNTMCNF_of_mem
   cases h : sigma v <;>
     simp [evalNTMClause, evalNTMLiteral, ntmNeg, h]
 
-@[simp] theorem evalNTMClause_singleton_litFor
-    (sigma : Assignment) (v : Nat) (b : Bool) :
-    evalNTMClause sigma [ntmLitFor v b] = true <->
-      sigma v = b := by
-  cases b <;>
-    simp [ntmLitFor]
-
 theorem eval_ntmLiteralCircuit
     (sigma : Assignment) (l : NTMLiteral) :
     evalCircuit sigma (ntmLiteralCircuit l) = evalNTMLiteral sigma l := by
@@ -229,6 +222,58 @@ def ntmChoiceVar
 
 def ntmLitFor (v : Nat) (value : Bool) : NTMLiteral :=
   if value then ntmPos v else ntmNeg v
+
+
+@[simp] theorem evalNTMClause_singleton_litFor
+    (sigma : Assignment) (v : Nat) (b : Bool) :
+    evalNTMClause sigma [ntmLitFor v b] = true <->
+      sigma v = b := by
+  cases b <;>
+    simp [ntmLitFor]
+
+theorem evalNTMCNF_ofFn_litFor_iff
+    {n : Nat}
+    (sigma : Assignment)
+    (v : Fin n -> Nat)
+    (b : Fin n -> Bool) :
+    evalNTMCNF sigma
+        (List.ofFn fun i : Fin n => [ntmLitFor (v i) (b i)]) = true <->
+      forall i : Fin n, sigma (v i) = b i := by
+  induction n with
+  | zero =>
+      simp [evalNTMCNF]
+  | succ n ih =>
+      rw [List.ofFn_succ]
+      rw [evalNTMCNF_cons_iff]
+      rw [evalNTMClause_singleton_litFor]
+      constructor
+      · rintro ⟨h0, hs⟩ i
+        refine Fin.cases h0 ?_ i
+        intro j
+        exact (ih
+          (fun k => v k.succ)
+          (fun k => b k.succ)).mp hs j
+      · intro h
+        constructor
+        · exact h 0
+        · exact (ih
+            (fun k => v k.succ)
+            (fun k => b k.succ)).mpr
+            (fun j => h j.succ)
+
+theorem eval_ntmSetStateClauses_nil_iff
+    (sigma : Assignment)
+    (M : PolyNTMCandidate)
+    (t s : Nat)
+    (target : Fin (M.stateCount + 1)) :
+    evalNTMCNF sigma (ntmSetStateClauses [] M t s target) = true <->
+      forall q : Fin (M.stateCount + 1),
+        sigma (ntmStateVar M t s q) = decide (q = target) := by
+  simpa [ntmSetStateClauses] using
+    (evalNTMCNF_ofFn_litFor_iff
+      sigma
+      (fun q : Fin (M.stateCount + 1) => ntmStateVar M t s q)
+      (fun q : Fin (M.stateCount + 1) => decide (q = target)))
 
 def ntmSetStateClauses
     (guard : NTMClause)
