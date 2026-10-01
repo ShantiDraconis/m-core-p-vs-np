@@ -126,6 +126,66 @@ theorem mem_runBranches_flatMap
         · exact Or.inl hz
         · exact Or.inr ⟨y, hy, hz⟩
 
+
+
+/--
+Recursive exact-fuel path relation matching runBranches.
+This is an induction-friendly form used to prove the Fin-indexed tableau path
+equivalence without reopening runBranches in later proofs.
+-/
+inductive NTMRunPath (M : PolyNTMCandidate) :
+    Nat -> NTMConfig M -> NTMConfig M -> Prop where
+  | zero (c : NTMConfig M) :
+      NTMRunPath M 0 c c
+  | halted
+      {fuel : Nat} {c z : NTMConfig M}
+      (hhalt : NTMHalted M c)
+      (tail : NTMRunPath M fuel c z) :
+      NTMRunPath M (fuel + 1) c z
+  | active
+      {fuel : Nat} {c c1 z : NTMConfig M}
+      (hactive : NTMActive M c)
+      (hstep : c1 ∈ M.machine.successors c)
+      (tail : NTMRunPath M fuel c1 z) :
+      NTMRunPath M (fuel + 1) c z
+
+theorem runBranches_singleton_succ_halted
+    (M : PolyNTMCandidate)
+    (fuel : Nat)
+    (c : NTMConfig M)
+    (h : NTMHalted M c) :
+    M.machine.runBranches (fuel + 1) [c] =
+      M.machine.runBranches fuel [c] := by
+  have hhalt :
+      M.machine.accepting c.state || M.machine.rejecting c.state = true := by
+    rcases h with ha | hr
+    · simp [ha]
+    · simp [hr]
+  simp [NTM.runBranches, hhalt]
+
+theorem runBranches_singleton_succ_active
+    (M : PolyNTMCandidate)
+    (fuel : Nat)
+    (c : NTMConfig M)
+    (h : NTMActive M c) :
+    M.machine.runBranches (fuel + 1) [c] =
+      M.machine.runBranches fuel (M.machine.successors c) := by
+  have hnot :
+      M.machine.accepting c.state || M.machine.rejecting c.state = false := by
+    apply Bool.eq_false_iff.mpr
+    intro htrue
+    have hor :
+        M.machine.accepting c.state = true \/
+          M.machine.rejecting c.state = true := by
+      exact Bool.or_eq_true.mp htrue
+    exact h hor
+  simp [NTM.runBranches, hnot]
+
+def RunBranchesPathEquivalence : Prop :=
+  ∀ (M : PolyNTMCandidate) (fuel : Nat) (c z : NTMConfig M),
+    z ∈ M.machine.runBranches fuel [c] <->
+      NTMRunPath M fuel c z
+
 /--
 Exact target lemma for the tableau.  It is deliberately stated separately:
 the next proof step is the induction relating singleton runBranches membership
