@@ -1,0 +1,40 @@
+{
+  "schema": "atk-p02-kernel-certificate.v1",
+  "status": "CERTIFIED",
+  "certificate_scope": "P02_KERNEL_TARGETED_STRUCTURAL_AND_KERNEL_VALIDATION",
+  "certified_source_sha": "13e26f6dc5c62a312ac725b1b7a5992750926ece",
+  "workflow_run_id": 36816598811,
+  "workflow_conclusion": "success",
+  "artifact_id": 11141826290,
+  "artifact_name": "p02-targeted-one-shot-13e26f6dc5c62a312ac725b1b7a5992750926ece",
+  "validated_modules": [
+    "MCore.Real.P02OperatorKernel",
+    "MCore.Real.P02FinalCompression",
+    "MCore.Real.P02KleeneKernel",
+    "MCore.Real.P02EffectiveAlignment",
+    "MCore.Real.P02UniversalLowerBound",
+    "MCore.Real.P02UniversalKernel"
+  ],
+  "validated_checks": [
+    "targeted lake build",
+    "sorry/admit source scan",
+    "explicit axiom/constant source scan",
+    "kernel #print axioms audit",
+    "unexpected axiom rejection",
+    "generated certificate JSON validation"
+  ],
+  "allowed_kernel_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ],
+  "does_not_certify": [
+    "Nonempty MCore.Real.P02UniversalKernel.SemanticDiagonalFamily",
+    "MCore.Real.P02UniversalKernel.PointwiseSemanticDiagonal",
+    "MCore.Real.P02FinalCompression.FINAL_OPEN_MATH",
+    "P01 concrete implementation on this branch",
+    "final P01 + P02 composition on this branch",
+    "unconditional P != NP"
+  ],
+  "open_math": "construct the D3 semantic diagonal family / universal SAT lower-bound producer"
+}
