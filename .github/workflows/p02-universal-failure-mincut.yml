@@ -7,6 +7,7 @@ on:
     paths:
       - 'lean/MCore/Real/P02UniversalFailureMinCut.lean'
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
+      - 'lean/MCore/Real/P02FiniteDescriptorReduction.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
       - 'lean/MCore/Real/P02TotalCandidateSemanticCore.lean'
       - 'lean/MCore/Real/P02SemanticTransformerCore.lean'
@@ -46,6 +47,7 @@ jobs:
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P02UniversalFailureMinCut
           lake build MCore.Real.P02ExplicitClockNormalForm
+          lake build MCore.Real.P02FiniteDescriptorReduction
           lake build MCore.Real.P02FailureNormalForms
           lake build MCore.Real.P02TotalCandidateSemanticCore
           lake build MCore.Real.P02SemanticTransformerCore
@@ -61,6 +63,7 @@ jobs:
           cat > P02UniversalFailureAudit.lean <<'EOF'
           import MCore.Real.P02UniversalFailureMinCut
           import MCore.Real.P02ExplicitClockNormalForm
+          import MCore.Real.P02FiniteDescriptorReduction
           import MCore.Real.P02FailureNormalForms
           import MCore.Real.P02TotalCandidateSemanticCore
           import MCore.Real.P02SemanticTransformerCore
@@ -79,6 +82,9 @@ jobs:
           #print axioms MCore.Real.P02ExplicitClockNormalForm.normalized_correctAt_of_correctAt
           #print axioms MCore.Real.P02ExplicitClockNormalForm.original_failure_of_normalized_failure
           #print axioms MCore.Real.P02ExplicitClockNormalForm.explicit_clock_producer_implies_universal_failure
+          #print axioms MCore.Real.P02FiniteDescriptorReduction.descriptorOf_toCandidate
+          #print axioms MCore.Real.P02FiniteDescriptorReduction.finiteDescriptorFailure_iff_universalFailure
+          #print axioms MCore.Real.P02FiniteDescriptorReduction.finiteDescriptorFailure_closes_internal_endpoint
           #print axioms MCore.Real.P02FailureNormalForms.semanticDisagreement_iff_not_semantic_correct
           #print axioms MCore.Real.P02FailureNormalForms.normalizedFailure_iff_not_correctAt
           #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_iff_universal_failure
@@ -101,6 +107,6 @@ jobs:
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean"
+          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean lean/MCore/Real/P02FiniteDescriptorReduction.lean"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
