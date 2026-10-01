@@ -62,12 +62,15 @@ theorem discriminator_clock_total :
 theorem discriminator_rejects_constFalse :
     ¬ DeclaredAccept discriminatorCandidate
       (encodeCircuit (.const false)) := by
-  decide
+  intro h
+  change false = true at h
+  contradiction
 
 theorem discriminator_accepts_constTrue :
     DeclaredAccept discriminatorCandidate
       (encodeCircuit (.const true)) := by
-  decide
+  change true = true
+  rfl
 
 /-- The semantic-negation transformer can emit only the two constant circuits.
 This candidate maps those constants to their own Boolean semantics, hence the
