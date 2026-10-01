@@ -216,7 +216,7 @@ theorem const_exact_bounded_certificate
   intro hmode tail frames consumed padding n hLayout hlen hread
 
   obtain ⟨m0, hm0, h0⟩ :=
-    const_checked_run_within_loopEnvelope
+    const_checked_reaches_have_within_loopEnvelope
       n sigma witness tail frames mode consumed padding v hmode hLayout
 
   let finalConsumed := consumed + 3
@@ -588,8 +588,7 @@ theorem neg_exact_bounded_certificate
               (evalCircuit sigma (.not child)) [] []
               (consumed + (encodeCircuit (.not child)).length) cfgFinal
             simp [ExactCheckedLoopOutcome] at hout3 ⊢
-            rw [← hExit]
-            simpa [evalCircuit] using hout3
+            simpa [hExit, evalCircuit] using hout3
 
 
 
@@ -870,7 +869,7 @@ theorem and_exact_bounded_certificate
             (encodeEvalFrames frames)
             (.andRight (evalCircuit sigma left))
           simpa [encodeCircuit, List.append_assoc] using hLayout
-        simpa [afterLeft, leftConsumed] using hp
+        simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
         hright hrightMode tail
@@ -1197,7 +1196,7 @@ theorem or_exact_bounded_certificate
                  (encodeCircuit (.or left right) ++ tail)
                  (encodeEvalFrames frames) padding }] := by
     simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-      List.append_assoc] using h0
+      childMode, List.append_assoc] using h0
 
   have hLayoutLeft :
       CheckedLayoutBound n leftConsumed
@@ -1313,7 +1312,7 @@ theorem or_exact_bounded_certificate
         (encodeEvalFrames frames)
         (.orRight (evalCircuit sigma left))
       simpa [encodeCircuit, List.append_assoc] using hLayout
-    simpa [afterLeft, leftConsumed] using hp
+    simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
     hright hrightMode tail
