@@ -53,7 +53,7 @@ theorem prepared_nonempty_reject_fail_closed
     simp [htermState, checkedVerifierMachine]
   have hhalts :
       checkedVerifierMachine.HaltsWithin (m0 + m1) start :=
-    haltsWithin_of_reaches_halted
+    P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted
       (m0 + m1) start terminal
       (by simpa [start, terminal] using hfull)
       hhalt
@@ -90,7 +90,7 @@ theorem prepared_empty_reject_fail_closed
   have hhalt : Halted checkedVerifierMachine terminal := by
     simp [terminal, Halted, checkedVerifierMachine]
   have hh :=
-    haltsWithin_of_reaches_halted 1 start terminal hreach hhalt
+    P01CheckedVerifierDeterminism.haltsWithin_of_reaches_halted 1 start terminal hreach hhalt
   have hn :
       ¬ checkedVerifierMachine.AcceptsWithin 1 start := by
     rw [acceptsWithin_iff_of_reached_terminal 1 start terminal hreach]
