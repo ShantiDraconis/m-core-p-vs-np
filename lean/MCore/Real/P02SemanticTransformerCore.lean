@@ -129,31 +129,11 @@ theorem semantic_alignment_core_implies_total_semantic_core
     TotalCandidateSemanticCore := by
   intro M hTotal
   rcases H M hTotal with ⟨x, halign⟩
-  let y := semanticNegationBits M x
-  refine ⟨y, ?_⟩
-  apply P02FailureNormalForms.SemanticDisagreement.falsePositive <;>
-    simp only [P02FailureNormalForms.candidateAnswer]
-  · by_cases hy : DeclaredAccept M y
-    · exact hy
-    · have hflip := semanticNegationBits_flip M x
-      by_cases hx : DeclaredAccept M x
-      · have hy' : DeclaredAccept M y := halign.mpr hx
-        exact False.elim (hy hy')
-      · have hsat : SATTarget y := by
-          simpa [y] using hflip.mpr hx
-        exact False.elim
-          ((transformed_output_fails_semantically M x halign)
-            ⟨fun _ => hsat, fun _ => by
-              have : DeclaredAccept M y := halign.mpr hx
-              exact this⟩)
-  · intro hsat
-    exact
-      (transformed_output_fails_semantically M x halign)
-        ⟨fun _ => hsat, fun _ => by
-          exact Classical.byContradiction (fun hny =>
-            hny (halign.mpr
-              (Classical.byContradiction (fun hnx =>
-                hnx ((semanticNegationBits_flip M x).mp hsat)))))⟩
+  refine ⟨semanticNegationBits M x, ?_⟩
+  apply
+    (P02FailureNormalForms.semanticDisagreement_iff_not_semantic_correct
+      M (semanticNegationBits M x)).mpr
+  exact transformed_output_fails_semantically M x halign
 
 theorem semantic_alignment_core_implies_universal_failure
     (H : SemanticAlignmentCore) :
