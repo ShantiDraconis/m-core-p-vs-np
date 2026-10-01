@@ -113,13 +113,10 @@ theorem orbit_alignment_gives_semantic_disagreement
   let x := orbit M seed n
   let y := diagonalBits M x
   refine ⟨y, ?_⟩
-  apply (semanticDisagreement_iff_not_semantic_correct M y).mpr
   have hFlip :
       SemanticFlip M y :=
     semanticFlip_diagonalBits_of_alignment M x hAlign
-  unfold SemanticFlip at hFlip
-  intro hCorrect
-  exact (hFlip.mp hCorrect.mpr) hCorrect.mp
+  exact (semanticFlip_iff_semanticDisagreement M y).mp hFlip
 
 theorem orbit_correct_of_no_alignment
     (M : PolyDTMCandidate)
