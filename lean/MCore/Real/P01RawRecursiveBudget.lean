@@ -161,7 +161,7 @@ theorem rootFailure_plus_chunk_le_rawTimeBound (n : Nat) :
         (n + 2) * X := by
     unfold rawFailureBudget
     dsimp [X]
-    simp [Nat.add_mul, Nat.one_mul, Nat.add_assoc]
+    simp [Nat.add_mul, Nat.one_mul, Nat.add_assoc, two_mul]
   rw [hleft]
   calc
     (n + 2) * X ≤ (2 * (n + 1)) * X := hmul
