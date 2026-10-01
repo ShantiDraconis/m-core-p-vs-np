@@ -1,0 +1,53 @@
+name: P01 raw closure targeted one-shot
+
+on:
+  push:
+    branches:
+      - atk/p01-raw-closure-final-20261001
+    paths:
+      - audit/P01_RAW_CLOSURE_RUN_ONCE
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve deps
+        run: |
+          set -euo pipefail
+          lake update
+          lake exe cache get
+      - name: Build former blockers
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01RawCoreFailure
+          lake build MCore.Real.P01ExactVerifierCanonicalRun
+      - name: Build final closure
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01RawClosureFinal
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          cat >/tmp/p01_raw_closure_audit.lean <<'EOF'
+          import MCore.Real.P01RawClosureFinal
+          #print axioms MCore.Real.P01RawClosureFinal.p01ConstructionGap_closed
+          EOF
+          lake env lean /tmp/p01_raw_closure_audit.lean | tee audit/P01_RAW_CLOSURE_AXIOMS.log
+          ! grep -q 'sorryAx' audit/P01_RAW_CLOSURE_AXIOMS.log
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p01-raw-closure-${{ github.sha }}
+          path: audit/P01_RAW_CLOSURE_AXIOMS.log
+          if-no-files-found: warn
