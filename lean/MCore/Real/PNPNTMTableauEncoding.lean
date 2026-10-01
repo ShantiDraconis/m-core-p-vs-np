@@ -4990,6 +4990,90 @@ theorem rightVar_lt_choiceBase
     ntmRightVar M x t s i a < ntmChoiceBase M x t :=
   (ntmRightVar_range M x t s i a hs hi).2
 
+
+theorem transition_mem_to_idx
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (tr : State × Symbol × Direction)
+    (hmem : tr ∈ ts) :
+    ∃ j : Nat, ∃ hj : j < ts.length, ts.get ⟨j, hj⟩ = tr := by
+  induction ts with
+  | nil =>
+      simp at hmem
+  | cons x xs ih =>
+      simp at hmem
+      rcases hmem with rfl | hmem
+      · exact ⟨0, by simp, by simp⟩
+      · rcases ih hmem with ⟨j, hj, hget⟩
+        exact ⟨j + 1, by simp [hj], by simpa using hget⟩
+
+theorem active_step_transition_witness
+    (M : PolyNTMCandidate)
+    (c c' : NTMConfig M)
+    (hStep : NTMTableauStep M c c')
+    (hActive : NTMActive M c) :
+    ∃ tr ∈ M.machine.transition c.state c.tape.head,
+      c' = M.machine.stepBranch c tr := by
+  rcases hStep with hhalt | hactive
+  · exact False.elim (hActive hhalt.1)
+  · rcases hactive with ⟨_, hsucc⟩
+    simp [NTM.successors] at hsucc
+    rcases hsucc with ⟨tr, hmem, rfl⟩
+    exact ⟨tr, hmem, rfl⟩
+
+noncomputable def choiceIdxOfStep
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (s : Nat) (hs : s < t) : Nat :=
+  let c := path ⟨s, by omega⟩
+  let c' := path ⟨s + 1, by omega⟩
+  if hActive : NTMActive M c then
+    let hStep : NTMTableauStep M c c' := by
+      simpa [c, c'] using hPath.2 ⟨s, hs⟩
+    let tr := (active_step_transition_witness M c c' hStep hActive).choose
+    let hmem := (active_step_transition_witness M c c' hStep hActive).choose_spec.1
+    (transition_mem_to_idx (M.machine.transition c.state c.tape.head) tr hmem).choose
+  else
+    0
+
+theorem choiceIdxOfStep_active_spec
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (s : Nat) (hs : s < t)
+    (hActive : NTMActive M (path ⟨s, by omega⟩)) :
+    ∃ hj :
+        choiceIdxOfStep M t path hPath s hs <
+          (M.machine.transition
+            (path ⟨s, by omega⟩).state
+            (path ⟨s, by omega⟩).tape.head).length,
+      (M.machine.transition
+        (path ⟨s, by omega⟩).state
+        (path ⟨s, by omega⟩).tape.head).get
+          ⟨choiceIdxOfStep M t path hPath s hs, hj⟩
+        =
+      (active_step_transition_witness M
+        (path ⟨s, by omega⟩)
+        (path ⟨s + 1, by omega⟩)
+        (by simpa using hPath.2 ⟨s, hs⟩)
+        hActive).choose := by
+  unfold choiceIdxOfStep
+  simp [hActive]
+  let W := active_step_transition_witness M
+    (path ⟨s, by omega⟩)
+    (path ⟨s + 1, by omega⟩)
+    (by simpa using hPath.2 ⟨s, hs⟩)
+    hActive
+  rcases transition_mem_to_idx
+      (M.machine.transition
+        (path ⟨s, by omega⟩).state
+        (path ⟨s, by omega⟩).tape.head)
+      W.choose W.choose_spec.1 with ⟨j, hj, hget⟩
+  exact ⟨hj, hget⟩
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
