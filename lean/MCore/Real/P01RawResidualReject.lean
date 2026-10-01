@@ -9,8 +9,10 @@ namespace P01RawResidualReject
 open CanonicalFinalProof
 open CircuitK1
 open CanonicalCircuitBits
+open CanonicalSATWitness
 open P01CNFMode
 open P01EncodedStackEvaluator
+open P01EncodedFrameTape
 open P01EvalCursorMachine
 open P01HaveValueCompositeNTM
 open P01CheckedEvalRunLoopNTM
@@ -91,12 +93,16 @@ theorem nonempty_tail_empty_frames_reaches_reject
 
   have hRejectSucc :
       cReject ∈ checkedEvalRunLoopMachine.successors cCheck := by
-    dsimp [cCheck, cReject, tCheck, tPeek, t0]
-    cases bs <;> cases b <;>
-      simp [checkedEvalRunLoopMachine, evalCursorStackEndTape,
-        NTM.successors, NTM.stepBranch, Tape.write, Tape.move,
-        List.reverse_cons, List.map_append,
-        List.replicate_succ, List.append_assoc]
+    have hne : (b :: bs).reverse ≠ [] := by simp
+    cases hrev : (b :: bs).reverse with
+    | nil =>
+        exact False.elim (hne hrev)
+    | cons x xs =>
+        dsimp [cCheck, cReject, tCheck, tPeek, t0]
+        simp [checkedEvalRunLoopMachine, evalCursorStackEndTape,
+          NTM.successors, NTM.stepBranch, Tape.write, Tape.move,
+          hrev, List.map_append, List.replicate_succ,
+          List.append_assoc]
 
   have hReject :
       cReject ∈ checkedEvalRunLoopMachine.runBranches 1 [cCheck] :=
