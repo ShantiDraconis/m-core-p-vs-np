@@ -5429,6 +5429,208 @@ theorem pathAssignment_head
       omega
     simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
 
+
+theorem pathAssignment_left
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t)
+    (a : Option Bool) :
+    pathAssignment M x t path hPath (ntmLeftVar M x t s i a) =
+      decide (a = (path ⟨s, by omega⟩).tape.left.getD i M.machine.blank) := by
+  by_cases ha : a = (path ⟨s, by omega⟩).tape.left.getD i M.machine.blank
+  · subst a
+    simp [pathAssignment, PathAssignmentLeftTrue, hs, hi]
+  · have hnotLeft :
+        ¬ PathAssignmentLeftTrue M x t path (ntmLeftVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', i', hi', heq⟩
+      have hinj := ntmLeftVar_injective M x t s s' i i' a
+        ((path ⟨s', by omega⟩).tape.left.getD i' M.machine.blank)
+        hi hi' heq
+      subst s'
+      subst i'
+      exact ha hinj.2.2
+    have hnotState :
+        ¬ PathAssignmentStateTrue M t path (ntmLeftVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', heq⟩
+      have hslt := ntmStateVar_lt_headBase M t s'
+        (path ⟨s', by omega⟩).state hs'
+      have hl := (ntmLeftVar_range M x t s i a hs hi).1
+      have hb : ntmHeadBase M t <= ntmLeftBase M x t := by
+        simp [ntmLeftBase]
+      omega
+    have hnotHead :
+        ¬ PathAssignmentHeadTrue M t path (ntmLeftVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', heq⟩
+      exact headVar_ne_leftVar M x t s' s i
+        (path ⟨s', by omega⟩).tape.head a hs' hs hi heq.symm
+    have hnotRight :
+        ¬ PathAssignmentRightTrue M x t path (ntmLeftVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', i', hi', heq⟩
+      exact leftVar_ne_rightVar M x t s s' i i' a
+        ((path ⟨s', by omega⟩).tape.right.getD i' M.machine.blank)
+        hs hs' hi hi' heq
+    have hnotChoice :
+        ¬ PathAssignmentChoiceTrue M x t path hPath (ntmLeftVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', hactive, heq⟩
+      have hl := (ntmLeftVar_range M x t s i a hs hi).2
+      have hc := ntmChoiceVar_ge_choiceBase M x t s'
+        (path ⟨s', by omega⟩).state
+        (path ⟨s', by omega⟩).tape.head
+        (choiceIdxOfStep M t path hPath s' hs')
+      have hb : ntmRightBase M x t <= ntmChoiceBase M x t := by
+        simp [ntmChoiceBase]
+      omega
+    simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
+
+theorem pathAssignment_right
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t)
+    (a : Option Bool) :
+    pathAssignment M x t path hPath (ntmRightVar M x t s i a) =
+      decide (a = (path ⟨s, by omega⟩).tape.right.getD i M.machine.blank) := by
+  by_cases ha : a = (path ⟨s, by omega⟩).tape.right.getD i M.machine.blank
+  · subst a
+    simp [pathAssignment, PathAssignmentRightTrue, hs, hi]
+  · have hnotRight :
+        ¬ PathAssignmentRightTrue M x t path (ntmRightVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', i', hi', heq⟩
+      have hinj := ntmRightVar_injective M x t s s' i i' a
+        ((path ⟨s', by omega⟩).tape.right.getD i' M.machine.blank)
+        hi hi' heq
+      subst s'
+      subst i'
+      exact ha hinj.2.2
+    have hnotState :
+        ¬ PathAssignmentStateTrue M t path (ntmRightVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', heq⟩
+      have hslt := ntmStateVar_lt_headBase M t s'
+        (path ⟨s', by omega⟩).state hs'
+      have hr := (ntmRightVar_range M x t s i a hs hi).1
+      have hb : ntmHeadBase M t <= ntmRightBase M x t := by
+        simp [ntmRightBase, ntmLeftBase]
+      omega
+    have hnotHead :
+        ¬ PathAssignmentHeadTrue M t path (ntmRightVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', heq⟩
+      have hh := (ntmHeadVar_range M x t s'
+        (path ⟨s', by omega⟩).tape.head hs').2
+      have hr := (ntmRightVar_range M x t s i a hs hi).1
+      have hb : ntmLeftBase M x t <= ntmRightBase M x t := by
+        simp [ntmRightBase]
+      omega
+    have hnotLeft :
+        ¬ PathAssignmentLeftTrue M x t path (ntmRightVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', i', hi', heq⟩
+      exact leftVar_ne_rightVar M x t s' s i' i
+        ((path ⟨s', by omega⟩).tape.left.getD i' M.machine.blank) a
+        hs' hs hi' hi heq.symm
+    have hnotChoice :
+        ¬ PathAssignmentChoiceTrue M x t path hPath (ntmRightVar M x t s i a) := by
+      intro h
+      rcases h with ⟨s', hs', hactive, heq⟩
+      have hr := (ntmRightVar_range M x t s i a hs hi).2
+      have hc := ntmChoiceVar_ge_choiceBase M x t s'
+        (path ⟨s', by omega⟩).state
+        (path ⟨s', by omega⟩).tape.head
+        (choiceIdxOfStep M t path hPath s' hs')
+      omega
+    simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
+
+theorem pathAssignment_choice_selected
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (s : Nat) (hs : s < t)
+    (hActive : NTMActive M (path ⟨s, by omega⟩)) :
+    pathAssignment M x t path hPath
+      (ntmChoiceVar M x t s
+        (path ⟨s, by omega⟩).state
+        (path ⟨s, by omega⟩).tape.head
+        (choiceIdxOfStep M t path hPath s hs)) = true := by
+  simp [pathAssignment, PathAssignmentChoiceTrue, hs, hActive]
+
+theorem pathAssignment_choice_unselected
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (s : Nat) (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Nat)
+    (hj : j < ntmBranchBound M + 1)
+    (hneq :
+      ¬ (NTMActive M (path ⟨s, by omega⟩) ∧
+         q = (path ⟨s, by omega⟩).state ∧
+         a = (path ⟨s, by omega⟩).tape.head ∧
+         j = choiceIdxOfStep M t path hPath s hs)) :
+    pathAssignment M x t path hPath (ntmChoiceVar M x t s q a j) = false := by
+  have hnotState :
+      ¬ PathAssignmentStateTrue M t path (ntmChoiceVar M x t s q a j) := by
+    intro h
+    rcases h with ⟨s', hs', heq⟩
+    have hslt := ntmStateVar_lt_headBase M t s'
+      (path ⟨s', by omega⟩).state hs'
+    have hc := ntmChoiceVar_ge_choiceBase M x t s q a j
+    have hb : ntmHeadBase M t <= ntmChoiceBase M x t := by
+      simp [ntmChoiceBase, ntmRightBase, ntmLeftBase]
+    omega
+  have hnotHead :
+      ¬ PathAssignmentHeadTrue M t path (ntmChoiceVar M x t s q a j) := by
+    intro h
+    rcases h with ⟨s', hs', heq⟩
+    have hh := (ntmHeadVar_range M x t s'
+      (path ⟨s', by omega⟩).tape.head hs').2
+    have hc := ntmChoiceVar_ge_choiceBase M x t s q a j
+    have hb : ntmLeftBase M x t <= ntmChoiceBase M x t := by
+      simp [ntmChoiceBase, ntmRightBase]
+    omega
+  have hnotLeft :
+      ¬ PathAssignmentLeftTrue M x t path (ntmChoiceVar M x t s q a j) := by
+    intro h
+    rcases h with ⟨s', hs', i', hi', heq⟩
+    have hl := (ntmLeftVar_range M x t s' i'
+      ((path ⟨s', by omega⟩).tape.left.getD i' M.machine.blank) hs' hi').2
+    have hc := ntmChoiceVar_ge_choiceBase M x t s q a j
+    have hb : ntmRightBase M x t <= ntmChoiceBase M x t := by
+      simp [ntmChoiceBase]
+    omega
+  have hnotRight :
+      ¬ PathAssignmentRightTrue M x t path (ntmChoiceVar M x t s q a j) := by
+    intro h
+    rcases h with ⟨s', hs', i', hi', heq⟩
+    have hr := (ntmRightVar_range M x t s' i'
+      ((path ⟨s', by omega⟩).tape.right.getD i' M.machine.blank) hs' hi').2
+    have hc := ntmChoiceVar_ge_choiceBase M x t s q a j
+    omega
+  have hnotChoice :
+      ¬ PathAssignmentChoiceTrue M x t path hPath (ntmChoiceVar M x t s q a j) := by
+    intro h
+    rcases h with ⟨s', hs', hactive', heq⟩
+    have hj' := choiceIdxOfStep_lt_branchBound_succ M t path hPath s' hs' hactive'
+    have hinj := ntmChoiceVar_injective M x t s s'
+      q (path ⟨s', by omega⟩).state
+      a (path ⟨s', by omega⟩).tape.head
+      j (choiceIdxOfStep M t path hPath s' hs')
+      hj hj' heq
+    have hsEq := hinj.1
+    subst s'
+    apply hneq
+    exact ⟨hactive', hinj.2.1, hinj.2.2.1, hinj.2.2.2⟩
+  simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice]
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
