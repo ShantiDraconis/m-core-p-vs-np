@@ -29,6 +29,7 @@ open P01CheckedEvalRunBoundedCertificate
 open P01ExactBoundedCircuitProducer
 open P01ExactBoundedReject
 open P01CheckedVerifierInvariant
+open P01CheckedVerifierBudget
 open P01CheckedVerifierGlobalBudget
 open P01CNFMode
 open P01NTMRunLaws
