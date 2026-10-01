@@ -109,9 +109,11 @@ theorem semanticDiagonalFamily_to_final_open_math
 /-- Once D3 is supplied, the already-recovered P01 composition closes the
 internal endpoint. -/
 theorem semanticDiagonalFamily_closes_final
+    (hP01 : P02FinalCompression.P01Side)
     (D : SemanticDiagonalFamily) :
     PneqNP := by
   exact P02FinalCompression.final_open_math_closes
+    hP01
     ⟨D.toP02Producer⟩
 
 end P02UniversalKernel
