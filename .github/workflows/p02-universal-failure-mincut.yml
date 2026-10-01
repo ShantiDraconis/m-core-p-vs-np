@@ -9,7 +9,7 @@ on:
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
       - 'lean/MCore/Real/P02TotalCandidateSemanticCore.lean'
-      - 'lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02CookLevinSameInputCore.lean'
+      - 'lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02CookLevinSameInputCore.lean'
       - 'lean/MCore/Real/P02CookLevinSameInputCore.lean'
       - 'lean/MCore/Real/P02SemanticFlipCore.lean'
       - 'lean/MCore/Real/P02ComplementTableauDiagonal.lean'
@@ -46,6 +46,7 @@ jobs:
           lake build MCore.Real.P02FailureNormalForms
           lake build MCore.Real.P02TotalCandidateSemanticCore
           lake build MCore.Real.P02SemanticTransformerCore
+          lake build MCore.Real.P02SemanticTransformerDichotomy
           lake build MCore.Real.P02CookLevinSameInputCore
           lake build MCore.Real.P02SemanticFlipCore
           lake build MCore.Real.P02ComplementTableauDiagonal
@@ -58,6 +59,7 @@ jobs:
           import MCore.Real.P02FailureNormalForms
           import MCore.Real.P02TotalCandidateSemanticCore
           import MCore.Real.P02SemanticTransformerCore
+          import MCore.Real.P02SemanticTransformerDichotomy
           import MCore.Real.P02CookLevinSameInputCore
           import MCore.Real.P02SemanticFlipCore
           import MCore.Real.P02ComplementTableauDiagonal
@@ -83,6 +85,10 @@ jobs:
           #print axioms MCore.Real.P02SemanticTransformerCore.semanticNegationBits_flip
           #print axioms MCore.Real.P02SemanticTransformerCore.transformed_output_fails_semantically
           #print axioms MCore.Real.P02SemanticTransformerCore.semantic_alignment_core_implies_universal_failure
+          #print axioms MCore.Real.P02SemanticTransformerDichotomy.falseBits_not_sat
+          #print axioms MCore.Real.P02SemanticTransformerDichotomy.trueBits_sat
+          #print axioms MCore.Real.P02SemanticTransformerDichotomy.alignment_or_constantCorrectPattern
+          #print axioms MCore.Real.P02SemanticTransformerDichotomy.constant_pattern_core_iff_universal_failure
           #print axioms MCore.Real.P02CookLevinSameInputCore.rejectTransform_sat_iff_not_accepts
           #print axioms MCore.Real.P02CookLevinSameInputCore.SameInputWitness.semanticFlip
           #print axioms MCore.Real.P02CookLevinSameInputCore.sameInputCore_implies_semanticFlipCore
