@@ -3984,6 +3984,74 @@ theorem trim_route_left_counterexample :
   simp [trimTrailingBlank, Tape.write, Tape.move]
 
 
+
+noncomputable def decodeChoiceIndex
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false) :
+    Fin (M.machine.transition q a).length :=
+  (ntmChoice_exists_of_guard M x t s q a sigma hSat hs hq ha hActive).choose
+
+theorem decodeChoiceIndex_true
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false) :
+    sigma
+      (ntmChoiceVar M x t s q a
+        (decodeChoiceIndex M x t s sigma hSat hs q a hq ha hActive).val) = true := by
+  exact (ntmChoice_exists_of_guard M x t s q a sigma hSat hs hq ha hActive).choose_spec
+
+noncomputable def operationalDecodeConfig
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    (s : Nat) -> s <= t -> NTMConfig M
+  | 0, _ =>
+      initialNTMConfig M.machine x
+  | s + 1, hsle =>
+      let hs : s < t := by omega
+      let hsPrev : s <= t := by omega
+      let prev := operationalDecodeConfig M x t sigma hSat s hsPrev
+      let q := decodeState M x t sigma hSat s hsPrev
+      let a := decodeHead M x t sigma hSat s hsPrev
+      if hHalt :
+          M.machine.accepting q = true ∨ M.machine.rejecting q = true then
+        prev
+      else
+        let hActive :
+            M.machine.accepting q = false ∧ M.machine.rejecting q = false := by
+          constructor
+          · cases h : M.machine.accepting q with
+            | false => rfl
+            | true => exact False.elim (hHalt (Or.inl h))
+          · cases h : M.machine.rejecting q with
+            | false => rfl
+            | true => exact False.elim (hHalt (Or.inr h))
+        let hq := decodeState_true M x t sigma hSat s hsPrev
+        let ha := decodeHead_true M x t sigma hSat s hsPrev
+        let j := decodeChoiceIndex M x t s sigma hSat hs q a hq ha hActive
+        M.machine.stepBranch prev ((M.machine.transition q a).get j)
+
+@[simp] theorem operationalDecodeConfig_zero
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    operationalDecodeConfig M x t sigma hSat 0 (by omega) =
+      initialNTMConfig M.machine x := by
+  rfl
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
