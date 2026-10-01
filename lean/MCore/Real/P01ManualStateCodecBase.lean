@@ -273,8 +273,22 @@ def inputNodeDecode (n : Nat) : P01InputNodeCompositeNTM.InputNodeCompositeState
       simp [inputNodeDecode, inputNodeCode, h, lookaheadDecode_code]
   | read m q =>
       have h := preservingCode_lt q
-      cases m <;>
-        simp [inputNodeDecode, inputNodeCode, h, preservingDecode_code] <;> omega
+      cases m with
+      | sourceTail =>
+          have h13 : ¬ 13 + preservingCode q < 13 := by omega
+          have h41 : 13 + preservingCode q < 41 := by omega
+          simp [inputNodeDecode, inputNodeCode, h13, h41, preservingDecode_code]
+      | frameStack =>
+          have h13 : ¬ 41 + preservingCode q < 13 := by omega
+          have h41 : ¬ 41 + preservingCode q < 41 := by omega
+          have h69 : 41 + preservingCode q < 69 := by omega
+          simp [inputNodeDecode, inputNodeCode, h13, h41, h69, preservingDecode_code]
+      | done =>
+          have h13 : ¬ 69 + preservingCode q < 13 := by omega
+          have h41 : ¬ 69 + preservingCode q < 41 := by omega
+          have h69 : ¬ 69 + preservingCode q < 69 := by omega
+          have h97 : 69 + preservingCode q < 97 := by omega
+          simp [inputNodeDecode, inputNodeCode, h13, h41, h69, h97, preservingDecode_code]
   | ret m b q =>
       have h := afterReadCode_lt q
       cases m <;> cases b <;>
