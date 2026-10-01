@@ -72,8 +72,11 @@ theorem decodeNat_eq_none_eq_replicate_true :
           | none =>
               have hrs : bs = List.replicate bs.length true :=
                 ih hrest
-              rw [hrs]
-              rfl
+              have hcons :
+                  true :: bs =
+                    true :: List.replicate bs.length true :=
+                congrArg (fun xs => true :: xs) hrs
+              simpa only [List.length_cons, List.replicate_succ] using hcons
           | some p =>
               rcases p with ⟨n, tail⟩
               simp [decodeNat, hrest] at h
