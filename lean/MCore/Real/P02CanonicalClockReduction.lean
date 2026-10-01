@@ -105,6 +105,34 @@ theorem normalizedAdversary_closes
   exact normalized_failure_transfers_back
     M c k hbound x (A.fails M c k)
 
+
+/-- Conversely, the universal lower bound chooses a failing input for every
+normalized representative. Hence the monomial-clock adversary is not a
+stronger assumption: it is an exact normal form. -/
+noncomputable def normalizedAdversaryOfUniversal
+    (h : UniversalSATLowerBound) :
+    NormalizedAdversary := by
+  classical
+  refine
+    { counterexample := fun M c k =>
+        Classical.choose (h (normalize M c k))
+      fails := ?_ }
+  intro M c k
+  exact Classical.choose_spec (h (normalize M c k))
+
+theorem normalizedAdversary_iff_universalSATLowerBound :
+    Nonempty NormalizedAdversary ↔ UniversalSATLowerBound := by
+  constructor
+  · rintro ⟨A⟩
+    exact normalizedAdversary_closes A
+  · intro h
+    exact ⟨normalizedAdversaryOfUniversal h⟩
+
+theorem normalizedAdversary_iff_notInP :
+    Nonempty NormalizedAdversary ↔ ¬ InP SATTarget := by
+  rw [normalizedAdversary_iff_universalSATLowerBound]
+  exact universalSATLowerBound_iff_notInP
+
 end P02CanonicalClockReduction
 end Real
 end MCore
