@@ -3,6 +3,7 @@ import MCore.Real.P02UniversalLowerBound
 import MCore.Real.P02CanonicalClockReduction
 import MCore.Real.P02KleeneKernel
 import MCore.Real.P02EffectiveAlignment
+import MCore.Real.P01PostMinCutClosure
 
 namespace MCore
 namespace Real
@@ -63,13 +64,9 @@ internal separation endpoint. -/
 theorem universal_lower_bound_closes_internal
     (h : UNIVERSAL_LOWER_BOUND) :
     PneqNP := by
-  have hNotP :
-      ¬ InP (SATBits circuitBitEncoding) :=
-    universal_lower_bound_iff_not_in_p.mp h
-  have hP02 :
-      Nonempty CanonicalSATP02Producer :=
-    canonicalSATProducer_iff_notInP.mpr hNotP
-  exact final_open_math_closes hP02
+  exact target_failure_implies_p_ne_np
+    P01PostMinCutClosure.canonical_sat_in_np_closed
+    (universalSATLowerBound_iff_universalFailure.mp h)
 
 /-- No structural producer remains below this proposition. -/
 abbrev FINAL_OPEN_MATH : Prop :=

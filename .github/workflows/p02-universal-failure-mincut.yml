@@ -24,6 +24,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: p02-universal-failure-mincut-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   mincut:
     runs-on: ubuntu-24.04
