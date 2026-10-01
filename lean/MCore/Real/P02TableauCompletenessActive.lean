@@ -89,9 +89,13 @@ theorem copySymbolClauses_true_of_guard_true
   unfold copySymbolClauses at hclause
   rcases List.mem_flatMap.mp hclause with ⟨a, _, ha⟩
   simp only [List.mem_cons, List.mem_singleton] at ha
-  rcases ha with rfl | rfl
-  · exact evalClause_append_true_of_guard_true sigma guard _ hguard
-  · exact evalClause_append_true_of_guard_true sigma guard _ hguard
+  rcases ha with hfirst | hrest
+  · rw [hfirst]
+    exact evalClause_append_true_of_guard_true sigma guard _ hguard
+  · rcases hrest with hsecond | hempty
+    · rw [hsecond]
+      exact evalClause_append_true_of_guard_true sigma guard _ hguard
+    · simp at hempty
 
 theorem copyLeftAll_true_of_guard_true
     (sigma : Assignment)
@@ -316,7 +320,7 @@ theorem inactive_transitionCase_true
               setRightCell guard M x t (s + 1) 0 write ++
               (List.range (radius x t - 1)).flatMap fun i =>
                 copyRightCell guard M x t s i (s + 1) (i + 1))
-            hh htail3
+            hh (by simpa only [List.append_assoc] using htail3)
         have hall :=
           evalCNF_append_true_local sigma
             (setStateClauses guard M t (s + 1) qNext)
@@ -387,7 +391,8 @@ theorem inactive_transitionCase_true
                 copyRightCell guard M x t s (i + 1) (s + 1) i) ++
               setRightCell guard M x t (s + 1) (radius x t - 1)
                 M.machine.blank)
-            (by simpa [setLeftCell] using hsetL) htail2
+            (by simpa [setLeftCell] using hsetL)
+            (by simpa only [List.append_assoc] using htail2)
         have htail4 :=
           evalCNF_append_true_local sigma
             (copySymbolClauses guard
