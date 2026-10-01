@@ -24,17 +24,19 @@ theorem copySymbolClauses_satisfied_of_assignment_eq
   unfold copySymbolClauses at hclause
   rcases List.mem_flatMap.mp hclause with ⟨a, _, ha⟩
   simp only [List.mem_cons, List.mem_singleton] at ha
-  rcases ha with rfl | rfl
-  · rw [evalClause_append]
+  rcases ha with ha | ha
+  · rw [ha, evalClause_append]
     have hv := hvals a
     cases hold : sigma (oldVar a) <;>
       cases hnew : sigma (newVar a) <;>
       simp_all [evalClause, evalLiteral, neg, pos]
-  · rw [evalClause_append]
-    have hv := hvals a
-    cases hold : sigma (oldVar a) <;>
-      cases hnew : sigma (newVar a) <;>
-      simp_all [evalClause, evalLiteral, neg, pos]
+  · rcases ha with ha | ha
+    · rw [ha, evalClause_append]
+      have hv := hvals a
+      cases hold : sigma (oldVar a) <;>
+        cases hnew : sigma (newVar a) <;>
+        simp_all [evalClause, evalLiteral, neg, pos]
+    · cases ha
 
 theorem copyLeftAll_satisfied
     (sigma : Assignment)
@@ -389,16 +391,18 @@ theorem active_left_case_true
           (List.range (radius x t - 1)).flatMap (fun i =>
             copyRightCell guard M x t s i (s + 1) (i + 1)))
         hh
-        (evalCNF_append_true sigma
-          ((List.range (radius x t - 1)).flatMap (fun i =>
-            copyLeftCell guard M x t s (i + 1) (s + 1) i))
-          (setLeftCell guard M x t (s + 1) (radius x t - 1)
-              M.machine.blank ++
-            setRightCell guard M x t (s + 1) 0 write ++
-            (List.range (radius x t - 1)).flatMap (fun i =>
-              copyRightCell guard M x t s i (s + 1) (i + 1)))
-          hshiftLeft
-          (evalCNF_append_true sigma
+        (by
+          simpa [List.append_assoc] using
+            (evalCNF_append_true sigma
+              ((List.range (radius x t - 1)).flatMap (fun i =>
+                copyLeftCell guard M x t s (i + 1) (s + 1) i))
+              (setLeftCell guard M x t (s + 1) (radius x t - 1)
+                  M.machine.blank ++
+                setRightCell guard M x t (s + 1) 0 write ++
+                (List.range (radius x t - 1)).flatMap (fun i =>
+                  copyRightCell guard M x t s i (s + 1) (i + 1)))
+              hshiftLeft
+              (evalCNF_append_true sigma
             (setLeftCell guard M x t (s + 1) (radius x t - 1)
               M.machine.blank)
             (setRightCell guard M x t (s + 1) 0 write ++
@@ -409,7 +413,7 @@ theorem active_left_case_true
               (setRightCell guard M x t (s + 1) 0 write)
               ((List.range (radius x t - 1)).flatMap (fun i =>
                 copyRightCell guard M x t s i (s + 1) (i + 1)))
-              hsetRight hshiftRight))))
+              hsetRight hshiftRight)))))
 
 theorem active_right_case_true
     (sigma : Assignment)
@@ -587,20 +591,22 @@ theorem active_right_case_true
             setRightCell guard M x t (s + 1) (radius x t - 1)
               M.machine.blank)
           hsetLeft
-          (evalCNF_append_true sigma
-            ((List.range (radius x t - 1)).flatMap (fun i =>
-              copyLeftCell guard M x t s i (s + 1) (i + 1)))
-            ((List.range (radius x t - 1)).flatMap (fun i =>
-                copyRightCell guard M x t s (i + 1) (s + 1) i) ++
-              setRightCell guard M x t (s + 1) (radius x t - 1)
-                M.machine.blank)
-            hshiftLeft
-            (evalCNF_append_true sigma
+          (by
+            simpa [List.append_assoc] using
+              (evalCNF_append_true sigma
+                ((List.range (radius x t - 1)).flatMap (fun i =>
+                  copyLeftCell guard M x t s i (s + 1) (i + 1)))
+                ((List.range (radius x t - 1)).flatMap (fun i =>
+                    copyRightCell guard M x t s (i + 1) (s + 1) i) ++
+                  setRightCell guard M x t (s + 1) (radius x t - 1)
+                    M.machine.blank)
+                hshiftLeft
+                (evalCNF_append_true sigma
               ((List.range (radius x t - 1)).flatMap (fun i =>
                 copyRightCell guard M x t s (i + 1) (s + 1) i))
               (setRightCell guard M x t (s + 1) (radius x t - 1)
                 M.machine.blank)
-              hshiftRight hsetRight))))
+              hshiftRight hsetRight)))))
 
 theorem active_transitionCase_true
     (M : PolyDTMCandidate)
