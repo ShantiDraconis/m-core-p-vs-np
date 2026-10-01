@@ -2789,6 +2789,193 @@ theorem ntmUniqueAt_halted_step
       (hU.hRight i hi)
       (ntmHalted_right_copy M x t s q a sigma hSat hs hq ha hHalt i hi)
 
+
+theorem ntmUniqueAt_active_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hU : NTMUniqueAt M x t sigma hSat s)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hActive :
+      M.machine.accepting q = false ∧ M.machine.rejecting q = false) :
+    NTMUniqueAt M x t sigma hSat (s + 1) := by
+  rcases ntmChoice_exists_of_guard M x t s q a sigma hSat hs hq ha hActive with
+    ⟨j, hj⟩
+  rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
+  have hStateExact :
+      forall r : Fin (M.stateCount + 1),
+        sigma (ntmStateVar M t (s + 1) r) = decide (r = qNext) := by
+    simpa [htr] using
+      ntmChoice_effect_state_exact M x t s q a j sigma hSat hs hActive hj
+  have hrpos : 0 < ntmRadius x t := by
+    simp [ntmRadius]
+  cases d with
+  | stay =>
+      have hHeadExact :
+          forall b : Option Bool,
+            sigma (ntmHeadVar M t (s + 1) b) = decide (b = write) := by
+        simpa [htr] using
+          ntmChoice_effect_head_exact_stay M x t s q a j sigma
+            hSat hs hActive (by simpa [htr]) hj
+      refine {
+        hState := existsUnique_of_exact_decide
+          (fun r => sigma (ntmStateVar M t (s + 1) r)) qNext hStateExact
+        hHead := existsUnique_of_exact_decide
+          (fun b => sigma (ntmHeadVar M t (s + 1) b)) write hHeadExact
+        hLeft := ?_
+        hRight := ?_
+      }
+      · intro i hi
+        exact existsUnique_transport
+          (fun b => sigma (ntmLeftVar M x t s i b))
+          (fun b => sigma (ntmLeftVar M x t (s + 1) i b))
+          (hU.hLeft i hi)
+          (by simpa [htr] using
+            ntmStay_left_copy_exact M x t s q a j sigma hSat hs hActive hj
+              (by simpa [htr]) i hi)
+      · intro i hi
+        exact existsUnique_transport
+          (fun b => sigma (ntmRightVar M x t s i b))
+          (fun b => sigma (ntmRightVar M x t (s + 1) i b))
+          (hU.hRight i hi)
+          (by simpa [htr] using
+            ntmStay_right_copy_exact M x t s q a j sigma hSat hs hActive hj
+              (by simpa [htr]) i hi)
+  | left =>
+      have hHeadCopy :
+          forall b : Option Bool,
+            sigma (ntmHeadVar M t (s + 1) b) =
+              sigma (ntmLeftVar M x t s 0 b) := by
+        simpa [htr] using
+          ntmChoice_effect_head_exact_left M x t s q a j sigma
+            hSat hs hActive (by simpa [htr]) hj
+      refine {
+        hState := existsUnique_of_exact_decide
+          (fun r => sigma (ntmStateVar M t (s + 1) r)) qNext hStateExact
+        hHead := existsUnique_transport
+          (fun b => sigma (ntmLeftVar M x t s 0 b))
+          (fun b => sigma (ntmHeadVar M t (s + 1) b))
+          (hU.hLeft 0 hrpos) hHeadCopy
+        hLeft := ?_
+        hRight := ?_
+      }
+      · intro i hi
+        by_cases hlast : i = ntmRadius x t - 1
+        · subst i
+          have hExact :
+              forall b : Option Bool,
+                sigma (ntmLeftVar M x t (s + 1) (ntmRadius x t - 1) b) =
+                  decide (b = M.machine.blank) := by
+            simpa [htr] using
+              ntmLeft_blankLeft_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr])
+          exact existsUnique_of_exact_decide
+            (fun b => sigma (ntmLeftVar M x t (s + 1)
+              (ntmRadius x t - 1) b))
+            M.machine.blank hExact
+        · have hi' : i < ntmRadius x t - 1 := by omega
+          have hip1 : i + 1 < ntmRadius x t := by omega
+          exact existsUnique_transport
+            (fun b => sigma (ntmLeftVar M x t s (i + 1) b))
+            (fun b => sigma (ntmLeftVar M x t (s + 1) i b))
+            (hU.hLeft (i + 1) hip1)
+            (by simpa [htr] using
+              ntmLeft_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr]) i hi')
+      · intro i hi
+        by_cases hzero : i = 0
+        · subst i
+          have hExact :
+              forall b : Option Bool,
+                sigma (ntmRightVar M x t (s + 1) 0 b) =
+                  decide (b = write) := by
+            simpa [htr] using
+              ntmLeft_writeRight0_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr])
+          exact existsUnique_of_exact_decide
+            (fun b => sigma (ntmRightVar M x t (s + 1) 0 b))
+            write hExact
+        · obtain ⟨k, rfl⟩ : ∃ k, i = k + 1 := by
+            use i - 1
+            omega
+          have hk : k < ntmRadius x t - 1 := by omega
+          exact existsUnique_transport
+            (fun b => sigma (ntmRightVar M x t s k b))
+            (fun b => sigma (ntmRightVar M x t (s + 1) (k + 1) b))
+            (hU.hRight k (by omega))
+            (by simpa [htr] using
+              ntmLeft_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr]) k hk)
+  | right =>
+      have hHeadCopy :
+          forall b : Option Bool,
+            sigma (ntmHeadVar M t (s + 1) b) =
+              sigma (ntmRightVar M x t s 0 b) := by
+        simpa [htr] using
+          ntmChoice_effect_head_exact_right M x t s q a j sigma
+            hSat hs hActive (by simpa [htr]) hj
+      refine {
+        hState := existsUnique_of_exact_decide
+          (fun r => sigma (ntmStateVar M t (s + 1) r)) qNext hStateExact
+        hHead := existsUnique_transport
+          (fun b => sigma (ntmRightVar M x t s 0 b))
+          (fun b => sigma (ntmHeadVar M t (s + 1) b))
+          (hU.hRight 0 hrpos) hHeadCopy
+        hLeft := ?_
+        hRight := ?_
+      }
+      · intro i hi
+        by_cases hzero : i = 0
+        · subst i
+          have hExact :
+              forall b : Option Bool,
+                sigma (ntmLeftVar M x t (s + 1) 0 b) =
+                  decide (b = write) := by
+            simpa [htr] using
+              ntmRight_writeLeft0_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr])
+          exact existsUnique_of_exact_decide
+            (fun b => sigma (ntmLeftVar M x t (s + 1) 0 b))
+            write hExact
+        · obtain ⟨k, rfl⟩ : ∃ k, i = k + 1 := by
+            use i - 1
+            omega
+          have hk : k < ntmRadius x t - 1 := by omega
+          exact existsUnique_transport
+            (fun b => sigma (ntmLeftVar M x t s k b))
+            (fun b => sigma (ntmLeftVar M x t (s + 1) (k + 1) b))
+            (hU.hLeft k (by omega))
+            (by simpa [htr] using
+              ntmRight_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr]) k hk)
+      · intro i hi
+        by_cases hlast : i = ntmRadius x t - 1
+        · subst i
+          have hExact :
+              forall b : Option Bool,
+                sigma (ntmRightVar M x t (s + 1) (ntmRadius x t - 1) b) =
+                  decide (b = M.machine.blank) := by
+            simpa [htr] using
+              ntmRight_blankRight_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr])
+          exact existsUnique_of_exact_decide
+            (fun b => sigma (ntmRightVar M x t (s + 1)
+              (ntmRadius x t - 1) b))
+            M.machine.blank hExact
+        · have hi' : i < ntmRadius x t - 1 := by omega
+          have hip1 : i + 1 < ntmRadius x t := by omega
+          exact existsUnique_transport
+            (fun b => sigma (ntmRightVar M x t s (i + 1) b))
+            (fun b => sigma (ntmRightVar M x t (s + 1) i b))
+            (hU.hRight (i + 1) hip1)
+            (by simpa [htr] using
+              ntmRight_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
+                (by simpa [htr]) i hi')
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
