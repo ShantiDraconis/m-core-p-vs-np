@@ -9,6 +9,7 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open P01CNFMode
 open P01EncodedStackEvaluator
+open P01EncodedFrameTape
 open P01CheckedVerifierInvariant
 open P01RawEvalSink
 open P01RawRecursiveBudget
