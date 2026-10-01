@@ -109,7 +109,7 @@ sha = subprocess.check_output(["git","rev-parse","HEAD"], text=True).strip()
 payload = {
   "schema": "atk-p02-targeted-certificate.v1",
   "status": "GREEN",
-  "scope": "P02_TARGETED_STRUCTURAL_AND_KERNEL_VALIDATION",
+  "scope": "P02_KERNEL_TARGETED_STRUCTURAL_AND_KERNEL_VALIDATION",
   "head_sha": sha,
   "generated_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
   "validated_modules": [
@@ -135,6 +135,8 @@ payload = {
     "Nonempty MCore.Real.P02UniversalKernel.SemanticDiagonalFamily",
     "MCore.Real.P02UniversalKernel.PointwiseSemanticDiagonal",
     "MCore.Real.P02FinalCompression.FINAL_OPEN_MATH",
+    "P01 concrete implementation",
+    "final P01 + P02 composition on this HEAD",
     "unconditional P != NP"
   ],
   "open_math": "construct the D3 semantic diagonal family / universal SAT lower-bound producer"
