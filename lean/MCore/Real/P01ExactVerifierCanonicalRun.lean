@@ -5,6 +5,8 @@ import MCore.Real.P01CheckedVerifierRun
 import MCore.Real.P01CheckedVerifierDeterminism
 import MCore.Real.P01ExactBoundedReject
 import MCore.Real.P01DirectVerifierInhabitant
+import MCore.Real.P01EncodedFrameTape
+import MCore.Real.P01GuessedWitnessRelation
 
 namespace MCore
 namespace Real
@@ -270,6 +272,8 @@ theorem prepared_canonical_halts_within_exact_global
           ({ state := .reject, tape := tape } : CheckedVerifierConfig)
           hreach hhalt
       exact haltsWithin_mono_le checkedVerifierMachine m T
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness (encodeCircuit phi) }
         (by simpa [T] using hm) hmhalt
   | true =>
       obtain ⟨m, hm, tape, hreach⟩ :=
@@ -296,6 +300,8 @@ theorem prepared_canonical_halts_within_exact_global
              tape := tape } : CheckedVerifierConfig)
           hreach hhalt
       exact haltsWithin_mono_le checkedVerifierMachine m T
+        { state := checkedVerifierMachine.initial,
+          tape := preparedTape witness (encodeCircuit phi) }
         (by simpa [T] using hm) hmhalt
 
 /-- Canonical-source correctness at the fixed global fuel, not merely at an

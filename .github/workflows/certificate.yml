@@ -1,5 +1,6 @@
 name: certificate
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 
 
 concurrency:
@@ -8,19 +9,18 @@ concurrency:
 
 jobs:
   c12:
-    runs-on: macos-14
-    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
         with:
           build: false
-          use-mathlib-cache: false
+          use-mathlib-cache: true
 
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
-          lake update
           lake exe cache get
 
       - name: Build final P01 closure root

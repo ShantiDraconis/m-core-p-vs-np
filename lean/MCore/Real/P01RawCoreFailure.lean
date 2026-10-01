@@ -4,6 +4,10 @@ import MCore.Real.P01RawMalformedTag
 import MCore.Real.P01RawMalformedUnary
 import MCore.Real.P01RawVerifierLift
 import MCore.Real.P01CheckedEvalRunBoundedHelpers
+import MCore.Real.P01GuessedWitnessRelation
+import MCore.Real.P01EncodedFrameTape
+import MCore.Real.P01CheckedVerifierBudget
+import MCore.Real.P01CheckedVerifierGlobalBudget
 
 namespace MCore
 namespace Real

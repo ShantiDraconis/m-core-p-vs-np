@@ -1,6 +1,7 @@
 name: fail-proof-all-gaps
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 
 
 concurrency:
@@ -9,18 +10,17 @@ concurrency:
 
 jobs:
   canonical-model:
-    runs-on: macos-14
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
         with:
           build: false
-          use-mathlib-cache: false
+          use-mathlib-cache: true
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
-          lake update
           lake exe cache get
       - name: Build final P01 closure root
         run: |
@@ -45,18 +45,17 @@ jobs:
           if grep -q 'sorryAx' gap-canonical-model.log; then exit 1; fi
 
   gap-compression:
-    runs-on: macos-14
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
         with:
           build: false
-          use-mathlib-cache: false
+          use-mathlib-cache: true
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
-          lake update
           lake exe cache get
       - name: Build G1-G3 compression and finite-evidence attack
         run: |
@@ -79,18 +78,17 @@ jobs:
           if grep -q 'sorryAx' gap-compression.log; then exit 1; fi
 
   sat-foundations:
-    runs-on: macos-14
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
         with:
           build: false
-          use-mathlib-cache: false
+          use-mathlib-cache: true
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
-          lake update
           lake exe cache get
       - name: Build exact SAT bit encoding witness and verifier
         run: |
@@ -172,18 +170,17 @@ jobs:
           if grep -q 'sorryAx' gap-sat-foundations.log; then exit 1; fi
 
   negative-attacks:
-    runs-on: macos-14
-    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
         with:
           build: false
-          use-mathlib-cache: false
+          use-mathlib-cache: true
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
-          lake update
           lake exe cache get
       - name: Build arbitrary-encoder and finite-evidence refutations
         run: |
