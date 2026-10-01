@@ -66,7 +66,10 @@ theorem stateCount_pos
       have hEq :
           finalState D falseBits = finalState D trueBits := by
         apply Fin.ext
-        simp [hsc]
+        have hFalse := (finalState D falseBits).isLt
+        have hTrue := (finalState D trueBits).isLt
+        rw [hsc] at hFalse hTrue
+        omega
       exact False.elim (constant_final_states_distinct D hPattern hEq)
   | succ n =>
       simp
@@ -95,11 +98,11 @@ theorem coefficient_pos
       have hFalseState :
           finalState D falseBits = D.machine.initial := by
         simp [finalState, FiniteDTMDescriptor.toCandidate,
-          monomialTimeBound, hc, TM.run]
+          monomialTimeBound, hc, TM.run, initialTMConfig]
       have hTrueState :
           finalState D trueBits = D.machine.initial := by
         simp [finalState, FiniteDTMDescriptor.toCandidate,
-          monomialTimeBound, hc, TM.run]
+          monomialTimeBound, hc, TM.run, initialTMConfig]
       have hDistinct := constant_final_states_distinct D hPattern
       exact False.elim (hDistinct (by rw [hFalseState, hTrueState]))
   | succ n =>
