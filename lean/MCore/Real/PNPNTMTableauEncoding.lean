@@ -3702,6 +3702,149 @@ theorem ntmPaddingAt_all
         exact ntmPaddingAt_active_step M x t s sigma hSat hslt hP
           q a hq ha ⟨hAcc, hRej⟩
 
+
+theorem ntmBlankTailAt_halted_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hB : NTMBlankTailAt M x t sigma hSat s)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hHalt : M.machine.accepting q = true ∨ M.machine.rejecting q = true) :
+    NTMBlankTailAt M x t sigma hSat (s + 1) := by
+  refine { hLeft := ?_, hRight := ?_ }
+  · intro i hxi hir
+    have hold : sigma (ntmLeftVar M x t s i M.machine.blank) = true :=
+      hB.hLeft i (by omega) hir
+    have hcopy := ntmHalted_left_copy M x t s q a sigma hSat hs hq ha hHalt i hir
+    rw [hcopy]
+    exact hold
+  · intro i hxi hir
+    have hold : sigma (ntmRightVar M x t s i M.machine.blank) = true :=
+      hB.hRight i (by omega) hir
+    have hcopy := ntmHalted_right_copy M x t s q a sigma hSat hs hq ha hHalt i hir
+    rw [hcopy]
+    exact hold
+
+theorem ntmBlankTailAt_active_step
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (hs : s < t)
+    (hB : NTMBlankTailAt M x t sigma hSat s)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hq : sigma (ntmStateVar M t s q) = true)
+    (ha : sigma (ntmHeadVar M t s a) = true)
+    (hActive : M.machine.accepting q = false ∧ M.machine.rejecting q = false) :
+    NTMBlankTailAt M x t sigma hSat (s + 1) := by
+  rcases ntmChoice_exists_of_guard M x t s q a sigma hSat hs hq ha hActive with ⟨j, hj⟩
+  rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
+  cases d with
+  | stay =>
+      refine { hLeft := ?_, hRight := ?_ }
+      · intro i hxi hir
+        have hold := hB.hLeft i (by omega) hir
+        have hcopy := ntmStay_left_copy_exact M x t s q a j sigma hSat hs hActive hj
+          (by simpa [htr]) i hir
+        rw [hcopy]
+        exact hold
+      · intro i hxi hir
+        have hold := hB.hRight i (by omega) hir
+        have hcopy := ntmStay_right_copy_exact M x t s q a j sigma hSat hs hActive hj
+          (by simpa [htr]) i hir
+        rw [hcopy]
+        exact hold
+  | left =>
+      refine { hLeft := ?_, hRight := ?_ }
+      · intro i hxi hir
+        by_cases hlast : i = ntmRadius x t - 1
+        · subst i
+          have hex := ntmLeft_blankLeft_exact M x t s q a j sigma hSat hs hActive hj
+            (by simpa [htr])
+          simpa using hex M.machine.blank
+        · have hi : i < ntmRadius x t - 1 := by omega
+          have hip1 : i + 1 < ntmRadius x t := by omega
+          have hold := hB.hLeft (i + 1) (by omega) hip1
+          have hcopy := ntmLeft_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
+            (by simpa [htr]) i hi
+          rw [hcopy]
+          exact hold
+      · intro i hxi hir
+        have hne0 : i ≠ 0 := by
+          intro h0
+          subst i
+          simp at hxi
+        obtain ⟨k, rfl⟩ : ∃ k, i = k + 1 := by
+          use i - 1
+          omega
+        have hk : k < ntmRadius x t - 1 := by omega
+        have hold := hB.hRight k (by omega) (by omega)
+        have hcopy := ntmLeft_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
+          (by simpa [htr]) k hk
+        rw [hcopy]
+        exact hold
+  | right =>
+      refine { hLeft := ?_, hRight := ?_ }
+      · intro i hxi hir
+        have hne0 : i ≠ 0 := by
+          intro h0
+          subst i
+          simp at hxi
+        obtain ⟨k, rfl⟩ : ∃ k, i = k + 1 := by
+          use i - 1
+          omega
+        have hk : k < ntmRadius x t - 1 := by omega
+        have hold := hB.hLeft k (by omega) (by omega)
+        have hcopy := ntmRight_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
+          (by simpa [htr]) k hk
+        rw [hcopy]
+        exact hold
+      · intro i hxi hir
+        by_cases hlast : i = ntmRadius x t - 1
+        · subst i
+          have hex := ntmRight_blankRight_exact M x t s q a j sigma hSat hs hActive hj
+            (by simpa [htr])
+          simpa using hex M.machine.blank
+        · have hi : i < ntmRadius x t - 1 := by omega
+          have hip1 : i + 1 < ntmRadius x t := by omega
+          have hold := hB.hRight (i + 1) (by omega) hip1
+          have hcopy := ntmRight_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
+            (by simpa [htr]) i hi
+          rw [hcopy]
+          exact hold
+
+theorem ntmBlankTailAt_all
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
+    forall s : Nat, s <= t -> NTMBlankTailAt M x t sigma hSat s := by
+  intro s
+  induction s with
+  | zero =>
+      intro _
+      exact ntmBlankTailAt_zero M x t sigma hSat
+  | succ s ih =>
+      intro hsle
+      have hslt : s < t := by omega
+      have hB := ih (by omega)
+      have hU := ntmUniqueAt_all M x t sigma hSat s (by omega)
+      rcases hU.hState with ⟨q, hq, _⟩
+      rcases hU.hHead with ⟨a, ha, _⟩
+      by_cases hHalt :
+          M.machine.accepting q = true ∨ M.machine.rejecting q = true
+      · exact ntmBlankTailAt_halted_step M x t s sigma hSat hslt hB q a hq ha hHalt
+      · have hAcc : M.machine.accepting q = false := by
+          cases h : M.machine.accepting q with
+          | false => rfl
+          | true => exact False.elim (hHalt (Or.inl h))
+        have hRej : M.machine.rejecting q = false := by
+          cases h : M.machine.rejecting q with
+          | false => rfl
+          | true => exact False.elim (hHalt (Or.inr h))
+        exact ntmBlankTailAt_active_step M x t s sigma hSat hslt hB q a hq ha ⟨hAcc, hRej⟩
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
