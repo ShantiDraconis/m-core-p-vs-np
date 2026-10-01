@@ -5074,6 +5074,61 @@ theorem choiceIdxOfStep_active_spec
       W.choose W.choose_spec.1 with ⟨j, hj, hget⟩
   exact ⟨hj, hget⟩
 
+
+theorem foldl_max_ge_acc
+    (xs : List Nat) (acc : Nat) :
+    acc <= xs.foldl Nat.max acc := by
+  induction xs generalizing acc with
+  | nil => simp
+  | cons x xs ih =>
+      simp only [List.foldl_cons]
+      exact le_trans (Nat.le_max_left acc x) (ih (Nat.max acc x))
+
+theorem foldl_max_ge_of_mem
+    (xs : List Nat) (x acc : Nat)
+    (hx : x ∈ xs) :
+    x <= xs.foldl Nat.max acc := by
+  induction xs generalizing acc with
+  | nil => simp at hx
+  | cons y ys ih =>
+      simp only [List.mem_cons] at hx
+      simp only [List.foldl_cons]
+      rcases hx with rfl | hx
+      · exact le_trans (Nat.le_max_right acc y)
+          (foldl_max_ge_acc ys (Nat.max acc y))
+      · exact ih hx
+
+theorem ntmBranchBound_ge_transition_length
+    (M : PolyNTMCandidate)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool) :
+    (M.machine.transition q a).length <= ntmBranchBound M := by
+  unfold ntmBranchBound
+  apply foldl_max_ge_of_mem
+  simp [ntmAlphabet]
+
+theorem choiceIdxOfStep_lt_branchBound_succ
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (s : Nat) (hs : s < t)
+    (hActive : NTMActive M (path ⟨s, by omega⟩)) :
+    choiceIdxOfStep M t path hPath s hs < ntmBranchBound M + 1 := by
+  rcases choiceIdxOfStep_active_spec M t path hPath s hs hActive with
+    ⟨hj, _⟩
+  have hb := ntmBranchBound_ge_transition_length M
+    (path ⟨s, by omega⟩).state
+    (path ⟨s, by omega⟩).tape.head
+  omega
+
+theorem ntmChoiceVar_ge_choiceBase
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (q : Fin (M.stateCount + 1))
+    (a : Option Bool) (j : Nat) :
+    ntmChoiceBase M x t <= ntmChoiceVar M x t s q a j := by
+  simp [ntmChoiceVar]
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
