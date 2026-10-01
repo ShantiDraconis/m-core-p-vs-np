@@ -191,9 +191,10 @@ theorem truncated_unary_reaches_raw_failure
   have hk : k + 1 ≤ checkedLoopStepEnvelope n := by
     unfold checkedLoopStepEnvelope
     have hk0 : k ≤ n := by
-      simpa [k] using
-        Nat.le_trans (by simp : rest.length ≤ (false :: false :: false :: rest).length)
-          hLayout.source_le
+      dsimp [k]
+      have hs := hLayout.source_le
+      simp only [List.length_cons] at hs
+      omega
     have hsmall : k + 1 ≤ n + 1 := Nat.succ_le_succ hk0
     have h1 : n + 1 ≤ (n + 1) * (n + 1) :=
       Nat.le_mul_of_pos_right (n + 1) (by omega)
