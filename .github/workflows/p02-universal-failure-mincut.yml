@@ -12,6 +12,7 @@ on:
       - 'lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02CookLevinSameInputCore.lean'
       - 'lean/MCore/Real/P02CookLevinSameInputCore.lean'
       - 'lean/MCore/Real/P02SemanticFlipCore.lean'
+      - 'lean/MCore/Real/P02ComplementTableauDiagonal.lean'
       - 'audit/ATK_P02_TOTAL_CANDIDATE_SEMANTIC_CORE_V1.json'
       - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
       - 'audit/ATK_P02_KLEENE_PORT_COMPAT_V1.json'
@@ -47,6 +48,7 @@ jobs:
           lake build MCore.Real.P02SemanticTransformerCore
           lake build MCore.Real.P02CookLevinSameInputCore
           lake build MCore.Real.P02SemanticFlipCore
+          lake build MCore.Real.P02ComplementTableauDiagonal
       - name: Exact axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
@@ -58,6 +60,7 @@ jobs:
           import MCore.Real.P02SemanticTransformerCore
           import MCore.Real.P02CookLevinSameInputCore
           import MCore.Real.P02SemanticFlipCore
+          import MCore.Real.P02ComplementTableauDiagonal
           #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_iff_universal_failure
@@ -88,6 +91,11 @@ jobs:
           #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_iff_total_semantic_core
           #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_iff_universal_failure
           #print axioms MCore.Real.P02SemanticFlipCore.semantic_flip_core_closes_internal_endpoint
+          #print axioms MCore.Real.P02ComplementTableauDiagonal.complement_acceptsAtFuel_iff_not
+          #print axioms MCore.Real.P02ComplementTableauDiagonal.diagonalBits_sat_iff_not_declaredAccepts
+          #print axioms MCore.Real.P02ComplementTableauDiagonal.semanticFlip_diagonalBits_of_alignment
+          #print axioms MCore.Real.P02ComplementTableauDiagonal.alignment_core_implies_semantic_flip_core
+          #print axioms MCore.Real.P02ComplementTableauDiagonal.alignment_core_implies_universal_failure
           EOF
           lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
           ! grep -E 'sorryAx' P02UniversalFailureAudit.log
