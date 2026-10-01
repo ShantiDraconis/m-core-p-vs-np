@@ -1011,8 +1011,8 @@ theorem and_exact_bounded_certificate
                 8 * (evalStepCount right + 1) + 3) * E := by
                   unfold checkedCircuitBudget
                   dsimp [E]
-                  simp [Nat.add_mul, Nat.succ_mul, Nat.mul_succ,
-                    Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+                  simp only [Nat.add_mul, Nat.succ_mul, Nat.mul_succ, Nat.one_mul]
+                  ac_rfl
             _ ≤
               8 * (evalStepCount left + evalStepCount right + 4) * E :=
                 hmul
@@ -1107,8 +1107,8 @@ theorem and_exact_bounded_certificate
                         8 * (evalStepCount right + 1) + 4) * E := by
                           unfold checkedCircuitBudget
                           dsimp [E]
-                          simp [Nat.add_mul, Nat.succ_mul, Nat.mul_succ,
-                            Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+                          simp only [Nat.add_mul, Nat.succ_mul, Nat.mul_succ, Nat.one_mul]
+                          ac_rfl
                     _ ≤
                       8 * (evalStepCount left + evalStepCount right + 4) * E :=
                         hmul
@@ -1124,8 +1124,8 @@ theorem and_exact_bounded_certificate
                   (evalCircuit sigma (.and left right)) [] []
                   (consumed + (encodeCircuit (.and left right)).length)
                   cfgFinal
-                simp [ExactCheckedLoopOutcome] at hout5 ⊢
-                simpa [exitMode, childMode, circuitTag, finalValue,
+                simp only [ExactCheckedLoopOutcome] at hout5 ⊢
+                simpa only [exitMode, childMode, circuitTag, finalValue,
                   evalCircuit] using hout5
 
 
@@ -1251,7 +1251,12 @@ theorem or_exact_bounded_certificate
     intro hnil
     have henc : encodeCircuit right = [] :=
       (List.append_eq_nil_iff.mp hnil).1
-    cases right <;> simp [encodeCircuit] at henc
+    cases right with
+    | input i => simp [encodeCircuit] at henc
+    | const b => cases b <;> simp [encodeCircuit] at henc
+    | not child => simp [encodeCircuit] at henc
+    | and a b => simp [encodeCircuit] at henc
+    | or a b => simp [encodeCircuit] at henc
 
   obtain ⟨padding1, hcfgLeft⟩ :=
     exact_outcome_have_of_tail_ne_nil
@@ -1503,7 +1508,7 @@ theorem or_exact_bounded_certificate
       | nil =>
           obtain ⟨m5, hm5, cfgFinal, h5, hout5⟩ :=
             have_reaches_outcome_within_envelope
-              n mode witness finalValue [] []
+              n .clause witness finalValue [] []
               finalConsumed (padding2 + 3)
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
@@ -1559,8 +1564,8 @@ theorem or_exact_bounded_certificate
                     8 * (evalStepCount right + 1) + 4) * E := by
                       unfold checkedCircuitBudget
                       dsimp [E]
-                      simp [Nat.add_mul, Nat.succ_mul, Nat.mul_succ,
-                        Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+                      simp only [Nat.add_mul, Nat.succ_mul, Nat.mul_succ, Nat.one_mul]
+                      ac_rfl
                 _ ≤
                   8 * (evalStepCount left + evalStepCount right + 4) * E :=
                     hmul
@@ -1576,8 +1581,8 @@ theorem or_exact_bounded_certificate
               (evalCircuit sigma (.or left right)) [] []
               (consumed + (encodeCircuit (.or left right)).length)
               cfgFinal
-            simp [ExactCheckedLoopOutcome] at hout5 ⊢
-            simpa [exitMode, childMode, circuitTag, finalValue,
+            simp only [ExactCheckedLoopOutcome] at hout5 ⊢
+            simpa only [exitMode, childMode, circuitTag, finalValue,
               evalCircuit] using hout5
 
 
