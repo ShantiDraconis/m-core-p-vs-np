@@ -10,8 +10,9 @@ on:
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
       - 'lean/MCore/Real/P02TotalCandidateSemanticCore.lean'
       - 'lean/MCore/Real/P02SemanticTransformerCore.lean'
-      - 'lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02DiagonalOrbitCore.lean'
+      - 'lean/MCore/Real/P02SemanticTransformerDichotomy.lean'
       - 'lean/MCore/Real/P02DiagonalOrbitCore.lean'
+      - 'lean/MCore/Real/P02SemanticAlignmentCountermodel.lean'
       - 'lean/MCore/Real/P02CookLevinSameInputCore.lean'
       - 'lean/MCore/Real/P02SemanticFlipCore.lean'
       - 'lean/MCore/Real/P02ComplementTableauDiagonal.lean'
@@ -30,12 +31,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Install Lean
-        run: |
-          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
-          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - uses: leanprover/lean-action@v1
       - name: Resolve dependencies
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
@@ -50,6 +46,7 @@ jobs:
           lake build MCore.Real.P02SemanticTransformerCore
           lake build MCore.Real.P02SemanticTransformerDichotomy
           lake build MCore.Real.P02DiagonalOrbitCore
+          lake build MCore.Real.P02SemanticAlignmentCountermodel
           lake build MCore.Real.P02CookLevinSameInputCore
           lake build MCore.Real.P02SemanticFlipCore
           lake build MCore.Real.P02ComplementTableauDiagonal
@@ -64,6 +61,7 @@ jobs:
           import MCore.Real.P02SemanticTransformerCore
           import MCore.Real.P02SemanticTransformerDichotomy
           import MCore.Real.P02DiagonalOrbitCore
+          import MCore.Real.P02SemanticAlignmentCountermodel
           import MCore.Real.P02CookLevinSameInputCore
           import MCore.Real.P02SemanticFlipCore
           import MCore.Real.P02ComplementTableauDiagonal
@@ -98,6 +96,9 @@ jobs:
           #print axioms MCore.Real.P02DiagonalOrbitCore.orbit_correct_of_no_alignment
           #print axioms MCore.Real.P02DiagonalOrbitCore.orbit_alignment_or_constant_orbit_correct
           #print axioms MCore.Real.P02DiagonalOrbitCore.orbit_residual_core_iff_universal_failure
+          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.constantPair_declared_total
+          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.constantPair_no_output_alignment
+          #print axioms MCore.Real.P02SemanticAlignmentCountermodel.semanticAlignmentCore_refuted
           #print axioms MCore.Real.P02CookLevinSameInputCore.rejectTransform_sat_iff_not_accepts
           #print axioms MCore.Real.P02CookLevinSameInputCore.SameInputWitness.semanticFlip
           #print axioms MCore.Real.P02CookLevinSameInputCore.sameInputCore_implies_semanticFlipCore
@@ -117,5 +118,6 @@ jobs:
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02CookLevinSameInputCore.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02CookLevinSameInputCore.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean
-          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean
+          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean"
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
