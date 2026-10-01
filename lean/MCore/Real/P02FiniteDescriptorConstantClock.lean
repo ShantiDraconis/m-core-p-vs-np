@@ -34,19 +34,19 @@ theorem getD_append_of_lt_length
           have hi' : i < xs.length := by
             simpa using hi
           simpa [List.getD_cons_succ] using
-            ih ys i d hi'
+            ih i hi'
 
 theorem canonical_run_state_eq_of_common_prefix
     {stateCount : Nat}
     (M : TM (Fin (stateCount + 1)) (Option Bool))
     (fuel : Nat)
-    (prefix tail₁ tail₂ : BitString)
-    (hLen : fuel < prefix.length) :
+    (pref tail₁ tail₂ : BitString)
+    (hLen : fuel < pref.length) :
     (M.run fuel
-        (initialTMConfig M (prefix ++ tail₁))).state =
+        (initialTMConfig M (pref ++ tail₁))).state =
       (M.run fuel
-        (initialTMConfig M (prefix ++ tail₂))).state := by
-  cases prefix with
+        (initialTMConfig M (pref ++ tail₂))).state := by
+  cases pref with
   | nil =>
       simp at hLen
   | cons b bs =>
