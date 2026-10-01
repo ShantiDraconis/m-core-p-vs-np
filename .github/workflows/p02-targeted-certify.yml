@@ -21,11 +21,12 @@ jobs:
       - uses: leanprover/lean-action@v1
         with:
           build: false
-          use-mathlib-cache: true
+          use-mathlib-cache: false
 
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
+          lake update
           lake exe cache get
 
       - name: Run targeted P02 validator
