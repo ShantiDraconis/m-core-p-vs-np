@@ -4,12 +4,20 @@ on:
   push:
     branches:
       - atk/p01-post-mincut-advance-20261001
+      - atk/p02-consolidated-kernel-20261001
     paths:
       - 'lean/MCore/Real/P02UniversalFailureMinCut.lean'
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
       - 'lean/MCore/Real/P02KleeneUniversalBridge.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
       - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
+      - 'lean/MCore/Real/P02OperatorKernel.lean'
+      - 'lean/MCore/Real/P02FinalCompression.lean'
+      - 'lean/MCore/Real/P02UniversalLowerBound.lean'
+      - 'lean/MCore/Real/P02CanonicalClockReduction.lean'
+      - 'lean/MCore/Real/P02KleeneKernel.lean'
+      - 'lean/MCore/Real/P02EffectiveAlignment.lean'
+      - 'lean/MCore/Real/P02UniversalLowerBoundMaster.lean'
       - '.github/workflows/p02-universal-failure-mincut.yml'
   workflow_dispatch:
 
@@ -39,6 +47,13 @@ jobs:
           lake build MCore.Real.P02ExplicitClockNormalForm
           lake build MCore.Real.P02KleeneUniversalBridge
           lake build MCore.Real.P02FailureNormalForms
+          lake build MCore.Real.P02OperatorKernel
+          lake build MCore.Real.P02FinalCompression
+          lake build MCore.Real.P02UniversalLowerBound
+          lake build MCore.Real.P02CanonicalClockReduction
+          lake build MCore.Real.P02KleeneKernel
+          lake build MCore.Real.P02EffectiveAlignment
+          lake build MCore.Real.P02UniversalLowerBoundMaster
       - name: Exact axiom audit
         run: |
           export PATH="$HOME/.elan/bin:$PATH"
@@ -47,6 +62,13 @@ jobs:
           import MCore.Real.P02ExplicitClockNormalForm
           import MCore.Real.P02KleeneUniversalBridge
           import MCore.Real.P02FailureNormalForms
+          import MCore.Real.P02OperatorKernel
+          import MCore.Real.P02FinalCompression
+          import MCore.Real.P02UniversalLowerBound
+          import MCore.Real.P02CanonicalClockReduction
+          import MCore.Real.P02KleeneKernel
+          import MCore.Real.P02EffectiveAlignment
+          import MCore.Real.P02UniversalLowerBoundMaster
           #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
           #print axioms MCore.Real.P02UniversalFailureMinCut.producer_iff_universal_failure
@@ -66,6 +88,17 @@ jobs:
           #print axioms MCore.Real.P02FailureNormalForms.NormalizedCounterexampleProducer.toFailureGenerator
           #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_iff_universal_failure
           #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_closes_internal_endpoint
+          #print axioms MCore.Real.P02OperatorKernel.p02Producer_iff_universalFailure
+          #print axioms MCore.Real.P02OperatorKernel.canonicalSATProducer_iff_notInP
+          #print axioms MCore.Real.P02FinalCompression.final_open_math_iff_sat_not_in_p
+          #print axioms MCore.Real.P02UniversalLowerBound.universalSATLowerBound_iff_operational
+          #print axioms MCore.Real.P02CanonicalClockReduction.normalizedAdversary_iff_universalSATLowerBound
+          #print axioms MCore.Real.P02KleeneKernel.kleene_fixed_point
+          #print axioms MCore.Real.P02KleeneKernel.kleene_bridge_closes_not_in_p
+          #print axioms MCore.Real.P02EffectiveAlignment.uniform_effective_coverage_closes_p02
+          #print axioms MCore.Real.P02UniversalLowerBoundMaster.universal_lower_bound_iff_not_in_p
+          #print axioms MCore.Real.P02UniversalLowerBoundMaster.universal_lower_bound_iff_operational
+          #print axioms MCore.Real.P02UniversalLowerBoundMaster.universal_lower_bound_closes_internal
           EOF
           lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
           ! grep -E 'sorryAx' P02UniversalFailureAudit.log
@@ -76,5 +109,7 @@ jobs:
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02FailureNormalForms.lean
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02FailureNormalForms.lean
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02OperatorKernel.lean lean/MCore/Real/P02FinalCompression.lean lean/MCore/Real/P02UniversalLowerBound.lean lean/MCore/Real/P02CanonicalClockReduction.lean lean/MCore/Real/P02KleeneKernel.lean lean/MCore/Real/P02EffectiveAlignment.lean lean/MCore/Real/P02UniversalLowerBoundMaster.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02OperatorKernel.lean lean/MCore/Real/P02FinalCompression.lean lean/MCore/Real/P02UniversalLowerBound.lean lean/MCore/Real/P02CanonicalClockReduction.lean lean/MCore/Real/P02KleeneKernel.lean lean/MCore/Real/P02EffectiveAlignment.lean lean/MCore/Real/P02UniversalLowerBoundMaster.lean
 
 # recheck-trigger 2026-10-01T13:10Z

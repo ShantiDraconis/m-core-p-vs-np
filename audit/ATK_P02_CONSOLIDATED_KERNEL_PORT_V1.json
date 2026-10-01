@@ -1,0 +1,31 @@
+{
+  "schema": "ATK_P02_CONSOLIDATED_KERNEL_PORT_V1",
+  "target_branch": "atk/p02-consolidated-kernel-20261001",
+  "base_sha": "b51da23a97746edc7ed8add814fb4ac1103ec23e",
+  "source_branch": "atk/p02-only-20261001",
+  "source_certified_sha": "fa83d082fe219a772aa41c981e6b0fa420ff2aac",
+  "source_certifying_run": 36831482480,
+  "ported_modules": [
+    "P02OperatorKernel",
+    "P02FinalCompression",
+    "P02UniversalLowerBound",
+    "P02CanonicalClockReduction",
+    "P02KleeneKernel",
+    "P02EffectiveAlignment",
+    "P02UniversalLowerBoundMaster"
+  ],
+  "terminal_equivalences": [
+    "Nonempty CanonicalSATP02Producer <-> UniversalFailure canonical SAT",
+    "UniversalSATLowerBound <-> not InP canonical SAT",
+    "UniversalSATLowerBound <-> operational timeout-or-semantic-mismatch form",
+    "UniversalSATLowerBound <-> normalized monomial-clock adversary"
+  ],
+  "constructive_route": "UniformEffectiveCoverage -> KleeneSATBridge -> CanonicalSATP02Producer -> UniversalFailure -> not InP",
+  "remaining_material_gap": "construct UniformEffectiveCoverage (or an equivalent genuine universal counterexample producer) without assuming UniversalFailure/not-InP/separation",
+  "does_not_certify": [
+    "UniformEffectiveCoverage inhabitant",
+    "UniversalFailure",
+    "SAT not in P",
+    "P != NP"
+  ]
+}
