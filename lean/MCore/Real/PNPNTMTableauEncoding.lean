@@ -5975,6 +5975,134 @@ theorem pathAssignment_choice_false_of_mismatch
     · exact hqm hq
     · exact ham ha
 
+
+theorem pathAssignment_choiceGuard_sat_of_false
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (j : Nat)
+    (hfalse : pathAssignment M x t path hPath
+      (ntmChoiceVar M x t s q a j) = false) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmChoiceGuardCNF M x t s q a j) = true := by
+  simp [ntmChoiceGuardCNF, evalNTMCNF, evalNTMClause,
+    evalNTMLiteral, ntmNeg, hfalse]
+
+theorem pathAssignment_guardChoiceClause_sat_of_mismatch
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hmismatch :
+      q ≠ (path ⟨s, by omega⟩).state ∨
+      a ≠ (path ⟨s, by omega⟩).tape.head) :
+    evalNTMClause (pathAssignment M x t path hPath)
+      (ntmGuardChoiceClause M x t s q a) = true := by
+  have hg := pathAssignment_case_guard_true_of_mismatch
+    M x t s path hPath hs q a hmismatch
+  unfold ntmGuardChoiceClause
+  exact evalNTMClause_append_of_left_true
+    (pathAssignment M x t path hPath)
+    [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
+    ((ntmIndexedTransitions (M.machine.transition q a)).map
+      (fun p => ntmPos (ntmChoiceVar M x t s q a p.1)))
+    hg
+
+theorem pathAssignment_atMostOne_sat_of_mismatch
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hmismatch :
+      q ≠ (path ⟨s, by omega⟩).state ∨
+      a ≠ (path ⟨s, by omega⟩).tape.head) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmAtMostOneChoiceCNF M x t s q a) = true := by
+  let entries := ntmIndexedTransitions (M.machine.transition q a)
+  let ids := entries.map Prod.fst
+  unfold ntmAtMostOneChoiceCNF
+  apply (evalNTMCNF_flatMap_list (pathAssignment M x t path hPath) ids
+    (fun j => ids.flatMap fun k =>
+      if j < k then
+        [[ntmNeg (ntmChoiceVar M x t s q a j),
+          ntmNeg (ntmChoiceVar M x t s q a k)]]
+      else [])).2
+  intro j hjmem
+  apply (evalNTMCNF_flatMap_list (pathAssignment M x t path hPath) ids
+    (fun k =>
+      if j < k then
+        [[ntmNeg (ntmChoiceVar M x t s q a j),
+          ntmNeg (ntmChoiceVar M x t s q a k)]]
+      else [])).2
+  intro k hkmem
+  by_cases hjk : j < k
+  · have hjEntry : ∃ tr, (j, tr) ∈ entries := by
+      simpa [ids] using hjmem
+    rcases hjEntry with ⟨trj, hjEntry⟩
+    have hkEntry : ∃ tr, (k, tr) ∈ entries := by
+      simpa [ids] using hkmem
+    rcases hkEntry with ⟨trk, hkEntry⟩
+    have hjlt := indexedTransitions_index_lt
+      (M.machine.transition q a) hjEntry
+    have hklt := indexedTransitions_index_lt
+      (M.machine.transition q a) hkEntry
+    have hjfalse := pathAssignment_choice_false_of_mismatch
+      M x t s path hPath hs q a j hjlt hmismatch
+    have hkfalse := pathAssignment_choice_false_of_mismatch
+      M x t s path hPath hs q a k hklt hmismatch
+    simp [hjk, evalNTMCNF, evalNTMClause, evalNTMLiteral, ntmNeg,
+      hjfalse, hkfalse]
+  · simp [hjk, evalNTMCNF]
+
+theorem pathAssignment_activeChoice_sat_of_mismatch
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (path : Fin (t + 1) -> NTMConfig M)
+    (hPath : NTMTableauPath M t (path 0) path)
+    (hs : s < t)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hmismatch :
+      q ≠ (path ⟨s, by omega⟩).state ∨
+      a ≠ (path ⟨s, by omega⟩).tape.head) :
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmActiveChoiceCNF M x t s q a) = true := by
+  let sigma := pathAssignment M x t path hPath
+  let entries := ntmIndexedTransitions (M.machine.transition q a)
+  have hfirst :
+      evalNTMCNF sigma [[ntmGuardChoiceClause M x t s q a]] = true := by
+    simp [evalNTMCNF,
+      pathAssignment_guardChoiceClause_sat_of_mismatch
+        M x t s path hPath hs q a hmismatch]
+  have hguards :
+      evalNTMCNF sigma
+        (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1)) = true := by
+    apply (evalNTMCNF_flatMap_list sigma entries
+      (fun p => ntmChoiceGuardCNF M x t s q a p.1)).2
+    intro p hp
+    have hpLt := indexedTransitions_index_lt
+      (M.machine.transition q a) hp
+    have hpFalse := pathAssignment_choice_false_of_mismatch
+      M x t s path hPath hs q a p.1 hpLt hmismatch
+    exact pathAssignment_choiceGuard_sat_of_false
+      M x t s path hPath q a p.1 hpFalse
+  have hamo := pathAssignment_atMostOne_sat_of_mismatch
+    M x t s path hPath hs q a hmismatch
+  have heffects :
+      evalNTMCNF sigma
+        (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)) = true := by
+    apply (evalNTMCNF_flatMap_list sigma entries
+      (fun p => ntmChoiceEffectCNF M x t s q a p)).2
+    intro p hp
+    have hpLt := indexedTransitions_index_lt
+      (M.machine.transition q a) hp
+    have hpFalse := pathAssignment_choice_false_of_mismatch
+      M x t s path hPath hs q a p.1 hpLt hmismatch
+    exact eval_choiceEffect_of_choice_false sigma M x t s q a p hpFalse
+  simp only [ntmActiveChoiceCNF, evalNTMCNF_append]
+  exact ⟨hfirst, hguards, hamo, heffects⟩
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
