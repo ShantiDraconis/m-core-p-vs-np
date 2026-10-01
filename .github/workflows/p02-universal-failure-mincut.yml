@@ -9,6 +9,7 @@ on:
       - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorReduction.lean'
       - 'lean/MCore/Real/P02FiniteDescriptorResidualCore.lean'
+      - 'lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean'
       - 'lean/MCore/Real/P02FailureNormalForms.lean'
       - 'lean/MCore/Real/P02TotalCandidateSemanticCore.lean'
       - 'lean/MCore/Real/P02SemanticTransformerCore.lean'
@@ -51,6 +52,7 @@ jobs:
           lake build MCore.Real.P02ExplicitClockNormalForm
           lake build MCore.Real.P02FiniteDescriptorReduction
           lake build MCore.Real.P02FiniteDescriptorResidualCore
+          lake build MCore.Real.P02FiniteDescriptorOrbitResidual
           lake build MCore.Real.P02FailureNormalForms
           lake build MCore.Real.P02TotalCandidateSemanticCore
           lake build MCore.Real.P02SemanticTransformerCore
@@ -69,6 +71,7 @@ jobs:
           import MCore.Real.P02ExplicitClockNormalForm
           import MCore.Real.P02FiniteDescriptorReduction
           import MCore.Real.P02FiniteDescriptorResidualCore
+          import MCore.Real.P02FiniteDescriptorOrbitResidual
           import MCore.Real.P02FailureNormalForms
           import MCore.Real.P02TotalCandidateSemanticCore
           import MCore.Real.P02SemanticTransformerCore
@@ -95,6 +98,9 @@ jobs:
           #print axioms MCore.Real.P02FiniteDescriptorResidualCore.failure_of_not_constant_correct
           #print axioms MCore.Real.P02FiniteDescriptorResidualCore.residual_iff_finiteDescriptorFailure
           #print axioms MCore.Real.P02FiniteDescriptorResidualCore.residual_iff_universalFailure
+          #print axioms MCore.Real.P02FiniteDescriptorOrbitResidual.orbitResidual_implies_residual
+          #print axioms MCore.Real.P02FiniteDescriptorOrbitResidual.orbitResidual_iff_residual
+          #print axioms MCore.Real.P02FiniteDescriptorOrbitResidual.orbitResidual_iff_universalFailure
           #print axioms MCore.Real.P02FailureNormalForms.semanticDisagreement_iff_not_semantic_correct
           #print axioms MCore.Real.P02FailureNormalForms.normalizedFailure_iff_not_correctAt
           #print axioms MCore.Real.P02FailureNormalForms.normalizedProducer_iff_universal_failure
@@ -117,6 +123,6 @@ jobs:
       - name: Placeholder firewall
         run: |
           set -euo pipefail
-          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FiniteDescriptorReduction.lean lean/MCore/Real/P02FiniteDescriptorResidualCore.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02OpenMathRouteFalsification.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean"
+          files="lean/MCore/Real/P02UniversalFailureMinCut.lean lean/MCore/Real/P02ExplicitClockNormalForm.lean lean/MCore/Real/P02FiniteDescriptorReduction.lean lean/MCore/Real/P02FiniteDescriptorResidualCore.lean lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean lean/MCore/Real/P02FailureNormalForms.lean lean/MCore/Real/P02TotalCandidateSemanticCore.lean lean/MCore/Real/P02SemanticTransformerCore.lean lean/MCore/Real/P02SemanticTransformerDichotomy.lean lean/MCore/Real/P02SemanticFlipCore.lean lean/MCore/Real/P02OpenMathRouteFalsification.lean lean/MCore/Real/P02ComplementTableauDiagonal.lean lean/MCore/Real/P02DiagonalOrbitCore.lean lean/MCore/Real/P02SemanticAlignmentCountermodel.lean lean/MCore/Real/P02CookLevinSameInputCore.lean"
           ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' $files
           ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' $files
