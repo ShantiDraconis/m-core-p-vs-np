@@ -4904,6 +4904,92 @@ theorem tableau_soundness_from_assignment
   exact path_to_acceptsWithin M t (initialNTMConfig M.machine x)
     (operationalTableauAcceptingPath M x t sigma hSat)
 
+
+theorem ntmSymbolCode_lt_three
+    (a : Option Bool) :
+    ntmSymbolCode a < 3 := by
+  cases a <;> simp [ntmSymbolCode]
+
+theorem ntmStateVar_lt_headBase
+    (M : PolyNTMCandidate) (t s : Nat)
+    (q : Fin (M.stateCount + 1))
+    (hs : s <= t) :
+    ntmStateVar M t s q < ntmHeadBase M t := by
+  simp [ntmStateVar, ntmHeadBase, ntmStateSlots, ntmStateCount]
+  have hq := q.isLt
+  omega
+
+theorem ntmHeadVar_range
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (a : Option Bool)
+    (hs : s <= t) :
+    ntmHeadBase M t <= ntmHeadVar M t s a ∧
+      ntmHeadVar M t s a < ntmLeftBase M x t := by
+  constructor
+  · simp [ntmHeadVar]
+  · simp [ntmHeadVar, ntmLeftBase]
+    have ha := ntmSymbolCode_lt_three a
+    omega
+
+theorem ntmLeftVar_range
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool)
+    (hs : s <= t) (hi : i < ntmRadius x t) :
+    ntmLeftBase M x t <= ntmLeftVar M x t s i a ∧
+      ntmLeftVar M x t s i a < ntmRightBase M x t := by
+  constructor
+  · simp [ntmLeftVar]
+  · simp [ntmLeftVar, ntmRightBase]
+    have ha := ntmSymbolCode_lt_three a
+    omega
+
+theorem ntmRightVar_range
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool)
+    (hs : s <= t) (hi : i < ntmRadius x t) :
+    ntmRightBase M x t <= ntmRightVar M x t s i a ∧
+      ntmRightVar M x t s i a < ntmChoiceBase M x t := by
+  constructor
+  · simp [ntmRightVar]
+  · simp [ntmRightVar, ntmChoiceBase]
+    have ha := ntmSymbolCode_lt_three a
+    omega
+
+theorem stateVar_ne_headVar
+    (M : PolyNTMCandidate) (x : BitString) (t s1 s2 : Nat)
+    (q : Fin (M.stateCount + 1)) (a : Option Bool)
+    (hs1 : s1 <= t) (hs2 : s2 <= t) :
+    ntmStateVar M t s1 q ≠ ntmHeadVar M t s2 a := by
+  have h1 := ntmStateVar_lt_headBase M t s1 q hs1
+  have h2 := (ntmHeadVar_range M x t s2 a hs2).1
+  omega
+
+theorem headVar_ne_leftVar
+    (M : PolyNTMCandidate) (x : BitString) (t s1 s2 i : Nat)
+    (a b : Option Bool)
+    (hs1 : s1 <= t) (hs2 : s2 <= t) (hi : i < ntmRadius x t) :
+    ntmHeadVar M t s1 a ≠ ntmLeftVar M x t s2 i b := by
+  have h1 := (ntmHeadVar_range M x t s1 a hs1).2
+  have h2 := (ntmLeftVar_range M x t s2 i b hs2 hi).1
+  omega
+
+theorem leftVar_ne_rightVar
+    (M : PolyNTMCandidate) (x : BitString) (t s1 s2 i j : Nat)
+    (a b : Option Bool)
+    (hs1 : s1 <= t) (hs2 : s2 <= t)
+    (hi : i < ntmRadius x t) (hj : j < ntmRadius x t) :
+    ntmLeftVar M x t s1 i a ≠ ntmRightVar M x t s2 j b := by
+  have h1 := (ntmLeftVar_range M x t s1 i a hs1 hi).2
+  have h2 := (ntmRightVar_range M x t s2 j b hs2 hj).1
+  omega
+
+theorem rightVar_lt_choiceBase
+    (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
+    (a : Option Bool)
+    (hs : s <= t) (hi : i < ntmRadius x t) :
+    ntmRightVar M x t s i a < ntmChoiceBase M x t :=
+  (ntmRightVar_range M x t s i a hs hi).2
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
