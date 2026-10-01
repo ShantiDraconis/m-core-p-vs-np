@@ -3851,11 +3851,27 @@ theorem list_eq_of_length_getD
     (hlen : xs.length = ys.length)
     (hget : forall i : Nat, i < xs.length -> xs.getD i d = ys.getD i d) :
     xs = ys := by
-  apply List.ext_getElem hlen
-  intro i hix hiy
-  have h := hget i hix
-  simpa [List.getD_eq_getElem xs d hix,
-    List.getD_eq_getElem ys d hiy] using h
+  induction xs generalizing ys with
+  | nil =>
+      cases ys <;> simp at hlen ⊢
+  | cons x xs ih =>
+      cases ys with
+      | nil =>
+          simp at hlen
+      | cons y ys =>
+          have hxy : x = y := by
+            have h0 := hget 0 (by simp)
+            simpa using h0
+          have hlen' : xs.length = ys.length := by
+            simpa using hlen
+          have htail :
+              forall i : Nat, i < xs.length ->
+                xs.getD i d = ys.getD i d := by
+            intro i hi
+            have hs := hget (i + 1) (by simp [hi])
+            simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hs
+          subst y
+          simp [ih hlen' htail]
 
 theorem rawLeftList_left_shape
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -7555,7 +7571,7 @@ theorem ntmInitial_weight_le
     ntmCNFWeight (ntmInitialCNF M x t) <=
       2 * ntmStateCount M + 6 + 12 * ntmRadius x t := by
   unfold ntmInitialCNF
-  repeat' rw [ntmCNFWeight_append]
+  rw [ntmCNFWeight_append, ntmCNFWeight_append, ntmCNFWeight_append]
   rw [ntmSetState_weight, ntmSetSymbol_weight]
   have hl := ntmCNFWeight_flatMap_range_le
     (ntmRadius x t) 6
@@ -8189,10 +8205,11 @@ theorem choiceEffect_varsLe
                   (ntmRightVar_lt_tableauVarCap M x t u i b hu hi))
   | left =>
       simp only [ntmChoiceEffectCNF, ntmLeftEffectCNF]
-      repeat' apply CNFVarsLe_append
+      apply CNFVarsLe_append
       · exact setState_varsLe _ guard M t (s+1) qNext hg
           (fun r => Nat.le_of_lt
             (ntmStateVar_lt_tableauVarCap M x t (s+1) r (by omega)))
+      · apply CNFVarsLe_append
       · exact copySymbol_varsLe _ guard
           (ntmLeftVar M x t s 0) (ntmHeadVar M t (s+1)) hg
           (fun b => Nat.le_of_lt
@@ -8235,7 +8252,11 @@ theorem choiceEffect_varsLe
           cl hcl
   | right =>
       simp only [ntmChoiceEffectCNF, ntmRightEffectCNF]
-      repeat' apply CNFVarsLe_append
+      apply CNFVarsLe_append
+      · exact setState_varsLe _ guard M t (s+1) qNext hg
+          (fun r => Nat.le_of_lt
+            (ntmStateVar_lt_tableauVarCap M x t (s+1) r (by omega)))
+      · apply CNFVarsLe_append
       · exact setState_varsLe _ guard M t (s+1) qNext hg
           (fun r => Nat.le_of_lt
             (ntmStateVar_lt_tableauVarCap M x t (s+1) r (by omega)))
