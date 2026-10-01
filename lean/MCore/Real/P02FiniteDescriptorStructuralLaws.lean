@@ -61,13 +61,15 @@ theorem stateCount_pos
     (D : FiniteDTMDescriptor)
     (hPattern : DescriptorConstantCorrect D) :
     0 < D.stateCount := by
-  by_contra h
-  have hz : D.stateCount = 0 := Nat.eq_zero_of_not_pos h
-  have hEq :
-      finalState D falseBits = finalState D trueBits := by
-    apply Fin.ext
-    simp [hz]
-  exact constant_final_states_distinct D hPattern hEq
+  cases hsc : D.stateCount with
+  | zero =>
+      have hEq :
+          finalState D falseBits = finalState D trueBits := by
+        apply Fin.ext
+        simp [hsc]
+      exact False.elim (constant_final_states_distinct D hPattern hEq)
+  | succ n =>
+      simp
 
 theorem accepting_nonconstant
     (D : FiniteDTMDescriptor)
@@ -88,19 +90,20 @@ theorem coefficient_pos
     (D : FiniteDTMDescriptor)
     (hPattern : DescriptorConstantCorrect D) :
     0 < D.coefficient := by
-  by_contra h
-  have hz : D.coefficient = 0 := Nat.eq_zero_of_not_pos h
-  have hFalseState :
-      finalState D falseBits = D.machine.initial := by
-    simp [finalState, FiniteDTMDescriptor.toCandidate,
-      monomialTimeBound, hz, TM.run]
-  have hTrueState :
-      finalState D trueBits = D.machine.initial := by
-    simp [finalState, FiniteDTMDescriptor.toCandidate,
-      monomialTimeBound, hz, TM.run]
-  have hDistinct := constant_final_states_distinct D hPattern
-  apply hDistinct
-  rw [hFalseState, hTrueState]
+  cases hc : D.coefficient with
+  | zero =>
+      have hFalseState :
+          finalState D falseBits = D.machine.initial := by
+        simp [finalState, FiniteDTMDescriptor.toCandidate,
+          monomialTimeBound, hc, TM.run]
+      have hTrueState :
+          finalState D trueBits = D.machine.initial := by
+        simp [finalState, FiniteDTMDescriptor.toCandidate,
+          monomialTimeBound, hc, TM.run]
+      have hDistinct := constant_final_states_distinct D hPattern
+      exact False.elim (hDistinct (by rw [hFalseState, hTrueState]))
+  | succ n =>
+      simp
 
 structure ResidualStructuralCertificate
     (D : FiniteDTMDescriptor) : Prop where
