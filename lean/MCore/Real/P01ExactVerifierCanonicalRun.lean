@@ -281,7 +281,7 @@ theorem prepared_canonical_halts_within_exact_global
             tape := preparedTape witness (encodeCircuit phi) }
           ({ state := .reject, tape := tape } : CheckedVerifierConfig)
           hreach hhalt
-      exact haltsWithin_mono_le m T
+      exact haltsWithin_mono_le checkedVerifierMachine m T
         { state := checkedVerifierMachine.initial,
           tape := preparedTape witness (encodeCircuit phi) }
         (by simpa [T] using hm) hmhalt
@@ -309,7 +309,7 @@ theorem prepared_canonical_halts_within_exact_global
                  (evalCircuit (witnessAssignment witness) phi)),
              tape := tape } : CheckedVerifierConfig)
           hreach hhalt
-      exact haltsWithin_mono_le m T
+      exact haltsWithin_mono_le checkedVerifierMachine m T
         { state := checkedVerifierMachine.initial,
           tape := preparedTape witness (encodeCircuit phi) }
         (by simpa [T] using hm) hmhalt
@@ -348,14 +348,14 @@ theorem prepared_canonical_accepts_iff_exact_global
           have : m ≤ T := by simpa [T] using hm
           omega
         simpa [heq] using hp
-      rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT]
+      rw [acceptsWithin_iff_of_reached_terminal T start terminal hreachT,
+        verifyBits_encode_iff]
       have hnotcnf : ¬ IsCNF phi := by
         intro hcnf
         have ht := (modeCheck_cnf_iff phi).2 hcnf
         rw [hmode] at ht
         contradiction
-      simp only [terminal, verifyBits_encode_iff, hnotcnf, iff_false]
-      simp [checkedVerifierMachine]
+      simp [terminal, checkedVerifierMachine, hnotcnf]
   | true =>
       obtain ⟨m, hm, tape, hreach⟩ :=
         prepared_cnf_reaches_semantic_final_within_exact_global
