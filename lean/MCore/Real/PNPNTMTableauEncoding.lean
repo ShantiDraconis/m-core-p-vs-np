@@ -45,6 +45,65 @@ def evalNTMCNF (sigma : Assignment) : NTMCNF -> Bool
   | [] => true
   | c :: cs => Bool.and (evalNTMClause sigma c) (evalNTMCNF sigma cs)
 
+
+
+theorem evalNTMCNF_append
+    (sigma : Assignment) (l1 l2 : NTMCNF) :
+    evalNTMCNF sigma (l1 ++ l2) = true <->
+      evalNTMCNF sigma l1 = true ∧
+      evalNTMCNF sigma l2 = true := by
+  induction l1 with
+  | nil =>
+      simp [evalNTMCNF]
+  | cons c cs ih =>
+      simp [evalNTMCNF, ih, Bool.and_eq_true]
+
+theorem evalNTMCNF_cons_iff
+    (sigma : Assignment) (c : NTMClause) (cs : NTMCNF) :
+    evalNTMCNF sigma (c :: cs) = true <->
+      evalNTMClause sigma c = true ∧
+      evalNTMCNF sigma cs = true := by
+  simp [evalNTMCNF, Bool.and_eq_true]
+
+theorem evalNTMCNF_of_mem
+    (sigma : Assignment) (f : NTMCNF) (c : NTMClause)
+    (hSat : evalNTMCNF sigma f = true)
+    (hc : c ∈ f) :
+    evalNTMClause sigma c = true := by
+  induction f with
+  | nil =>
+      simp at hc
+  | cons d ds ih =>
+      have hsplit :
+          evalNTMClause sigma d = true ∧
+          evalNTMCNF sigma ds = true :=
+        (evalNTMCNF_cons_iff sigma d ds).mp hSat
+      simp only [List.mem_cons] at hc
+      rcases hc with rfl | hc
+      · exact hsplit.1
+      · exact ih hsplit.2 hc
+
+@[simp] theorem evalNTMClause_singleton_pos
+    (sigma : Assignment) (v : Nat) :
+    evalNTMClause sigma [ntmPos v] = true <->
+      sigma v = true := by
+  cases h : sigma v <;>
+    simp [evalNTMClause, evalNTMLiteral, ntmPos, h]
+
+@[simp] theorem evalNTMClause_singleton_neg
+    (sigma : Assignment) (v : Nat) :
+    evalNTMClause sigma [ntmNeg v] = true <->
+      sigma v = false := by
+  cases h : sigma v <;>
+    simp [evalNTMClause, evalNTMLiteral, ntmNeg, h]
+
+@[simp] theorem evalNTMClause_singleton_litFor
+    (sigma : Assignment) (v : Nat) (b : Bool) :
+    evalNTMClause sigma [ntmLitFor v b] = true <->
+      sigma v = b := by
+  cases b <;>
+    simp [ntmLitFor]
+
 theorem eval_ntmLiteralCircuit
     (sigma : Assignment) (l : NTMLiteral) :
     evalCircuit sigma (ntmLiteralCircuit l) = evalNTMLiteral sigma l := by
