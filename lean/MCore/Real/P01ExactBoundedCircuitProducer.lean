@@ -1,3 +1,4 @@
+import Mathlib.Tactic
 import MCore.Real.P01CheckedEvalRunBoundedCertificate
 
 namespace MCore
@@ -97,7 +98,13 @@ theorem layout_consume_prefix
 theorem encodeCircuit_ne_nil
     (phi : CircuitK1.Circuit) :
     encodeCircuit phi ≠ [] := by
-  cases phi <;> simp [encodeCircuit]
+  cases phi with
+  | input i => simp [encodeCircuit]
+  | const v =>
+      cases v <;> simp [encodeCircuit]
+  | not child => simp [encodeCircuit]
+  | and left right => simp [encodeCircuit]
+  | or left right => simp [encodeCircuit]
 
 /-- One common loop envelope plus one exact circuit budget normalizes
 algebraically to the coefficient form used in all compositional budgets. -/
@@ -911,7 +918,7 @@ theorem and_exact_bounded_certificate
             (.andRight (evalCircuit sigma left))
           · simp
           · simpa [encodeCircuit, List.append_assoc] using hLayout
-        simpa [afterLeft, leftConsumed] using hp
+        simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
       obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
         hright hrightMode tail
@@ -1178,6 +1185,8 @@ theorem or_exact_bounded_certificate
     rw [modeCheck_or] at h
     simpa using h
   have hAllowed : tagAllowed mode .or = true := hparts.1.1
+  have hChildMode : childMode mode .or = .clause := by
+    cases mode <;> simp [tagAllowed, childMode] at hAllowed ⊢
   have hleftMode : modeCheck .clause left = true := hparts.1.2
   have hrightMode : modeCheck .clause right = true := hparts.2
 
@@ -1238,7 +1247,7 @@ theorem or_exact_bounded_certificate
                  (encodeCircuit (.or left right) ++ tail)
                  (encodeEvalFrames frames) padding }] := by
     simpa [cNeedLeft, leftConsumed, padLeft, encodeCircuit,
-      List.append_assoc] using h0
+      List.append_assoc, hChildMode] using h0
 
   have hLayoutLeft :
       CheckedLayoutBound n leftConsumed
@@ -1353,7 +1362,7 @@ theorem or_exact_bounded_certificate
         (.orRight (evalCircuit sigma left))
       · simp
       · simpa [encodeCircuit, List.append_assoc] using hLayout
-    simpa [afterLeft, leftConsumed] using hp
+    simpa [afterLeft, leftConsumed, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] using hp
 
   obtain ⟨m3, hm3, cfgRight, h3, hout3⟩ :=
     hright hrightMode tail
