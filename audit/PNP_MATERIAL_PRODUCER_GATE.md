@@ -14,17 +14,26 @@ are valid transports from a supplied lower bound, but are not producers of the l
 
 ## Material requirement
 
-A material P≠NP lane must construct, from a concrete standard complexity model,
-a language `L` with:
+A material P≠NP lane must construct, from the canonical complexity model, an
+operational producer for one explicit language `L`:
 
 ```
-NP L
-¬ P L
+InNP L
+FailureGenerator L
 ```
 
-without receiving `¬ P L` as a structure field or hypothesis equivalent to it.
+where `FailureGenerator L` computes a concrete counterexample input for every
+deterministic polynomial-time candidate and proves that the candidate is wrong
+on that input.
+
+The endpoint proposition `¬ InP L` must be **derived** from the generator.
+It is forbidden as an input field, hypothesis, oracle, or equivalent wrapper.
+
+Canonical material type:
+`MCore.Attack.CanonicalFailureProducer`.
 
 Current classification:
-- wrapper/transport: GREEN_TRANSPORT
-- genuine lower-bound producer: OPEN_MATH
+- `CanonicalNotInPWitness`: GREEN_TRANSPORT only
+- `CanonicalFailureProducer → ¬InP`: GREEN_DERIVATION
+- construction of `CanonicalFailureProducer.failure_generator`: OPEN_MATH
 - MATERIAL_GREEN: false
