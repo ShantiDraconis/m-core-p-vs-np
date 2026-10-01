@@ -198,3 +198,5 @@ import MCore.Real.P01RawCoreFailure
 import MCore.Real.P01RawCoreFailureRecursive
 
 import MCore.Real.P01RawClosureFinal
+
+import MCore.Real.P02KleeneFirewall
