@@ -16,6 +16,7 @@ open CanonicalSATWitness
 open P01CNFMode
 open P01EncodedStackEvaluator
 open P01EvalCursorMachine
+open P01EncodedFrameTape
 open P01WitnessPreservingPrep
 open P01CheckedVerifierInvariant
 open P01CheckedEvalRunLoopNTM
