@@ -1,0 +1,51 @@
+name: P02 Universal Failure Min-Cut
+
+on:
+  push:
+    branches:
+      - atk/p01-post-mincut-advance-20261001
+    paths:
+      - 'lean/MCore/Real/P02UniversalFailureMinCut.lean'
+      - '.github/workflows/p02-universal-failure-mincut.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mincut:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
+      - name: Resolve dependencies
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+      - name: Build P02 min-cut
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P02UniversalFailureMinCut
+      - name: Exact axiom audit
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P02UniversalFailureAudit.lean <<'EOF'
+          import MCore.Real.P02UniversalFailureMinCut
+          #print axioms MCore.Real.P02UniversalFailureMinCut.failureMode_iff_not_correctAt
+          #print axioms MCore.Real.P02UniversalFailureMinCut.producer_implies_universal_failure
+          #print axioms MCore.Real.P02UniversalFailureMinCut.producer_iff_universal_failure
+          #print axioms MCore.Real.P02UniversalFailureMinCut.producer_closes_internal_endpoint
+          EOF
+          lake env lean P02UniversalFailureAudit.lean | tee P02UniversalFailureAudit.log
+          ! grep -E 'sorryAx' P02UniversalFailureAudit.log
+      - name: Placeholder firewall
+        run: |
+          set -euo pipefail
+          ! grep -nE '(^|[^[:alnum:]_])(sorry|admit|sorryAx)([^[:alnum:]_]|$)' lean/MCore/Real/P02UniversalFailureMinCut.lean
+          ! grep -nE '^[[:space:]]*(axiom|constant|constants)[[:space:]]' lean/MCore/Real/P02UniversalFailureMinCut.lean
