@@ -264,6 +264,7 @@ def inputNodeDecode (n : Nat) : P01InputNodeCompositeNTM.InputNodeCompositeState
   else if n = 168 then .done true .done
   else .reject
 
+set_option maxRecDepth 10000 in
 @[simp] theorem inputNodeDecode_code
     (q : P01InputNodeCompositeNTM.InputNodeCompositeState) :
     inputNodeDecode (inputNodeCode q) = q := by
