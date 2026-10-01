@@ -61,9 +61,8 @@ theorem initialRightPart_length
     | zero =>
         simp
     | succ n ih =>
-        rw [List.range_succ, List.map_append, List.sum_append]
-        simp [ih, Nat.mul_succ, Nat.add_assoc, Nat.add_comm,
-          Nat.add_left_comm]
+        simp [List.range_succ, ih, Nat.mul_succ, Nat.add_assoc,
+          Nat.add_comm, Nat.add_left_comm]
   simpa [setRightCell_length] using hsum (radius x t)
 
 theorem boundedExecTableauCNF_length_gt_input
