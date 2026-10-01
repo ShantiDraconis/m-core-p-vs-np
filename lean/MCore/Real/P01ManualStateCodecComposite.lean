@@ -1,3 +1,4 @@
+set_option maxRecDepth 10000 in
 import MCore.Real.P01ManualStateCodecBase
 import MCore.Real.P01CheckedVerifierCompositeNTM
 
@@ -29,13 +30,13 @@ def frameCursorDecode (n : Nat) :
     frameCursorDecode (frameCursorCode f q) = (f, q) := by
   have h := cursorReturnCode_lt q
   cases f with
-  | neg => simp [frameCursorDecode, frameCursorCode, cursorReturnDecode_code]; omega
-  | andLeft => simp [frameCursorDecode, frameCursorCode, cursorReturnDecode_code]; omega
+  | neg => simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left]; omega
+  | andLeft => simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left]; omega
   | andRight b =>
-      cases b <;> simp [frameCursorDecode, frameCursorCode, cursorReturnDecode_code] <;> omega
-  | orLeft => simp [frameCursorDecode, frameCursorCode, cursorReturnDecode_code]; omega
+      cases b <;> simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left] <;> omega
+  | orLeft => simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left]; omega
   | orRight b =>
-      cases b <;> simp [frameCursorDecode, frameCursorCode, cursorReturnDecode_code] <;> omega
+      cases b <;> simp [frameCursorDecode, frameCursorCode, evalFrameCode, cursorReturnDecode_code, Nat.add_sub_cancel_left] <;> omega
 
 theorem frameCursorCode_lt
     (f : P01EncodedStackEvaluator.EvalFrame)
@@ -43,11 +44,11 @@ theorem frameCursorCode_lt
     frameCursorCode f q < 35 := by
   have h := cursorReturnCode_lt q
   cases f with
-  | neg => simp [frameCursorCode]; omega
-  | andLeft => simp [frameCursorCode]; omega
-  | andRight b => cases b <;> simp [frameCursorCode] <;> omega
-  | orLeft => simp [frameCursorCode]; omega
-  | orRight b => cases b <;> simp [frameCursorCode] <;> omega
+  | neg => simp [frameCursorCode, evalFrameCode]; omega
+  | andLeft => simp [frameCursorCode, evalFrameCode]; omega
+  | andRight b => cases b <;> simp [frameCursorCode, evalFrameCode] <;> omega
+  | orLeft => simp [frameCursorCode, evalFrameCode]; omega
+  | orRight b => cases b <;> simp [frameCursorCode, evalFrameCode] <;> omega
 
 def framePushPairCode
     (f : P01EncodedStackEvaluator.EvalFrame)
@@ -70,13 +71,13 @@ def framePushPairDecode (n : Nat) :
     framePushPairDecode (framePushPairCode f q) = (f, q) := by
   have h := framePushCode_lt q
   cases f with
-  | neg => simp [framePushPairDecode, framePushPairCode, framePushDecode_code]; omega
-  | andLeft => simp [framePushPairDecode, framePushPairCode, framePushDecode_code]; omega
+  | neg => simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left]; omega
+  | andLeft => simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left]; omega
   | andRight b =>
-      cases b <;> simp [framePushPairDecode, framePushPairCode, framePushDecode_code] <;> omega
-  | orLeft => simp [framePushPairDecode, framePushPairCode, framePushDecode_code]; omega
+      cases b <;> simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left] <;> omega
+  | orLeft => simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left]; omega
   | orRight b =>
-      cases b <;> simp [framePushPairDecode, framePushPairCode, framePushDecode_code] <;> omega
+      cases b <;> simp [framePushPairDecode, framePushPairCode, evalFrameCode, framePushDecode_code, Nat.add_sub_cancel_left] <;> omega
 
 theorem framePushPairCode_lt
     (f : P01EncodedStackEvaluator.EvalFrame)
@@ -84,11 +85,11 @@ theorem framePushPairCode_lt
     framePushPairCode f q < 161 := by
   have h := framePushCode_lt q
   cases f with
-  | neg => simp [framePushPairCode]; omega
-  | andLeft => simp [framePushPairCode]; omega
-  | andRight b => cases b <;> simp [framePushPairCode] <;> omega
-  | orLeft => simp [framePushPairCode]; omega
-  | orRight b => cases b <;> simp [framePushPairCode] <;> omega
+  | neg => simp [framePushPairCode, evalFrameCode]; omega
+  | andLeft => simp [framePushPairCode, evalFrameCode]; omega
+  | andRight b => cases b <;> simp [framePushPairCode, evalFrameCode] <;> omega
+  | orLeft => simp [framePushPairCode, evalFrameCode]; omega
+  | orRight b => cases b <;> simp [framePushPairCode, evalFrameCode] <;> omega
 
 def needExprStateCount : Nat := 401
 
@@ -131,19 +132,19 @@ def needExprDecode (n : Nat) : P01NeedExprCompositeNTM.NeedExprCompositeState :=
       simp [needExprDecode, needExprCode, h, cursorSeekDecode_code]
   | decode q =>
       have h := tagDecodeStateCode_lt q
-      simp [needExprDecode, needExprCode, h, tagDecodeStateDecode_code] <;> omega
+      simp [needExprDecode, needExprCode, h, tagDecodeStateDecode_code, Nat.add_sub_cancel_left] <;> omega
   | input q =>
       have h := inputNodeCode_lt q
-      simp [needExprDecode, needExprCode, inputNodeStateCount, h, inputNodeDecode_code] <;> omega
+      simp [needExprDecode, needExprCode, inputNodeStateCount, h, inputNodeDecode_code, Nat.add_sub_cancel_left] <;> omega
   | retValue b q =>
       have h := cursorReturnCode_lt q
-      cases b <;> simp [needExprDecode, needExprCode, h, cursorReturnDecode_code] <;> omega
+      cases b <;> simp [needExprDecode, needExprCode, h, cursorReturnDecode_code, Nat.add_sub_cancel_left] <;> omega
   | retPush f q =>
       have h := frameCursorCode_lt f q
-      simp [needExprDecode, needExprCode, h, frameCursorDecode_code] <;> omega
+      simp [needExprDecode, needExprCode, h, frameCursorDecode_code, Nat.add_sub_cancel_left] <;> omega
   | push f q =>
       have h := framePushPairCode_lt f q
-      simp [needExprDecode, needExprCode, h, framePushPairDecode_code] <;> omega
+      simp [needExprDecode, needExprCode, h, framePushPairDecode_code, Nat.add_sub_cancel_left] <;> omega
   | doneValue b => cases b <;> simp [needExprDecode, needExprCode]
   | doneNeed => simp [needExprDecode, needExprCode]
   | reject => simp [needExprDecode, needExprCode]
@@ -154,11 +155,11 @@ theorem needExprCode_lt
   cases q with
   | seek q =>
       have h := cursorSeekCode_lt q
-      simp [needExprCode, needExprStateCount]
+      simp [needExprCode, needExprStateCount, inputNodeStateCount]
       omega
   | decode q =>
       have h := tagDecodeStateCode_lt q
-      simp [needExprCode, needExprStateCount]
+      simp [needExprCode, needExprStateCount, inputNodeStateCount]
       omega
   | input q =>
       have h := inputNodeCode_lt q
@@ -166,14 +167,14 @@ theorem needExprCode_lt
       omega
   | retValue b q =>
       have h := cursorReturnCode_lt q
-      cases b <;> simp [needExprCode, needExprStateCount] <;> omega
+      cases b <;> simp [needExprCode, needExprStateCount, inputNodeStateCount] <;> omega
   | retPush f q =>
       have h := frameCursorCode_lt f q
-      simp [needExprCode, needExprStateCount]
+      simp [needExprCode, needExprStateCount, inputNodeStateCount]
       omega
   | push f q =>
       have h := framePushPairCode_lt f q
-      simp [needExprCode, needExprStateCount]
+      simp [needExprCode, needExprStateCount, inputNodeStateCount]
       omega
   | doneValue b => cases b <;> decide
   | doneNeed => decide
@@ -217,10 +218,10 @@ def haveValueDecode (n : Nat) : P01HaveValueCompositeNTM.HaveValueCompositeState
   | peek b => cases b <;> simp [haveValueDecode, haveValueCode]
   | pop b q =>
       have h := framePopCode_lt q
-      cases b <;> simp [haveValueDecode, haveValueCode, h, framePopDecode_code] <;> omega
+      cases b <;> simp [haveValueDecode, haveValueCode, h, framePopDecode_code, Nat.add_sub_cancel_left] <;> omega
   | push f q =>
       have h := framePushPairCode_lt f q
-      simp [haveValueDecode, haveValueCode, h, framePushPairDecode_code] <;> omega
+      simp [haveValueDecode, haveValueCode, h, framePushPairDecode_code, Nat.add_sub_cancel_left] <;> omega
   | doneValue b => cases b <;> simp [haveValueDecode, haveValueCode]
   | doneNeed => simp [haveValueDecode, haveValueCode]
   | reject => simp [haveValueDecode, haveValueCode]
@@ -277,11 +278,11 @@ def checkedEvalDecode (n : Nat) : P01CheckedEvalRunLoopNTM.CheckedEvalRunState :
   | need m q =>
       have h := needExprCode_lt q
       cases m <;>
-        simp [checkedEvalDecode, checkedEvalCode, needExprStateCount, h, needExprDecode_code] <;> omega
-  | have m q =>
+        simp [checkedEvalDecode, checkedEvalCode, needExprStateCount, h, needExprDecode_code, Nat.add_sub_cancel_left] <;> omega
+  | «have» m q =>
       have h := haveValueCode_lt q
       cases m <;>
-        simp [checkedEvalDecode, checkedEvalCode, haveValueStateCount, h, haveValueDecode_code] <;> omega
+        simp [checkedEvalDecode, checkedEvalCode, haveValueStateCount, h, haveValueDecode_code, Nat.add_sub_cancel_left] <;> omega
   | checkSource b => cases b <;> simp [checkedEvalDecode, checkedEvalCode]
   | final b => cases b <;> simp [checkedEvalDecode, checkedEvalCode]
   | reject => simp [checkedEvalDecode, checkedEvalCode]
@@ -294,7 +295,7 @@ theorem checkedEvalCode_lt
       have h := needExprCode_lt q
       cases m <;>
         simp [checkedEvalCode, checkedEvalStateCount, needExprStateCount] at * <;> omega
-  | have m q =>
+  | «have» m q =>
       have h := haveValueCode_lt q
       cases m <;>
         simp [checkedEvalCode, checkedEvalStateCount, haveValueStateCount] at * <;> omega
