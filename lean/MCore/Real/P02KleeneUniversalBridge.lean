@@ -81,8 +81,8 @@ theorem counterexample_fails
   have hflip :
       CanonicalSAT (counterexample B) ↔
         ¬ DeclaredAccepts M (counterexample B) := by
-    exact B.realizer.flips_of_fixed
-      (fixedCode B) (fixedCode_spec B)
+    apply B.realizer.flips_of_fixed
+    exact fixedCode_spec B
   intro hCorrect
   rcases hCorrect with ⟨_, hSem⟩
   by_cases hAcc : DeclaredAccepts M (counterexample B)
