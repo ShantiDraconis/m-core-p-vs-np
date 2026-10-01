@@ -18,7 +18,7 @@ theorem exact_encoding_or_decode_none
       decodeCircuit bs = none := by
   cases hdec : decodeCircuit bs with
   | none =>
-      exact Or.inr hdec
+      exact Or.inr rfl
   | some phi =>
       have hdec' : decodeCircuit bs = some phi := by simpa using hdec
       exact Or.inl ⟨phi, decodeCircuit_sound bs phi hdec'⟩
@@ -32,7 +32,7 @@ theorem verifyBits_false_of_decode_none
   intro h
   rcases h with ⟨phi, hphi, hcnf, heval⟩
   rw [hdec] at hphi
-  contradiction
+  cases hphi
 
 
 #print axioms MCore.Real.P01RawSourceSplit.exact_encoding_or_decode_none
