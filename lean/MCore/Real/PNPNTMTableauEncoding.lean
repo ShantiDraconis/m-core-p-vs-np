@@ -3013,6 +3013,170 @@ theorem ntmUniqueAt_all
         exact ntmUniqueAt_active_step M x t s sigma hSat hslt hU
           q a hq ha ⟨hAcc, hRej⟩
 
+
+noncomputable def decodeState
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    Fin (M.stateCount + 1) :=
+  (ntmUniqueAt_all M x t sigma hSat s hs).hState.choose
+
+noncomputable def decodeHead
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    Option Bool :=
+  (ntmUniqueAt_all M x t sigma hSat s hs).hHead.choose
+
+noncomputable def decodeLeftCell
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    Option Bool :=
+  ((ntmUniqueAt_all M x t sigma hSat s hs).hLeft i hi).choose
+
+noncomputable def decodeRightCell
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    Option Bool :=
+  ((ntmUniqueAt_all M x t sigma hSat s hs).hRight i hi).choose
+
+def trimTrailingBlank
+    (blank : Option Bool) (xs : List (Option Bool)) : List (Option Bool) :=
+  (xs.reverse.dropWhile (fun a => decide (a = blank))).reverse
+
+noncomputable def decodeLeftList
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : List (Option Bool) :=
+  trimTrailingBlank M.machine.blank <|
+    List.ofFn (fun i : Fin (ntmRadius x t) =>
+      decodeLeftCell M x t sigma hSat s hs i.val i.isLt)
+
+noncomputable def decodeRightList
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : List (Option Bool) :=
+  trimTrailingBlank M.machine.blank <|
+    List.ofFn (fun i : Fin (ntmRadius x t) =>
+      decodeRightCell M x t sigma hSat s hs i.val i.isLt)
+
+noncomputable def decodeConfig
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : NTMConfig M :=
+  { state := decodeState M x t sigma hSat s hs
+    tape :=
+      { left := decodeLeftList M x t sigma hSat s hs
+        head := decodeHead M x t sigma hSat s hs
+        right := decodeRightList M x t sigma hSat s hs } }
+
+theorem decodeState_true
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    sigma (ntmStateVar M t s (decodeState M x t sigma hSat s hs)) = true := by
+  exact (ntmUniqueAt_all M x t sigma hSat s hs).hState.choose_spec.1
+
+theorem decodeState_unique
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (r : Fin (M.stateCount + 1))
+    (hr : sigma (ntmStateVar M t s r) = true) :
+    r = decodeState M x t sigma hSat s hs := by
+  exact (ntmUniqueAt_all M x t sigma hSat s hs).hState.choose_spec.2 r hr
+
+theorem decodeHead_true
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    sigma (ntmHeadVar M t s (decodeHead M x t sigma hSat s hs)) = true := by
+  exact (ntmUniqueAt_all M x t sigma hSat s hs).hHead.choose_spec.1
+
+theorem decodeHead_unique
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (a : Option Bool)
+    (ha : sigma (ntmHeadVar M t s a) = true) :
+    a = decodeHead M x t sigma hSat s hs := by
+  exact (ntmUniqueAt_all M x t sigma hSat s hs).hHead.choose_spec.2 a ha
+
+theorem decodeLeftCell_true
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    sigma (ntmLeftVar M x t s i
+      (decodeLeftCell M x t sigma hSat s hs i hi)) = true := by
+  exact ((ntmUniqueAt_all M x t sigma hSat s hs).hLeft i hi).choose_spec.1
+
+theorem decodeLeftCell_unique
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t)
+    (b : Option Bool)
+    (hb : sigma (ntmLeftVar M x t s i b) = true) :
+    b = decodeLeftCell M x t sigma hSat s hs i hi := by
+  exact ((ntmUniqueAt_all M x t sigma hSat s hs).hLeft i hi).choose_spec.2 b hb
+
+theorem decodeRightCell_true
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t) :
+    sigma (ntmRightVar M x t s i
+      (decodeRightCell M x t sigma hSat s hs i hi)) = true := by
+  exact ((ntmUniqueAt_all M x t sigma hSat s hs).hRight i hi).choose_spec.1
+
+theorem decodeRightCell_unique
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t)
+    (i : Nat) (hi : i < ntmRadius x t)
+    (b : Option Bool)
+    (hb : sigma (ntmRightVar M x t s i b) = true) :
+    b = decodeRightCell M x t sigma hSat s hs i hi := by
+  exact ((ntmUniqueAt_all M x t sigma hSat s hs).hRight i hi).choose_spec.2 b hb
+
+@[simp] theorem decodeConfig_state
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    (decodeConfig M x t sigma hSat s hs).state =
+      decodeState M x t sigma hSat s hs := by
+  rfl
+
+@[simp] theorem decodeConfig_head
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) :
+    (decodeConfig M x t sigma hSat s hs).tape.head =
+      decodeHead M x t sigma hSat s hs := by
+  rfl
+
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
