@@ -27,9 +27,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Lean
         run: |
-          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          curl --retry 5 --retry-delay 2 --retry-all-errors -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o /tmp/elan-init.sh
+          sh /tmp/elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)"
+          for i in 1 2 3 4 5; do
+            $HOME/.elan/bin/elan toolchain install "$(cat lean-toolchain)" && break
+            test "$i" = 5 && exit 1
+            sleep $((i * 3))
+          done
           $HOME/.elan/bin/elan default "$(cat lean-toolchain)"
       - name: Resolve dependencies
         run: |
