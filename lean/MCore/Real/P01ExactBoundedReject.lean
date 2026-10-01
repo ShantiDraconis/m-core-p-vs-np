@@ -434,9 +434,15 @@ theorem and_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
+            have hmul' :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n ≤
+                  8 * (evalStepCount (.and left right) + 1) *
+                    checkedLoopStepEnvelope n := by
+              simpa [E, Nat.add_mul, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+                using hmul
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            exact Nat.le_trans hraw hmul
+            exact Nat.le_trans hraw hmul'
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .cnf right = false := by
@@ -603,9 +609,18 @@ theorem and_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
+            have hmul' :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n +
+                    checkedLoopStepEnvelope n +
+                    8 * (evalStepCount right + 1) * checkedLoopStepEnvelope n ≤
+                  8 * (evalStepCount (.and left right) + 1) *
+                    checkedLoopStepEnvelope n := by
+              simpa [E, Nat.add_mul, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm,
+                Nat.add_assoc, Nat.add_left_comm, Nat.add_comm]
+                using hmul
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            exact Nat.le_trans hraw hmul
+            exact Nat.le_trans hraw hmul'
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 
@@ -696,7 +711,7 @@ theorem or_exact_bounded_reject
       have h0' :
           cNeedLeft ∈
             checkedEvalRunLoopMachine.runBranches m0
-              [{ state := .need mode needExprCompositeMachine.initial,
+              [{ state := .need .clause needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right) ++ tail)
@@ -728,7 +743,7 @@ theorem or_exact_bounded_reject
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               m0 m1
-              [{ state := .need mode needExprCompositeMachine.initial,
+              [{ state := .need .clause needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right) ++ tail)
@@ -748,9 +763,15 @@ theorem or_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
+            have hmul' :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n ≤
+                  8 * (evalStepCount (.or left right) + 1) *
+                    checkedLoopStepEnvelope n := by
+              simpa [E, Nat.add_mul, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+                using hmul
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            exact Nat.le_trans hraw hmul
+            exact Nat.le_trans hraw hmul'
           exact ⟨m0 + m1, hbudget, cfgReject, hAll, hrej⟩
       | true =>
           have hrightMode : modeCheck .clause right = false := by
@@ -774,7 +795,7 @@ theorem or_exact_bounded_reject
           have h01 :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               m0 m1
-              [{ state := .need mode needExprCompositeMachine.initial,
+              [{ state := .need .clause needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right) ++ tail)
@@ -835,7 +856,7 @@ theorem or_exact_bounded_reject
           have h012 :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + m1) m2
-              [{ state := .need mode needExprCompositeMachine.initial,
+              [{ state := .need .clause needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right) ++ tail)
@@ -892,7 +913,7 @@ theorem or_exact_bounded_reject
           have hAll :=
             mem_runBranches_trans checkedEvalRunLoopMachine
               (m0 + m1 + m2) m3
-              [{ state := .need mode needExprCompositeMachine.initial,
+              [{ state := .need .clause needExprCompositeMachine.initial,
                  tape :=
                    evalCursorStackEndTape witness consumed
                      (encodeCircuit (.or left right) ++ tail)
@@ -917,9 +938,18 @@ theorem or_exact_bounded_reject
               simp [evalStepCount]
               omega
             have hmul := Nat.mul_le_mul_right E hcoef
+            have hmul' :
+                checkedLoopStepEnvelope n +
+                    8 * (evalStepCount left + 1) * checkedLoopStepEnvelope n +
+                    checkedLoopStepEnvelope n +
+                    8 * (evalStepCount right + 1) * checkedLoopStepEnvelope n ≤
+                  8 * (evalStepCount (.or left right) + 1) *
+                    checkedLoopStepEnvelope n := by
+              simpa [E, Nat.add_mul, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm,
+                Nat.add_assoc, Nat.add_left_comm, Nat.add_comm]
+                using hmul
             unfold checkedCircuitBudget at hraw ⊢
-            dsimp [E] at hmul
-            exact Nat.le_trans hraw hmul
+            exact Nat.le_trans hraw hmul'
           exact ⟨m0 + m1 + m2 + m3, hbudget, cfgReject, hAll, hrej⟩
 
 /-- Exact bounded negative structural producer for every canonical circuit. -/
