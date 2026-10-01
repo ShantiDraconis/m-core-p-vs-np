@@ -1,6 +1,7 @@
-set_option maxRecDepth 10000
 import MCore.Real.P01ManualStateCodecBase
 import MCore.Real.P01CheckedVerifierCompositeNTM
+
+set_option maxRecDepth 10000
 
 namespace MCore
 namespace Real
