@@ -56,7 +56,17 @@ theorem failureAt_iff_nonhalting_or_mismatch
       ¬ HaltsAtDeclaredBound M x ∨ SemanticMismatch M x := by
   unfold FailureAt SemanticMismatch
   rw [correctAt_iff_halts_and_semantics]
-  tauto
+  constructor
+  · intro h
+    by_cases hH : HaltsAtDeclaredBound M x
+    · right
+      intro hSem
+      exact h ⟨hH, hSem⟩
+    · exact Or.inl hH
+  · intro h hBoth
+    rcases h with hH | hSem
+    · exact hH hBoth.1
+    · exact hSem hBoth.2
 
 /-- Mismatch can be witnessed in exactly one of the two Boolean directions. -/
 theorem semanticMismatch_iff_wrong_yes_or_wrong_no
@@ -66,7 +76,32 @@ theorem semanticMismatch_iff_wrong_yes_or_wrong_no
       (AcceptsAtDeclaredBound M x ∧ ¬ SATTarget x) ∨
       (¬ AcceptsAtDeclaredBound M x ∧ SATTarget x) := by
   unfold SemanticMismatch
-  tauto
+  constructor
+  · intro h
+    by_cases hA : AcceptsAtDeclaredBound M x
+    · left
+      refine ⟨hA, ?_⟩
+      intro hSAT
+      apply h
+      constructor
+      · intro _
+        exact hSAT
+      · intro _
+        exact hA
+    · right
+      refine ⟨hA, ?_⟩
+      apply Classical.byContradiction
+      intro hNotSAT
+      apply h
+      constructor
+      · intro hAcc
+        exact False.elim (hA hAcc)
+      · intro hSAT
+        exact False.elim (hNotSAT hSAT)
+  · intro h hEq
+    rcases h with ⟨hA, hNotSAT⟩ | ⟨hNotA, hSAT⟩
+    · exact hNotSAT (hEq.mp hA)
+    · exact hNotA (hEq.mpr hSAT)
 
 /-- Canonical universal lower bound, stated directly as a failure input for
 every polynomial-time deterministic candidate. -/
