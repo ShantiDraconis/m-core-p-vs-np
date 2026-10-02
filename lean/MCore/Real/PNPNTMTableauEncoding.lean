@@ -770,7 +770,7 @@ theorem ntmChoice_exists_nat_of_guard
       sigma (ntmChoiceVar M x t s q a j) = true := by
   have hfirst :=
     (evalNTMCNF_append sigma
-      [[ntmGuardChoiceClause M x t s q a]]
+      [ntmGuardChoiceClause M x t s q a]
       ((ntmIndexedTransitions (M.machine.transition q a)).flatMap
           (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
        ntmAtMostOneChoiceCNF M x t s q a ++
@@ -869,7 +869,7 @@ theorem activeChoice_atMostOne_sat
   let entries := ntmIndexedTransitions (M.machine.transition q a)
   have h1 :=
     (evalNTMCNF_append sigma
-      [[ntmGuardChoiceClause M x t s q a]]
+      [ntmGuardChoiceClause M x t s q a]
       (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
        ntmAtMostOneChoiceCNF M x t s q a ++
        entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
@@ -899,7 +899,7 @@ theorem activeChoice_choiceGuards_sat
   let entries := ntmIndexedTransitions (M.machine.transition q a)
   have h1 :=
     (evalNTMCNF_append sigma
-      [[ntmGuardChoiceClause M x t s q a]]
+      [ntmGuardChoiceClause M x t s q a]
       (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
        ntmAtMostOneChoiceCNF M x t s q a ++
        entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
@@ -1074,7 +1074,7 @@ theorem activeChoice_choiceEffects_sat
   let entries := ntmIndexedTransitions (M.machine.transition q a)
   have h1 :=
     (evalNTMCNF_append sigma
-      [[ntmGuardChoiceClause M x t s q a]]
+      [ntmGuardChoiceClause M x t s q a]
       (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
        ntmAtMostOneChoiceCNF M x t s q a ++
        entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
@@ -6126,7 +6126,7 @@ theorem pathAssignment_activeChoice_sat_of_mismatch
   let sigma := pathAssignment M x t path hPath
   let entries := ntmIndexedTransitions (M.machine.transition q a)
   have hfirst :
-      evalNTMCNF sigma [[ntmGuardChoiceClause M x t s q a]] = true := by
+      evalNTMCNF sigma [ntmGuardChoiceClause M x t s q a] = true := by
     simp [evalNTMCNF,
       pathAssignment_guardChoiceClause_sat_of_mismatch
         M x t s path hPath hs q a hmismatch]
@@ -6961,7 +6961,7 @@ theorem pathAssignment_activeChoice_actual_sat
     simpa [sigma, a] using
       pathAssignment_actual_head_true M x t s path hPath (by omega)
   have hfirst :
-      evalNTMCNF sigma [[ntmGuardChoiceClause M x t s q a]] = true := by
+      evalNTMCNF sigma [ntmGuardChoiceClause M x t s q a] = true := by
     have hjmem :
         (j, (M.machine.transition q a).get ⟨j, by simpa [q, a, j] using hj⟩) ∈ entries := by
       simpa [entries] using indexedTransitions_get_mem
@@ -7050,14 +7050,17 @@ theorem pathAssignment_activeChoice_actual_sat
     have hpLt := indexedTransitions_index_lt (M.machine.transition q a)
       (by simpa [entries] using hp)
     by_cases hpj : p.1 = j
-    · have hpVal :
-          p.2 = (M.machine.transition q a).get
-            ⟨j, by simpa [hpj] using hpLt⟩ := by
-        apply indexedTransitions_index_value (M.machine.transition q a) j p.2
-        · simpa [entries, hpj] using hp
-        · simpa [hpj] using hpLt
-      subst p
-      simpa [q, a, j, hpVal] using
+    · rcases p with ⟨idx, trp⟩
+      dsimp at hpj hpLt hp ⊢
+      subst idx
+      have hpVal :
+          trp = (M.machine.transition q a).get
+            ⟨j, by simpa using hpLt⟩ := by
+        apply indexedTransitions_index_value (M.machine.transition q a) j trp
+        · simpa [entries] using hp
+        · simpa using hpLt
+      subst trp
+      simpa [q, a, j] using
         pathAssignment_selected_effect_sat M x t s path hPath hs hActive
           (by simpa [q, a, j] using hj)
     · have hpFalse :
@@ -7081,41 +7084,23 @@ theorem pathAssignment_transitionCase_sat
     (q : Fin (M.stateCount + 1)) (a : Option Bool) :
     evalNTMCNF (pathAssignment M x t path hPath)
       (ntmTransitionCaseCNF M x t s q a) = true := by
-  by_cases hhaltBool :
-      M.machine.accepting q || M.machine.rejecting q = true
-  · have hHalt :
-        M.machine.accepting q = true ∨ M.machine.rejecting q = true := by
-      exact Bool.or_eq_true.mp hhaltBool
-    simpa [ntmTransitionCaseCNF, hhaltBool] using
+  by_cases hHalt :
+      M.machine.accepting q = true ∨ M.machine.rejecting q = true
+  · simpa [ntmTransitionCaseCNF, hHalt] using
       pathAssignment_haltedStutter_sat M x t s path hPath hs q a hHalt
-  · have hfalse :
-        M.machine.accepting q || M.machine.rejecting q = false := by
-      cases h :
-          M.machine.accepting q || M.machine.rejecting q <;> simp_all
-    by_cases hq : q = (path ⟨s, by omega⟩).state
+  · by_cases hq : q = (path ⟨s, by omega⟩).state
     · by_cases ha : a = (path ⟨s, by omega⟩).tape.head
       · subst q
         subst a
         have hActive :
             NTMActive M (path ⟨s, by omega⟩) := by
-          intro hhalt
-          rcases hhalt with hacc | hrej
-          · have : M.machine.accepting (path ⟨s, by omega⟩).state = false := by
-              have hor := hfalse
-              cases ha0 : M.machine.accepting (path ⟨s, by omega⟩).state <;>
-                simp_all
-            simp [hacc] at this
-          · have : M.machine.rejecting (path ⟨s, by omega⟩).state = false := by
-              have hor := hfalse
-              cases hr0 : M.machine.rejecting (path ⟨s, by omega⟩).state <;>
-                simp_all
-            simp [hrej] at this
-        simpa [ntmTransitionCaseCNF, hfalse] using
+          exact hHalt
+        simpa [ntmTransitionCaseCNF, hHalt] using
           pathAssignment_activeChoice_actual_sat M x t s path hPath hs hActive
-      · simpa [ntmTransitionCaseCNF, hfalse] using
+      · simpa [ntmTransitionCaseCNF, hHalt] using
           pathAssignment_activeChoice_sat_of_mismatch
             M x t s path hPath hs q a (Or.inr ha)
-    · simpa [ntmTransitionCaseCNF, hfalse] using
+    · simpa [ntmTransitionCaseCNF, hHalt] using
         pathAssignment_activeChoice_sat_of_mismatch
           M x t s path hPath hs q a (Or.inl hq)
 
@@ -7802,7 +7787,7 @@ theorem ntmActiveChoice_weight_le
   have hm : m <= ntmBranchBound M :=
     ntmBranchBound_ge_transition_length M q a
   have hfirst :
-      ntmCNFWeight [[ntmGuardChoiceClause M x t s q a]] = m + 3 := by
+      ntmCNFWeight [ntmGuardChoiceClause M x t s q a] = m + 3 := by
     simp [ntmCNFWeight, ntmGuardChoiceClause_weight, m]
   have hguards :
       ntmCNFWeight
