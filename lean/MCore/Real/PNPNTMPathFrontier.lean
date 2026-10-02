@@ -81,22 +81,41 @@ theorem mem_runBranches_append
 
 
 
+theorem runBranches_nil
+    {State Symbol : Type}
+    (M : NTM State Symbol)
+    (fuel : Nat) :
+    M.runBranches fuel [] = [] := by
+  induction fuel with
+  | zero => rfl
+  | succ fuel ih =>
+      simpa [NTM.runBranches] using ih
+
 theorem runBranches_halted_singleton
     (M : PolyNTMCandidate)
     (c : NTMConfig M)
     (fuel : Nat)
     (h : NTMHalted M c) :
     M.machine.runBranches fuel [c] = [c] := by
-  have hhalt :
+  have hflag :
       M.machine.accepting c.state || M.machine.rejecting c.state = true := by
     rcases h with ha | hr
     · simp [ha]
     · simp [hr]
   induction fuel with
-  | zero =>
-      rfl
+  | zero => rfl
   | succ fuel ih =>
-      simp [NTM.runBranches, hhalt, ih]
+      rw [NTM.runBranches]
+      have hHalted :
+          [c].filter (fun q =>
+            M.machine.accepting q.state || M.machine.rejecting q.state) = [c] := by
+        simp [hflag]
+      have hActive :
+          [c].filter (fun q =>
+            !(M.machine.accepting q.state || M.machine.rejecting q.state)) = [] := by
+        simp [hflag]
+      rw [hHalted, hActive]
+      simpa using ih
 
 theorem mem_runBranches_flatMap
     {State Symbol : Type}
@@ -109,7 +128,7 @@ theorem mem_runBranches_flatMap
       ∃ x ∈ xs, z ∈ M.runBranches fuel (f x) := by
   induction xs with
   | nil =>
-      simp [NTM.runBranches]
+      simp [runBranches_nil]
   | cons x xs ih =>
       simp only [List.flatMap_cons]
       rw [mem_runBranches_append M fuel (f x) (xs.flatMap f) z]
@@ -156,12 +175,22 @@ theorem runBranches_singleton_succ_halted
     (h : NTMHalted M c) :
     M.machine.runBranches (fuel + 1) [c] =
       M.machine.runBranches fuel [c] := by
-  have hhalt :
+  have hflag :
       M.machine.accepting c.state || M.machine.rejecting c.state = true := by
     rcases h with ha | hr
     · simp [ha]
     · simp [hr]
-  simp [NTM.runBranches, hhalt]
+  rw [NTM.runBranches]
+  have hHalted :
+      [c].filter (fun q =>
+        M.machine.accepting q.state || M.machine.rejecting q.state) = [c] := by
+    simp [hflag]
+  have hActive :
+      [c].filter (fun q =>
+        !(M.machine.accepting q.state || M.machine.rejecting q.state)) = [] := by
+    simp [hflag]
+  rw [hHalted, hActive]
+  rfl
 
 theorem runBranches_singleton_succ_active
     (M : PolyNTMCandidate)
@@ -170,16 +199,22 @@ theorem runBranches_singleton_succ_active
     (h : NTMActive M c) :
     M.machine.runBranches (fuel + 1) [c] =
       M.machine.runBranches fuel (M.machine.successors c) := by
-  have hnot :
+  have hflag :
       M.machine.accepting c.state || M.machine.rejecting c.state = false := by
     apply Bool.eq_false_iff.mpr
     intro htrue
-    have hor :
-        M.machine.accepting c.state = true \/
-          M.machine.rejecting c.state = true := by
-      exact Bool.or_eq_true.mp htrue
-    exact h hor
-  simp [NTM.runBranches, hnot]
+    exact h (Bool.or_eq_true.mp htrue)
+  rw [NTM.runBranches]
+  have hHalted :
+      [c].filter (fun q =>
+        M.machine.accepting q.state || M.machine.rejecting q.state) = [] := by
+    simp [hflag]
+  have hActive :
+      [c].filter (fun q =>
+        !(M.machine.accepting q.state || M.machine.rejecting q.state)) = [c] := by
+    simp [hflag]
+  rw [hHalted, hActive]
+  rfl
 
 def RunBranchesPathEquivalence : Prop :=
   ∀ (M : PolyNTMCandidate) (fuel : Nat) (c z : NTMConfig M),
@@ -201,8 +236,9 @@ theorem mem_runBranches_list_iff_exists_singleton
     | nil => rfl
     | cons x xs ih =>
         simp [ih]
-  rw [← hflat]
-  exact mem_runBranches_flatMap M fuel xs (fun x => [x]) z
+  have h :=
+    mem_runBranches_flatMap M fuel xs (fun x => [x]) z
+  simpa [hflat] using h
 
 theorem runBranches_iff_runPath
     (M : PolyNTMCandidate)
@@ -351,6 +387,13 @@ def tailFinPath
     Fin (n + 1) -> α :=
   fun i => path i.succ
 
+@[simp] theorem tailFinPath_last
+    {n : Nat} {α : Type}
+    (path : Fin (n + 2) -> α) :
+    tailFinPath path (Fin.last n) =
+      path (Fin.last (n + 1)) := by
+  rfl
+
 theorem tailFinPath_isPath
     (M : PolyNTMCandidate)
     (fuel : Nat)
@@ -391,18 +434,20 @@ theorem finPath_to_runPath
         simpa [c1, h.1] using hs
       rcases hfirst with hhalt | hactive
       · rcases hhalt with ⟨hcHalt, hc1⟩
-        subst c1
+        have hrun' :
+            NTMRunPath M fuel c (tail (Fin.last fuel)) := by
+          simpa [hc1] using hrun
         have hout :
             NTMRunPath M (fuel + 1) c
               (tail (Fin.last fuel)) :=
-          NTMRunPath.halted hcHalt hrun
-        simpa [tail, tailFinPath] using hout
+          NTMRunPath.halted hcHalt hrun'
+        simpa [tail] using hout
       · rcases hactive with ⟨hcActive, hc1mem⟩
         have hout :
             NTMRunPath M (fuel + 1) c
               (tail (Fin.last fuel)) :=
           NTMRunPath.active hcActive hc1mem hrun
-        simpa [tail, tailFinPath] using hout
+        simpa [tail] using hout
 
 theorem acceptsWithin_to_path
     (M : PolyNTMCandidate)
