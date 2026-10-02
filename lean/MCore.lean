@@ -180,3 +180,5 @@ import MCore.Real.P02ExactDiagonalFrontier
 import MCore.Real.P02BehavioralAlignment
 
 import MCore.Real.P02KleeneGapAudit
+
+import MCore.Real.P03ClosureKernel
