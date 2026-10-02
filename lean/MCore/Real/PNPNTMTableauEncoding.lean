@@ -6156,7 +6156,7 @@ theorem pathAssignment_activeChoice_sat_of_mismatch
       M x t s path hPath hs q a p.1 hpLt hmismatch
     exact eval_choiceEffect_of_choice_false sigma M x t s q a p hpFalse
   simp only [ntmActiveChoiceCNF, evalNTMCNF_append]
-  exact ⟨hfirst, hguards, hamo, heffects⟩
+  exact ⟨⟨⟨hfirst, hguards⟩, hamo⟩, heffects⟩
 
 
 theorem eval_haltedStutter_guard_true
@@ -6659,6 +6659,7 @@ theorem pathAssignment_selected_effect_sat
             [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
             M x t s qNext write by
         simp [ntmChoiceEffectCNF, htrDef]]
+      unfold ntmStayEffectCNF
       rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
@@ -6706,6 +6707,7 @@ theorem pathAssignment_selected_effect_sat
             [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
             M x t s qNext write by
         simp [ntmChoiceEffectCNF, htrDef]]
+      unfold ntmLeftEffectCNF
       rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
@@ -6795,6 +6797,7 @@ theorem pathAssignment_selected_effect_sat
             [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
             M x t s qNext write by
         simp [ntmChoiceEffectCNF, htrDef]]
+      unfold ntmRightEffectCNF
       rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
@@ -6901,7 +6904,7 @@ theorem indexedTransitionsAux_index_value
               indexedTransitionsAux_index_ge xs (start + 1) start tr htail
             omega
       | succ j =>
-          have hj' : j < xs.length := by omega
+          have hj' : j < xs.length := by simpa using hj
           simp only [ntmIndexedTransitionsAux, List.mem_cons] at hmem
           rcases hmem with hhead | htail
           · have hEq : start + (j + 1) = start := congrArg Prod.fst hhead
