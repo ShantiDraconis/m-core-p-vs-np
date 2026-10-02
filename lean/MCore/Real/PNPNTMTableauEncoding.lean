@@ -368,7 +368,13 @@ theorem evalNTMCNF_append
   | nil =>
       simp [evalNTMCNF]
   | cons c cs ih =>
-      simp [evalNTMCNF, ih, Bool.and_eq_true]
+      simp only [List.cons_append, evalNTMCNF, Bool.and_eq_true]
+      rw [ih]
+      constructor
+      · rintro ⟨hc, hcs, hl2⟩
+        exact ⟨⟨hc, hcs⟩, hl2⟩
+      · rintro ⟨⟨hc, hcs⟩, hl2⟩
+        exact ⟨hc, hcs, hl2⟩
 
 theorem evalNTMCNF_cons_iff
     (sigma : Assignment) (c : NTMClause) (cs : NTMCNF) :
@@ -484,7 +490,11 @@ theorem evalNTMCNF_ofFn_litFor_iff
       forall i : Fin n, sigma (v i) = b i := by
   induction n with
   | zero =>
-      simp [evalNTMCNF]
+      constructor
+      · intro _ i
+        exact Fin.elim0 i
+      · intro _
+        rfl
   | succ n ih =>
       rw [List.ofFn_succ]
       rw [evalNTMCNF_cons_iff]
@@ -525,127 +535,42 @@ theorem eval_ntmSetSymbolClauses_nil_iff
     evalNTMCNF sigma (ntmSetSymbolClauses [] varAt target) = true <->
       forall a : Option Bool,
         sigma (varAt a) = decide (a = target) := by
-  cases target with
-  | none =>
-      constructor
-      · intro h a
-        rcases (evalNTMCNF_append sigma
-          [[ntmLitFor (varAt none) true]]
-          [[ntmLitFor (varAt (some false)) false],
-           [ntmLitFor (varAt (some true)) false]]).mp
-          (by simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF] using h) with
-          ⟨h0, hrest⟩
-        have hn : sigma (varAt none) = true := by
-          simpa [evalNTMCNF] using h0
-        have hr := hrest
+  constructor
+  · intro h a
+    cases target with
+    | none =>
         cases a with
-        | none => simpa using hn
-        | some b =>
-            cases b <;>
-              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
-      · intro h
-        have hnone := h none
-        have hf := h (some false)
-        have ht := h (some true)
-        simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-          evalNTMClause, evalNTMLiteral, ntmLitFor] using
-          And.intro hnone (And.intro hf ht)
-  | some targetBool =>
-      cases targetBool <;>
-        constructor
-        · intro h a
+        | none =>
+            simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+              evalNTMClause, evalNTMLiteral, ntmLitFor] using h
+        | some av =>
+            cases av <;>
+              simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                evalNTMClause, evalNTMLiteral, ntmLitFor] using h
+    | some tv =>
+        cases tv <;>
           cases a with
           | none =>
-              simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-                evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
-          | some b =>
-              cases b <;>
-                simp [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
-                  evalNTMClause, evalNTMLiteral, ntmLitFor] at h ⊢
-        · intro h
-          have hnone := h none
-          have hf := h (some false)
-          have ht := h (some true)
+              simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                evalNTMClause, evalNTMLiteral, ntmLitFor] using h
+          | some av =>
+              cases av <;>
+                simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+                  evalNTMClause, evalNTMLiteral, ntmLitFor] using h
+  · intro h
+    have hn := h none
+    have hf := h (some false)
+    have ht := h (some true)
+    cases target with
+    | none =>
+        simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
+          evalNTMClause, evalNTMLiteral, ntmLitFor] using
+          And.intro hn (And.intro hf ht)
+    | some tv =>
+        cases tv <;>
           simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF,
             evalNTMClause, evalNTMLiteral, ntmLitFor] using
-            And.intro hnone (And.intro hf ht)
-
-theorem eval_ntmSetLeftCell_nil_iff
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment) (i : Nat) (a : Option Bool) :
-    evalNTMCNF sigma (ntmSetLeftCell [] M x t 0 i a) = true <->
-      forall b : Option Bool,
-        sigma (ntmLeftVar M x t 0 i b) = decide (b = a) := by
-  exact eval_ntmSetSymbolClauses_nil_iff
-    sigma (ntmLeftVar M x t 0 i) a
-
-theorem eval_ntmSetRightCell_nil_iff
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment) (i : Nat) (a : Option Bool) :
-    evalNTMCNF sigma (ntmSetRightCell [] M x t 0 i a) = true <->
-      forall b : Option Bool,
-        sigma (ntmRightVar M x t 0 i b) = decide (b = a) := by
-  exact eval_ntmSetSymbolClauses_nil_iff
-    sigma (ntmRightVar M x t 0 i) a
-
-theorem evalNTMCNF_flatMap_range
-    (sigma : Assignment) (n : Nat) (f : Nat -> NTMCNF) :
-    evalNTMCNF sigma ((List.range n).flatMap f) = true <->
-      forall i : Nat, i < n -> evalNTMCNF sigma (f i) = true := by
-  induction n with
-  | zero =>
-      simp [evalNTMCNF]
-  | succ n ih =>
-      rw [List.range_succ]
-      rw [List.flatMap_append]
-      rw [evalNTMCNF_append]
-      rw [ih]
-      constructor
-      · rintro ⟨hprev, hlast⟩ i hi
-        by_cases hEq : i = n
-        · subst i
-          simpa using hlast
-        · exact hprev i (by omega)
-      · intro h
-        constructor
-        · intro i hi
-          exact h i (by omega)
-        · simpa using h n (by omega)
-
-theorem evalNTMCNF_flatMap_list
-    {α : Type}
-    (sigma : Assignment)
-    (xs : List α)
-    (f : α -> NTMCNF) :
-    evalNTMCNF sigma (xs.flatMap f) = true <->
-      forall a, a ∈ xs -> evalNTMCNF sigma (f a) = true := by
-  induction xs with
-  | nil =>
-      simp [evalNTMCNF]
-  | cons a as ih =>
-      rw [List.flatMap_cons]
-      rw [evalNTMCNF_append]
-      rw [ih]
-      constructor
-      · rintro ⟨ha, has⟩ x hx
-        simp only [List.mem_cons] at hx
-        rcases hx with rfl | hx
-        · exact ha
-        · exact has x hx
-      · intro h
-        constructor
-        · exact h a (by simp)
-        · intro x hx
-          exact h x (by simp [hx])
-
-theorem evalNTMCNF_flatten
-    (sigma : Assignment)
-    (xss : List NTMCNF) :
-    evalNTMCNF sigma xss.flatten = true <->
-      forall xs, xs ∈ xss -> evalNTMCNF sigma xs = true := by
-  simpa [List.flatten] using
-    (evalNTMCNF_flatMap_list sigma xss (fun xs => xs))
+            And.intro hn (And.intro hf ht)
 
 theorem evalNTMCNF_map_flatten_ofFn
     {n : Nat}
