@@ -9,6 +9,7 @@ open P02UniversalFailureMinCut
 open P02KleeneUniversalBridge
 open P02TotalCandidateKleeneReduction
 open P02ComplementRunRealization
+open P01PostMinCutClosure
 
 /-- The exact candidate-indexed semantic object needed after the concrete
 complement Cook--Levin reduction has been built.  No compiler, code type, or
@@ -51,6 +52,7 @@ theorem not_correctAt_implies_flip_of_halt
     (hHalt : DeclaredHalts M x)
     (hBad : ¬ M.CorrectAt CanonicalSAT x) :
     CanonicalSAT x ↔ ¬ DeclaredAccepts M x := by
+  classical
   have hSemBad :
       ¬ (DeclaredAccepts M x ↔ CanonicalSAT x) := by
     intro hSem
