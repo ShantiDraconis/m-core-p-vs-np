@@ -27,6 +27,22 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03OpenMathFrontier.cross_orbit_full_input_law_implies_universal_failure
 #print axioms MCore.Real.P03OpenMathFrontier.cross_orbit_full_input_law_closes_internal_endpoint
 
+
+#print axioms MCore.Real.P03CounterexampleLaws.three_revisits_force_odd_falsified
+#print axioms MCore.Real.P03CounterexampleLaws.initial_state_injects_source_falsified
+#print axioms MCore.Real.P03CounterexampleLaws.no_two_distinct_complement_entries
+#print axioms MCore.Real.P03CounterexampleLaws.no_two_distinct_complement_choice_indices
+
+#print axioms MCore.Real.P03TransitionClosure.transitionClosureWitness
+#print axioms MCore.Real.P03TransitionClosure.transitionClosureEffect
+#print axioms MCore.Real.P03TransitionClosure.deterministicTransitionClosure
+
+#print axioms MCore.Real.P03TerminalSemanticBridge.final_state_equiv_implies_accept_equiv
+#print axioms MCore.Real.P03TerminalSemanticBridge.full_run_accept_equiv_iff_obs
+#print axioms MCore.Real.P03TerminalSemanticBridge.full_run_witness_implies_odd_semantic_recurrence
+#print axioms MCore.Real.P03TerminalSemanticBridge.full_run_acceptance_law_iff_cross_orbit_law
+#print axioms MCore.Real.P03TerminalSemanticBridge.full_run_acceptance_law_implies_total_odd_recurrence
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
