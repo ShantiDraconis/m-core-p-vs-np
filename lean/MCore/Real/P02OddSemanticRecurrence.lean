@@ -30,6 +30,20 @@ modulo side condition so the parity argument is transparent to the kernel.
 def OddGap (i j : Nat) : Prop :=
   ∃ d : Nat, j = i + (2 * d + 1)
 
+theorem oddGap_lt
+    {i j : Nat}
+    (h : OddGap i j) :
+    i < j := by
+  rcases h with ⟨d, rfl⟩
+  omega
+
+theorem oddGap_ne
+    {i j : Nat}
+    (h : OddGap i j) :
+    i ≠ j :=
+  Nat.ne_of_lt (oddGap_lt h)
+
+
 /--
 An orbit has odd semantic recurrence when two points at odd distance are
 indistinguishable by M.
@@ -239,6 +253,8 @@ theorem flipOrbit_odd_not_equiv
     have hAj := hNeg.mpr hAi
     exact hAi (hEq.mpr hAj)
 
+#print axioms MCore.Real.P02OddSemanticRecurrence.oddGap_lt
+#print axioms MCore.Real.P02OddSemanticRecurrence.oddGap_ne
 #print axioms MCore.Real.P02OddSemanticRecurrence.two_flips_restore
 #print axioms MCore.Real.P02OddSemanticRecurrence.odd_flips_negate
 #print axioms MCore.Real.P02OddSemanticRecurrence.no_adjacent_equiv_implies_flip
