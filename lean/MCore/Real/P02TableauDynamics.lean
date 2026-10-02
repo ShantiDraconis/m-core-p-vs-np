@@ -70,14 +70,31 @@ theorem decodeCircuit_R2_M
     (SourceRecovery.decodeCircuit_reduce
       M hTotal (R_M M hTotal x))
 
-/-
-Next exact obligations, intentionally not postulated:
-  decodeChain₁ : decodeSource ... (R_M M hTotal x) = some x
-  decodeChain₂ : decodeSource ... (R2_M M hTotal x) = some (R_M M hTotal x)
+@[simp] theorem decodeChain₁
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) :
+    decodeSourceBits
+        (complementToNTMCandidate M)
+        x.length
+        (M.timeBound x.length)
+        (R_M M hTotal x) =
+      some x := by
+  exact SourceRecovery.decodeSource_reduce M hTotal x
 
-Both reduce to the still-unimplemented computable extraction of the time-0
-head/right unit clauses from the decoded NTMCNF.
--/
+@[simp] theorem decodeChain₂
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) :
+    decodeSourceBits
+        (complementToNTMCandidate M)
+        (R_M M hTotal x).length
+        (M.timeBound (R_M M hTotal x).length)
+        (R2_M M hTotal x) =
+      some (R_M M hTotal x) := by
+  simpa [R2_M] using
+    (SourceRecovery.decodeSource_reduce
+      M hTotal (R_M M hTotal x))
 
 end P02TableauDynamics
 end Real
