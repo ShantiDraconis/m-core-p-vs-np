@@ -190,6 +190,42 @@ theorem initial_var_classifier
         simpa [ntmLitFor_var] using hvar.symm
 
 /--
+A genuine UNSAT core: actual clauses, together with membership in the full
+tableau and an UNSAT certificate.  This is stronger than a block-support mask.
+-/
+structure ClauseUnsatCore
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) where
+  clauses : NTMCNF
+  subset_whole :
+    ∀ clause ∈ clauses,
+      clause ∈ boundedExecTableauCNF_NTM M x t
+  unsat : CNFUnsat clauses
+
+/-- A core touches a concrete CNF block when it contains a clause from it. -/
+def CoreTouches
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t : Nat}
+    (core : ClauseUnsatCore M x t)
+    (block : NTMCNF) : Prop :=
+  ∃ clause, clause ∈ core.clauses ∧ clause ∈ block
+
+/-- The full tableau itself is always a legitimate core when it is UNSAT. -/
+def fullUnsatCore
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t : Nat}
+    (h : CNFUnsat (boundedExecTableauCNF_NTM M x t)) :
+    ClauseUnsatCore M x t where
+  clauses := boundedExecTableauCNF_NTM M x t
+  subset_whole := by
+    intro clause hclause
+    exact hclause
+  unsat := h
+
+/--
 A non-degenerate interaction conflict.
 
 The prefix Init+Transit is satisfiable, Terminal is satisfiable in isolation,
