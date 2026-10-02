@@ -326,11 +326,123 @@ theorem headBlockOffset_eq_prefix_length
       (ntmSetStateClauses [] M t 0 M.machine.initial).length := by
   simp [headBlockOffset, initialStateClauseCount]
 
+/-- Slicing at the retained head offset recovers exactly the three head clauses. -/
+theorem drop_headBlockOffset_take_head
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    symbolBlockAt (ntmInitialCNF M x t) (headBlockOffset M) =
+      ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head := by
+  unfold symbolBlockAt ntmInitialCNF
+  rw [headBlockOffset_eq_prefix_length]
+  simp [length_ntmSetSymbolClauses]
+
+/--
+Uniform three-clause blocks in a range-flatMap can be recovered by their
+block index. This is the only generic list-arithmetic lemma needed by the
+time-zero right-tape decoder.
+-/
+theorem flatMap_range_block_slice
+    (f : Nat → NTMCNF)
+    (h3 : ∀ i, (f i).length = 3)
+    (k i : Nat)
+    (hi : i < k) :
+    (((List.range k).flatMap f).drop (3 * i)).take 3 = f i := by
+  induction k with
+  | zero =>
+      omega
+  | succ k ih =>
+      rw [List.range_succ, List.flatMap_append]
+      by_cases hik : i < k
+      · have hlen :
+          ((List.range k).flatMap f).length = 3 * k := by
+            simp [h3, Nat.mul_comm]
+        have hfit : 3 * i + 3 ≤ ((List.range k).flatMap f).length := by
+          rw [hlen]
+          omega
+        rw [List.drop_append_of_le]
+        · rw [List.take_append_of_le]
+          · exact ih i hik
+          · simpa [List.length_drop, hlen] using hfit
+        · rw [hlen]
+          omega
+      · have hikEq : i = k := by omega
+        subst i
+        have hlen :
+          ((List.range k).flatMap f).length = 3 * k := by
+            simp [h3, Nat.mul_comm]
+        rw [List.drop_append]
+        simp [hlen, h3]
+
+/-- Slicing the concrete right block at cell i recovers exactly that cell block. -/
+theorem drop_rightBlockOffset_take_right
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t i : Nat)
+    (hi : i < ntmRadius x t) :
+    symbolBlockAt
+        (ntmInitialCNF M x t)
+        (rightBlockOffset M x.length t + 3 * i) =
+      ntmSetRightCell [] M x t 0 i
+        ((inputTape x).right.getD i M.machine.blank) := by
+  unfold symbolBlockAt ntmInitialCNF
+  let stateBlock :=
+    ntmSetStateClauses [] M t 0 M.machine.initial
+  let headBlock :=
+    ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head
+  let leftBlock :=
+    (List.range (ntmRadius x t)).flatMap (fun j =>
+      ntmSetLeftCell [] M x t 0 j
+        ((inputTape x).left.getD j M.machine.blank))
+  let rightCell : Nat → NTMCNF := fun j =>
+    ntmSetRightCell [] M x t 0 j
+      ((inputTape x).right.getD j M.machine.blank)
+  have hoff :
+      rightBlockOffset M x.length t =
+        stateBlock.length + headBlock.length + leftBlock.length := by
+    simpa [stateBlock, headBlock, leftBlock] using
+      rightBlockOffset_eq_prefix_length M x t
+  rw [hoff]
+  simp only [List.append_assoc]
+  rw [List.drop_append_of_le]
+  · rw [List.drop_append_of_le]
+    · rw [List.drop_append_of_le]
+      · simpa [rightCell] using
+          flatMap_range_block_slice rightCell
+            (fun j => by
+              simp [rightCell, ntmSetRightCell,
+                length_ntmSetSymbolClauses])
+            (ntmRadius x t) i hi
+      · simp
+    · simp
+  · simp
+
+@[simp] theorem getHeadAt0_initialCNF
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    getHeadAt0 M t (ntmInitialCNF M x t) = some (inputTape x).head := by
+  simp [getHeadAt0, drop_headBlockOffset_take_head]
+
+@[simp] theorem getRightAt0_initialCNF
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t i : Nat)
+    (hi : i < ntmRadius x t) :
+    getRightAt0 M x.length t (ntmInitialCNF M x t) i =
+      some ((inputTape x).right.getD i M.machine.blank) := by
+  have hlayout :
+      ntmRightVar M (layoutInput x.length) t 0 i =
+        ntmRightVar M x t 0 i := by
+    apply ntmRightVar_eq_of_length_eq
+    simp
+  simp [getRightAt0, drop_rightBlockOffset_take_right,
+    hi, ntmSetRightCell, hlayout]
+
 /-
-The only remaining source-recovery proof is now local to list slicing:
-  * drop headBlockOffset, take 3 = the head symbol block;
-  * drop rightBlockOffset + 3*i, take 3 = right cell i.
-No semantic or complexity hypothesis remains here.
+Next obligation:
+  readRightBits_initialCNF
+followed by extractInitialTape_initialCNF. No further layout theorem is needed.
 -/
 
 end SourceRecovery
