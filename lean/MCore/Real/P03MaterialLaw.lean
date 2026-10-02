@@ -53,7 +53,7 @@ structure ClausePhaseWitness
 Clause-derived phase extractor target.  The extractor is only required on
 inputs for which the complete bounded tableau is unsatisfiable.
 
-No DeclaredAccepts, ObsEquiv, OddGap, or P/NP endpoint occurs in the fields.
+No semantic endpoint or P/NP endpoint occurs in the extractor fields.
 -/
 structure ClausePhaseExtractor
     (M : PolyNTMCandidate) where
@@ -90,8 +90,7 @@ structure ClauseDerivedParityMixing
       ObsEquiv M u v
 
 /--
-Universal producer target for P03.  This is a proposition only; no axiom or
-inhabitant is supplied.
+Universal producer target for P03.  This is a proposition only; no inhabitant is supplied.
 -/
 def P03_MATERIAL_LAW : Prop :=
   ∀ (M : PolyDTMCandidate)
