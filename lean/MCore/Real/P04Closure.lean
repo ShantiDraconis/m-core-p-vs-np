@@ -21,10 +21,7 @@ theorem materialWitness_to_oddSemanticRecurrence
     (W : ClauseDerivedParityMixing M hTotal) :
     OddSemanticRecurrence M (R_M M hTotal) := by
   refine ⟨W.seed, W.i, W.j, W.odd_gap, ?_⟩
-  exact W.phase_to_obs
-    (Orbit (R_M M hTotal) W.seed W.i)
-    (Orbit (R_M M hTotal) W.seed W.j)
-    W.same_phase
+  exact W.phase_to_obs W.same_phase
 
 /--
 If and only if P03 is materially inhabited for every total candidate, the
