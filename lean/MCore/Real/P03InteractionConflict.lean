@@ -244,6 +244,60 @@ structure OrbitalInteractionConflict
   h_whole_unsat :
     CNFUnsat (boundedExecTableauCNF_NTM M x t)
 
+/-- A satisfiable prefix has a satisfiable Init projection. -/
+theorem init_sat_of_prefix_sat
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t : Nat}
+    (h :
+      CNFSat (supportedCNF initTransitSupport M x t)) :
+    CNFSat (ntmInitialCNF M x t) := by
+  rcases h with ⟨sigma, hSat⟩
+  refine ⟨sigma, ?_⟩
+  rw [supportedCNF_initTransitSupport] at hSat
+  exact
+    (evalNTMCNF_append sigma
+      (ntmInitialCNF M x t)
+      (ntmTransitionsCNF M x t)).1 hSat |>.1
+
+/-- If a larger CNF is SAT, every sub-CNF selected by clause membership is SAT. -/
+theorem cnf_sat_of_clause_subset
+    {small big : NTMCNF}
+    {sigma : Assignment}
+    (hBig : evalNTMCNF sigma big = true)
+    (hSub : ∀ clause ∈ small, clause ∈ big) :
+    evalNTMCNF sigma small = true := by
+  induction small with
+  | nil =>
+      rfl
+  | cons clause rest ih =>
+      have hClause :
+          evalNTMClause sigma clause = true := by
+        exact evalNTMCNF_of_mem sigma big clause hBig
+          (hSub clause (by simp))
+      have hRest :
+          evalNTMCNF sigma rest = true := by
+        apply ih
+        intro c hc
+        exact hSub c (by simp [hc])
+      simp [evalNTMCNF, hClause, hRest]
+
+/-- UNSAT is monotone upward under clause inclusion. -/
+theorem cnf_unsat_of_unsat_subset
+    {small big : NTMCNF}
+    (hSmall : CNFUnsat small)
+    (hSub : ∀ clause ∈ small, clause ∈ big) :
+    CNFUnsat big := by
+  intro sigma
+  by_cases hBig : evalNTMCNF sigma big = true
+  · have hSmallSat := cnf_sat_of_clause_subset hBig hSub
+    have hSmallFalse := hSmall sigma
+    rw [hSmallSat] at hSmallFalse
+    contradiction
+  · cases hEval : evalNTMCNF sigma big
+    · rfl
+    · exact False.elim (hBig hEval)
+
 /-- Degenerate case: Terminal is already contradictory without Init/Transit. -/
 def IsTerminalDegenerate
     (M : PolyNTMCandidate)
@@ -446,6 +500,9 @@ theorem init_terminal_sat_of_both
       ⟨hSatI, hSatT⟩
 
 #print axioms MCore.Real.P03InteractionConflict.init_terminal_sat_of_both
+#print axioms MCore.Real.P03InteractionConflict.init_sat_of_prefix_sat
+#print axioms MCore.Real.P03InteractionConflict.cnf_sat_of_clause_subset
+#print axioms MCore.Real.P03InteractionConflict.cnf_unsat_of_unsat_subset
 
 #print axioms MCore.Real.P03InteractionConflict.terminal_sat_implies_nonempty_lits
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_state
