@@ -2717,19 +2717,19 @@ structure NTMUniqueAt
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) : Prop where
   hState :
-    ExistsUnique (fun q : Fin (M.stateCount + 1) =>
-      sigma (ntmStateVar M t s q) = true)
+    ∃! q : Fin (M.stateCount + 1),
+      sigma (ntmStateVar M t s q) = true
   hHead :
-    ExistsUnique (fun a : Option Bool =>
-      sigma (ntmHeadVar M t s a) = true)
+    ∃! a : Option Bool,
+      sigma (ntmHeadVar M t s a) = true
   hLeft :
     forall i : Nat, i < ntmRadius x t ->
-      ExistsUnique (fun b : Option Bool =>
-        sigma (ntmLeftVar M x t s i b) = true)
+      ∃! b : Option Bool,
+        sigma (ntmLeftVar M x t s i b) = true
   hRight :
     forall i : Nat, i < ntmRadius x t ->
-      ExistsUnique (fun b : Option Bool =>
-        sigma (ntmRightVar M x t s i b) = true)
+      ∃! b : Option Bool,
+        sigma (ntmRightVar M x t s i b) = true
 
 theorem existsUnique_of_exact_decide
     {α : Type}
@@ -2737,7 +2737,7 @@ theorem existsUnique_of_exact_decide
     (f : α -> Bool)
     (target : α)
     (h : forall a : α, f a = decide (a = target)) :
-    ExistsUnique (fun a : α => f a = true) := by
+    ∃! a : α, f a = true := by
   refine ⟨target, ?_, ?_⟩
   · simpa using h target
   · intro a ha
@@ -2748,9 +2748,9 @@ theorem existsUnique_of_exact_decide
 theorem existsUnique_transport
     {α : Type}
     (old new : α -> Bool)
-    (hOld : ExistsUnique (fun a : α => old a = true))
+    (hOld : ∃! a : α, old a = true)
     (hEq : forall a : α, new a = old a) :
-    ExistsUnique (fun a : α => new a = true) := by
+    ∃! a : α, new a = true := by
   rcases hOld with ⟨a, ha, huniq⟩
   refine ⟨a, ?_, ?_⟩
   · simpa [hEq a] using ha
@@ -8628,8 +8628,8 @@ theorem ntmInitial_state_exists_unique
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    ExistsUnique (fun q : Fin (M.stateCount + 1) =>
-      sigma (ntmStateVar M t 0 q) = true) := by
+    ∃! q : Fin (M.stateCount + 1),
+      sigma (ntmStateVar M t 0 q) = true := by
   refine ⟨M.machine.initial, ?_, ?_⟩
   · simpa using
       ntmInitial_state_exact M x t sigma hSat M.machine.initial
@@ -8675,8 +8675,8 @@ theorem ntmInitial_head_exists_unique
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    ExistsUnique (fun a : Option Bool =>
-      sigma (ntmHeadVar M t 0 a) = true) := by
+    ∃! a : Option Bool,
+      sigma (ntmHeadVar M t 0 a) = true := by
   refine ⟨(inputTape x).head, ?_, ?_⟩
   · simpa using
       ntmInitial_head_exact M x t sigma hSat (inputTape x).head
@@ -8736,8 +8736,8 @@ theorem ntmInitial_left_exists_unique
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (i : Nat) (hi : i < ntmRadius x t) :
-    ExistsUnique (fun b : Option Bool =>
-      sigma (ntmLeftVar M x t 0 i b) = true) := by
+    ∃! b : Option Bool,
+      sigma (ntmLeftVar M x t 0 i b) = true := by
   let target := (inputTape x).left.getD i M.machine.blank
   refine ⟨target, ?_, ?_⟩
   · simpa [target] using
@@ -8798,8 +8798,8 @@ theorem ntmInitial_right_exists_unique
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (i : Nat) (hi : i < ntmRadius x t) :
-    ExistsUnique (fun b : Option Bool =>
-      sigma (ntmRightVar M x t 0 i b) = true) := by
+    ∃! b : Option Bool,
+      sigma (ntmRightVar M x t 0 i b) = true := by
   let target := (inputTape x).right.getD i M.machine.blank
   refine ⟨target, ?_, ?_⟩
   · simpa [target] using
