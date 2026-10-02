@@ -169,7 +169,8 @@ def PolynomialWitness.toFullRunWitness
           odd := ?_ }
       acceptance := ?_ }
   · exact ⟨W.d, W.odd⟩
-  · exact hbool
+  · simpa [FullRunAcceptEquivalent, OrbitAcceptance,
+      FullInputOrbitPair.left, FullInputOrbitPair.right] using hbool
 
 /--
 Conversely, every genuine terminal witness has a constant-polynomial energy
@@ -186,7 +187,9 @@ def PolynomialWitness.ofFullRunWitness
   let Q : Polynomial ℝ := Polynomial.C (BoolValue b)
   have hacc :
       OrbitAcceptance M hTotal W.pair.seed W.pair.i =
-        OrbitAcceptance M hTotal W.pair.seed W.pair.j := W.acceptance
+        OrbitAcceptance M hTotal W.pair.seed W.pair.j := by
+    simpa [FullRunAcceptEquivalent, OrbitAcceptance,
+      FullInputOrbitPair.left, FullInputOrbitPair.right] using W.acceptance
   refine
     { seed := W.pair.seed
       i := W.pair.i
