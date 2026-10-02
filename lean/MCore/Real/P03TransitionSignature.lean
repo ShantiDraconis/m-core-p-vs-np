@@ -382,6 +382,51 @@ theorem complement_active_effect_same_entry
 
 #print axioms MCore.Real.P03TransitionSignature.complement_indexed_entry_unique
 #print axioms MCore.Real.P03TransitionSignature.complement_active_effect_same_entry
+/--
+An active-effect signature specialized to the deterministic complemented
+candidate.  The transition payload is not arbitrary: it is exactly the
+underlying deterministic TM transition at (q,a).
+-/
+structure DeterministicEffectSignature
+    (candidate : PolyDTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (core : ClauseUnsatCore (complementToNTMCandidate candidate) x t) where
+  effect :
+    ActiveEffectSignature
+      (complementToNTMCandidate candidate) x t core
+  index_zero : effect.entry.1 = 0
+  transition_exact :
+    effect.entry.2 =
+      candidate.machine.transition effect.base.q effect.base.a
+
+/-- Every complemented active-effect signature canonicalizes to index 0 and
+the unique deterministic transition. -/
+def deterministic_effect_signature
+    (candidate : PolyDTMCandidate)
+    {x : BitString}
+    {t : Nat}
+    {core : ClauseUnsatCore (complementToNTMCandidate candidate) x t}
+    (effect :
+      ActiveEffectSignature
+        (complementToNTMCandidate candidate) x t core) :
+    DeterministicEffectSignature candidate x t core := by
+  have hEntry :
+      effect.entry =
+        (0, candidate.machine.transition effect.base.q effect.base.a) := by
+    exact complement_indexed_entry_unique
+      candidate effect.base.q effect.base.a
+      effect.entry_mem
+      (by simp)
+  refine
+    { effect := effect
+      index_zero := ?_
+      transition_exact := ?_ }
+  · exact congrArg Prod.fst hEntry
+  · exact congrArg Prod.snd hEntry
+
+#print axioms MCore.Real.P03TransitionSignature.deterministic_effect_signature
+
 
 
 #print axioms MCore.Real.P03TransitionSignature.signature_of_occurrence
