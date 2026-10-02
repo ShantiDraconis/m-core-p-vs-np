@@ -83,7 +83,7 @@ theorem counterexample_fails
         ¬ DeclaredAccepts M (counterexample B) := by
     simpa [counterexample] using
       B.realizer.flips_of_fixed
-        (fixedCode B)
+        (c := fixedCode B)
         (fixedCode_spec B)
   intro hCorrect
   rcases hCorrect with ⟨_, hSem⟩
