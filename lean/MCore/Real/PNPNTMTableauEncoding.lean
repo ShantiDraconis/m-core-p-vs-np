@@ -5180,11 +5180,17 @@ theorem mul_add_encode_injective
     simpa [hkmod, hk'mod] using hmod
   subst k'
   have hsdiv : (s * stride + k) / stride = s := by
-    rw [Nat.add_div_of_lt_right hk]
-    simp [hstride]
+    calc
+      (s * stride + k) / stride = (k + stride * s) / stride := by
+        simp [Nat.mul_comm, Nat.add_comm]
+      _ = k / stride + s := Nat.add_mul_div_left k s hstride
+      _ = s := by simp [Nat.div_eq_of_lt hk]
   have hs'div : (s' * stride + k) / stride = s' := by
-    rw [Nat.add_div_of_lt_right hk]
-    simp [hstride]
+    calc
+      (s' * stride + k) / stride = (k + stride * s') / stride := by
+        simp [Nat.mul_comm, Nat.add_comm]
+      _ = k / stride + s' := Nat.add_mul_div_left k s' hstride
+      _ = s' := by simp [Nat.div_eq_of_lt hk]
   simpa [hsdiv, hs'div] using hdiv
 
 theorem ntmStateVar_injective
