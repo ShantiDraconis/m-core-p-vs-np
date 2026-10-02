@@ -111,6 +111,18 @@ theorem rangeFailureLaw_iff_fullRunAcceptanceLaw :
     exact (rangeFailure_iff_fullRunWitness M hTotal).2 (H M hTotal)
 
 /--
+Perfect semantic flip on the concrete complemented Cook--Levin image.
+This is the exact constructive content needed to falsify RangeFailureLaw for
+one total candidate.
+-/
+def PerfectFlip
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M) : Prop :=
+  ∀ x : BitString,
+    DeclaredAccepts M (R_M M hTotal x) ↔
+      ¬ DeclaredAccepts M x
+
+/--
 The exact alternative to a range failure: M agrees with CanonicalSAT on
 every point in the concrete reduction range.
 -/
@@ -120,6 +132,24 @@ def RangeCorrect
   ∀ x : BitString,
     DeclaredAccepts M (R_M M hTotal x) ↔
       PNPCookLevinMaterialMinCut.CanonicalSAT (R_M M hTotal x)
+
+theorem rangeCorrect_iff_perfectFlip
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M) :
+    RangeCorrect M hTotal ↔ PerfectFlip M hTotal := by
+  constructor
+  · intro hCorrect x
+    have hSat :
+        PNPCookLevinMaterialMinCut.CanonicalSAT (R_M M hTotal x) ↔
+          ¬ DeclaredAccepts M x := by
+      simpa [R_M] using complement_reduce_correct M hTotal x
+    exact (hCorrect x).trans hSat
+  · intro hFlip x
+    have hSat :
+        PNPCookLevinMaterialMinCut.CanonicalSAT (R_M M hTotal x) ↔
+          ¬ DeclaredAccepts M x := by
+      simpa [R_M] using complement_reduce_correct M hTotal x
+    exact (hFlip x).trans hSat.symm
 
 theorem no_rangeFailure_iff_rangeCorrect
     (M : PolyDTMCandidate)
@@ -154,6 +184,7 @@ theorem range_failure_or_range_correct
 #print axioms MCore.Real.P03RangeFailureFrontier.witness_implies_rangeFailure
 #print axioms MCore.Real.P03RangeFailureFrontier.rangeFailure_iff_fullRunWitness
 #print axioms MCore.Real.P03RangeFailureFrontier.rangeFailureLaw_iff_fullRunAcceptanceLaw
+#print axioms MCore.Real.P03RangeFailureFrontier.rangeCorrect_iff_perfectFlip
 #print axioms MCore.Real.P03RangeFailureFrontier.no_rangeFailure_iff_rangeCorrect
 #print axioms MCore.Real.P03RangeFailureFrontier.range_failure_or_range_correct
 
