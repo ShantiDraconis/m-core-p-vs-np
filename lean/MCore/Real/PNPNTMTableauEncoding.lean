@@ -836,10 +836,9 @@ theorem activeChoice_sat
       M.machine.accepting q = false ∧
       M.machine.rejecting q = false) :
     evalNTMCNF sigma (ntmActiveChoiceCNF M x t s q a) = true := by
-  have hor :
-      M.machine.accepting q || M.machine.rejecting q = false := by
-    simp [hActive.1, hActive.2]
-  simpa [ntmTransitionCaseCNF, hor] using hCase
+  cases ha : M.machine.accepting q <;>
+    cases hr : M.machine.rejecting q <;>
+    simp_all [ntmTransitionCaseCNF]
 
 theorem ntmChoice_exists_nat_of_guard
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -910,29 +909,35 @@ theorem boundedExecCircuit_NTM_isCNF
   exact ntmCNFCircuit_isCNF _
 
 
+theorem indexedTransitionsAux_index_mem
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (start j : Nat)
+    (hj : j < ts.length) :
+    (start + j, ts.get ⟨j, hj⟩) ∈ ntmIndexedTransitionsAux start ts := by
+  induction ts generalizing start j with
+  | nil =>
+      simp at hj
+  | cons x xs ih =>
+      cases j with
+      | zero =>
+          simp [ntmIndexedTransitionsAux]
+      | succ j =>
+          have hj' : j < xs.length := by simpa using hj
+          simp only [ntmIndexedTransitionsAux, List.mem_cons]
+          right
+          have hmem := ih (start + 1) j hj'
+          simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hmem
+
 theorem indexedTransitions_index_mem
     {State Symbol : Type}
     (ts : List (State × Symbol × Direction))
     (j : Nat)
     (hj : j < ts.length) :
     ∃ tr, (j, tr) ∈ ntmIndexedTransitions ts := by
+  refine ⟨ts.get ⟨j, hj⟩, ?_⟩
   unfold ntmIndexedTransitions
-  generalize hstart : 0 = start
-  subst start
-  induction ts generalizing j with
-  | nil =>
-      simp at hj
-  | cons tr rest ih =>
-      cases j with
-      | zero =>
-          exact ⟨tr, by simp [ntmIndexedTransitionsAux]⟩
-      | succ j =>
-          have hj' : j < rest.length := by
-            simpa using Nat.succ_lt_succ_iff.mp (by simpa using hj)
-          rcases ih j hj' with ⟨tr', hmem⟩
-          exact ⟨tr', by
-            simp [ntmIndexedTransitionsAux]
-            exact hmem⟩
+  simpa using indexedTransitionsAux_index_mem ts 0 j hj
 
 theorem indexedTransitions_index_in_ids
     {State Symbol : Type}
@@ -951,24 +956,25 @@ theorem activeChoice_atMostOne_sat
       evalNTMCNF sigma (ntmActiveChoiceCNF M x t s q a) = true) :
     evalNTMCNF sigma (ntmAtMostOneChoiceCNF M x t s q a) = true := by
   let entries := ntmIndexedTransitions (M.machine.transition q a)
-  have h1 :=
-    (evalNTMCNF_append sigma
-      [ntmGuardChoiceClause M x t s q a]
-      (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
-       ntmAtMostOneChoiceCNF M x t s q a ++
-       entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      (by simpa [ntmActiveChoiceCNF, entries, List.append_assoc] using hActiveSat)
-  have h2 :=
-    (evalNTMCNF_append sigma
-      (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
-      (ntmAtMostOneChoiceCNF M x t s q a ++
-       entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      h1.2
-  have h3 :=
-    (evalNTMCNF_append sigma
-      (ntmAtMostOneChoiceCNF M x t s q a)
-      (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      h2.2
+  have hcanon :
+      evalNTMCNF sigma
+        ([ntmGuardChoiceClause M x t s q a] ++
+         entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+         ntmAtMostOneChoiceCNF M x t s q a ++
+         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)) = true := by
+    simpa [ntmActiveChoiceCNF, entries] using hActiveSat
+  have h1 := (evalNTMCNF_append sigma
+    [ntmGuardChoiceClause M x t s q a]
+    (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+     ntmAtMostOneChoiceCNF M x t s q a ++
+     entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hcanon
+  have h2 := (evalNTMCNF_append sigma
+    (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
+    (ntmAtMostOneChoiceCNF M x t s q a ++
+     entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp h1.2
+  have h3 := (evalNTMCNF_append sigma
+    (ntmAtMostOneChoiceCNF M x t s q a)
+    (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp h2.2
   exact h3.1
 
 theorem activeChoice_choiceGuards_sat
@@ -981,19 +987,22 @@ theorem activeChoice_choiceGuards_sat
       ((ntmIndexedTransitions (M.machine.transition q a)).flatMap
         (fun p => ntmChoiceGuardCNF M x t s q a p.1)) = true := by
   let entries := ntmIndexedTransitions (M.machine.transition q a)
-  have h1 :=
-    (evalNTMCNF_append sigma
-      [ntmGuardChoiceClause M x t s q a]
-      (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
-       ntmAtMostOneChoiceCNF M x t s q a ++
-       entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      (by simpa [ntmActiveChoiceCNF, entries, List.append_assoc] using hActiveSat)
-  have h2 :=
-    (evalNTMCNF_append sigma
-      (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
-      (ntmAtMostOneChoiceCNF M x t s q a ++
-       entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      h1.2
+  have hcanon :
+      evalNTMCNF sigma
+        ([ntmGuardChoiceClause M x t s q a] ++
+         entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+         ntmAtMostOneChoiceCNF M x t s q a ++
+         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)) = true := by
+    simpa [ntmActiveChoiceCNF, entries] using hActiveSat
+  have h1 := (evalNTMCNF_append sigma
+    [ntmGuardChoiceClause M x t s q a]
+    (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+     ntmAtMostOneChoiceCNF M x t s q a ++
+     entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hcanon
+  have h2 := (evalNTMCNF_append sigma
+    (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
+    (ntmAtMostOneChoiceCNF M x t s q a ++
+     entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp h1.2
   simpa [entries] using h2.1
 
 theorem ntmAtMostOne_pair_mem
@@ -1156,24 +1165,25 @@ theorem activeChoice_choiceEffects_sat
       ((ntmIndexedTransitions (M.machine.transition q a)).flatMap
         (fun p => ntmChoiceEffectCNF M x t s q a p)) = true := by
   let entries := ntmIndexedTransitions (M.machine.transition q a)
-  have h1 :=
-    (evalNTMCNF_append sigma
-      [ntmGuardChoiceClause M x t s q a]
-      (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
-       ntmAtMostOneChoiceCNF M x t s q a ++
-       entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      (by simpa [ntmActiveChoiceCNF, entries, List.append_assoc] using hActiveSat)
-  have h2 :=
-    (evalNTMCNF_append sigma
-      (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
-      (ntmAtMostOneChoiceCNF M x t s q a ++
-       entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      h1.2
-  have h3 :=
-    (evalNTMCNF_append sigma
-      (ntmAtMostOneChoiceCNF M x t s q a)
-      (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp
-      h2.2
+  have hcanon :
+      evalNTMCNF sigma
+        ([ntmGuardChoiceClause M x t s q a] ++
+         entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+         ntmAtMostOneChoiceCNF M x t s q a ++
+         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)) = true := by
+    simpa [ntmActiveChoiceCNF, entries] using hActiveSat
+  have h1 := (evalNTMCNF_append sigma
+    [ntmGuardChoiceClause M x t s q a]
+    (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+     ntmAtMostOneChoiceCNF M x t s q a ++
+     entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hcanon
+  have h2 := (evalNTMCNF_append sigma
+    (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
+    (ntmAtMostOneChoiceCNF M x t s q a ++
+     entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp h1.2
+  have h3 := (evalNTMCNF_append sigma
+    (ntmAtMostOneChoiceCNF M x t s q a)
+    (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp h2.2
   simpa [entries] using h3.2
 
 theorem choiceEffect_block_sat
