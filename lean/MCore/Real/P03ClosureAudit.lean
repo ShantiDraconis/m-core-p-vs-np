@@ -43,6 +43,16 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03TerminalSemanticBridge.full_run_acceptance_law_iff_cross_orbit_law
 #print axioms MCore.Real.P03TerminalSemanticBridge.full_run_acceptance_law_implies_total_odd_recurrence
 
+
+#print axioms MCore.Real.P03CriticalHalfSymmetry.complementSymmetry_involutive
+#print axioms MCore.Real.P03CriticalHalfSymmetry.criticalReflection_involutive
+#print axioms MCore.Real.P03CriticalHalfSymmetry.criticalHalfMap_intertwines
+#print axioms MCore.Real.P03CriticalHalfSymmetry.balanced_pair_fixed
+#print axioms MCore.Real.P03CriticalHalfSymmetry.criticalHalfMap_balanced
+#print axioms MCore.Real.P03CriticalHalfSymmetry.criticalReflection_fixed_iff
+#print axioms MCore.Real.P03CriticalHalfSymmetry.canonical_symmetry_is_closed
+#print axioms MCore.Real.P03CriticalHalfSymmetry.materialBridge_iff_fullRunAcceptanceLaw
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
