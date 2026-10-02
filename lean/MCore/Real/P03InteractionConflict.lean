@@ -64,7 +64,65 @@ theorem terminal_sat_implies_nonempty_lits
   rcases h with ⟨sigma, hSat⟩
   simp [ntmFinalAcceptanceCNF, hEmpty, evalNTMCNF, evalNTMClause] at hSat
 
+/--
+For positive time, a terminal state variable cannot be the initial state
+variable.  This is the only Init/Terminal separation fact that needs t > 0.
+-/
+theorem terminal_state_ne_initial_state
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (ht : 0 < t)
+    (q0 qt : Fin (M.stateCount + 1)) :
+    ntmStateVar M t 0 q0 ≠ ntmStateVar M t t qt := by
+  intro hEq
+  have h := ntmStateVar_injective M t 0 t q0 qt hEq
+  omega
+
+/-- Terminal state variables lie strictly below the head-variable region. -/
+theorem terminal_state_ne_initial_head
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (qt : Fin (M.stateCount + 1))
+    (a : Option Bool) :
+    ntmStateVar M t t qt ≠ ntmHeadVar M t 0 a := by
+  exact stateVar_ne_headVar M x t t 0 qt a (by omega) (by omega)
+
+/-- Terminal state variables cannot collide with initial left-tape variables. -/
+theorem terminal_state_ne_initial_left
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t i : Nat)
+    (hi : i < ntmRadius x t)
+    (qt : Fin (M.stateCount + 1))
+    (a : Option Bool) :
+    ntmStateVar M t t qt ≠ ntmLeftVar M x t 0 i a := by
+  have hs := ntmStateVar_lt_headBase M t t qt (by omega)
+  have hl := (ntmLeftVar_range M x t 0 i a (by omega) hi).1
+  have hb : ntmHeadBase M t ≤ ntmLeftBase M x t := by
+    simp [ntmLeftBase]
+  omega
+
+/-- Terminal state variables cannot collide with initial right-tape variables. -/
+theorem terminal_state_ne_initial_right
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t i : Nat)
+    (hi : i < ntmRadius x t)
+    (qt : Fin (M.stateCount + 1))
+    (a : Option Bool) :
+    ntmStateVar M t t qt ≠ ntmRightVar M x t 0 i a := by
+  have hs := ntmStateVar_lt_headBase M t t qt (by omega)
+  have hr := (ntmRightVar_range M x t 0 i a (by omega) hi).1
+  have hb : ntmHeadBase M t ≤ ntmRightBase M x t := by
+    simp [ntmRightBase, ntmLeftBase]
+  omega
+
 #print axioms MCore.Real.P03InteractionConflict.terminal_sat_implies_nonempty_lits
+#print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_state
+#print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_head
+#print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_left
+#print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_right
 
 end P03InteractionConflict
 end Real
