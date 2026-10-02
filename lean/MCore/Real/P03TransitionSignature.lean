@@ -337,6 +337,52 @@ theorem complement_no_distinct_choice_indices
   omega
 
 #print axioms MCore.Real.P03TransitionSignature.complement_no_distinct_choice_indices
+/--
+For the complemented deterministic candidate, two indexed transition entries
+at the same (q,a) are not merely equal in index: the complete indexed entries
+are identical.
+-/
+theorem complement_indexed_entry_unique
+    (candidate : PolyDTMCandidate)
+    (q : Fin (candidate.stateCount + 1))
+    (a : Option Bool)
+    {p1 p2 :
+      Nat × (Fin (candidate.stateCount + 1) × Option Bool × Direction)}
+    (h1 :
+      p1 ∈ ntmIndexedTransitions
+        ((complementToNTMCandidate candidate).machine.transition q a))
+    (h2 :
+      p2 ∈ ntmIndexedTransitions
+        ((complementToNTMCandidate candidate).machine.transition q a)) :
+    p1 = p2 := by
+  simpa using h1.trans h2.symm
+
+/--
+Consequently, any two active-effect signatures at the same complemented
+state/head-symbol pair carry the same concrete machine transition entry.
+-/
+theorem complement_active_effect_same_entry
+    (candidate : PolyDTMCandidate)
+    {x : BitString}
+    {t : Nat}
+    {core :
+      ClauseUnsatCore
+        (complementToNTMCandidate candidate) x t}
+    (s1 s2 :
+      ActiveEffectSignature
+        (complementToNTMCandidate candidate) x t core)
+    (hq : s1.base.q = s2.base.q)
+    (ha : s1.base.a = s2.base.a) :
+    s1.entry = s2.entry := by
+  subst hq
+  subst ha
+  exact complement_indexed_entry_unique
+    candidate s1.base.q s1.base.a
+    s1.entry_mem s2.entry_mem
+
+#print axioms MCore.Real.P03TransitionSignature.complement_indexed_entry_unique
+#print axioms MCore.Real.P03TransitionSignature.complement_active_effect_same_entry
+
 
 #print axioms MCore.Real.P03TransitionSignature.signature_of_occurrence
 #print axioms MCore.Real.P03TransitionSignature.occurrence_of_core_touch
