@@ -188,6 +188,32 @@ theorem three_revisits_can_all_have_even_gaps :
     omega
 
 /--
+Control state alone does not inject the input source: every input starts in
+the same machine.initial state, while the canonical tape differs with the
+input bits.
+-/
+theorem initial_state_same_for_all_inputs
+    (candidate : PolyDTMCandidate)
+    (x y : BitString) :
+    (initialTMConfig candidate.machine x).state =
+      (initialTMConfig candidate.machine y).state := by
+  rfl
+
+/--
+A concrete witness that equal control state does not imply equal input.
+The empty input and [false] have the same initial state but distinct canonical
+input tapes.
+-/
+theorem equal_initial_state_does_not_determine_source
+    (candidate : PolyDTMCandidate) :
+    (initialTMConfig candidate.machine ([] : BitString)).state =
+      (initialTMConfig candidate.machine [false]).state ∧
+    ([] : BitString) ≠ [false] := by
+  constructor
+  · rfl
+  · simp
+
+/--
 Research guardrail: the current positive frontier is not allowed to rely on
 any of the following unproved implications.
 
@@ -235,6 +261,8 @@ theorem clauseDerivedMixingLaw_is_scaffold_only
 #print axioms MCore.Real.P02AntiModels.strongClockFlip_odd_not_equiv
 #print axioms MCore.Real.P02AntiModels.alternatingControl_two_step
 #print axioms MCore.Real.P02AntiModels.three_revisits_can_all_have_even_gaps
+#print axioms MCore.Real.P02AntiModels.initial_state_same_for_all_inputs
+#print axioms MCore.Real.P02AntiModels.equal_initial_state_does_not_determine_source
 #print axioms MCore.Real.P02AntiModels.clauseDerivedMixingLaw_is_scaffold_only
 
 end P02AntiModels
