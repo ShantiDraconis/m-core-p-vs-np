@@ -68,6 +68,7 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03RangeFailureFrontier.witness_implies_rangeFailure
 #print axioms MCore.Real.P03RangeFailureFrontier.rangeFailure_iff_fullRunWitness
 #print axioms MCore.Real.P03RangeFailureFrontier.rangeFailureLaw_iff_fullRunAcceptanceLaw
+#print axioms MCore.Real.P03RangeFailureFrontier.rangeCorrect_iff_perfectFlip
 #print axioms MCore.Real.P03RangeFailureFrontier.no_rangeFailure_iff_rangeCorrect
 #print axioms MCore.Real.P03RangeFailureFrontier.range_failure_or_range_correct
 
