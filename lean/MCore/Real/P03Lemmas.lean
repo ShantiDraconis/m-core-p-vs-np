@@ -35,7 +35,21 @@ literal bit-prefix of the successor.
     (SourceRecovery.decodeSource_reduce
       M hTotal (Orbit (R_M M hTotal) seed k))
 
+/--
+The canonical full-support conflict witness necessarily includes the transition
+block.  This is a structural fact about fullSupport only; it does not claim
+that every minimal or relevant conflict must contain Transit.
+-/
+theorem full_conflict_support_contains_transition
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (hUnsat : CNFUnsat (boundedExecTableauCNF_NTM M x t)) :
+    (((fullConflictExtractor M).locate x t hUnsat).support.transit = true) := by
+  rfl
+
 #print axioms MCore.Real.P03Lemmas.decode_recovers_orbit_step
+#print axioms MCore.Real.P03Lemmas.full_conflict_support_contains_transition
 
 end P03Lemmas
 end Real
