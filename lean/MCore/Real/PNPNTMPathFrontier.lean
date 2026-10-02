@@ -214,7 +214,7 @@ theorem runBranches_singleton_succ_active
         !(M.machine.accepting q.state || M.machine.rejecting q.state)) = [c] := by
     simp [hflag]
   rw [hHalted, hActive]
-  rfl
+  simp
 
 def RunBranchesPathEquivalence : Prop :=
   ∀ (M : PolyNTMCandidate) (fuel : Nat) (c z : NTMConfig M),
