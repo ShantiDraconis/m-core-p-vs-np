@@ -44,12 +44,12 @@ theorem candidate_bridge_gives_exact_witness
     {M : PolyDTMCandidate}
     (B : CandidateKleeneBridge M) :
     ExactDiagonalWitness M := by
-  refine ⟨counterexample B, ?_⟩
+  refine ⟨P02KleeneUniversalBridge.counterexample B, ?_⟩
   have hFlip :=
     B.realizer.flips_of_fixed
-      (fixedCode B)
-      (fixedCode_spec B)
-  simpa [counterexample] using hFlip
+      (P02KleeneUniversalBridge.fixedCode B)
+      (P02KleeneUniversalBridge.fixedCode_spec B)
+  simpa [P02KleeneUniversalBridge.counterexample] using hFlip
 
 /-- Exact audit statement: inhabiting the current Kleene wrapper is equivalent
 to inhabiting the semantic diagonal frontier itself. -/
