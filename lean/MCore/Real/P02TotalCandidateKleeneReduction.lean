@@ -24,7 +24,7 @@ semantic/Kleene self-reference construction. -/
 def TotalCandidateKleeneBridge : Prop :=
   ∀ M : PolyDTMCandidate,
     DeclaredClockTotal M →
-      CandidateKleeneBridge M
+      Nonempty (CandidateKleeneBridge M)
 
 theorem exists_timeout_of_not_total
     (M : PolyDTMCandidate)
@@ -45,7 +45,8 @@ theorem candidate_failure_of_total_kleene
     ∃ x : BitString, CandidateFailureMode M x := by
   classical
   by_cases hTotal : DeclaredClockTotal M
-  · let K : CandidateKleeneBridge M := B M hTotal
+  · let K : CandidateKleeneBridge M :=
+      Classical.choice (B M hTotal)
     refine ⟨P02KleeneUniversalBridge.counterexample K, ?_⟩
     apply (failureMode_iff_not_correctAt
       M (P02KleeneUniversalBridge.counterexample K)).mpr
