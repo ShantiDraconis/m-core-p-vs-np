@@ -7737,7 +7737,7 @@ theorem ntmAtMostOne_weight_le
       else [])
     (by
       intro j hj
-      apply le_trans
+      apply Nat.le_trans
         (ntmCNFWeight_flatMap_list_le ids 3
           (fun k =>
             if j < k then
@@ -7750,7 +7750,29 @@ theorem ntmAtMostOne_weight_le
             · simp [h, ntmCNFWeight, ntmClauseWeight]
             · simp [h, ntmCNFWeight]))
       simp)
-  simpa [ids, ntmIndexedTransitions_length, pow_two] using houter
+  have houter' :
+      ntmCNFWeight
+        (ids.flatMap fun j =>
+          ids.flatMap fun k =>
+            if j < k then
+              [[ntmNeg (ntmChoiceVar M x t s q a j),
+                ntmNeg (ntmChoiceVar M x t s q a k)]]
+            else []) <=
+        (M.machine.transition q a).length *
+          (3 * (M.machine.transition q a).length) := by
+    simpa [ids, ntmIndexedTransitions_length] using houter
+  calc
+    ntmCNFWeight
+        (ids.flatMap fun j =>
+          ids.flatMap fun k =>
+            if j < k then
+              [[ntmNeg (ntmChoiceVar M x t s q a j),
+                ntmNeg (ntmChoiceVar M x t s q a k)]]
+            else [])
+        <= (M.machine.transition q a).length *
+            (3 * (M.machine.transition q a).length) := houter'
+    _ = 3 * (M.machine.transition q a).length ^ 2 := by
+      simp [Nat.pow_succ, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
 
 def ntmActiveChoiceWeightCap
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
@@ -8448,7 +8470,7 @@ theorem ntmFinal_weight_le
           some (ntmPos (ntmStateVar M t t q))
         else none).length
       <= M.stateCount + 1 := by
-    exact le_trans
+    exact Nat.le_trans
       (filterMap_length_le
         (fun q : Fin (M.stateCount + 1) =>
           if M.machine.accepting q = true then
