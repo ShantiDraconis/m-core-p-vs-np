@@ -544,8 +544,12 @@ theorem eval_ntmSetSymbolClauses_nil_iff
         (ntmSetSymbolClauses [] varAt target)
         [ntmLitFor (varAt a) (decide (a = target))]
         h
-      cases a <;>
-        simp [ntmSetSymbolClauses, ntmAlphabet]
+      cases a with
+      | none =>
+          simp [ntmSetSymbolClauses, ntmAlphabet]
+      | some av =>
+          cases av <;>
+            simp [ntmSetSymbolClauses, ntmAlphabet]
     exact (evalNTMClause_singleton_litFor
       sigma (varAt a) (decide (a = target))).mp hcl
   · intro h
@@ -564,9 +568,8 @@ theorem eval_ntmSetSymbolClauses_nil_iff
           [ntmLitFor (varAt (some true)) (decide (some true = target))] = true :=
       (evalNTMClause_singleton_litFor
         sigma (varAt (some true)) (decide (some true = target))).2 (h (some true))
-    simp only [ntmSetSymbolClauses, ntmAlphabet, List.map_cons, List.map_nil,
-      List.nil_append, evalNTMCNF, Bool.and_eq_true]
-    exact ⟨hn, hf, ht⟩
+    simpa [ntmSetSymbolClauses, ntmAlphabet, evalNTMCNF] using
+      And.intro hn (And.intro hf ht)
 
 theorem eval_ntmSetLeftCell_nil_iff
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -680,8 +683,35 @@ theorem evalNTMClause_map_pos_exists
   | nil =>
       simp [evalNTMClause]
   | cons a as ih =>
-      simp [evalNTMClause, evalNTMLiteral, ntmPos, ih,
-        Bool.or_eq_true, or_assoc]
+      simp only [List.map_cons, evalNTMClause, evalNTMLiteral, ntmPos,
+        Bool.or_eq_true, ih, List.mem_cons]
+      constructor
+      · intro h
+        rcases h with ha | ht
+        · exact ⟨a, Or.inl rfl, ha⟩
+        · rcases ht with ⟨x, hx, hv⟩
+          exact ⟨x, Or.inr hx, hv⟩
+      · rintro ⟨x, hx, hv⟩
+        rcases hx with rfl | hx
+        · exact Or.inl hv
+        · exact Or.inr ⟨x, hx, hv⟩
+
+theorem indexedTransitionsAux_index_lt
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (start j : Nat) (tr : State × Symbol × Direction)
+    (h : (j, tr) ∈ ntmIndexedTransitionsAux start ts) :
+    j < start + ts.length := by
+  induction ts generalizing start j tr with
+  | nil =>
+      simp [ntmIndexedTransitionsAux] at h
+  | cons x xs ih =>
+      simp only [ntmIndexedTransitionsAux, List.mem_cons] at h
+      rcases h with hhead | htail
+      · cases hhead
+        simp
+      · have hlt := ih (start + 1) j tr htail
+        simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hlt
 
 theorem indexedTransitions_index_lt
     {State Symbol : Type}
@@ -690,19 +720,8 @@ theorem indexedTransitions_index_lt
     (h : (j, tr) ∈ ntmIndexedTransitions ts) :
     j < ts.length := by
   unfold ntmIndexedTransitions at h
-  generalize hstart : 0 = start at h
-  clear hstart
-  induction ts generalizing start j tr with
-  | nil =>
-      simp [ntmIndexedTransitionsAux] at h
-  | cons x xs ih =>
-      simp [ntmIndexedTransitionsAux] at h
-      rcases h with h | h
-      · rcases h with ⟨rfl, rfl⟩
-        simp
-      · have hj := ih (start := start + 1) h
-        simp at hj ⊢
-        omega
+  have hlt := indexedTransitionsAux_index_lt ts 0 j tr h
+  simpa using hlt
 
 theorem boundedExec_transitionStep_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -752,7 +771,8 @@ theorem activeChoice_sat
   have hor :
       M.machine.accepting q || M.machine.rejecting q = false := by
     simp [hActive.1, hActive.2]
-  simpa [ntmTransitionCaseCNF, hor] using hCase
+  rw [ntmTransitionCaseCNF, hor] at hCase
+  exact hCase
 
 theorem ntmChoice_exists_nat_of_guard
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -1213,31 +1233,8 @@ theorem ntmChoice_effect_state_exact
     rcases indexedTransitions_index_mem
       (M.machine.transition q a) j.val j.isLt with ⟨tr, hmem⟩
     have htr : tr = (M.machine.transition q a).get j := by
-      -- indexedTransitions preserves the source-list element at each index
-      -- derive equality from unique lookup position by list induction
-      unfold ntmIndexedTransitions at hmem
-      generalize hstart : 0 = start at hmem
-      subst start
-      induction hts : M.machine.transition q a generalizing j.val tr with
-      | nil =>
-          simp at j
-      | cons hd tl ih =>
-          cases j with
-          | mk j hjlt =>
-            cases j with
-            | zero =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · simpa using congrArg Prod.snd h
-                · omega
-            | succ k =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · omega
-                · have hk : k < tl.length := by simpa using hjlt
-                  let jk : Fin tl.length := ⟨k, hk⟩
-                  have ih' := ih (j := jk) (tr := tr) h
-                  simpa using ih'
+      exact indexedTransitions_index_value
+        (M.machine.transition q a) j.val tr hmem j.isLt
     simpa [htr] using hmem
   have hEff :
       evalNTMCNF sigma
@@ -1447,28 +1444,8 @@ theorem ntmChoice_effect_head_exact_stay
   rcases indexedTransitions_index_mem
       (M.machine.transition q a) j.val j.isLt with ⟨tr, hmem⟩
   have htr : tr = (M.machine.transition q a).get j := by
-    unfold ntmIndexedTransitions at hmem
-    generalize hstart : 0 = start at hmem
-    subst start
-    induction hts : M.machine.transition q a generalizing j.val tr with
-    | nil => simp at j
-    | cons hd tl ih =>
-        cases j with
-        | mk j hjlt =>
-            cases j with
-            | zero =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · simpa using congrArg Prod.snd h
-                · omega
-            | succ k =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · omega
-                · have hk : k < tl.length := by simpa using hjlt
-                  let jk : Fin tl.length := ⟨k, hk⟩
-                  have ih' := ih (j := jk) (tr := tr) h
-                  simpa using ih'
+    exact indexedTransitions_index_value
+      (M.machine.transition q a) j.val tr hmem j.isLt
   have hmemIndexed :
       (j.val, (M.machine.transition q a).get j) ∈
         ntmIndexedTransitions (M.machine.transition q a) := by
@@ -1512,28 +1489,8 @@ theorem ntmChoice_effect_head_exact_left
   rcases indexedTransitions_index_mem
       (M.machine.transition q a) j.val j.isLt with ⟨tr, hmem⟩
   have htr : tr = (M.machine.transition q a).get j := by
-    unfold ntmIndexedTransitions at hmem
-    generalize hstart : 0 = start at hmem
-    subst start
-    induction hts : M.machine.transition q a generalizing j.val tr with
-    | nil => simp at j
-    | cons hd tl ih =>
-        cases j with
-        | mk j hjlt =>
-            cases j with
-            | zero =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · simpa using congrArg Prod.snd h
-                · omega
-            | succ k =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · omega
-                · have hk : k < tl.length := by simpa using hjlt
-                  let jk : Fin tl.length := ⟨k, hk⟩
-                  have ih' := ih (j := jk) (tr := tr) h
-                  simpa using ih'
+    exact indexedTransitions_index_value
+      (M.machine.transition q a) j.val tr hmem j.isLt
   have hmemIndexed :
       (j.val, (M.machine.transition q a).get j) ∈
         ntmIndexedTransitions (M.machine.transition q a) := by
@@ -1574,28 +1531,8 @@ theorem ntmChoice_effect_head_exact_right
   rcases indexedTransitions_index_mem
       (M.machine.transition q a) j.val j.isLt with ⟨tr, hmem⟩
   have htr : tr = (M.machine.transition q a).get j := by
-    unfold ntmIndexedTransitions at hmem
-    generalize hstart : 0 = start at hmem
-    subst start
-    induction hts : M.machine.transition q a generalizing j.val tr with
-    | nil => simp at j
-    | cons hd tl ih =>
-        cases j with
-        | mk j hjlt =>
-            cases j with
-            | zero =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · simpa using congrArg Prod.snd h
-                · omega
-            | succ k =>
-                simp [ntmIndexedTransitionsAux] at hmem
-                rcases hmem with h | h
-                · omega
-                · have hk : k < tl.length := by simpa using hjlt
-                  let jk : Fin tl.length := ⟨k, hk⟩
-                  have ih' := ih (j := jk) (tr := tr) h
-                  simpa using ih'
+    exact indexedTransitions_index_value
+      (M.machine.transition q a) j.val tr hmem j.isLt
   have hmemIndexed :
       (j.val, (M.machine.transition q a).get j) ∈
         ntmIndexedTransitions (M.machine.transition q a) := by
