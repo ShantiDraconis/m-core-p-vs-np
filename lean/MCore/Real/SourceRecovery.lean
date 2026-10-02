@@ -155,12 +155,124 @@ theorem inputTape_injective :
           subst bs
           rfl
 
+/-- Canonical dummy input used only to recover length-dependent variable IDs. -/
+def layoutInput (n : Nat) : BitString :=
+  List.replicate n false
+
+@[simp] theorem layoutInput_length (n : Nat) :
+    (layoutInput n).length = n := by
+  simp [layoutInput]
+
+/--
+Decode exactly one three-clause symbol block produced by ntmSetSymbolClauses.
+This is positional: it never searches the full CNF.
+-/
+def decodeSymbolBlock
+    (varAt : Option Bool → Nat)
+    (block : NTMCNF) : Option (Option Bool) :=
+  if block = ntmSetSymbolClauses [] varAt none then
+    some none
+  else if block = ntmSetSymbolClauses [] varAt (some false) then
+    some (some false)
+  else if block = ntmSetSymbolClauses [] varAt (some true) then
+    some (some true)
+  else
+    none
+
+@[simp] theorem decodeSymbolBlock_setSymbolClauses
+    (varAt : Option Bool → Nat)
+    (target : Option Bool) :
+    decodeSymbolBlock varAt (ntmSetSymbolClauses [] varAt target) =
+      some target := by
+  cases target with
+  | none =>
+      simp [decodeSymbolBlock]
+  | some b =>
+      cases b <;>
+        simp [decodeSymbolBlock, ntmSetSymbolClauses, ntmAlphabet,
+          ntmLitFor, ntmPos, ntmNeg]
+
+def initialStateClauseCount (M : PolyNTMCandidate) : Nat :=
+  ntmStateCount M
+
+def retainedRadius (n t : Nat) : Nat :=
+  n + t + 1
+
+def headBlockOffset (M : PolyNTMCandidate) : Nat :=
+  initialStateClauseCount M
+
+def rightBlockOffset
+    (M : PolyNTMCandidate)
+    (n t : Nat) : Nat :=
+  initialStateClauseCount M + 3 + 3 * retainedRadius n t
+
+def symbolBlockAt
+    (F : NTMCNF)
+    (offset : Nat) : NTMCNF :=
+  (F.drop offset).take 3
+
+def getHeadAt0
+    (M : PolyNTMCandidate)
+    (t : Nat)
+    (F : NTMCNF) : Option (Option Bool) :=
+  decodeSymbolBlock
+    (ntmHeadVar M t 0)
+    (symbolBlockAt F (headBlockOffset M))
+
+def getRightAt0
+    (M : PolyNTMCandidate)
+    (n t : Nat)
+    (F : NTMCNF)
+    (i : Nat) : Option (Option Bool) :=
+  decodeSymbolBlock
+    (ntmRightVar M (layoutInput n) t 0 i)
+    (symbolBlockAt F (rightBlockOffset M n t + 3 * i))
+
+/-- Read exactly the requested number of source-tail cells. -/
+def readRightBits
+    (M : PolyNTMCandidate)
+    (n t : Nat)
+    (F : NTMCNF) :
+    Nat → Nat → Option BitString
+  | _, 0 => some []
+  | i, count + 1 =>
+      match getRightAt0 M n t F i with
+      | some (some b) =>
+          match readRightBits M n t F (i + 1) count with
+          | some bs => some (b :: bs)
+          | none => none
+      | _ => none
+
+/--
+Operational inverse of the time-0 source encoding.
+For n=0 the head must be blank. For n+1 the head contains the first bit and
+the following n bits are read from right(0,0),...,right(0,n-1).
+-/
+def extractInitialTape
+    (M : PolyNTMCandidate)
+    (n t : Nat)
+    (F : NTMCNF) : Option BitString :=
+  match n with
+  | 0 =>
+      match getHeadAt0 M t F with
+      | some none => some []
+      | _ => none
+  | k + 1 =>
+      match getHeadAt0 M t F with
+      | some (some b) =>
+          match readRightBits M n t F 0 k with
+          | some bs => some (b :: bs)
+          | none => none
+      | _ => none
+
 /-
-Next material-free engineering target (not postulated here):
-  extractInitialTape :
-    PolyNTMCandidate → Nat → Nat → NTMCNF → Option BitString
-with a proof that it reads the time-0 head/right unit clauses emitted by
-ntmInitialCNF, followed by decodeSource_reduce for the concrete R_M range.
+Remaining proof obligation (not postulated):
+  extractInitialTape_initialCNF :
+    x.length = n →
+    extractInitialTape M n t (ntmInitialCNF M x t) = some x
+
+Once this is proved, decodeSource_reduce and both decode chains are direct
+compositions with decodeCircuit_reduce and decodeNTMCNF_ntmCNFCircuit.
 -/
 
 end SourceRecovery
