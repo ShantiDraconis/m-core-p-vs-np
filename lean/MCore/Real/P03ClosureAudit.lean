@@ -53,6 +53,16 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03CriticalHalfSymmetry.canonical_symmetry_is_closed
 #print axioms MCore.Real.P03CriticalHalfSymmetry.materialBridge_iff_fullRunAcceptanceLaw
 
+
+#print axioms MCore.Real.P03PolynomialWitness.p1_p2_exact
+#print axioms MCore.Real.P03PolynomialWitness.p3_zero_iff_unit_gap
+#print axioms MCore.Real.P03PolynomialWitness.witnessEnergy_eq_zero_iff
+#print axioms MCore.Real.P03PolynomialWitness.critical_counterexample_stationary
+#print axioms MCore.Real.P03PolynomialWitness.critical_counterexample_values_differ
+#print axioms MCore.Real.P03PolynomialWitness.boolValue_injective
+#print axioms MCore.Real.P03PolynomialWitness.polynomialWitness_iff_fullRunWitness
+#print axioms MCore.Real.P03PolynomialWitness.polynomialWitnessLaw_iff_fullRunAcceptanceLaw
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
