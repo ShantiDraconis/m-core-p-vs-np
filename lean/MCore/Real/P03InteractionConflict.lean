@@ -9,6 +9,81 @@ open PNPNTMTableauEncoding
 open P03MaterialLaw
 open P03Lemmas
 
+/-- Variables occurring in one NTM clause. -/
+def ClauseVarSet (clause : NTMClause) : Finset Nat :=
+  (clause.map NTMLiteral.var).toFinset
+
+/-- Variables occurring anywhere in an NTM CNF. -/
+def CNFVarSet (F : NTMCNF) : Finset Nat :=
+  (F.flatMap (fun clause => clause.map NTMLiteral.var)).toFinset
+
+theorem var_mem_CNFVarSet_of_mem
+    {F : NTMCNF}
+    {clause : NTMClause}
+    {lit : NTMLiteral}
+    (hcl : clause ∈ F)
+    (hl : lit ∈ clause) :
+    lit.var ∈ CNFVarSet F := by
+  simp [CNFVarSet]
+  exact ⟨clause, hcl, lit, hl, rfl⟩
+
+theorem evalNTMLiteral_eq_of_agree
+    {sigma1 sigma2 : Assignment}
+    {lit : NTMLiteral}
+    (h : sigma1 lit.var = sigma2 lit.var) :
+    evalNTMLiteral sigma1 lit = evalNTMLiteral sigma2 lit := by
+  simp [evalNTMLiteral, h]
+
+theorem evalNTMClause_eq_of_agree_on_varset
+    {clause : NTMClause}
+    {sigma1 sigma2 : Assignment}
+    (h :
+      ∀ v ∈ ClauseVarSet clause,
+        sigma1 v = sigma2 v) :
+    evalNTMClause sigma1 clause = evalNTMClause sigma2 clause := by
+  induction clause with
+  | nil =>
+      rfl
+  | cons lit rest ih =>
+      have hlit : sigma1 lit.var = sigma2 lit.var := by
+        apply h
+        simp [ClauseVarSet]
+      have hrest :
+          ∀ v ∈ ClauseVarSet rest,
+            sigma1 v = sigma2 v := by
+        intro v hv
+        apply h
+        simpa [ClauseVarSet] using hv
+      simp only [evalNTMClause]
+      rw [evalNTMLiteral_eq_of_agree hlit, ih hrest]
+
+theorem evalNTMCNF_eq_of_agree_on_varset
+    {F : NTMCNF}
+    {sigma1 sigma2 : Assignment}
+    (h :
+      ∀ v ∈ CNFVarSet F,
+        sigma1 v = sigma2 v) :
+    evalNTMCNF sigma1 F = evalNTMCNF sigma2 F := by
+  induction F with
+  | nil =>
+      rfl
+  | cons clause rest ih =>
+      have hclause :
+          ∀ v ∈ ClauseVarSet clause,
+            sigma1 v = sigma2 v := by
+        intro v hv
+        apply h
+        simp [CNFVarSet, ClauseVarSet] at hv ⊢
+        exact Or.inl hv
+      have hrest :
+          ∀ v ∈ CNFVarSet rest,
+            sigma1 v = sigma2 v := by
+        intro v hv
+        apply h
+        simpa [CNFVarSet] using hv
+      simp only [evalNTMCNF]
+      rw [evalNTMClause_eq_of_agree_on_varset hclause, ih hrest]
+
 /--
 A non-degenerate interaction conflict.
 
@@ -118,6 +193,9 @@ theorem terminal_state_ne_initial_right
     simp [ntmRightBase, ntmLeftBase]
   omega
 
+#print axioms MCore.Real.P03InteractionConflict.var_mem_CNFVarSet_of_mem
+#print axioms MCore.Real.P03InteractionConflict.evalNTMClause_eq_of_agree_on_varset
+#print axioms MCore.Real.P03InteractionConflict.evalNTMCNF_eq_of_agree_on_varset
 #print axioms MCore.Real.P03InteractionConflict.terminal_sat_implies_nonempty_lits
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_state
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_head
