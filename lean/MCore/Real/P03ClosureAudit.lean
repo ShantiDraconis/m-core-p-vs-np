@@ -1,0 +1,34 @@
+import MCore.Real.P03ClosureKernel
+
+namespace MCore
+namespace Real
+namespace P03ClosureAudit
+
+#print axioms MCore.Real.P03ClosureOperations.eval_append_true_iff
+#print axioms MCore.Real.P03ClosureOperations.sat_restricts_to_clause_subset
+#print axioms MCore.Real.P03ClosureOperations.unsat_extends_to_clause_superset
+#print axioms MCore.Real.P03ClosureOperations.decode_outer_orbit_step
+#print axioms MCore.Real.P03ClosureOperations.deterministic_complement_entry_unique
+
+#print axioms MCore.Real.P03ClosureOperators.core_touches_iff
+#print axioms MCore.Real.P03ClosureOperators.init_terminal_disjoint_operator
+#print axioms MCore.Real.P03ClosureOperators.init_terminal_sat_operator
+#print axioms MCore.Real.P03ClosureOperators.transition_touch_operator
+#print axioms MCore.Real.P03ClosureOperators.touch_to_occurrence_operator
+
+#print axioms MCore.Real.P03ClosureLaws.interaction_exposes_transition_step
+#print axioms MCore.Real.P03ClosureLaws.interaction_exposes_state_symbol_case
+#print axioms MCore.Real.P03ClosureLaws.deterministic_complement_has_single_index
+#print axioms MCore.Real.P03ClosureLaws.deterministic_complement_has_single_entry
+
+#print axioms MCore.Real.P03OpenMathFrontier.full_run_accept_equiv_implies_obs
+#print axioms MCore.Real.P03OpenMathFrontier.producer_implies_odd_semantic_recurrence
+#print axioms MCore.Real.P03OpenMathFrontier.cross_orbit_full_input_law_implies_total_odd_recurrence
+#print axioms MCore.Real.P03OpenMathFrontier.cross_orbit_full_input_law_implies_universal_failure
+#print axioms MCore.Real.P03OpenMathFrontier.cross_orbit_full_input_law_closes_internal_endpoint
+
+#print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
+
+end P03ClosureAudit
+end Real
+end MCore
