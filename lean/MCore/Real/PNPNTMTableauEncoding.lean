@@ -683,18 +683,23 @@ theorem evalNTMClause_map_pos_exists
   | nil =>
       simp [evalNTMClause]
   | cons a as ih =>
-      simp only [List.map_cons, evalNTMClause, evalNTMLiteral, ntmPos,
-        Bool.or_eq_true, ih, List.mem_cons]
+      change
+        (sigma (v a) || evalNTMClause sigma (as.map (fun x => ntmPos (v x)))) = true <->
+          ∃ x, x ∈ a :: as ∧ sigma (v x) = true
+      rw [Bool.or_eq_true]
       constructor
       · intro h
         rcases h with ha | ht
-        · exact ⟨a, Or.inl rfl, ha⟩
-        · rcases ht with ⟨x, hx, hv⟩
-          exact ⟨x, Or.inr hx, hv⟩
+        · exact ⟨a, by simp, ha⟩
+        · have hex : ∃ x ∈ as, sigma (v x) = true := ih.mp ht
+          rcases hex with ⟨x, hx, hv⟩
+          exact ⟨x, by simp [hx], hv⟩
       · rintro ⟨x, hx, hv⟩
-        rcases hx with rfl | hx
-        · exact Or.inl hv
-        · exact Or.inr ⟨x, hx, hv⟩
+        simp only [List.mem_cons] at hx
+        rcases hx with hxa | hx
+        · subst x
+          exact Or.inl hv
+        · exact Or.inr (ih.mpr ⟨x, hx, hv⟩)
 
 theorem indexedTransitionsAux_index_lt
     {State Symbol : Type}
@@ -722,6 +727,69 @@ theorem indexedTransitions_index_lt
   unfold ntmIndexedTransitions at h
   have hlt := indexedTransitionsAux_index_lt ts 0 j tr h
   simpa using hlt
+
+theorem indexedTransitionsAux_index_ge
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (start j : Nat) (tr : State × Symbol × Direction)
+    (hmem : (j, tr) ∈ ntmIndexedTransitionsAux start ts) :
+    start ≤ j := by
+  induction ts generalizing start j tr with
+  | nil =>
+      simp [ntmIndexedTransitionsAux] at hmem
+  | cons x xs ih =>
+      simp only [ntmIndexedTransitionsAux, List.mem_cons] at hmem
+      rcases hmem with hhead | htail
+      · cases hhead
+        exact Nat.le_refl start
+      · have hge := ih (start + 1) j tr htail
+        omega
+
+theorem indexedTransitionsAux_index_value
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (start j : Nat) (tr : State × Symbol × Direction)
+    (hmem : (start + j, tr) ∈ ntmIndexedTransitionsAux start ts)
+    (hj : j < ts.length) :
+    tr = ts.get ⟨j, hj⟩ := by
+  induction ts generalizing start j tr with
+  | nil =>
+      simp at hj
+  | cons x xs ih =>
+      cases j with
+      | zero =>
+          simp only [Nat.add_zero, ntmIndexedTransitionsAux, List.mem_cons] at hmem
+          rcases hmem with hhead | htail
+          · cases hhead
+            rfl
+          · have hge :=
+              indexedTransitionsAux_index_ge xs (start + 1) start tr htail
+            omega
+      | succ j =>
+          have hj' : j < xs.length := by simpa using hj
+          simp only [ntmIndexedTransitionsAux, List.mem_cons] at hmem
+          rcases hmem with hhead | htail
+          · have hEq : start + (j + 1) = start := congrArg Prod.fst hhead
+            omega
+          · have htail' :
+                ((start + 1) + j, tr) ∈
+                  ntmIndexedTransitionsAux (start + 1) xs := by
+              simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using htail
+            have hval := ih (start + 1) j tr htail' hj'
+            simpa using hval
+
+theorem indexedTransitions_index_value
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (j : Nat) (tr : State × Symbol × Direction)
+    (hmem : (j, tr) ∈ ntmIndexedTransitions ts)
+    (hj : j < ts.length) :
+    tr = ts.get ⟨j, hj⟩ := by
+  unfold ntmIndexedTransitions at hmem
+  have h :=
+    indexedTransitionsAux_index_value ts 0 j tr
+      (by simpa using hmem) hj
+  simpa using h
 
 theorem boundedExec_transitionStep_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -771,8 +839,7 @@ theorem activeChoice_sat
   have hor :
       M.machine.accepting q || M.machine.rejecting q = false := by
     simp [hActive.1, hActive.2]
-  rw [ntmTransitionCaseCNF, hor] at hCase
-  exact hCase
+  simpa [ntmTransitionCaseCNF, hor] using hCase
 
 theorem ntmChoice_exists_nat_of_guard
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -1190,6 +1257,50 @@ theorem eval_setSymbol_neg_guard_to_nil
     exact evalNTMClause_neg_prefix_true sigma cvar _ (by simpa using hguarded) hc
   exact (evalNTMClause_singleton_litFor sigma (varAt b) (decide (b = target))).mp hunit
 
+theorem eval_copySymbol_neg_guard_of_choice_true
+    (sigma : Assignment)
+    (cvar : Nat)
+    (oldVar newVar : Option Bool -> Nat)
+    (h :
+      evalNTMCNF sigma
+        (ntmCopySymbolClauses [ntmNeg cvar] oldVar newVar) = true)
+    (hc : sigma cvar = true) :
+    forall a : Option Bool,
+      sigma (newVar a) = sigma (oldVar a) := by
+  intro a
+  have hforward :
+      evalNTMClause sigma
+        ([ntmNeg cvar] ++
+          [ntmNeg (oldVar a), ntmPos (newVar a)]) = true := by
+    apply evalNTMCNF_of_mem sigma
+      (ntmCopySymbolClauses [ntmNeg cvar] oldVar newVar) _
+      h
+    cases a <;>
+      simp [ntmCopySymbolClauses, ntmAlphabet]
+  have hbackward :
+      evalNTMClause sigma
+        ([ntmNeg cvar] ++
+          [ntmPos (oldVar a), ntmNeg (newVar a)]) = true := by
+    apply evalNTMCNF_of_mem sigma
+      (ntmCopySymbolClauses [ntmNeg cvar] oldVar newVar) _
+      h
+    cases a <;>
+      simp [ntmCopySymbolClauses, ntmAlphabet]
+  have hf :
+      evalNTMClause sigma
+        [ntmNeg (oldVar a), ntmPos (newVar a)] = true :=
+    evalNTMClause_neg_prefix_true sigma cvar _
+      (by simpa using hforward) hc
+  have hb :
+      evalNTMClause sigma
+        [ntmPos (oldVar a), ntmNeg (newVar a)] = true :=
+    evalNTMClause_neg_prefix_true sigma cvar _
+      (by simpa using hbackward) hc
+  cases hold : sigma (oldVar a) <;>
+    cases hnew : sigma (newVar a) <;>
+    simp [evalNTMClause, evalNTMLiteral, ntmNeg, ntmPos,
+      hold, hnew] at hf hb ⊢
+
 theorem choiceEffect_stateBlock_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (q : Fin (M.stateCount + 1)) (a : Option Bool)
@@ -1551,50 +1662,6 @@ theorem ntmChoice_effect_head_exact_right
     (ntmRightVar M x t s 0)
     (ntmHeadVar M t (s + 1))
     hCopy hj
-
-theorem eval_copySymbol_neg_guard_of_choice_true
-    (sigma : Assignment)
-    (cvar : Nat)
-    (oldVar newVar : Option Bool -> Nat)
-    (h :
-      evalNTMCNF sigma
-        (ntmCopySymbolClauses [ntmNeg cvar] oldVar newVar) = true)
-    (hc : sigma cvar = true) :
-    forall a : Option Bool,
-      sigma (newVar a) = sigma (oldVar a) := by
-  intro a
-  have hforward :
-      evalNTMClause sigma
-        ([ntmNeg cvar] ++
-          [ntmNeg (oldVar a), ntmPos (newVar a)]) = true := by
-    apply evalNTMCNF_of_mem sigma
-      (ntmCopySymbolClauses [ntmNeg cvar] oldVar newVar) _
-      h
-    cases a <;>
-      simp [ntmCopySymbolClauses, ntmAlphabet]
-  have hbackward :
-      evalNTMClause sigma
-        ([ntmNeg cvar] ++
-          [ntmPos (oldVar a), ntmNeg (newVar a)]) = true := by
-    apply evalNTMCNF_of_mem sigma
-      (ntmCopySymbolClauses [ntmNeg cvar] oldVar newVar) _
-      h
-    cases a <;>
-      simp [ntmCopySymbolClauses, ntmAlphabet]
-  have hf :
-      evalNTMClause sigma
-        [ntmNeg (oldVar a), ntmPos (newVar a)] = true :=
-    evalNTMClause_neg_prefix_true sigma cvar _
-      (by simpa using hforward) hc
-  have hb :
-      evalNTMClause sigma
-        [ntmPos (oldVar a), ntmNeg (newVar a)] = true :=
-    evalNTMClause_neg_prefix_true sigma cvar _
-      (by simpa using hbackward) hc
-  cases hold : sigma (oldVar a) <;>
-    cases hnew : sigma (newVar a) <;>
-    simp [evalNTMClause, evalNTMLiteral, ntmNeg, ntmPos,
-      hold, hnew] at hf hb ⊢
 
 theorem stay_copyLeft_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -6799,69 +6866,6 @@ theorem pathAssignment_selected_effect_sat
                 using hout
             simpa [c', hcell]
 
-
-theorem indexedTransitionsAux_index_ge
-    {State Symbol : Type}
-    (ts : List (State × Symbol × Direction))
-    (start j : Nat) (tr : State × Symbol × Direction)
-    (hmem : (j, tr) ∈ ntmIndexedTransitionsAux start ts) :
-    start ≤ j := by
-  induction ts generalizing start j tr with
-  | nil =>
-      simp [ntmIndexedTransitionsAux] at hmem
-  | cons x xs ih =>
-      simp only [ntmIndexedTransitionsAux, List.mem_cons] at hmem
-      rcases hmem with hhead | htail
-      · cases hhead
-        exact Nat.le_refl start
-      · have hge := ih (start + 1) j tr htail
-        omega
-
-theorem indexedTransitionsAux_index_value
-    {State Symbol : Type}
-    (ts : List (State × Symbol × Direction))
-    (start j : Nat) (tr : State × Symbol × Direction)
-    (hmem : (start + j, tr) ∈ ntmIndexedTransitionsAux start ts)
-    (hj : j < ts.length) :
-    tr = ts.get ⟨j, hj⟩ := by
-  induction ts generalizing start j tr with
-  | nil =>
-      simp at hj
-  | cons x xs ih =>
-      cases j with
-      | zero =>
-          simp only [Nat.add_zero, ntmIndexedTransitionsAux, List.mem_cons] at hmem
-          rcases hmem with hhead | htail
-          · cases hhead
-            rfl
-          · have hge :=
-              indexedTransitionsAux_index_ge xs (start + 1) start tr htail
-            omega
-      | succ j =>
-          have hj' : j < xs.length := by simpa using hj
-          simp only [ntmIndexedTransitionsAux, List.mem_cons] at hmem
-          rcases hmem with hhead | htail
-          · have hEq : start + (j + 1) = start := congrArg Prod.fst hhead
-            omega
-          · have htail' :
-                ((start + 1) + j, tr) ∈
-                  ntmIndexedTransitionsAux (start + 1) xs := by
-              simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using htail
-            have hval := ih (start + 1) j tr htail' hj'
-            simpa using hval
-
-theorem indexedTransitions_index_value
-    {State Symbol : Type}
-    (ts : List (State × Symbol × Direction))
-    (j : Nat) (tr : State × Symbol × Direction)
-    (hmem : (j, tr) ∈ ntmIndexedTransitions ts)
-    (hj : j < ts.length) :
-    tr = ts.get ⟨j, hj⟩ := by
-  unfold ntmIndexedTransitions at hmem
-  have h :=
-    indexedTransitionsAux_index_value ts 0 j tr
-      (by simpa using hmem) hj
-  simpa using h
 
 theorem pathAssignment_actual_state_true
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
