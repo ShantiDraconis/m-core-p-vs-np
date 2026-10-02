@@ -6650,15 +6650,18 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simp [NTM.stepBranch, Tape.write, Tape.move, htrDef]
         simpa [c, c', heq]
-      simp only [ntmChoiceEffectCNF, htrDef, ntmStayEffectCNF, evalNTMCNF_append]
+      simp only [ntmChoiceEffectCNF, htrDef, ntmStayEffectCNF]
+      rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
           (ntmChoiceVar M x t s c.state c.tape.head j)
           qNext hchoice hstateExact, ?_⟩
+      rw [evalNTMCNF_append]
       refine ⟨eval_setSymbol_neg_guard_of_exact
           (pathAssignment M x t path hPath)
           (ntmChoiceVar M x t s c.state c.tape.head j)
           (ntmHeadVar M t (s + 1)) write hchoice hheadExact, ?_⟩
+      rw [evalNTMCNF_append]
       constructor
       · rw [show ntmCopyLeftAll
           [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)] M x t s =
@@ -6689,16 +6692,19 @@ theorem pathAssignment_selected_effect_sat
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_left_head M.machine.blank write c.tape
         simpa [c, c', heq]
-      simp only [ntmChoiceEffectCNF, htrDef, ntmLeftEffectCNF, evalNTMCNF_append]
+      simp only [ntmChoiceEffectCNF, htrDef, ntmLeftEffectCNF]
+      rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
           (ntmChoiceVar M x t s c.state c.tape.head j)
           qNext hchoice hstateExact, ?_⟩
+      rw [evalNTMCNF_append]
       refine ⟨eval_copySymbol_neg_guard_of_eq
           (pathAssignment M x t path hPath)
           (ntmChoiceVar M x t s c.state c.tape.head j)
           (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1))
           hchoice hheadEq, ?_⟩
+      rw [evalNTMCNF_append]
       refine ⟨?_, ?_⟩
       · rw [evalNTMCNF_flatMap_range]
         intro i hi
@@ -6770,7 +6776,8 @@ theorem pathAssignment_selected_effect_sat
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_right_head M.machine.blank write c.tape
         simpa [c, c', heq]
-      simp only [ntmChoiceEffectCNF, htrDef, ntmRightEffectCNF, evalNTMCNF_append]
+      simp only [ntmChoiceEffectCNF, htrDef, ntmRightEffectCNF]
+      rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
           (ntmChoiceVar M x t s c.state c.tape.head j)
