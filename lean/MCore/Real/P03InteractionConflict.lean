@@ -304,6 +304,58 @@ theorem terminal_state_ne_initial_right
 #print axioms MCore.Real.P03InteractionConflict.var_mem_CNFVarSet_of_mem
 #print axioms MCore.Real.P03InteractionConflict.evalNTMClause_eq_of_agree_on_varset
 #print axioms MCore.Real.P03InteractionConflict.evalNTMCNF_eq_of_agree_on_varset
+/--
+For positive clock, Init and Terminal use disjoint variable sets.
+Terminal contains only state variables at time t; Init contains the four
+time-zero regions classified above.
+-/
+theorem init_terminal_vars_disjoint
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (ht : 0 < t) :
+    Disjoint
+      (CNFVarSet (ntmInitialCNF M x t))
+      (CNFVarSet (ntmFinalAcceptanceCNF M t)) := by
+  rw [Finset.disjoint_left]
+  intro v hvI hvT
+  rcases terminal_var_classifier hvT with ⟨qt, _hacc, hvTerminal⟩
+  rcases initial_var_classifier hvI with
+    hState | hHead | hLeft | hRight
+  · rcases hState with ⟨q0, hvInitial⟩
+    have hEq :
+        ntmStateVar M t 0 q0 =
+          ntmStateVar M t t qt := by
+      calc
+        ntmStateVar M t 0 q0 = v := hvInitial.symm
+        _ = ntmStateVar M t t qt := hvTerminal
+    exact (terminal_state_ne_initial_state M t ht q0 qt) hEq
+  · rcases hHead with ⟨a, hvInitial⟩
+    have hEq :
+        ntmStateVar M t t qt =
+          ntmHeadVar M t 0 a := by
+      calc
+        ntmStateVar M t t qt = v := hvTerminal.symm
+        _ = ntmHeadVar M t 0 a := hvInitial
+    exact (terminal_state_ne_initial_head M x t qt a) hEq
+  · rcases hLeft with ⟨i, hi, a, hvInitial⟩
+    have hEq :
+        ntmStateVar M t t qt =
+          ntmLeftVar M x t 0 i a := by
+      calc
+        ntmStateVar M t t qt = v := hvTerminal.symm
+        _ = ntmLeftVar M x t 0 i a := hvInitial
+    exact (terminal_state_ne_initial_left M x t i hi qt a) hEq
+  · rcases hRight with ⟨i, hi, a, hvInitial⟩
+    have hEq :
+        ntmStateVar M t t qt =
+          ntmRightVar M x t 0 i a := by
+      calc
+        ntmStateVar M t t qt = v := hvTerminal.symm
+        _ = ntmRightVar M x t 0 i a := hvInitial
+    exact (terminal_state_ne_initial_right M x t i hi qt a) hEq
+
+#print axioms MCore.Real.P03InteractionConflict.init_terminal_vars_disjoint
 #print axioms MCore.Real.P03InteractionConflict.terminal_sat_implies_nonempty_lits
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_state
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_head
