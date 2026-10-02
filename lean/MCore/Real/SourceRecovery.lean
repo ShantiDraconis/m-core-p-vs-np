@@ -265,14 +265,72 @@ def extractInitialTape
           | none => none
       | _ => none
 
-/-
-Remaining proof obligation (not postulated):
-  extractInitialTape_initialCNF :
-    x.length = n →
-    extractInitialTape M n t (ntmInitialCNF M x t) = some x
+@[simp] theorem length_ntmSetStateClauses
+    (M : PolyNTMCandidate)
+    (t s : Nat)
+    (target : Fin (M.stateCount + 1)) :
+    (ntmSetStateClauses [] M t s target).length = ntmStateCount M := by
+  simp [ntmSetStateClauses, ntmStateCount]
 
-Once this is proved, decodeSource_reduce and both decode chains are direct
-compositions with decodeCircuit_reduce and decodeNTMCNF_ntmCNFCircuit.
+@[simp] theorem length_ntmSetSymbolClauses
+    (varAt : Option Bool → Nat)
+    (target : Option Bool) :
+    (ntmSetSymbolClauses [] varAt target).length = 3 := by
+  simp [ntmSetSymbolClauses, ntmAlphabet]
+
+@[simp] theorem length_initial_left_block
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    ((List.range (ntmRadius x t)).flatMap (fun i =>
+      ntmSetLeftCell [] M x t 0 i
+        ((inputTape x).left.getD i M.machine.blank))).length =
+      3 * ntmRadius x t := by
+  simp [ntmSetLeftCell, length_ntmSetSymbolClauses, Nat.mul_comm]
+
+@[simp] theorem length_initial_right_block
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    ((List.range (ntmRadius x t)).flatMap (fun i =>
+      ntmSetRightCell [] M x t 0 i
+        ((inputTape x).right.getD i M.machine.blank))).length =
+      3 * ntmRadius x t := by
+  simp [ntmSetRightCell, length_ntmSetSymbolClauses, Nat.mul_comm]
+
+/--
+The retained offset is exactly the number of clauses preceding the initial
+right-tape block.
+-/
+theorem rightBlockOffset_eq_prefix_length
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    rightBlockOffset M x.length t =
+      (ntmSetStateClauses [] M t 0 M.machine.initial).length +
+      (ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head).length +
+      ((List.range (ntmRadius x t)).flatMap (fun i =>
+        ntmSetLeftCell [] M x t 0 i
+          ((inputTape x).left.getD i M.machine.blank))).length := by
+  simp [rightBlockOffset, initialStateClauseCount, retainedRadius,
+    ntmRadius, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm]
+
+/--
+The head offset is exactly the number of clauses preceding the initial head
+symbol block.
+-/
+theorem headBlockOffset_eq_prefix_length
+    (M : PolyNTMCandidate)
+    (t : Nat) :
+    headBlockOffset M =
+      (ntmSetStateClauses [] M t 0 M.machine.initial).length := by
+  simp [headBlockOffset, initialStateClauseCount]
+
+/-
+The only remaining source-recovery proof is now local to list slicing:
+  * drop headBlockOffset, take 3 = the head symbol block;
+  * drop rightBlockOffset + 3*i, take 3 = right cell i.
+No semantic or complexity hypothesis remains here.
 -/
 
 end SourceRecovery
