@@ -321,7 +321,8 @@ theorem runPath_to_finPath
           refine Fin.cases ?_ (fun j => ?_) i
           · left
             refine ⟨hhalt, ?_⟩
-            simp [path', prependFinPath, hpath.1]
+            change path 0 = c
+            exact hpath.1
           · simpa [path', prependFinPath] using hpath.2 j
       · simpa [path', prependFinPath] using hlast
   | @active fuel c c1 z hactive hstep tail ih =>
@@ -335,7 +336,9 @@ theorem runPath_to_finPath
           refine Fin.cases ?_ (fun j => ?_) i
           · right
             refine ⟨hactive, ?_⟩
-            simpa [path', prependFinPath, hpath.1] using hstep
+            change path 0 ∈ M.machine.successors c
+            rw [hpath.1]
+            exact hstep
           · simpa [path', prependFinPath] using hpath.2 j
       · simpa [path', prependFinPath] using hlast
 
@@ -367,7 +370,7 @@ theorem finPath_to_runPath
     (path : Fin (t + 1) -> NTMConfig M)
     (h : NTMTableauPath M t c path) :
     NTMRunPath M t c (path (Fin.last t)) := by
-  induction t generalizing c path with
+  induction t generalizing c with
   | zero =>
       have h0 : path 0 = c := h.1
       simpa [h0] using NTMRunPath.zero c
