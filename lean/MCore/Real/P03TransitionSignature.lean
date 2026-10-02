@@ -182,6 +182,77 @@ def signature_of_occurrence
           simpa [ntmTransitionCaseCNF, hHalt] using hCase }
 
 /--
+Concrete active-effect payload.  This is the first signature that carries an
+actual machine transition rather than only a syntactic case.
+-/
+structure ActiveEffectSignature
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (core : ClauseUnsatCore M x t) where
+  base : TransitionInteractionSignature M x t core
+  active : base.kind = .activeChoice
+  entry :
+    Nat × (Fin (M.stateCount + 1) × Option Bool × Direction)
+  entry_mem :
+    entry ∈ ntmIndexedTransitions
+      (M.machine.transition base.q base.a)
+  clause_in_effect :
+    base.clause ∈
+      ntmChoiceEffectCNF M x t base.step base.q base.a entry
+
+/--
+When an active signature's clause lies in the choice-effect region, extract
+the concrete indexed machine transition.
+-/
+def active_effect_signature_of_region
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t : Nat}
+    {core : ClauseUnsatCore M x t}
+    (sig : TransitionInteractionSignature M x t core)
+    (hActive : sig.kind = .activeChoice)
+    (hEffect :
+      ∃ p ∈ ntmIndexedTransitions
+          (M.machine.transition sig.q sig.a),
+        sig.clause ∈
+          ntmChoiceEffectCNF
+            M x t sig.step sig.q sig.a p) :
+    ActiveEffectSignature M x t core := by
+  rcases hEffect with ⟨p, hp, hcl⟩
+  exact
+    { base := sig
+      active := hActive
+      entry := p
+      entry_mem := hp
+      clause_in_effect := hcl }
+
+/--
+The entry carried by an ActiveEffectSignature is a genuine transition of the
+candidate, with a valid index and exact list value.
+-/
+theorem active_effect_entry_is_machine_transition
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t : Nat}
+    {core : ClauseUnsatCore M x t}
+    (sig : ActiveEffectSignature M x t core) :
+    ∃ hj :
+        sig.entry.1 <
+          (M.machine.transition sig.base.q sig.base.a).length,
+      sig.entry.2 =
+        (M.machine.transition sig.base.q sig.base.a).get
+          ⟨sig.entry.1, hj⟩ := by
+  have hj :=
+    indexedTransitions_index_lt
+      (M.machine.transition sig.base.q sig.base.a)
+      sig.entry_mem
+  refine ⟨hj, ?_⟩
+  exact indexedTransitions_index_value
+    (M.machine.transition sig.base.q sig.base.a)
+    sig.entry.1 sig.entry.2 sig.entry_mem hj
+
+/--
 Every real Transit touch of an UNSAT core yields a concrete transition-step
 occurrence.
 -/
@@ -221,6 +292,7 @@ def occurrence_of_interaction_core
 #print axioms MCore.Real.P03TransitionSignature.transition_clause_has_step
 #print axioms MCore.Real.P03TransitionSignature.transition_step_clause_has_case
 #print axioms MCore.Real.P03TransitionSignature.active_clause_region
+#print axioms MCore.Real.P03TransitionSignature.active_effect_entry_is_machine_transition
 #print axioms MCore.Real.P03TransitionSignature.signature_of_occurrence
 #print axioms MCore.Real.P03TransitionSignature.occurrence_of_core_touch
 #print axioms MCore.Real.P03TransitionSignature.occurrence_of_interaction_core
