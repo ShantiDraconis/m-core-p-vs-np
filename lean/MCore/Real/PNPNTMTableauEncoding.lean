@@ -6592,6 +6592,9 @@ theorem pathAssignment_selected_effect_sat
     simpa [c, j] using
       pathAssignment_choice_selected M x t path hPath s hs hActive
   rcases htrDef : tr with ⟨qNext, write, d⟩
+  change
+    evalNTMCNF (pathAssignment M x t path hPath)
+      (ntmChoiceEffectCNF M x t s c.state c.tape.head (j, tr)) = true
   have hstateExact :
       forall r : Fin (M.stateCount + 1),
         pathAssignment M x t path hPath (ntmStateVar M t (s + 1) r) =
@@ -6650,7 +6653,12 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simp [NTM.stepBranch, Tape.write, Tape.move, htrDef]
         simpa [c, c', heq]
-      simp only [ntmChoiceEffectCNF, htrDef, ntmStayEffectCNF]
+      rw [show
+        ntmChoiceEffectCNF M x t s c.state c.tape.head (j, tr) =
+          ntmStayEffectCNF
+            [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+            M x t s qNext write by
+        simp [ntmChoiceEffectCNF, htrDef]]
       rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
@@ -6692,7 +6700,12 @@ theorem pathAssignment_selected_effect_sat
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_left_head M.machine.blank write c.tape
         simpa [c, c', heq]
-      simp only [ntmChoiceEffectCNF, htrDef, ntmLeftEffectCNF]
+      rw [show
+        ntmChoiceEffectCNF M x t s c.state c.tape.head (j, tr) =
+          ntmLeftEffectCNF
+            [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+            M x t s qNext write by
+        simp [ntmChoiceEffectCNF, htrDef]]
       rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
@@ -6776,7 +6789,12 @@ theorem pathAssignment_selected_effect_sat
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_right_head M.machine.blank write c.tape
         simpa [c, c', heq]
-      simp only [ntmChoiceEffectCNF, htrDef, ntmRightEffectCNF]
+      rw [show
+        ntmChoiceEffectCNF M x t s c.state c.tape.head (j, tr) =
+          ntmRightEffectCNF
+            [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+            M x t s qNext write by
+        simp [ntmChoiceEffectCNF, htrDef]]
       rw [evalNTMCNF_append]
       refine ⟨eval_setState_neg_guard_of_exact
           (pathAssignment M x t path hPath) M t (s + 1)
