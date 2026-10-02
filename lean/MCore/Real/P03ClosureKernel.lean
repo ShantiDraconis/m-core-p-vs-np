@@ -8,6 +8,7 @@ import MCore.Real.P03CounterexampleLaws
 import MCore.Real.P03TransitionClosure
 import MCore.Real.P03TerminalSemanticBridge
 import MCore.Real.P03CriticalHalfSymmetry
+import MCore.Real.P03PolynomialWitness
 
 namespace MCore
 namespace Real
@@ -17,6 +18,7 @@ open P03MaterialLaw
 open P03OpenMathFrontier
 open P03TerminalSemanticBridge
 open P03CriticalHalfSymmetry
+open P03PolynomialWitness
 
 /--
 The structural kernel is fully decomposed, but the material endpoint remains
@@ -49,7 +51,12 @@ theorem remaining_open_math_iff_half_symmetry_material_bridge :
       (materialBridge_iff_fullRunAcceptanceLaw canonicalHalfSymmetry).1 H
 
 #print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_cross_orbit
+theorem remaining_open_math_iff_polynomial_witness_law :
+    RemainingOpenMath ↔ PolynomialWitnessLaw :=
+  polynomialWitnessLaw_iff_fullRunAcceptanceLaw.symm
+
 #print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_half_symmetry_material_bridge
+#print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_polynomial_witness_law
 
 end P03ClosureKernel
 end Real
