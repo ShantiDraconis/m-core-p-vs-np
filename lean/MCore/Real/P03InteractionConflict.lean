@@ -84,6 +84,111 @@ theorem evalNTMCNF_eq_of_agree_on_varset
       simp only [evalNTMCNF]
       rw [evalNTMClause_eq_of_agree_on_varset hclause, ih hrest]
 
+theorem mem_CNFVarSet_iff
+    {F : NTMCNF}
+    {v : Nat} :
+    v ∈ CNFVarSet F ↔
+      ∃ clause ∈ F, ∃ lit ∈ clause, lit.var = v := by
+  simp [CNFVarSet]
+
+theorem terminal_var_classifier
+    {M : PolyNTMCandidate}
+    {t v : Nat}
+    (hv : v ∈ CNFVarSet (ntmFinalAcceptanceCNF M t)) :
+    ∃ q : Fin (M.stateCount + 1),
+      M.machine.accepting q = true ∧
+      v = ntmStateVar M t t q := by
+  rcases (mem_CNFVarSet_iff.mp hv) with
+    ⟨clause, hclause, lit, hlit, hvar⟩
+  have hclauseEq : clause = ntmAcceptingStateLits M t := by
+    simpa [ntmFinalAcceptanceCNF] using hclause
+  subst clause
+  unfold ntmAcceptingStateLits at hlit
+  rcases filterMap_mem_exists
+      (fun q : Fin (M.stateCount + 1) =>
+        if M.machine.accepting q = true then
+          some (ntmPos (ntmStateVar M t t q))
+        else none)
+      (List.ofFn fun q : Fin (M.stateCount + 1) => q)
+      lit hlit with
+    ⟨q, _hqmem, hq⟩
+  by_cases hacc : M.machine.accepting q = true
+  · simp [hacc] at hq
+    subst lit
+    refine ⟨q, hacc, ?_⟩
+    simpa [ntmPos] using hvar.symm
+  · simp [hacc] at hq
+
+/--
+Every variable in the initial block belongs to exactly one of the four
+time-zero regions: state, head, left tape, or right tape.
+-/
+theorem initial_var_classifier
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t v : Nat}
+    (hv : v ∈ CNFVarSet (ntmInitialCNF M x t)) :
+    (∃ q : Fin (M.stateCount + 1),
+        v = ntmStateVar M t 0 q) ∨
+    (∃ a : Option Bool,
+        v = ntmHeadVar M t 0 a) ∨
+    (∃ i : Nat, i < ntmRadius x t ∧
+      ∃ a : Option Bool,
+        v = ntmLeftVar M x t 0 i a) ∨
+    (∃ i : Nat, i < ntmRadius x t ∧
+      ∃ a : Option Bool,
+        v = ntmRightVar M x t 0 i a) := by
+  rcases (mem_CNFVarSet_iff.mp hv) with
+    ⟨clause, hclause, lit, hlit, hvar⟩
+  unfold ntmInitialCNF at hclause
+  simp only [List.mem_append] at hclause
+  rcases hclause with hState | hclause
+  · unfold ntmSetStateClauses at hState
+    rw [List.mem_ofFn] at hState
+    rcases hState with ⟨q, rfl⟩
+    simp at hlit
+    subst lit
+    left
+    refine ⟨q, ?_⟩
+    simpa [ntmLitFor_var] using hvar.symm
+  · rcases hclause with hHead | hclause
+    · unfold ntmSetSymbolClauses at hHead
+      rw [List.mem_map] at hHead
+      rcases hHead with ⟨a, _ha, rfl⟩
+      simp at hlit
+      subst lit
+      right
+      left
+      refine ⟨a, ?_⟩
+      simpa [ntmLitFor_var] using hvar.symm
+    · rcases hclause with hLeft | hRight
+      · rw [List.mem_flatMap] at hLeft
+        rcases hLeft with ⟨i, hi, hset⟩
+        have hir : i < ntmRadius x t := List.mem_range.mp hi
+        unfold ntmSetLeftCell ntmSetSymbolClauses at hset
+        rw [List.mem_map] at hset
+        rcases hset with ⟨a, _ha, rfl⟩
+        simp at hlit
+        subst lit
+        right
+        right
+        left
+        refine ⟨i, hir, a, ?_⟩
+        simpa [ntmLitFor_var] using hvar.symm
+      · rw [List.mem_flatMap] at hRight
+        rcases hRight with ⟨i, hi, hset⟩
+        have hir : i < ntmRadius x t := List.mem_range.mp hi
+        unfold ntmSetRightCell ntmSetSymbolClauses at hset
+        rw [List.mem_map] at hset
+        rcases hset with ⟨a, _ha, rfl⟩
+        simp at hlit
+        subst lit
+        right
+        right
+        right
+        refine ⟨i, hir, a, ?_⟩
+        simpa [ntmLitFor_var] using hvar.symm
+
 /--
 A non-degenerate interaction conflict.
 
@@ -193,6 +298,9 @@ theorem terminal_state_ne_initial_right
     simp [ntmRightBase, ntmLeftBase]
   omega
 
+#print axioms MCore.Real.P03InteractionConflict.mem_CNFVarSet_iff
+#print axioms MCore.Real.P03InteractionConflict.terminal_var_classifier
+#print axioms MCore.Real.P03InteractionConflict.initial_var_classifier
 #print axioms MCore.Real.P03InteractionConflict.var_mem_CNFVarSet_of_mem
 #print axioms MCore.Real.P03InteractionConflict.evalNTMClause_eq_of_agree_on_varset
 #print axioms MCore.Real.P03InteractionConflict.evalNTMCNF_eq_of_agree_on_varset
