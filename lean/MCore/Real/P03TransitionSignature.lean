@@ -293,6 +293,51 @@ def occurrence_of_interaction_core
 #print axioms MCore.Real.P03TransitionSignature.transition_step_clause_has_case
 #print axioms MCore.Real.P03TransitionSignature.active_clause_region
 #print axioms MCore.Real.P03TransitionSignature.active_effect_entry_is_machine_transition
+/--
+For the complemented deterministic candidate there is exactly one transition
+entry for every state/head-symbol pair.
+-/
+@[simp] theorem complement_transition_singleton
+    (candidate : PolyDTMCandidate)
+    (q : Fin (candidate.stateCount + 1))
+    (a : Option Bool) :
+    (complementToNTMCandidate candidate).machine.transition q a =
+      [candidate.machine.transition q a] := by
+  rfl
+
+@[simp] theorem complement_indexedTransitions_singleton
+    (candidate : PolyDTMCandidate)
+    (q : Fin (candidate.stateCount + 1))
+    (a : Option Bool) :
+    ntmIndexedTransitions
+        ((complementToNTMCandidate candidate).machine.transition q a) =
+      [(0, candidate.machine.transition q a)] := by
+  rfl
+
+/--
+Hence two concrete indexed choices at the same complemented (q,a) cannot have
+different indices.  This blocks the proposed "two distinct choices in one
+interaction core" route.
+-/
+theorem complement_no_distinct_choice_indices
+    (candidate : PolyDTMCandidate)
+    (q : Fin (candidate.stateCount + 1))
+    (a : Option Bool)
+    {j1 j2 : Nat}
+    {tr1 tr2 :
+      Fin (candidate.stateCount + 1) × Option Bool × Direction}
+    (h1 :
+      (j1, tr1) ∈ ntmIndexedTransitions
+        ((complementToNTMCandidate candidate).machine.transition q a))
+    (h2 :
+      (j2, tr2) ∈ ntmIndexedTransitions
+        ((complementToNTMCandidate candidate).machine.transition q a)) :
+    j1 = j2 := by
+  simp at h1 h2
+  omega
+
+#print axioms MCore.Real.P03TransitionSignature.complement_no_distinct_choice_indices
+
 #print axioms MCore.Real.P03TransitionSignature.signature_of_occurrence
 #print axioms MCore.Real.P03TransitionSignature.occurrence_of_core_touch
 #print axioms MCore.Real.P03TransitionSignature.occurrence_of_interaction_core
