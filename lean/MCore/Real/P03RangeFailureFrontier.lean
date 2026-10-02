@@ -81,7 +81,7 @@ theorem witness_implies_rangeFailure
   rcases oddRecurrence_implies_adjacent hOdd with ⟨x, hInv⟩
   refine ⟨x, ?_⟩
   apply (semanticFailure_reduce_iff_invariant M hTotal x).2
-  simpa [R_M, ObsEquiv] using hInv.symm
+  simpa [R_M, ObsEquiv] using hInv
 
 theorem rangeFailure_iff_fullRunWitness
     (M : PolyDTMCandidate)
