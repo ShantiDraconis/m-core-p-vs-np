@@ -503,6 +503,58 @@ theorem init_terminal_sat_of_both
 #print axioms MCore.Real.P03InteractionConflict.init_sat_of_prefix_sat
 #print axioms MCore.Real.P03InteractionConflict.cnf_sat_of_clause_subset
 #print axioms MCore.Real.P03InteractionConflict.cnf_unsat_of_unsat_subset
+/--
+In a genuine positive-time interaction conflict, every actual UNSAT core of
+the full tableau must contain at least one transition clause.
+
+This is the nontrivial Transit-necessity statement: it is not a consequence of
+fullSupport by definition.
+-/
+theorem interaction_conflict_core_requires_transition
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t : Nat}
+    (ht : 0 < t)
+    (C : OrbitalInteractionConflict M x t)
+    (core : ClauseUnsatCore M x t) :
+    CoreTouches core (ntmTransitionsCNF M x t) := by
+  by_contra hNoTransit
+  have hSubsetInitTerminal :
+      ∀ clause ∈ core.clauses,
+        clause ∈
+          ntmInitialCNF M x t ++
+            ntmFinalAcceptanceCNF M t := by
+    intro clause hCore
+    have hWhole := core.subset_whole clause hCore
+    unfold boundedExecTableauCNF_NTM at hWhole
+    simp only [List.mem_append] at hWhole
+    rcases hWhole with hInit | hRest
+    · exact List.mem_append_left _ hInit
+    · rcases hRest with hTransit | hTerminal
+      · exfalso
+        apply hNoTransit
+        exact ⟨clause, hCore, hTransit⟩
+      · exact List.mem_append_right _ hTerminal
+  have hInitTerminalUnsat :
+      CNFUnsat
+        (ntmInitialCNF M x t ++
+          ntmFinalAcceptanceCNF M t) :=
+    cnf_unsat_of_unsat_subset core.unsat hSubsetInitTerminal
+  have hInit :
+      CNFSat (ntmInitialCNF M x t) :=
+    init_sat_of_prefix_sat C.h_prefix_sat
+  have hInitTerminalSat :
+      CNFSat
+        (ntmInitialCNF M x t ++
+          ntmFinalAcceptanceCNF M t) :=
+    init_terminal_sat_of_both M x t ht hInit C.h_term_sat
+  rcases hInitTerminalSat with ⟨sigma, hSat⟩
+  have hFalse := hInitTerminalUnsat sigma
+  rw [hSat] at hFalse
+  contradiction
+
+#print axioms MCore.Real.P03InteractionConflict.interaction_conflict_core_requires_transition
+
 
 #print axioms MCore.Real.P03InteractionConflict.terminal_sat_implies_nonempty_lits
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_state
