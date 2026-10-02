@@ -44,7 +44,7 @@ theorem p03_material_law_implies_oddParityMixing
 
 /--
 Conditional endpoint composition only.  This remains unusable as a final
-closure until P03_MATERIAL_LAW is proved without sorry/admit/new axioms.
+closure until P03_MATERIAL_LAW is proved without placeholder proof terms or new assumptions.
 -/
 theorem p03_material_law_closes_internal_endpoint
     (H : P03_MATERIAL_LAW) :
