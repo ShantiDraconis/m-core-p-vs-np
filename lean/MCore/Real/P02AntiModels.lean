@@ -158,6 +158,36 @@ theorem alternatingControl_two_step
     simp [AlternatingControl, h]
 
 /--
+Three repetitions of one finite signature do not force an odd-distance pair.
+The concrete revisit set {0,2,4} has three occurrences, but every pairwise
+distance is even.  This blocks the proposed "3 visits / 2 parities" argument.
+-/
+theorem three_revisits_can_all_have_even_gaps :
+    let i₁ := 0
+    let i₂ := 2
+    let i₃ := 4
+    i₁ < i₂ ∧ i₂ < i₃ ∧
+    ¬ OddGap i₁ i₂ ∧
+    ¬ OddGap i₂ i₃ ∧
+    ¬ OddGap i₁ i₃ := by
+  dsimp
+  constructor
+  · omega
+  constructor
+  · omega
+  constructor
+  · intro h
+    rcases h with ⟨d, hd⟩
+    omega
+  constructor
+  · intro h
+    rcases h with ⟨d, hd⟩
+    omega
+  · intro h
+    rcases h with ⟨d, hd⟩
+    omega
+
+/--
 Research guardrail: the current positive frontier is not allowed to rely on
 any of the following unproved implications.
 
@@ -204,6 +234,7 @@ theorem clauseDerivedMixingLaw_is_scaffold_only
 #print axioms MCore.Real.P02AntiModels.weakFlip_recover
 #print axioms MCore.Real.P02AntiModels.strongClockFlip_odd_not_equiv
 #print axioms MCore.Real.P02AntiModels.alternatingControl_two_step
+#print axioms MCore.Real.P02AntiModels.three_revisits_can_all_have_even_gaps
 #print axioms MCore.Real.P02AntiModels.clauseDerivedMixingLaw_is_scaffold_only
 
 end P02AntiModels
