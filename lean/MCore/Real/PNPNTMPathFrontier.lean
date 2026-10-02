@@ -199,20 +199,31 @@ theorem runBranches_singleton_succ_active
     (h : NTMActive M c) :
     M.machine.runBranches (fuel + 1) [c] =
       M.machine.runBranches fuel (M.machine.successors c) := by
-  have hflag :
-      M.machine.accepting c.state || M.machine.rejecting c.state = false := by
-    cases ha : M.machine.accepting c.state <;>
-      cases hr : M.machine.rejecting c.state <;>
-      simp_all [NTMActive, NTMHalted]
+  have hacc : M.machine.accepting c.state = false := by
+    cases ha : M.machine.accepting c.state with
+    | false => exact ha
+    | true =>
+        exfalso
+        apply h
+        left
+        exact ha
+  have hrej : M.machine.rejecting c.state = false := by
+    cases hr : M.machine.rejecting c.state with
+    | false => exact hr
+    | true =>
+        exfalso
+        apply h
+        right
+        exact hr
   rw [NTM.runBranches]
   have hHalted :
       [c].filter (fun q =>
         M.machine.accepting q.state || M.machine.rejecting q.state) = [] := by
-    simp [hflag]
+    simp [hacc, hrej]
   have hActive :
       [c].filter (fun q =>
         !(M.machine.accepting q.state || M.machine.rejecting q.state)) = [c] := by
-    simp [hflag]
+    simp [hacc, hrej]
   rw [hHalted, hActive]
   simp
 
