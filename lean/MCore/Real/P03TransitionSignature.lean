@@ -44,6 +44,29 @@ theorem transition_clause_has_step
   exact ⟨s, List.mem_range.mp hsRange, hsClause⟩
 
 /--
+A clause in one transition step comes from one concrete control-state /
+head-symbol transition case.
+-/
+theorem transition_step_clause_has_case
+    {M : PolyNTMCandidate}
+    {x : BitString}
+    {t s : Nat}
+    {clause : NTMClause}
+    (h :
+      clause ∈ ntmTransitionStepCNF M x t s) :
+    ∃ q : Fin (M.stateCount + 1),
+      ∃ a : Option Bool,
+        clause ∈ ntmTransitionCaseCNF M x t s q a := by
+  unfold ntmTransitionStepCNF at h
+  rw [List.mem_flatten] at h
+  rcases h with ⟨casesForQ, hCasesForQ, hClause⟩
+  rw [List.mem_ofFn] at hCasesForQ
+  rcases hCasesForQ with ⟨q, rfl⟩
+  rw [List.mem_flatMap] at hClause
+  rcases hClause with ⟨a, _ha, hClause⟩
+  exact ⟨q, a, hClause⟩
+
+/--
 Every real Transit touch of an UNSAT core yields a concrete transition-step
 occurrence.
 -/
@@ -81,6 +104,7 @@ def occurrence_of_interaction_core
     (interaction_conflict_core_requires_transition ht C core)
 
 #print axioms MCore.Real.P03TransitionSignature.transition_clause_has_step
+#print axioms MCore.Real.P03TransitionSignature.transition_step_clause_has_case
 #print axioms MCore.Real.P03TransitionSignature.occurrence_of_core_touch
 #print axioms MCore.Real.P03TransitionSignature.occurrence_of_interaction_core
 
