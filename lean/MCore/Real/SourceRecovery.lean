@@ -564,11 +564,158 @@ def decodeSource
       some x := by
   simp [decodeSource]
 
-/-
-For the full boundedExecTableauCNF_NTM, source extraction from the complete
-CNF now reduces to proving that extractInitialTape is prefix-stable under
-appending transitions/final blocks. The initial block itself is fully inverted.
--/
+/-- A three-clause slice wholly contained in a prefix is unchanged by appending. -/
+theorem symbolBlockAt_append_left
+    (F G : NTMCNF)
+    (offset : Nat)
+    (hfit : offset + 3 ≤ F.length) :
+    symbolBlockAt (F ++ G) offset = symbolBlockAt F offset := by
+  unfold symbolBlockAt
+  rw [List.drop_append_of_le]
+  · rw [List.take_append_of_le]
+    · rfl
+    · simpa [List.length_drop] using hfit
+  · omega
+
+theorem head_slice_fits_initial
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    headBlockOffset M + 3 ≤ (ntmInitialCNF M x t).length := by
+  unfold ntmInitialCNF
+  rw [headBlockOffset_eq_prefix_length]
+  simp [length_ntmSetSymbolClauses]
+
+theorem right_slice_fits_initial
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t i : Nat)
+    (hi : i < ntmRadius x t) :
+    rightBlockOffset M x.length t + 3 * i + 3 ≤
+      (ntmInitialCNF M x t).length := by
+  unfold ntmInitialCNF
+  rw [rightBlockOffset_eq_prefix_length]
+  simp [length_initial_right_block]
+  omega
+
+@[simp] theorem getHeadAt0_boundedExecTableau
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    getHeadAt0 M t (boundedExecTableauCNF_NTM M x t) =
+      some (inputTape x).head := by
+  unfold boundedExecTableauCNF_NTM
+  have hslice :
+      symbolBlockAt
+          (ntmInitialCNF M x t ++
+            (ntmTransitionsCNF M x t ++ ntmFinalAcceptanceCNF M t))
+          (headBlockOffset M) =
+        symbolBlockAt (ntmInitialCNF M x t) (headBlockOffset M) := by
+    exact symbolBlockAt_append_left _ _ _
+      (head_slice_fits_initial M x t)
+  simp [getHeadAt0, hslice, drop_headBlockOffset_take_head]
+
+@[simp] theorem getRightAt0_boundedExecTableau
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t i : Nat)
+    (hi : i < ntmRadius x t) :
+    getRightAt0 M x.length t
+        (boundedExecTableauCNF_NTM M x t) i =
+      some ((inputTape x).right.getD i M.machine.blank) := by
+  unfold boundedExecTableauCNF_NTM
+  have hslice :
+      symbolBlockAt
+          (ntmInitialCNF M x t ++
+            (ntmTransitionsCNF M x t ++ ntmFinalAcceptanceCNF M t))
+          (rightBlockOffset M x.length t + 3 * i) =
+        symbolBlockAt
+          (ntmInitialCNF M x t)
+          (rightBlockOffset M x.length t + 3 * i) := by
+    exact symbolBlockAt_append_left _ _ _
+      (right_slice_fits_initial M x t i hi)
+  have hlayout :
+      ntmRightVar M (layoutInput x.length) t 0 i =
+        ntmRightVar M x t 0 i := by
+    apply ntmRightVar_eq_of_length_eq
+    simp
+  simp [getRightAt0, hslice, drop_rightBlockOffset_take_right,
+    hi, ntmSetRightCell, hlayout]
+
+theorem readRightBits_boundedExec_aux
+    (M : PolyNTMCandidate)
+    (b : Bool)
+    (bs : BitString)
+    (t i count : Nat)
+    (hspan : i + count ≤ bs.length) :
+    readRightBits M (b :: bs).length t
+        (boundedExecTableauCNF_NTM M (b :: bs) t) i count =
+      some (getDBits bs i count) := by
+  induction count generalizing i with
+  | zero =>
+      rfl
+  | succ count ih =>
+      have hi : i < bs.length := by omega
+      have hRadius : i < ntmRadius (b :: bs) t := by
+        simp [ntmRadius]
+        omega
+      have hget :
+          getRightAt0 M (b :: bs).length t
+              (boundedExecTableauCNF_NTM M (b :: bs) t) i =
+            some (some (bs.getD i false)) := by
+        rw [getRightAt0_boundedExecTableau M (b :: bs) t i hRadius]
+        simp [inputTape, M.blank_none, map_some_getD_of_lt bs i hi]
+      rw [readRightBits]
+      rw [hget]
+      have hspan' : (i + 1) + count ≤ bs.length := by omega
+      rw [ih (i + 1) hspan']
+      rfl
+
+@[simp] theorem extractInitialTape_boundedExecTableau
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    extractInitialTape M x.length t
+        (boundedExecTableauCNF_NTM M x t) =
+      some x := by
+  cases x with
+  | nil =>
+      simp [extractInitialTape, getHeadAt0_boundedExecTableau, inputTape]
+  | cons b bs =>
+      have htail :
+          readRightBits M (b :: bs).length t
+              (boundedExecTableauCNF_NTM M (b :: bs) t) 0 bs.length =
+            some bs := by
+        rw [readRightBits_boundedExec_aux M b bs t 0 bs.length]
+        · simp
+        · simp
+      simp [extractInitialTape, getHeadAt0_boundedExecTableau,
+        inputTape, htail]
+
+/-- Decode a source directly from canonical circuit-encoding bits. -/
+def decodeSourceBits
+    (M : PolyNTMCandidate)
+    (n t : Nat)
+    (bits : BitString) : Option BitString :=
+  match decodeCircuit bits with
+  | none => none
+  | some c => decodeSource M n t c
+
+/-- The concrete complemented Cook--Levin reduction retains its source. -/
+theorem decodeSource_reduce
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) :
+    decodeSourceBits
+        (complementToNTMCandidate M)
+        x.length
+        (M.timeBound x.length)
+        ((complementSemanticReduction M hTotal).reduce x) =
+      some x := by
+  unfold decodeSourceBits
+  rw [decodeCircuit_reduce M hTotal x]
+  simp [decodeSource]
+
 
 end SourceRecovery
 end Real
