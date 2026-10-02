@@ -174,3 +174,5 @@ import MCore.Real.P01CheckedEvalRunBoundedConst
 import MCore.Real.P01CheckedEvalRunBoundedCertificate
 
 import MCore.Real.P02ComplementRunRealization
+
+import MCore.Real.P02ExactDiagonalFrontier
