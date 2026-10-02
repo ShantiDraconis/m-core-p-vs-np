@@ -135,7 +135,10 @@ theorem oddRecurrence_implies_adjacent
     intro k hObs
     apply hNone
     refine ⟨Orbit R x0 k, ?_⟩
-    simpa [Orbit] using hObs
+    have hObs' :
+        ObsEquiv M (Orbit R x0 (k + 1)) (Orbit R x0 k) := by
+      exact hObs.symm
+    simpa [Orbit] using hObs'
   have hFlip :=
     no_adjacent_equiv_implies_flip
       (M := M) (R := R) (x0 := x0) hNo
