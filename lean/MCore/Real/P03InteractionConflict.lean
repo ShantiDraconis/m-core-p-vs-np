@@ -356,6 +356,61 @@ theorem init_terminal_vars_disjoint
     exact (terminal_state_ne_initial_right M x t i hi qt a) hEq
 
 #print axioms MCore.Real.P03InteractionConflict.init_terminal_vars_disjoint
+/--
+Disjoint satisfiable CNFs can be satisfied by one combined assignment.
+This is specialized to Init and Terminal because that is the material bridge
+needed by the interaction-conflict route.
+-/
+theorem init_terminal_sat_of_both
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat)
+    (ht : 0 < t)
+    (hI : CNFSat (ntmInitialCNF M x t))
+    (hT : CNFSat (ntmFinalAcceptanceCNF M t)) :
+    CNFSat
+      (ntmInitialCNF M x t ++
+        ntmFinalAcceptanceCNF M t) := by
+  rcases hI with ⟨sigmaI, hsigmaI⟩
+  rcases hT with ⟨sigmaT, hsigmaT⟩
+  have hDisj :=
+    init_terminal_vars_disjoint M x t ht
+  let sigma : Assignment := fun v =>
+    if v ∈ CNFVarSet (ntmInitialCNF M x t) then
+      sigmaI v
+    else
+      sigmaT v
+  have hAgreeI :
+      ∀ v ∈ CNFVarSet (ntmInitialCNF M x t),
+        sigma v = sigmaI v := by
+    intro v hv
+    simp [sigma, hv]
+  have hAgreeT :
+      ∀ v ∈ CNFVarSet (ntmFinalAcceptanceCNF M t),
+        sigma v = sigmaT v := by
+    intro v hvT
+    have hvI :
+        v ∉ CNFVarSet (ntmInitialCNF M x t) := by
+      intro hvI
+      exact (Finset.disjoint_left.mp hDisj) hvI hvT
+    simp [sigma, hvI]
+  have hSatI :
+      evalNTMCNF sigma (ntmInitialCNF M x t) = true := by
+    rw [evalNTMCNF_eq_of_agree_on_varset hAgreeI]
+    exact hsigmaI
+  have hSatT :
+      evalNTMCNF sigma (ntmFinalAcceptanceCNF M t) = true := by
+    rw [evalNTMCNF_eq_of_agree_on_varset hAgreeT]
+    exact hsigmaT
+  refine ⟨sigma, ?_⟩
+  exact
+    (evalNTMCNF_append sigma
+      (ntmInitialCNF M x t)
+      (ntmFinalAcceptanceCNF M t)).2
+      ⟨hSatI, hSatT⟩
+
+#print axioms MCore.Real.P03InteractionConflict.init_terminal_sat_of_both
+
 #print axioms MCore.Real.P03InteractionConflict.terminal_sat_implies_nonempty_lits
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_state
 #print axioms MCore.Real.P03InteractionConflict.terminal_state_ne_initial_head
