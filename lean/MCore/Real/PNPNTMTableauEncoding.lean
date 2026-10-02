@@ -6845,6 +6845,56 @@ theorem pathAssignment_selected_effect_sat
             simpa [c', hcell]
 
 
+theorem indexedTransitionsAux_index_ge
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (start j : Nat) (tr : State × Symbol × Direction)
+    (hmem : (j, tr) ∈ ntmIndexedTransitionsAux start ts) :
+    start ≤ j := by
+  induction ts generalizing start j tr with
+  | nil =>
+      simp [ntmIndexedTransitionsAux] at hmem
+  | cons x xs ih =>
+      simp only [ntmIndexedTransitionsAux, List.mem_cons] at hmem
+      rcases hmem with hhead | htail
+      · cases hhead
+        exact Nat.le_refl start
+      · have hge := ih (start + 1) j tr htail
+        omega
+
+theorem indexedTransitionsAux_index_value
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (start j : Nat) (tr : State × Symbol × Direction)
+    (hmem : (start + j, tr) ∈ ntmIndexedTransitionsAux start ts)
+    (hj : j < ts.length) :
+    tr = ts.get ⟨j, hj⟩ := by
+  induction ts generalizing start j tr with
+  | nil =>
+      simp at hj
+  | cons x xs ih =>
+      cases j with
+      | zero =>
+          simp only [Nat.add_zero, ntmIndexedTransitionsAux, List.mem_cons] at hmem
+          rcases hmem with hhead | htail
+          · cases hhead
+            rfl
+          · have hge :=
+              indexedTransitionsAux_index_ge xs (start + 1) start tr htail
+            omega
+      | succ j =>
+          have hj' : j < xs.length := by omega
+          simp only [ntmIndexedTransitionsAux, List.mem_cons] at hmem
+          rcases hmem with hhead | htail
+          · have hEq : start + (j + 1) = start := congrArg Prod.fst hhead
+            omega
+          · have htail' :
+                ((start + 1) + j, tr) ∈
+                  ntmIndexedTransitionsAux (start + 1) xs := by
+              simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using htail
+            have hval := ih (start + 1) j tr htail' hj'
+            simpa using hval
+
 theorem indexedTransitions_index_value
     {State Symbol : Type}
     (ts : List (State × Symbol × Direction))
@@ -6853,21 +6903,10 @@ theorem indexedTransitions_index_value
     (hj : j < ts.length) :
     tr = ts.get ⟨j, hj⟩ := by
   unfold ntmIndexedTransitions at hmem
-  generalize hstart : 0 = start at hmem
-  subst start
-  induction ts generalizing j tr with
-  | nil =>
-      simp at hj
-  | cons x xs ih =>
-      cases j with
-      | zero =>
-          simp [ntmIndexedTransitionsAux] at hmem
-          simpa [hmem]
-      | succ j =>
-          simp [ntmIndexedTransitionsAux] at hmem
-          have hj' : j < xs.length := by omega
-          have h := ih j tr hmem hj'
-          simpa using h
+  have h :=
+    indexedTransitionsAux_index_value ts 0 j tr
+      (by simpa using hmem) hj
+  simpa using h
 
 theorem pathAssignment_actual_state_true
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
