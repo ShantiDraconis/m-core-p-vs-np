@@ -201,9 +201,9 @@ theorem runBranches_singleton_succ_active
       M.machine.runBranches fuel (M.machine.successors c) := by
   have hflag :
       M.machine.accepting c.state || M.machine.rejecting c.state = false := by
-    apply Bool.eq_false_iff.mpr
-    intro htrue
-    exact h (Bool.or_eq_true.mp htrue)
+    cases ha : M.machine.accepting c.state <;>
+      cases hr : M.machine.rejecting c.state <;>
+      simp_all [NTMActive, NTMHalted]
   rw [NTM.runBranches]
   have hHalted :
       [c].filter (fun q =>
