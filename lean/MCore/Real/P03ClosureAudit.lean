@@ -63,6 +63,14 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03PolynomialWitness.polynomialWitness_iff_fullRunWitness
 #print axioms MCore.Real.P03PolynomialWitness.polynomialWitnessLaw_iff_fullRunAcceptanceLaw
 
+
+#print axioms MCore.Real.P03RangeFailureFrontier.rangeFailure_to_witness
+#print axioms MCore.Real.P03RangeFailureFrontier.witness_implies_rangeFailure
+#print axioms MCore.Real.P03RangeFailureFrontier.rangeFailure_iff_fullRunWitness
+#print axioms MCore.Real.P03RangeFailureFrontier.rangeFailureLaw_iff_fullRunAcceptanceLaw
+#print axioms MCore.Real.P03RangeFailureFrontier.no_rangeFailure_iff_rangeCorrect
+#print axioms MCore.Real.P03RangeFailureFrontier.range_failure_or_range_correct
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
