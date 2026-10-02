@@ -439,10 +439,135 @@ theorem drop_rightBlockOffset_take_right
   simp [getRightAt0, drop_rightBlockOffset_take_right,
     hi, ntmSetRightCell, hlayout]
 
+/-- Pure list model of the operational right-tape reader. -/
+def getDBits (bs : BitString) : Nat → Nat → BitString
+  | _, 0 => []
+  | i, count + 1 =>
+      bs.getD i false :: getDBits bs (i + 1) count
+
+theorem map_some_getD_of_lt
+    (bs : BitString)
+    (i : Nat)
+    (hi : i < bs.length) :
+    (bs.map some).getD i none = some (bs.getD i false) := by
+  induction bs generalizing i with
+  | nil =>
+      simp at hi
+  | cons b bs ih =>
+      cases i with
+      | zero =>
+          simp [List.getD_cons_zero]
+      | succ i =>
+          have hi' : i < bs.length := by
+            simpa using hi
+          simpa [List.getD_cons_succ] using ih i hi'
+
+theorem getDBits_cons_succ
+    (b : Bool)
+    (bs : BitString)
+    (i count : Nat) :
+    getDBits (b :: bs) (i + 1) count =
+      getDBits bs i count := by
+  induction count generalizing i with
+  | zero =>
+      rfl
+  | succ count ih =>
+      simp [getDBits, List.getD_cons_succ, ih, Nat.add_assoc]
+
+@[simp] theorem getDBits_all
+    (bs : BitString) :
+    getDBits bs 0 bs.length = bs := by
+  induction bs with
+  | nil =>
+      rfl
+  | cons b bs ih =>
+      simp [getDBits, getDBits_cons_succ, ih, List.getD_cons_zero]
+
+/--
+The operational reader agrees with the pure getD model on every in-range
+segment of the source tail.
+-/
+theorem readRightBits_initialCNF_aux
+    (M : PolyNTMCandidate)
+    (b : Bool)
+    (bs : BitString)
+    (t i count : Nat)
+    (hspan : i + count ≤ bs.length) :
+    readRightBits M (b :: bs).length t
+        (ntmInitialCNF M (b :: bs) t) i count =
+      some (getDBits bs i count) := by
+  induction count generalizing i with
+  | zero =>
+      rfl
+  | succ count ih =>
+      have hi : i < bs.length := by
+        omega
+      have hRadius : i < ntmRadius (b :: bs) t := by
+        simp [ntmRadius]
+        omega
+      have hget :
+          getRightAt0 M (b :: bs).length t
+              (ntmInitialCNF M (b :: bs) t) i =
+            some (some (bs.getD i false)) := by
+        rw [getRightAt0_initialCNF M (b :: bs) t i hRadius]
+        simp [inputTape, M.blank_none, map_some_getD_of_lt bs i hi]
+      rw [readRightBits]
+      rw [hget]
+      have hspan' : (i + 1) + count ≤ bs.length := by
+        omega
+      rw [ih (i + 1) hspan']
+      rfl
+
+@[simp] theorem readRightBits_initialCNF
+    (M : PolyNTMCandidate)
+    (b : Bool)
+    (bs : BitString)
+    (t : Nat) :
+    readRightBits M (b :: bs).length t
+        (ntmInitialCNF M (b :: bs) t) 0 bs.length =
+      some bs := by
+  rw [readRightBits_initialCNF_aux M b bs t 0 bs.length]
+  · simp
+  · simp
+
+/-- The positional time-zero decoder is a left inverse of ntmInitialCNF. -/
+@[simp] theorem extractInitialTape_initialCNF
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    extractInitialTape M x.length t (ntmInitialCNF M x t) = some x := by
+  cases x with
+  | nil =>
+      simp [extractInitialTape, getHeadAt0_initialCNF, inputTape]
+  | cons b bs =>
+      simp [extractInitialTape, getHeadAt0_initialCNF,
+        readRightBits_initialCNF, inputTape]
+
+/--
+Decode a source from a circuit known to carry the concrete tableau shape,
+using retained source length and clock metadata.
+-/
+def decodeSource
+    (M : PolyNTMCandidate)
+    (n t : Nat)
+    (c : Circuit) : Option BitString :=
+  match decodeNTMCNF c with
+  | none => none
+  | some F => extractInitialTape M n t F
+
+@[simp] theorem decodeSource_ntmCNFCircuit_initial
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    decodeSource M x.length t
+        (ntmCNFCircuit (ntmInitialCNF M x t)) =
+      some x := by
+  simp [decodeSource]
+
 /-
-Next obligation:
-  readRightBits_initialCNF
-followed by extractInitialTape_initialCNF. No further layout theorem is needed.
+For the full boundedExecTableauCNF_NTM, source extraction from the complete
+CNF now reduces to proving that extractInitialTape is prefix-stable under
+appending transitions/final blocks. The initial block itself is fully inverted.
 -/
 
 end SourceRecovery
