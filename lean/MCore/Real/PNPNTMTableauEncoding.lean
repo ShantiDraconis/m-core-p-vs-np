@@ -969,11 +969,17 @@ theorem activeChoice_atMostOne_sat
         (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
          ntmAtMostOneChoiceCNF M x t s q a ++
          entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hcanon
+  have hA2 :
+      evalNTMCNF sigma
+        (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+         (ntmAtMostOneChoiceCNF M x t s q a ++
+          entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))) = true := by
+    simpa [List.append_assoc] using hA.2
   have hB :=
       (evalNTMCNF_append sigma
         (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
         (ntmAtMostOneChoiceCNF M x t s q a ++
-         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hA.2
+         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hA2
   have hC :=
       (evalNTMCNF_append sigma
         (ntmAtMostOneChoiceCNF M x t s q a)
@@ -1009,11 +1015,17 @@ theorem activeChoice_choiceGuards_sat
         (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
          ntmAtMostOneChoiceCNF M x t s q a ++
          entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hcanon
+  have hA2 :
+      evalNTMCNF sigma
+        (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+         (ntmAtMostOneChoiceCNF M x t s q a ++
+          entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))) = true := by
+    simpa [List.append_assoc] using hA.2
   have hB :=
       (evalNTMCNF_append sigma
         (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
         (ntmAtMostOneChoiceCNF M x t s q a ++
-         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hA.2
+         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hA2
   have hC :=
       (evalNTMCNF_append sigma
         (ntmAtMostOneChoiceCNF M x t s q a)
@@ -1206,11 +1218,17 @@ theorem activeChoice_choiceEffects_sat
         (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
          ntmAtMostOneChoiceCNF M x t s q a ++
          entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hcanon
+  have hA2 :
+      evalNTMCNF sigma
+        (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1) ++
+         (ntmAtMostOneChoiceCNF M x t s q a ++
+          entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))) = true := by
+    simpa [List.append_assoc] using hA.2
   have hB :=
       (evalNTMCNF_append sigma
         (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1))
         (ntmAtMostOneChoiceCNF M x t s q a ++
-         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hA.2
+         entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))).mp hA2
   have hC :=
       (evalNTMCNF_append sigma
         (ntmAtMostOneChoiceCNF M x t s q a)
@@ -2699,19 +2717,19 @@ structure NTMUniqueAt
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) : Prop where
   hState :
-    ∃! q : Fin (M.stateCount + 1),
-      sigma (ntmStateVar M t s q) = true
+    ExistsUnique (fun q : Fin (M.stateCount + 1) =>
+      sigma (ntmStateVar M t s q) = true)
   hHead :
-    ∃! a : Option Bool,
-      sigma (ntmHeadVar M t s a) = true
+    ExistsUnique (fun a : Option Bool =>
+      sigma (ntmHeadVar M t s a) = true)
   hLeft :
     forall i : Nat, i < ntmRadius x t ->
-      ∃! b : Option Bool,
-        sigma (ntmLeftVar M x t s i b) = true
+      ExistsUnique (fun b : Option Bool =>
+        sigma (ntmLeftVar M x t s i b) = true)
   hRight :
     forall i : Nat, i < ntmRadius x t ->
-      ∃! b : Option Bool,
-        sigma (ntmRightVar M x t s i b) = true
+      ExistsUnique (fun b : Option Bool =>
+        sigma (ntmRightVar M x t s i b) = true)
 
 theorem existsUnique_of_exact_decide
     {α : Type}
@@ -2719,7 +2737,7 @@ theorem existsUnique_of_exact_decide
     (f : α -> Bool)
     (target : α)
     (h : forall a : α, f a = decide (a = target)) :
-    ∃! a : α, f a = true := by
+    ExistsUnique (fun a : α => f a = true) := by
   refine ⟨target, ?_, ?_⟩
   · simpa using h target
   · intro a ha
@@ -2730,9 +2748,9 @@ theorem existsUnique_of_exact_decide
 theorem existsUnique_transport
     {α : Type}
     (old new : α -> Bool)
-    (hOld : ∃! a : α, old a = true)
+    (hOld : ExistsUnique (fun a : α => old a = true))
     (hEq : forall a : α, new a = old a) :
-    ∃! a : α, new a = true := by
+    ExistsUnique (fun a : α => new a = true) := by
   rcases hOld with ⟨a, ha, huniq⟩
   refine ⟨a, ?_, ?_⟩
   · simpa [hEq a] using ha
@@ -8610,8 +8628,8 @@ theorem ntmInitial_state_exists_unique
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    ∃! q : Fin (M.stateCount + 1),
-      sigma (ntmStateVar M t 0 q) = true := by
+    ExistsUnique (fun q : Fin (M.stateCount + 1) =>
+      sigma (ntmStateVar M t 0 q) = true) := by
   refine ⟨M.machine.initial, ?_, ?_⟩
   · simpa using
       ntmInitial_state_exact M x t sigma hSat M.machine.initial
@@ -8657,8 +8675,8 @@ theorem ntmInitial_head_exists_unique
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    ∃! a : Option Bool,
-      sigma (ntmHeadVar M t 0 a) = true := by
+    ExistsUnique (fun a : Option Bool =>
+      sigma (ntmHeadVar M t 0 a) = true) := by
   refine ⟨(inputTape x).head, ?_, ?_⟩
   · simpa using
       ntmInitial_head_exact M x t sigma hSat (inputTape x).head
@@ -8718,8 +8736,8 @@ theorem ntmInitial_left_exists_unique
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (i : Nat) (hi : i < ntmRadius x t) :
-    ∃! b : Option Bool,
-      sigma (ntmLeftVar M x t 0 i b) = true := by
+    ExistsUnique (fun b : Option Bool =>
+      sigma (ntmLeftVar M x t 0 i b) = true) := by
   let target := (inputTape x).left.getD i M.machine.blank
   refine ⟨target, ?_, ?_⟩
   · simpa [target] using
@@ -8780,8 +8798,8 @@ theorem ntmInitial_right_exists_unique
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (i : Nat) (hi : i < ntmRadius x t) :
-    ∃! b : Option Bool,
-      sigma (ntmRightVar M x t 0 i b) = true := by
+    ExistsUnique (fun b : Option Bool =>
+      sigma (ntmRightVar M x t 0 i b) = true) := by
   let target := (inputTape x).right.getD i M.machine.blank
   refine ⟨target, ?_, ?_⟩
   · simpa [target] using
