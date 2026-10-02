@@ -97,23 +97,23 @@ theorem runBranches_halted_singleton
     (fuel : Nat)
     (h : NTMHalted M c) :
     M.machine.runBranches fuel [c] = [c] := by
-  have hflag :
-      M.machine.accepting c.state || M.machine.rejecting c.state = true := by
-    rcases h with ha | hr
-    · simp [ha]
-    · simp [hr]
   induction fuel with
-  | zero => rfl
+  | zero =>
+      rfl
   | succ fuel ih =>
       rw [NTM.runBranches]
       have hHalted :
           [c].filter (fun q =>
             M.machine.accepting q.state || M.machine.rejecting q.state) = [c] := by
-        simp [hflag]
+        rcases h with ha | hr
+        · simp [ha]
+        · simp [hr]
       have hActive :
           [c].filter (fun q =>
             !(M.machine.accepting q.state || M.machine.rejecting q.state)) = [] := by
-        simp [hflag]
+        rcases h with ha | hr
+        · simp [ha]
+        · simp [hr]
       rw [hHalted, hActive]
       simpa using ih
 
@@ -175,20 +175,19 @@ theorem runBranches_singleton_succ_halted
     (h : NTMHalted M c) :
     M.machine.runBranches (fuel + 1) [c] =
       M.machine.runBranches fuel [c] := by
-  have hflag :
-      M.machine.accepting c.state || M.machine.rejecting c.state = true := by
-    rcases h with ha | hr
-    · simp [ha]
-    · simp [hr]
   rw [NTM.runBranches]
   have hHalted :
       [c].filter (fun q =>
         M.machine.accepting q.state || M.machine.rejecting q.state) = [c] := by
-    simp [hflag]
+    rcases h with ha | hr
+    · simp [ha]
+    · simp [hr]
   have hActive :
       [c].filter (fun q =>
         !(M.machine.accepting q.state || M.machine.rejecting q.state)) = [] := by
-    simp [hflag]
+    rcases h with ha | hr
+    · simp [ha]
+    · simp [hr]
   rw [hHalted, hActive]
   rfl
 
@@ -201,20 +200,18 @@ theorem runBranches_singleton_succ_active
       M.machine.runBranches fuel (M.machine.successors c) := by
   have hacc : M.machine.accepting c.state = false := by
     cases ha : M.machine.accepting c.state with
-    | false => exact ha
+    | false => rfl
     | true =>
         exfalso
         apply h
-        left
-        exact ha
+        exact Or.inl ha
   have hrej : M.machine.rejecting c.state = false := by
     cases hr : M.machine.rejecting c.state with
-    | false => exact hr
+    | false => rfl
     | true =>
         exfalso
         apply h
-        right
-        exact hr
+        exact Or.inr hr
   rw [NTM.runBranches]
   have hHalted :
       [c].filter (fun q =>
