@@ -53,31 +53,36 @@ theorem g21_iff_universal_failure :
 
 theorem g21_iff_universal_lower_bound :
     G21Pointwise ↔ P02UniversalLowerBound.UniversalSATLowerBound := by
-  rw [g21_iff_universal_failure]
-  exact P02UniversalLowerBound.universalSATLowerBound_iff_universalFailure.symm
+  exact Iff.trans
+    g21_iff_universal_failure
+    P02UniversalLowerBound.universalSATLowerBound_iff_universalFailure.symm
 
 theorem g21_iff_not_in_p :
     G21Pointwise ↔ ¬ InP SATTarget := by
-  rw [g21_iff_universal_lower_bound]
-  exact P02UniversalLowerBound.universalSATLowerBound_iff_notInP
+  exact Iff.trans
+    g21_iff_universal_lower_bound
+    P02UniversalLowerBound.universalSATLowerBound_iff_notInP
 
 theorem g21_iff_p02_operator :
     G21Pointwise ↔ Nonempty P02OperatorKernel.CanonicalSATP02Producer := by
-  rw [g21_iff_not_in_p]
-  exact P02OperatorKernel.canonicalSATProducer_iff_notInP.symm
+  exact Iff.trans
+    g21_iff_not_in_p
+    P02OperatorKernel.canonicalSATProducer_iff_notInP.symm
 
 theorem g21_iff_normalized_adversary :
     G21Pointwise ↔ Nonempty P02CanonicalClockReduction.NormalizedAdversary := by
-  rw [g21_iff_universal_lower_bound]
-  exact P02CanonicalClockReduction.normalizedAdversary_iff_universalSATLowerBound.symm
+  exact Iff.trans
+    g21_iff_universal_lower_bound
+    P02CanonicalClockReduction.normalizedAdversary_iff_universalSATLowerBound.symm
 
 /-- The frozen Claim1--7 bundle is a useful certified source object, but
 the existing semantic gate proves that a bridge from it to P02 is exactly as
 strong as the official target.  This is a firewall, not a producer. -/
 theorem claim_bundle_bridge_iff_g21 :
     MCore.Real.P02Lane4SemanticGate.T10SemanticBridge ↔ G21Pointwise := by
-  rw [MCore.Real.P02Lane4SemanticGate.t10SemanticBridge_iff_officialTarget]
-  exact g21_iff_universal_lower_bound.symm
+  exact Iff.trans
+    MCore.Real.P02Lane4SemanticGate.t10SemanticBridge_iff_officialTarget
+    g21_iff_universal_lower_bound.symm
 
 theorem claim_bundle_is_inhabited :
     MCore.Real.P02Lane4SemanticGate.CandidateRoot :=
@@ -112,8 +117,14 @@ def canonicalNotInPWitnessOfG21
     (h : G21Pointwise) :
     MCore.Attack.CanonicalNotInPWitness :=
   { language := SATTarget
-    in_np := p01_side_closed
-    not_in_p := g21_iff_not_in_p.mp h }
+    in_np :=
+      (MCore.Real.CanonicalComplexityBridge.canonical_interface_np_match
+        SATTarget).mpr p01_side_closed
+    not_in_p := by
+      intro hP
+      exact (g21_iff_not_in_p.mp h)
+        ((MCore.Real.CanonicalComplexityBridge.canonical_interface_p_match
+          SATTarget).mp hP) }
 
 /-- Historical terminal accounting, ported to the current P01-closed branch:
 the only remaining mathematical producer is G21. -/
