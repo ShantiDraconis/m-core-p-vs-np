@@ -4060,6 +4060,21 @@ theorem list_eq_of_length_getD
           subst y
           simp [ih hlen' htail]
 
+theorem list_getD_drop
+    {α : Type}
+    (xs : List α) (n i : Nat) (d : α) :
+    (xs.drop n).getD i d = xs.getD (n + i) d := by
+  induction n generalizing xs with
+  | zero =>
+      simp
+  | succ n ih =>
+      cases xs with
+      | nil =>
+          simp
+      | cons x xs =>
+          simpa [Nat.succ_add] using ih xs
+
+
 theorem rawLeftList_left_shape
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (sigma : Assignment)
@@ -4106,7 +4121,7 @@ theorem rawLeftList_left_shape
             decodeLeftCell M x t sigma hSat s (by omega) (i + 1) hiOld := by
         exact (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
           i hir _ hNew).symm
-      simp [rawLeftList, List.getD_drop, hcell, hiShift, ntmRadius]
+      simp [rawLeftList, list_getD_drop, hcell, hiShift, ntmRadius, Nat.add_comm]
 
 theorem rawRightList_left_shape
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -6382,7 +6397,7 @@ theorem eval_setState_two_neg_guard_of_exact
   apply (evalNTMCNF_map_flatten_ofFn sigma
     (fun r : Fin (M.stateCount + 1) =>
       [[ntmNeg c1, ntmNeg c2] ++
-        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))])).2
+        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))]])).2
   intro r
   have hunit :
       evalNTMClause sigma
@@ -7634,7 +7649,7 @@ theorem ntmCNFWeight_append
 
 theorem ntmCNFWeight_flatMap_range_le
     (n K : Nat) (f : Nat -> NTMCNF)
-    (h : forall i < n, ntmCNFWeight (f i) <= K) :
+    (h : forall i, i < n -> ntmCNFWeight (f i) <= K) :
     ntmCNFWeight ((List.range n).flatMap f) <= n * K := by
   induction n with
   | zero => simp [ntmCNFWeight]
@@ -7690,7 +7705,7 @@ theorem ntmCopyLeftAll_weight
       ntmRadius x t * (6 * (guard.length + 3)) := by
   unfold ntmCopyLeftAll
   have hconst :
-      forall i < ntmRadius x t,
+      forall i, i < ntmRadius x t ->
         ntmCNFWeight
           (ntmCopySymbolClauses guard
             (ntmLeftVar M x t s i)
