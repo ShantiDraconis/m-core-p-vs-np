@@ -68,7 +68,7 @@ theorem material_gap_count :
 
 theorem fail_closed :
     green = false ∧ buildVerified = false := by
-  rfl
+  exact ⟨rfl, rfl⟩
 
 #print axioms MCore.Real.P02_YangMills.Architecture.closed_base_source_count
 #print axioms MCore.Real.P02_YangMills.Architecture.closed_bridge_source_count

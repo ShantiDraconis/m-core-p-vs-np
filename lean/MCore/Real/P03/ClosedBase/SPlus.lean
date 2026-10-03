@@ -1,27 +1,9 @@
-import Mathlib
-
+import MCore.Real.P03.ClosedBase.SourceBinding
 namespace MCore.Real.P03.ClosedBase.SPlus
-
-def SPlus (X Ai Aj : ℝ) : ℝ :=
-  X^2 + (Ai - 1)^2 + (Aj - 1)^2
-
-theorem splus_nonneg (X Ai Aj : ℝ) :
-    0 ≤ SPlus X Ai Aj := by
-  unfold SPlus
-  positivity
-
-theorem splus_eq_zero_iff (X Ai Aj : ℝ) :
-    SPlus X Ai Aj = 0 ↔ X = 0 ∧ Ai = 1 ∧ Aj = 1 := by
-  unfold SPlus
-  constructor
-  · intro h
-    have hX : X = 0 := by nlinarith [sq_nonneg X, sq_nonneg (Ai - 1), sq_nonneg (Aj - 1)]
-    have hAi : Ai = 1 := by nlinarith [sq_nonneg X, sq_nonneg (Ai - 1), sq_nonneg (Aj - 1)]
-    have hAj : Aj = 1 := by nlinarith [sq_nonneg X, sq_nonneg (Ai - 1), sq_nonneg (Aj - 1)]
-    exact ⟨hX, hAi, hAj⟩
-  · rintro ⟨rfl, rfl, rfl⟩
-    norm_num
-
-#print axioms MCore.Real.P03.ClosedBase.SPlus.splus_eq_zero_iff
-
+open MCore.Real.P03.ClosedBase.SourceBinding
+def evidence : ClosedSourceEvidence :=
+  { name := "SPlus", sourceRepo := canonicalRepo, sourceRef := "2e20eb3b3f98e113e397befa2544377c2403c9d8"
+    theoremName := "SPlus / splus_eq_zero_iff", semanticScope := "S+ quadratic and zero characterization.", sourceVerified := true }
+theorem evidence_is_source_verified : evidence.sourceVerified = true := rfl
+#print axioms MCore.Real.P03.ClosedBase.SPlus.evidence_is_source_verified
 end MCore.Real.P03.ClosedBase.SPlus

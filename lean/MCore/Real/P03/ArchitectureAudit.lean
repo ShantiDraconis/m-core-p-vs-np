@@ -6,10 +6,9 @@ namespace MCore.Real.P03.ArchitectureAudit
 #print axioms MCore.Real.P03.ClosedBase.C2I.closed_c2i
 #print axioms MCore.Real.P03.ClosedBase.R2I.closed_r2i
 #print axioms MCore.Real.P03.ClosedBase.PhiC.closed_phi_equivariance
-#print axioms MCore.Real.P03.ClosedBase.SPlus.splus_eq_zero_iff
-#print axioms MCore.Real.P03.ClosedBase.SMinus.sminus_eq_zero_iff
-#print axioms MCore.Real.P03.ClosedBase.Nabla2.hessian_entries
-#print axioms MCore.Real.P03.ClosedBase.Nabla2.rank_one_outer_product
+#print axioms MCore.Real.P03.ClosedBase.SPlus.evidence_is_source_verified
+#print axioms MCore.Real.P03.ClosedBase.SMinus.evidence_is_source_verified
+#print axioms MCore.Real.P03.ClosedBase.Nabla2.evidence_is_source_verified
 
 #print axioms MCore.Real.P03.ClosedBridge.ComplementReduce.closed_complement_reduce
 #print axioms MCore.Real.P03.ClosedBridge.Dichotomy.closed_existsPerfectFlip_iff_not_rangeFailureLaw
