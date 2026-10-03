@@ -13,7 +13,15 @@
       "theorem": "MCore.Real.SevenLaneGreenGate.no_open_millennium_lane_green",
       "promotion_theorem": "MCore.Real.SevenLaneGreenGate.promote_when_complete",
       "current_green_open_problem_count": 0
-    }
+    },
+    "research_claim_boundary": [
+      "Do not mark GREEN from architectural reduction alone.",
+      "Do not infer R_M injectivity from a non-involution statement.",
+      "Do not treat trivial inhabitation of legacy Yang-Mills interfaces as physical reflection positivity or a physical transfer theorem.",
+      "Do not treat a bounded zeta-zero window type as finite/effectively enumerable without a separate theorem.",
+      "Do not treat source-bound external evidence as a local Lean proof."
+    ],
+    "green_definition": "terminal endpoint inhabited + required local/external bridges discharged + build/audit verified"
   },
   "P01_Riemann": {
     "closedBase": {
@@ -151,13 +159,14 @@
   },
   "P05_Hodge": {
     "state": "REAL_FRONTIER_BOUND",
+    "canonical_source": {
+      "repo": "ShantiDraconis/m-core-hodge",
+      "frozen_ref": "42eaf7d4d639871f82eceb121ee525a6c4f30d84",
+      "main_ref": "a994aebb57a3032f3c6c99d785b19aa650392630"
+    },
     "closedBase": {
       "count": 4,
-      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
-      "canonical_source": {
-        "repo": "ShantiDraconis/m-core-hodge",
-        "ref": "42eaf7d4d639871f82eceb121ee525a6c4f30d84"
-      }
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
     },
     "closedBridge": {
       "count": 2,
@@ -169,8 +178,7 @@
     },
     "openBridge": {
       "name": "ConcreteAlgebraicityPayload",
-      "state": "REAL_SOURCE_BOUND_FRONTIER",
-      "equivalent_regression_target": "TrivialQbarR2Payload"
+      "state": "REAL_SOURCE_BOUND_FRONTIER"
     },
     "materialGaps": 1,
     "green": false,
@@ -180,13 +188,14 @@
   },
   "P06_BSD": {
     "state": "REAL_FRONTIER_BOUND",
+    "canonical_source": {
+      "repo": "ShantiDraconis/m-core-bsd",
+      "main_ref": "ed28a02170001a4afb0b3230e1bda238dcb5fa9f",
+      "firewall_ref": "c1e7b245726c4c65f5f9f878acefb86460746f4a"
+    },
     "closedBase": {
       "count": 4,
-      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
-      "canonical_source": {
-        "repo": "ShantiDraconis/m-core-bsd",
-        "ref": "ed28a02170001a4afb0b3230e1bda238dcb5fa9f"
-      }
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
     },
     "closedBridge": {
       "count": 2,
@@ -199,15 +208,14 @@
     "openBridge": {
       "name": "RealizableBSDProducer",
       "state": "REAL_SOURCE_BOUND_FRONTIER",
-      "target": "realizable elliptic-curve domain + universal rank equality + refined leading-coefficient identity on the same domain",
-      "firewall_ref": "c1e7b245726c4c65f5f9f878acefb86460746f4a",
-      "rejected_abstract_target": "∀ d : BSDArithmeticAnalyticData, BSDRankPart d"
+      "target": "realizable elliptic-curve domain + universal rank equality + refined leading-coefficient identity on the same domain"
     },
+    "rejectedAbstractTarget": "∀ d : BSDArithmeticAnalyticData, BSDRankPart d",
     "materialGaps": 1,
     "green": false,
     "build": "UNVERIFIED",
     "architecture_commit": "fb0a25b819878ea9625847961e25ac93aaa8d04f",
-    "audit_commit": "922ea92c305a016c84eb059d858ce45ab8bcd731"
+    "audit_sha": "fa0e5e74dccffa4f5882ca10e373d777b068b7d4"
   },
   "P07_Poincare": {
     "state": "HISTORICALLY_SOLVED_EXTERNALLY",
