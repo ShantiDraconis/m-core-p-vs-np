@@ -263,10 +263,14 @@ theorem effective_coverage_to_same_terminal
 /-- Explicit accounting boundary: both active constructive routes land in the
 same terminal proposition; neither route is manufactured here. -/
 structure OpenProducerInventory where
-  behavioral_route :
-    Prop := MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer
-  effective_route :
-    Type := P02EffectiveAlignment.UniformEffectiveCoverage
+  behavioral_route : Prop
+  effective_route : Type
+
+def openProducerInventory : OpenProducerInventory where
+  behavioral_route :=
+    MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer
+  effective_route :=
+    P02EffectiveAlignment.UniformEffectiveCoverage
 
 abbrev TERMINAL_OPEN_MATH : Prop :=
   P02UniversalLowerBoundMaster.FINAL_OPEN_MATH
@@ -303,6 +307,7 @@ theorem normalized_route_iff_g21 :
 #print axioms P02.LANE4.AdvancedCertificateReuse.t10_to_g21
 #print axioms P02.LANE4.AdvancedCertificateReuse.effective_coverage_to_g21
 #print axioms P02.LANE4.AdvancedCertificateReuse.normalized_route_iff_g21
+#print axioms P02.LANE4.AdvancedCertificateReuse.openProducerInventory
 #print axioms P02.LANE4.AdvancedCertificateReuse.reusedTerminalChain
 #print axioms P02.LANE4.AdvancedCertificateReuse.exact_diagonal_to_universal_lower_bound
 #print axioms P02.LANE4.AdvancedCertificateReuse.exact_diagonal_to_p02_operator
