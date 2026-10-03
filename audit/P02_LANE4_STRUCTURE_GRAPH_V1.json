@@ -29,7 +29,8 @@
     "P02.LANE4.AUX.R5_PAIR",
     "P02.LANE4.StructuralClosure",
     "P02.LANE4.AUX.STRUCTURAL_CLOSURE",
-    "P02.LANE4.StructureBundle"
+    "P02.LANE4.StructureBundle",
+    "P02.LANE4.AdvancedCertificateReuse"
   ],
   "open_math_chain": [
     "P02.LANE4.OPEN_MATH.BehavioralAlignment",
@@ -57,5 +58,26 @@
     "Injective reduction does not imply SameBehaviorAt",
     "PolynomialTimeBound does not imply monotone timeBound",
     "Bare fuel dominance does not imply behavioral preservation"
-  ]
+  ],
+  "advanced_certificates": {
+    "reused": [
+      "P01PostMinCutClosure.canonical_sat_in_np_closed",
+      "P02UniversalLowerBound.universalSATLowerBound_iff_notInP",
+      "P02OperatorKernel.canonicalSATProducer_iff_notInP",
+      "P02CanonicalClockReduction.normalizedAdversary_iff_universalSATLowerBound",
+      "P02EffectiveAlignment.uniform_effective_coverage_closes_p02",
+      "MCore.Attack.CanonicalTerminalProducer.canonicalWitness_closes_separation",
+      "historical M-Core P02G21G22Attack equivalences ported to current canonical target"
+    ],
+    "conclusions": [
+      "P01/G1 is closed and should not be reopened",
+      "G2.2 is equivalent to G21/not-InP and is not an independent producer",
+      "NormalizedAdversary is an exact normal form, not a new frontier",
+      "T10 and UniformEffectiveCoverage are sufficient constructive routes into the same G21 terminal target"
+    ],
+    "remaining_open": [
+      "G21Pointwise / UniversalSATLowerBound",
+      "TotalBehavioralAlignmentProducer OR UniformEffectiveCoverage or another genuine producer of G21"
+    ]
+  }
 }
