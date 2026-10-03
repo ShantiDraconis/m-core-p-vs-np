@@ -5,7 +5,7 @@
   "global": {
     "green": false,
     "build": "UNVERIFIED",
-    "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01/P02 evidence files",
+    "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01-P06 architecture evidence files (static source scan only)",
     "open_problem_green_count": 0,
     "note": "Fail-closed manifest: materialGaps=1 means one current real frontier per lane, not that one theorem is known to suffice mathematically. Candidate decompositions remain OPEN until formally connected.",
     "green_gate": {
@@ -19,7 +19,8 @@
       "Do not infer R_M injectivity from a non-involution statement.",
       "Do not treat trivial inhabitation of legacy Yang-Mills interfaces as physical reflection positivity or a physical transfer theorem.",
       "Do not treat a bounded zeta-zero window type as finite/effectively enumerable without a separate theorem.",
-      "Do not treat source-bound external evidence as a local Lean proof."
+      "Do not treat source-bound external evidence as a local Lean proof.",
+      "Do not collapse BSD to universal equality over arbitrary BSDArithmeticAnalyticData; the canonical counteraudit requires realizable elliptic-curve binding and a refined formula on the same domain."
     ],
     "green_definition": "terminal endpoint inhabited + required local/external bridges discharged + build/audit verified"
   },
@@ -239,13 +240,19 @@
       "state": "REAL_SOURCE_BOUND_FRONTIER",
       "target": "realizable elliptic-curve domain + universal rank equality + refined leading-coefficient identity on the same domain",
       "firewall_ref": "c1e7b245726c4c65f5f9f878acefb86460746f4a",
-      "rejected_target": "∀ d : BSDArithmeticAnalyticData, BSDRankPart d"
+      "rejected_target": "∀ d : BSDArithmeticAnalyticData, BSDRankPart d",
+      "atomic_obligations": [
+        "universal analyticOrderAtOne = mordellWeilRank on a realizable elliptic-curve domain",
+        "refined leading-coefficient identity on the same realizable domain"
+      ],
+      "target_file_commit": "58eb58f9be23cb28541905986cc30eb76f402cf3"
     },
     "materialGaps": 1,
     "green": false,
     "build": "UNVERIFIED",
-    "architecture_commit": "fb0a25b819878ea9625847961e25ac93aaa8d04f",
-    "audit_commit": "935346f73e439b6c71a7605e96afb8840cec1bc7"
+    "architecture_commit": "8f88d23df2c43053eceb7941bf97d177630363ec",
+    "audit_commit": "90ccf90559f44aad9db767fd55a0b95435871865",
+    "materialAtoms": 2
   },
   "P07_Poincare": {
     "state": "HISTORICALLY_SOLVED_EXTERNALLY",
