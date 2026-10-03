@@ -1,5 +1,5 @@
 import MCore.Real.P03TerminalSemanticBridge
-import Mathlib.Data.Polynomial.Basic
+import Mathlib
 
 namespace MCore
 namespace Real
