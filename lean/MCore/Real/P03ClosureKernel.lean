@@ -10,6 +10,7 @@ import MCore.Real.P03TerminalSemanticBridge
 import MCore.Real.P03CriticalHalfSymmetry
 import MCore.Real.P03PolynomialWitness
 import MCore.Real.P03RangeFailureFrontier
+import MCore.Real.P03PerfectFlipDichotomy
 
 namespace MCore
 namespace Real
