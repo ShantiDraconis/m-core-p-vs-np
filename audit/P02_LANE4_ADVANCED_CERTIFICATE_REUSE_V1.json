@@ -1,0 +1,87 @@
+{
+  "schema": "P02_LANE4_ADVANCED_CERTIFICATE_REUSE_V1",
+  "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+  "state": "SOURCE_CONSTRUCTED_BUILD_PENDING",
+  "reused_directly": [
+    {
+      "artifact": "MCore.Real.P01PostMinCutClosure.canonical_sat_in_np_closed",
+      "role": "closed P01/G1 side",
+      "action": "REUSE",
+      "frontier_effect": "removes P01 from current terminal accounting"
+    },
+    {
+      "artifact": "MCore.Real.P02TableauSourceRecovery",
+      "role": "R1/R3 injectivity",
+      "action": "ALREADY_CONSUMED_BY_R1_R3_REAL",
+      "frontier_effect": "structural only"
+    },
+    {
+      "artifact": "MCore.Real.P02UniversalLowerBoundMaster",
+      "role": "canonical terminal lower bound and equivalences",
+      "action": "REUSE",
+      "frontier_effect": "fixes exact terminal as UniversalSATLowerBound"
+    },
+    {
+      "artifact": "MCore.Real.P02CanonicalClockReduction.NormalizedAdversary",
+      "role": "monomial-clock normal form",
+      "action": "REUSE_EXACT_NORMAL_FORM",
+      "frontier_effect": "removes need to reason about arbitrary timeBound shape, but does not create a lower-bound witness"
+    },
+    {
+      "artifact": "MCore.Real.P02EffectiveAlignment.UniformEffectiveCoverage",
+      "role": "alternative constructive route",
+      "action": "REUSE_AS_SUFFICIENT_PRODUCER",
+      "frontier_effect": "if inhabited, produces G21/not-InP"
+    },
+    {
+      "artifact": "MCore.Real.Claim1To7Only + P02Lane4SemanticGate",
+      "role": "frozen Claim1-7 aggregate and semantic firewall",
+      "action": "REUSE_AS_FIREWALL",
+      "frontier_effect": "proves CandidateRoot→OfficialTarget is exactly as strong as OfficialTarget; cannot promote Claim1-7 to P02"
+    },
+    {
+      "artifact": "historical ShantiDraconis/M-Core P02G21G22Attack",
+      "role": "G21/G22/P02 equivalence",
+      "action": "PORTED_TO_CURRENT_CANONICAL_TARGET",
+      "frontier_effect": "G2.2 is not an independent producer"
+    },
+    {
+      "artifact": "MCore.Attack.CanonicalTerminalProducer",
+      "role": "terminal fixed not-in-P witness consumer",
+      "action": "REUSE",
+      "frontier_effect": "G21 plus closed P01 constructs CanonicalNotInPWitness"
+    }
+  ],
+  "rejected_as_producers": [
+    {
+      "artifact": "Claim1To7Only canonicalFinalProof",
+      "reason": "claim-only scope; semantic bridge to official target is equivalent to the target itself"
+    },
+    {
+      "artifact": "FuelCounterexample",
+      "reason": "abstract firewall only; does not refute concrete FuelToBehaviorBridge"
+    },
+    {
+      "artifact": "StructuralClosure/R1-R5",
+      "reason": "data preservation and injectivity do not imply behavioral alignment"
+    }
+  ],
+  "current_exact_frontier": {
+    "terminal": "P02.LANE4.AdvancedCertificateReuse.G21Pointwise",
+    "equivalent": [
+      "UniversalFailure SATTarget",
+      "UniversalSATLowerBound",
+      "not InP SATTarget",
+      "Nonempty CanonicalSATP02Producer",
+      "Nonempty NormalizedAdversary",
+      "G22Contradiction"
+    ],
+    "sufficient_routes": [
+      "TotalBehavioralAlignmentProducer",
+      "UniformEffectiveCoverage",
+      "any direct genuine G21Pointwise producer"
+    ],
+    "not_closed": true
+  },
+  "generated_from_head": "905495a6d9334dceeb579c030125dfb0b0baca26"
+}
