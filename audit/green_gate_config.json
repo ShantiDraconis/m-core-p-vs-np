@@ -40,7 +40,10 @@
       "required_bridge_markers": [
         "FiniteSpanToDNLimit"
       ],
-      "green_certificate": "lean/MCore/Real/P01_Riemann/GreenCertificate.lean"
+      "green_certificate": "lean/MCore/Real/P01_Riemann/GreenCertificate.lean",
+      "required_new_math_module": "lean/MCore/Real/P01_Riemann/NewMath/FiniteSpanProducer.lean",
+      "required_material_producer_symbol": "MCore.Real.P01_Riemann.NewMath.FiniteSpanProducer.material_producer",
+      "required_frontier_bridge_symbol": "MCore.Real.P01_Riemann.NewMath.FiniteSpanProducer.material_producer_closes_frontier"
     },
     "P02_YangMills": {
       "directory": "lean/MCore/Real/P02_YangMills",
@@ -59,7 +62,10 @@
         "B60ToMassGap",
         "B60ConcretePhysicalAdapter"
       ],
-      "green_certificate": "lean/MCore/Real/P02_YangMills/GreenCertificate.lean"
+      "green_certificate": "lean/MCore/Real/P02_YangMills/GreenCertificate.lean",
+      "required_new_math_module": "lean/MCore/Real/P02_YangMills/NewMath/B60PhysicalProducer.lean",
+      "required_material_producer_symbol": "MCore.Real.P02_YangMills.NewMath.B60PhysicalProducer.material_producer",
+      "required_frontier_bridge_symbol": "MCore.Real.P02_YangMills.NewMath.B60PhysicalProducer.material_producer_closes_frontier"
     },
     "P03_PvsNP": {
       "directory": "lean/MCore/Real/P03",
@@ -73,7 +79,10 @@
         "CompleteRouteBInhabitant",
         "completeRouteB_implies_existsPerfectFlip"
       ],
-      "green_certificate": "lean/MCore/Real/P03/GreenCertificate.lean"
+      "green_certificate": "lean/MCore/Real/P03/GreenCertificate.lean",
+      "required_new_math_module": "lean/MCore/Real/P03/NewMath/CompleteRouteBProducer.lean",
+      "required_material_producer_symbol": "MCore.Real.P03.NewMath.CompleteRouteBProducer.material_producer",
+      "required_frontier_bridge_symbol": "MCore.Real.P03.NewMath.CompleteRouteBProducer.material_producer_closes_frontier"
     },
     "P04_NavierStokes": {
       "directory": "lean/MCore/Real/P04_NavierStokes",
@@ -93,7 +102,10 @@
         "CoreToCertificate",
         "SignedGainToDifferential"
       ],
-      "green_certificate": "lean/MCore/Real/P04_NavierStokes/GreenCertificate.lean"
+      "green_certificate": "lean/MCore/Real/P04_NavierStokes/GreenCertificate.lean",
+      "required_new_math_module": "lean/MCore/Real/P04_NavierStokes/NewMath/SignedGainCoreProducer.lean",
+      "required_material_producer_symbol": "MCore.Real.P04_NavierStokes.NewMath.SignedGainCoreProducer.material_producer",
+      "required_frontier_bridge_symbol": "MCore.Real.P04_NavierStokes.NewMath.SignedGainCoreProducer.material_producer_closes_frontier"
     },
     "P05_Hodge": {
       "directory": "lean/MCore/Real/P05_Hodge",
@@ -113,7 +125,10 @@
         "H01ToPointwise",
         "PointwiseToHodge"
       ],
-      "green_certificate": "lean/MCore/Real/P05_Hodge/GreenCertificate.lean"
+      "green_certificate": "lean/MCore/Real/P05_Hodge/GreenCertificate.lean",
+      "required_new_math_module": "lean/MCore/Real/P05_Hodge/NewMath/ConcreteAlgebraicityProducer.lean",
+      "required_material_producer_symbol": "MCore.Real.P05_Hodge.NewMath.ConcreteAlgebraicityProducer.material_producer",
+      "required_frontier_bridge_symbol": "MCore.Real.P05_Hodge.NewMath.ConcreteAlgebraicityProducer.material_producer_closes_frontier"
     },
     "P06_BSD": {
       "directory": "lean/MCore/Real/P06_BSD",
@@ -137,30 +152,33 @@
         "RankWitnessToOpenCore",
         "RankPartToEquality"
       ],
-      "green_certificate": "lean/MCore/Real/P06_BSD/GreenCertificate.lean"
+      "green_certificate": "lean/MCore/Real/P06_BSD/GreenCertificate.lean",
+      "required_new_math_module": "lean/MCore/Real/P06_BSD/NewMath/RealizableBSDProducer.lean",
+      "required_material_producer_symbol": "MCore.Real.P06_BSD.NewMath.RealizableBSDProducer.material_producer",
+      "required_frontier_bridge_symbol": "MCore.Real.P06_BSD.NewMath.RealizableBSDProducer.material_producer_closes_frontier"
     }
   },
   "gate": "GREEN_GATE_FAIL_CLOSED",
-  "version": "fail-closed-green-gate-v4-terminal-theorem-required",
+  "version": "fail-closed-green-gate-v5-genuine-producer-required",
   "rules": [
     "1. frozen refs correct and pinned",
-    "2. axiom declarations = 0 (ignore #print axioms/comments)",
-    "3. sorry proof terms = 0 (ignore comments/documentation)",
+    "2. axiom declarations = 0",
+    "3. sorry proof terms = 0",
     "4. admit proof terms = 0",
     "5. opaque declarations = 0",
     "6. no forbidden administrative frontier aliases",
-    "7. GreenCertificate.lean exists",
-    "8. terminal_endpoint_closed Bool is status telemetry only and MUST NOT count as a proof",
-    "9. GREEN promotion requires theorem terminal_endpoint_certified whose proof consumes the real material frontier and closes the actual terminal endpoint",
-    "10. ArchitectureAudit.lean compiles",
-    "11. lake build MCore passes",
-    "12. manifest records exact provenance/hash/build and only then green=true"
+    "7. dedicated NewMath producer module exists",
+    "8. producer is a genuine construction, not an alias/re-export/abbrev of the frontier",
+    "9. material_producer_closes_frontier proves the real frontier from the concrete producer",
+    "10. terminal_endpoint_certified consumes the frontier closure and proves the actual endpoint",
+    "11. ArchitectureAudit.lean and lake build MCore pass",
+    "12. manifest records exact producer/frontier/terminal provenance before manual green=true promotion"
   ],
   "current_state": {
     "P01-P06": {
       "GREEN": false,
       "BUILD": "UNVERIFIED",
-      "reason": "STRUCTURAL SOURCE REDs cleaned: certificates are placeholder-free and explicitly prove status=false. Remaining RED is material/terminal/build. No lane has theorem terminal_endpoint_certified."
+      "reason": "RED remains correct: no lane currently has the required genuine NewMath producer -> frontier -> terminal certified chain."
     }
   },
   "promotion_contract": {
@@ -169,5 +187,21 @@
     "required_positive_theorem": "terminal_endpoint_certified",
     "theorem_requirement": "must be a theorem with no axiom/sorry/admit/opaque in its dependency tree and must consume the real frontier rather than an alias",
     "automatic_promotion": false
+  },
+  "material_producer_policy": {
+    "alias_is_not_construction": true,
+    "reject_patterns": [
+      "axiom producer : Frontier",
+      "opaque producer : Frontier",
+      "def producer : Frontier := by sorry",
+      "def producer : Frontier := existingOpenFrontier",
+      "abbrev producer := Frontier"
+    ],
+    "require": [
+      "dedicated NewMath construction module",
+      "concrete producer object/theorem with axiom=0 sorry=0 admit=0 opaque=0",
+      "material_producer_closes_frontier theorem proving the real frontier from the producer",
+      "terminal_endpoint_certified theorem consuming that frontier closure"
+    ]
   }
 }
