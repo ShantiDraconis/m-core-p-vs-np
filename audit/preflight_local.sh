@@ -72,11 +72,10 @@ rm -f "$LANE_BUILD_LOG"
 lake build P02 2>&1 | tee "$LANE_BUILD_LOG"
 echo "PREFLIGHT_LANE4_TARGET_SUCCESS"
 
-# Once the dependency graph has been built, re-elaborate the critical base
-# source directly so its source-level elaboration is independently visible.
-echo "-- BASE RECHECK lean/MCore/Real/PNPNTMTableauEncoding.lean"
-lake env lean lean/MCore/Real/PNPNTMTableauEncoding.lean
-echo "PREFLIGHT_TABLEAU_BASE_SUCCESS"
+# The P02 root imports CompleteBundle, whose transitive dependency graph includes
+# the tableau base and every LANE4 AUX/bundle source.  A second direct Lean pass
+# would only duplicate elaboration on a fresh CI runner.
+echo "PREFLIGHT_TABLEAU_BASE_COVERED_BY_P02_BUILD"
 
 echo "== PREFLIGHT L3: AUX GATE MIRROR =="
 
