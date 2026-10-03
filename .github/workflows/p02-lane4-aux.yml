@@ -21,6 +21,7 @@ jobs:
         run: |
           set -euo pipefail
           lake update
+          lake exe cache get
 
       - name: P02-LANE-4 fail-closed gate
         run: |
