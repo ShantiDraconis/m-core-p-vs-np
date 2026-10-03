@@ -9,10 +9,11 @@
     "open_problem_green_count": 0,
     "note": "Fail-closed manifest: materialGaps=1 means one current real frontier per lane, not that one theorem is known to suffice mathematically. Candidate decompositions remain OPEN until formally connected.",
     "green_gate": {
-      "commit": "defbeaafa964a32ac1399bfb2612be52eec23da4",
+      "commit": "962c707c7642b2d4ce821ea97ac63e05ef4749ad",
       "theorem": "MCore.Real.SevenLaneGreenGate.no_open_millennium_lane_green",
       "promotion_theorem": "MCore.Real.SevenLaneGreenGate.promote_when_complete",
-      "current_green_open_problem_count": 0
+      "current_green_open_problem_count": 0,
+      "source_of_truth": "per-lane GreenCertificate -> MaterialFrontierStatus"
     },
     "research_claim_boundary": [
       "Do not mark GREEN from architectural reduction alone.",
@@ -31,7 +32,12 @@
       "real_frontier_bound_count_theorem": "MCore.Real.SevenLaneClaimBoundary.five_open_lanes_have_real_frontier_bound",
       "local_green_open_lane_count_theorem": "MCore.Real.SevenLaneClaimBoundary.no_open_lane_claims_local_green"
     },
-    "mcore_integration_commit": "2ecabe88ce0583e3aa261182e8dad0786bb9749c"
+    "mcore_integration_commit": "2ecabe88ce0583e3aa261182e8dad0786bb9749c",
+    "structural_red_cleanup": {
+      "state": "SOURCE_UPDATED_BUILD_UNVERIFIED",
+      "static_scan": "axiom=0 sorry=0 admit=0 opaque=0 on MaterialFrontierStatus + GreenCertificate + SevenLaneGreenGate",
+      "remaining_red": "material frontier / terminal endpoint only"
+    }
   },
   "P01_Riemann": {
     "closedBase": {
@@ -78,7 +84,10 @@
     "green": false,
     "build": "UNVERIFIED",
     "architecture_commit": "6711dd738cabb48e6f89886db12b1f805f401a1d",
-    "audit_commit": "5aa493aab794f5088ec276f1689189ccfdb755ef"
+    "audit_commit": "5aa493aab794f5088ec276f1689189ccfdb755ef",
+    "frontier_status_commit": "21b5a02b35fc92ea1b9ac9847b5be2964702c62f",
+    "green_certificate_commit": "4071f8f0750efd30b721957544834c728502ece2",
+    "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed"
   },
   "P02_YangMills": {
     "closedBase": {
@@ -127,7 +136,10 @@
     "green": false,
     "build": "UNVERIFIED",
     "architecture_commit": "db2b8d1b3ae533ec7572d1c24e927c30cd866f9b",
-    "audit_commit": "dd79326cc4c3760c484da5f1adcd6f130566ae59"
+    "audit_commit": "dd79326cc4c3760c484da5f1adcd6f130566ae59",
+    "frontier_status_commit": "5433a0688883b03c1ef6c7daf61113e4bd9a248d",
+    "green_certificate_commit": "9f3aac3f5c675cd56a5d4f860711ac2a1c28b4a1",
+    "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed"
   },
   "P03_PvsNP": {
     "state": "REAL_ARCHITECTURE_BOUND",
@@ -143,7 +155,10 @@
     "build": "UNVERIFIED",
     "complete_route_b_commit": "8efb917c1f5939b1a94a850ff0c6905ad61fc4e3",
     "architecture_commit": "5b218e4513f02939f5863df8e0224856be1e7cf6",
-    "audit_commit": "641531d189eb925646ea2dd7e268926d79b73491"
+    "audit_commit": "641531d189eb925646ea2dd7e268926d79b73491",
+    "frontier_status_commit": "23672956d50d6e6486bd86f06292bd4310b233b1",
+    "green_certificate_commit": "b6893342e69e3e75898164b479dd449e56a9aa2f",
+    "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed"
   },
   "P04_NavierStokes": {
     "state": "REAL_FRONTIER_BOUND",
@@ -181,7 +196,10 @@
     "green": false,
     "build": "UNVERIFIED",
     "architecture_commit": "f0ce17a5",
-    "audit_commit": "ca49d938"
+    "audit_commit": "ca49d938",
+    "frontier_status_commit": "151e5927a7b33fe8beb0442c000c067a45f9fda7",
+    "green_certificate_commit": "03b643c7f8a1c5056203e385cbf249d7d3614631",
+    "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed"
   },
   "P05_Hodge": {
     "state": "REAL_FRONTIER_BOUND",
@@ -220,7 +238,10 @@
     "green": false,
     "build": "UNVERIFIED",
     "architecture_commit": "d5f69759",
-    "audit_commit": "5c74d6a6"
+    "audit_commit": "5c74d6a6",
+    "frontier_status_commit": "81cbdef9da76628a50117f2d199fae82693a60fd",
+    "green_certificate_commit": "5d4a477f737008fc204178bb60195cf71992da08",
+    "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed"
   },
   "P06_BSD": {
     "state": "REAL_FRONTIER_BOUND",
@@ -274,7 +295,10 @@
       "NoFalseFinalCertificate",
       "AbstractRankInterfaceCounteraudit",
       "ExternalInputProvenance"
-    ]
+    ],
+    "frontier_status_commit": "d09aa793e5306ea3f9012e264ad42aecc4b4ee37",
+    "green_certificate_commit": "b2f89924ae71950dd554985a78aee94adc6b2f92",
+    "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed"
   },
   "P07_Poincare": {
     "state": "HISTORICALLY_SOLVED_EXTERNALLY",
