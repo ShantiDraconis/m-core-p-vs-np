@@ -2999,13 +2999,18 @@ theorem ntmUniqueAt_active_step
   | stay =>
       have hDirStay :
           ((M.machine.transition q a).get j).2.2 = Direction.stay := by
-        rw [htr]
+        exact congrArg (fun tr => tr.2.2) htr
+      have hWrite :
+          ((M.machine.transition q a).get j).2.1 = write := by
+        exact congrArg (fun tr => tr.2.1) htr
+      have hHeadRaw :=
+        ntmChoice_effect_head_exact_stay M x t s q a j sigma
+          hSat hs hActive hDirStay hj
       have hHeadExact :
           forall b : Option Bool,
             sigma (ntmHeadVar M t (s + 1) b) = decide (b = write) := by
-        simpa [htr] using
-          ntmChoice_effect_head_exact_stay M x t s q a j sigma
-            hSat hs hActive hDirStay hj
+        intro b
+        simpa [hWrite] using hHeadRaw b
       refine {
         hState := existsUnique_of_exact_decide
           (fun r => sigma (ntmStateVar M t (s + 1) r)) qNext hStateExact
@@ -3019,17 +3024,15 @@ theorem ntmUniqueAt_active_step
           (fun b => sigma (ntmLeftVar M x t s i b))
           (fun b => sigma (ntmLeftVar M x t (s + 1) i b))
           (hU.hLeft i hi)
-          (by simpa [htr] using
-            ntmStay_left_copy_exact M x t s q a j sigma hSat hs hActive hj
-              hDirStay i hi)
+          (ntmStay_left_copy_exact M x t s q a j sigma
+            hSat hs hActive hj hDirStay i hi)
       · intro i hi
         exact existsUnique_transport
           (fun b => sigma (ntmRightVar M x t s i b))
           (fun b => sigma (ntmRightVar M x t (s + 1) i b))
           (hU.hRight i hi)
-          (by simpa [htr] using
-            ntmStay_right_copy_exact M x t s q a j sigma hSat hs hActive hj
-              hDirStay i hi)
+          (ntmStay_right_copy_exact M x t s q a j sigma
+            hSat hs hActive hj hDirStay i hi)
   | left =>
       have hDirLeft :
           ((M.machine.transition q a).get j).2.2 = Direction.left := by
