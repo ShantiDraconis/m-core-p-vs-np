@@ -4059,7 +4059,7 @@ theorem list_eq_of_length_getD
           subst y
           simp [ih hlen' htail]
 
-/-- The earlier raw-list left-move shape experiment was intentionally
+/- The earlier raw-list left-move shape experiment was intentionally
 removed from the kernel path: it was not consumed by the P02 LANE4 dependency
 closure.  The operational decoder below is the canonical consumed route. -/
 
