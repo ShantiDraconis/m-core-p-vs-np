@@ -66,10 +66,10 @@ lake exe cache get
 # Build only the registered terminal module for P02-LANE-4.  Lake resolves
 # its complete dependency closure topologically while excluding unrelated
 # lanes such as P03 that are not dependencies of this module.
-echo "-- TOPOLOGICAL MODULE P02Lane4"
+echo "-- TOPOLOGICAL MODULE P02"
 LANE_BUILD_LOG="${TMPDIR:-/tmp}/p02_lane4_complete_bundle_build.log"
 rm -f "$LANE_BUILD_LOG"
-lake build +P02Lane4 2>&1 | tee "$LANE_BUILD_LOG"
+lake build +P02 2>&1 | tee "$LANE_BUILD_LOG"
 echo "PREFLIGHT_LANE4_TARGET_SUCCESS"
 
 # Once the dependency graph has been built, re-elaborate the critical base
@@ -87,7 +87,7 @@ P02_LANE4_TARGET_ALREADY_GREEN=1 \
 grep -q 'SCAN_OK: 0 axiom/sorry/admit/opaque' "$LOG" \
   || red "gate did not emit SCAN_OK"
 
-grep -q 'P02Lane4 SUCCESS' "$LOG" \
+grep -q 'P02 SUCCESS' "$LOG" \
   || red "gate did not confirm CompleteBundle topological build"
 
 grep -q 'AUX_GREEN_CANDIDATE: P02-LANE-4' "$LOG" \
