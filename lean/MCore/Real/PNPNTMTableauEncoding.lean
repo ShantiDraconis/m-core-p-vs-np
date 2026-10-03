@@ -4305,18 +4305,22 @@ theorem decodeInitial_state
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
     M.machine.initial = decodeState M x t sigma hSat 0 (by omega) := by
-  apply decodeState_unique M x t sigma hSat 0 (by omega)
   have hExact := ntmInitial_state_exact M x t sigma hSat M.machine.initial
-  simpa using hExact
+  have hTrue :
+      sigma (ntmStateVar M t 0 M.machine.initial) = true := by
+    simpa using hExact
+  exact decodeState_unique M x t sigma hSat 0 (by omega) M.machine.initial hTrue
 
 theorem decodeInitial_head
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
     (inputTape x).head = decodeHead M x t sigma hSat 0 (by omega) := by
-  apply decodeHead_unique M x t sigma hSat 0 (by omega)
   have hExact := ntmInitial_head_exact M x t sigma hSat (inputTape x).head
-  simpa using hExact
+  have hTrue :
+      sigma (ntmHeadVar M t 0 (inputTape x).head) = true := by
+    simpa using hExact
+  exact decodeHead_unique M x t sigma hSat 0 (by omega) (inputTape x).head hTrue
 
 theorem decodeInitial_leftCell
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -4325,10 +4329,13 @@ theorem decodeInitial_leftCell
     (i : Nat) (hi : i < ntmRadius x t) :
     (inputTape x).left.getD i M.machine.blank =
       decodeLeftCell M x t sigma hSat 0 (by omega) i hi := by
-  apply decodeLeftCell_unique M x t sigma hSat 0 (by omega) i hi
   have hExact := ntmInitial_left_exact M x t sigma hSat i hi
     ((inputTape x).left.getD i M.machine.blank)
-  simpa using hExact
+  have hTrue :
+      sigma (ntmLeftVar M x t 0 i ((inputTape x).left.getD i M.machine.blank)) = true := by
+    simpa using hExact
+  exact decodeLeftCell_unique M x t sigma hSat 0 (by omega) i hi
+    ((inputTape x).left.getD i M.machine.blank) hTrue
 
 theorem decodeInitial_rightCell
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -4337,10 +4344,13 @@ theorem decodeInitial_rightCell
     (i : Nat) (hi : i < ntmRadius x t) :
     (inputTape x).right.getD i M.machine.blank =
       decodeRightCell M x t sigma hSat 0 (by omega) i hi := by
-  apply decodeRightCell_unique M x t sigma hSat 0 (by omega) i hi
   have hExact := ntmInitial_right_exact M x t sigma hSat i hi
     ((inputTape x).right.getD i M.machine.blank)
-  simpa using hExact
+  have hTrue :
+      sigma (ntmRightVar M x t 0 i ((inputTape x).right.getD i M.machine.blank)) = true := by
+    simpa using hExact
+  exact decodeRightCell_unique M x t sigma hSat 0 (by omega) i hi
+    ((inputTape x).right.getD i M.machine.blank) hTrue
 
 theorem operationalDecodeAgrees_zero
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
