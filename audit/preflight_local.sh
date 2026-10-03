@@ -14,6 +14,9 @@ red() {
   exit 1
 }
 
+echo "== PREFLIGHT L0: STRUCTURE COMPLETENESS =="
+bash audit/p02_lane4_structure_check.sh
+
 echo "== PREFLIGHT L1: STATIC FAIL-FAST =="
 
 # Keep this scan definition aligned with audit/p02_lane4_aux_green.sh.
