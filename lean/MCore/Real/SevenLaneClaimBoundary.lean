@@ -11,9 +11,9 @@ inductive ClaimKind where
 
 structure LaneClaim where
   lane : String
-  closedBaseCount : Nat
-  closedBridgeCount : Nat
-  sourceMiddleCount : Nat
+  closedBaseRecordCount : Nat
+  closedBridgeRecordCount : Nat
+  sourceMiddleRecordCount : Nat
   materialGaps : Nat
   materialAtoms : Nat
   claimKind : ClaimKind
@@ -24,9 +24,9 @@ structure LaneClaim where
 
 def p01 : LaneClaim :=
   { lane := "P01_Riemann"
-    closedBaseCount := 3
-    closedBridgeCount := 0
-    sourceMiddleCount := 1
+    closedBaseRecordCount := 3
+    closedBridgeRecordCount := 0
+    sourceMiddleRecordCount := 1
     materialGaps := 1
     materialAtoms := 1
     claimKind := .sourceMiddleOnly
@@ -36,9 +36,9 @@ def p01 : LaneClaim :=
 
 def p02 : LaneClaim :=
   { lane := "P02_YangMills"
-    closedBaseCount := 4
-    closedBridgeCount := 1
-    sourceMiddleCount := 0
+    closedBaseRecordCount := 4
+    closedBridgeRecordCount := 1
+    sourceMiddleRecordCount := 0
     materialGaps := 1
     materialAtoms := 1
     claimKind := .realFrontierBound
@@ -48,9 +48,9 @@ def p02 : LaneClaim :=
 
 def p03 : LaneClaim :=
   { lane := "P03_PvsNP"
-    closedBaseCount := 6
-    closedBridgeCount := 4
-    sourceMiddleCount := 2
+    closedBaseRecordCount := 6
+    closedBridgeRecordCount := 4
+    sourceMiddleRecordCount := 2
     materialGaps := 1
     materialAtoms := 1
     claimKind := .realFrontierBound
@@ -60,9 +60,9 @@ def p03 : LaneClaim :=
 
 def p04 : LaneClaim :=
   { lane := "P04_NavierStokes"
-    closedBaseCount := 4
-    closedBridgeCount := 2
-    sourceMiddleCount := 0
+    closedBaseRecordCount := 4
+    closedBridgeRecordCount := 2
+    sourceMiddleRecordCount := 0
     materialGaps := 1
     materialAtoms := 1
     claimKind := .realFrontierBound
@@ -72,9 +72,9 @@ def p04 : LaneClaim :=
 
 def p05 : LaneClaim :=
   { lane := "P05_Hodge"
-    closedBaseCount := 4
-    closedBridgeCount := 2
-    sourceMiddleCount := 0
+    closedBaseRecordCount := 4
+    closedBridgeRecordCount := 2
+    sourceMiddleRecordCount := 0
     materialGaps := 1
     materialAtoms := 1
     claimKind := .realFrontierBound
@@ -84,9 +84,9 @@ def p05 : LaneClaim :=
 
 def p06 : LaneClaim :=
   { lane := "P06_BSD"
-    closedBaseCount := 4
-    closedBridgeCount := 2
-    sourceMiddleCount := 0
+    closedBaseRecordCount := 4
+    closedBridgeRecordCount := 2
+    sourceMiddleRecordCount := 0
     materialGaps := 1
     materialAtoms := 2
     claimKind := .realFrontierBound
@@ -96,9 +96,9 @@ def p06 : LaneClaim :=
 
 def p07 : LaneClaim :=
   { lane := "P07_Poincare"
-    closedBaseCount := 0
-    closedBridgeCount := 0
-    sourceMiddleCount := 0
+    closedBaseRecordCount := 0
+    closedBridgeRecordCount := 0
+    sourceMiddleRecordCount := 0
     materialGaps := 0
     materialAtoms := 0
     claimKind := .historicallySolvedExternal
@@ -133,9 +133,7 @@ manifest: every open lane has terminalEndpointClosed=false.
 -/
 theorem frontier_claim_not_solution_claim :
     ∀ L ∈ openLaneClaims, L.terminalEndpointClosed = false := by
-  intro L hL
-  simp [openLaneClaims] at hL
-  rcases hL with rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
+  decide
 
 /--
 P07 is recorded as historically solved externally; this does not manufacture a
