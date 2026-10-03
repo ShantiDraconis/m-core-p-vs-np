@@ -4684,11 +4684,13 @@ theorem operationalDecodeAgrees_active_step
       have hDirStay :
           ((M.machine.transition q a).get j).2.2 = Direction.stay := by
         rw [htr]
+      have hHeadNext0 :=
+        decodeHead_stay M x t s sigma hSat hs q a j
+          (by simpa [q] using hActive) hj hDirStay
+      rw [htr] at hHeadNext0
       have hHeadNext :
-          decodeHead M x t sigma hSat (s + 1) (by omega) = write := by
-        simpa [htr] using
-          decodeHead_stay M x t s sigma hSat hs q a j
-            (by simpa [q] using hActive) hj hDirStay
+          decodeHead M x t sigma hSat (s + 1) (by omega) = write :=
+        hHeadNext0
       refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
       · simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hStateNext]
