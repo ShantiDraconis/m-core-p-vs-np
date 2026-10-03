@@ -71,6 +71,23 @@ if ! grep -q '"promoted": false' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; the
   exit 1
 fi
 
+if ! grep -q '"kernel_verified": false' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; then
+  echo "RED: kernel-pending guard missing before AUX promotion"
+  exit 1
+fi
+if ! grep -q '"frozen_hard_aux": false' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; then
+  echo "RED: FROZEN_HARD AUX guard missing"
+  exit 1
+fi
+if ! grep -q '"frozen_hard_full": false' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; then
+  echo "RED: FROZEN_HARD FULL guard missing"
+  exit 1
+fi
+if ! grep -q '"remaining_terminal": "G21Pointwise"' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; then
+  echo "RED: canonical G21 terminal accounting missing"
+  exit 1
+fi
+
 echo "AUX_GREEN_CANDIDATE: P02-LANE-4"
 echo "T10_OPEN_MATH: MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer"
 echo "DOES_NOT_CERTIFY: UniversalFailure | SAT_not_in_P | P_ne_NP | FULL_FROZEN_HARD"
