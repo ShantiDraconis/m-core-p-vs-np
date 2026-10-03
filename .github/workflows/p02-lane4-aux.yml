@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - atk/p02-lane4-reuse-t10-audit-20261003
+  workflow_dispatch:
 
 concurrency:
   group: p02-lane4-aux-${{ github.ref }}
   cancel-in-progress: true
-  workflow_dispatch:
 
 jobs:
   aux:
