@@ -7,7 +7,13 @@
     "build": "UNVERIFIED",
     "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01/P02 evidence files",
     "open_problem_green_count": 0,
-    "note": "P01-P06 remain fail-closed. Architecture/source-bound GREEN prefixes do not imply Millennium endpoint closure."
+    "note": "P01-P06 remain fail-closed. Architecture/source-bound GREEN prefixes do not imply Millennium endpoint closure.",
+    "green_gate": {
+      "commit": "defbeaafa964a32ac1399bfb2612be52eec23da4",
+      "theorem": "MCore.Real.SevenLaneGreenGate.no_open_millennium_lane_green",
+      "promotion_theorem": "MCore.Real.SevenLaneGreenGate.promote_when_complete",
+      "current_green_open_problem_count": 0
+    }
   },
   "P01_Riemann": {
     "closedBase": {
