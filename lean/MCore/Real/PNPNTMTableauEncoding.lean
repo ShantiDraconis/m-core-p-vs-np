@@ -5366,7 +5366,8 @@ theorem pathAssignment_state
         (path ⟨s', by omega⟩).tape.head
         (choiceIdxOfStep M t path hPath s' hs')
       have hb : ntmHeadBase M t <= ntmChoiceBase M x t := by
-        simp [ntmChoiceBase, ntmRightBase, ntmLeftBase]
+        unfold ntmChoiceBase ntmRightBase ntmLeftBase
+        exact Nat.le_trans (Nat.le_add_right _ _) (Nat.le_add_right _ _)
       omega
     simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, hq]
 
@@ -5422,7 +5423,8 @@ theorem pathAssignment_head
         (path ⟨s', by omega⟩).tape.head
         (choiceIdxOfStep M t path hPath s' hs')
       have hb : ntmLeftBase M x t <= ntmChoiceBase M x t := by
-        simp [ntmChoiceBase, ntmRightBase]
+        unfold ntmChoiceBase ntmRightBase
+        exact Nat.le_trans (Nat.le_add_right _ _) (Nat.le_add_right _ _)
       omega
     simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
 
@@ -5561,7 +5563,14 @@ theorem pathAssignment_choice_selected
         (path ⟨s, by omega⟩).state
         (path ⟨s, by omega⟩).tape.head
         (choiceIdxOfStep M t path hPath s hs)) = true := by
-  simp [pathAssignment, PathAssignmentChoiceTrue, hs, hActive]
+  have hChoice :
+      PathAssignmentChoiceTrue M x t path hPath
+        (ntmChoiceVar M x t s
+          (path ⟨s, by omega⟩).state
+          (path ⟨s, by omega⟩).tape.head
+          (choiceIdxOfStep M t path hPath s hs)) := by
+    exact ⟨s, hs, hActive, rfl⟩
+  simp [pathAssignment, hChoice]
 
 theorem pathAssignment_choice_unselected
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -5683,7 +5692,7 @@ theorem pathAssignment_initial_left_sat
         (inputTape x).left.getD i M.machine.blank := by
     simpa [initialNTMConfig] using
       congrArg (fun c => c.tape.left.getD i M.machine.blank) h0
-  simpa [hleft]
+  rw [hleft]
 
 theorem pathAssignment_initial_right_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -5705,7 +5714,7 @@ theorem pathAssignment_initial_right_sat
         (inputTape x).right.getD i M.machine.blank := by
     simpa [initialNTMConfig] using
       congrArg (fun c => c.tape.right.getD i M.machine.blank) h0
-  simpa [hright]
+  rw [hright]
 
 theorem pathAssignment_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
