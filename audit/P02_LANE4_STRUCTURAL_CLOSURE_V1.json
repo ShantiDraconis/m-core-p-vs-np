@@ -1,0 +1,50 @@
+{
+  "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
+  "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+  "head_at_record": "8b15dcd414e2248e0b3350daa07134857421a6b7",
+  "status": "BUILD_PENDING_FAIL_CLOSED",
+  "structural": {
+    "R1": "CONSTRUCTED",
+    "R2": "CONSTRUCTED",
+    "R3": "CONSTRUCTED",
+    "R4": "CONSTRUCTED_UNVERIFIED_BUILD",
+    "R5": "CONSTRUCTED_UNVERIFIED_BUILD"
+  },
+  "files": [
+    "lean/P02/LANE4/AUX/R1_R3_REAL.lean",
+    "lean/P02/LANE4/AUX/R2_R4_RADIUS.lean",
+    "lean/P02/LANE4/AUX/R4_R5_BOUNDED.lean",
+    "lean/P02/LANE4/AUX/R4_TRANSITION_LENGTH.lean",
+    "lean/P02/LANE4/AUX/R4_PREFIX_SIGNATURE.lean",
+    "lean/P02/LANE4/AUX/R4_PREFIX_MAXIMAL.lean",
+    "lean/P02/LANE4/AUX/R4_TRANSITION_HEAD.lean",
+    "lean/P02/LANE4/AUX/R4_TRANSITION_HEAD_FINAL.lean",
+    "lean/P02/LANE4/AUX/R4_INITIAL_INJECTIVE.lean",
+    "lean/P02/LANE4/AUX/R4_FINAL.lean",
+    "lean/P02/LANE4/AUX/R5_PAIR_INJECTIVE.lean",
+    "lean/P02/LANE4/StructuralClosure.lean"
+  ],
+  "t10": {
+    "state": "OPEN_MATH",
+    "target": "MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer",
+    "exact_obligation": "forall total M, exists x, DeclaredAccepts M ((complementSemanticReduction M hTotal).reduce x) <-> DeclaredAccepts M x",
+    "promoted": false
+  },
+  "build": {
+    "state": "PENDING",
+    "reason": "No Lean/lake execution was performed in this session; no Actions run triggered."
+  },
+  "does_not_certify": [
+    "UniversalFailure CanonicalSAT",
+    "SAT not in P",
+    "P != NP",
+    "T10 semantic closure",
+    "FROZEN_HARD"
+  ],
+  "rules": [
+    "NO_SCAFFOLD_ESCAPE",
+    "NO_ENDPOINT_ASSUMPTION",
+    "STRUCTURAL_CLOSURE_DOES_NOT_IMPLY_BEHAVIORAL_ALIGNMENT",
+    "FAIL_CLOSED_UNTIL_REAL_BUILD"
+  ]
+}
