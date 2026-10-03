@@ -69,7 +69,8 @@ echo "PREFLIGHT_TABLEAU_BASE_SUCCESS"
 echo "== PREFLIGHT L3: AUX GATE MIRROR =="
 
 rm -f "$LOG"
-bash audit/p02_lane4_aux_green.sh 2>&1 | tee "$LOG"
+P02_LANE4_MCORE_ALREADY_GREEN=1 \
+  bash audit/p02_lane4_aux_green.sh 2>&1 | tee "$LOG"
 
 grep -q 'SCAN_OK: 0 axiom/sorry/admit/opaque' "$LOG" \
   || red "gate did not emit SCAN_OK"
