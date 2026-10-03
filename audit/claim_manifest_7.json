@@ -22,7 +22,9 @@
       "Do not treat source-bound external evidence as a local Lean proof.",
       "Do not collapse BSD to universal equality over arbitrary BSDArithmeticAnalyticData; the canonical counteraudit requires realizable elliptic-curve binding and a refined formula on the same domain."
     ],
-    "green_definition": "terminal endpoint inhabited + required local/external bridges discharged + build/audit verified"
+    "green_definition": "terminal endpoint inhabited + required local/external bridges discharged + build/audit verified",
+    "independent_open_frontiers": 6,
+    "open_frontier_registry_commit": "8d7e30414b38d5adbeb45d0323b5474eca77076a"
   },
   "P01_Riemann": {
     "closedBase": {
@@ -52,18 +54,24 @@
       }
     },
     "closedBridge": {
-      "count": 0,
-      "state": "EMPTY"
+      "count": 1,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "canonical_source": {
+        "repo": "ShantiDraconis/m-core-riemann",
+        "ref": "d6a291b4563f9021f74ab63cc983d44f079472da"
+      },
+      "name": "FiniteSpanToDNLimit"
     },
     "openBridge": {
-      "name": "BoundedZeroUnique",
-      "state": "ADMINISTRATIVE_TARGET_ONLY"
+      "name": "FiniteSpanApproximatesChi concreteGeneratorFamily",
+      "state": "REAL_SOURCE_BOUND_FRONTIER",
+      "equivalent": "DNLimit = 0"
     },
     "materialGaps": 1,
     "green": false,
     "build": "UNVERIFIED",
-    "architecture_commit": "707d398b6ceb54927cbf8a9c728b990dfe6ccae5",
-    "audit_commit": "0216d8473e78d138dd7ffaec7529453097bd49ce"
+    "architecture_commit": "6711dd738cabb48e6f89886db12b1f805f401a1d",
+    "audit_commit": "5aa493aab794f5088ec276f1689189ccfdb755ef"
   },
   "P02_YangMills": {
     "closedBase": {
@@ -250,7 +258,7 @@
     "materialGaps": 1,
     "green": false,
     "build": "UNVERIFIED",
-    "architecture_commit": "8f88d23df2c43053eceb7941bf97d177630363ec",
+    "architecture_commit": "fb0a25b819878ea9625847961e25ac93aaa8d04f",
     "audit_commit": "90ccf90559f44aad9db767fd55a0b95435871865",
     "materialAtoms": 2
   },
