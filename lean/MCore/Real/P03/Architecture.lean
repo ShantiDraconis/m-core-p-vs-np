@@ -13,6 +13,7 @@ import MCore.Real.P03.OpenBridge.SourceLen
 import MCore.Real.P03.OpenBridge.BoundedUnique
 import MCore.Real.P03.OpenBridge.UniformDecoder
 import MCore.Real.P03.OpenBridge.MFlipDepth
+import MCore.Real.P03.OpenBridge.CompleteRouteB
 import MCore.Real.P03.OpenMath.RangeFailureLaw
 import MCore.Real.P03.OpenMath.SATinP
 
@@ -49,9 +50,10 @@ def closedBridge : List LayerRecord :=
 def openBridge : List LayerRecord :=
   [ ⟨"BoundedCandidate", .closed, "genuine source inhabits the bounded candidate space"⟩
   , ⟨"SourceLen", .sourceClosedBuildUnverified, "source-length bound present in source; build not verified here"⟩
-  , ⟨"BoundedUnique", .openBridge, "unique predecessor subgap"⟩
+  , ⟨"BoundedUnique", .blockedByOpenBridge, "material component of CompleteRouteB; not counted separately from the complete package"⟩
   , ⟨"UniformDecoder", .blockedByOpenBridge, "pointwise recovery closed; uniform effective decoder is blocked by BoundedUnique and algorithmic/poly obligations"⟩
-  , ⟨"MFlipDepth", .blockedByOpenBridge, "physical depth-parity PerfectFlip construction is downstream of the uniform decoder"⟩ ]
+  , ⟨"MFlipDepth", .blockedByOpenBridge, "physical depth-parity PerfectFlip construction is downstream of the uniform decoder"⟩
+  , ⟨"CompleteRouteB", .openBridge, "complete material package: uniqueness + effective/poly decoder + strict growth + depth parity"⟩ ]
 
 def openMath : List LayerRecord :=
   [ ⟨"RangeFailureLaw", .openMath, "P03 terminal A-side"⟩
