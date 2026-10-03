@@ -7731,7 +7731,10 @@ theorem ntmCNFWeight_flatMap_range_le
       rw [List.range_succ, List.flatMap_append, ntmCNFWeight_append]
       have hprev := ih (fun i hi => h i (by omega))
       have hlast := h n (by omega)
-      nlinarith
+      calc
+        ntmCNFWeight ((List.range n).flatMap f) + ntmCNFWeight (f n)
+            <= n * K + K := Nat.add_le_add hprev hlast
+        _ = (n + 1) * K := by ring
 
 theorem ntmCNFWeight_flatMap_list_le
     {α : Type}
@@ -7744,8 +7747,10 @@ theorem ntmCNFWeight_flatMap_list_le
       rw [List.flatMap_cons, ntmCNFWeight_append]
       have ha := h a (by simp)
       have ht := ih (fun z hz => h z (by simp [hz]))
-      simp at *
-      nlinarith
+      calc
+        ntmCNFWeight (f a) + ntmCNFWeight (as.flatMap f)
+            <= K + as.length * K := Nat.add_le_add ha ht
+        _ = (a :: as).length * K := by simp [Nat.add_mul]
 
 theorem ntmSetState_weight
     (guard : NTMClause)
@@ -7793,8 +7798,13 @@ theorem ntmCopyLeftAll_weight
       rw [List.range_succ, List.flatMap_append, ntmCNFWeight_append]
       simp only [List.flatMap_singleton]
       rw [ntmCopySymbol_weight]
-      have := ih
-      nlinarith
+      calc
+        ntmCNFWeight ((List.range n).flatMap
+            (fun i => ntmCopyLeftCell guard M x t s i (s + 1) i)) +
+            6 * (guard.length + 3)
+            = n * (6 * (guard.length + 3)) + 6 * (guard.length + 3) := by
+                rw [ih]
+        _ = (n + 1) * (6 * (guard.length + 3)) := by ring
 
 theorem ntmCopyRightAll_weight
     (guard : NTMClause)
@@ -7808,7 +7818,13 @@ theorem ntmCopyRightAll_weight
       rw [List.range_succ, List.flatMap_append, ntmCNFWeight_append]
       simp only [List.flatMap_singleton]
       rw [ntmCopySymbol_weight]
-      nlinarith
+      calc
+        ntmCNFWeight ((List.range n).flatMap
+            (fun i => ntmCopyRightCell guard M x t s i (s + 1) i)) +
+            6 * (guard.length + 3)
+            = n * (6 * (guard.length + 3)) + 6 * (guard.length + 3) := by
+                rw [ih]
+        _ = (n + 1) * (6 * (guard.length + 3)) := by ring
 
 theorem ntmInitial_weight_le
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
