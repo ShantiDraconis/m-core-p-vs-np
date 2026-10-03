@@ -141,26 +141,33 @@
     }
   },
   "gate": "GREEN_GATE_FAIL_CLOSED",
-  "version": "fail-closed-green-gate-v3-token-aware",
+  "version": "fail-closed-green-gate-v4-terminal-theorem-required",
   "rules": [
-    "1. frozen refs correct and pinned, including the real P01 finite-span frontier source",
+    "1. frozen refs correct and pinned",
     "2. axiom declarations = 0 (ignore #print axioms/comments)",
     "3. sorry proof terms = 0 (ignore comments/documentation)",
-    "4. admit proof terms = 0 (ignore comments/documentation)",
-    "5. opaque declarations = 0 (ignore prose mentioning opaque)",
+    "4. admit proof terms = 0",
+    "5. opaque declarations = 0",
     "6. no forbidden administrative frontier aliases",
     "7. GreenCertificate.lean exists",
-    "8. GreenCertificate exposes terminal_endpoint_closed and theorem terminal_endpoint_certified : terminal_endpoint_closed = true",
-    "9. ArchitectureAudit.lean compiles",
-    "10. lake build MCore passes",
-    "11. real terminal endpoint is closed, not an architectural proxy",
-    "12. manifest records exact provenance/hash/build"
+    "8. terminal_endpoint_closed Bool is status telemetry only and MUST NOT count as a proof",
+    "9. GREEN promotion requires theorem terminal_endpoint_certified whose proof consumes the real material frontier and closes the actual terminal endpoint",
+    "10. ArchitectureAudit.lean compiles",
+    "11. lake build MCore passes",
+    "12. manifest records exact provenance/hash/build and only then green=true"
   ],
   "current_state": {
     "P01-P06": {
       "GREEN": false,
       "BUILD": "UNVERIFIED",
-      "reason": "RED is terminal/mathematical: current GreenCertificate files prove terminal_endpoint_closed = false; there are no sorry proof holes in the six current OpenBridge targets"
+      "reason": "STRUCTURAL SOURCE REDs cleaned: certificates are placeholder-free and explicitly prove status=false. Remaining RED is material/terminal/build. No lane has theorem terminal_endpoint_certified."
     }
+  },
+  "promotion_contract": {
+    "telemetry_field": "terminal_endpoint_closed",
+    "telemetry_is_not_proof": true,
+    "required_positive_theorem": "terminal_endpoint_certified",
+    "theorem_requirement": "must be a theorem with no axiom/sorry/admit/opaque in its dependency tree and must consume the real frontier rather than an alias",
+    "automatic_promotion": false
   }
 }
