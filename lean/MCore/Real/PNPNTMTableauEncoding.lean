@@ -8636,8 +8636,7 @@ theorem tableauVarCap_poly
       (Nat.mul_le_mul_left
         (((3 * Q + 2) * (B + 1) + B)) hr_sq)
   have hone : 1 <= r^2 := by
-    have hp : 0 < r^2 := by positivity
-    omega
+    exact Nat.le_trans hr hr_sq
   have hsum :=
     Nat.add_le_add
       (Nat.add_le_add hbase hinner2)
@@ -8666,8 +8665,16 @@ theorem boundedExec_encoded_length_poly
   let V := tableauVarCoeff M
   have hr : 1 <= r := by simp [r, ntmRadius]
   have hr4 : 1 <= r^4 := by
-    have hp : 0 < r^4 := by positivity
-    omega
+    have hr2 : 1 <= r^2 := by
+      have hr_sq : r <= r^2 := by
+        have h := Nat.mul_le_mul_left r hr
+        simpa [pow_two, Nat.mul_comm] using h
+      exact Nat.le_trans hr hr_sq
+    calc
+      1 <= (r^2)^2 := by
+        have h := Nat.mul_le_mul_left (r^2) hr2
+        simpa [pow_two, Nat.mul_comm] using h
+      _ = r^4 := by ring
   have hw :
       ntmCNFWeight f <= W * r^2 := by
     simpa [f, W, r] using boundedExec_weight_poly M x t
