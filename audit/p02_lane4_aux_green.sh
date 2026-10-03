@@ -51,9 +51,9 @@ FILES=(
   lean/P02/LANE4/OPEN_MATH/BehavioralAlignment.lean
   lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean
   lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean
-  lean/P02/LANE4/CompleteBundle.lean
-  lean/P02/LANE4/AdvancedCertificateReuse.lean
   lean/P02/LANE4/StructureBundle.lean
+  lean/P02/LANE4/AdvancedCertificateReuse.lean
+  lean/P02/LANE4/CompleteBundle.lean
 )
 
 for f in "${FILES[@]}"; do
