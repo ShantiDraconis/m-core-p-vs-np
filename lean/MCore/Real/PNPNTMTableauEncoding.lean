@@ -4918,11 +4918,16 @@ theorem ntmDecode_step
   let q := decodeState M x t sigma hSat s (by omega)
   let a := decodeHead M x t sigma hSat s (by omega)
   have hA := operationalDecodeAgrees_all M x t sigma hSat s (by omega)
+  have hstateCfg :
+      (operationalDecodeConfig M x t sigma hSat s (by omega)).state = q := by
+    simpa [q] using hA.hState
   by_cases hHalt :
       M.machine.accepting q = true ∨ M.machine.rejecting q = true
   · left
     constructor
-    · simpa [NTMHalted, hA.hState, q] using hHalt
+    · unfold NTMHalted
+      rw [hstateCfg]
+      exact hHalt
     · simp [operationalDecodeConfig, q, a, hHalt]
   · have hActive :
         M.machine.accepting q = false ∧ M.machine.rejecting q = false := by
@@ -4945,10 +4950,9 @@ theorem ntmDecode_step
     right
     constructor
     · intro hh
-      have hh' :
-          M.machine.accepting q = true ∨ M.machine.rejecting q = true := by
-        simpa [NTMHalted, hA.hState, q] using hh
-      exact hHalt hh'
+      unfold NTMHalted at hh
+      rw [hstateCfg] at hh
+      exact hHalt hh
     · have htrmem : tr ∈ M.machine.transition q a := by
         dsimp [tr]
         exact List.get_mem _ _
