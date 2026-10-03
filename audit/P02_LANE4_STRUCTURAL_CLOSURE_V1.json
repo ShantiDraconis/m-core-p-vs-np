@@ -2,7 +2,7 @@
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
   "head_at_record": "4049fffb3aa998a2751e3ba4f47b6f2e8f42b95c",
-  "status": "STRUCTURE_SOURCE_COMPLETE_BUILD_PENDING_FAIL_CLOSED",
+  "status": "STRUCTURE_AND_ADVANCED_CERTS_SOURCE_AGGREGATED_BUILD_PENDING_FAIL_CLOSED",
   "structural": {
     "R1": "CONSTRUCTED",
     "R2": "CONSTRUCTED",
@@ -32,7 +32,9 @@
     "lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean",
     "lean/P02/LANE4/StructureBundle.lean",
     "audit/P02_LANE4_STRUCTURE_GRAPH_V1.json",
-    "audit/p02_lane4_structure_check.sh"
+    "audit/p02_lane4_structure_check.sh",
+    "lean/P02/LANE4/AdvancedCertificateReuse.lean",
+    "audit/P02_LANE4_CERTIFICATE_REUSE_V1.json"
   ],
   "t10": {
     "state": "OPEN_MATH",
@@ -118,5 +120,36 @@
       "OPEN_MATH boundary isolated at T10"
     ],
     "kernel_verified": false
+  },
+  "advanced_certificate_reuse": {
+    "state": "SOURCE_AGGREGATED_BUILD_PENDING",
+    "module": "lean/P02/LANE4/AdvancedCertificateReuse.lean",
+    "catalog": "audit/P02_LANE4_CERTIFICATE_REUSE_V1.json",
+    "reused": [
+      "P02OperatorKernel",
+      "P02UniversalLowerBound",
+      "P02UniversalFailureMinCut",
+      "P02CanonicalClockReduction",
+      "P02KleeneKernel",
+      "P02EffectiveAlignment",
+      "P02UniversalLowerBoundMaster",
+      "ATK_TERMINAL_P_VS_NP_e927d326"
+    ],
+    "post_t10_chain": [
+      "TotalBehavioralAlignmentProducer",
+      "TotalExactDiagonalProducer",
+      "UniversalFailure",
+      "UniversalSATLowerBound",
+      "CanonicalSATP02Producer",
+      "UniversalCounterexampleProducer",
+      "NormalizedAdversary",
+      "not InP canonical SAT",
+      "internal PneqNP endpoint"
+    ],
+    "remaining_open": [
+      "TotalBehavioralAlignmentProducer",
+      "UniformEffectiveCoverage"
+    ],
+    "note": "No post-T10 structural gap remains in source; no inhabitant is manufactured."
   }
 }
