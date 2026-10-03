@@ -1,0 +1,127 @@
+{
+  "schema": "green-gate/v1",
+  "manifest": "audit/claim_manifest_7.json",
+  "build_command": [
+    "lake",
+    "build",
+    "MCore"
+  ],
+  "static_forbidden_regex": [
+    "^\\s*axiom\\b",
+    "\\bsorry\\b",
+    "\\badmit\\b",
+    "^\\s*opaque\\b"
+  ],
+  "globally_forbidden_frontier_names": [
+    "BoundedCycleUnique",
+    "BoundedShaUnique",
+    "BoundedGaugeUnique",
+    "BoundedFlowUnique"
+  ],
+  "problems": {
+    "P01_Riemann": {
+      "directory": "lean/MCore/Real/P01_Riemann",
+      "architecture_audit": "lean/MCore/Real/P01_Riemann/ArchitectureAudit.lean",
+      "frozen_sources": [],
+      "required_terminal_symbols": [
+        "MCore.Real.P01_Riemann.GreenCertificate.terminal_endpoint_closed"
+      ],
+      "required_bridge_markers": [
+        "FiniteSpanToDNLimit"
+      ],
+      "green_certificate": "lean/MCore/Real/P01_Riemann/GreenCertificate.lean"
+    },
+    "P02_YangMills": {
+      "directory": "lean/MCore/Real/P02_YangMills",
+      "architecture_audit": "lean/MCore/Real/P02_YangMills/ArchitectureAudit.lean",
+      "frozen_sources": [
+        {
+          "repo": "https://github.com/ShantiDraconis/m-core-yang-mills.git",
+          "ref": "cd4bbfd348b607bd24ed0c6d605207b764286f58"
+        }
+      ],
+      "required_terminal_symbols": [
+        "MCore.Real.P02_YangMills.GreenCertificate.terminal_endpoint_closed"
+      ],
+      "required_bridge_markers": [
+        "B60ToMassGap",
+        "B60ConcretePhysicalAdapter"
+      ],
+      "green_certificate": "lean/MCore/Real/P02_YangMills/GreenCertificate.lean"
+    },
+    "P03_PvsNP": {
+      "directory": "lean/MCore/Real/P03",
+      "architecture_audit": "lean/MCore/Real/P03/ArchitectureAudit.lean",
+      "frozen_sources": [],
+      "required_terminal_symbols": [
+        "MCore.Real.P03.GreenCertificate.terminal_endpoint_closed"
+      ],
+      "required_bridge_markers": [
+        "CompleteRouteBInhabitant",
+        "completeRouteB_implies_existsPerfectFlip"
+      ],
+      "green_certificate": "lean/MCore/Real/P03/GreenCertificate.lean"
+    },
+    "P04_NavierStokes": {
+      "directory": "lean/MCore/Real/P04_NavierStokes",
+      "architecture_audit": "lean/MCore/Real/P04_NavierStokes/ArchitectureAudit.lean",
+      "frozen_sources": [
+        {
+          "repo": "https://github.com/ShantiDraconis/navier-stokes-critical-barrier-audit.git",
+          "ref": "df808543535d34d4e8c46096b3455d76b0151fa2"
+        }
+      ],
+      "required_terminal_symbols": [
+        "MCore.Real.P04_NavierStokes.GreenCertificate.terminal_endpoint_closed"
+      ],
+      "required_bridge_markers": [
+        "ActualNSToSignedGainCore",
+        "CoreToCertificate",
+        "SignedGainToDifferential"
+      ],
+      "green_certificate": "lean/MCore/Real/P04_NavierStokes/GreenCertificate.lean"
+    },
+    "P05_Hodge": {
+      "directory": "lean/MCore/Real/P05_Hodge",
+      "architecture_audit": "lean/MCore/Real/P05_Hodge/ArchitectureAudit.lean",
+      "frozen_sources": [
+        {
+          "repo": "https://github.com/ShantiDraconis/m-core-hodge.git",
+          "ref": "42eaf7d4d639871f82eceb121ee525a6c4f30d84"
+        }
+      ],
+      "required_terminal_symbols": [
+        "MCore.Real.P05_Hodge.GreenCertificate.terminal_endpoint_closed"
+      ],
+      "required_bridge_markers": [
+        "ConcreteAlgebraicityPayload",
+        "H01ToPointwise",
+        "PointwiseToHodge"
+      ],
+      "green_certificate": "lean/MCore/Real/P05_Hodge/GreenCertificate.lean"
+    },
+    "P06_BSD": {
+      "directory": "lean/MCore/Real/P06_BSD",
+      "architecture_audit": "lean/MCore/Real/P06_BSD/ArchitectureAudit.lean",
+      "frozen_sources": [
+        {
+          "repo": "https://github.com/ShantiDraconis/m-core-bsd.git",
+          "ref": "ed28a02170001a4afb0b3230e1bda238dcb5fa9f"
+        },
+        {
+          "repo": "https://github.com/ShantiDraconis/m-core-bsd.git",
+          "ref": "c1e7b245726c4c65f5f9f878acefb86460746f4a"
+        }
+      ],
+      "required_terminal_symbols": [
+        "MCore.Real.P06_BSD.GreenCertificate.terminal_endpoint_closed"
+      ],
+      "required_bridge_markers": [
+        "RealizableBSDProducer",
+        "RankWitnessToOpenCore",
+        "RankPartToEquality"
+      ],
+      "green_certificate": "lean/MCore/Real/P06_BSD/GreenCertificate.lean"
+    }
+  }
+}
