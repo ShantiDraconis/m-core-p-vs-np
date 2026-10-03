@@ -5236,7 +5236,8 @@ theorem ntmHeadVar_range
     have htime :
         (s + 1) * 3 <= (t + 1) * 3 :=
       Nat.mul_le_mul_right 3 (Nat.succ_le_succ hs)
-    exact Nat.add_lt_add_left (lt_of_lt_of_le hcell htime) (ntmHeadBase M t)
+    simpa [Nat.add_assoc] using
+      (Nat.add_lt_add_left (lt_of_lt_of_le hcell htime) (ntmHeadBase M t))
 
 theorem ntmLeftVar_range
     (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
@@ -5276,13 +5277,13 @@ theorem ntmLeftVar_range
       (Nat.le_add_right
         (ntmLeftBase M x t + (s * ntmRadius x t + i) * 3)
         (ntmSymbolCode a))
-  · unfold ntmLeftVar ntmRightBase
-    change
-      ntmLeftBase M x t + ((s * r + i) * 3 + ntmSymbolCode a) <
-        ntmLeftBase M x t + ((t + 1) * r) * 3
-    exact Nat.add_lt_add_left
-      (lt_of_lt_of_le hcell (Nat.le_trans hindex3 htime3))
-      (ntmLeftBase M x t)
+  · have hlocal :
+        (s * r + i) * 3 + ntmSymbolCode a <
+          ((t + 1) * r) * 3 :=
+      lt_of_lt_of_le hcell (Nat.le_trans hindex3 htime3)
+    have hadd :=
+      Nat.add_lt_add_left hlocal (ntmLeftBase M x t)
+    simpa [ntmLeftVar, ntmRightBase, r, Nat.add_assoc] using hadd
 
 theorem ntmRightVar_range
     (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
@@ -5322,13 +5323,13 @@ theorem ntmRightVar_range
       (Nat.le_add_right
         (ntmRightBase M x t + (s * ntmRadius x t + i) * 3)
         (ntmSymbolCode a))
-  · unfold ntmRightVar ntmChoiceBase
-    change
-      ntmRightBase M x t + ((s * r + i) * 3 + ntmSymbolCode a) <
-        ntmRightBase M x t + ((t + 1) * r) * 3
-    exact Nat.add_lt_add_left
-      (lt_of_lt_of_le hcell (Nat.le_trans hindex3 htime3))
-      (ntmRightBase M x t)
+  · have hlocal :
+        (s * r + i) * 3 + ntmSymbolCode a <
+          ((t + 1) * r) * 3 :=
+      lt_of_lt_of_le hcell (Nat.le_trans hindex3 htime3)
+    have hadd :=
+      Nat.add_lt_add_left hlocal (ntmRightBase M x t)
+    simpa [ntmRightVar, ntmChoiceBase, r, Nat.add_assoc] using hadd
 
 theorem stateVar_ne_headVar
     (M : PolyNTMCandidate) (x : BitString) (t s1 s2 : Nat)
