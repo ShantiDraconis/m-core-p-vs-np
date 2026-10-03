@@ -5393,9 +5393,9 @@ theorem active_step_transition_witness
   rcases hStep with hhalt | hactive
   · exact False.elim (hActive hhalt.1)
   · rcases hactive with ⟨_, hsucc⟩
-    simp [NTM.successors] at hsucc
-    rcases hsucc with ⟨tr, hmem, rfl⟩
-    exact ⟨tr, hmem, rfl⟩
+    unfold NTM.successors at hsucc
+    rcases List.mem_map.mp hsucc with ⟨tr, hmem, hEq⟩
+    exact ⟨tr, hmem, hEq.symm⟩
 
 noncomputable def choiceIdxOfStep
     (M : PolyNTMCandidate)
