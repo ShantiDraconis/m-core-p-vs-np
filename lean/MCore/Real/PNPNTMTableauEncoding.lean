@@ -4487,38 +4487,46 @@ theorem operationalTapeBound_step
           M.machine.stepBranch
             (operationalDecodeConfig M x t sigma hSat s (by omega))
             (qNext, write, d) := by
-      simp [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr]
+      have hbranch :=
+        congrArg
+          (fun tr =>
+            M.machine.stepBranch
+              (operationalDecodeConfig M x t sigma hSat s (by omega)) tr)
+          htr
+      simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j] using hbranch
     cases d with
     | stay =>
-        rw [hcfg]
         refine { left_len := ?_, right_len := ?_ }
-        · simpa [NTM.stepBranch, Tape.write, Tape.move] using
+        · rw [hcfg]
+          simpa [NTM.stepBranch, Tape.write, Tape.move] using
             Nat.le_trans hB.left_len
               (by omega : x.length + s <= x.length + (s + 1))
         · simpa [NTM.stepBranch, Tape.write, Tape.move] using
             Nat.le_trans hB.right_len
               (by omega : x.length + s <= x.length + (s + 1))
     | left =>
-        rw [hcfg]
         have hlr := tapeMove_left_lengths M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
         refine { left_len := ?_, right_len := ?_ }
-        · have hleft := Nat.le_trans hlr.1 hB.left_len
+        · rw [hcfg]
+          have hleft := Nat.le_trans hlr.1 hB.left_len
           simpa [NTM.stepBranch] using
             Nat.le_trans hleft
               (by omega : x.length + s <= x.length + (s + 1))
-        · have hright :=
+        · rw [hcfg]
+          have hright :=
             Nat.le_trans hlr.2 (Nat.add_le_add_right hB.right_len 1)
           simpa [NTM.stepBranch, Nat.add_assoc] using hright
     | right =>
-        rw [hcfg]
         have hlr := tapeMove_right_lengths M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
         refine { left_len := ?_, right_len := ?_ }
-        · have hleft :=
+        · rw [hcfg]
+          have hleft :=
             Nat.le_trans hlr.1 (Nat.add_le_add_right hB.left_len 1)
           simpa [NTM.stepBranch, Nat.add_assoc] using hleft
-        · have hright := Nat.le_trans hlr.2 hB.right_len
+        · rw [hcfg]
+          have hright := Nat.le_trans hlr.2 hB.right_len
           simpa [NTM.stepBranch] using
             Nat.le_trans hright
               (by omega : x.length + s <= x.length + (s + 1))
@@ -4594,7 +4602,13 @@ theorem operationalDecodeAgrees_active_step
         M.machine.stepBranch
           (operationalDecodeConfig M x t sigma hSat s (by omega))
           (qNext, write, d) := by
-    simp [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr]
+    have hbranch :=
+      congrArg
+        (fun tr =>
+          M.machine.stepBranch
+            (operationalDecodeConfig M x t sigma hSat s (by omega)) tr)
+        htr
+    simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j] using hbranch
   have hStateNext0 :=
     decodeState_choice M x t s sigma hSat hs q a j
       (by simpa [q] using hActive) hj
