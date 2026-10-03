@@ -187,3 +187,14 @@ import MCore.Real.P03ClosedMath
 
 import MCore.Real.P03.Architecture
 import MCore.Real.P03.ArchitectureAudit
+
+import MCore.Real.P01_Riemann.Architecture
+import MCore.Real.P01_Riemann.ArchitectureAudit
+import MCore.Real.P02_YangMills.Architecture
+import MCore.Real.P02_YangMills.ArchitectureAudit
+import MCore.Real.P04_NavierStokes.Architecture
+import MCore.Real.P04_NavierStokes.ArchitectureAudit
+import MCore.Real.P05_Hodge.Architecture
+import MCore.Real.P05_Hodge.ArchitectureAudit
+import MCore.Real.P06_BSD.Architecture
+import MCore.Real.P06_BSD.ArchitectureAudit
