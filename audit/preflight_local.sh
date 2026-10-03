@@ -69,7 +69,7 @@ lake exe cache get
 echo "-- TOPOLOGICAL MODULE P02.LANE4.CompleteBundle"
 LANE_BUILD_LOG="${TMPDIR:-/tmp}/p02_lane4_complete_bundle_build.log"
 rm -f "$LANE_BUILD_LOG"
-lake build P02.LANE4.CompleteBundle 2>&1 | tee "$LANE_BUILD_LOG"
+lake build +P02.LANE4.CompleteBundle 2>&1 | tee "$LANE_BUILD_LOG"
 echo "PREFLIGHT_LANE4_COMPLETE_BUNDLE_SUCCESS"
 
 # Once the dependency graph has been built, re-elaborate the critical base
