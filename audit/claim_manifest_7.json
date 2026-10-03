@@ -37,7 +37,19 @@
       "state": "SOURCE_UPDATED_BUILD_UNVERIFIED",
       "static_scan": "axiom=0 sorry=0 admit=0 opaque=0 on MaterialFrontierStatus + GreenCertificate + SevenLaneGreenGate",
       "remaining_red": "material frontier / terminal endpoint only"
-    }
+    },
+    "static_scan": {
+      "proof_holes": {
+        "sorry": 0,
+        "admit": 0,
+        "note": "GitHub repository search found no Lean proof-hole tokens sorry/admit in the current branch targets; prior broad text scans produced false positives from comments/prose."
+      },
+      "declaration_scan": {
+        "axiom": "requires token-aware declaration scan; do not count #print axioms or prose",
+        "opaque": "requires token-aware declaration scan; do not count prose mentioning opaque"
+      }
+    },
+    "red_reason": "P01-P06 remain RED because their GreenCertificate templates prove terminal_endpoint_closed = false and terminal_endpoint_certified is absent; RED is mathematical/terminal, not caused by sorry placeholders."
   },
   "P01_Riemann": {
     "closedBase": {
