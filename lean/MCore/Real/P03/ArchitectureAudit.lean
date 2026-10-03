@@ -1,3 +1,4 @@
+import MCore.Real.P03.GreenCertificate
 import MCore.Real.P03.Architecture
 
 namespace MCore.Real.P03.ArchitectureAudit
@@ -34,3 +35,6 @@ namespace MCore.Real.P03.ArchitectureAudit
 #print axioms MCore.Real.P03.Architecture.architecture_build_unverified
 
 end MCore.Real.P03.ArchitectureAudit
+
+#print axioms MCore.Real.P03.GreenCertificate.terminal_endpoint_not_certified
+#print axioms MCore.Real.P03.GreenCertificate.build_not_verified
