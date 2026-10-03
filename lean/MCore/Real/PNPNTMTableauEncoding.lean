@@ -5161,9 +5161,22 @@ theorem ntmStateVar_lt_headBase
     (q : Fin (M.stateCount + 1))
     (hs : s <= t) :
     ntmStateVar M t s q < ntmHeadBase M t := by
-  simp [ntmStateVar, ntmHeadBase, ntmStateSlots, ntmStateCount]
-  have hq := q.isLt
-  omega
+  unfold ntmStateVar ntmHeadBase ntmStateSlots
+  have hq : q.val < ntmStateCount M := by
+    simpa [ntmStateCount] using q.isLt
+  have hlocal :
+      s * ntmStateCount M + q.val <
+        (s + 1) * ntmStateCount M := by
+    calc
+      s * ntmStateCount M + q.val
+          < s * ntmStateCount M + ntmStateCount M :=
+            Nat.add_lt_add_left hq (s * ntmStateCount M)
+      _ = (s + 1) * ntmStateCount M := by ring
+  have htime :
+      (s + 1) * ntmStateCount M <=
+        (t + 1) * ntmStateCount M :=
+    Nat.mul_le_mul_right (ntmStateCount M) (Nat.succ_le_succ hs)
+  exact lt_of_lt_of_le hlocal htime
 
 theorem ntmHeadVar_range
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -5171,11 +5184,23 @@ theorem ntmHeadVar_range
     (hs : s <= t) :
     ntmHeadBase M t <= ntmHeadVar M t s a ∧
       ntmHeadVar M t s a < ntmLeftBase M x t := by
+  have ha : ntmSymbolCode a < 3 := ntmSymbolCode_lt_three a
   constructor
-  · simp [ntmHeadVar]
-  · simp [ntmHeadVar, ntmLeftBase]
-    have ha := ntmSymbolCode_lt_three a
-    omega
+  · unfold ntmHeadVar
+    exact Nat.le_trans
+      (Nat.le_add_right (ntmHeadBase M t) (s * 3))
+      (Nat.le_add_right (ntmHeadBase M t + s * 3) (ntmSymbolCode a))
+  · unfold ntmHeadVar ntmLeftBase
+    have hcell :
+        s * 3 + ntmSymbolCode a < (s + 1) * 3 := by
+      calc
+        s * 3 + ntmSymbolCode a < s * 3 + 3 :=
+          Nat.add_lt_add_left ha (s * 3)
+        _ = (s + 1) * 3 := by ring
+    have htime :
+        (s + 1) * 3 <= (t + 1) * 3 :=
+      Nat.mul_le_mul_right 3 (Nat.succ_le_succ hs)
+    exact Nat.add_lt_add_left (lt_of_lt_of_le hcell htime) (ntmHeadBase M t)
 
 theorem ntmLeftVar_range
     (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
@@ -5183,11 +5208,45 @@ theorem ntmLeftVar_range
     (hs : s <= t) (hi : i < ntmRadius x t) :
     ntmLeftBase M x t <= ntmLeftVar M x t s i a ∧
       ntmLeftVar M x t s i a < ntmRightBase M x t := by
+  let r := ntmRadius x t
+  have ha : ntmSymbolCode a < 3 := ntmSymbolCode_lt_three a
+  have hindex : s * r + i < (s + 1) * r := by
+    calc
+      s * r + i < s * r + r := Nat.add_lt_add_left hi (s * r)
+      _ = (s + 1) * r := by ring
+  have hindexSucc : s * r + i + 1 <= (s + 1) * r :=
+    Nat.succ_le_iff.mpr hindex
+  have hcell :
+      (s * r + i) * 3 + ntmSymbolCode a <
+        (s * r + i + 1) * 3 := by
+    calc
+      (s * r + i) * 3 + ntmSymbolCode a
+          < (s * r + i) * 3 + 3 :=
+            Nat.add_lt_add_left ha ((s * r + i) * 3)
+      _ = (s * r + i + 1) * 3 := by ring
+  have hindex3 :
+      (s * r + i + 1) * 3 <= ((s + 1) * r) * 3 :=
+    Nat.mul_le_mul_right 3 hindexSucc
+  have htimeR :
+      (s + 1) * r <= (t + 1) * r :=
+    Nat.mul_le_mul_right r (Nat.succ_le_succ hs)
+  have htime3 :
+      ((s + 1) * r) * 3 <= ((t + 1) * r) * 3 :=
+    Nat.mul_le_mul_right 3 htimeR
   constructor
-  · simp [ntmLeftVar]
-  · simp [ntmLeftVar, ntmRightBase]
-    have ha := ntmSymbolCode_lt_three a
-    omega
+  · unfold ntmLeftVar
+    exact Nat.le_trans
+      (Nat.le_add_right (ntmLeftBase M x t) ((s * ntmRadius x t + i) * 3))
+      (Nat.le_add_right
+        (ntmLeftBase M x t + (s * ntmRadius x t + i) * 3)
+        (ntmSymbolCode a))
+  · unfold ntmLeftVar ntmRightBase
+    change
+      ntmLeftBase M x t + ((s * r + i) * 3 + ntmSymbolCode a) <
+        ntmLeftBase M x t + ((t + 1) * r) * 3
+    exact Nat.add_lt_add_left
+      (lt_of_lt_of_le hcell (Nat.le_trans hindex3 htime3))
+      (ntmLeftBase M x t)
 
 theorem ntmRightVar_range
     (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
@@ -5195,11 +5254,45 @@ theorem ntmRightVar_range
     (hs : s <= t) (hi : i < ntmRadius x t) :
     ntmRightBase M x t <= ntmRightVar M x t s i a ∧
       ntmRightVar M x t s i a < ntmChoiceBase M x t := by
+  let r := ntmRadius x t
+  have ha : ntmSymbolCode a < 3 := ntmSymbolCode_lt_three a
+  have hindex : s * r + i < (s + 1) * r := by
+    calc
+      s * r + i < s * r + r := Nat.add_lt_add_left hi (s * r)
+      _ = (s + 1) * r := by ring
+  have hindexSucc : s * r + i + 1 <= (s + 1) * r :=
+    Nat.succ_le_iff.mpr hindex
+  have hcell :
+      (s * r + i) * 3 + ntmSymbolCode a <
+        (s * r + i + 1) * 3 := by
+    calc
+      (s * r + i) * 3 + ntmSymbolCode a
+          < (s * r + i) * 3 + 3 :=
+            Nat.add_lt_add_left ha ((s * r + i) * 3)
+      _ = (s * r + i + 1) * 3 := by ring
+  have hindex3 :
+      (s * r + i + 1) * 3 <= ((s + 1) * r) * 3 :=
+    Nat.mul_le_mul_right 3 hindexSucc
+  have htimeR :
+      (s + 1) * r <= (t + 1) * r :=
+    Nat.mul_le_mul_right r (Nat.succ_le_succ hs)
+  have htime3 :
+      ((s + 1) * r) * 3 <= ((t + 1) * r) * 3 :=
+    Nat.mul_le_mul_right 3 htimeR
   constructor
-  · simp [ntmRightVar]
-  · simp [ntmRightVar, ntmChoiceBase]
-    have ha := ntmSymbolCode_lt_three a
-    omega
+  · unfold ntmRightVar
+    exact Nat.le_trans
+      (Nat.le_add_right (ntmRightBase M x t) ((s * ntmRadius x t + i) * 3))
+      (Nat.le_add_right
+        (ntmRightBase M x t + (s * ntmRadius x t + i) * 3)
+        (ntmSymbolCode a))
+  · unfold ntmRightVar ntmChoiceBase
+    change
+      ntmRightBase M x t + ((s * r + i) * 3 + ntmSymbolCode a) <
+        ntmRightBase M x t + ((t + 1) * r) * 3
+    exact Nat.add_lt_add_left
+      (lt_of_lt_of_le hcell (Nat.le_trans hindex3 htime3))
+      (ntmRightBase M x t)
 
 theorem stateVar_ne_headVar
     (M : PolyNTMCandidate) (x : BitString) (t s1 s2 : Nat)
