@@ -1,7 +1,7 @@
 {
   "schema": "P02_LANE4_CERTIFICATE_REUSE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
-  "status": "SOURCE_AGGREGATED_BUILD_PENDING",
+  "status": "SOURCE_COMPLETE_KERNEL_PENDING",
   "reused": [
     {
       "artifact": "CERTIFICATES/ATK_TERMINAL_P_VS_NP_e927d326.json",
@@ -104,7 +104,12 @@
   ],
   "remaining_open_producers": [
     "MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer",
-    "MCore.Real.P02EffectiveAlignment.UniformEffectiveCoverage"
+    "MCore.Real.P02EffectiveAlignment.UniformEffectiveCoverage",
+    "direct genuine P02.LANE4.AdvancedCertificateReuse.G21Pointwise producer"
   ],
-  "no_scaffold_escape": true
+  "no_scaffold_escape": true,
+  "source_snapshot": "253902e3848cde8d4014dca2212498a83708e8af",
+  "complete_bundle": "lean/P02/LANE4/CompleteBundle.lean",
+  "kernel_verified": false,
+  "promotion_allowed": false
 }
