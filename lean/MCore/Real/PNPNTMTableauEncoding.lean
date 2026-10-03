@@ -4672,18 +4672,23 @@ theorem operationalDecodeAgrees_active_step
     · have := (by simpa [q] using hActive.2)
       simp [hrej] at this
   rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
+  have hStateNext0 :=
+    decodeState_choice M x t s sigma hSat hs q a j
+      (by simpa [q] using hActive) hj
+  rw [htr] at hStateNext0
   have hStateNext :
-      decodeState M x t sigma hSat (s + 1) (by omega) = qNext := by
-    simpa [htr] using
-      decodeState_choice M x t s sigma hSat hs q a j
-        (by simpa [q] using hActive) hj
+      decodeState M x t sigma hSat (s + 1) (by omega) = qNext :=
+    hStateNext0
   cases d with
   | stay =>
+      have hDirStay :
+          ((M.machine.transition q a).get j).2.2 = Direction.stay := by
+        rw [htr]
       have hHeadNext :
           decodeHead M x t sigma hSat (s + 1) (by omega) = write := by
         simpa [htr] using
           decodeHead_stay M x t s sigma hSat hs q a j
-            (by simpa [q] using hActive) hj (by simpa [htr])
+            (by simpa [q] using hActive) hj hDirStay
       refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
       · simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hStateNext]
@@ -4695,7 +4700,7 @@ theorem operationalDecodeAgrees_active_step
         have hop := tapeMove_stay_left_getD M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape i
         have hcell := ntmStay_left_copy_exact M x t s q a j sigma hSat hs
-          (by simpa [q] using hActive) hj (by simpa [htr]) i hi
+          (by simpa [q] using hActive) hj hDirStay i hi
         have hOld := hA.hLeft i hi
         have hNew :
             decodeLeftCell M x t sigma hSat (s + 1) (by omega) i hi =
@@ -4715,7 +4720,7 @@ theorem operationalDecodeAgrees_active_step
         have hop := tapeMove_stay_right_getD M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape i
         have hcell := ntmStay_right_copy_exact M x t s q a j sigma hSat hs
-          (by simpa [q] using hActive) hj (by simpa [htr]) i hi
+          (by simpa [q] using hActive) hj hDirStay i hi
         have hOld := hA.hRight i hi
         have hNew :
             decodeRightCell M x t sigma hSat (s + 1) (by omega) i hi =
@@ -4732,6 +4737,9 @@ theorem operationalDecodeAgrees_active_step
         simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hOld, hNew] using hop
   | left =>
+      have hDirLeft :
+          ((M.machine.transition q a).get j).2.2 = Direction.left := by
+        rw [htr]
       refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
       · simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hStateNext]
@@ -4740,7 +4748,7 @@ theorem operationalDecodeAgrees_active_step
         have hrpos : 0 < ntmRadius x t := by simp [ntmRadius]
         have hOld := hA.hLeft 0 hrpos
         have hHeadCell := ntmChoice_effect_head_exact_left M x t s q a j sigma
-          hSat hs (by simpa [q] using hActive) (by simpa [htr]) hj
+          hSat hs (by simpa [q] using hActive) hDirLeft hj
         have hNext :
             decodeHead M x t sigma hSat (s + 1) (by omega) =
               decodeLeftCell M x t sigma hSat s (by omega) 0 hrpos := by
@@ -4762,7 +4770,7 @@ theorem operationalDecodeAgrees_active_step
           have hout := operational_left_getD_outside M x t s (ntmRadius x t)
             sigma hSat (by omega) (by simp [ntmRadius]; omega)
           have hExact := ntmLeft_blankLeft_exact M x t s q a j sigma hSat hs
-            (by simpa [q] using hActive) hj (by simpa [htr])
+            (by simpa [q] using hActive) hj hDirLeft
           have hNext :
               decodeLeftCell M x t sigma hSat (s + 1) (by omega)
                 (ntmRadius x t - 1) (by omega) = M.machine.blank := by
@@ -4776,7 +4784,7 @@ theorem operationalDecodeAgrees_active_step
           have hiOld : i + 1 < ntmRadius x t := by omega
           have hOld := hA.hLeft (i + 1) hiOld
           have hcell := ntmLeft_shiftedLeft_exact M x t s q a j sigma hSat hs
-            (by simpa [q] using hActive) hj (by simpa [htr]) i hiShift
+            (by simpa [q] using hActive) hj hDirLeft i hiShift
           have hNext :
               decodeLeftCell M x t sigma hSat (s + 1) (by omega) i hi =
                 decodeLeftCell M x t sigma hSat s (by omega) (i + 1) hiOld := by
@@ -4796,7 +4804,7 @@ theorem operationalDecodeAgrees_active_step
             have hop := tapeMove_left_right_zero M.machine.blank write
               (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
             have hExact := ntmLeft_writeRight0_exact M x t s q a j sigma hSat hs
-              (by simpa [q] using hActive) hj (by simpa [htr])
+              (by simpa [q] using hActive) hj hDirLeft
             have hNext :
                 decodeRightCell M x t sigma hSat (s + 1) (by omega) 0 (by omega) = write := by
               apply (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
@@ -4811,7 +4819,7 @@ theorem operationalDecodeAgrees_active_step
               (operationalDecodeConfig M x t sigma hSat s (by omega)).tape k
             have hOld := hA.hRight k hkOld
             have hcell := ntmLeft_shiftedRight_exact M x t s q a j sigma hSat hs
-              (by simpa [q] using hActive) hj (by simpa [htr]) k hk
+              (by simpa [q] using hActive) hj hDirLeft k hk
             have hNext :
                 decodeRightCell M x t sigma hSat (s + 1) (by omega) (k + 1) hi =
                   decodeRightCell M x t sigma hSat s (by omega) k hkOld := by
@@ -4827,6 +4835,9 @@ theorem operationalDecodeAgrees_active_step
             simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
               NTM.stepBranch, hOld, hNext] using hop
   | right =>
+      have hDirRight :
+          ((M.machine.transition q a).get j).2.2 = Direction.right := by
+        rw [htr]
       refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
       · simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hStateNext]
@@ -4835,7 +4846,7 @@ theorem operationalDecodeAgrees_active_step
         have hrpos : 0 < ntmRadius x t := by simp [ntmRadius]
         have hOld := hA.hRight 0 hrpos
         have hHeadCell := ntmChoice_effect_head_exact_right M x t s q a j sigma
-          hSat hs (by simpa [q] using hActive) (by simpa [htr]) hj
+          hSat hs (by simpa [q] using hActive) hDirRight hj
         have hNext :
             decodeHead M x t sigma hSat (s + 1) (by omega) =
               decodeRightCell M x t sigma hSat s (by omega) 0 hrpos := by
@@ -4855,7 +4866,7 @@ theorem operationalDecodeAgrees_active_step
             have hop := tapeMove_right_left_zero M.machine.blank write
               (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
             have hExact := ntmRight_writeLeft0_exact M x t s q a j sigma hSat hs
-              (by simpa [q] using hActive) hj (by simpa [htr])
+              (by simpa [q] using hActive) hj hDirRight
             have hNext :
                 decodeLeftCell M x t sigma hSat (s + 1) (by omega) 0 (by omega) = write := by
               apply (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
@@ -4870,7 +4881,7 @@ theorem operationalDecodeAgrees_active_step
               (operationalDecodeConfig M x t sigma hSat s (by omega)).tape k
             have hOld := hA.hLeft k hkOld
             have hcell := ntmRight_shiftedLeft_exact M x t s q a j sigma hSat hs
-              (by simpa [q] using hActive) hj (by simpa [htr]) k hk
+              (by simpa [q] using hActive) hj hDirRight k hk
             have hNext :
                 decodeLeftCell M x t sigma hSat (s + 1) (by omega) (k + 1) hi =
                   decodeLeftCell M x t sigma hSat s (by omega) k hkOld := by
@@ -4893,7 +4904,7 @@ theorem operationalDecodeAgrees_active_step
           have hout := operational_right_getD_outside M x t s (ntmRadius x t)
             sigma hSat (by omega) (by simp [ntmRadius]; omega)
           have hExact := ntmRight_blankRight_exact M x t s q a j sigma hSat hs
-            (by simpa [q] using hActive) hj (by simpa [htr])
+            (by simpa [q] using hActive) hj hDirRight
           have hNext :
               decodeRightCell M x t sigma hSat (s + 1) (by omega)
                 (ntmRadius x t - 1) (by omega) = M.machine.blank := by
@@ -4907,7 +4918,7 @@ theorem operationalDecodeAgrees_active_step
           have hiOld : i + 1 < ntmRadius x t := by omega
           have hOld := hA.hRight (i + 1) hiOld
           have hcell := ntmRight_shiftedRight_exact M x t s q a j sigma hSat hs
-            (by simpa [q] using hActive) hj (by simpa [htr]) i hiShift
+            (by simpa [q] using hActive) hj hDirRight i hiShift
           have hNext :
               decodeRightCell M x t sigma hSat (s + 1) (by omega) i hi =
                 decodeRightCell M x t sigma hSat s (by omega) (i + 1) hiOld := by
