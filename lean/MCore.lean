@@ -201,3 +201,5 @@ import MCore.Real.P06_BSD.ArchitectureAudit
 import MCore.Real.SevenLaneGreenGate
 
 import MCore.Real.SixOpenFrontierRegistry
+
+import MCore.Real.SevenLaneClaimBoundary
