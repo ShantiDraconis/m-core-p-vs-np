@@ -74,6 +74,83 @@ theorem range_decodes_to_concrete_tableau
             (M.timeBound x.length))) := by
   simpa [R_M] using decodeCircuit_R_M M hTotal x
 
+
+
+/-- A CNF with m clauses produces a circuit AST of size at least m. -/
+theorem cnf_clause_count_le_circuit_size
+    (F : NTMCNF) :
+    F.length ≤ CircuitK1.size (ntmCNFCircuit F) := by
+  induction F with
+  | nil =>
+      simp [ntmCNFCircuit, CircuitK1.size]
+  | cons clause rest ih =>
+      simp [ntmCNFCircuit, CircuitK1.size]
+      omega
+
+/-- The concrete tableau contains enough initial tape material to dominate the
+source length at the clause-count level. -/
+theorem source_length_le_tableau_clause_count
+    (M : PolyNTMCandidate)
+    (x : BitString)
+    (t : Nat) :
+    x.length ≤ (boundedExecTableauCNF_NTM M x t).length := by
+  unfold boundedExecTableauCNF_NTM
+  have hright :
+      3 * ntmRadius x t ≤ (ntmInitialCNF M x t).length := by
+    unfold ntmInitialCNF
+    simp only [List.length_append]
+    have hr :=
+      length_initial_right_block M x t
+    omega
+  have hradius : x.length ≤ 3 * ntmRadius x t := by
+    unfold ntmRadius
+    omega
+  omega
+
+/-- On every genuine reduction output, the source length is bounded by the
+encoded output length.  This is enough to search source lengths finitely. -/
+theorem source_length_le_reduction_length
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) :
+    x.length ≤ (R_M M hTotal x).length := by
+  let N := complementToNTMCandidate M
+  let t := M.timeBound x.length
+  let F := boundedExecTableauCNF_NTM N x t
+  have h1 : x.length ≤ F.length := by
+    simpa [F, N, t] using
+      source_length_le_tableau_clause_count N x t
+  have h2 : F.length ≤ CircuitK1.size (ntmCNFCircuit F) :=
+    cnf_clause_count_le_circuit_size F
+  have h3 :
+      CircuitK1.size (ntmCNFCircuit F) ≤
+        (encodeCircuit (ntmCNFCircuit F)).length :=
+    size_le_encodeCircuit_length (ntmCNFCircuit F)
+  have hreduce :
+      R_M M hTotal x =
+        encodeCircuit (ntmCNFCircuit F) := by
+    rfl
+  rw [hreduce]
+  omega
+
+/-- Clock metadata is arithmetically recoverable from a time-0 head variable
+identifier once the candidate is fixed. -/
+def recoverClockFromHeadVar
+    (M : PolyNTMCandidate)
+    (v : Nat) : Nat :=
+  v / ntmStateCount M - 1
+
+theorem recoverClockFromHeadVar_correct
+    (M : PolyNTMCandidate)
+    (t : Nat) :
+    recoverClockFromHeadVar M (ntmHeadVar M t 0 none) = t := by
+  unfold recoverClockFromHeadVar ntmHeadVar ntmHeadBase ntmStateSlots
+  have hpos : 0 < ntmStateCount M := by
+    simp [ntmStateCount]
+  rw [Nat.add_zero, Nat.zero_mul, Nat.add_zero]
+  rw [Nat.mul_div_right _ hpos]
+  omega
+
 /--
 The remaining constructive producer for the B branch.
 It is deliberately weaker than PerfectFlip: it asks only for uniform recovery
