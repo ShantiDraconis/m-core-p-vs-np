@@ -14,6 +14,7 @@ echo "== P02-LANE-4 L0: STRUCTURE COMPLETENESS =="
 FILES=(
   lakefile.toml
   lean/MCore.lean
+  lean/P02Lane4.lean
 
   lean/MCore/Real/PNPCookLevinMaterialMinCut.lean
   lean/MCore/Real/PNPNTMTableauFrontier.lean
