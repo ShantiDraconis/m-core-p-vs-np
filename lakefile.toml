@@ -6,7 +6,7 @@ name = "MCore"
 srcDir = "lean"
 
 [[lean_lib]]
-name = "P02Lane4"
+name = "P02"
 srcDir = "lean"
 
 [[lean_exe]]
