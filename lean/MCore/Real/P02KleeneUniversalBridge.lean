@@ -84,8 +84,10 @@ theorem counterexample_fails
     change
       CanonicalSAT (B.realizer.bitsOf (fixedCode B)) ↔
         ¬ DeclaredAccepts M (B.realizer.bitsOf (fixedCode B))
-    apply B.realizer.flips_of_fixed (fixedCode B)
-    exact fixedCode_spec B
+    exact CanonicalSATFixedPointRealizer.flips_of_fixed
+      B.realizer
+      (fixedCode B)
+      (fixedCode_spec B)
   intro hCorrect
   change
     M.machine.HaltsWithin
