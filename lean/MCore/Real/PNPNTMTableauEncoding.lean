@@ -2618,8 +2618,8 @@ theorem ntmLeft_blankLeft_exact
     (j.val, (M.machine.transition q a).get j) sigma hEff hDir
   have hnil := eval_setLeft_neg_guard_to_nil M x t (s + 1) (ntmRadius x t - 1)
     (ntmChoiceVar M x t s q a j.val) M.machine.blank sigma hset hj
-  exact (eval_ntmSetLeftCell_nil_iff M x t sigma (ntmRadius x t - 1)
-    M.machine.blank).mp hnil
+  exact (eval_ntmSetLeftCell_nil_iff_at M x t (s + 1) sigma
+    (ntmRadius x t - 1) M.machine.blank).mp hnil
 
 theorem ntmLeft_writeRight0_exact
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2640,7 +2640,7 @@ theorem ntmLeft_writeRight0_exact
   have hnil := eval_setRight_neg_guard_to_nil M x t (s + 1) 0
     (ntmChoiceVar M x t s q a j.val)
     ((M.machine.transition q a).get j).2.1 sigma hset hj
-  exact (eval_ntmSetRightCell_nil_iff M x t sigma 0
+  exact (eval_ntmSetRightCell_nil_iff_at M x t (s + 1) sigma 0
     ((M.machine.transition q a).get j).2.1).mp hnil
 
 
@@ -2651,18 +2651,18 @@ structure NTMUniqueAt
     (s : Nat) : Prop where
   hState :
     ExistsUnique (fun q : Fin (M.stateCount + 1) =>
-      sigma (ntmStateVar M t s q) = true
+      sigma (ntmStateVar M t s q) = true)
   hHead :
     ExistsUnique (fun a : Option Bool =>
-      sigma (ntmHeadVar M t s a) = true
+      sigma (ntmHeadVar M t s a) = true)
   hLeft :
     forall i : Nat, i < ntmRadius x t ->
       ExistsUnique (fun b : Option Bool =>
-        sigma (ntmLeftVar M x t s i b) = true
+        sigma (ntmLeftVar M x t s i b) = true)
   hRight :
     forall i : Nat, i < ntmRadius x t ->
       ExistsUnique (fun b : Option Bool =>
-        sigma (ntmRightVar M x t s i b) = true
+        sigma (ntmRightVar M x t s i b) = true)
 
 theorem existsUnique_of_exact_decide
     {α : Type}
