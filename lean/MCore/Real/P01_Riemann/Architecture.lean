@@ -1,3 +1,4 @@
+import MCore.Real.P01_Riemann.OpenBridge.BoundedZeroCandidate
 import MCore.Real.P01_Riemann.ClosedBase.ZetaEulerProduct
 import MCore.Real.P01_Riemann.ClosedBase.ZetaFunctionalEquation
 import MCore.Real.P01_Riemann.ClosedBase.ZetaAnalytic
@@ -32,7 +33,9 @@ def closedBase : List LayerRecord :=
 
 def closedBridge : List LayerRecord := []
 
-def sourceMiddle : List LayerRecord := []
+def sourceMiddle : List LayerRecord :=
+  [ ⟨"BoundedZeroCandidate", .sourceClosedBuildUnverified,
+      "bounded nontrivial zeta-zero window type is defined; compact-zero finiteness/effective enumeration is not yet proved"⟩ ]
 
 /-- Intended single-pivot architecture target for Riemann hypothesis frontier. -/
 def openBridge : List LayerRecord :=
@@ -51,6 +54,9 @@ def materialGaps : Nat := 1
 def green : Bool := false
 def buildVerified : Bool := false
 
+theorem source_middle_count :
+    sourceMiddle.length = 1 := by decide
+
 theorem closed_base_source_count :
     closedBase.length = 3 := by decide
 
@@ -64,6 +70,7 @@ theorem fail_closed :
     green = false ∧ buildVerified = false := by
   rfl
 
+#print axioms MCore.Real.P01_Riemann.Architecture.source_middle_count
 #print axioms MCore.Real.P01_Riemann.Architecture.closed_base_source_count
 #print axioms MCore.Real.P01_Riemann.Architecture.target_open_bridge_count
 #print axioms MCore.Real.P01_Riemann.Architecture.material_gap_count
