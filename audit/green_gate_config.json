@@ -16,13 +16,20 @@
     "BoundedCycleUnique",
     "BoundedShaUnique",
     "BoundedGaugeUnique",
-    "BoundedFlowUnique"
+    "BoundedFlowUnique",
+    "BoundedZeroUnique",
+    "ActualCurveToShaCore"
   ],
   "problems": {
     "P01_Riemann": {
       "directory": "lean/MCore/Real/P01_Riemann",
       "architecture_audit": "lean/MCore/Real/P01_Riemann/ArchitectureAudit.lean",
-      "frozen_sources": [],
+      "frozen_sources": [
+        {
+          "repo": "https://github.com/ShantiDraconis/m-core-riemann.git",
+          "ref": "d6a291b4563f9021f74ab63cc983d44f079472da"
+        }
+      ],
       "required_terminal_symbols": [
         "MCore.Real.P01_Riemann.GreenCertificate.terminal_endpoint_closed",
         "MCore.Real.P01_Riemann.GreenCertificate.terminal_endpoint_certified"
@@ -131,9 +138,9 @@
     }
   },
   "gate": "GREEN_GATE_FAIL_CLOSED",
-  "version": "a4b46824450804aa1fbcdc6f39307391b8d65fbc",
+  "version": "fail-closed-green-gate-v2",
   "rules": [
-    "1. frozen refs correct and pinned",
+    "1. frozen refs correct and pinned, including the real P01 finite-span frontier source",
     "2. axiom=0",
     "3. sorry=0",
     "4. admit=0",
