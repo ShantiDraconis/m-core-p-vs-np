@@ -4898,14 +4898,13 @@ theorem operationalDecodeAgrees_active_step
         have hNext :
             decodeHead M x t sigma hSat (s + 1) (by omega) =
               decodeRightCell M x t sigma hSat s (by omega) 0 hrpos := by
-          apply (decodeHead_unique M x t sigma hSat (s + 1) (by omega) _)
           have hold := decodeRightCell_true M x t sigma hSat s (by omega) 0 hrpos
           have hn :
               sigma (ntmHeadVar M t (s + 1)
                 (decodeRightCell M x t sigma hSat s (by omega) 0 hrpos)) = true := by
             rw [hHeadCell]
             exact hold
-          exact hn
+          exact (decodeHead_unique M x t sigma hSat (s + 1) (by omega) _ hn).symm
         simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hOld, hNext] using hop
       · intro i hi
@@ -4917,9 +4916,11 @@ theorem operationalDecodeAgrees_active_step
               (by simpa [q] using hActive) hj hDirRight
             have hNext :
                 decodeLeftCell M x t sigma hSat (s + 1) (by omega) 0 (by omega) = write := by
-              apply (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
-                0 (by omega) write)
-              simpa [htr] using hExact write
+              have hw :
+                  sigma (ntmLeftVar M x t (s + 1) 0 write) = true := by
+                simpa [htr] using hExact write
+              exact (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
+                0 (by omega) write hw).symm
             simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
               NTM.stepBranch, hNext] using hop
         | succ k =>
@@ -4933,15 +4934,14 @@ theorem operationalDecodeAgrees_active_step
             have hNext :
                 decodeLeftCell M x t sigma hSat (s + 1) (by omega) (k + 1) hi =
                   decodeLeftCell M x t sigma hSat s (by omega) k hkOld := by
-              apply (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
-                (k + 1) hi _)
               have hold := decodeLeftCell_true M x t sigma hSat s (by omega) k hkOld
               have hn :
                   sigma (ntmLeftVar M x t (s + 1) (k + 1)
                     (decodeLeftCell M x t sigma hSat s (by omega) k hkOld)) = true := by
                 rw [hcell]
                 exact hold
-              exact hn
+              exact (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
+                (k + 1) hi _ hn).symm
             simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
               NTM.stepBranch, hOld, hNext] using hop
       · intro i hi
@@ -4956,9 +4956,12 @@ theorem operationalDecodeAgrees_active_step
           have hNext :
               decodeRightCell M x t sigma hSat (s + 1) (by omega)
                 (ntmRadius x t - 1) (by omega) = M.machine.blank := by
-            apply (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
-              (ntmRadius x t - 1) (by omega) M.machine.blank)
-            simpa using hExact M.machine.blank
+            have hb :
+                sigma (ntmRightVar M x t (s + 1) (ntmRadius x t - 1)
+                  M.machine.blank) = true := by
+              simpa using hExact M.machine.blank
+            exact (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
+              (ntmRadius x t - 1) (by omega) M.machine.blank hb).symm
           simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
             NTM.stepBranch, hNext, Nat.sub_add_cancel (by simp [ntmRadius] : 1 <= ntmRadius x t)] using
               (hop.trans hout)
@@ -4970,14 +4973,14 @@ theorem operationalDecodeAgrees_active_step
           have hNext :
               decodeRightCell M x t sigma hSat (s + 1) (by omega) i hi =
                 decodeRightCell M x t sigma hSat s (by omega) (i + 1) hiOld := by
-            apply (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega) i hi _)
             have hold := decodeRightCell_true M x t sigma hSat s (by omega) (i + 1) hiOld
             have hn :
                 sigma (ntmRightVar M x t (s + 1) i
                   (decodeRightCell M x t sigma hSat s (by omega) (i + 1) hiOld)) = true := by
               rw [hcell]
               exact hold
-            exact hn
+            exact (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
+              i hi _ hn).symm
           simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
             NTM.stepBranch, hOld, hNext] using hop
 
