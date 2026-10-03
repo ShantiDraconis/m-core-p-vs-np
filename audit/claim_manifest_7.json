@@ -7,7 +7,7 @@
     "build": "UNVERIFIED",
     "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01/P02 evidence files",
     "open_problem_green_count": 0,
-    "note": "P01-P06 remain fail-closed. Architecture/source-bound GREEN prefixes do not imply Millennium endpoint closure.",
+    "note": "Fail-closed manifest: materialGaps=1 means one current real frontier per lane, not that one theorem is known to suffice mathematically. Candidate decompositions remain OPEN until formally connected.",
     "green_gate": {
       "commit": "defbeaafa964a32ac1399bfb2612be52eec23da4",
       "theorem": "MCore.Real.SevenLaneGreenGate.no_open_millennium_lane_green",
@@ -137,11 +137,21 @@
       "canonical_source": {
         "repo": "ShantiDraconis/navier-stokes-critical-barrier-audit",
         "ref": "df808543535d34d4e8c46096b3455d76b0151fa2"
-      }
+      },
+      "items": [
+        "ProducerANonnegative",
+        "EnergyCompatibleResidual",
+        "SignedGainNontriviality",
+        "SignedGainCoreEquivalence"
+      ]
     },
     "closedBridge": {
       "count": 2,
-      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "items": [
+        "CoreToCertificate",
+        "SignedGainToDifferential"
+      ]
     },
     "sourceMiddle": {
       "count": 0,
@@ -159,18 +169,27 @@
   },
   "P05_Hodge": {
     "state": "REAL_FRONTIER_BOUND",
-    "canonical_source": {
-      "repo": "ShantiDraconis/m-core-hodge",
-      "frozen_ref": "42eaf7d4d639871f82eceb121ee525a6c4f30d84",
-      "main_ref": "a994aebb57a3032f3c6c99d785b19aa650392630"
-    },
     "closedBase": {
       "count": 4,
-      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "canonical_source": {
+        "repo": "ShantiDraconis/m-core-hodge",
+        "ref": "42eaf7d4d639871f82eceb121ee525a6c4f30d84"
+      },
+      "items": [
+        "RationalHodgePointwiseReduction",
+        "HodgeDecompositionReduction",
+        "SemanticInterfaceCounteraudit",
+        "AlgebraicityFrontierStatus"
+      ]
     },
     "closedBridge": {
       "count": 2,
-      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "items": [
+        "H01ToPointwise",
+        "PointwiseToHodge"
+      ]
     },
     "sourceMiddle": {
       "count": 0,
@@ -178,28 +197,38 @@
     },
     "openBridge": {
       "name": "ConcreteAlgebraicityPayload",
-      "state": "REAL_SOURCE_BOUND_FRONTIER"
+      "state": "REAL_SOURCE_BOUND_FRONTIER",
+      "equivalent_regression_target": "TrivialQbarR2Payload"
     },
     "materialGaps": 1,
     "green": false,
     "build": "UNVERIFIED",
-    "architecture_commit": "d5f69759c21dfd93667845234fe638e985b6bbb3",
-    "audit_commit": "5c74d6a67d41c28dc33bdd26c556564f6ff6e11d"
+    "architecture_commit": "d5f69759",
+    "audit_commit": "5c74d6a6"
   },
   "P06_BSD": {
     "state": "REAL_FRONTIER_BOUND",
-    "canonical_source": {
-      "repo": "ShantiDraconis/m-core-bsd",
-      "main_ref": "ed28a02170001a4afb0b3230e1bda238dcb5fa9f",
-      "firewall_ref": "c1e7b245726c4c65f5f9f878acefb86460746f4a"
-    },
     "closedBase": {
       "count": 4,
-      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "canonical_source": {
+        "repo": "ShantiDraconis/m-core-bsd",
+        "ref": "ed28a02170001a4afb0b3230e1bda238dcb5fa9f"
+      },
+      "items": [
+        "RankEqualityTwoDirections",
+        "ExternalInputClassification",
+        "AbstractTypeCounteraudit",
+        "OpenCoreFirewall"
+      ]
     },
     "closedBridge": {
       "count": 2,
-      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "items": [
+        "RankWitnessToOpenCore",
+        "RankPartToEquality"
+      ]
     },
     "sourceMiddle": {
       "count": 0,
@@ -208,14 +237,15 @@
     "openBridge": {
       "name": "RealizableBSDProducer",
       "state": "REAL_SOURCE_BOUND_FRONTIER",
-      "target": "realizable elliptic-curve domain + universal rank equality + refined leading-coefficient identity on the same domain"
+      "target": "realizable elliptic-curve domain + universal rank equality + refined leading-coefficient identity on the same domain",
+      "firewall_ref": "c1e7b245726c4c65f5f9f878acefb86460746f4a",
+      "rejected_target": "∀ d : BSDArithmeticAnalyticData, BSDRankPart d"
     },
-    "rejectedAbstractTarget": "∀ d : BSDArithmeticAnalyticData, BSDRankPart d",
     "materialGaps": 1,
     "green": false,
     "build": "UNVERIFIED",
     "architecture_commit": "fb0a25b819878ea9625847961e25ac93aaa8d04f",
-    "audit_sha": "fa0e5e74dccffa4f5882ca10e373d777b068b7d4"
+    "audit_commit": "935346f73e439b6c71a7605e96afb8840cec1bc7"
   },
   "P07_Poincare": {
     "state": "HISTORICALLY_SOLVED_EXTERNALLY",
