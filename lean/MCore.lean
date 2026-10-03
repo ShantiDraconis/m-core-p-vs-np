@@ -184,3 +184,6 @@ import MCore.Real.P02KleeneGapAudit
 import MCore.Real.P03ClosureKernel
 import MCore.Real.P03ClosureAudit
 import MCore.Real.P03ClosedMath
+
+import MCore.Real.P03.Architecture
+import MCore.Real.P03.ArchitectureAudit
