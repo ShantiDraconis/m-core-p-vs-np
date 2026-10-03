@@ -589,6 +589,24 @@ theorem eval_ntmSetRightCell_nil_iff
   exact eval_ntmSetSymbolClauses_nil_iff
     sigma (ntmRightVar M x t 0 i) a
 
+theorem eval_ntmSetLeftCell_nil_iff_at
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment) (i : Nat) (a : Option Bool) :
+    evalNTMCNF sigma (ntmSetLeftCell [] M x t s i a) = true <->
+      forall b : Option Bool,
+        sigma (ntmLeftVar M x t s i b) = decide (b = a) := by
+  exact eval_ntmSetSymbolClauses_nil_iff
+    sigma (ntmLeftVar M x t s i) a
+
+theorem eval_ntmSetRightCell_nil_iff_at
+    (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
+    (sigma : Assignment) (i : Nat) (a : Option Bool) :
+    evalNTMCNF sigma (ntmSetRightCell [] M x t s i a) = true <->
+      forall b : Option Bool,
+        sigma (ntmRightVar M x t s i b) = decide (b = a) := by
+  exact eval_ntmSetSymbolClauses_nil_iff
+    sigma (ntmRightVar M x t s i) a
+
 theorem evalNTMCNF_flatMap_range
     (sigma : Assignment) (n : Nat) (f : Nat -> NTMCNF) :
     evalNTMCNF sigma ((List.range n).flatMap f) = true <->
@@ -2007,53 +2025,11 @@ theorem leftEffect_shiftedLeft_sat
   rcases entry with ⟨j, qNext, write, d⟩
   simp at hDir
   subst d
-  have h1 :=
-    (evalNTMCNF_append sigma
-      (ntmSetStateClauses [ntmNeg (ntmChoiceVar M x t s q a j)]
-        M t (s + 1) qNext)
-      (ntmCopySymbolClauses [ntmNeg (ntmChoiceVar M x t s q a j)]
-        (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)) ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s (k + 1) (s + 1) k) ++
-       ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
-       ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) 0 write ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp
-      (by simpa [ntmChoiceEffectCNF, ntmLeftEffectCNF, List.append_assoc] using hEff)
-  have h2 :=
-    (evalNTMCNF_append sigma
-      (ntmCopySymbolClauses [ntmNeg (ntmChoiceVar M x t s q a j)]
-        (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)))
-      ((List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s (k + 1) (s + 1) k) ++
-       ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
-       ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) 0 write ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp
-      (by simpa [List.append_assoc] using h1.2)
-  have h3 :=
-    (evalNTMCNF_append sigma
-      ((List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s (k + 1) (s + 1) k))
-      (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
-       ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) 0 write ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp h2.2
+  simp [ntmChoiceEffectCNF, ntmLeftEffectCNF,
+    evalNTMCNF_append, List.append_assoc] at hEff
   exact (evalNTMCNF_flatMap_range sigma (ntmRadius x t - 1)
     (fun k => ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-      M x t s (k + 1) (s + 1) k)).mp h3.1 i hi
+      M x t s (k + 1) (s + 1) k)).mp hEff.2.2.1 i hi
 
 theorem leftEffect_blankLeft_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2070,7 +2046,7 @@ theorem leftEffect_blankLeft_sat
   subst d
   simp [ntmChoiceEffectCNF, ntmLeftEffectCNF,
     evalNTMCNF_append, List.append_assoc] at hEff
-  exact hEff.2.2.1
+  exact hEff.2.2.2.1
 
 theorem leftEffect_writeRight0_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2087,7 +2063,7 @@ theorem leftEffect_writeRight0_sat
   subst d
   simp [ntmChoiceEffectCNF, ntmLeftEffectCNF,
     evalNTMCNF_append, List.append_assoc] at hEff
-  exact hEff.2.2.2.1
+  exact hEff.2.2.2.2.1
 
 
 theorem leftEffect_shiftedRight_sat
@@ -2105,65 +2081,11 @@ theorem leftEffect_shiftedRight_sat
   rcases entry with ⟨j, qNext, write, d⟩
   simp at hDir
   subst d
-  have h1 :=
-    (evalNTMCNF_append sigma
-      (ntmSetStateClauses [ntmNeg (ntmChoiceVar M x t s q a j)]
-        M t (s + 1) qNext)
-      (ntmCopySymbolClauses [ntmNeg (ntmChoiceVar M x t s q a j)]
-        (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)) ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s (k + 1) (s + 1) k) ++
-       ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
-       ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) 0 write ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp
-      (by simpa [ntmChoiceEffectCNF, ntmLeftEffectCNF, List.append_assoc] using hEff)
-  have h2 := (evalNTMCNF_append sigma
-      (ntmCopySymbolClauses [ntmNeg (ntmChoiceVar M x t s q a j)]
-        (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)))
-      ((List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s (k + 1) (s + 1) k) ++
-       ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
-       ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) 0 write ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp
-      (by simpa [List.append_assoc] using h1.2)
-  have h3 := (evalNTMCNF_append sigma
-      ((List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s (k + 1) (s + 1) k))
-      (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) (ntmRadius x t - 1) M.machine.blank ++
-       ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-         M x t (s + 1) 0 write ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp h2.2
-  have h4 := (evalNTMCNF_append sigma
-      (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-        M x t (s + 1) (ntmRadius x t - 1) M.machine.blank)
-      (ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-        M x t (s + 1) 0 write ++
-       (List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp h3.2
-  have h5 := (evalNTMCNF_append sigma
-      (ntmSetRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-        M x t (s + 1) 0 write)
-      ((List.range (ntmRadius x t - 1)).flatMap (fun k =>
-         ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-           M x t s k (s + 1) (k + 1)))).mp h4.2
+  simp [ntmChoiceEffectCNF, ntmLeftEffectCNF,
+    evalNTMCNF_append, List.append_assoc] at hEff
   exact (evalNTMCNF_flatMap_range sigma (ntmRadius x t - 1)
     (fun k => ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-      M x t s k (s + 1) (k + 1))).mp h5.2 i hi
+      M x t s k (s + 1) (k + 1))).mp hEff.2.2.2.2.2 i hi
 
 theorem rightEffect_writeLeft0_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2180,7 +2102,7 @@ theorem rightEffect_writeLeft0_sat
   subst d
   simp [ntmChoiceEffectCNF, ntmRightEffectCNF,
     evalNTMCNF_append, List.append_assoc] at hEff
-  exact hEff.2.1
+  exact hEff.2.2.1
 
 theorem rightEffect_shiftedLeft_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2201,7 +2123,7 @@ theorem rightEffect_shiftedLeft_sat
     evalNTMCNF_append, List.append_assoc] at hEff
   exact (evalNTMCNF_flatMap_range sigma (ntmRadius x t - 1)
     (fun k => ntmCopyLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-      M x t s k (s + 1) (k + 1))).mp hEff.2.2.1 i hi
+      M x t s k (s + 1) (k + 1))).mp hEff.2.2.2.1 i hi
 
 theorem rightEffect_shiftedRight_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2222,7 +2144,7 @@ theorem rightEffect_shiftedRight_sat
     evalNTMCNF_append, List.append_assoc] at hEff
   exact (evalNTMCNF_flatMap_range sigma (ntmRadius x t - 1)
     (fun k => ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
-      M x t s (k + 1) (s + 1) k)).mp hEff.2.2.2.1 i hi
+      M x t s (k + 1) (s + 1) k)).mp hEff.2.2.2.2.1 i hi
 
 theorem rightEffect_blankRight_sat
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2239,7 +2161,7 @@ theorem rightEffect_blankRight_sat
   subst d
   simp [ntmChoiceEffectCNF, ntmRightEffectCNF,
     evalNTMCNF_append, List.append_assoc] at hEff
-  exact hEff.2.2.2.2
+  exact hEff.2.2.2.2.2
 
 
 
@@ -2357,7 +2279,7 @@ theorem ntmRight_writeLeft0_exact
   have hnil := eval_setLeft_neg_guard_to_nil M x t (s + 1) 0
     (ntmChoiceVar M x t s q a j.val)
     ((M.machine.transition q a).get j).2.1 sigma hset hj
-  exact (eval_ntmSetLeftCell_nil_iff M x t sigma 0
+  exact (eval_ntmSetLeftCell_nil_iff_at M x t (s + 1) sigma 0
     ((M.machine.transition q a).get j).2.1).mp hnil
 
 theorem ntmRight_blankRight_exact
@@ -2378,7 +2300,7 @@ theorem ntmRight_blankRight_exact
     (j.val, (M.machine.transition q a).get j) sigma hEff hDir
   have hnil := eval_setRight_neg_guard_to_nil M x t (s + 1) (ntmRadius x t - 1)
     (ntmChoiceVar M x t s q a j.val) M.machine.blank sigma hset hj
-  exact (eval_ntmSetRightCell_nil_iff M x t sigma (ntmRadius x t - 1)
+  exact (eval_ntmSetRightCell_nil_iff_at M x t (s + 1) sigma (ntmRadius x t - 1)
     M.machine.blank).mp hnil
 
 
@@ -4375,9 +4297,9 @@ theorem operationalTapeBound_step
       M.machine.accepting q = true ∨ M.machine.rejecting q = true
   · refine { left_len := ?_, right_len := ?_ }
     · simpa [operationalDecodeConfig, q, a, hHalt] using
-        le_trans hB.left_len (by omega : x.length + s <= x.length + (s + 1))
+        Nat.le_trans hB.left_len (by omega : x.length + s <= x.length + (s + 1))
     · simpa [operationalDecodeConfig, q, a, hHalt] using
-        le_trans hB.right_len (by omega : x.length + s <= x.length + (s + 1))
+        Nat.le_trans hB.right_len (by omega : x.length + s <= x.length + (s + 1))
   · have hActive :
         M.machine.accepting q = false ∧ M.machine.rejecting q = false := by
       constructor
@@ -4396,44 +4318,42 @@ theorem operationalTapeBound_step
         refine { left_len := ?_, right_len := ?_ }
         · simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j,
             htr, Tape.write, Tape.move] using
-            le_trans hB.left_len (by omega : x.length + s <= x.length + (s + 1))
+            Nat.le_trans hB.left_len (by omega : x.length + s <= x.length + (s + 1))
         · simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j,
             htr, Tape.write, Tape.move] using
-            le_trans hB.right_len (by omega : x.length + s <= x.length + (s + 1))
+            Nat.le_trans hB.right_len (by omega : x.length + s <= x.length + (s + 1))
     | left =>
         have hlr := tapeMove_left_lengths M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
         refine { left_len := ?_, right_len := ?_ }
-        · have := le_trans hlr.1 hB.left_len
+        · have := Nat.le_trans hlr.1 hB.left_len
           simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr] using
-            le_trans this (by omega : x.length + s <= x.length + (s + 1))
-        · have := le_trans hlr.2 (Nat.add_le_add_right hB.right_len 1)
+            Nat.le_trans this (by omega : x.length + s <= x.length + (s + 1))
+        · have := Nat.le_trans hlr.2 (Nat.add_le_add_right hB.right_len 1)
           simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
             Nat.add_assoc] using this
     | right =>
         have hlr := tapeMove_right_lengths M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
         refine { left_len := ?_, right_len := ?_ }
-        · have := le_trans hlr.1 (Nat.add_le_add_right hB.left_len 1)
+        · have := Nat.le_trans hlr.1 (Nat.add_le_add_right hB.left_len 1)
           simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
             Nat.add_assoc] using this
-        · have := le_trans hlr.2 hB.right_len
+        · have := Nat.le_trans hlr.2 hB.right_len
           simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr] using
-            le_trans this (by omega : x.length + s <= x.length + (s + 1))
+            Nat.le_trans this (by omega : x.length + s <= x.length + (s + 1))
 
 theorem operationalTapeBound_all
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    forall s : Nat, s <= t ->
-      OperationalTapeBoundAt M x t sigma hSat s (by assumption) := by
-  intro s
+    ∀ (s : Nat) (hs : s <= t),
+      OperationalTapeBoundAt M x t sigma hSat s hs := by
+  intro s hs
   induction s with
   | zero =>
-      intro _
       simpa using operationalTapeBound_zero M x t sigma hSat
   | succ s ih =>
-      intro hsle
       exact operationalTapeBound_step M x t s sigma hSat (by omega) (ih (by omega))
 
 theorem operational_left_getD_outside

@@ -91,7 +91,9 @@ theorem counterexample_fails
         (fixedCode_spec B)
   intro hCorrect
   change
-    DeclaredHalts M (counterexample B) ∧
+    M.machine.HaltsWithin
+        (M.timeBound (counterexample B).length)
+        (initialTMConfig M.machine (counterexample B)) ∧
       (DeclaredAccepts M (counterexample B) ↔
         CanonicalSAT (counterexample B)) at hCorrect
   rcases hCorrect with ⟨_, hSem⟩
