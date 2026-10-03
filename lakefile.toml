@@ -8,7 +8,7 @@ srcDir = "lean"
 [[lean_lib]]
 name = "P02"
 srcDir = "lean"
-roots = ["P02Lane4"]
+roots = ["P02"]
 
 [[lean_exe]]
 name = "c11_regression"
