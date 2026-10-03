@@ -22,6 +22,7 @@ inductive LayerState where
   | closed
   | sourceClosedBuildUnverified
   | openBridge
+  | blockedByOpenBridge
   | openMath
   deriving Repr, DecidableEq, BEq
 
@@ -49,8 +50,8 @@ def openBridge : List LayerRecord :=
   [ ⟨"BoundedCandidate", .closed, "genuine source inhabits the bounded candidate space"⟩
   , ⟨"SourceLen", .sourceClosedBuildUnverified, "source-length bound present in source; build not verified here"⟩
   , ⟨"BoundedUnique", .openBridge, "unique predecessor subgap"⟩
-  , ⟨"UniformDecoder", .openBridge, "pointwise recovery closed; uniform effective decoder remains open"⟩
-  , ⟨"MFlipDepth", .openBridge, "physical depth-parity PerfectFlip construction not built"⟩ ]
+  , ⟨"UniformDecoder", .blockedByOpenBridge, "pointwise recovery closed; uniform effective decoder is blocked by BoundedUnique and algorithmic/poly obligations"⟩
+  , ⟨"MFlipDepth", .blockedByOpenBridge, "physical depth-parity PerfectFlip construction is downstream of the uniform decoder"⟩ ]
 
 def openMath : List LayerRecord :=
   [ ⟨"RangeFailureLaw", .openMath, "P03 terminal A-side"⟩
@@ -70,11 +71,15 @@ def buildVerified : Bool := false
 
 theorem closed_base_count : closedBase.length = 6 := by decide
 theorem closed_bridge_count : closedBridge.length = 4 := by decide
+theorem unique_open_bridge_count : openBridgeCount = 1 := by decide
+theorem open_math_count : openMathCount = 2 := by decide
 theorem architecture_green_false : green = false := rfl
 theorem architecture_build_unverified : buildVerified = false := rfl
 
 #print axioms MCore.Real.P03.Architecture.closed_base_count
 #print axioms MCore.Real.P03.Architecture.closed_bridge_count
+#print axioms MCore.Real.P03.Architecture.unique_open_bridge_count
+#print axioms MCore.Real.P03.Architecture.open_math_count
 #print axioms MCore.Real.P03.Architecture.architecture_green_false
 #print axioms MCore.Real.P03.Architecture.architecture_build_unverified
 
