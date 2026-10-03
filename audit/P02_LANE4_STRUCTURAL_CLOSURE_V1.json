@@ -2,7 +2,7 @@
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
   "head_at_record": "4049fffb3aa998a2751e3ba4f47b6f2e8f42b95c",
-  "status": "STRUCTURE_AND_ADVANCED_CERTS_SOURCE_AGGREGATED_BUILD_PENDING_FAIL_CLOSED",
+  "status": "STRUCTURE_PLUS_ADVANCED_CERT_REUSE_SOURCE_COMPLETE_BUILD_PENDING_FAIL_CLOSED",
   "structural": {
     "R1": "CONSTRUCTED",
     "R2": "CONSTRUCTED",
@@ -122,34 +122,27 @@
     "kernel_verified": false
   },
   "advanced_certificate_reuse": {
-    "state": "SOURCE_AGGREGATED_BUILD_PENDING",
-    "module": "lean/P02/LANE4/AdvancedCertificateReuse.lean",
-    "catalog": "audit/P02_LANE4_CERTIFICATE_REUSE_V1.json",
-    "reused": [
-      "P02OperatorKernel",
-      "P02UniversalLowerBound",
-      "P02UniversalFailureMinCut",
-      "P02CanonicalClockReduction",
-      "P02KleeneKernel",
-      "P02EffectiveAlignment",
-      "P02UniversalLowerBoundMaster",
-      "ATK_TERMINAL_P_VS_NP_e927d326"
+    "state": "CONSTRUCTED_SOURCE_COMPLETE",
+    "file": "lean/P02/LANE4/AdvancedCertificateReuse.lean",
+    "reused_closed": [
+      "canonical_sat_in_np_closed",
+      "g21_iff_not_in_p",
+      "g21_iff_p02_operator",
+      "g21_iff_normalized_adversary",
+      "g21_iff_g22",
+      "canonicalNotInPWitnessOfG21",
+      "t10_to_g21",
+      "effective_coverage_to_g21"
     ],
-    "post_t10_chain": [
+    "p01_state": "CLOSED_REUSE",
+    "g22_state": "CONSUMER_EQUIVALENT_NOT_PRODUCER",
+    "normalized_adversary_state": "EXACT_NORMAL_FORM_NOT_NEW_FRONTIER",
+    "remaining_terminal": "G21Pointwise",
+    "genuine_routes": [
       "TotalBehavioralAlignmentProducer",
-      "TotalExactDiagonalProducer",
-      "UniversalFailure",
-      "UniversalSATLowerBound",
-      "CanonicalSATP02Producer",
-      "UniversalCounterexampleProducer",
-      "NormalizedAdversary",
-      "not InP canonical SAT",
-      "internal PneqNP endpoint"
+      "UniformEffectiveCoverage",
+      "any other direct genuine producer of G21Pointwise"
     ],
-    "remaining_open": [
-      "TotalBehavioralAlignmentProducer",
-      "UniformEffectiveCoverage"
-    ],
-    "note": "No post-T10 structural gap remains in source; no inhabitant is manufactured."
+    "kernel_verified": false
   }
 }
