@@ -8,6 +8,9 @@ LANE_DIR="lean/P02/LANE4"
 AUX_DIR="$LANE_DIR/AUX"
 OPEN_DIR="$LANE_DIR/OPEN_MATH"
 
+echo "== P02-LANE-4: L0 STRUCTURE PRECHECK =="
+bash audit/p02_lane4_structure_check.sh
+
 echo "== P02-LANE-4: STATIC SCAN =="
 if grep -R -n -E '(^[[:space:]]*axiom\b|\bsorry\b|\badmit\b|^[[:space:]]*opaque\b)'   "$AUX_DIR" "$LANE_DIR/StructuralClosure.lean" "$OPEN_DIR"   --include='*.lean'; then
   echo "RED: forbidden Lean construct found in P02-LANE-4"
@@ -40,6 +43,9 @@ FILES=(
   lean/P02/LANE4/OPEN_MATH/BehavioralAlignment.lean
   lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean
   lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean
+  lean/P02/LANE4/CompleteBundle.lean
+  lean/P02/LANE4/AdvancedCertificateReuse.lean
+  lean/P02/LANE4/StructureBundle.lean
 )
 
 for f in "${FILES[@]}"; do
