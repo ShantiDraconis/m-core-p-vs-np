@@ -72,6 +72,13 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03RangeFailureFrontier.no_rangeFailure_iff_rangeCorrect
 #print axioms MCore.Real.P03RangeFailureFrontier.range_failure_or_range_correct
 
+
+#print axioms MCore.Real.P03PerfectFlipDichotomy.existsPerfectFlip_iff_not_rangeFailureLaw
+#print axioms MCore.Real.P03PerfectFlipDichotomy.rangeFailureLaw_or_existsPerfectFlip
+#print axioms MCore.Real.P03PerfectFlipDichotomy.perfectFlip_orbit_step
+#print axioms MCore.Real.P03PerfectFlipDichotomy.perfectFlip_odd_not_equiv
+#print axioms MCore.Real.P03PerfectFlipDichotomy.perfectFlip_no_fullRunWitness
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
