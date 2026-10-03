@@ -5726,8 +5726,9 @@ noncomputable def pathAssignment
     (path : Fin (t + 1) -> NTMConfig M)
     {c0 : NTMConfig M}
     (hPath : NTMTableauPath M t c0 path) :
-    Assignment :=
-  fun v =>
+    Assignment := by
+  classical
+  exact fun v =>
     decide (
       PathAssignmentStateTrue M t path v ∨
       PathAssignmentHeadTrue M t path v ∨
