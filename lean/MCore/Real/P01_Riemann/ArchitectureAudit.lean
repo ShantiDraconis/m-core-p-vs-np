@@ -1,3 +1,4 @@
+import MCore.Real.P01_Riemann.GreenCertificate
 import MCore.Real.P01_Riemann.Architecture
 
 namespace MCore.Real.P01_Riemann.ArchitectureAudit
@@ -18,3 +19,6 @@ namespace MCore.Real.P01_Riemann.ArchitectureAudit
 #print axioms MCore.Real.P01_Riemann.Architecture.fail_closed
 
 end MCore.Real.P01_Riemann.ArchitectureAudit
+
+#print axioms MCore.Real.P01_Riemann.GreenCertificate.terminal_endpoint_not_certified
+#print axioms MCore.Real.P01_Riemann.GreenCertificate.build_not_verified
