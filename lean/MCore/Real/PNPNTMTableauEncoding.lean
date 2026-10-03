@@ -5075,6 +5075,41 @@ theorem boundedExec_final_sat
     (ntmTransitionsCNF M x t)
     (ntmFinalAcceptanceCNF M t)).mp hAll.2 |>.2
 
+theorem evalNTMClause_true_exists
+    (sigma : Assignment) (cl : NTMClause)
+    (h : evalNTMClause sigma cl = true) :
+    ∃ l ∈ cl, evalNTMLiteral sigma l = true := by
+  induction cl with
+  | nil =>
+      simp [evalNTMClause] at h
+  | cons l ls ih =>
+      simp only [evalNTMClause, Bool.or_eq_true] at h
+      rcases h with hl | hls
+      · exact ⟨l, by simp, hl⟩
+      · rcases ih hls with ⟨z, hzmem, hztrue⟩
+        exact ⟨z, by simp [hzmem], hztrue⟩
+
+theorem filterMap_mem_exists_early
+    {α β : Type} (f : α → Option β) (xs : List α) (y : β)
+    (hy : y ∈ xs.filterMap f) :
+    ∃ x, x ∈ xs ∧ f x = some y := by
+  induction xs with
+  | nil =>
+      simp at hy
+  | cons x xs ih =>
+      simp only [List.filterMap_cons] at hy
+      cases hfx : f x with
+      | none =>
+          simp [hfx] at hy
+          rcases ih hy with ⟨z, hz, hfz⟩
+          exact ⟨z, by simp [hz], hfz⟩
+      | some z =>
+          simp [hfx] at hy
+          rcases hy with rfl | hy
+          · exact ⟨x, by simp, hfx⟩
+          · rcases ih hy with ⟨w, hw, hfw⟩
+            exact ⟨w, by simp [hw], hfw⟩
+
 theorem acceptingStateLits_sat_exists
     (M : PolyNTMCandidate) (t : Nat) (sigma : Assignment)
     (h :
@@ -5082,23 +5117,23 @@ theorem acceptingStateLits_sat_exists
     ∃ q : Fin (M.stateCount + 1),
       M.machine.accepting q = true ∧
       sigma (ntmStateVar M t t q) = true := by
-  unfold ntmAcceptingStateLits at h
-  let qs := List.ofFn (fun q : Fin (M.stateCount + 1) => q)
-  induction qs with
-  | nil =>
-      simp [evalNTMClause] at h
-  | cons q qs ih =>
-      by_cases hacc : M.machine.accepting q = true
-      · simp [List.filterMap_cons, hacc, evalNTMClause, evalNTMLiteral, ntmPos,
-          Bool.or_eq_true] at h
-        rcases h with hq | hrest
-        · exact ⟨q, hacc, hq⟩
-        · rcases ih hrest with ⟨r, hracc, hrsig⟩
-          exact ⟨r, hracc, hrsig⟩
-      · have haccf : M.machine.accepting q = false := by
-          cases hq : M.machine.accepting q <;> simp_all
-        simp [List.filterMap_cons, haccf] at h
-        exact ih h
+  rcases evalNTMClause_true_exists sigma (ntmAcceptingStateLits M t) h with
+    ⟨lit, hlitmem, hlittrue⟩
+  unfold ntmAcceptingStateLits at hlitmem
+  rcases filterMap_mem_exists_early
+      (fun q : Fin (M.stateCount + 1) =>
+        if M.machine.accepting q = true then
+          some (ntmPos (ntmStateVar M t t q))
+        else none)
+      (List.ofFn fun q : Fin (M.stateCount + 1) => q)
+      lit hlitmem with
+    ⟨q, _hqmem, hq⟩
+  by_cases hacc : M.machine.accepting q = true
+  · simp [hacc] at hq
+    subst lit
+    refine ⟨q, hacc, ?_⟩
+    simpa [evalNTMLiteral, ntmPos] using hlittrue
+  · simp [hacc] at hq
 
 theorem decode_accepting
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
