@@ -46,7 +46,7 @@ SAT-not-in-P statement through the already-certified master equivalence. -/
 theorem officialTarget_iff_sat_not_in_p :
     OfficialTarget ↔
       ¬ MCore.Real.CanonicalFinalProof.InP
-        (MCore.Real.CanonicalCircuitBits.SATBits
+        (MCore.Real.CanonicalSATBoundary.SATBits
           MCore.Real.CanonicalCircuitBits.circuitBitEncoding) :=
   universal_lower_bound_iff_not_in_p
 
