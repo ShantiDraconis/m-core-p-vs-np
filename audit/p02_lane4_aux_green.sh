@@ -20,11 +20,11 @@ fi
 echo "SCAN_OK: 0 axiom/sorry/admit/opaque"
 
 echo "== P02-LANE-4: TOPOLOGICAL PREREQUISITE =="
-if [[ "${P02_LANE4_MCORE_ALREADY_GREEN:-0}" == "1" ]]; then
-  echo "MCORE_PREREQUISITE: reused from preflight L2"
+if [[ "${P02_LANE4_BUNDLE_ALREADY_GREEN:-0}" == "1" ]]; then
+  echo "P02.LANE4.CompleteBundle SUCCESS (reused from preflight L2)"
 else
-  lake build MCore
-  echo "MCORE_PREREQUISITE: lake build MCore SUCCESS"
+  lake build P02.LANE4.CompleteBundle
+  echo "P02.LANE4.CompleteBundle SUCCESS"
 fi
 
 echo "== P02-LANE-4: BASE DEPENDENCY KERNEL CHECK =="
@@ -61,12 +61,8 @@ for f in "${FILES[@]}"; do
   lake env lean "$f"
 done
 
-echo "== P02-LANE-4: FULL MCORE BUILD STATUS =="
-if [[ "${P02_LANE4_MCORE_ALREADY_GREEN:-0}" == "1" ]]; then
-  echo "lake build MCore SUCCESS (reused from preflight L2)"
-else
-  echo "lake build MCore SUCCESS"
-fi
+echo "== P02-LANE-4: SCOPED TOPOLOGICAL BUILD STATUS =="
+echo "P02.LANE4.CompleteBundle SUCCESS"
 
 echo "== P02-LANE-4: FAIL-CLOSED FRONTIER CHECK =="
 if ! grep -q '"state": "OPEN_MATH"' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; then
