@@ -1,14 +1,14 @@
 {
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
-  "head_at_record": "4049fffb3aa998a2751e3ba4f47b6f2e8f42b95c",
-  "status": "STRUCTURE_PLUS_ADVANCED_CERT_REUSE_SOURCE_COMPLETE_BUILD_PENDING_FAIL_CLOSED",
+  "head_at_record": "253902e3848cde8d4014dca2212498a83708e8af",
+  "status": "SOURCE_COMPLETE_KERNEL_PENDING_FAIL_CLOSED",
   "structural": {
-    "R1": "CONSTRUCTED",
-    "R2": "CONSTRUCTED",
-    "R3": "CONSTRUCTED",
-    "R4": "CONSTRUCTED_UNVERIFIED_BUILD",
-    "R5": "CONSTRUCTED_UNVERIFIED_BUILD"
+    "R1": "CONSTRUCTED_SOURCE_COMPLETE",
+    "R2": "CONSTRUCTED_SOURCE_COMPLETE",
+    "R3": "CONSTRUCTED_SOURCE_COMPLETE",
+    "R4": "CONSTRUCTED_SOURCE_COMPLETE_KERNEL_PENDING",
+    "R5": "CONSTRUCTED_SOURCE_COMPLETE_KERNEL_PENDING"
   },
   "files": [
     "lean/P02/LANE4/AUX/R1_R3_REAL.lean",
@@ -34,7 +34,9 @@
     "audit/P02_LANE4_STRUCTURE_GRAPH_V1.json",
     "audit/p02_lane4_structure_check.sh",
     "lean/P02/LANE4/AdvancedCertificateReuse.lean",
-    "audit/P02_LANE4_CERTIFICATE_REUSE_V1.json"
+    "audit/P02_LANE4_CERTIFICATE_REUSE_V1.json",
+    "lean/P02/LANE4/CompleteBundle.lean",
+    "audit/P02_LANE4_ADVANCED_CERTIFICATE_REUSE_V1.json"
   ],
   "t10": {
     "state": "OPEN_MATH",
@@ -44,7 +46,9 @@
   },
   "build": {
     "state": "PENDING",
-    "reason": "No Lean/lake execution was performed in this session; no Actions run triggered."
+    "l2": "lake clean || true; lake update; lake exe cache get; lake build MCore; lake env lean lean/MCore/Real/PNPNTMTableauEncoding.lean",
+    "l3": "bash audit/p02_lane4_aux_green.sh",
+    "reason": "Source is complete; kernel validation has not yet succeeded on this source snapshot."
   },
   "does_not_certify": [
     "UniversalFailure CanonicalSAT",
@@ -144,5 +148,40 @@
       "any other direct genuine producer of G21Pointwise"
     ],
     "kernel_verified": false
+  },
+  "kernel_verified": false,
+  "l0_structure": {
+    "state": "SOURCE_COMPLETE",
+    "script": "audit/p02_lane4_structure_check.sh",
+    "verifies": [
+      "required source and audit files present",
+      "mathlib v4.19.0 declared",
+      "critical structural and terminal theorem names present",
+      "R5_PAIR/StructureBundle/AdvancedCertificateReuse/CompleteBundle wired into MCore",
+      "no axiom/sorry/admit/opaque under lean/P02/LANE4"
+    ],
+    "kernel": false
+  },
+  "complete_bundle": {
+    "state": "CONSTRUCTED_SOURCE_COMPLETE",
+    "file": "lean/P02/LANE4/CompleteBundle.lean",
+    "contains": [
+      "AUX structural inhabitant",
+      "reused terminal theorem chain",
+      "T10OpenMath boundary",
+      "G21OpenMath boundary"
+    ],
+    "does_not_contain": [
+      "T10 inhabitant",
+      "G21 inhabitant",
+      "UniversalFailure inhabitant",
+      "manufactured not-InP witness"
+    ],
+    "kernel_verified": false
+  },
+  "promotion": {
+    "aux_green_candidate": false,
+    "frozen_hard_aux": false,
+    "frozen_hard_full": false
   }
 }
