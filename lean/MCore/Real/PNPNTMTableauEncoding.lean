@@ -4755,7 +4755,8 @@ theorem operationalDecodeAgrees_active_step
               have hw0 := hExact write
               have hw :
                   sigma (ntmRightVar M x t (s + 1) 0 write) = true := by
-                simpa [hWrite] using hw0
+                rw [hWrite] at hw0
+                simpa using hw0
               exact (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
                 0 (by omega) write hw).symm
             rw [hStep]
@@ -4780,7 +4781,8 @@ theorem operationalDecodeAgrees_active_step
               exact (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
                 (k + 1) hi _ hn).symm
             rw [hStep]
-            simpa [NTM.stepBranch, hOld, hNext] using hop
+            simpa [NTM.stepBranch] using
+              (hop.trans hOld |>.trans hNext.symm)
   | right =>
       have hDirRight :
           ((M.machine.transition q a).get j).2.2 = Direction.right := by
@@ -4821,7 +4823,8 @@ theorem operationalDecodeAgrees_active_step
               have hw0 := hExact write
               have hw :
                   sigma (ntmLeftVar M x t (s + 1) 0 write) = true := by
-                simpa [hWrite] using hw0
+                rw [hWrite] at hw0
+                simpa using hw0
               exact (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
                 0 (by omega) write hw).symm
             rw [hStep]
@@ -4846,7 +4849,8 @@ theorem operationalDecodeAgrees_active_step
               exact (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
                 (k + 1) hi _ hn).symm
             rw [hStep]
-            simpa [NTM.stepBranch, hOld, hNext] using hop
+            simpa [NTM.stepBranch] using
+              (hop.trans hOld |>.trans hNext.symm)
       · intro i hi
         have hop := tapeMove_right_right_getD M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape i
