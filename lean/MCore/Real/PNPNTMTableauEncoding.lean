@@ -1,5 +1,6 @@
 
 import MCore.Real.PNPNTMPathFrontier
+import Mathlib.Data.List.GetD
 
 namespace MCore
 namespace Real
@@ -4445,7 +4446,7 @@ theorem operational_left_getD_outside
     (operationalDecodeConfig M x t sigma hSat s hs).tape.left.getD i M.machine.blank =
       M.machine.blank := by
   apply List.getD_eq_default
-  exact le_trans (operationalTapeBound_all M x t sigma hSat s hs).left_len hi
+  exact Nat.le_trans (operationalTapeBound_all M x t sigma hSat s hs).left_len hi
 
 theorem operational_right_getD_outside
     (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
@@ -4456,7 +4457,7 @@ theorem operational_right_getD_outside
     (operationalDecodeConfig M x t sigma hSat s hs).tape.right.getD i M.machine.blank =
       M.machine.blank := by
   apply List.getD_eq_default
-  exact le_trans (operationalTapeBound_all M x t sigma hSat s hs).right_len hi
+  exact Nat.le_trans (operationalTapeBound_all M x t sigma hSat s hs).right_len hi
 
 
 theorem operationalDecodeAgrees_active_step
@@ -5124,7 +5125,7 @@ theorem foldl_max_ge_acc
   | nil => simp
   | cons x xs ih =>
       simp only [List.foldl_cons]
-      exact le_trans (Nat.le_max_left acc x) (ih (Nat.max acc x))
+      exact Nat.le_trans (Nat.le_max_left acc x) (ih (Nat.max acc x))
 
 theorem foldl_max_ge_of_mem
     (xs : List Nat) (x acc : Nat)
@@ -5136,7 +5137,7 @@ theorem foldl_max_ge_of_mem
       simp only [List.mem_cons] at hx
       simp only [List.foldl_cons]
       rcases hx with rfl | hx
-      · exact le_trans (Nat.le_max_right acc y)
+      · exact Nat.le_trans (Nat.le_max_right acc y)
           (foldl_max_ge_acc ys (Nat.max acc y))
       · exact ih hx
 
@@ -6358,14 +6359,14 @@ theorem pathAssignment_haltedStutter_sat
           simpa [c, c'] using congrArg (fun z => z.tape.right) hEq
         simpa [hrEq]
       simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
-      exact ⟨eval_setState_two_neg_guard_of_exact sigma M t (s + 1)
+      refine ⟨eval_setState_two_neg_guard_of_exact sigma M t (s + 1)
           (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
-          c.state hstate0 hhead0 hstateExact,
-        eval_copySymbol_two_neg_guard_of_eq sigma
+          c.state hstate0 hhead0 hstateExact, ?_⟩
+      refine ⟨eval_copySymbol_two_neg_guard_of_eq sigma
           (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
           (ntmHeadVar M t s) (ntmHeadVar M t (s + 1))
-          hstate0 hhead0 hheadEq,
-        hleft, hright⟩
+          hstate0 hhead0 hheadEq, ?_⟩
+      exact ⟨hleft, hright⟩
     · have hg := pathAssignment_case_guard_true_of_mismatch
         M x t s path hPath hs q a (Or.inr ha)
       exact eval_haltedStutter_guard_true
@@ -6391,10 +6392,10 @@ theorem pathTapeBound_zero
   have h0 := hPath.1
   change path 0 = initialNTMConfig M.machine x at h0
   refine { left_len := ?_, right_len := ?_ }
-  · have hl := congrArg (fun c => c.tape.left.length) h0
-    cases x <;> simpa [initialNTMConfig, inputTape] using hl
-  · have hr := congrArg (fun c => c.tape.right.length) h0
-    cases x <;> simpa [initialNTMConfig, inputTape] using hr
+  · rw [h0]
+    cases x <;> simp [initialNTMConfig, inputTape]
+  · rw [h0]
+    cases x <;> simp [initialNTMConfig, inputTape]
 
 theorem pathTapeBound_step
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -6413,11 +6414,11 @@ theorem pathTapeBound_step
     · have hlen : c'.tape.left.length = c.tape.left.length := by
         simpa using congrArg (fun z => z.tape.left.length) heq
       rw [hlen]
-      exact le_trans hB.left_len (by omega)
+      exact Nat.le_trans hB.left_len (by omega)
     · have hlen : c'.tape.right.length = c.tape.right.length := by
         simpa using congrArg (fun z => z.tape.right.length) heq
       rw [hlen]
-      exact le_trans hB.right_len (by omega)
+      exact Nat.le_trans hB.right_len (by omega)
   · rcases active_step_transition_witness M c c' (Or.inr hactive)
       hactive.1 with ⟨tr, hmem, heq⟩
     rcases tr with ⟨qNext, write, d⟩
@@ -6429,11 +6430,11 @@ theorem pathTapeBound_step
         · have hl := congrArg (fun z => z.tape.left.length) heq'
           simp [NTM.stepBranch, Tape.write, Tape.move] at hl
           rw [hl]
-          exact le_trans hB.left_len (by omega)
+          exact Nat.le_trans hB.left_len (by omega)
         · have hr := congrArg (fun z => z.tape.right.length) heq'
           simp [NTM.stepBranch, Tape.write, Tape.move] at hr
           rw [hr]
-          exact le_trans hB.right_len (by omega)
+          exact Nat.le_trans hB.right_len (by omega)
     | left =>
         have heq' :
             c' = M.machine.stepBranch c (qNext, write, Direction.left) := heq
@@ -6442,11 +6443,11 @@ theorem pathTapeBound_step
         · have hlEq := congrArg (fun z => z.tape.left.length) heq'
           simp [NTM.stepBranch] at hlEq
           rw [hlEq]
-          exact le_trans hlen.1 (le_trans hB.left_len (by omega))
+          exact Nat.le_trans hlen.1 (Nat.le_trans hB.left_len (by omega))
         · have hrEq := congrArg (fun z => z.tape.right.length) heq'
           simp [NTM.stepBranch] at hrEq
           rw [hrEq]
-          exact le_trans hlen.2 (by omega)
+          exact Nat.le_trans hlen.2 (by omega)
     | right =>
         have heq' :
             c' = M.machine.stepBranch c (qNext, write, Direction.right) := heq
@@ -6455,24 +6456,22 @@ theorem pathTapeBound_step
         · have hlEq := congrArg (fun z => z.tape.left.length) heq'
           simp [NTM.stepBranch] at hlEq
           rw [hlEq]
-          exact le_trans hlen.1 (by omega)
+          exact Nat.le_trans hlen.1 (by omega)
         · have hrEq := congrArg (fun z => z.tape.right.length) heq'
           simp [NTM.stepBranch] at hrEq
           rw [hrEq]
-          exact le_trans hlen.2 (le_trans hB.right_len (by omega))
+          exact Nat.le_trans hlen.2 (Nat.le_trans hB.right_len (by omega))
 
 theorem pathTapeBound_all
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (path : Fin (t + 1) -> NTMConfig M)
     (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
-    forall s : Nat, s <= t -> PathTapeBoundAt M x t path s (by assumption) := by
-  intro s
+    ∀ (s : Nat) (hs : s <= t), PathTapeBoundAt M x t path s hs := by
+  intro s hs
   induction s with
   | zero =>
-      intro _
       simpa using pathTapeBound_zero M x t path hPath
   | succ s ih =>
-      intro hsle
       exact pathTapeBound_step M x t s path hPath (by omega) (ih (by omega))
 
 theorem path_left_getD_outside
@@ -6482,7 +6481,7 @@ theorem path_left_getD_outside
     (hs : s <= t) (hi : x.length + s <= i) :
     (path ⟨s, by omega⟩).tape.left.getD i M.machine.blank = M.machine.blank := by
   apply List.getD_eq_default
-  exact le_trans (pathTapeBound_all M x t path hPath s hs).left_len hi
+  exact Nat.le_trans (pathTapeBound_all M x t path hPath s hs).left_len hi
 
 theorem path_right_getD_outside
     (M : PolyNTMCandidate) (x : BitString) (t s i : Nat)
@@ -6491,18 +6490,15 @@ theorem path_right_getD_outside
     (hs : s <= t) (hi : x.length + s <= i) :
     (path ⟨s, by omega⟩).tape.right.getD i M.machine.blank = M.machine.blank := by
   apply List.getD_eq_default
-  exact le_trans (pathTapeBound_all M x t path hPath s hs).right_len hi
+  exact Nat.le_trans (pathTapeBound_all M x t path hPath s hs).right_len hi
 
 
-theorem indexedTransitions_get_mem
+theorem indexedTransitionsAux_get_mem
     {State Symbol : Type}
     (ts : List (State × Symbol × Direction))
-    (j : Nat) (hj : j < ts.length) :
-    (j, ts.get ⟨j, hj⟩) ∈ ntmIndexedTransitions ts := by
-  unfold ntmIndexedTransitions
-  generalize hstart : 0 = start
-  subst start
-  induction ts generalizing j with
+    (start j : Nat) (hj : j < ts.length) :
+    (start + j, ts.get ⟨j, hj⟩) ∈ ntmIndexedTransitionsAux start ts := by
+  induction ts generalizing start j with
   | nil =>
       simp at hj
   | cons tr rest ih =>
@@ -6510,9 +6506,18 @@ theorem indexedTransitions_get_mem
       | zero =>
           simp [ntmIndexedTransitionsAux]
       | succ j =>
-          have hj' : j < rest.length := by omega
-          have hmem := ih j hj'
-          simpa [ntmIndexedTransitionsAux] using hmem
+          have hj' : j < rest.length := by
+            simpa using hj
+          have hmem := ih (start + 1) j hj'
+          simpa [ntmIndexedTransitionsAux, Nat.add_assoc] using hmem
+
+theorem indexedTransitions_get_mem
+    {State Symbol : Type}
+    (ts : List (State × Symbol × Direction))
+    (j : Nat) (hj : j < ts.length) :
+    (j, ts.get ⟨j, hj⟩) ∈ ntmIndexedTransitions ts := by
+  unfold ntmIndexedTransitions
+  simpa using indexedTransitionsAux_get_mem ts 0 j hj
 
 theorem eval_setState_neg_guard_of_exact
     (sigma : Assignment)
@@ -6528,8 +6533,8 @@ theorem eval_setState_neg_guard_of_exact
   unfold ntmSetStateClauses
   apply (evalNTMCNF_map_flatten_ofFn sigma
     (fun r : Fin (M.stateCount + 1) =>
-      [[ntmNeg cvar] ++
-        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))])).2
+      [([ntmNeg cvar] ++
+        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))])])).2
   intro r
   have hunit :
       evalNTMClause sigma
@@ -6549,7 +6554,8 @@ theorem eval_setSymbol_neg_guard_of_exact
       (ntmSetSymbolClauses [ntmNeg cvar] varAt target) = true := by
   unfold ntmSetSymbolClauses
   apply (evalNTMCNF_flatMap_list sigma ntmAlphabet
-    (fun b => [[[ntmNeg cvar] ++ [ntmLitFor (varAt b) (decide (b = target))]]])).2
+    (fun b => [([ntmNeg cvar] ++
+      [ntmLitFor (varAt b) (decide (b = target))])])).2
   intro b hb
   have hunit :
       evalNTMClause sigma [ntmLitFor (varAt b) (decide (b = target))] = true := by
@@ -8610,7 +8616,7 @@ theorem boundedExec_encoded_length_poly
         tableauEncodingCoeff M * r^4 := by
     unfold tableauEncodingCoeff
     nlinarith
-  exact le_trans henc (by
+  exact Nat.le_trans henc (by
     simpa [f, r, ntmRadius, pow_succ, pow_two] using hmain)
 
 theorem boundedExec_initial_sat
