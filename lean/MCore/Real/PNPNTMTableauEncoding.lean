@@ -5722,26 +5722,30 @@ theorem pathAssignment_initial_sat
     (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path) :
     evalNTMCNF (pathAssignment M x t path hPath)
       (ntmInitialCNF M x t) = true := by
-  have hs := pathAssignment_initial_state_sat M x t path hPath
-  have hh := pathAssignment_initial_head_sat M x t path hPath
-  have hl := pathAssignment_initial_left_sat M x t path hPath
-  have hr := pathAssignment_initial_right_sat M x t path hPath
-  rw [show ntmInitialCNF M x t =
-      ntmSetStateClauses [] M t 0 M.machine.initial ++
-      ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head ++
-      (List.range (ntmRadius x t)).flatMap (fun i =>
-        ntmSetLeftCell [] M x t 0 i
-          ((inputTape x).left.getD i M.machine.blank)) ++
-      (List.range (ntmRadius x t)).flatMap (fun i =>
-        ntmSetRightCell [] M x t 0 i
-          ((inputTape x).right.getD i M.machine.blank)) by
-        rfl]
-  rw [evalNTMCNF_append]
-  refine ⟨hs, ?_⟩
-  rw [evalNTMCNF_append]
-  refine ⟨hh, ?_⟩
-  rw [evalNTMCNF_append]
-  exact ⟨hl, hr⟩
+  let sigma := pathAssignment M x t path hPath
+  let st := ntmSetStateClauses [] M t 0 M.machine.initial
+  let hd := ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head
+  let lf := (List.range (ntmRadius x t)).flatMap (fun i =>
+    ntmSetLeftCell [] M x t 0 i
+      ((inputTape x).left.getD i M.machine.blank))
+  let rt := (List.range (ntmRadius x t)).flatMap (fun i =>
+    ntmSetRightCell [] M x t 0 i
+      ((inputTape x).right.getD i M.machine.blank))
+  have hs : evalNTMCNF sigma st = true := by
+    simpa [sigma, st] using pathAssignment_initial_state_sat M x t path hPath
+  have hh : evalNTMCNF sigma hd = true := by
+    simpa [sigma, hd] using pathAssignment_initial_head_sat M x t path hPath
+  have hl : evalNTMCNF sigma lf = true := by
+    simpa [sigma, lf] using pathAssignment_initial_left_sat M x t path hPath
+  have hr : evalNTMCNF sigma rt = true := by
+    simpa [sigma, rt] using pathAssignment_initial_right_sat M x t path hPath
+  have hsh : evalNTMCNF sigma (st ++ hd) = true :=
+    (evalNTMCNF_append sigma st hd).2 ⟨hs, hh⟩
+  have hshl : evalNTMCNF sigma ((st ++ hd) ++ lf) = true :=
+    (evalNTMCNF_append sigma (st ++ hd) lf).2 ⟨hsh, hl⟩
+  have hall : evalNTMCNF sigma (((st ++ hd) ++ lf) ++ rt) = true :=
+    (evalNTMCNF_append sigma ((st ++ hd) ++ lf) rt).2 ⟨hshl, hr⟩
+  simpa [sigma, st, hd, lf, rt, ntmInitialCNF, List.append_assoc] using hall
 
 
 theorem evalNTMClause_append_of_left_true
@@ -5757,31 +5761,38 @@ theorem evalNTMClause_append_of_left_true
       · exact Or.inl hl
       · exact Or.inr (ih hls)
 
+theorem evalNTMCNF_of_all_mem_true
+    (sigma : Assignment) (f : NTMCNF)
+    (h : ∀ cl, cl ∈ f → evalNTMClause sigma cl = true) :
+    evalNTMCNF sigma f = true := by
+  induction f with
+  | nil => rfl
+  | cons cl rest ih =>
+      rw [evalNTMCNF_cons_iff]
+      exact ⟨h cl (by simp), ih (fun c hc => h c (by simp [hc]))⟩
+
 theorem eval_setState_guard_true
     (sigma : Assignment) (guard : NTMClause)
     (M : PolyNTMCandidate) (t s : Nat)
     (target : Fin (M.stateCount + 1))
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmSetStateClauses guard M t s target) = true := by
-  rw [show ntmSetStateClauses guard M t s target =
-      List.ofFn (fun q : Fin (M.stateCount + 1) =>
-        guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))]) by
-        rfl]
-  apply (evalNTMCNF_map_flatten_ofFn sigma
-    (fun q : Fin (M.stateCount + 1) =>
-      [guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))]])).2
-  intro q
-  simp [evalNTMCNF, evalNTMClause_append_of_left_true sigma guard _ hg]
+  apply evalNTMCNF_of_all_mem_true
+  intro cl hcl
+  unfold ntmSetStateClauses at hcl
+  rcases List.mem_ofFn.mp hcl with ⟨q, rfl⟩
+  exact evalNTMClause_append_of_left_true sigma guard _ hg
 
 theorem eval_setSymbol_guard_true
     (sigma : Assignment) (guard : NTMClause)
     (varAt : Option Bool -> Nat) (target : Option Bool)
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmSetSymbolClauses guard varAt target) = true := by
-  apply (evalNTMCNF_flatMap_list sigma ntmAlphabet
-    (fun a => [[guard ++ [ntmLitFor (varAt a) (decide (a = target))]]])).2
-  intro a ha
-  simp [evalNTMCNF, evalNTMClause_append_of_left_true sigma guard _ hg]
+  apply evalNTMCNF_of_all_mem_true
+  intro cl hcl
+  unfold ntmSetSymbolClauses at hcl
+  rcases List.mem_map.mp hcl with ⟨a, _, rfl⟩
+  exact evalNTMClause_append_of_left_true sigma guard _ hg
 
 theorem eval_copySymbol_guard_true
     (sigma : Assignment) (guard : NTMClause)
