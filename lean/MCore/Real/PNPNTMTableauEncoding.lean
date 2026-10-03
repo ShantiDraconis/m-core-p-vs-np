@@ -3969,32 +3969,38 @@ theorem ntmBlankTailAt_active_step
   rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
   cases d with
   | stay =>
+      have hDirStay :
+          ((M.machine.transition q a).get j).2.2 = Direction.stay := by
+        exact congrArg (fun tr => tr.2.2) htr
       refine { hLeft := ?_, hRight := ?_ }
       · intro i hxi hir
         have hold := hB.hLeft i (by omega) hir
         have hcopy := ntmStay_left_copy_exact M x t s q a j sigma hSat hs hActive hj
-          (by simpa [htr]) i hir
+          hDirStay i hir
         rw [hcopy]
         exact hold
       · intro i hxi hir
         have hold := hB.hRight i (by omega) hir
         have hcopy := ntmStay_right_copy_exact M x t s q a j sigma hSat hs hActive hj
-          (by simpa [htr]) i hir
+          hDirStay i hir
         rw [hcopy]
         exact hold
   | left =>
+      have hDirLeft :
+          ((M.machine.transition q a).get j).2.2 = Direction.left := by
+        exact congrArg (fun tr => tr.2.2) htr
       refine { hLeft := ?_, hRight := ?_ }
       · intro i hxi hir
         by_cases hlast : i = ntmRadius x t - 1
         · subst i
           have hex := ntmLeft_blankLeft_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr])
+            hDirLeft
           simpa using hex M.machine.blank
         · have hi : i < ntmRadius x t - 1 := by omega
           have hip1 : i + 1 < ntmRadius x t := by omega
           have hold := hB.hLeft (i + 1) (by omega) hip1
           have hcopy := ntmLeft_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr]) i hi
+            hDirLeft i hi
           rw [hcopy]
           exact hold
       · intro i hxi hir
@@ -4008,10 +4014,13 @@ theorem ntmBlankTailAt_active_step
         have hk : k < ntmRadius x t - 1 := by omega
         have hold := hB.hRight k (by omega) (by omega)
         have hcopy := ntmLeft_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
-          (by simpa [htr]) k hk
+          hDirLeft k hk
         rw [hcopy]
         exact hold
   | right =>
+      have hDirRight :
+          ((M.machine.transition q a).get j).2.2 = Direction.right := by
+        exact congrArg (fun tr => tr.2.2) htr
       refine { hLeft := ?_, hRight := ?_ }
       · intro i hxi hir
         have hne0 : i ≠ 0 := by
@@ -4024,20 +4033,20 @@ theorem ntmBlankTailAt_active_step
         have hk : k < ntmRadius x t - 1 := by omega
         have hold := hB.hLeft k (by omega) (by omega)
         have hcopy := ntmRight_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
-          (by simpa [htr]) k hk
+          hDirRight k hk
         rw [hcopy]
         exact hold
       · intro i hxi hir
         by_cases hlast : i = ntmRadius x t - 1
         · subst i
           have hex := ntmRight_blankRight_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr])
+            hDirRight
           simpa using hex M.machine.blank
         · have hi : i < ntmRadius x t - 1 := by omega
           have hip1 : i + 1 < ntmRadius x t := by omega
           have hold := hB.hRight (i + 1) (by omega) hip1
           have hcopy := ntmRight_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr]) i hi
+            hDirRight i hi
           rw [hcopy]
           exact hold
 
