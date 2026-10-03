@@ -73,6 +73,9 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03RangeFailureFrontier.range_failure_or_range_correct
 
 
+#print axioms MCore.Real.P03PerfectFlipDichotomy.sat_realization_candidate_perfectFlip
+#print axioms MCore.Real.P03PerfectFlipDichotomy.canonicalSAT_inP_implies_existsPerfectFlip
+#print axioms MCore.Real.P03PerfectFlipDichotomy.rangeFailureLaw_implies_canonicalSAT_not_inP
 #print axioms MCore.Real.P03PerfectFlipDichotomy.existsPerfectFlip_iff_not_rangeFailureLaw
 #print axioms MCore.Real.P03PerfectFlipDichotomy.rangeFailureLaw_or_existsPerfectFlip
 #print axioms MCore.Real.P03PerfectFlipDichotomy.perfectFlip_orbit_step
@@ -89,6 +92,15 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03PerfectFlipConstruction.range_first3_classifier_constant
 #print axioms MCore.Real.P03PerfectFlipConstruction.R_M_source_recover
 #print axioms MCore.Real.P03PerfectFlipConstruction.sourceRecursiveFlipLaw_iff_perfectFlip
+
+
+#print axioms MCore.Real.P03UniformRangeDecoder.pointwise_source_recovery
+#print axioms MCore.Real.P03UniformRangeDecoder.head_block_offset_independent
+#print axioms MCore.Real.P03UniformRangeDecoder.range_decodes_to_concrete_tableau
+#print axioms MCore.Real.P03UniformRangeDecoder.cnf_clause_count_le_circuit_size
+#print axioms MCore.Real.P03UniformRangeDecoder.source_length_le_tableau_clause_count
+#print axioms MCore.Real.P03UniformRangeDecoder.source_length_le_reduction_length
+#print axioms MCore.Real.P03UniformRangeDecoder.recoverClockFromHeadVar_correct
 
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
