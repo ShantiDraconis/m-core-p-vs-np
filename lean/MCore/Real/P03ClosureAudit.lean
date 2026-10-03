@@ -79,6 +79,9 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03PerfectFlipDichotomy.perfectFlip_odd_not_equiv
 #print axioms MCore.Real.P03PerfectFlipDichotomy.perfectFlip_no_fullRunWitness
 
+#print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_not_existsPerfectFlip
+#print axioms MCore.Real.P03ClosureKernel.remaining_open_math_or_existsPerfectFlip
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
