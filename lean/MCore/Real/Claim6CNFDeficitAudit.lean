@@ -1,4 +1,3 @@
-import Mathlib.Tactic
 import MCore.C11.BranchingCost
 import MCore.C10.RestrictionProgress
 import MCore.Real.P02BoundedComputationEncoding
