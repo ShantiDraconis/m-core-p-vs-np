@@ -47,14 +47,21 @@ lake update
 # rather than allowing later imports to produce misleading missing-olean errors.
 lake exe cache get
 
-# Compile the base dependency first.  The AUX files import this module.
-echo "-- BASE lean/MCore/Real/PNPNTMTableauEncoding.lean"
-lake env lean lean/MCore/Real/PNPNTMTableauEncoding.lean
-
-# Build the registered library target after the base module is known to elaborate.
-echo "-- LIBRARY MCore"
-lake build MCore
+# Build the registered Lean library topologically.  This is the only reliable
+# way to materialize the full import chain
+# PNPNTMTableauEncoding -> PNPNTMPathFrontier -> PNPNTMTableauFrontier -> ...
+# without depending on stale .olean files.
+echo "-- TOPOLOGICAL LIBRARY MCore"
+MCORE_LOG="${TMPDIR:-/tmp}/p02_lane4_mcore_build.log"
+rm -f "$MCORE_LOG"
+lake build MCore 2>&1 | tee "$MCORE_LOG"
 echo "PREFLIGHT_MCORE_SUCCESS"
+
+# Once the dependency graph has been built, re-elaborate the critical base
+# source directly so its source-level elaboration is independently visible.
+echo "-- BASE RECHECK lean/MCore/Real/PNPNTMTableauEncoding.lean"
+lake env lean lean/MCore/Real/PNPNTMTableauEncoding.lean
+echo "PREFLIGHT_TABLEAU_BASE_SUCCESS"
 
 echo "== PREFLIGHT L3: AUX GATE MIRROR =="
 
