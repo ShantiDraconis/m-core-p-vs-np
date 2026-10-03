@@ -71,6 +71,28 @@ theorem g21_iff_normalized_adversary :
   rw [g21_iff_universal_lower_bound]
   exact P02CanonicalClockReduction.normalizedAdversary_iff_universalSATLowerBound.symm
 
+
+/-- Explicit non-rfl transport requested by the terminal audit.  This consumes
+UniversalSATLowerBound; it does not manufacture the lower-bound witness. -/
+theorem g21Pointwise_of_lowerBound
+    (h : P02UniversalLowerBound.UniversalSATLowerBound) :
+    G21Pointwise := by
+  exact g21_iff_universal_lower_bound.mpr h
+
+/-- Reverse transport, making the exact equivalence visible to audit tooling. -/
+theorem lowerBound_of_g21Pointwise
+    (h : G21Pointwise) :
+    P02UniversalLowerBound.UniversalSATLowerBound := by
+  exact g21_iff_universal_lower_bound.mp h
+
+/-- A direct genuine G21 inhabitant closes the internal endpoint without T10.
+Therefore T10 is a sufficient producer route, not a second mandatory terminal. -/
+theorem g21_closes_internal_endpoint
+    (h : G21Pointwise) :
+    PneqNP := by
+  exact P02UniversalLowerBoundMaster.universal_lower_bound_closes_internal
+    (lowerBound_of_g21Pointwise h)
+
 /-- The frozen Claim1--7 bundle is a useful certified source object, but
 the existing semantic gate proves that a bridge from it to P02 is exactly as
 strong as the official target.  This is a firewall, not a producer. -/
@@ -287,6 +309,9 @@ theorem normalized_route_iff_g21 :
 #print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_not_in_p
 #print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_p02_operator
 #print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_normalized_adversary
+#print axioms P02.LANE4.AdvancedCertificateReuse.g21Pointwise_of_lowerBound
+#print axioms P02.LANE4.AdvancedCertificateReuse.lowerBound_of_g21Pointwise
+#print axioms P02.LANE4.AdvancedCertificateReuse.g21_closes_internal_endpoint
 #print axioms P02.LANE4.AdvancedCertificateReuse.p01_side_closed
 #print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_g22
 #print axioms P02.LANE4.AdvancedCertificateReuse.t10_to_g21
