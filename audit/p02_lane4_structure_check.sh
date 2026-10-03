@@ -34,6 +34,8 @@ FILES=(
   lean/P02/LANE4/StructuralClosure.lean
   lean/P02/LANE4/AUX/STRUCTURAL_CLOSURE.lean
   lean/P02/LANE4/StructureBundle.lean
+  lean/P02/LANE4/AdvancedCertificateReuse.lean
+  audit/P02_LANE4_CERTIFICATE_REUSE_V1.json
   lean/P02/LANE4/OPEN_MATH/BehavioralAlignment.lean
   lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean
   lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean
@@ -65,13 +67,35 @@ grep -q 'def auxStructure' lean/P02/LANE4/StructureBundle.lean \
   || red "missing auxStructure aggregate"
 grep -q 'abbrev T10OpenMath' lean/P02/LANE4/StructureBundle.lean \
   || red "missing T10OpenMath boundary"
+grep -q 'theorem t10_to_universal_lower_bound' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing t10_to_universal_lower_bound"
+grep -q 'theorem exact_diagonal_to_p02_operator' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing exact_diagonal_to_p02_operator"
 echo "SYMBOLS_OK"
 
 # MCore root must wire every structural facade used by the public aggregate.
 grep -q '^import P02.LANE4.AUX.R5_PAIR$' lean/MCore.lean \
   || red "R5_PAIR facade not wired into MCore"
-grep -q '^import P02.LANE4.StructureBundle$' lean/MCore.lean \
+grep -q '^import P02.LANE4.StructureBundleecho "ROOT_IMPORTS_OK"
+
+if grep -R -n -E '(^[[:space:]]*axiom\b|\bsorry\b|\badmit\b|^[[:space:]]*opaque\b)' \
+  lean/P02/LANE4 --include='*.lean'; then
+  red "forbidden construct in LANE4 structure"
+fi
+echo "STRUCTURE_SCAN_OK: 0 axiom/sorry/admit/opaque"
+echo "STRUCTURE_READY_FOR_KERNEL"
+ lean/MCore.lean \
   || red "StructureBundle not wired into MCore"
+grep -q '^import P02.LANE4.AdvancedCertificateReuseecho "ROOT_IMPORTS_OK"
+
+if grep -R -n -E '(^[[:space:]]*axiom\b|\bsorry\b|\badmit\b|^[[:space:]]*opaque\b)' \
+  lean/P02/LANE4 --include='*.lean'; then
+  red "forbidden construct in LANE4 structure"
+fi
+echo "STRUCTURE_SCAN_OK: 0 axiom/sorry/admit/opaque"
+echo "STRUCTURE_READY_FOR_KERNEL"
+ lean/MCore.lean \
+  || red "AdvancedCertificateReuse not wired into MCore"
 echo "ROOT_IMPORTS_OK"
 
 if grep -R -n -E '(^[[:space:]]*axiom\b|\bsorry\b|\badmit\b|^[[:space:]]*opaque\b)' \
