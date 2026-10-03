@@ -3000,22 +3000,15 @@ theorem ntmUniqueAt_active_step
       have hDirStay :
           ((M.machine.transition q a).get j).2.2 = Direction.stay := by
         exact congrArg (fun tr => tr.2.2) htr
-      have hWrite :
-          ((M.machine.transition q a).get j).2.1 = write := by
-        exact congrArg (fun tr => tr.2.1) htr
-      have hHeadRaw :=
+      have hHeadExact :=
         ntmChoice_effect_head_exact_stay M x t s q a j sigma
           hSat hs hActive hDirStay hj
-      have hHeadExact :
-          forall b : Option Bool,
-            sigma (ntmHeadVar M t (s + 1) b) = decide (b = write) := by
-        intro b
-        simpa [hWrite] using hHeadRaw b
       refine {
         hState := existsUnique_of_exact_decide
           (fun r => sigma (ntmStateVar M t (s + 1) r)) qNext hStateExact
         hHead := existsUnique_of_exact_decide
-          (fun b => sigma (ntmHeadVar M t (s + 1) b)) write hHeadExact
+          (fun b => sigma (ntmHeadVar M t (s + 1) b))
+          ((M.machine.transition q a).get j).2.1 hHeadExact
         hLeft := ?_
         hRight := ?_
       }
@@ -3037,9 +3030,6 @@ theorem ntmUniqueAt_active_step
       have hDirLeft :
           ((M.machine.transition q a).get j).2.2 = Direction.left := by
         exact congrArg (fun tr => tr.2.2) htr
-      have hWriteLeft :
-          ((M.machine.transition q a).get j).2.1 = write := by
-        exact congrArg (fun tr => tr.2.1) htr
       have hHeadCopy :
           forall b : Option Bool,
             sigma (ntmHeadVar M t (s + 1) b) =
@@ -3080,18 +3070,12 @@ theorem ntmUniqueAt_active_step
       · intro i hi
         by_cases hzero : i = 0
         · subst i
-          have hRaw :=
+          have hExact :=
             ntmLeft_writeRight0_exact M x t s q a j sigma hSat hs hActive hj
               hDirLeft
-          have hExact :
-              forall b : Option Bool,
-                sigma (ntmRightVar M x t (s + 1) 0 b) =
-                  decide (b = write) := by
-            intro b
-            simpa [hWriteLeft] using hRaw b
           exact existsUnique_of_exact_decide
             (fun b => sigma (ntmRightVar M x t (s + 1) 0 b))
-            write hExact
+            ((M.machine.transition q a).get j).2.1 hExact
         · obtain ⟨k, rfl⟩ : ∃ k, i = k + 1 := by
             use i - 1
             omega
@@ -3106,9 +3090,6 @@ theorem ntmUniqueAt_active_step
       have hDirRight :
           ((M.machine.transition q a).get j).2.2 = Direction.right := by
         exact congrArg (fun tr => tr.2.2) htr
-      have hWriteRight :
-          ((M.machine.transition q a).get j).2.1 = write := by
-        exact congrArg (fun tr => tr.2.1) htr
       have hHeadCopy :
           forall b : Option Bool,
             sigma (ntmHeadVar M t (s + 1) b) =
@@ -3128,18 +3109,12 @@ theorem ntmUniqueAt_active_step
       · intro i hi
         by_cases hzero : i = 0
         · subst i
-          have hRaw :=
+          have hExact :=
             ntmRight_writeLeft0_exact M x t s q a j sigma hSat hs hActive hj
               hDirRight
-          have hExact :
-              forall b : Option Bool,
-                sigma (ntmLeftVar M x t (s + 1) 0 b) =
-                  decide (b = write) := by
-            intro b
-            simpa [hWriteRight] using hRaw b
           exact existsUnique_of_exact_decide
             (fun b => sigma (ntmLeftVar M x t (s + 1) 0 b))
-            write hExact
+            ((M.machine.transition q a).get j).2.1 hExact
         · obtain ⟨k, rfl⟩ : ∃ k, i = k + 1 := by
             use i - 1
             omega
