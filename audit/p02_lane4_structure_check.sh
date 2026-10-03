@@ -14,6 +14,7 @@ echo "== P02-LANE-4 L0: STRUCTURE COMPLETENESS =="
 FILES=(
   lakefile.toml
   lean/MCore.lean
+  lean/P02.lean
   lean/P02Lane4.lean
 
   lean/MCore/Real/PNPCookLevinMaterialMinCut.lean
@@ -116,6 +117,27 @@ grep -q 'theorem terminal_iff_not_in_p' lean/P02/LANE4/CompleteBundle.lean   || 
 echo "SYMBOLS_OK"
 
 echo "== L0 ROOT WIRING =="
+grep -q '^import P02.LANE4.CompleteBundlegrep -q '^import P02.LANE4.AUX.R5_PAIR$' lean/MCore.lean   || red "R5_PAIR facade not wired into MCore"
+grep -q '^import P02.LANE4.StructureBundle$' lean/MCore.lean   || red "StructureBundle not wired into MCore"
+grep -q '^import P02.LANE4.AdvancedCertificateReuse$' lean/MCore.lean   || red "AdvancedCertificateReuse not wired into MCore"
+grep -q '^import P02.LANE4.CompleteBundle$' lean/MCore.lean   || red "CompleteBundle not wired into MCore"
+echo "ROOT_IMPORTS_OK"
+
+echo "== L0 FORBIDDEN CONSTRUCT SCAN =="
+if grep -R -n -E   '(^[[:space:]]*axiom[[:space:]]|(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)|^[[:space:]]*opaque[[:space:]])'   lean/P02/LANE4 --include='*.lean'
+then
+  red "forbidden construct in P02-LANE-4"
+fi
+echo "STRUCTURE_SCAN_OK: 0 axiom/sorry/admit/opaque"
+
+echo "L0_OK: STRUCTURE_CONSTRUCTED_SOURCE_COMPLETE"
+echo "KERNEL_VERIFIED: false"
+echo "T10: OPEN_MATH"
+echo "G21Pointwise: OPEN_MATH"
+echo "FROZEN_HARD_AUX: false"
+echo "FROZEN_HARD_FULL: false"
+ lean/P02.lean \
+  || red "P02 root does not import CompleteBundle"
 grep -q '^import P02.LANE4.AUX.R5_PAIR$' lean/MCore.lean   || red "R5_PAIR facade not wired into MCore"
 grep -q '^import P02.LANE4.StructureBundle$' lean/MCore.lean   || red "StructureBundle not wired into MCore"
 grep -q '^import P02.LANE4.AdvancedCertificateReuse$' lean/MCore.lean   || red "AdvancedCertificateReuse not wired into MCore"
