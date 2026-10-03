@@ -3040,7 +3040,7 @@ theorem ntmUniqueAt_active_step
               sigma (ntmLeftVar M x t s 0 b) := by
         simpa [htr] using
           ntmChoice_effect_head_exact_left M x t s q a j sigma
-            hSat hs hActive hDirStay hj
+            hSat hs hActive hDirLeft hj
       refine {
         hState := existsUnique_of_exact_decide
           (fun r => sigma (ntmStateVar M t (s + 1) r)) qNext hStateExact
@@ -3108,7 +3108,7 @@ theorem ntmUniqueAt_active_step
               sigma (ntmRightVar M x t s 0 b) := by
         simpa [htr] using
           ntmChoice_effect_head_exact_right M x t s q a j sigma
-            hSat hs hActive hDirStay hj
+            hSat hs hActive hDirRight hj
       refine {
         hState := existsUnique_of_exact_decide
           (fun r => sigma (ntmStateVar M t (s + 1) r)) qNext hStateExact
