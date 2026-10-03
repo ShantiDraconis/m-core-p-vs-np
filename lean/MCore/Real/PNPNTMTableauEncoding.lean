@@ -5403,17 +5403,19 @@ noncomputable def choiceIdxOfStep
     (path : Fin (t + 1) -> NTMConfig M)
     {c0 : NTMConfig M}
     (hPath : NTMTableauPath M t c0 path)
-    (s : Nat) (hs : s < t) : Nat :=
+    (s : Nat) (hs : s < t) : Nat := by
+  classical
   let c := path ⟨s, by omega⟩
   let c' := path ⟨s + 1, by omega⟩
-  if hActive : NTMActive M c then
-    let hStep : NTMTableauStep M c c' := by
-      simpa [c, c'] using hPath.2 ⟨s, hs⟩
-    let tr := (active_step_transition_witness M c c' hStep hActive).choose
-    let hmem := (active_step_transition_witness M c c' hStep hActive).choose_spec.1
-    (transition_mem_to_idx (M.machine.transition c.state c.tape.head) tr hmem).choose
-  else
-    0
+  exact
+    if hActive : NTMActive M c then
+      let hStep : NTMTableauStep M c c' := by
+        simpa [c, c'] using hPath.2 ⟨s, hs⟩
+      let tr := (active_step_transition_witness M c c' hStep hActive).choose
+      let hmem := (active_step_transition_witness M c c' hStep hActive).choose_spec.1
+      (transition_mem_to_idx (M.machine.transition c.state c.tape.head) tr hmem).choose
+    else
+      0
 
 theorem choiceIdxOfStep_active_spec
     (M : PolyNTMCandidate)
