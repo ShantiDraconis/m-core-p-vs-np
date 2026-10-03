@@ -5065,18 +5065,19 @@ theorem filterMap_mem_exists_early
   | nil =>
       simp at hy
   | cons x xs ih =>
-      simp only [List.filterMap_cons] at hy
       cases hfx : f x with
       | none =>
-          simp [hfx] at hy
-          rcases ih hy with ⟨z, hz, hfz⟩
-          exact ⟨z, by simp [hz], hfz⟩
+          rw [List.filterMap_cons, hfx] at hy
+          rcases ih hy with ⟨z, hzmem, hfz⟩
+          exact ⟨z, List.mem_cons_of_mem x hzmem, hfz⟩
       | some z =>
-          simp [hfx] at hy
-          rcases hy with rfl | hy
-          · exact ⟨x, by simp, hfx⟩
-          · rcases ih hy with ⟨w, hw, hfw⟩
-            exact ⟨w, by simp [hw], hfw⟩
+          rw [List.filterMap_cons, hfx] at hy
+          simp only [List.mem_cons] at hy
+          rcases hy with hyHead | hyTail
+          · subst z
+            exact ⟨x, by simp, hfx⟩
+          · rcases ih hyTail with ⟨w, hwmem, hfw⟩
+            exact ⟨w, List.mem_cons_of_mem x hwmem, hfw⟩
 
 theorem acceptingStateLits_sat_exists
     (M : PolyNTMCandidate) (t : Nat) (sigma : Assignment)
@@ -5149,7 +5150,11 @@ theorem tableau_soundness_from_assignment
 theorem ntmSymbolCode_lt_three
     (a : Option Bool) :
     ntmSymbolCode a < 3 := by
-  cases a <;> simp [ntmSymbolCode]
+  cases a with
+  | none =>
+      simp [ntmSymbolCode]
+  | some b =>
+      cases b <;> simp [ntmSymbolCode]
 
 theorem ntmStateVar_lt_headBase
     (M : PolyNTMCandidate) (t s : Nat)
