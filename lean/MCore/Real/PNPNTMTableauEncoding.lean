@@ -4148,9 +4148,9 @@ theorem rawLeftList_left_shape
       have hblank :
           decodeLeftCell M x t sigma hSat (s + 1) (by omega)
             (ntmRadius x t - 1) (by omega) = M.machine.blank := by
-        apply (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
-          (ntmRadius x t - 1) (by omega) M.machine.blank)
-        simpa using hExact M.machine.blank
+        exact (decodeLeftCell_unique M x t sigma hSat (s + 1) (by omega)
+          (ntmRadius x t - 1) (by omega) M.machine.blank
+          (by simpa using hExact M.machine.blank)).symm
       simp [rawLeftList, hblank, rawLeftList_length, ntmRadius]
     · have hiShift : i < ntmRadius x t - 1 := by omega
       have hiOld : i + 1 < ntmRadius x t := by omega
@@ -4197,9 +4197,9 @@ theorem rawRightList_left_shape
         have hwrite :
             decodeRightCell M x t sigma hSat (s + 1) (by omega) 0 (by omega) =
               ((M.machine.transition q a).get j).2.1 := by
-          apply (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
-            0 (by omega) ((M.machine.transition q a).get j).2.1)
-          simpa using hExact ((M.machine.transition q a).get j).2.1
+          exact (decodeRightCell_unique M x t sigma hSat (s + 1) (by omega)
+            0 (by omega) ((M.machine.transition q a).get j).2.1
+            (by simpa using hExact ((M.machine.transition q a).get j).2.1)).symm
         simp [rawRightList, hwrite]
     | succ k =>
         have hk : k < ntmRadius x t - 1 := by omega
