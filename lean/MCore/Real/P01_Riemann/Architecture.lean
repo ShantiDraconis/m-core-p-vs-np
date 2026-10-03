@@ -1,3 +1,6 @@
+import MCore.Real.P01_Riemann.ClosedBase.ZetaEulerProduct
+import MCore.Real.P01_Riemann.ClosedBase.ZetaFunctionalEquation
+import MCore.Real.P01_Riemann.ClosedBase.ZetaAnalytic
 namespace MCore.Real.P01_Riemann.Architecture
 
 /--
@@ -19,7 +22,13 @@ structure LayerRecord where
   note : String
   deriving Repr, DecidableEq
 
-def closedBase : List LayerRecord := []
+def closedBase : List LayerRecord :=
+  [ ⟨"ZetaAnalytic", .sourceClosedBuildUnverified,
+      "completed zeta0 entire; riemannZeta differentiable away from s=1"⟩
+  , ⟨"ZetaFunctionalEquation", .sourceClosedBuildUnverified,
+      "completed zeta reflection s ↦ 1-s"⟩
+  , ⟨"ZetaEulerProduct", .sourceClosedBuildUnverified,
+      "Euler product and nonvanishing for Re(s)>1"⟩ ]
 
 def closedBridge : List LayerRecord := []
 
@@ -42,6 +51,9 @@ def materialGaps : Nat := 1
 def green : Bool := false
 def buildVerified : Bool := false
 
+theorem closed_base_source_count :
+    closedBase.length = 3 := by decide
+
 theorem target_open_bridge_count :
     targetOpenBridgeCount = 1 := rfl
 
@@ -52,6 +64,7 @@ theorem fail_closed :
     green = false ∧ buildVerified = false := by
   rfl
 
+#print axioms MCore.Real.P01_Riemann.Architecture.closed_base_source_count
 #print axioms MCore.Real.P01_Riemann.Architecture.target_open_bridge_count
 #print axioms MCore.Real.P01_Riemann.Architecture.material_gap_count
 #print axioms MCore.Real.P01_Riemann.Architecture.fail_closed
