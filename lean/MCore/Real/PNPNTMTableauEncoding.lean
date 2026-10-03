@@ -2314,11 +2314,9 @@ theorem haltedCase_sat
     evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true := by
   have hStep := boundedExec_transitionStep_sat M x t s sigma hSat hs
   have hCase := transitionStep_case_sat M x t s q a sigma hStep
-  have hor : M.machine.accepting q || M.machine.rejecting q = true := by
-    rcases hHalt with ha | hr
-    · simp [ha]
-    · simp [hr]
-  simpa [ntmTransitionCaseCNF, hor] using hCase
+  rcases hHalt with ha | hr
+  · simpa [ntmTransitionCaseCNF, ha] using hCase
+  · simpa [ntmTransitionCaseCNF, hr] using hCase
 
 theorem evalNTMClause_two_neg_prefix_true
     (sigma : Assignment) (c1 c2 : Nat) (cl : NTMClause)
@@ -2348,7 +2346,11 @@ theorem eval_setState_two_neg_guard_to_nil
     apply evalNTMCNF_of_mem sigma
       (ntmSetStateClauses [ntmNeg c1, ntmNeg c2] M t s target) _
       h
-    simp [ntmSetStateClauses]
+    rw [show ntmSetStateClauses [ntmNeg c1, ntmNeg c2] M t s target =
+      List.ofFn (fun q : Fin (M.stateCount + 1) =>
+        [ntmNeg c1, ntmNeg c2] ++
+          [ntmLitFor (ntmStateVar M t s q) (decide (q = target))]) by rfl]
+    exact List.mem_ofFn.mpr ⟨r, rfl⟩
   have hunit :
       evalNTMClause sigma
         [ntmLitFor (ntmStateVar M t s r) (decide (r = target))] = true := by
@@ -2375,7 +2377,11 @@ theorem eval_copySymbol_two_neg_guard_true
     apply evalNTMCNF_of_mem sigma
       (ntmCopySymbolClauses [ntmNeg c1, ntmNeg c2] oldVar newVar) _
       h
-    cases b <;> simp [ntmCopySymbolClauses, ntmAlphabet]
+    cases b with
+    | none =>
+        simp [ntmCopySymbolClauses, ntmAlphabet]
+    | some bv =>
+        cases bv <;> simp [ntmCopySymbolClauses, ntmAlphabet]
   have hbwd :
       evalNTMClause sigma
         ([ntmNeg c1, ntmNeg c2] ++
@@ -2383,7 +2389,11 @@ theorem eval_copySymbol_two_neg_guard_true
     apply evalNTMCNF_of_mem sigma
       (ntmCopySymbolClauses [ntmNeg c1, ntmNeg c2] oldVar newVar) _
       h
-    cases b <;> simp [ntmCopySymbolClauses, ntmAlphabet]
+    cases b with
+    | none =>
+        simp [ntmCopySymbolClauses, ntmAlphabet]
+    | some bv =>
+        cases bv <;> simp [ntmCopySymbolClauses, ntmAlphabet]
   have hf :
       evalNTMClause sigma [ntmNeg (oldVar b), ntmPos (newVar b)] = true :=
     evalNTMClause_two_neg_prefix_true sigma c1 c2 _
