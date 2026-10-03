@@ -1,8 +1,8 @@
 {
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
-  "head_at_record": "916f0267ae61159b31446f5ca489b8ec9dc2782b",
-  "status": "BUILD_PENDING_FAIL_CLOSED",
+  "head_at_record": "4018038749895045274786328e0834b7e14b61a9",
+  "status": "BUILD_PENDING_FAIL_CLOSED_DENSIFIED",
   "structural": {
     "R1": "CONSTRUCTED",
     "R2": "CONSTRUCTED",
@@ -22,7 +22,13 @@
     "lean/P02/LANE4/AUX/R4_INITIAL_INJECTIVE.lean",
     "lean/P02/LANE4/AUX/R4_FINAL.lean",
     "lean/P02/LANE4/AUX/R5_PAIR_INJECTIVE.lean",
-    "lean/P02/LANE4/StructuralClosure.lean"
+    "lean/P02/LANE4/StructuralClosure.lean",
+    "lean/P02/LANE4/AUX/R4_INITIAL_CNF_DECODER.lean",
+    "lean/P02/LANE4/AUX/R4_FIXED_FUEL.lean",
+    "lean/P02/LANE4/AUX/R5_PAIR.lean",
+    "lean/P02/LANE4/AUX/STRUCTURAL_CLOSURE.lean",
+    "lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean",
+    "audit/p02_lane4_aux_green.sh"
   ],
   "t10": {
     "state": "OPEN_MATH",
@@ -39,7 +45,9 @@
     "SAT not in P",
     "P != NP",
     "T10 semantic closure",
-    "FROZEN_HARD"
+    "FROZEN_HARD",
+    "FuelToBehaviorBridge",
+    "FuelWitnessProducer"
   ],
   "rules": [
     "NO_SCAFFOLD_ESCAPE",
@@ -49,7 +57,7 @@
   ],
   "open_math_route": {
     "file": "lean/P02/LANE4/OPEN_MATH/BehavioralAlignment.lean",
-    "commit": "4880da19a05848f31370431c404f6643eed12694",
+    "commit": "5dca35b440e555bc063210e77cfcc8058935df69",
     "t10_target": "MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer",
     "fuel_route": {
       "witness_producer": "P02.LANE4.OPEN_MATH.BehavioralAlignment.FuelWitnessProducer",
@@ -60,6 +68,19 @@
       "Fuel dominance alone does not imply behavioral preservation for an arbitrary candidate.",
       "Opposite behavior at reduce(x) does not yield UniversalFailure; with Cook-Levin correctness it yields correctness of M on that reduction output."
     ],
-    "state": "OPEN_MATH"
+    "state": "OPEN_MATH",
+    "densified": {
+      "behavior_dichotomy": "SameBehaviorAt ∨ OppositeBehaviorAt for every fixed source",
+      "opposite_branch": "OppositeBehaviorAt -> M agrees with CanonicalSAT on reduce(x), not UniversalFailure",
+      "structural_fact": "R5 gives injectivity/recoverability only; it does not inhabit FuelToBehaviorBridge",
+      "abstract_barrier_file": "lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean",
+      "abstract_barrier": "bare fuel dominance does not logically imply same behavior without machine-specific semantics"
+    }
+  },
+  "local_gate": {
+    "file": "audit/p02_lane4_aux_green.sh",
+    "state": "NOT_RUN",
+    "success_label": "AUX_GREEN_CANDIDATE",
+    "full_green_forbidden_while_t10_open": true
   }
 }
