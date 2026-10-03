@@ -3776,7 +3776,8 @@ theorem ntmBlankTail_penultimate
     simp [ntmRadius]
     omega
   have hlt : ntmRadius x t - 2 < ntmRadius x t := by
-    simp [ntmRadius]
+    unfold ntmRadius
+    omega
   exact ⟨hB.hLeft _ hidx hlt, hB.hRight _ hidx hlt⟩
 
 
