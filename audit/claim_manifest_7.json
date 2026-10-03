@@ -1,0 +1,143 @@
+{
+  "schema": "claim-frontier-7/v1",
+  "branch": "atk/pnp-cook-levin-material-mincut-20261001",
+  "generated_from": "source inspection only; no lake build executed",
+  "global": {
+    "green": false,
+    "build": "UNVERIFIED",
+    "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01/P02 evidence files"
+  },
+  "P01_Riemann": {
+    "closedBase": {
+      "count": 3,
+      "state": "LOCAL_SOURCE_CLOSED_BUILD_UNVERIFIED",
+      "files": [
+        {
+          "name": "ZetaAnalytic",
+          "commit": "857724f66cc1cc688ae8ecf3aca21a272b1451b1"
+        },
+        {
+          "name": "ZetaFunctionalEquation",
+          "commit": "67c594b68e80945fb54f371d5f523be73da36933"
+        },
+        {
+          "name": "ZetaEulerProduct",
+          "commit": "6404463249d03eb77f4a367bceda796c068ce150"
+        }
+      ]
+    },
+    "sourceMiddle": {
+      "count": 1,
+      "state": "TYPE_DEFINED_FINITE_WINDOW_NOT_YET_FINITE_ENUMERATION_THEOREM",
+      "file": {
+        "name": "BoundedZeroCandidate",
+        "commit": "90e9873ce6725c499d897326d1395d92c93da672"
+      }
+    },
+    "closedBridge": {
+      "count": 0,
+      "state": "EMPTY"
+    },
+    "openBridge": {
+      "name": "BoundedZeroUnique",
+      "state": "ADMINISTRATIVE_TARGET_ONLY"
+    },
+    "materialGaps": 1,
+    "green": false,
+    "build": "UNVERIFIED",
+    "architecture_commit": "707d398b6ceb54927cbf8a9c728b990dfe6ccae5",
+    "audit_commit": "0216d8473e78d138dd7ffaec7529453097bd49ce"
+  },
+  "P02_YangMills": {
+    "closedBase": {
+      "count": 4,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "canonical_source": {
+        "repo": "ShantiDraconis/m-core-yang-mills",
+        "ref": "cd4bbfd348b607bd24ed0c6d605207b764286f58"
+      },
+      "files": [
+        {
+          "name": "ReflectionPositivityInterfaceTrivial",
+          "commit": "33c28ae312037895a5c55d349b552fea3ec24a64"
+        },
+        {
+          "name": "PositiveTransferInterfaceTrivial",
+          "commit": "eebd47fe7ff31924cf757307902a5866326ac9e1"
+        },
+        {
+          "name": "A1FrontierReduction",
+          "commit": "53b9a2c7b80c622bb073dc0e451a222a3261dc0a"
+        },
+        {
+          "name": "B6IsUniqueBlockingNode",
+          "commit": "92641c5be33eb28dc8691a400b87d4905555a5b2"
+        }
+      ]
+    },
+    "closedBridge": {
+      "count": 1,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "file": {
+        "name": "B60ToMassGap",
+        "commit": "1a1b45a125619d4eb45d8fd340fee4667ddb1c5e"
+      }
+    },
+    "sourceMiddle": {
+      "count": 0,
+      "state": "EMPTY"
+    },
+    "openBridge": {
+      "name": "B60ConcretePhysicalAdapter",
+      "state": "REAL_FRONTIER_IN_CANONICAL_SOURCE_NOT_YET_DECOMPOSED_TO_UNIQUE_PIVOT"
+    },
+    "materialGaps": 1,
+    "green": false,
+    "build": "UNVERIFIED",
+    "architecture_commit": "db2b8d1b3ae533ec7572d1c24e927c30cd866f9b",
+    "audit_commit": "dd79326cc4c3760c484da5f1adcd6f130566ae59"
+  },
+  "P03_PvsNP": {
+    "state": "REAL_ARCHITECTURE_BOUND",
+    "openBridge": "Nonempty CompleteRouteBInhabitant",
+    "components": [
+      "BoundedSourceUnique",
+      "UniformDecoderEffective",
+      "StrictRangeGrowth",
+      "DepthParityCertificate"
+    ],
+    "materialGaps": 1,
+    "green": false,
+    "build": "UNVERIFIED",
+    "complete_route_b_commit": "8efb917c1f5939b1a94a850ff0c6905ad61fc4e3",
+    "architecture_commit": "5b218e4513f02939f5863df8e0224856be1e7cf6",
+    "audit_commit": "641531d189eb925646ea2dd7e268926d79b73491"
+  },
+  "P04_NavierStokes": {
+    "state": "SKELETON_FAIL_CLOSED",
+    "closedBase": 0,
+    "closedBridge": 0,
+    "sourceMiddle": 0,
+    "green": false,
+    "build": "UNVERIFIED"
+  },
+  "P05_Hodge": {
+    "state": "SKELETON_FAIL_CLOSED",
+    "closedBase": 0,
+    "closedBridge": 0,
+    "sourceMiddle": 0,
+    "green": false,
+    "build": "UNVERIFIED"
+  },
+  "P06_BSD": {
+    "state": "SKELETON_FAIL_CLOSED",
+    "closedBase": 0,
+    "closedBridge": 0,
+    "sourceMiddle": 0,
+    "green": false,
+    "build": "UNVERIFIED"
+  },
+  "P07_Poincare": {
+    "state": "NOT_AUDITED_IN_THIS_BRANCH_MANIFEST"
+  }
+}
