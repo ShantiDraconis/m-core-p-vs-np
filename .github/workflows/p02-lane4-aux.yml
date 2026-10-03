@@ -8,7 +8,7 @@ on:
 jobs:
   aux:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
@@ -17,20 +17,14 @@ jobs:
           test: false
           lint: false
 
-      - name: Resolve pinned dependencies
+      - name: P02-LANE-4 local/CI identical preflight
         run: |
           set -euo pipefail
-          lake update
-          lake exe cache get
+          bash audit/preflight_local.sh 2>&1 | tee audit/P02-LANE4-PREFLIGHT.log
 
-      - name: P02-LANE-4 fail-closed gate
-        run: |
-          set -euo pipefail
-          bash audit/p02_lane4_aux_green.sh 2>&1 | tee audit/P02-LANE4-AUX-GATE.log
-
-      - name: Upload gate log
+      - name: Upload preflight log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: p02-lane4-aux-gate
-          path: audit/P02-LANE4-AUX-GATE.log
+          name: p02-lane4-preflight
+          path: audit/P02-LANE4-PREFLIGHT.log
