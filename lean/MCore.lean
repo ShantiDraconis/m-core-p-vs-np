@@ -205,3 +205,17 @@ import MCore.Real.SixOpenFrontierRegistry
 import MCore.Real.SevenLaneClaimBoundary
 
 import MCore.Real.PvsNPTerminalLaw
+
+
+import MCore.Real.P02BoundedComputationEncoding
+import MCore.Real.Claim3PersistentFamily
+import MCore.Real.Claim4NormalizedProgress
+import MCore.Real.Claim7VariableCoverage
+import MCore.Real.P02RestrictionLowerBoundPattern
+import MCore.Real.Claim6CNFDeficitAudit
+import MCore.Real.P02RestrictionFamilyAudit
+import MCore.Real.TotalVariableCoverageObligationNorm
+import MCore.Real.BridgeSeven
+import MCore.Real.Claim1To7Only
+import MCore.Real.P02CNFEncodingDeficitAudit
+import MCore.Real.P02Lane4SemanticGate
