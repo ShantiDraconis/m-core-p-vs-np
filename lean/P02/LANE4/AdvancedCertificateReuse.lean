@@ -1,3 +1,4 @@
+import MCore.Real.P02Lane4SemanticGate
 import MCore.Attack.CanonicalTerminalProducer
 import MCore.Real.P01PostMinCutClosure
 import P02.LANE4.StructureBundle
@@ -32,6 +33,7 @@ open MCore.Real.P02KleeneKernel
 open MCore.Real.P02EffectiveAlignment
 open MCore.Real.P02UniversalLowerBoundMaster
 open MCore.Real.P01PostMinCutClosure
+open MCore.Real.P02Lane4SemanticGate
 
 /-- Fixed canonical SAT target shared by the frozen P01 side and all
 current P02 normal forms. -/
@@ -68,6 +70,18 @@ theorem g21_iff_normalized_adversary :
     G21Pointwise ↔ Nonempty P02CanonicalClockReduction.NormalizedAdversary := by
   rw [g21_iff_universal_lower_bound]
   exact P02CanonicalClockReduction.normalizedAdversary_iff_universalSATLowerBound.symm
+
+/-- The frozen Claim1--7 bundle is a useful certified source object, but
+the existing semantic gate proves that a bridge from it to P02 is exactly as
+strong as the official target.  This is a firewall, not a producer. -/
+theorem claim_bundle_bridge_iff_g21 :
+    MCore.Real.P02Lane4SemanticGate.T10SemanticBridge ↔ G21Pointwise := by
+  rw [MCore.Real.P02Lane4SemanticGate.t10SemanticBridge_iff_officialTarget]
+  exact g21_iff_universal_lower_bound.symm
+
+theorem claim_bundle_is_inhabited :
+    MCore.Real.P02Lane4SemanticGate.CandidateRoot :=
+  MCore.Real.P02Lane4SemanticGate.candidateRoot_inhabited
 
 /-- The entire SAT-in-NP side is already kernel-connected in the current
 branch and should be reused rather than reopened. -/
@@ -267,6 +281,8 @@ theorem normalized_route_iff_g21 :
     Nonempty P02CanonicalClockReduction.NormalizedAdversary ↔ G21Pointwise :=
   g21_iff_normalized_adversary.symm
 
+#print axioms P02.LANE4.AdvancedCertificateReuse.claim_bundle_bridge_iff_g21
+#print axioms P02.LANE4.AdvancedCertificateReuse.claim_bundle_is_inhabited
 #print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_universal_failure
 #print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_not_in_p
 #print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_p02_operator
