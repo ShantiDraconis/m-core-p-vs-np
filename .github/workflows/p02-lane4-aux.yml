@@ -1,0 +1,31 @@
+name: p02-lane4-aux
+on:
+  push:
+    branches:
+      - atk/p02-lane4-reuse-t10-audit-20261003
+  workflow_dispatch:
+
+jobs:
+  aux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
+      - name: P02-LANE-4 fail-closed gate
+        run: |
+          set -euo pipefail
+          bash audit/p02_lane4_aux_green.sh 2>&1 | tee audit/P02-LANE4-AUX-GATE.log
+
+      - name: Upload gate log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p02-lane4-aux-gate
+          path: audit/P02-LANE4-AUX-GATE.log
