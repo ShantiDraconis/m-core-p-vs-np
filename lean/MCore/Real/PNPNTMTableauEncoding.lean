@@ -8559,12 +8559,25 @@ theorem tableauVarCap_poly
   have hbase :
       ntmChoiceBase M x t <= (Q + 9) * r^2 := by
     unfold ntmChoiceBase ntmRightBase ntmLeftBase ntmHeadBase ntmStateSlots
-    have hq := Nat.mul_le_mul_right Q ht1
-    have h3 := Nat.mul_le_mul_right 3 ht1
-    have h6r0 := Nat.mul_le_mul_right (r * 6) ht1
-    have hq2 := Nat.le_trans hq (Nat.mul_le_mul_left Q hr_sq)
-    have h32 := Nat.le_trans h3 (Nat.mul_le_mul_left 3 hr_sq)
-    have h6r :
+    have hq :
+      (t + 1) * Q <= r * Q :=
+    Nat.mul_le_mul_right Q ht1
+  have h3 :
+      (t + 1) * 3 <= r * 3 :=
+    Nat.mul_le_mul_right 3 ht1
+  have hq2 :
+      (t + 1) * Q <= Q * r^2 := by
+    calc
+      (t + 1) * Q <= r * Q := hq
+      _ <= r^2 * Q := Nat.mul_le_mul_right Q hr_sq
+      _ = Q * r^2 := by ring
+  have h32 :
+      (t + 1) * 3 <= 3 * r^2 := by
+    calc
+      (t + 1) * 3 <= r * 3 := h3
+      _ <= r^2 * 3 := Nat.mul_le_mul_right 3 hr_sq
+      _ = 3 * r^2 := by ring
+  have h6r :
         (t + 1) * r * 6 <= 6 * r^2 := by
       calc
         (t + 1) * r * 6 <= r * r * 6 := by
@@ -8662,7 +8675,11 @@ theorem boundedExec_encoded_length_poly
         13 * (W * r^2) * (V * r^2) :=
     Nat.mul_le_mul hmul1 hv
   have h13 : 13 * W * V <= 16 * W * V := by
-    exact Nat.mul_le_mul_right (W * V) (by omega)
+    calc
+      13 * W * V = 13 * (W * V) := by ring
+      _ <= 16 * (W * V) :=
+        Nat.mul_le_mul_right (W * V) (by omega)
+      _ = 16 * W * V := by ring
   have hprod :
       13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) <=
         16 * W * V * r^4 := by
