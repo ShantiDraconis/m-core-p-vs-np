@@ -3009,6 +3009,22 @@ def trimTrailingBlank
     (blank : Option Bool) (xs : List (Option Bool)) : List (Option Bool) :=
   (xs.reverse.dropWhile (fun a => decide (a = blank))).reverse
 
+noncomputable def rawLeftList
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : List (Option Bool) :=
+  List.ofFn (fun i : Fin (ntmRadius x t) =>
+    decodeLeftCell M x t sigma hSat s hs i.val i.isLt)
+
+noncomputable def rawRightList
+    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
+    (sigma : Assignment)
+    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
+    (s : Nat) (hs : s <= t) : List (Option Bool) :=
+  List.ofFn (fun i : Fin (ntmRadius x t) =>
+    decodeRightCell M x t sigma hSat s hs i.val i.isLt)
+
 noncomputable def decodeLeftList
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
@@ -3154,22 +3170,6 @@ theorem trimTrailingBlank_all_blank
       rw [List.replicate_succ]
       rw [trimTrailingBlank_append_blank]
       exact ih
-
-noncomputable def rawLeftList
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment)
-    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
-    (s : Nat) (hs : s <= t) : List (Option Bool) :=
-  List.ofFn (fun i : Fin (ntmRadius x t) =>
-    decodeLeftCell M x t sigma hSat s hs i.val i.isLt)
-
-noncomputable def rawRightList
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment)
-    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
-    (s : Nat) (hs : s <= t) : List (Option Bool) :=
-  List.ofFn (fun i : Fin (ntmRadius x t) =>
-    decodeRightCell M x t sigma hSat s hs i.val i.isLt)
 
 theorem decodeLeftList_eq_trim_raw
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
