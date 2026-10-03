@@ -5003,7 +5003,9 @@ theorem ntmDecode_step
             ∈
           M.machine.successors
               (operationalDecodeConfig M x t sigma hSat s (by omega)) := by
-        simp [NTM.successors, hstates, hheads, htrmem]
+        unfold NTM.successors
+        rw [hstates, hheads]
+        exact List.mem_map.mpr ⟨tr, htrmem, rfl⟩
       rw [hStep]
       exact hsucc
 
