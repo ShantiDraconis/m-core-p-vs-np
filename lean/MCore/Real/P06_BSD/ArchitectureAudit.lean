@@ -11,6 +11,7 @@ namespace MCore.Real.P06_BSD.ArchitectureAudit
 #print axioms MCore.Real.P06_BSD.OpenBridge.RealizableBSDProducerTarget.source_ref_fixed
 #print axioms MCore.Real.P06_BSD.Architecture.closed_base_source_count
 #print axioms MCore.Real.P06_BSD.Architecture.closed_bridge_source_count
+#print axioms MCore.Real.P06_BSD.Architecture.material_atom_count
 #print axioms MCore.Real.P06_BSD.Architecture.target_open_bridge_count
 #print axioms MCore.Real.P06_BSD.Architecture.material_gap_count
 #print axioms MCore.Real.P06_BSD.Architecture.fail_closed
