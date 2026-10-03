@@ -77,29 +77,33 @@ failure of the original candidate at one concrete input. -/
 theorem counterexample_fails
     {M : PolyDTMCandidate}
     (B : CandidateKleeneBridge M) :
-    ¬ M.CorrectAt CanonicalSAT (counterexample B) := by
+    ¬ M.CorrectAt CanonicalSAT (counterexample B') := by
+  rcases B with ⟨K, R⟩
+  let B' : CandidateKleeneBridge M := ⟨K, R⟩
+  have hfix :
+      K.eval (K.compile (fixedCode B')) =
+        K.eval (fixedCode B') :=
+    fixedCode_spec B'
   have hflip :
-      CanonicalSAT (counterexample B) ↔
-        ¬ DeclaredAccepts M (counterexample B) := by
+      CanonicalSAT (counterexample B') ↔
+        ¬ DeclaredAccepts M (counterexample B') := by
     change
-      CanonicalSAT (B.realizer.bitsOf (fixedCode B)) ↔
-        ¬ DeclaredAccepts M (B.realizer.bitsOf (fixedCode B))
-    exact B.realizer.flips_of_fixed
-      (fixedCode B)
-      (fixedCode_spec B)
+      CanonicalSAT (R.bitsOf (fixedCode B')) ↔
+        ¬ DeclaredAccepts M (R.bitsOf (fixedCode B'))
+    exact R.flips_of_fixed (fixedCode B') hfix
   intro hCorrect
   change
     M.machine.HaltsWithin
-        (M.timeBound (counterexample B).length)
-        (initialTMConfig M.machine (counterexample B)) ∧
-      (DeclaredAccepts M (counterexample B) ↔
-        CanonicalSAT (counterexample B)) at hCorrect
+        (M.timeBound (counterexample B').length)
+        (initialTMConfig M.machine (counterexample B')) ∧
+      (DeclaredAccepts M (counterexample B') ↔
+        CanonicalSAT (counterexample B')) at hCorrect
   rcases hCorrect with ⟨_, hSem⟩
-  by_cases hAcc : DeclaredAccepts M (counterexample B)
-  · have hSat : CanonicalSAT (counterexample B) :=
+  by_cases hAcc : DeclaredAccepts M (counterexample B')
+  · have hSat : CanonicalSAT (counterexample B') :=
       hSem.mp hAcc
     exact (hflip.mp hSat) hAcc
-  · have hSat : CanonicalSAT (counterexample B) :=
+  · have hSat : CanonicalSAT (counterexample B') :=
       hflip.mpr hAcc
     exact hAcc (hSem.mpr hSat)
 
