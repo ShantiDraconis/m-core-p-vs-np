@@ -22,6 +22,7 @@ open P03TerminalSemanticBridge
 open P03CriticalHalfSymmetry
 open P03PolynomialWitness
 open P03RangeFailureFrontier
+open P03PerfectFlipDichotomy
 
 /--
 The structural kernel is fully decomposed, but the material endpoint remains
@@ -64,7 +65,19 @@ theorem remaining_open_math_iff_range_failure_law :
   rangeFailureLaw_iff_fullRunAcceptanceLaw.symm
 
 #print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_polynomial_witness_law
+theorem remaining_open_math_iff_not_existsPerfectFlip :
+    RemainingOpenMath ↔ ¬ ExistsPerfectFlip := by
+  rw [remaining_open_math_iff_range_failure_law]
+  exact existsPerfectFlip_iff_not_rangeFailureLaw.symm.not
+
+theorem remaining_open_math_or_existsPerfectFlip :
+    RemainingOpenMath ∨ ExistsPerfectFlip := by
+  rw [remaining_open_math_iff_range_failure_law]
+  exact rangeFailureLaw_or_existsPerfectFlip
+
 #print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_range_failure_law
+#print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_not_existsPerfectFlip
+#print axioms MCore.Real.P03ClosureKernel.remaining_open_math_or_existsPerfectFlip
 
 end P03ClosureKernel
 end Real
