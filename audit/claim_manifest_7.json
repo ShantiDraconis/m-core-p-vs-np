@@ -7,14 +7,8 @@
     "build": "UNVERIFIED",
     "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01-P06 architecture evidence files (static source scan only)",
     "open_problem_green_count": 0,
-    "note": "Fail-closed manifest: materialGaps=1 means one current real frontier per lane, not that one theorem is known to suffice mathematically. Candidate decompositions remain OPEN until formally connected.",
-    "green_gate": {
-      "commit": "962c707c7642b2d4ce821ea97ac63e05ef4749ad",
-      "theorem": "MCore.Real.SevenLaneGreenGate.no_open_millennium_lane_green",
-      "promotion_theorem": "MCore.Real.SevenLaneGreenGate.promote_when_complete",
-      "current_green_open_problem_count": 0,
-      "source_of_truth": "per-lane GreenCertificate -> MaterialFrontierStatus"
-    },
+    "note": "RED means the terminal endpoint is not certified. Existing CLOSED_BASE/CLOSED_BRIDGE evidence remains preserved and is not reopened.",
+    "green_gate": "FAIL_CLOSED_RED",
     "research_claim_boundary": [
       "Do not mark GREEN from architectural reduction alone.",
       "Do not infer R_M injectivity from a non-involution statement.",
@@ -63,7 +57,8 @@
       "rule": "Alias/re-export/abbrev of an OPEN frontier is never a material producer.",
       "required_chain": "NewMath concrete producer -> material_producer_closes_frontier -> terminal_endpoint_certified",
       "current_state": "P01-P06 remain RED until this chain exists without axiom/sorry/admit/opaque."
-    }
+    },
+    "status": "RED"
   },
   "P01_Riemann": {
     "closedBase": {
@@ -115,7 +110,9 @@
     "green_certificate_commit": "4071f8f0750efd30b721957544834c728502ece2",
     "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed",
     "structuralAudit": "SOURCE_CLEAN_BUILD_UNVERIFIED",
-    "terminalCertificate": "ABSENT: terminal_endpoint_certified"
+    "terminalCertificate": "ABSENT: terminal_endpoint_certified",
+    "status": "RED",
+    "green_gate": "RED_TERMINAL_NOT_CERTIFIED"
   },
   "P02_YangMills": {
     "closedBase": {
@@ -169,7 +166,9 @@
     "green_certificate_commit": "9f3aac3f5c675cd56a5d4f860711ac2a1c28b4a1",
     "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed",
     "structuralAudit": "SOURCE_CLEAN_BUILD_UNVERIFIED",
-    "terminalCertificate": "ABSENT: terminal_endpoint_certified"
+    "terminalCertificate": "ABSENT: terminal_endpoint_certified",
+    "status": "RED",
+    "green_gate": "RED_TERMINAL_NOT_CERTIFIED"
   },
   "P03_PvsNP": {
     "state": "REAL_ARCHITECTURE_BOUND",
@@ -190,7 +189,9 @@
     "green_certificate_commit": "b6893342e69e3e75898164b479dd449e56a9aa2f",
     "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed",
     "structuralAudit": "SOURCE_CLEAN_BUILD_UNVERIFIED",
-    "terminalCertificate": "ABSENT: terminal_endpoint_certified"
+    "terminalCertificate": "ABSENT: terminal_endpoint_certified",
+    "status": "RED",
+    "green_gate": "RED_TERMINAL_NOT_CERTIFIED"
   },
   "P04_NavierStokes": {
     "state": "REAL_FRONTIER_BOUND",
@@ -233,7 +234,9 @@
     "green_certificate_commit": "03b643c7f8a1c5056203e385cbf249d7d3614631",
     "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed",
     "structuralAudit": "SOURCE_CLEAN_BUILD_UNVERIFIED",
-    "terminalCertificate": "ABSENT: terminal_endpoint_certified"
+    "terminalCertificate": "ABSENT: terminal_endpoint_certified",
+    "status": "RED",
+    "green_gate": "RED_TERMINAL_NOT_CERTIFIED"
   },
   "P05_Hodge": {
     "state": "REAL_FRONTIER_BOUND",
@@ -277,7 +280,9 @@
     "green_certificate_commit": "5d4a477f737008fc204178bb60195cf71992da08",
     "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed",
     "structuralAudit": "SOURCE_CLEAN_BUILD_UNVERIFIED",
-    "terminalCertificate": "ABSENT: terminal_endpoint_certified"
+    "terminalCertificate": "ABSENT: terminal_endpoint_certified",
+    "status": "RED",
+    "green_gate": "RED_TERMINAL_NOT_CERTIFIED"
   },
   "P06_BSD": {
     "state": "REAL_FRONTIER_BOUND",
@@ -336,7 +341,9 @@
     "green_certificate_commit": "b2f89924ae71950dd554985a78aee94adc6b2f92",
     "red_reason": "material frontier and terminal endpoint remain uncertified; structural RED duplication removed",
     "structuralAudit": "SOURCE_CLEAN_BUILD_UNVERIFIED",
-    "terminalCertificate": "ABSENT: terminal_endpoint_certified"
+    "terminalCertificate": "ABSENT: terminal_endpoint_certified",
+    "status": "RED",
+    "green_gate": "RED_TERMINAL_NOT_CERTIFIED"
   },
   "P07_Poincare": {
     "state": "HISTORICALLY_SOLVED_EXTERNALLY",
