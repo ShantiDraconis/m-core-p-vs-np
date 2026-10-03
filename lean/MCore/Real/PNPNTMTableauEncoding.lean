@@ -4573,10 +4573,14 @@ theorem operationalDecodeAgrees_active_step
       ¬ (M.machine.accepting q = true ∨ M.machine.rejecting q = true) := by
     intro h
     rcases h with hacc | hrej
-    · have := (by simpa [q] using hActive.1)
-      simp [hacc] at this
-    · have := (by simpa [q] using hActive.2)
-      simp [hrej] at this
+    · have hfalse : M.machine.accepting q = false := by
+        simpa [q] using hActive.1
+      rw [hfalse] at hacc
+      cases hacc
+    · have hfalse : M.machine.rejecting q = false := by
+        simpa [q] using hActive.2
+      rw [hfalse] at hrej
+      cases hrej
   rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
   have hStateNext0 :=
     decodeState_choice M x t s sigma hSat hs q a j
