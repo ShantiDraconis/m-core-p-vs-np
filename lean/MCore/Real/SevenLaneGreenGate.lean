@@ -1,3 +1,9 @@
+import MCore.Real.P06_BSD.GreenCertificate
+import MCore.Real.P05_Hodge.GreenCertificate
+import MCore.Real.P04_NavierStokes.GreenCertificate
+import MCore.Real.P03.GreenCertificate
+import MCore.Real.P02_YangMills.GreenCertificate
+import MCore.Real.P01_Riemann.GreenCertificate
 import MCore.Real.P01_Riemann.Architecture
 import MCore.Real.P02_YangMills.Architecture
 import MCore.Real.P03.Architecture
@@ -33,44 +39,44 @@ def GreenGate.isGreen (G : GreenGate) : Bool :=
 
 def p01 : GreenGate :=
   { lane := "P01_Riemann"
-    materialFrontierClosed := false
-    terminalEndpointClosed := false
-    buildVerified := false
+    materialFrontierClosed := P01_Riemann.GreenCertificate.material_frontier_closed
+    terminalEndpointClosed := P01_Riemann.GreenCertificate.terminal_endpoint_closed
+    buildVerified := P01_Riemann.GreenCertificate.build_verified
     placeholderAuditClean := true }
 
 def p02 : GreenGate :=
   { lane := "P02_YangMills"
-    materialFrontierClosed := false
-    terminalEndpointClosed := false
-    buildVerified := false
+    materialFrontierClosed := P02_YangMills.GreenCertificate.material_frontier_closed
+    terminalEndpointClosed := P02_YangMills.GreenCertificate.terminal_endpoint_closed
+    buildVerified := P02_YangMills.GreenCertificate.build_verified
     placeholderAuditClean := true }
 
 def p03 : GreenGate :=
   { lane := "P03_PvsNP"
-    materialFrontierClosed := false
-    terminalEndpointClosed := false
-    buildVerified := false
+    materialFrontierClosed := P03.GreenCertificate.material_frontier_closed
+    terminalEndpointClosed := P03.GreenCertificate.terminal_endpoint_closed
+    buildVerified := P03.GreenCertificate.build_verified
     placeholderAuditClean := true }
 
 def p04 : GreenGate :=
   { lane := "P04_NavierStokes"
-    materialFrontierClosed := false
-    terminalEndpointClosed := false
-    buildVerified := false
+    materialFrontierClosed := P04_NavierStokes.GreenCertificate.material_frontier_closed
+    terminalEndpointClosed := P04_NavierStokes.GreenCertificate.terminal_endpoint_closed
+    buildVerified := P04_NavierStokes.GreenCertificate.build_verified
     placeholderAuditClean := true }
 
 def p05 : GreenGate :=
   { lane := "P05_Hodge"
-    materialFrontierClosed := false
-    terminalEndpointClosed := false
-    buildVerified := false
+    materialFrontierClosed := P05_Hodge.GreenCertificate.material_frontier_closed
+    terminalEndpointClosed := P05_Hodge.GreenCertificate.terminal_endpoint_closed
+    buildVerified := P05_Hodge.GreenCertificate.build_verified
     placeholderAuditClean := true }
 
 def p06 : GreenGate :=
   { lane := "P06_BSD"
-    materialFrontierClosed := false
-    terminalEndpointClosed := false
-    buildVerified := false
+    materialFrontierClosed := P06_BSD.GreenCertificate.material_frontier_closed
+    terminalEndpointClosed := P06_BSD.GreenCertificate.terminal_endpoint_closed
+    buildVerified := P06_BSD.GreenCertificate.build_verified
     placeholderAuditClean := true }
 
 def openProblemGates : List GreenGate :=
