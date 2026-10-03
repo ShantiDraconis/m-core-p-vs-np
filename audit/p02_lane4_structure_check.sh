@@ -40,6 +40,7 @@ FILES=(
   lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean
   lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean
   audit/P02_LANE4_STRUCTURE_GRAPH_V1.json
+  audit/P02_LANE4_ADVANCED_CERTIFICATE_REUSE_V1.json
 )
 
 for f in "${FILES[@]}"; do
@@ -67,6 +68,18 @@ grep -q 'def auxStructure' lean/P02/LANE4/StructureBundle.lean \
   || red "missing auxStructure aggregate"
 grep -q 'abbrev T10OpenMath' lean/P02/LANE4/StructureBundle.lean \
   || red "missing T10OpenMath boundary"
+grep -q 'theorem g21_iff_not_in_p' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing g21_iff_not_in_p"
+grep -q 'theorem g21_iff_p02_operator' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing g21_iff_p02_operator"
+grep -q 'theorem g21_iff_normalized_adversary' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing g21_iff_normalized_adversary"
+grep -q 'theorem p01_side_closed' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing closed P01 reuse"
+grep -q 'theorem claim_bundle_bridge_iff_g21' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing Claim1-7 semantic firewall"
+grep -q 'theorem effective_coverage_to_g21' lean/P02/LANE4/AdvancedCertificateReuse.lean \
+  || red "missing effective coverage adapter"
 grep -q 'theorem t10_to_universal_lower_bound' lean/P02/LANE4/AdvancedCertificateReuse.lean \
   || red "missing t10_to_universal_lower_bound"
 grep -q 'theorem exact_diagonal_to_p02_operator' lean/P02/LANE4/AdvancedCertificateReuse.lean \
