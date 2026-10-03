@@ -1,7 +1,3 @@
-import MCore.Real.P06_BSD.ClosedBridge.RankPartToRankEquality
-import MCore.Real.P06_BSD.ClosedBase.NoFalseFinalCertificate
-import MCore.Real.P06_BSD.ClosedBase.AbstractRankInterfaceCounteraudit
-import MCore.Real.P06_BSD.ClosedBase.ExternalInputProvenance
 import MCore.Real.P06_BSD.OpenBridge.RealizableBSDProducerTarget
 import MCore.Real.P06_BSD.ClosedBridge.RankPartToEquality
 import MCore.Real.P06_BSD.ClosedBridge.RankWitnessToOpenCore
