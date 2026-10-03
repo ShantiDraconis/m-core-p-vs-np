@@ -65,10 +65,6 @@ theorem length_uniqueness_closes_bounded_source_unique
       injectiveRejectCandidate_total := by
   intro x C
   have hlen : C.source.length = x.length := hLen x C
-  have hclock :
-      injectiveRejectCandidate.timeBound C.source.length =
-        injectiveRejectCandidate.timeBound x.length := by
-    rw [hlen]
   have hCandidate := C.decodes
   have hGenuine :=
     (genuineSourceCandidate
@@ -76,9 +72,8 @@ theorem length_uniqueness_closes_bounded_source_unique
       injectiveRejectCandidate_total
       x).decodes
   rw [hlen] at hCandidate
-  rw [hclock] at hCandidate
   rw [hGenuine] at hCandidate
-  exact Option.some.inj hCandidate.symm
+  exact (Option.some.inj hCandidate).symm
 
 #print axioms MCore.Real.P03BoundedSourceUniqueAttack.injectiveRejectCandidate_time_injective
 #print axioms MCore.Real.P03BoundedSourceUniqueAttack.injectiveRejectCandidate_total
