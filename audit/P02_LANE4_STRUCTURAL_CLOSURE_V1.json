@@ -1,7 +1,7 @@
 {
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
-  "head_at_record": "8b15dcd414e2248e0b3350daa07134857421a6b7",
+  "head_at_record": "916f0267ae61159b31446f5ca489b8ec9dc2782b",
   "status": "BUILD_PENDING_FAIL_CLOSED",
   "structural": {
     "R1": "CONSTRUCTED",
@@ -46,5 +46,20 @@
     "NO_ENDPOINT_ASSUMPTION",
     "STRUCTURAL_CLOSURE_DOES_NOT_IMPLY_BEHAVIORAL_ALIGNMENT",
     "FAIL_CLOSED_UNTIL_REAL_BUILD"
-  ]
+  ],
+  "open_math_route": {
+    "file": "lean/P02/LANE4/OPEN_MATH/BehavioralAlignment.lean",
+    "commit": "4880da19a05848f31370431c404f6643eed12694",
+    "t10_target": "MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer",
+    "fuel_route": {
+      "witness_producer": "P02.LANE4.OPEN_MATH.BehavioralAlignment.FuelWitnessProducer",
+      "semantic_bridge": "P02.LANE4.OPEN_MATH.BehavioralAlignment.FuelToBehaviorBridge",
+      "combined_producer": "P02.LANE4.OPEN_MATH.BehavioralAlignment.FuelRouteProducer"
+    },
+    "correction": [
+      "Fuel dominance alone does not imply behavioral preservation for an arbitrary candidate.",
+      "Opposite behavior at reduce(x) does not yield UniversalFailure; with Cook-Levin correctness it yields correctness of M on that reduction output."
+    ],
+    "state": "OPEN_MATH"
+  }
 }
