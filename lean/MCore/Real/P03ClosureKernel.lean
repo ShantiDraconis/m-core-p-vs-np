@@ -68,7 +68,13 @@ theorem remaining_open_math_iff_range_failure_law :
 theorem remaining_open_math_iff_not_existsPerfectFlip :
     RemainingOpenMath ↔ ¬ ExistsPerfectFlip := by
   rw [remaining_open_math_iff_range_failure_law]
-  exact existsPerfectFlip_iff_not_rangeFailureLaw.symm.not
+  constructor
+  · intro hRange hFlip
+    exact (existsPerfectFlip_iff_not_rangeFailureLaw.mp hFlip) hRange
+  · intro hNoFlip
+    by_contra hNoRange
+    exact hNoFlip
+      (existsPerfectFlip_iff_not_rangeFailureLaw.mpr hNoRange)
 
 theorem remaining_open_math_or_existsPerfectFlip :
     RemainingOpenMath ∨ ExistsPerfectFlip := by
