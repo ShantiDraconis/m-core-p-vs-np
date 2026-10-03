@@ -1,8 +1,8 @@
 {
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
-  "head_at_record": "253902e3848cde8d4014dca2212498a83708e8af",
-  "status": "SOURCE_COMPLETE_KERNEL_PENDING_FAIL_CLOSED",
+  "head_at_record": "8c171e3faafa7bba79a9f3d1e1f8171ed7e3113c",
+  "status": "SOURCE_COMPLETE_PREKERNEL_HARDENED",
   "structural": {
     "R1": "CONSTRUCTED_SOURCE_COMPLETE",
     "R2": "CONSTRUCTED_SOURCE_COMPLETE",
@@ -183,5 +183,13 @@
     "aux_green_candidate": false,
     "frozen_hard_aux": false,
     "frozen_hard_full": false
+  },
+  "prekernel_hardening": {
+    "shell_syntax_check": true,
+    "import_dag_check": true,
+    "stale_manifest_guard": true,
+    "explicit_nat_product_normalization": true,
+    "duplicate_mcore_build_removed_from_preflight_path": true,
+    "l3_fail_closed_guards": true
   }
 }
