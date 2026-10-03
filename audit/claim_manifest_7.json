@@ -57,6 +57,12 @@
       "positive_terminal_certificate": "ABSENT",
       "required_symbol": "terminal_endpoint_certified",
       "consequence": "GREEN=false remains mandatory"
+    },
+    "material_producer_policy": {
+      "commit": "8d619c37cd5d2fe3af2e2b6c75a9ca2891243cf9",
+      "rule": "Alias/re-export/abbrev of an OPEN frontier is never a material producer.",
+      "required_chain": "NewMath concrete producer -> material_producer_closes_frontier -> terminal_endpoint_certified",
+      "current_state": "P01-P06 remain RED until this chain exists without axiom/sorry/admit/opaque."
     }
   },
   "P01_Riemann": {
