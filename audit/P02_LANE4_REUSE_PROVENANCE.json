@@ -1,0 +1,69 @@
+{
+  "schema": "ATK_P02_LANE4_REUSE_PROVENANCE_V1",
+  "target_branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+  "target_base_branch": "atk/terminal-parameter-law-20261003",
+  "target_base_sha": "2e87d036a7f86638e413823cc59662a0d69d39c3",
+  "source_repo": "ShantiDraconis/Elyon-Public-Proof",
+  "source_commit": "d88ad767019a9e487833b0030ec67f5fc7b39b7d",
+  "lean": "leanprover/lean4:v4.19.0",
+  "reused_files": [
+    {
+      "path": "lean/MCore/Real/P02BoundedComputationEncoding.lean",
+      "git_blob": "f2acd3d4a036312886311d1547ad08639a9e07a7"
+    },
+    {
+      "path": "lean/MCore/Real/Claim3PersistentFamily.lean",
+      "git_blob": "4b0de0111f186ec8808ab46fd060d32cb89ecdfa"
+    },
+    {
+      "path": "lean/MCore/Real/Claim4NormalizedProgress.lean",
+      "git_blob": "1af7149f4825be9f4117048363d597c504d08ed9"
+    },
+    {
+      "path": "lean/MCore/Real/Claim7VariableCoverage.lean",
+      "git_blob": "e7c59e0d1cf71ec35618a4c23785c88ad1a11a6e"
+    },
+    {
+      "path": "lean/MCore/Real/P02RestrictionLowerBoundPattern.lean",
+      "git_blob": "c05230d88f0b116269fd2fcc510fd1d779573a99"
+    },
+    {
+      "path": "lean/MCore/Real/Claim6CNFDeficitAudit.lean",
+      "git_blob": "0a73a130302e4f1abe93b03f6496711570d49970"
+    },
+    {
+      "path": "lean/MCore/Real/P02RestrictionFamilyAudit.lean",
+      "git_blob": "ab411eff30f65c5da11a20118d79bf43f1e2d36b"
+    },
+    {
+      "path": "lean/MCore/Real/TotalVariableCoverageObligationNorm.lean",
+      "git_blob": "89ae0dfe20a9689c310ac3510175bcb46ad751d0"
+    },
+    {
+      "path": "lean/MCore/Real/BridgeSeven.lean",
+      "git_blob": "482afbf893be85df185a23f7a8391f1541c3686b"
+    },
+    {
+      "path": "lean/MCore/Real/Claim1To7Only.lean",
+      "git_blob": "b00e8ff8634cf6ad96c4de35a0695209d26b31cd"
+    }
+  ],
+  "base_blob_compatibility": {
+    "lean/MCore/Real/CanonicalCircuitBits.lean": "IDENTICAL",
+    "lean/MCore/Real/CNFStructure.lean": "IDENTICAL",
+    "lean/MCore/C11/BranchingCost.lean": "IDENTICAL",
+    "lean/MCore/C10/RestrictionProgress.lean": "IDENTICAL",
+    "lean/MCore/CircuitC2.lean": "IDENTICAL"
+  },
+  "new_files": [
+    "lean/MCore/Real/P02CNFEncodingDeficitAudit.lean",
+    "lean/MCore/Real/P02Lane4SemanticGate.lean"
+  ],
+  "official_target": "MCore.Real.P02UniversalLowerBoundMaster.UNIVERSAL_LOWER_BOUND",
+  "official_target_equivalence": "UNIVERSAL_LOWER_BOUND <-> not InP (SATBits circuitBitEncoding)",
+  "t10_result": "FAIL_CLOSED_OPEN",
+  "t10_reason": "T10SemanticBridge is proved equivalent to OfficialTarget because CandidateRoot is already inhabited; therefore Claim1To7 reuse does not by itself discharge the universal SAT lower bound.",
+  "final_root_promotion": false,
+  "build_state": "BUILD_PENDING",
+  "frozen_hard": false
+}
