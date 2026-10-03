@@ -4241,13 +4241,18 @@ theorem tapeMove_left_right_zero
     (blank write : Option Bool) (tape : Tape (Option Bool)) :
     (Tape.move blank Direction.left (tape.write write)).right.getD 0 blank =
       write := by
-  cases tape <;> simp [Tape.write, Tape.move]
+  cases tape with
+  | mk left head right =>
+      cases left <;> simp [Tape.write, Tape.move]
 
 theorem tapeMove_left_right_succ
     (blank write : Option Bool) (tape : Tape (Option Bool)) (i : Nat) :
     (Tape.move blank Direction.left (tape.write write)).right.getD (i + 1) blank =
       tape.right.getD i blank := by
-  cases tape <;> simp [Tape.write, Tape.move, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
+  cases tape with
+  | mk left head right =>
+      cases left <;>
+        simp [Tape.write, Tape.move, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
 
 theorem tapeMove_right_head
     (blank write : Option Bool) (tape : Tape (Option Bool)) :
@@ -4261,13 +4266,18 @@ theorem tapeMove_right_left_zero
     (blank write : Option Bool) (tape : Tape (Option Bool)) :
     (Tape.move blank Direction.right (tape.write write)).left.getD 0 blank =
       write := by
-  cases tape <;> simp [Tape.write, Tape.move]
+  cases tape with
+  | mk left head right =>
+      cases right <;> simp [Tape.write, Tape.move]
 
 theorem tapeMove_right_left_succ
     (blank write : Option Bool) (tape : Tape (Option Bool)) (i : Nat) :
     (Tape.move blank Direction.right (tape.write write)).left.getD (i + 1) blank =
       tape.left.getD i blank := by
-  cases tape <;> simp [Tape.write, Tape.move, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
+  cases tape with
+  | mk left head right =>
+      cases right <;>
+        simp [Tape.write, Tape.move, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
 
 theorem tapeMove_right_right_getD
     (blank write : Option Bool) (tape : Tape (Option Bool)) (i : Nat) :
