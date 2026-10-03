@@ -1,3 +1,4 @@
+import MCore.Real.P04_NavierStokes.GreenCertificate
 import MCore.Real.P04_NavierStokes.Architecture
 
 namespace MCore.Real.P04_NavierStokes.ArchitectureAudit
@@ -16,3 +17,6 @@ namespace MCore.Real.P04_NavierStokes.ArchitectureAudit
 #print axioms MCore.Real.P04_NavierStokes.Architecture.fail_closed
 
 end MCore.Real.P04_NavierStokes.ArchitectureAudit
+
+#print axioms MCore.Real.P04_NavierStokes.GreenCertificate.terminal_endpoint_not_certified
+#print axioms MCore.Real.P04_NavierStokes.GreenCertificate.build_not_verified
