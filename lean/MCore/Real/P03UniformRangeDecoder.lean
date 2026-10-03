@@ -151,6 +151,69 @@ theorem recoverClockFromHeadVar_correct
   rw [Nat.mul_div_right _ hpos]
   omega
 
+
+
+/--
+A source candidate for encoded bits, using only metadata determined by the
+candidate and the proposed source length.  The length bound makes the search
+space finite on genuine reduction outputs.
+-/
+structure BoundedSourceCandidate
+    (M : PolyDTMCandidate)
+    (bits : BitString) where
+  source : BitString
+  length_le : source.length ≤ bits.length
+  decodes :
+    decodeSourceBits
+        (complementToNTMCandidate M)
+        source.length
+        (M.timeBound source.length)
+        bits = some source
+
+/-- Every real reduction output has at least one bounded source candidate: its
+actual source. -/
+def genuineSourceCandidate
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) :
+    BoundedSourceCandidate M (R_M M hTotal x) :=
+  { source := x
+    length_le := source_length_le_reduction_length M hTotal x
+    decodes := by
+      simpa [R_M] using decodeSource_reduce M hTotal x }
+
+/--
+Uniqueness of the bounded source candidate would immediately turn the
+pointwise decoder into a uniform source decoder on the real reduction range.
+This is isolated as a property, not assumed as a theorem.
+-/
+def BoundedSourceUnique
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M) : Prop :=
+  ∀ (x : BitString)
+    (C : BoundedSourceCandidate M (R_M M hTotal x)),
+    C.source = x
+
+theorem boundedSourceUnique_gives_extensional_recovery
+    {M : PolyDTMCandidate}
+    {hTotal : DeclaredClockTotal M}
+    (hUnique : BoundedSourceUnique M hTotal)
+    (x : BitString)
+    (C : BoundedSourceCandidate M (R_M M hTotal x)) :
+    C.source = x :=
+  hUnique x C
+
+/--
+The unresolved metadata question is now an exact uniqueness statement:
+the true source is known to be present in a finite length-bounded candidate
+space; what remains is to rule out a distinct source satisfying the same
+parameterized decoder on the same real reduction output.
+-/
+def BoundedSourceUniquenessGap : Prop :=
+  ∃ (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M),
+    BoundedSourceUnique M hTotal
+
 /--
 The remaining constructive producer for the B branch.
 It is deliberately weaker than PerfectFlip: it asks only for uniform recovery
