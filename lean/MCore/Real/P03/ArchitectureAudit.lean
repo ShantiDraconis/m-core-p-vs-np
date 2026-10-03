@@ -23,6 +23,8 @@ namespace MCore.Real.P03.ArchitectureAudit
 
 #print axioms MCore.Real.P03.Architecture.closed_base_count
 #print axioms MCore.Real.P03.Architecture.closed_bridge_count
+#print axioms MCore.Real.P03.Architecture.unique_open_bridge_count
+#print axioms MCore.Real.P03.Architecture.open_math_count
 #print axioms MCore.Real.P03.Architecture.architecture_green_false
 #print axioms MCore.Real.P03.Architecture.architecture_build_unverified
 
