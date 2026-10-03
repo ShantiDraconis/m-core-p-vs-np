@@ -199,3 +199,5 @@ import MCore.Real.P05_Hodge.ArchitectureAudit
 import MCore.Real.P06_BSD.Architecture
 import MCore.Real.P06_BSD.ArchitectureAudit
 import MCore.Real.SevenLaneGreenGate
+
+import MCore.Real.SixOpenFrontierRegistry
