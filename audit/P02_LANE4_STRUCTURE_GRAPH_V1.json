@@ -1,0 +1,61 @@
+{
+  "schema": "P02_LANE4_STRUCTURE_GRAPH_V1",
+  "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+  "purpose": "Complete structural dependency graph before kernel validation",
+  "base_chain": [
+    "MCore.Real.PNPCookLevinMaterialMinCut",
+    "MCore.Real.PNPNTMTableauFrontier",
+    "MCore.Real.PNPNTMPathFrontier",
+    "MCore.Real.PNPNTMTableauEncoding",
+    "MCore.Real.PNPNTMTableauClosure",
+    "MCore.Real.P02TableauSourceRecovery",
+    "MCore.Real.P02ComplementRunRealization",
+    "MCore.Real.P02BehavioralAlignment"
+  ],
+  "aux_chain": [
+    "P02.LANE4.AUX.R1_R3_REAL",
+    "P02.LANE4.AUX.R2_R4_RADIUS",
+    "P02.LANE4.AUX.R4_R5_BOUNDED",
+    "P02.LANE4.AUX.R4_TRANSITION_LENGTH",
+    "P02.LANE4.AUX.R4_PREFIX_SIGNATURE",
+    "P02.LANE4.AUX.R4_PREFIX_MAXIMAL",
+    "P02.LANE4.AUX.R4_TRANSITION_HEAD",
+    "P02.LANE4.AUX.R4_TRANSITION_HEAD_FINAL",
+    "P02.LANE4.AUX.R4_INITIAL_INJECTIVE",
+    "P02.LANE4.AUX.R4_INITIAL_CNF_DECODER",
+    "P02.LANE4.AUX.R4_FINAL",
+    "P02.LANE4.AUX.R4_FIXED_FUEL",
+    "P02.LANE4.AUX.R5_PAIR_INJECTIVE",
+    "P02.LANE4.AUX.R5_PAIR",
+    "P02.LANE4.StructuralClosure",
+    "P02.LANE4.AUX.STRUCTURAL_CLOSURE",
+    "P02.LANE4.StructureBundle"
+  ],
+  "open_math_chain": [
+    "P02.LANE4.OPEN_MATH.BehavioralAlignment",
+    "P02.LANE4.OPEN_MATH.FuelCounterexample",
+    "P02.LANE4.OPEN_MATH.SameBehaviorFromPolyBound"
+  ],
+  "structure_endpoints": {
+    "R1": "Function.Injective inputTape",
+    "R3": "Function.Injective ntmCNFCircuit",
+    "R2": "initial-CNF equality -> source length equality",
+    "R4": "fixed-fuel bounded tableau/circuit injectivity",
+    "R5": "(source,fuel) pair injectivity + complement reduction injectivity",
+    "AUX": "P02.LANE4.StructuralClosure",
+    "T10": "MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer"
+  },
+  "promotion_policy": {
+    "structural_bundle": "CONSTRUCTED",
+    "verified_build": false,
+    "frozen_hard_aux": false,
+    "frozen_hard_full": false,
+    "t10": "OPEN_MATH"
+  },
+  "non_implications": [
+    "StructuralClosure does not imply T10",
+    "Injective reduction does not imply SameBehaviorAt",
+    "PolynomialTimeBound does not imply monotone timeBound",
+    "Bare fuel dominance does not imply behavioral preservation"
+  ]
+}
