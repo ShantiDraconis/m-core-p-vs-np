@@ -1,3 +1,4 @@
+import MCore.Real.P06_BSD.GreenCertificate
 import MCore.Real.P06_BSD.Architecture
 
 namespace MCore.Real.P06_BSD.ArchitectureAudit
@@ -17,3 +18,6 @@ namespace MCore.Real.P06_BSD.ArchitectureAudit
 #print axioms MCore.Real.P06_BSD.Architecture.fail_closed
 
 end MCore.Real.P06_BSD.ArchitectureAudit
+
+#print axioms MCore.Real.P06_BSD.GreenCertificate.terminal_endpoint_not_certified
+#print axioms MCore.Real.P06_BSD.GreenCertificate.build_not_verified
