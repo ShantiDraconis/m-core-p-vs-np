@@ -2,7 +2,7 @@
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
   "head_at_record": "4049fffb3aa998a2751e3ba4f47b6f2e8f42b95c",
-  "status": "BUILD_PENDING_FAIL_CLOSED_DENSIFIED",
+  "status": "STRUCTURE_SOURCE_COMPLETE_BUILD_PENDING_FAIL_CLOSED",
   "structural": {
     "R1": "CONSTRUCTED",
     "R2": "CONSTRUCTED",
@@ -29,7 +29,10 @@
     "lean/P02/LANE4/AUX/STRUCTURAL_CLOSURE.lean",
     "lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean",
     "audit/p02_lane4_aux_green.sh",
-    "lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean"
+    "lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean",
+    "lean/P02/LANE4/StructureBundle.lean",
+    "audit/P02_LANE4_STRUCTURE_GRAPH_V1.json",
+    "audit/p02_lane4_structure_check.sh"
   ],
   "t10": {
     "state": "OPEN_MATH",
@@ -99,5 +102,21 @@
     "state": "NOT_RUN",
     "success_label": "AUX_GREEN_CANDIDATE",
     "full_green_forbidden_while_t10_open": true
+  },
+  "structure_bundle": {
+    "state": "CONSTRUCTED_SOURCE_COMPLETE",
+    "file": "lean/P02/LANE4/StructureBundle.lean",
+    "graph": "audit/P02_LANE4_STRUCTURE_GRAPH_V1.json",
+    "static_check": "audit/p02_lane4_structure_check.sh",
+    "includes": [
+      "base Cook-Levin/NTM tableau chain",
+      "R1/R3 source and CNF/circuit injectivity",
+      "R2 initial dimension recovery",
+      "R4 fixed-fuel injectivity",
+      "R5 pair/reduction injectivity",
+      "StructuralClosure aggregate",
+      "OPEN_MATH boundary isolated at T10"
+    ],
+    "kernel_verified": false
   }
 }
