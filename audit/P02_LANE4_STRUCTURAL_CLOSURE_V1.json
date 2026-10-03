@@ -1,8 +1,8 @@
 {
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
-  "head_at_record": "8c171e3faafa7bba79a9f3d1e1f8171ed7e3113c",
-  "status": "SOURCE_COMPLETE_PREKERNEL_HARDENED",
+  "head_at_record": "29e5fde392bc953eb69c8028be4fedf0a9be0d79",
+  "status": "SOURCE_COMPLETE_PREKERNEL_HARDENED_V2",
   "structural": {
     "R1": "CONSTRUCTED_SOURCE_COMPLETE",
     "R2": "CONSTRUCTED_SOURCE_COMPLETE",
@@ -191,5 +191,17 @@
     "explicit_nat_product_normalization": true,
     "duplicate_mcore_build_removed_from_preflight_path": true,
     "l3_fail_closed_guards": true
+  },
+  "prekernel_hardening_v2": {
+    "standalone_gate_topological": true,
+    "shell_syntax_check": true,
+    "bundle_import_dag_check": true,
+    "stale_manifest_guard": true,
+    "explicit_polynomial_monotonicity": true,
+    "removed_positivity_from_poly_bounds": true,
+    "explicit_canonical_interface_adapters": true,
+    "explicit_open_producer_inventory": true,
+    "l3_bundle_order": "StructureBundle -> AdvancedCertificateReuse -> CompleteBundle",
+    "forbidden_construct_scan_clean": true
   }
 }
