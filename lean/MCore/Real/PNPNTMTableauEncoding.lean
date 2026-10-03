@@ -3415,26 +3415,8 @@ theorem rawRightList_length
     (rawRightList M x t sigma hSat s hs).length = ntmRadius x t := by
   simp [rawRightList, ntmRadius]
 
-theorem rawLeftList_get
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment)
-    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
-    (s : Nat) (hs : s <= t)
-    (i : Fin (ntmRadius x t)) :
-    (rawLeftList M x t sigma hSat s hs).getD i.val M.machine.blank =
-      decodeLeftCell M x t sigma hSat s hs i.val i.isLt := by
-  simp [rawLeftList, i.isLt]
-
-theorem rawRightList_get
-    (M : PolyNTMCandidate) (x : BitString) (t : Nat)
-    (sigma : Assignment)
-    (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
-    (s : Nat) (hs : s <= t)
-    (i : Fin (ntmRadius x t)) :
-    (rawRightList M x t sigma hSat s hs).getD i.val M.machine.blank =
-      decodeRightCell M x t sigma hSat s hs i.val i.isLt := by
-  simp [rawRightList, i.isLt]
-
+/-- Direct raw-list getD lemmas were removed from the kernel path: they had
+no consumers in the P02 LANE4 dependency closure.  Length facts remain below. -/
 
 theorem rawLeftList_stay
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
