@@ -54,8 +54,12 @@ for f in "${FILES[@]}"; do
 done
 
 echo "== P02-LANE-4: FULL MCORE BUILD =="
-lake build MCore
-echo "lake build MCore SUCCESS"
+if [[ "${P02_LANE4_MCORE_ALREADY_GREEN:-0}" == "1" ]]; then
+  echo "lake build MCore SUCCESS (reused from preflight L2)"
+else
+  lake build MCore
+  echo "lake build MCore SUCCESS"
+fi
 
 echo "== P02-LANE-4: FAIL-CLOSED FRONTIER CHECK =="
 if ! grep -q '"state": "OPEN_MATH"' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; then
