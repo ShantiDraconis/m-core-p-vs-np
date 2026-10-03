@@ -16,6 +16,9 @@ fi
 
 echo "SCAN_OK: 0 axiom/sorry/admit/opaque"
 
+echo "== P02-LANE-4: BASE DEPENDENCY KERNEL CHECK =="
+lake env lean lean/MCore/Real/PNPNTMTableauEncoding.lean
+
 echo "== P02-LANE-4: AUX FILE KERNEL CHECK =="
 FILES=(
   lean/P02/LANE4/AUX/R1_R3_REAL.lean
