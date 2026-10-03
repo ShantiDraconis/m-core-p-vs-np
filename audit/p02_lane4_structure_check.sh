@@ -15,7 +15,6 @@ FILES=(
   lakefile.toml
   lean/MCore.lean
   lean/P02.lean
-  lean/P02Lane4.lean
 
   lean/MCore/Real/PNPCookLevinMaterialMinCut.lean
   lean/MCore/Real/PNPNTMTableauFrontier.lean
@@ -85,15 +84,14 @@ fi
 grep -q '^import P02.LANE4.StructureBundle$' lean/P02/LANE4/AdvancedCertificateReuse.lean   || red "AdvancedCertificateReuse must import StructureBundle"
 grep -q '^import P02.LANE4.StructureBundle$' lean/P02/LANE4/CompleteBundle.lean   || red "CompleteBundle must import StructureBundle"
 grep -q '^import P02.LANE4.AdvancedCertificateReuse$' lean/P02/LANE4/CompleteBundle.lean   || red "CompleteBundle must import AdvancedCertificateReuse"
-grep -q '^import P02.LANE4.CompleteBundle$' lean/P02.lean   || red "P02 library root must import CompleteBundle"
-echo "IMPORT_DAG_OK: StructureBundle -> AdvancedCertificateReuse -> CompleteBundle -> P02"
+echo "IMPORT_DAG_OK: StructureBundle -> AdvancedCertificateReuse -> CompleteBundle"
 
 echo "== L0 MANIFEST =="
-grep -q 'name = "P02"' lakefile.toml   || red "P02 lean_lib missing from lakefile.toml"
 grep -q 'name = "mathlib"' lakefile.toml   || red "mathlib dependency missing from lakefile.toml"
 grep -q 'git = "https://github.com/leanprover-community/mathlib4.git"' lakefile.toml   || red "mathlib repository mismatch"
 grep -q 'rev = "v4.19.0"' lakefile.toml   || red "mathlib pin mismatch"
-echo "MANIFEST_OK: P02 library + mathlib v4.19.0"
+grep -q 'name = "P02"' lakefile.toml   || red "P02 lean_lib target missing from lakefile.toml"
+echo "MANIFEST_OK: mathlib v4.19.0 + P02 target"
 
 echo "== L0 CRITICAL DECLARATIONS =="
 grep -q 'theorem initial_dim_extract_real' lean/P02/LANE4/AUX/R2_R4_RADIUS.lean   || red "missing initial_dim_extract_real"
@@ -101,8 +99,10 @@ grep -q 'theorem boundedExecTableau_pair_injective' lean/P02/LANE4/AUX/R5_PAIR_I
 grep -q 'theorem boundedExecCircuit_pair_injective' lean/P02/LANE4/AUX/R5_PAIR_INJECTIVE.lean   || red "missing boundedExecCircuit_pair_injective"
 grep -q 'theorem reduce_M_injective_final' lean/P02/LANE4/AUX/R5_PAIR_INJECTIVE.lean   || red "missing reduce_M_injective_final"
 grep -q 'theorem total_behavioral_alignment_to_exact' lean/MCore/Real/P02BehavioralAlignment.lean   || red "missing total_behavioral_alignment_to_exact"
+
 grep -q 'def auxStructure' lean/P02/LANE4/StructureBundle.lean   || red "missing auxStructure"
 grep -q 'abbrev T10OpenMath' lean/P02/LANE4/StructureBundle.lean   || red "missing T10OpenMath"
+
 grep -q 'def G21Pointwise' lean/P02/LANE4/AdvancedCertificateReuse.lean   || red "missing G21Pointwise"
 grep -q 'theorem g21_iff_not_in_p' lean/P02/LANE4/AdvancedCertificateReuse.lean   || red "missing g21_iff_not_in_p"
 grep -q 'theorem g21_iff_p02_operator' lean/P02/LANE4/AdvancedCertificateReuse.lean   || red "missing g21_iff_p02_operator"
@@ -111,11 +111,13 @@ grep -q 'theorem p01_side_closed' lean/P02/LANE4/AdvancedCertificateReuse.lean  
 grep -q 'theorem claim_bundle_bridge_iff_g21' lean/P02/LANE4/AdvancedCertificateReuse.lean   || red "missing Claim1-7 firewall"
 grep -q 'theorem t10_to_g21' lean/P02/LANE4/AdvancedCertificateReuse.lean   || red "missing t10_to_g21"
 grep -q 'theorem effective_coverage_to_g21' lean/P02/LANE4/AdvancedCertificateReuse.lean   || red "missing effective_coverage_to_g21"
+
 grep -q 'def sourceCompletePackage' lean/P02/LANE4/CompleteBundle.lean   || red "missing sourceCompletePackage"
 grep -q 'theorem terminal_iff_not_in_p' lean/P02/LANE4/CompleteBundle.lean   || red "missing terminal_iff_not_in_p"
 echo "SYMBOLS_OK"
 
 echo "== L0 ROOT WIRING =="
+grep -q '^import P02.LANE4.CompleteBundle$' lean/P02.lean   || red "P02 root does not import CompleteBundle"
 grep -q '^import P02.LANE4.AUX.R5_PAIR$' lean/MCore.lean   || red "R5_PAIR facade not wired into MCore"
 grep -q '^import P02.LANE4.StructureBundle$' lean/MCore.lean   || red "StructureBundle not wired into MCore"
 grep -q '^import P02.LANE4.AdvancedCertificateReuse$' lean/MCore.lean   || red "AdvancedCertificateReuse not wired into MCore"
