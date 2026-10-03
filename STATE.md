@@ -2,7 +2,7 @@
 
 ## C1
 
-Status: RED_RECORDED / FIX_IN_PROGRESS
+Status: FIX_APPLIED / BUILD_PENDING
 
 Latest audited RED:
 - SHA: `b57468caa3fad70764206ea5d3d7513dad7ce28c`
@@ -19,4 +19,6 @@ Earlier C1 RED class:
 - an intermediate `restrict_or` regression was corrected before certification and is now required to have a named adversarial regression.
 
 Freeze policy: no C1 SHA is frozen until the complete hardened gate is GREEN.
-Next transition: hardened C1 candidate -> CI -> GREEN then immutable freeze and individual certificate; otherwise record next RED fingerprint and repair forward only.
+Applied fix: `certificate.yml` now audits the exact C1 axiom set, allowing only Lean's standard `propext` (or no axioms if future proof terms simplify further) and rejecting any unexpected dependency or `sorryAx`.
+Fix commit: `9a39ed5c89e97768bf6124d2df36fa6e93c0631f`.
+Next transition: run the hardened C1 gate -> if PASS, GREEN then immutable freeze and individual certificate; otherwise record the next RED fingerprint and repair forward only.
