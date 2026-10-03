@@ -1,3 +1,8 @@
+import MCore.Real.P02_YangMills.ClosedBridge.B60ToMassGap
+import MCore.Real.P02_YangMills.ClosedBase.B6IsUniqueBlockingNode
+import MCore.Real.P02_YangMills.ClosedBase.A1FrontierReduction
+import MCore.Real.P02_YangMills.ClosedBase.PositiveTransferInterfaceTrivial
+import MCore.Real.P02_YangMills.ClosedBase.ReflectionPositivityInterfaceTrivial
 namespace MCore.Real.P02_YangMills.Architecture
 
 /--
@@ -19,9 +24,19 @@ structure LayerRecord where
   note : String
   deriving Repr, DecidableEq
 
-def closedBase : List LayerRecord := []
+def closedBase : List LayerRecord :=
+  [ ⟨"ReflectionPositivityInterfaceTrivial", .sourceClosedBuildUnverified,
+      "source-bound interface invalidation: B3 is trivially inhabitable; not physical reflection positivity"⟩
+  , ⟨"PositiveTransferInterfaceTrivial", .sourceClosedBuildUnverified,
+      "source-bound interface invalidation: B4 is trivially inhabitable; not a physical transfer theorem"⟩
+  , ⟨"A1FrontierReduction", .sourceClosedBuildUnverified,
+      "legacy A1 scientific bridge reduces to B1+B2"⟩
+  , ⟨"B6IsUniqueBlockingNode", .sourceClosedBuildUnverified,
+      "source-bound min-cut certificate: B6/K20-K30 is the unique blocking node"⟩ ]
 
-def closedBridge : List LayerRecord := []
+def closedBridge : List LayerRecord :=
+  [ ⟨"B60ToMassGap", .sourceClosedBuildUnverified,
+      "source-bound conditional bridge: genuine B60ConcretePhysicalAdapter implies an existential K14 mass-gap witness"⟩ ]
 
 def sourceMiddle : List LayerRecord := []
 
@@ -42,6 +57,12 @@ def materialGaps : Nat := 1
 def green : Bool := false
 def buildVerified : Bool := false
 
+theorem closed_base_source_count :
+    closedBase.length = 4 := by decide
+
+theorem closed_bridge_source_count :
+    closedBridge.length = 1 := by decide
+
 theorem target_open_bridge_count :
     targetOpenBridgeCount = 1 := rfl
 
@@ -52,6 +73,8 @@ theorem fail_closed :
     green = false ∧ buildVerified = false := by
   rfl
 
+#print axioms MCore.Real.P02_YangMills.Architecture.closed_base_source_count
+#print axioms MCore.Real.P02_YangMills.Architecture.closed_bridge_source_count
 #print axioms MCore.Real.P02_YangMills.Architecture.target_open_bridge_count
 #print axioms MCore.Real.P02_YangMills.Architecture.material_gap_count
 #print axioms MCore.Real.P02_YangMills.Architecture.fail_closed
