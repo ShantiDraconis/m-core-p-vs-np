@@ -23,7 +23,7 @@ echo "== P02-LANE-4: TOPOLOGICAL PREREQUISITE =="
 if [[ "${P02_LANE4_TARGET_ALREADY_GREEN:-0}" == "1" ]]; then
   echo "P02 SUCCESS (reused from preflight L2)"
 else
-  lake build +P02
+  lake build P02
   echo "P02 SUCCESS"
 fi
 
