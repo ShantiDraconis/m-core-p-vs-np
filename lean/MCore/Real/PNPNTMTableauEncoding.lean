@@ -3656,7 +3656,8 @@ theorem ntmPaddingAt_zero
     have htarget :
         (inputTape x).left.getD i M.machine.blank = M.machine.blank := by
       cases x <;> simp [inputTape]
-    simpa [htarget] using hExact
+    rw [htarget] at hExact
+    simpa using hExact
   · intro i hi hRadius
     have hExact :=
       ntmInitial_right_exact M x t sigma hSat i hRadius M.machine.blank
@@ -3667,9 +3668,12 @@ theorem ntmPaddingAt_zero
           simp [inputTape]
       | cons b bs =>
           simp only [inputTape]
-          apply list_getD_eq_default_of_length_le
-          simpa using hi
-    simpa [htarget] using hExact
+          have hbs : bs.length <= i := by
+            simp at hi
+            omega
+          exact list_getD_eq_default_of_length_le bs M.machine.blank i hbs
+    rw [htarget] at hExact
+    simpa using hExact
 
 theorem ntmPaddingAt_halted_step
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -3727,7 +3731,8 @@ theorem ntmBlankTailAt_zero
     have hget :
         (inputTape x).left.getD i M.machine.blank = M.machine.blank := by
       cases x <;> simp [inputTape]
-    simpa [hget] using hExact
+    rw [hget] at hExact
+    simpa using hExact
   · intro i hxi hir
     have hExact := ntmInitial_right_exact M x t sigma hSat i hir M.machine.blank
     have hget :
@@ -3736,11 +3741,13 @@ theorem ntmBlankTailAt_zero
       | nil =>
           simp [inputTape]
       | cons b bs =>
-          simp [inputTape]
+          simp only [inputTape]
           have hi : bs.length <= i := by
-            simpa using hxi
-          exact list_getD_eq_default_of_length_le _ _ hi
-    simpa [hget] using hExact
+            simp at hxi
+            omega
+          exact list_getD_eq_default_of_length_le bs M.machine.blank i hi
+    rw [hget] at hExact
+    simpa using hExact
 
 theorem ntmBlankTail_boundary
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -3791,34 +3798,40 @@ theorem ntmPaddingAt_active_step
   rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
   cases d with
   | stay =>
+      have hDirStay :
+          ((M.machine.transition q a).get j).2.2 = Direction.stay := by
+        rw [htr]
       refine { leftBlank := ?_, rightBlank := ?_ }
       · intro i hi hRadius
         have hOld := hP.leftBlank i (by omega) hRadius
         have hCopy :=
           ntmStay_left_copy_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr]) i hRadius M.machine.blank
+            hDirStay i hRadius M.machine.blank
         simpa [hCopy] using hOld
       · intro i hi hRadius
         have hOld := hP.rightBlank i (by omega) hRadius
         have hCopy :=
           ntmStay_right_copy_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr]) i hRadius M.machine.blank
+            hDirStay i hRadius M.machine.blank
         simpa [hCopy] using hOld
   | left =>
+      have hDirLeft :
+          ((M.machine.transition q a).get j).2.2 = Direction.left := by
+        rw [htr]
       refine { leftBlank := ?_, rightBlank := ?_ }
       · intro i hi hRadius
         by_cases hlast : i = ntmRadius x t - 1
         · subst i
           have hExact :=
             ntmLeft_blankLeft_exact M x t s q a j sigma hSat hs hActive hj
-              (by simpa [htr]) M.machine.blank
+              hDirLeft M.machine.blank
           simpa using hExact
         · have hiShift : i < ntmRadius x t - 1 := by omega
           have hip1 : i + 1 < ntmRadius x t := by omega
           have hOld := hP.leftBlank (i + 1) (by omega) hip1
           have hCopy :=
             ntmLeft_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
-              (by simpa [htr]) i hiShift M.machine.blank
+              hDirLeft i hiShift M.machine.blank
           simpa [hCopy] using hOld
       · intro i hi hRadius
         have hne0 : i ≠ 0 := by
@@ -3832,9 +3845,12 @@ theorem ntmPaddingAt_active_step
         have hOld := hP.rightBlank k (by omega) (by omega)
         have hCopy :=
           ntmLeft_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr]) k hk M.machine.blank
+            hDirLeft k hk M.machine.blank
         simpa [hCopy] using hOld
   | right =>
+      have hDirRight :
+          ((M.machine.transition q a).get j).2.2 = Direction.right := by
+        rw [htr]
       refine { leftBlank := ?_, rightBlank := ?_ }
       · intro i hi hRadius
         have hne0 : i ≠ 0 := by
@@ -3848,21 +3864,21 @@ theorem ntmPaddingAt_active_step
         have hOld := hP.leftBlank k (by omega) (by omega)
         have hCopy :=
           ntmRight_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
-            (by simpa [htr]) k hk M.machine.blank
+            hDirRight k hk M.machine.blank
         simpa [hCopy] using hOld
       · intro i hi hRadius
         by_cases hlast : i = ntmRadius x t - 1
         · subst i
           have hExact :=
             ntmRight_blankRight_exact M x t s q a j sigma hSat hs hActive hj
-              (by simpa [htr]) M.machine.blank
+              hDirRight M.machine.blank
           simpa using hExact
         · have hiShift : i < ntmRadius x t - 1 := by omega
           have hip1 : i + 1 < ntmRadius x t := by omega
           have hOld := hP.rightBlank (i + 1) (by omega) hip1
           have hCopy :=
             ntmRight_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
-              (by simpa [htr]) i hiShift M.machine.blank
+              hDirRight i hiShift M.machine.blank
           simpa [hCopy] using hOld
 
 theorem ntmPaddingAt_all
