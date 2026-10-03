@@ -92,13 +92,13 @@ theorem counterexample_fails
         ¬ DeclaredAccepts M (R.bitsOf (fixedCode B'))
     exact R.flips_of_fixed (fixedCode B') hfix
   intro hCorrect
-  change
-    M.machine.HaltsWithin
-        (M.timeBound (counterexample B').length)
-        (initialTMConfig M.machine (counterexample B')) ∧
-      (DeclaredAccepts M (counterexample B') ↔
-        CanonicalSAT (counterexample B')) at hCorrect
-  rcases hCorrect with ⟨_, hSem⟩
+  unfold PolyDTMCandidate.CorrectAt at hCorrect
+  dsimp at hCorrect
+  rcases hCorrect with ⟨_, hSem0⟩
+  have hSem :
+      DeclaredAccepts M (counterexample B') ↔
+        CanonicalSAT (counterexample B') := by
+    simpa [DeclaredAccepts] using hSem0
   by_cases hAcc : DeclaredAccepts M (counterexample B')
   · have hSat : CanonicalSAT (counterexample B') :=
       hSem.mp hAcc
