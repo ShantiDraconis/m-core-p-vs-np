@@ -7818,7 +7818,7 @@ theorem ntmChoiceEffect_weight_le
         ntmEffectWeightCap, ntmCNFWeight_append,
         ntmSetState_weight, ntmSetSymbol_weight,
         ntmCopyLeftAll_weight, ntmCopyRightAll_weight]
-      nlinarith
+      omega
   | left =>
       unfold ntmChoiceEffectCNF ntmLeftEffectCNF ntmEffectWeightCap
       simp only [ntmCNFWeight_append]
@@ -7857,7 +7857,7 @@ theorem ntmChoiceEffect_weight_le
         simpa [ntmSetRightCell] using
           ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
             (ntmRightVar M x t (s+1) 0) write]
-      nlinarith
+      omega
   | right =>
       unfold ntmChoiceEffectCNF ntmRightEffectCNF ntmEffectWeightCap
       simp only [ntmCNFWeight_append]
@@ -7896,7 +7896,7 @@ theorem ntmChoiceEffect_weight_le
         simpa [ntmSetRightCell] using
           ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
             (ntmRightVar M x t (s+1) (ntmRadius x t - 1)) M.machine.blank]
-      nlinarith
+      omega
 
 
 theorem ntmIndexedTransitions_length
