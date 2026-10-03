@@ -8017,9 +8017,17 @@ theorem ntmActiveChoice_weight_le
         (by
           intro p hp
           exact ntmChoiceEffect_weight_le M x t s q a p)
+  have hm2 :
+      m ^ 2 <= (ntmBranchBound M) ^ 2 := by
+    simpa [pow_two] using Nat.mul_le_mul hm hm
+  have heffect_mono :
+      m * ntmEffectWeightCap M x t <=
+        ntmBranchBound M * ntmEffectWeightCap M x t :=
+    Nat.mul_le_mul_right (ntmEffectWeightCap M x t) hm
   simp only [ntmActiveChoiceCNF, ntmCNFWeight_append]
+  rw [hfirst]
   unfold ntmActiveChoiceWeightCap
-  nlinarith [hm]
+  omega
 
 def ntmHaltedWeightCap
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
