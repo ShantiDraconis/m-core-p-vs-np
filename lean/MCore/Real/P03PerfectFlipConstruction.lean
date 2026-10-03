@@ -63,7 +63,7 @@ theorem R_M_fixed_prefix
   unfold R_M complementSemanticReduction
   change
     encodeCircuit
-      (concreteNTMTableauProducer.circuit
+      (PNPNTMTableauClosure.concreteNTMTableauProducer.circuit
         (complementRunRealization M hTotal).candidate
         x
         ((complementRunRealization M hTotal).candidate.timeBound x.length))
