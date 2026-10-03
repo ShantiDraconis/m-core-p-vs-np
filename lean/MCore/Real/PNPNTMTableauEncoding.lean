@@ -1,6 +1,5 @@
 
 import MCore.Real.PNPNTMPathFrontier
-import Mathlib.Data.List.GetD
 
 namespace MCore
 namespace Real
@@ -3568,7 +3567,7 @@ theorem ntmBlankTailAt_zero
           simp [inputTape]
           have hi : bs.length <= i := by
             simpa using hxi
-          exact List.getD_eq_default _ _ hi
+          exact list_getD_eq_default_of_length_le _ _ hi
     simpa [hget] using hExact
 
 theorem ntmBlankTail_boundary
@@ -4445,7 +4444,7 @@ theorem operational_left_getD_outside
     (hi : x.length + s <= i) :
     (operationalDecodeConfig M x t sigma hSat s hs).tape.left.getD i M.machine.blank =
       M.machine.blank := by
-  apply List.getD_eq_default
+  apply list_getD_eq_default_of_length_le
   exact Nat.le_trans (operationalTapeBound_all M x t sigma hSat s hs).left_len hi
 
 theorem operational_right_getD_outside
@@ -4456,7 +4455,7 @@ theorem operational_right_getD_outside
     (hi : x.length + s <= i) :
     (operationalDecodeConfig M x t sigma hSat s hs).tape.right.getD i M.machine.blank =
       M.machine.blank := by
-  apply List.getD_eq_default
+  apply list_getD_eq_default_of_length_le
   exact Nat.le_trans (operationalTapeBound_all M x t sigma hSat s hs).right_len hi
 
 
@@ -6480,7 +6479,7 @@ theorem path_left_getD_outside
     (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
     (hs : s <= t) (hi : x.length + s <= i) :
     (path ⟨s, by omega⟩).tape.left.getD i M.machine.blank = M.machine.blank := by
-  apply List.getD_eq_default
+  apply list_getD_eq_default_of_length_le
   exact Nat.le_trans (pathTapeBound_all M x t path hPath s hs).left_len hi
 
 theorem path_right_getD_outside
@@ -6489,7 +6488,7 @@ theorem path_right_getD_outside
     (hPath : NTMTableauPath M t (initialNTMConfig M.machine x) path)
     (hs : s <= t) (hi : x.length + s <= i) :
     (path ⟨s, by omega⟩).tape.right.getD i M.machine.blank = M.machine.blank := by
-  apply List.getD_eq_default
+  apply list_getD_eq_default_of_length_le
   exact Nat.le_trans (pathTapeBound_all M x t path hPath s hs).right_len hi
 
 

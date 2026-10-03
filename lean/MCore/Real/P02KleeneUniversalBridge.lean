@@ -90,6 +90,10 @@ theorem counterexample_fails
         (fixedCode B)
         (fixedCode_spec B)
   intro hCorrect
+  change
+    DeclaredHalts M (counterexample B) ∧
+      (DeclaredAccepts M (counterexample B) ↔
+        CanonicalSAT (counterexample B)) at hCorrect
   rcases hCorrect with ⟨_, hSem⟩
   by_cases hAcc : DeclaredAccepts M (counterexample B)
   · have hSat : CanonicalSAT (counterexample B) :=
