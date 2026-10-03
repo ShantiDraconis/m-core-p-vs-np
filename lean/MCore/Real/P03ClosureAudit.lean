@@ -104,6 +104,20 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03UniformRangeDecoder.genuineSourceCandidate
 #print axioms MCore.Real.P03UniformRangeDecoder.boundedSourceUnique_gives_extensional_recovery
 
+
+#print axioms MCore.Real.P03ClosedMath.candidate_closed_dichotomy
+#print axioms MCore.Real.P03ClosedMath.no_rangeFailure_iff_perfectFlip
+#print axioms MCore.Real.P03ClosedMath.global_closed_dichotomy
+#print axioms MCore.Real.P03ClosedMath.rangeFailureLaw_iff_not_existsPerfectFlip
+#print axioms MCore.Real.P03ClosedMath.rangeFailureLaw_iff_fullRunAcceptance
+#print axioms MCore.Real.P03ClosedMath.rangeFailureLaw_closes_internal_endpoint
+#print axioms MCore.Real.P03ClosedMath.perfectFlip_refutes_rangeFailureLaw
+#print axioms MCore.Real.P03ClosedMath.perfectFlip_blocks_odd_recurrence
+#print axioms MCore.Real.P03ClosedMath.reduction_range_fixed_prefix
+#print axioms MCore.Real.P03ClosedMath.reduction_range_source_recovery
+#print axioms MCore.Real.P03ClosedMath.canonicalSAT_inP_gives_B
+#print axioms MCore.Real.P03ClosedMath.closed_math_status
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
