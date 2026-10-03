@@ -11,6 +11,7 @@ import MCore.Real.P03CriticalHalfSymmetry
 import MCore.Real.P03PolynomialWitness
 import MCore.Real.P03RangeFailureFrontier
 import MCore.Real.P03PerfectFlipDichotomy
+import MCore.Real.P03PerfectFlipConstruction
 
 namespace MCore
 namespace Real
