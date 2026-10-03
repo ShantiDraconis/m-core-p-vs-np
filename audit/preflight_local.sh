@@ -44,7 +44,20 @@ echo "== PREFLIGHT L2: TOPOLOGICAL BUILD =="
 
 # Remove stale oleans so local success cannot come from an obsolete dependency.
 lake clean || true
+
+# The repository may carry a stale pre-Mathlib manifest.  lake update is the
+# authoritative regeneration step; verify that it actually records Mathlib
+# before attempting cache or compilation.
+if [[ -f lake-manifest.json ]] && ! grep -q '"name"[[:space:]]*:[[:space:]]*"mathlib"' lake-manifest.json; then
+  echo "MANIFEST_STALE_BEFORE_UPDATE: regenerating dependency manifest"
+fi
+
 lake update
+
+grep -q '"name"[[:space:]]*:[[:space:]]*"mathlib"' lake-manifest.json \
+  || red "lake update completed but lake-manifest.json still has no mathlib package"
+
+echo "MANIFEST_RESOLVED: mathlib present after lake update"
 
 # Match CI dependency materialization.  If cache is unavailable, fail here
 # rather than allowing later imports to produce misleading missing-olean errors.
