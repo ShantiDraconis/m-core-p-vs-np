@@ -8,4 +8,4 @@
 {"url":"https://github.com/leanprover-community/quote4","type":"git","subDir":null,"scope":"leanprover-community","rev":"fa4f7f15d97591a9cf3aa7724ba371c7fc6dda02","name":"Qq","manifestFile":"lake-manifest.json","inputRev":"master","inherited":true,"configFile":"lakefile.toml"},
 {"url":"https://github.com/leanprover-community/batteries","type":"git","subDir":null,"scope":"leanprover-community","rev":"f5d04a9c4973d401c8c92500711518f7c656f034","name":"batteries","manifestFile":"lake-manifest.json","inputRev":"main","inherited":true,"configFile":"lakefile.toml"},
 {"url":"https://github.com/leanprover/lean4-cli","type":"git","subDir":null,"scope":"leanprover","rev":"02dbd02bc00ec4916e99b04b2245b30200e200d0","name":"Cli","manifestFile":"lake-manifest.json","inputRev":"main","inherited":true,"configFile":"lakefile.toml"}],
-"name":"m-core-p-vs-np","lakeDir":".lake","fixedToolchain":false}
+"name":"m_core_p_vs_np","lakeDir":".lake","fixedToolchain":false}
