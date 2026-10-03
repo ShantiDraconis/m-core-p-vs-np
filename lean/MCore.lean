@@ -246,3 +246,11 @@ import P02.LANE4.AUX.R5_PAIR_INJECTIVE
 import P02.LANE4.StructuralClosure
 
 import P02.LANE4.OPEN_MATH.BehavioralAlignment
+
+import P02.LANE4.AUX.R4_INITIAL_CNF_DECODER
+
+import P02.LANE4.AUX.R4_FIXED_FUEL
+
+import P02.LANE4.AUX.STRUCTURAL_CLOSURE
+
+import P02.LANE4.OPEN_MATH.FuelCounterexample
