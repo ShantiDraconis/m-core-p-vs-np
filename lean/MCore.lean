@@ -224,3 +224,5 @@ import MCore.Real.P02TableauSourceRecovery
 import P02.LANE4.AUX.R1_R3_REAL
 
 import P02.LANE4.AUX.R2_R4_RADIUS
+
+import P02.LANE4.AUX.R4_R5_BOUNDED
