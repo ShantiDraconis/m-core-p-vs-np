@@ -30,7 +30,8 @@
     "P02.LANE4.StructuralClosure",
     "P02.LANE4.AUX.STRUCTURAL_CLOSURE",
     "P02.LANE4.StructureBundle",
-    "P02.LANE4.AdvancedCertificateReuse"
+    "P02.LANE4.AdvancedCertificateReuse",
+    "P02.LANE4.CompleteBundle"
   ],
   "open_math_chain": [
     "P02.LANE4.OPEN_MATH.BehavioralAlignment",
@@ -79,5 +80,16 @@
       "G21Pointwise / UniversalSATLowerBound",
       "TotalBehavioralAlignmentProducer OR UniformEffectiveCoverage or another genuine producer of G21"
     ]
+  },
+  "complete_bundle": {
+    "file": "lean/P02/LANE4/CompleteBundle.lean",
+    "source_state": "CONSTRUCTED_SOURCE_COMPLETE",
+    "composition": [
+      "StructureBundle.auxStructure",
+      "AdvancedCertificateReuse.reusedTerminalChain",
+      "T10OpenMath kept outside AUX",
+      "G21OpenMath kept OPEN"
+    ],
+    "kernel_verified": false
   }
 }
