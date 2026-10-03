@@ -23,7 +23,7 @@ echo "== P02-LANE-4: TOPOLOGICAL PREREQUISITE =="
 if [[ "${P02_LANE4_TARGET_ALREADY_GREEN:-0}" == "1" ]]; then
   echo "P02Lane4 SUCCESS (reused from preflight L2)"
 else
-  lake build +P02.LANE4.CompleteBundle
+  lake build +P02Lane4
   echo "P02Lane4 SUCCESS"
 fi
 
