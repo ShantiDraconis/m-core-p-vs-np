@@ -24,7 +24,8 @@
       "architecture_audit": "lean/MCore/Real/P01_Riemann/ArchitectureAudit.lean",
       "frozen_sources": [],
       "required_terminal_symbols": [
-        "MCore.Real.P01_Riemann.GreenCertificate.terminal_endpoint_closed"
+        "MCore.Real.P01_Riemann.GreenCertificate.terminal_endpoint_closed",
+        "MCore.Real.P01_Riemann.GreenCertificate.terminal_endpoint_certified"
       ],
       "required_bridge_markers": [
         "FiniteSpanToDNLimit"
@@ -41,7 +42,8 @@
         }
       ],
       "required_terminal_symbols": [
-        "MCore.Real.P02_YangMills.GreenCertificate.terminal_endpoint_closed"
+        "MCore.Real.P02_YangMills.GreenCertificate.terminal_endpoint_closed",
+        "MCore.Real.P02_YangMills.GreenCertificate.terminal_endpoint_certified"
       ],
       "required_bridge_markers": [
         "B60ToMassGap",
@@ -54,7 +56,8 @@
       "architecture_audit": "lean/MCore/Real/P03/ArchitectureAudit.lean",
       "frozen_sources": [],
       "required_terminal_symbols": [
-        "MCore.Real.P03.GreenCertificate.terminal_endpoint_closed"
+        "MCore.Real.P03.GreenCertificate.terminal_endpoint_closed",
+        "MCore.Real.P03.GreenCertificate.terminal_endpoint_certified"
       ],
       "required_bridge_markers": [
         "CompleteRouteBInhabitant",
@@ -72,7 +75,8 @@
         }
       ],
       "required_terminal_symbols": [
-        "MCore.Real.P04_NavierStokes.GreenCertificate.terminal_endpoint_closed"
+        "MCore.Real.P04_NavierStokes.GreenCertificate.terminal_endpoint_closed",
+        "MCore.Real.P04_NavierStokes.GreenCertificate.terminal_endpoint_certified"
       ],
       "required_bridge_markers": [
         "ActualNSToSignedGainCore",
@@ -91,7 +95,8 @@
         }
       ],
       "required_terminal_symbols": [
-        "MCore.Real.P05_Hodge.GreenCertificate.terminal_endpoint_closed"
+        "MCore.Real.P05_Hodge.GreenCertificate.terminal_endpoint_closed",
+        "MCore.Real.P05_Hodge.GreenCertificate.terminal_endpoint_certified"
       ],
       "required_bridge_markers": [
         "ConcreteAlgebraicityPayload",
@@ -114,7 +119,8 @@
         }
       ],
       "required_terminal_symbols": [
-        "MCore.Real.P06_BSD.GreenCertificate.terminal_endpoint_closed"
+        "MCore.Real.P06_BSD.GreenCertificate.terminal_endpoint_closed",
+        "MCore.Real.P06_BSD.GreenCertificate.terminal_endpoint_certified"
       ],
       "required_bridge_markers": [
         "RealizableBSDProducer",
@@ -122,6 +128,29 @@
         "RankPartToEquality"
       ],
       "green_certificate": "lean/MCore/Real/P06_BSD/GreenCertificate.lean"
+    }
+  },
+  "gate": "GREEN_GATE_FAIL_CLOSED",
+  "version": "a4b46824450804aa1fbcdc6f39307391b8d65fbc",
+  "rules": [
+    "1. frozen refs correct and pinned",
+    "2. axiom=0",
+    "3. sorry=0",
+    "4. admit=0",
+    "5. opaque=0",
+    "6. no forbidden administrative frontier aliases",
+    "7. GreenCertificate.lean exists",
+    "8. GreenCertificate exposes terminal_endpoint_closed and theorem terminal_endpoint_certified : terminal_endpoint_closed = true",
+    "9. ArchitectureAudit.lean compiles",
+    "10. lake build MCore passes",
+    "11. real terminal endpoint is closed, not an architectural proxy",
+    "12. manifest records exact provenance/hash/build"
+  ],
+  "current_state": {
+    "P01-P06": {
+      "GREEN": false,
+      "BUILD": "UNVERIFIED",
+      "reason": "RED certificate templates exist, but terminal_endpoint_certified is intentionally absent"
     }
   }
 }
