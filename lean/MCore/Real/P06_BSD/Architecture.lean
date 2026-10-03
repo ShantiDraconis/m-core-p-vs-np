@@ -1,3 +1,7 @@
+import MCore.Real.P06_BSD.ClosedBridge.RankPartToRankEquality
+import MCore.Real.P06_BSD.ClosedBase.NoFalseFinalCertificate
+import MCore.Real.P06_BSD.ClosedBase.AbstractRankInterfaceCounteraudit
+import MCore.Real.P06_BSD.ClosedBase.ExternalInputProvenance
 import MCore.Real.P06_BSD.OpenBridge.RealizableBSDProducerTarget
 import MCore.Real.P06_BSD.ClosedBridge.RankPartToEquality
 import MCore.Real.P06_BSD.ClosedBridge.RankWitnessToOpenCore
@@ -47,13 +51,14 @@ def sourceMiddle : List LayerRecord := []
 /-- Intended single-pivot architecture target for BSD rank/refined frontier. -/
 def openBridge : List LayerRecord :=
   [ ⟨"RealizableBSDProducer", .openBridgeTarget,
-      "real frontier: realizable elliptic-curve domain + universal rank equality + refined leading-coefficient identity on the same domain"⟩ ]
+      "real composite frontier: realizable curve domain + universal rank equality + refined leading-coefficient identity on the same domain"⟩ ]
 
 def openMath : List LayerRecord :=
   [ ⟨"BSD_CONJECTURE", .openMath, "terminal mathematical endpoint remains open"⟩ ]
 
 def targetOpenBridgeCount : Nat := 1
 def materialGaps : Nat := 1
+def materialAtoms : Nat := 2
 def green : Bool := false
 def buildVerified : Bool := false
 
