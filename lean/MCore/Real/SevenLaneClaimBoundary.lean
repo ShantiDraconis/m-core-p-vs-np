@@ -25,11 +25,11 @@ structure LaneClaim where
 def p01 : LaneClaim :=
   { lane := "P01_Riemann"
     closedBaseRecordCount := 3
-    closedBridgeRecordCount := 0
+    closedBridgeRecordCount := 1
     sourceMiddleRecordCount := 1
     materialGaps := 1
     materialAtoms := 1
-    claimKind := .sourceMiddleOnly
+    claimKind := .realFrontierBound
     terminalEndpointClosed := false
     buildVerified := false
     green := false }
@@ -116,8 +116,8 @@ def realFrontierBoundCount : Nat :=
 def locallyGreenOpenLaneCount : Nat :=
   openLaneClaims.foldl (fun n L => if L.green then n + 1 else n) 0
 
-theorem five_open_lanes_have_real_frontier_bound :
-    realFrontierBoundCount = 5 := by decide
+theorem six_open_lanes_have_real_frontier_bound :
+    realFrontierBoundCount = 6 := by decide
 
 theorem no_open_lane_claims_terminal_closure :
     openLaneClaims.all (fun L => !L.terminalEndpointClosed) = true := by
@@ -145,7 +145,7 @@ theorem poincare_external_not_local_build :
     p07.buildVerified = false := by
   decide
 
-#print axioms MCore.Real.SevenLaneClaimBoundary.five_open_lanes_have_real_frontier_bound
+#print axioms MCore.Real.SevenLaneClaimBoundary.six_open_lanes_have_real_frontier_bound
 #print axioms MCore.Real.SevenLaneClaimBoundary.no_open_lane_claims_terminal_closure
 #print axioms MCore.Real.SevenLaneClaimBoundary.no_open_lane_claims_local_green
 #print axioms MCore.Real.SevenLaneClaimBoundary.frontier_claim_not_solution_claim
