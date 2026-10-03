@@ -109,6 +109,65 @@ theorem perfectFlip_no_fullRunWitness
     (rangeCorrect_iff_perfectFlip M hTotal).2 hFlip
   exact ((no_rangeFailure_iff_rangeCorrect M hTotal).2 hCorrect) hFail
 
+
+
+/--
+Any genuine deterministic polynomial-time realization of CanonicalSAT is,
+for its own complemented Cook--Levin reduction, a real PerfectFlip candidate.
+-/
+theorem sat_realization_candidate_perfectFlip
+    (D : PolyDTMRealization
+      PNPCookLevinMaterialMinCut.CanonicalSAT) :
+    ∃ hTotal : DeclaredClockTotal D.candidate,
+      PerfectFlip D.candidate hTotal := by
+  have hTotal : DeclaredClockTotal D.candidate := by
+    intro x
+    exact (D.decides x).1
+  refine ⟨hTotal, ?_⟩
+  intro x
+  have hx :
+      DeclaredAccepts D.candidate x ↔
+        PNPCookLevinMaterialMinCut.CanonicalSAT x := by
+    exact (D.decides x).2
+  have hy :
+      DeclaredAccepts D.candidate
+          (R_M D.candidate hTotal x) ↔
+        PNPCookLevinMaterialMinCut.CanonicalSAT
+          (R_M D.candidate hTotal x) := by
+    exact (D.decides (R_M D.candidate hTotal x)).2
+  have hreduce :
+      PNPCookLevinMaterialMinCut.CanonicalSAT
+          (R_M D.candidate hTotal x) ↔
+        ¬ DeclaredAccepts D.candidate x := by
+    simpa [R_M] using
+      complement_reduce_correct D.candidate hTotal x
+  exact hy.trans hreduce
+
+theorem canonicalSAT_inP_implies_existsPerfectFlip
+    (hP : InP PNPCookLevinMaterialMinCut.CanonicalSAT) :
+    ExistsPerfectFlip := by
+  rcases hP with ⟨D⟩
+  rcases sat_realization_candidate_perfectFlip D with
+    ⟨hTotal, hFlip⟩
+  exact ⟨D.candidate, hTotal, hFlip⟩
+
+/--
+Consequently the universal range-failure route excludes a deterministic
+polynomial-time CanonicalSAT decider, consistently with its downstream
+UniversalFailure theorem.
+-/
+theorem rangeFailureLaw_implies_canonicalSAT_not_inP
+    (H : RangeFailureLaw) :
+    ¬ InP PNPCookLevinMaterialMinCut.CanonicalSAT := by
+  intro hP
+  have hFlip : ExistsPerfectFlip :=
+    canonicalSAT_inP_implies_existsPerfectFlip hP
+  exact (existsPerfectFlip_iff_not_rangeFailureLaw.mp hFlip) H
+
+#print axioms MCore.Real.P03PerfectFlipDichotomy.sat_realization_candidate_perfectFlip
+#print axioms MCore.Real.P03PerfectFlipDichotomy.canonicalSAT_inP_implies_existsPerfectFlip
+#print axioms MCore.Real.P03PerfectFlipDichotomy.rangeFailureLaw_implies_canonicalSAT_not_inP
+
 #print axioms MCore.Real.P03PerfectFlipDichotomy.existsPerfectFlip_iff_not_rangeFailureLaw
 #print axioms MCore.Real.P03PerfectFlipDichotomy.rangeFailureLaw_or_existsPerfectFlip
 #print axioms MCore.Real.P03PerfectFlipDichotomy.perfectFlip_orbit_step
