@@ -220,3 +220,5 @@ import MCore.Real.Claim1To7Only
 import MCore.Real.P02CNFEncodingDeficitAudit
 import MCore.Real.P02Lane4SemanticGate
 import MCore.Real.P02TableauSourceRecovery
+
+import P02.LANE4.AUX.R1_R3_REAL
