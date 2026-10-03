@@ -7771,7 +7771,21 @@ theorem ntmInitial_weight_le
         ntmSetSymbol_weight ([] : NTMClause)
           (ntmRightVar M x t 0 i)
           ((inputTape x).right.getD i M.machine.blank))
-  nlinarith
+  have hcells :
+      ntmCNFWeight
+          ((List.range (ntmRadius x t)).flatMap (fun i =>
+            ntmSetLeftCell [] M x t 0 i
+              ((inputTape x).left.getD i M.machine.blank))) +
+        ntmCNFWeight
+          ((List.range (ntmRadius x t)).flatMap (fun i =>
+            ntmSetRightCell [] M x t 0 i
+              ((inputTape x).right.getD i M.machine.blank)))
+        <= 12 * ntmRadius x t := by
+    calc
+      _ <= ntmRadius x t * 6 + ntmRadius x t * 6 :=
+        Nat.add_le_add hl hr
+      _ = 12 * ntmRadius x t := by ring
+  omega
 
 theorem ntmHaltedStutter_weight_le
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
