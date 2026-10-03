@@ -38,6 +38,6 @@ A lane may be promoted from `GREEN=false` to `GREEN=true` only when **all** gate
 
 ## Current expected outcome
 
-For P01-P06, the gate must currently fail because no audited terminal `GreenCertificate.lean` exists that closes the corresponding Millennium endpoint.
+For P01-P06, RED `GreenCertificate.lean` templates now exist, but the gate must still fail because `terminal_endpoint_certified` is absent and `terminal_endpoint_closed = false`.
 
 This failure is intentional and preserves the fail-closed invariant.
