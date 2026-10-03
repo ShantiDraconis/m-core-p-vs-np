@@ -3382,13 +3382,7 @@ theorem trimTrailingBlank_nil
 theorem trimTrailingBlank_all_blank
     (blank : Option Bool) (n : Nat) :
     trimTrailingBlank blank (List.replicate n blank) = [] := by
-  induction n with
-  | zero =>
-      simp [trimTrailingBlank]
-  | succ n ih =>
-      rw [List.replicate_succ]
-      rw [trimTrailingBlank_append_blank]
-      exact ih
+  simp [trimTrailingBlank]
 
 theorem decodeLeftList_eq_trim_raw
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
