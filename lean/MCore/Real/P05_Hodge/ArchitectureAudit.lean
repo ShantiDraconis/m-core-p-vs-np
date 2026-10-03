@@ -1,3 +1,4 @@
+import MCore.Real.P05_Hodge.GreenCertificate
 import MCore.Real.P05_Hodge.Architecture
 
 namespace MCore.Real.P05_Hodge.ArchitectureAudit
@@ -16,3 +17,6 @@ namespace MCore.Real.P05_Hodge.ArchitectureAudit
 #print axioms MCore.Real.P05_Hodge.Architecture.fail_closed
 
 end MCore.Real.P05_Hodge.ArchitectureAudit
+
+#print axioms MCore.Real.P05_Hodge.GreenCertificate.terminal_endpoint_not_certified
+#print axioms MCore.Real.P05_Hodge.GreenCertificate.build_not_verified
