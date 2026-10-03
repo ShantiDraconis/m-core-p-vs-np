@@ -29,6 +29,38 @@ jobs:
             MCore.C9.Reuse MCore.C9.Vars MCore.C9.Mu MCore.C9.Good MCore.C9.Step \
             MCore.C10.RestrictionProgress MCore.C11.BranchingCost c11_regression
 
+      - name: C1 semantic axiom closure
+        run: |
+          set -euo pipefail
+          cat > CircuitK1AxiomAudit.lean <<'EOF'
+          import MCore.CircuitK1
+          #print axioms MCore.CircuitK1.size_restrict
+          #print axioms MCore.CircuitK1.depth_restrict
+          #print axioms MCore.CircuitK1.mu_restrict_invariant
+          #print axioms MCore.CircuitK1.raw_potential_does_not_drop
+          EOF
+          lake env lean CircuitK1AxiomAudit.lean 2>&1 | tee audit/CircuitK1-axioms.log
+          if grep -E 'sorryAx' audit/CircuitK1-axioms.log; then exit 1; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed = {"propext"}
+          log = Path("audit/CircuitK1-axioms.log").read_text().splitlines()
+          seen = 0
+          for line in log:
+              marker = "depends on axioms: ["
+              if marker in line:
+                  seen += 1
+                  deps = line.split(marker, 1)[1].rsplit("]", 1)[0]
+                  got = {x.strip() for x in deps.split(",") if x.strip()}
+                  bad = got - allowed
+                  if bad:
+                      raise SystemExit(f"unexpected C1 axioms: {sorted(bad)}")
+              elif "does not depend on any axioms" in line:
+                  seen += 1
+          if seen < 4:
+              raise SystemExit(f"incomplete C1 axiom audit: saw {seen}/4 theorem reports")
+          PY
+
       - name: Build C12 family layer
         run: |
           set -euo pipefail
