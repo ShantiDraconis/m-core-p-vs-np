@@ -63,15 +63,14 @@ echo "MANIFEST_RESOLVED: mathlib present after lake update"
 # rather than allowing later imports to produce misleading missing-olean errors.
 lake exe cache get
 
-# Build the registered Lean library topologically.  This is the only reliable
-# way to materialize the full import chain
-# PNPNTMTableauEncoding -> PNPNTMPathFrontier -> PNPNTMTableauFrontier -> ...
-# without depending on stale .olean files.
-echo "-- TOPOLOGICAL LIBRARY MCore"
-MCORE_LOG="${TMPDIR:-/tmp}/p02_lane4_mcore_build.log"
-rm -f "$MCORE_LOG"
-lake build MCore 2>&1 | tee "$MCORE_LOG"
-echo "PREFLIGHT_MCORE_SUCCESS"
+# Build only the registered terminal module for P02-LANE-4.  Lake resolves
+# its complete dependency closure topologically while excluding unrelated
+# lanes such as P03 that are not dependencies of this module.
+echo "-- TOPOLOGICAL MODULE P02.LANE4.CompleteBundle"
+LANE_BUILD_LOG="${TMPDIR:-/tmp}/p02_lane4_complete_bundle_build.log"
+rm -f "$LANE_BUILD_LOG"
+lake build P02.LANE4.CompleteBundle 2>&1 | tee "$LANE_BUILD_LOG"
+echo "PREFLIGHT_LANE4_COMPLETE_BUNDLE_SUCCESS"
 
 # Once the dependency graph has been built, re-elaborate the critical base
 # source directly so its source-level elaboration is independently visible.
@@ -82,14 +81,14 @@ echo "PREFLIGHT_TABLEAU_BASE_SUCCESS"
 echo "== PREFLIGHT L3: AUX GATE MIRROR =="
 
 rm -f "$LOG"
-P02_LANE4_MCORE_ALREADY_GREEN=1 \
+P02_LANE4_BUNDLE_ALREADY_GREEN=1 \
   bash audit/p02_lane4_aux_green.sh 2>&1 | tee "$LOG"
 
 grep -q 'SCAN_OK: 0 axiom/sorry/admit/opaque' "$LOG" \
   || red "gate did not emit SCAN_OK"
 
-grep -q 'lake build MCore SUCCESS' "$LOG" \
-  || red "gate did not confirm lake build MCore SUCCESS"
+grep -q 'P02.LANE4.CompleteBundle SUCCESS' "$LOG" \
+  || red "gate did not confirm CompleteBundle topological build"
 
 grep -q 'AUX_GREEN_CANDIDATE: P02-LANE-4' "$LOG" \
   || red "gate did not emit AUX_GREEN_CANDIDATE"
