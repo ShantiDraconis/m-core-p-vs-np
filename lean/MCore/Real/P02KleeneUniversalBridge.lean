@@ -77,33 +77,31 @@ failure of the original candidate at one concrete input. -/
 theorem counterexample_fails
     {M : PolyDTMCandidate}
     (B : CandidateKleeneBridge M) :
-    ¬ M.CorrectAt CanonicalSAT (counterexample B') := by
-  rcases B with ⟨K, R⟩
-  let B' : CandidateKleeneBridge M := ⟨K, R⟩
+    ¬ M.CorrectAt CanonicalSAT (counterexample B) := by
   have hfix :
-      K.eval (K.compile (fixedCode B')) =
-        K.eval (fixedCode B') :=
-    fixedCode_spec B'
+      B.compiler.eval (B.compiler.compile (fixedCode B)) =
+        B.compiler.eval (fixedCode B) :=
+    fixedCode_spec B
   have hflip :
-      CanonicalSAT (counterexample B') ↔
-        ¬ DeclaredAccepts M (counterexample B') := by
+      CanonicalSAT (counterexample B) ↔
+        ¬ DeclaredAccepts M (counterexample B) := by
     change
-      CanonicalSAT (R.bitsOf (fixedCode B')) ↔
-        ¬ DeclaredAccepts M (R.bitsOf (fixedCode B'))
-    exact R.flips_of_fixed (fixedCode B') hfix
+      CanonicalSAT (B.realizer.bitsOf (fixedCode B)) ↔
+        ¬ DeclaredAccepts M (B.realizer.bitsOf (fixedCode B))
+    exact B.realizer.flips_of_fixed (fixedCode B) hfix
   intro hCorrect
   unfold PolyDTMCandidate.CorrectAt at hCorrect
   dsimp at hCorrect
   rcases hCorrect with ⟨_, hSem0⟩
   have hSem :
-      DeclaredAccepts M (counterexample B') ↔
-        CanonicalSAT (counterexample B') := by
-    simpa [DeclaredAccepts] using hSem0
-  by_cases hAcc : DeclaredAccepts M (counterexample B')
-  · have hSat : CanonicalSAT (counterexample B') :=
+      DeclaredAccepts M (counterexample B) ↔
+        CanonicalSAT (counterexample B) := by
+    exact hSem0
+  by_cases hAcc : DeclaredAccepts M (counterexample B)
+  · have hSat : CanonicalSAT (counterexample B) :=
       hSem.mp hAcc
     exact (hflip.mp hSat) hAcc
-  · have hSat : CanonicalSAT (counterexample B') :=
+  · have hSat : CanonicalSAT (counterexample B) :=
       hflip.mpr hAcc
     exact hAcc (hSem.mpr hSat)
 
