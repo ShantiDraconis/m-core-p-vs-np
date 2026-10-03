@@ -2,6 +2,15 @@ import MCore.Real.P04_NavierStokes.Architecture
 
 namespace MCore.Real.P04_NavierStokes.ArchitectureAudit
 
+#print axioms MCore.Real.P04_NavierStokes.ClosedBase.ProducerANonnegative.evidence_is_source_verified
+#print axioms MCore.Real.P04_NavierStokes.ClosedBase.EnergyCompatibleResidual.evidence_is_source_verified
+#print axioms MCore.Real.P04_NavierStokes.ClosedBase.SignedGainNontriviality.evidence_is_source_verified
+#print axioms MCore.Real.P04_NavierStokes.ClosedBase.SignedGainCoreEquivalence.evidence_is_source_verified
+#print axioms MCore.Real.P04_NavierStokes.ClosedBridge.CoreToCertificate.evidence_is_source_verified
+#print axioms MCore.Real.P04_NavierStokes.ClosedBridge.SignedGainToDifferential.evidence_is_source_verified
+#print axioms MCore.Real.P04_NavierStokes.OpenBridge.ActualNSToSignedGainCoreTarget.source_ref_fixed
+#print axioms MCore.Real.P04_NavierStokes.Architecture.closed_base_source_count
+#print axioms MCore.Real.P04_NavierStokes.Architecture.closed_bridge_source_count
 #print axioms MCore.Real.P04_NavierStokes.Architecture.target_open_bridge_count
 #print axioms MCore.Real.P04_NavierStokes.Architecture.material_gap_count
 #print axioms MCore.Real.P04_NavierStokes.Architecture.fail_closed
