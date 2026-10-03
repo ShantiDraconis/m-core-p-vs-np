@@ -82,6 +82,14 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03ClosureKernel.remaining_open_math_iff_not_existsPerfectFlip
 #print axioms MCore.Real.P03ClosureKernel.remaining_open_math_or_existsPerfectFlip
 
+
+#print axioms MCore.Real.P03PerfectFlipConstruction.boundedExecTableauCNF_NTM_ne_nil
+#print axioms MCore.Real.P03PerfectFlipConstruction.boundedExecCircuit_NTM_is_and
+#print axioms MCore.Real.P03PerfectFlipConstruction.R_M_fixed_prefix
+#print axioms MCore.Real.P03PerfectFlipConstruction.range_first3_classifier_constant
+#print axioms MCore.Real.P03PerfectFlipConstruction.R_M_source_recover
+#print axioms MCore.Real.P03PerfectFlipConstruction.sourceRecursiveFlipLaw_iff_perfectFlip
+
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
 end P03ClosureAudit
