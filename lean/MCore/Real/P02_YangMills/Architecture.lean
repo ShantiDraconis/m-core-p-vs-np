@@ -1,3 +1,4 @@
+import MCore.Real.P02_YangMills.OpenBridge.B60Target
 import MCore.Real.P02_YangMills.ClosedBridge.B60ToMassGap
 import MCore.Real.P02_YangMills.ClosedBase.B6IsUniqueBlockingNode
 import MCore.Real.P02_YangMills.ClosedBase.A1FrontierReduction
@@ -42,12 +43,8 @@ def sourceMiddle : List LayerRecord := []
 
 /-- Intended single-pivot architecture target for Yang-Mills mass-gap frontier. -/
 def openBridge : List LayerRecord :=
-  [ ⟨"BoundedGaugeUnique", .openBridgeTarget,
-      "target pivot only; theorem/source binding not yet installed"⟩
-  , ⟨"UniformGaugeDecoder", .blockedByOpenBridge,
-      "downstream target; must not count as an independent material gap"⟩
-  , ⟨"GaugeDepth", .blockedByOpenBridge,
-      "downstream target; requires effective construction, cost bound and strict measure"⟩ ]
+  [ ⟨"B60ConcretePhysicalAdapter", .openBridgeTarget,
+      "real source-bound frontier at m-core-yang-mills@cd4bbfd3; no inhabitant is asserted locally"⟩ ]
 
 def openMath : List LayerRecord :=
   [ ⟨"YANG_MILLS_MASS_GAP", .openMath, "terminal mathematical endpoint remains open"⟩ ]
