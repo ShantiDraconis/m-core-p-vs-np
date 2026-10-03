@@ -7526,10 +7526,37 @@ theorem ntmChoiceVar_le_tableauVarCap
   have hq : q.val <= M.stateCount := by
     omega
   have ha : ntmSymbolCode a <= 2 := by
-    have := ntmSymbolCode_lt_three a
+    have h := ntmSymbolCode_lt_three a
     omega
-  simp [ntmChoiceVar, tableauVarCap, ntmStateCount]
-  nlinarith
+  have hst :
+      s * ntmStateCount M <= t * ntmStateCount M :=
+    Nat.mul_le_mul_right (ntmStateCount M) hs
+  have hidx :
+      s * ntmStateCount M + q.val <=
+        t * ntmStateCount M + M.stateCount :=
+    Nat.add_le_add hst hq
+  have hthree :
+      (s * ntmStateCount M + q.val) * 3 <=
+        (t * ntmStateCount M + M.stateCount) * 3 :=
+    Nat.mul_le_mul_right 3 hidx
+  have hsymbol :
+      (s * ntmStateCount M + q.val) * 3 + ntmSymbolCode a <=
+        (t * ntmStateCount M + M.stateCount) * 3 + 2 :=
+    Nat.add_le_add hthree ha
+  have hbranches :
+      ((s * ntmStateCount M + q.val) * 3 + ntmSymbolCode a) *
+          (ntmBranchBound M + 1) <=
+        ((t * ntmStateCount M + M.stateCount) * 3 + 2) *
+          (ntmBranchBound M + 1) :=
+    Nat.mul_le_mul_right (ntmBranchBound M + 1) hsymbol
+  have htail :
+      ((s * ntmStateCount M + q.val) * 3 + ntmSymbolCode a) *
+          (ntmBranchBound M + 1) + j <=
+        ((t * ntmStateCount M + M.stateCount) * 3 + 2) *
+          (ntmBranchBound M + 1) + ntmBranchBound M :=
+    Nat.add_le_add hbranches hj
+  unfold ntmChoiceVar tableauVarCap
+  exact Nat.add_le_add_left htail (ntmChoiceBase M x t)
 
 def ClauseVarsLe (cap : Nat) (cl : NTMClause) : Prop :=
   forall l, l ∈ cl -> l.var <= cap
