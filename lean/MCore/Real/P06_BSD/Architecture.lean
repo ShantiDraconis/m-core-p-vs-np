@@ -12,9 +12,9 @@ import MCore.Real.P06_BSD.ClosedBase.RankEqualityTwoDirections
 namespace MCore.Real.P06_BSD.Architecture
 
 /--
-Architecture skeleton mirroring the P03 four-layer layout.
-This file is an administrative manifest only: it does not prove that the named
-pivot is the mathematically correct unique open bridge for this lane.
+Fail-closed BSD architecture bound to the canonical source repository.
+Closed entries below are source-evidence bindings; the realizable composite
+producer remains OPEN and is not promoted by this manifest.
 -/
 inductive LayerState where
   | closed
@@ -68,6 +68,9 @@ theorem closed_base_source_count :
 theorem closed_bridge_source_count :
     closedBridge.length = 2 := by decide
 
+theorem material_atom_count :
+    materialAtoms = 2 := rfl
+
 theorem target_open_bridge_count :
     targetOpenBridgeCount = 1 := rfl
 
@@ -80,6 +83,7 @@ theorem fail_closed :
 
 #print axioms MCore.Real.P06_BSD.Architecture.closed_base_source_count
 #print axioms MCore.Real.P06_BSD.Architecture.closed_bridge_source_count
+#print axioms MCore.Real.P06_BSD.Architecture.material_atom_count
 #print axioms MCore.Real.P06_BSD.Architecture.target_open_bridge_count
 #print axioms MCore.Real.P06_BSD.Architecture.material_gap_count
 #print axioms MCore.Real.P06_BSD.Architecture.fail_closed
