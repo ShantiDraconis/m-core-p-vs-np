@@ -36,9 +36,9 @@ structure CanonicalSATFixedPointRealizer
   bitsOf : K.Code → BitString
   flips_of_fixed :
     ∀ c : K.Code,
-      K.eval (K.compile c) = K.eval c →
-      CanonicalSAT (bitsOf c) ↔
-        ¬ DeclaredAccepts M (bitsOf c)
+      (K.eval (K.compile c) = K.eval c) →
+        (CanonicalSAT (bitsOf c) ↔
+          ¬ DeclaredAccepts M (bitsOf c))
 
 theorem kleene_fixed_point
     {M : PolyDTMCandidate}
@@ -84,13 +84,9 @@ theorem counterexample_fails
     change
       CanonicalSAT (B.realizer.bitsOf (fixedCode B)) ↔
         ¬ DeclaredAccepts M (B.realizer.bitsOf (fixedCode B))
-    have hflipRule :=
-      B.realizer.flips_of_fixed (fixedCode B)
-    have hspec :
-        B.compiler.eval (B.compiler.compile (fixedCode B)) =
-          B.compiler.eval (fixedCode B) :=
-      fixedCode_spec B
-    exact hflipRule hspec
+    exact B.realizer.flips_of_fixed
+      (fixedCode B)
+      (fixedCode_spec B)
   intro hCorrect
   change
     M.machine.HaltsWithin
