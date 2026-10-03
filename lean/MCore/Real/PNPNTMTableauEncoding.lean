@@ -3441,9 +3441,9 @@ theorem rawLeftList_get
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) (hs : s <= t)
     (i : Fin (ntmRadius x t)) :
-    (rawLeftList M x t sigma hSat s hs).get i =
+    (rawLeftList M x t sigma hSat s hs).getD i.val M.machine.blank =
       decodeLeftCell M x t sigma hSat s hs i.val i.isLt := by
-  simp [rawLeftList]
+  simp [rawLeftList, i.isLt]
 
 theorem rawRightList_get
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -3451,9 +3451,9 @@ theorem rawRightList_get
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) (hs : s <= t)
     (i : Fin (ntmRadius x t)) :
-    (rawRightList M x t sigma hSat s hs).get i =
+    (rawRightList M x t sigma hSat s hs).getD i.val M.machine.blank =
       decodeRightCell M x t sigma hSat s hs i.val i.isLt := by
-  simp [rawRightList]
+  simp [rawRightList, i.isLt]
 
 
 theorem rawLeftList_stay
