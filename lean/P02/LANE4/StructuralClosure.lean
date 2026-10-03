@@ -23,6 +23,20 @@ structure StructuralClosure where
   r4_boundedExecCircuit_same_params_injective :
     ∀ (M : PolyNTMCandidate) (t : Nat),
       Function.Injective (fun x => boundedExecCircuit_NTM M x t)
+  r5_tableau_pair_injective :
+    ∀ (M : PolyNTMCandidate)
+      {x y : BitString}
+      {tx ty : Nat},
+      boundedExecTableauCNF_NTM M x tx =
+        boundedExecTableauCNF_NTM M y ty →
+      tx = ty ∧ x = y
+  r5_circuit_pair_injective :
+    ∀ (M : PolyNTMCandidate)
+      {x y : BitString}
+      {tx ty : Nat},
+      boundedExecCircuit_NTM M x tx =
+        boundedExecCircuit_NTM M y ty →
+      tx = ty ∧ x = y
   r5_complement_reduce_injective :
     ∀ (M : PolyDTMCandidate)
       (hTotal : P02TotalCandidateKleeneReduction.DeclaredClockTotal M),
@@ -37,6 +51,10 @@ def structuralClosure : StructuralClosure where
     AUX.R1_R3_REAL.ntmCNFCircuit_injective
   r4_boundedExecCircuit_same_params_injective :=
     AUX.R4_FINAL.boundedExecCircuit_same_params_injective
+  r5_tableau_pair_injective :=
+    AUX.R5_PAIR_INJECTIVE.boundedExecTableau_pair_injective
+  r5_circuit_pair_injective :=
+    AUX.R5_PAIR_INJECTIVE.boundedExecCircuit_pair_injective
   r5_complement_reduce_injective :=
     AUX.R5_PAIR_INJECTIVE.reduce_M_injective_final
 
@@ -53,8 +71,29 @@ theorem t10_open_math_to_exact
     P02ExactDiagonalFrontier.TotalExactDiagonalProducer :=
   total_behavioral_alignment_to_exact B
 
+/-- The pair-injective data can be projected directly from the aggregate. -/
+theorem structural_tableau_pair_recovery
+    (M : PolyNTMCandidate)
+    {x y : BitString}
+    {tx ty : Nat}
+    (h :
+      boundedExecTableauCNF_NTM M x tx =
+        boundedExecTableauCNF_NTM M y ty) :
+    tx = ty ∧ x = y :=
+  structuralClosure.r5_tableau_pair_injective M h
+
+/-- The aggregate never supplies behavioral preservation.  T10 remains an
+explicit independent input to the terminal composition theorem. -/
+theorem structural_plus_behavioral_to_exact
+    (S : StructuralClosure)
+    (B : T10_OPEN_MATH) :
+    P02ExactDiagonalFrontier.TotalExactDiagonalProducer :=
+  t10_open_math_to_exact S B
+
 #print axioms P02.LANE4.structuralClosure
+#print axioms P02.LANE4.structural_tableau_pair_recovery
 #print axioms P02.LANE4.t10_open_math_to_exact
+#print axioms P02.LANE4.structural_plus_behavioral_to_exact
 
 end LANE4
 end P02
