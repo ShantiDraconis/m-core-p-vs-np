@@ -6,9 +6,9 @@ namespace MCore.Real.P01_Riemann.GreenCertificate
 Fail-closed terminal certificate template.
 This file is intentionally RED until a genuine terminal proof is installed.
 -/
-def frontierName : String := "BoundedZeroCandidate / uniform zero-control frontier"
+def frontierName : String := "FiniteSpanApproximatesChi concreteGeneratorFamily / DNLimit = 0"
 def terminalEndpointName : String := "RiemannHypothesis"
-def provenance : String := "Mathlib + local P01 wrappers"
+def provenance : String := "Mathlib + local P01 wrappers + ShantiDraconis/m-core-riemann@d6a291b4563f9021f74ab63cc983d44f079472da"
 
 /-- False until the actual terminal endpoint is proved and audited. -/
 def terminal_endpoint_closed : Bool := false
