@@ -1,7 +1,7 @@
 {
   "schema": "P02_LANE4_STRUCTURAL_CLOSURE_V1",
   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
-  "head_at_record": "4018038749895045274786328e0834b7e14b61a9",
+  "head_at_record": "4049fffb3aa998a2751e3ba4f47b6f2e8f42b95c",
   "status": "BUILD_PENDING_FAIL_CLOSED_DENSIFIED",
   "structural": {
     "R1": "CONSTRUCTED",
@@ -28,7 +28,8 @@
     "lean/P02/LANE4/AUX/R5_PAIR.lean",
     "lean/P02/LANE4/AUX/STRUCTURAL_CLOSURE.lean",
     "lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean",
-    "audit/p02_lane4_aux_green.sh"
+    "audit/p02_lane4_aux_green.sh",
+    "lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean"
   ],
   "t10": {
     "state": "OPEN_MATH",
@@ -75,6 +76,22 @@
       "structural_fact": "R5 gives injectivity/recoverability only; it does not inhabit FuelToBehaviorBridge",
       "abstract_barrier_file": "lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean",
       "abstract_barrier": "bare fuel dominance does not logically imply same behavior without machine-specific semantics"
+    },
+    "poly_size_route": {
+      "file": "lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean",
+      "commit": "c4effb74da21d322aed783b14f3bf1161f0e82cb",
+      "facts": [
+        "PolynomialTimeBound is only an upper bound and does not imply monotonicity.",
+        "Size growth alone does not imply fuel growth for an arbitrary polynomially bounded clock.",
+        "ReductionSizeNondecreaseProducer + DeclaredClockMonotonicityProducer imply FuelWitnessProducer.",
+        "FuelToBehaviorBridge remains independently required to obtain SameBehaviorAt."
+      ],
+      "remaining_producers": [
+        "ReductionSizeNondecreaseProducer",
+        "DeclaredClockMonotonicityProducer",
+        "FuelToBehaviorBridge"
+      ],
+      "state": "OPEN_MATH_DECOMPOSED"
     }
   },
   "local_gate": {
