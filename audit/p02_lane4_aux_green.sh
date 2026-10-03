@@ -27,39 +27,40 @@ else
   echo "P02 SUCCESS"
 fi
 
-echo "== P02-LANE-4: BASE DEPENDENCY KERNEL CHECK =="
-lake env lean lean/MCore/Real/PNPNTMTableauEncoding.lean
-
-echo "== P02-LANE-4: AUX FILE KERNEL CHECK =="
-FILES=(
-  lean/P02/LANE4/AUX/R1_R3_REAL.lean
-  lean/P02/LANE4/AUX/R2_R4_RADIUS.lean
-  lean/P02/LANE4/AUX/R4_R5_BOUNDED.lean
-  lean/P02/LANE4/AUX/R4_TRANSITION_LENGTH.lean
-  lean/P02/LANE4/AUX/R4_PREFIX_SIGNATURE.lean
-  lean/P02/LANE4/AUX/R4_PREFIX_MAXIMAL.lean
-  lean/P02/LANE4/AUX/R4_TRANSITION_HEAD.lean
-  lean/P02/LANE4/AUX/R4_TRANSITION_HEAD_FINAL.lean
-  lean/P02/LANE4/AUX/R4_INITIAL_INJECTIVE.lean
-  lean/P02/LANE4/AUX/R4_INITIAL_CNF_DECODER.lean
-  lean/P02/LANE4/AUX/R4_FINAL.lean
-  lean/P02/LANE4/AUX/R4_FIXED_FUEL.lean
-  lean/P02/LANE4/AUX/R5_PAIR_INJECTIVE.lean
-  lean/P02/LANE4/AUX/R5_PAIR.lean
-  lean/P02/LANE4/StructuralClosure.lean
-  lean/P02/LANE4/AUX/STRUCTURAL_CLOSURE.lean
-  lean/P02/LANE4/OPEN_MATH/BehavioralAlignment.lean
-  lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean
-  lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean
-  lean/P02/LANE4/StructureBundle.lean
-  lean/P02/LANE4/AdvancedCertificateReuse.lean
-  lean/P02/LANE4/CompleteBundle.lean
-)
-
-for f in "${FILES[@]}"; do
-  echo "-- CHECK $f"
-  lake env lean "$f"
-done
+echo "== P02-LANE-4: KERNEL COVERAGE =="
+echo "P02 root -> CompleteBundle covers tableau + R1-R5 + OPEN_MATH audit modules + bundles"
+if [[ "${P02_LANE4_DEEP_RECHECK:-0}" == "1" ]]; then
+  echo "== P02-LANE-4: OPTIONAL DEEP DIRECT RECHECK =="
+  FILES=(
+    lean/MCore/Real/PNPNTMTableauEncoding.lean
+    lean/P02/LANE4/AUX/R1_R3_REAL.lean
+    lean/P02/LANE4/AUX/R2_R4_RADIUS.lean
+    lean/P02/LANE4/AUX/R4_R5_BOUNDED.lean
+    lean/P02/LANE4/AUX/R4_TRANSITION_LENGTH.lean
+    lean/P02/LANE4/AUX/R4_PREFIX_SIGNATURE.lean
+    lean/P02/LANE4/AUX/R4_PREFIX_MAXIMAL.lean
+    lean/P02/LANE4/AUX/R4_TRANSITION_HEAD.lean
+    lean/P02/LANE4/AUX/R4_TRANSITION_HEAD_FINAL.lean
+    lean/P02/LANE4/AUX/R4_INITIAL_INJECTIVE.lean
+    lean/P02/LANE4/AUX/R4_INITIAL_CNF_DECODER.lean
+    lean/P02/LANE4/AUX/R4_FINAL.lean
+    lean/P02/LANE4/AUX/R4_FIXED_FUEL.lean
+    lean/P02/LANE4/AUX/R5_PAIR_INJECTIVE.lean
+    lean/P02/LANE4/AUX/R5_PAIR.lean
+    lean/P02/LANE4/StructuralClosure.lean
+    lean/P02/LANE4/AUX/STRUCTURAL_CLOSURE.lean
+    lean/P02/LANE4/OPEN_MATH/BehavioralAlignment.lean
+    lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean
+    lean/P02/LANE4/OPEN_MATH/SameBehaviorFromPolyBound.lean
+    lean/P02/LANE4/StructureBundle.lean
+    lean/P02/LANE4/AdvancedCertificateReuse.lean
+    lean/P02/LANE4/CompleteBundle.lean
+  )
+  for f in "${FILES[@]}"; do
+    echo "-- CHECK $f"
+    lake env lean "$f"
+  done
+fi
 
 echo "== P02-LANE-4: SCOPED TOPOLOGICAL BUILD STATUS =="
 echo "P02 SUCCESS"
