@@ -31,14 +31,65 @@ theorem reduceM_sat_iff_not_accepts
       ¬ DeclaredAccepts M x := by
   simpa [reduceM] using complement_reduce_correct M hTotal x
 
-/-- Exact positive branch: same declared behavior on source and reduction
-output is precisely the witness consumed by BehavioralSelfAlignment. -/
+/-- Positive behavioral branch. -/
 def SameBehaviorAt
     (M : PolyDTMCandidate)
     (hTotal : DeclaredClockTotal M)
     (x : BitString) : Prop :=
   DeclaredAccepts M (reduceM M hTotal x) ↔
     DeclaredAccepts M x
+
+/-- Opposite behavioral branch. -/
+def OppositeBehaviorAt
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) : Prop :=
+  DeclaredAccepts M (reduceM M hTotal x) ↔
+    ¬ DeclaredAccepts M x
+
+/-- For any fixed source, the two Boolean-valued acceptance propositions are
+either equal or opposite.  This is propositional case analysis only; it does
+not select the useful branch uniformly. -/
+theorem behavior_dichotomy_at
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) :
+    SameBehaviorAt M hTotal x ∨
+      OppositeBehaviorAt M hTotal x := by
+  classical
+  by_cases hx : DeclaredAccepts M x
+  · by_cases hr : DeclaredAccepts M (reduceM M hTotal x)
+    · left
+      constructor <;> intro <;> assumption
+    · right
+      constructor
+      · intro hred
+        exact False.elim (hr hred)
+      · intro hnotx
+        exact False.elim (hnotx hx)
+  · by_cases hr : DeclaredAccepts M (reduceM M hTotal x)
+    · right
+      constructor
+      · intro _
+        exact hx
+      · intro _
+        exact hr
+    · left
+      constructor
+      · intro hred
+        exact False.elim (hr hred)
+      · intro hx'
+        exact False.elim (hx hx')
+
+theorem not_same_implies_opposite
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString)
+    (hNotSame : ¬ SameBehaviorAt M hTotal x) :
+    OppositeBehaviorAt M hTotal x := by
+  rcases behavior_dichotomy_at M hTotal x with hSame | hOpp
+  · exact False.elim (hNotSame hSame)
+  · exact hOpp
 
 theorem sameBehaviorAt_gives_behavioral_alignment
     (M : PolyDTMCandidate)
@@ -48,27 +99,41 @@ theorem sameBehaviorAt_gives_behavioral_alignment
     BehavioralSelfAlignment M hTotal := by
   exact ⟨x, by simpa [SameBehaviorAt, reduceM] using hSame⟩
 
-/-- The opposite branch does NOT give UniversalFailure.  Since acceptance is
-Boolean-valued, opposite behavior together with Cook--Levin correctness makes
-M agree with CanonicalSAT on the reduction output.  This theorem records the
-direction explicitly so future work cannot accidentally promote that branch
-to a lower-bound witness. -/
+/-- The opposite branch does NOT give UniversalFailure.  Together with the
+Cook--Levin complement identity it gives correctness of M on this specific
+reduction output. -/
 theorem oppositeBehaviorAt_implies_correct_on_reduction
     (M : PolyDTMCandidate)
     (hTotal : DeclaredClockTotal M)
     (x : BitString)
-    (hOpp :
-      DeclaredAccepts M (reduceM M hTotal x) ↔
-        ¬ DeclaredAccepts M x) :
+    (hOpp : OppositeBehaviorAt M hTotal x) :
     DeclaredAccepts M (reduceM M hTotal x) ↔
       CanonicalSAT (reduceM M hTotal x) := by
   rw [hOpp]
   exact (reduceM_sat_iff_not_accepts M hTotal x).symm
 
-/-- A clock/fuel inequality alone is only a resource statement.  It does not
-assert that an arbitrary candidate M interprets the Cook--Levin encoding,
-recovers x, or simulates M on x.  The missing semantic content is therefore
-kept as a separate producer rather than smuggled in through the clock. -/
+/-- Exact local outcome exposed without pretending that either branch closes
+the global endpoint. -/
+def LocalReductionOutcome
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) : Prop :=
+  SameBehaviorAt M hTotal x ∨
+    (DeclaredAccepts M (reduceM M hTotal x) ↔
+      CanonicalSAT (reduceM M hTotal x))
+
+theorem local_reduction_outcome
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString) :
+    LocalReductionOutcome M hTotal x := by
+  rcases behavior_dichotomy_at M hTotal x with hSame | hOpp
+  · exact Or.inl hSame
+  · exact Or.inr
+      (oppositeBehaviorAt_implies_correct_on_reduction
+        M hTotal x hOpp)
+
+/-- A clock/fuel inequality is only a resource statement. -/
 def FuelDominatesSourceSimulation
     (M : PolyDTMCandidate)
     (hTotal : DeclaredClockTotal M)
@@ -76,9 +141,8 @@ def FuelDominatesSourceSimulation
   M.timeBound (reduceM M hTotal x).length ≥
     M.timeBound x.length
 
-/-- What would actually be sufficient: a genuine machine-specific theorem
-turning a resource inequality plus the concrete encoding into behavioral
-preservation.  This is intentionally a Prop interface, not an inhabitant. -/
+/-- A machine-specific semantic transport theorem.  This is the strong
+missing bridge: fuel dominance is not sufficient by itself. -/
 def FuelToBehaviorBridge : Prop :=
   ∀ (M : PolyDTMCandidate)
     (hTotal : DeclaredClockTotal M)
@@ -86,14 +150,36 @@ def FuelToBehaviorBridge : Prop :=
     FuelDominatesSourceSimulation M hTotal x →
       SameBehaviorAt M hTotal x
 
-/-- A witness-producing fuel theorem plus a genuine FuelToBehaviorBridge would
-close the remaining frontier.  This theorem is purely compositional and does
-not assume UniversalFailure, not-InP, or P!=NP. -/
+/-- Witness-producing resource side of the proposed route. -/
 def FuelWitnessProducer : Prop :=
   ∀ (M : PolyDTMCandidate)
     (hTotal : DeclaredClockTotal M),
-    ∃ x : BitString, FuelDominatesSourceSimulation M hTotal x
+    ∃ x : BitString,
+      FuelDominatesSourceSimulation M hTotal x
 
+/-- Pointwise packaged witness. -/
+structure FuelWitness
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M) where
+  source : BitString
+  dominates :
+    FuelDominatesSourceSimulation M hTotal source
+
+theorem fuelWitnessProducer_iff_packaged :
+    FuelWitnessProducer ↔
+      ∀ (M : PolyDTMCandidate)
+        (hTotal : DeclaredClockTotal M),
+        Nonempty (FuelWitness M hTotal) := by
+  constructor
+  · intro W M hTotal
+    rcases W M hTotal with ⟨x, hx⟩
+    exact ⟨⟨x, hx⟩⟩
+  · intro W M hTotal
+    rcases W M hTotal with ⟨w⟩
+    exact ⟨w.source, w.dominates⟩
+
+/-- If the resource witness and genuine semantic transport are both available,
+the exact remaining behavioral producer follows. -/
 theorem fuel_route_closes_behavioral_alignment
     (W : FuelWitnessProducer)
     (B : FuelToBehaviorBridge) :
@@ -103,7 +189,7 @@ theorem fuel_route_closes_behavioral_alignment
   exact sameBehaviorAt_gives_behavioral_alignment
     M hTotal x (B M hTotal x hx)
 
-/-- Exact remaining open material on the proposed fuel route. -/
+/-- Exact material package for the proposed fuel route. -/
 structure FuelRouteProducer where
   witness : FuelWitnessProducer
   bridge : FuelToBehaviorBridge
@@ -113,10 +199,38 @@ theorem fuelRouteProducer_closes_T10
     TotalBehavioralAlignmentProducer :=
   fuel_route_closes_behavioral_alignment P.witness P.bridge
 
+/-- The structural R5 theorem is useful information, but it does not inhabit
+FuelToBehaviorBridge.  This theorem records only the valid consequence:
+distinct source strings have distinct reduction outputs. -/
+theorem structural_reduction_injective
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M) :
+    Function.Injective (reduceM M hTotal) := by
+  simpa [reduceM] using
+    P02.LANE4.structuralClosure.r5_complement_reduce_injective
+      M hTotal
+
+/-- If a SameBehavior witness exists, the existing repository chain produces
+the exact diagonal witness. -/
+theorem sameBehaviorAt_gives_exact_diagonal
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString)
+    (hSame : SameBehaviorAt M hTotal x) :
+    P02ExactDiagonalFrontier.ExactDiagonalWitness M := by
+  apply behavioral_alignment_gives_exact_witness M hTotal
+  exact sameBehaviorAt_gives_behavioral_alignment
+    M hTotal x hSame
+
 #print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.reduceM_sat_iff_not_accepts
+#print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.behavior_dichotomy_at
 #print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.oppositeBehaviorAt_implies_correct_on_reduction
+#print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.local_reduction_outcome
+#print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.fuelWitnessProducer_iff_packaged
 #print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.fuel_route_closes_behavioral_alignment
 #print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.fuelRouteProducer_closes_T10
+#print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.structural_reduction_injective
+#print axioms P02.LANE4.OPEN_MATH.BehavioralAlignment.sameBehaviorAt_gives_exact_diagonal
 
 end BehavioralAlignment
 end OPEN_MATH
