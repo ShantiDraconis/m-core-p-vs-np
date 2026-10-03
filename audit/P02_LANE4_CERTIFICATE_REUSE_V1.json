@@ -1,0 +1,110 @@
+{
+  "schema": "P02_LANE4_CERTIFICATE_REUSE_V1",
+  "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+  "status": "SOURCE_AGGREGATED_BUILD_PENDING",
+  "reused": [
+    {
+      "artifact": "CERTIFICATES/ATK_TERMINAL_P_VS_NP_e927d326.json",
+      "role": "frozen terminal boundary provenance",
+      "useful_for": [
+        "UniversalFailure <-> not-InP boundary provenance",
+        "fail-closed endpoint accounting"
+      ],
+      "does_not_supply": [
+        "T10 inhabitant",
+        "UniversalFailure inhabitant",
+        "P!=NP proof"
+      ]
+    },
+    {
+      "artifact": "audit/ATK_P02_CONSOLIDATED_KERNEL_PORT_V1.json",
+      "role": "advanced P02 kernel map",
+      "useful_for": [
+        "P02OperatorKernel",
+        "P02UniversalLowerBound",
+        "P02CanonicalClockReduction",
+        "P02KleeneKernel",
+        "P02EffectiveAlignment",
+        "P02UniversalLowerBoundMaster"
+      ],
+      "remaining_material_gap": "UniformEffectiveCoverage or equivalent genuine universal counterexample producer"
+    },
+    {
+      "artifact": "audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json",
+      "role": "failure normal form",
+      "useful_for": [
+        "timeout/false-positive/false-negative decomposition",
+        "counterexample-producer equivalence"
+      ],
+      "remaining_material_gap": "NormalizedCounterexampleProducer / genuine universal counterexample"
+    },
+    {
+      "artifact": "lean/MCore/Real/P02ExactDiagonalFrontier.lean",
+      "role": "minimal exact diagonal frontier",
+      "useful_for": [
+        "TotalExactDiagonalProducer <-> UniversalFailure",
+        "timeout split",
+        "internal endpoint transport"
+      ]
+    },
+    {
+      "artifact": "lean/MCore/Real/P02UniversalFailureMinCut.lean",
+      "role": "candidate-indexed failure producer",
+      "useful_for": [
+        "UniversalCounterexampleProducer <-> UniversalFailure"
+      ]
+    },
+    {
+      "artifact": "lean/MCore/Real/P02UniversalLowerBoundMaster.lean",
+      "role": "terminal normalization hub",
+      "useful_for": [
+        "UniversalSATLowerBound <-> not-InP",
+        "operator form",
+        "normalized-adversary form",
+        "operational form"
+      ]
+    }
+  ],
+  "newly_aggregated_module": "lean/P02/LANE4/AdvancedCertificateReuse.lean",
+  "new_chain": [
+    "TotalBehavioralAlignmentProducer",
+    "TotalExactDiagonalProducer",
+    "UniversalFailure canonical SAT",
+    "UniversalSATLowerBound",
+    "Nonempty CanonicalSATP02Producer",
+    "Nonempty UniversalCounterexampleProducer",
+    "Nonempty NormalizedAdversary",
+    "not InP canonical SAT",
+    "internal PneqNP endpoint"
+  ],
+  "alternate_existing_route": [
+    "UniformEffectiveCoverage",
+    "KleeneSATBridge",
+    "CanonicalSATP02Producer",
+    "UniversalSATLowerBound"
+  ],
+  "excluded_from_promotion": [
+    {
+      "class": "legacy/internal decomposition certificates",
+      "examples": [
+        "certificates/K7.md",
+        "C1 internal scaffold"
+      ],
+      "reason": "do not add material strength to LANE4 T10 or canonical lower-bound producer"
+    },
+    {
+      "class": "P01 physical verifier certificates",
+      "reason": "useful to SAT-in-NP lane, but not a substitute for P02 lower-bound/T10 inhabitant"
+    },
+    {
+      "class": "abstract fuel counterexample",
+      "artifact": "lean/P02/LANE4/OPEN_MATH/FuelCounterexample.lean",
+      "reason": "firewall only; does not refute or inhabit concrete FuelToBehaviorBridge"
+    }
+  ],
+  "remaining_open_producers": [
+    "MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer",
+    "MCore.Real.P02EffectiveAlignment.UniformEffectiveCoverage"
+  ],
+  "no_scaffold_escape": true
+}
