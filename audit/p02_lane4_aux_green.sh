@@ -49,6 +49,7 @@ done
 
 echo "== P02-LANE-4: FULL MCORE BUILD =="
 lake build MCore
+echo "lake build MCore SUCCESS"
 
 echo "== P02-LANE-4: FAIL-CLOSED FRONTIER CHECK =="
 if ! grep -q '"state": "OPEN_MATH"' audit/P02_LANE4_STRUCTURAL_CLOSURE_V1.json; then
