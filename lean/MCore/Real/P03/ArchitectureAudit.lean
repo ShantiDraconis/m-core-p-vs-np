@@ -21,6 +21,11 @@ namespace MCore.Real.P03.ArchitectureAudit
 #print axioms MCore.Real.P03.OpenBridge.SourceLen.source_len_bound
 #print axioms MCore.Real.P03.OpenBridge.UniformDecoder.pointwise_closed
 
+#print axioms MCore.Real.P03.OpenBridge.CompleteRouteB.even_succ_iff_not_even
+#print axioms MCore.Real.P03.OpenBridge.CompleteRouteB.completeRouteB_implies_perfectFlip
+#print axioms MCore.Real.P03.OpenBridge.CompleteRouteB.completeRouteB_implies_existsPerfectFlip
+#print axioms MCore.Real.P03.OpenBridge.CompleteRouteB.completeRouteB_refutes_rangeFailureLaw
+
 #print axioms MCore.Real.P03.Architecture.closed_base_count
 #print axioms MCore.Real.P03.Architecture.closed_bridge_count
 #print axioms MCore.Real.P03.Architecture.unique_open_bridge_count
