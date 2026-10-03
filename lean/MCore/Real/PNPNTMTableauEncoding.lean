@@ -3679,10 +3679,11 @@ theorem ntmPaddingAt_zero
           simp [inputTape]
       | cons b bs =>
           simp only [inputTape]
-          have hbs : bs.length <= i := by
-            simp at hi
-            omega
-          exact list_getD_eq_default_of_length_le bs M.machine.blank i hbs
+          have hbs : (bs.map some).length <= i := by
+            simpa using (show bs.length <= i by
+              simp at hi
+              omega)
+          exact list_getD_eq_default_of_length_le (bs.map some) M.machine.blank i hbs
     rw [htarget] at hExact
     simpa using hExact
 
@@ -3753,10 +3754,11 @@ theorem ntmBlankTailAt_zero
           simp [inputTape]
       | cons b bs =>
           simp only [inputTape]
-          have hi : bs.length <= i := by
-            simp at hxi
-            omega
-          exact list_getD_eq_default_of_length_le bs M.machine.blank i hi
+          have hi : (bs.map some).length <= i := by
+            simpa using (show bs.length <= i by
+              simp at hxi
+              omega)
+          exact list_getD_eq_default_of_length_le (bs.map some) M.machine.blank i hi
     rw [hget] at hExact
     simpa using hExact
 
