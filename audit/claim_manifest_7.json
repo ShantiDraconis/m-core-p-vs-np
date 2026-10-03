@@ -24,7 +24,14 @@
     ],
     "green_definition": "terminal endpoint inhabited + required local/external bridges discharged + build/audit verified",
     "independent_open_frontiers": 6,
-    "open_frontier_registry_commit": "8d7e30414b38d5adbeb45d0323b5474eca77076a"
+    "open_frontier_registry_commit": "8d7e30414b38d5adbeb45d0323b5474eca77076a",
+    "claim_boundary": {
+      "commit": "eb0b3a728d96077b7725df2bfc3af28464998953",
+      "theorem": "MCore.Real.SevenLaneClaimBoundary.frontier_claim_not_solution_claim",
+      "real_frontier_bound_count_theorem": "MCore.Real.SevenLaneClaimBoundary.five_open_lanes_have_real_frontier_bound",
+      "local_green_open_lane_count_theorem": "MCore.Real.SevenLaneClaimBoundary.no_open_lane_claims_local_green"
+    },
+    "mcore_integration_commit": "2ecabe88ce0583e3aa261182e8dad0786bb9749c"
   },
   "P01_Riemann": {
     "closedBase": {
