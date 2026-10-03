@@ -3428,7 +3428,7 @@ theorem rawLeftList_length
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) (hs : s <= t) :
     (rawLeftList M x t sigma hSat s hs).length = ntmRadius x t := by
-  simp [rawLeftList]
+  simp [rawLeftList, ntmRadius]
 
 theorem rawRightList_length
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -3436,7 +3436,7 @@ theorem rawRightList_length
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) (hs : s <= t) :
     (rawRightList M x t sigma hSat s hs).length = ntmRadius x t := by
-  simp [rawRightList]
+  simp [rawRightList, ntmRadius]
 
 theorem rawLeftList_get
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -3446,7 +3446,11 @@ theorem rawLeftList_get
     (i : Fin (ntmRadius x t)) :
     (rawLeftList M x t sigma hSat s hs).getD i.val M.machine.blank =
       decodeLeftCell M x t sigma hSat s hs i.val i.isLt := by
-  simp [rawLeftList, i.isLt]
+  have hi :
+      i.val < (rawLeftList M x t sigma hSat s hs).length := by
+    simpa [rawLeftList] using i.isLt
+  rw [List.getD_eq_getElem _ _ hi]
+  simp [rawLeftList]
 
 theorem rawRightList_get
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -3456,7 +3460,11 @@ theorem rawRightList_get
     (i : Fin (ntmRadius x t)) :
     (rawRightList M x t sigma hSat s hs).getD i.val M.machine.blank =
       decodeRightCell M x t sigma hSat s hs i.val i.isLt := by
-  simp [rawRightList, i.isLt]
+  have hi :
+      i.val < (rawRightList M x t sigma hSat s hs).length := by
+    simpa [rawRightList] using i.isLt
+  rw [List.getD_eq_getElem _ _ hi]
+  simp [rawRightList]
 
 
 theorem rawLeftList_stay
