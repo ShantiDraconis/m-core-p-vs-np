@@ -1,3 +1,5 @@
+import MCore.Attack.CanonicalTerminalProducer
+import MCore.Real.P01PostMinCutClosure
 import P02.LANE4.StructureBundle
 
 import MCore.Real.P02OperatorKernel
@@ -29,6 +31,80 @@ open MCore.Real.P02BehavioralAlignment
 open MCore.Real.P02KleeneKernel
 open MCore.Real.P02EffectiveAlignment
 open MCore.Real.P02UniversalLowerBoundMaster
+open MCore.Real.P01PostMinCutClosure
+
+/-- Fixed canonical SAT target shared by the frozen P01 side and all
+current P02 normal forms. -/
+abbrev SATTarget : BitLanguage :=
+  SATBits circuitBitEncoding
+
+/-- Port of the historical G2.1/G21 pointwise target into the current
+canonical model. -/
+def G21Pointwise : Prop :=
+  ∀ candidate : PolyDTMCandidate,
+    ∃ x : BitString,
+      ¬ candidate.CorrectAt SATTarget x
+
+theorem g21_iff_universal_failure :
+    G21Pointwise ↔ UniversalFailure SATTarget :=
+  Iff.rfl
+
+theorem g21_iff_universal_lower_bound :
+    G21Pointwise ↔ P02UniversalLowerBound.UniversalSATLowerBound := by
+  rw [g21_iff_universal_failure]
+  exact P02UniversalLowerBound.universalSATLowerBound_iff_universalFailure.symm
+
+theorem g21_iff_not_in_p :
+    G21Pointwise ↔ ¬ InP SATTarget := by
+  rw [g21_iff_universal_lower_bound]
+  exact P02UniversalLowerBound.universalSATLowerBound_iff_notInP
+
+theorem g21_iff_p02_operator :
+    G21Pointwise ↔ Nonempty P02OperatorKernel.CanonicalSATP02Producer := by
+  rw [g21_iff_not_in_p]
+  exact P02OperatorKernel.canonicalSATProducer_iff_notInP.symm
+
+theorem g21_iff_normalized_adversary :
+    G21Pointwise ↔ Nonempty P02CanonicalClockReduction.NormalizedAdversary := by
+  rw [g21_iff_universal_lower_bound]
+  exact P02CanonicalClockReduction.normalizedAdversary_iff_universalSATLowerBound.symm
+
+/-- The entire SAT-in-NP side is already kernel-connected in the current
+branch and should be reused rather than reopened. -/
+theorem p01_side_closed :
+    InNP SATTarget :=
+  P01PostMinCutClosure.canonical_sat_in_np_closed
+
+/-- G2.2 is a consumer/equivalent form, not an independent producer. -/
+def G22Contradiction : Prop :=
+  ∀ realization : PolyDTMRealization SATTarget, False
+
+theorem g22_iff_not_in_p :
+    G22Contradiction ↔ ¬ InP SATTarget := by
+  constructor
+  · intro h hP
+    rcases hP with ⟨R⟩
+    exact h R
+  · intro h R
+    exact h ⟨R⟩
+
+theorem g21_iff_g22 :
+    G21Pointwise ↔ G22Contradiction := by
+  rw [g21_iff_not_in_p, g22_iff_not_in_p]
+
+/-- Any genuine G21 producer now forms the exact canonical terminal witness
+because P01/G1 is already closed. -/
+def canonicalNotInPWitnessOfG21
+    (h : G21Pointwise) :
+    MCore.Attack.CanonicalNotInPWitness :=
+  { language := SATTarget
+    in_np := p01_side_closed
+    not_in_p := g21_iff_not_in_p.mp h }
+
+/-- Historical terminal accounting, ported to the current P01-closed branch:
+the only remaining mathematical producer is G21. -/
+abbrev CURRENT_FINAL_OPEN_MATH : Prop :=
+  G21Pointwise
 
 /--
 All post-T10 targets that were already present in the repository but were not
@@ -170,6 +246,36 @@ structure OpenProducerInventory where
 abbrev TERMINAL_OPEN_MATH : Prop :=
   P02UniversalLowerBoundMaster.FINAL_OPEN_MATH
 
+
+/-- T10 reaches the historical/current G21 terminal target directly. -/
+theorem t10_to_g21
+    (T : MCore.Real.P02BehavioralAlignment.TotalBehavioralAlignmentProducer) :
+    G21Pointwise := by
+  apply g21_iff_universal_lower_bound.mpr
+  exact t10_to_universal_lower_bound T
+
+/-- Uniform effective coverage is a second genuine constructive entry point
+into exactly the same G21 target. -/
+theorem effective_coverage_to_g21
+    (U : P02EffectiveAlignment.UniformEffectiveCoverage) :
+    G21Pointwise := by
+  apply g21_iff_universal_lower_bound.mpr
+  exact effective_coverage_to_same_terminal U
+
+/-- Normalized adversary is an exact normal form, not an additional frontier. -/
+theorem normalized_route_iff_g21 :
+    Nonempty P02CanonicalClockReduction.NormalizedAdversary ↔ G21Pointwise :=
+  g21_iff_normalized_adversary.symm
+
+#print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_universal_failure
+#print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_not_in_p
+#print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_p02_operator
+#print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_normalized_adversary
+#print axioms P02.LANE4.AdvancedCertificateReuse.p01_side_closed
+#print axioms P02.LANE4.AdvancedCertificateReuse.g21_iff_g22
+#print axioms P02.LANE4.AdvancedCertificateReuse.t10_to_g21
+#print axioms P02.LANE4.AdvancedCertificateReuse.effective_coverage_to_g21
+#print axioms P02.LANE4.AdvancedCertificateReuse.normalized_route_iff_g21
 #print axioms P02.LANE4.AdvancedCertificateReuse.reusedTerminalChain
 #print axioms P02.LANE4.AdvancedCertificateReuse.exact_diagonal_to_universal_lower_bound
 #print axioms P02.LANE4.AdvancedCertificateReuse.exact_diagonal_to_p02_operator
