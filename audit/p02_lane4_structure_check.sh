@@ -15,6 +15,7 @@ FILES=(
   lakefile.toml
   lean/MCore.lean
   lean/P02.lean
+  lean/P02.lean
   lean/P02Lane4.lean
 
   lean/MCore/Real/PNPCookLevinMaterialMinCut.lean
