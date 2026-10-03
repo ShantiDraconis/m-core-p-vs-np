@@ -4584,12 +4584,10 @@ theorem operationalDecodeAgrees_active_step
     rcases h with hacc | hrej
     · have hfalse : M.machine.accepting q = false := by
         simpa [q] using hActive.1
-      rw [hfalse] at hacc
-      cases hacc
+      simp [hfalse] at hacc
     · have hfalse : M.machine.rejecting q = false := by
         simpa [q] using hActive.2
-      rw [hfalse] at hrej
-      cases hrej
+      simp [hfalse] at hrej
   rcases htr : (M.machine.transition q a).get j with ⟨qNext, write, d⟩
   have hStep :
       operationalDecodeConfig M x t sigma hSat (s + 1) (by omega) =
