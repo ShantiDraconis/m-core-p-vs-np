@@ -1,11 +1,13 @@
 {
   "schema": "claim-frontier-7/v1",
   "branch": "atk/pnp-cook-levin-material-mincut-20261001",
-  "generated_from": "source inspection only; no lake build executed",
+  "generated_from": "source inspection and source-bound evidence only; no lake build executed",
   "global": {
     "green": false,
     "build": "UNVERIFIED",
-    "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01/P02 evidence files"
+    "static_forbidden_scan": "axiom=0 sorry=0 admit=0 opaque=0 on newly added/updated P01/P02 evidence files",
+    "open_problem_green_count": 0,
+    "note": "P01-P06 remain fail-closed. Architecture/source-bound GREEN prefixes do not imply Millennium endpoint closure."
   },
   "P01_Riemann": {
     "closedBase": {
@@ -114,30 +116,96 @@
     "audit_commit": "641531d189eb925646ea2dd7e268926d79b73491"
   },
   "P04_NavierStokes": {
-    "state": "SKELETON_FAIL_CLOSED",
-    "closedBase": 0,
-    "closedBridge": 0,
-    "sourceMiddle": 0,
+    "state": "REAL_FRONTIER_BOUND",
+    "closedBase": {
+      "count": 4,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "canonical_source": {
+        "repo": "ShantiDraconis/navier-stokes-critical-barrier-audit",
+        "ref": "df808543535d34d4e8c46096b3455d76b0151fa2"
+      }
+    },
+    "closedBridge": {
+      "count": 2,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+    },
+    "sourceMiddle": {
+      "count": 0,
+      "state": "EMPTY"
+    },
+    "openBridge": {
+      "name": "ActualNSToSignedGainCore",
+      "state": "REAL_SOURCE_BOUND_FRONTIER"
+    },
+    "materialGaps": 1,
     "green": false,
-    "build": "UNVERIFIED"
+    "build": "UNVERIFIED",
+    "architecture_commit": "f0ce17a5",
+    "audit_commit": "ca49d938"
   },
   "P05_Hodge": {
-    "state": "SKELETON_FAIL_CLOSED",
-    "closedBase": 0,
-    "closedBridge": 0,
-    "sourceMiddle": 0,
+    "state": "REAL_FRONTIER_BOUND",
+    "closedBase": {
+      "count": 4,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "canonical_source": {
+        "repo": "ShantiDraconis/m-core-hodge",
+        "ref": "42eaf7d4d639871f82eceb121ee525a6c4f30d84"
+      }
+    },
+    "closedBridge": {
+      "count": 2,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+    },
+    "sourceMiddle": {
+      "count": 0,
+      "state": "EMPTY"
+    },
+    "openBridge": {
+      "name": "ConcreteAlgebraicityPayload",
+      "state": "REAL_SOURCE_BOUND_FRONTIER",
+      "equivalent_regression_target": "TrivialQbarR2Payload"
+    },
+    "materialGaps": 1,
     "green": false,
-    "build": "UNVERIFIED"
+    "build": "UNVERIFIED",
+    "architecture_commit": "d5f69759c21dfd93667845234fe638e985b6bbb3",
+    "audit_commit": "5c74d6a67d41c28dc33bdd26c556564f6ff6e11d"
   },
   "P06_BSD": {
-    "state": "SKELETON_FAIL_CLOSED",
-    "closedBase": 0,
-    "closedBridge": 0,
-    "sourceMiddle": 0,
+    "state": "REAL_FRONTIER_BOUND",
+    "closedBase": {
+      "count": 4,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED",
+      "canonical_source": {
+        "repo": "ShantiDraconis/m-core-bsd",
+        "ref": "ed28a02170001a4afb0b3230e1bda238dcb5fa9f"
+      }
+    },
+    "closedBridge": {
+      "count": 2,
+      "state": "SOURCE_BOUND_EXTERNAL_CLOSED_BUILD_UNVERIFIED"
+    },
+    "sourceMiddle": {
+      "count": 0,
+      "state": "EMPTY"
+    },
+    "openBridge": {
+      "name": "RealizableBSDProducer",
+      "state": "REAL_SOURCE_BOUND_FRONTIER",
+      "target": "realizable elliptic-curve domain + universal rank equality + refined leading-coefficient identity on the same domain",
+      "firewall_ref": "c1e7b245726c4c65f5f9f878acefb86460746f4a",
+      "rejected_abstract_target": "∀ d : BSDArithmeticAnalyticData, BSDRankPart d"
+    },
+    "materialGaps": 1,
     "green": false,
-    "build": "UNVERIFIED"
+    "build": "UNVERIFIED",
+    "architecture_commit": "fb0a25b819878ea9625847961e25ac93aaa8d04f",
+    "audit_commit": "922ea92c305a016c84eb059d858ce45ab8bcd731"
   },
   "P07_Poincare": {
-    "state": "NOT_AUDITED_IN_THIS_BRANCH_MANIFEST"
+    "state": "HISTORICALLY_SOLVED_EXTERNALLY",
+    "green_scope": "not audited as a local proof in this branch",
+    "note": "Poincare was solved by Perelman; this manifest does not claim a local formal proof or a prize-eligible new result."
   }
 }
