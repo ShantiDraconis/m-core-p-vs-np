@@ -4501,7 +4501,8 @@ theorem operationalTapeBound_step
           simpa [NTM.stepBranch, Tape.write, Tape.move] using
             Nat.le_trans hB.left_len
               (by omega : x.length + s <= x.length + (s + 1))
-        · simpa [NTM.stepBranch, Tape.write, Tape.move] using
+        · rw [hcfg]
+          simpa [NTM.stepBranch, Tape.write, Tape.move] using
             Nat.le_trans hB.right_len
               (by omega : x.length + s <= x.length + (s + 1))
     | left =>
