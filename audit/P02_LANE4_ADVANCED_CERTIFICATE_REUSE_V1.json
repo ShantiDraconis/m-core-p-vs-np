@@ -83,5 +83,10 @@
     ],
     "not_closed": true
   },
-  "generated_from_head": "905495a6d9334dceeb579c030125dfb0b0baca26"
+  "generated_from_head": "SOURCE_MOVED_AFTER_COMPLETE_BUNDLE",
+  "complete_bundle": "lean/P02/LANE4/CompleteBundle.lean",
+  "source_state": "CONSTRUCTED_SOURCE_COMPLETE",
+  "kernel_verified": false,
+  "frozen_hard_aux": false,
+  "frozen_hard_full": false
 }
