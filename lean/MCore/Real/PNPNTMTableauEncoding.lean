@@ -4399,15 +4399,15 @@ structure OperationalDecodeAgreesAt
     (operationalDecodeConfig M x t sigma hSat s hs).tape.head =
       decodeHead M x t sigma hSat s hs
   hLeft :
-    forall i : Nat, i < ntmRadius x t ->
+    forall (i : Nat) (hi : i < ntmRadius x t),
       (operationalDecodeConfig M x t sigma hSat s hs).tape.left.getD
           i M.machine.blank =
-        decodeLeftCell M x t sigma hSat s hs i (by assumption)
+        decodeLeftCell M x t sigma hSat s hs i hi
   hRight :
-    forall i : Nat, i < ntmRadius x t ->
+    forall (i : Nat) (hi : i < ntmRadius x t),
       (operationalDecodeConfig M x t sigma hSat s hs).tape.right.getD
           i M.machine.blank =
-        decodeRightCell M x t sigma hSat s hs i (by assumption)
+        decodeRightCell M x t sigma hSat s hs i hi
 
 theorem decodeInitial_state
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
