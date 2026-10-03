@@ -1,3 +1,5 @@
+import MCore.Real.P01_Riemann.ClosedBridge.FiniteSpanToDNLimit
+import MCore.Real.P01_Riemann.SourceBinding
 import MCore.Real.P01_Riemann.OpenBridge.BoundedZeroCandidate
 import MCore.Real.P01_Riemann.ClosedBase.ZetaEulerProduct
 import MCore.Real.P01_Riemann.ClosedBase.ZetaFunctionalEquation
@@ -31,7 +33,9 @@ def closedBase : List LayerRecord :=
   , ⟨"ZetaEulerProduct", .sourceClosedBuildUnverified,
       "Euler product and nonvanishing for Re(s)>1"⟩ ]
 
-def closedBridge : List LayerRecord := []
+def closedBridge : List LayerRecord :=
+  [ ⟨"FiniteSpanToDNLimit", .sourceClosedBuildUnverified,
+      "source-bound equivalence: FiniteSpanApproximatesChi concreteGeneratorFamily iff DNLimit = 0"⟩ ]
 
 def sourceMiddle : List LayerRecord :=
   [ ⟨"BoundedZeroCandidate", .sourceClosedBuildUnverified,
@@ -39,12 +43,8 @@ def sourceMiddle : List LayerRecord :=
 
 /-- Intended single-pivot architecture target for Riemann hypothesis frontier. -/
 def openBridge : List LayerRecord :=
-  [ ⟨"BoundedZeroUnique", .openBridgeTarget,
-      "target pivot only; theorem/source binding not yet installed"⟩
-  , ⟨"UniformZeroDecoder", .blockedByOpenBridge,
-      "downstream target; must not count as an independent material gap"⟩
-  , ⟨"ZeroDepth", .blockedByOpenBridge,
-      "downstream target; requires effective construction, cost bound and strict measure"⟩ ]
+  [ ⟨"FiniteSpanApproximatesChi", .openBridgeTarget,
+      "real source-bound frontier from m-core-riemann@d6a291b4; equivalent to DNLimit = 0"⟩ ]
 
 def openMath : List LayerRecord :=
   [ ⟨"RH", .openMath, "terminal mathematical endpoint remains open"⟩ ]
@@ -53,6 +53,9 @@ def targetOpenBridgeCount : Nat := 1
 def materialGaps : Nat := 1
 def green : Bool := false
 def buildVerified : Bool := false
+
+theorem closed_bridge_source_count :
+    closedBridge.length = 1 := by decide
 
 theorem source_middle_count :
     sourceMiddle.length = 1 := by decide
@@ -70,6 +73,7 @@ theorem fail_closed :
     green = false ∧ buildVerified = false := by
   rfl
 
+#print axioms MCore.Real.P01_Riemann.Architecture.closed_bridge_source_count
 #print axioms MCore.Real.P01_Riemann.Architecture.source_middle_count
 #print axioms MCore.Real.P01_Riemann.Architecture.closed_base_source_count
 #print axioms MCore.Real.P01_Riemann.Architecture.target_open_bridge_count
