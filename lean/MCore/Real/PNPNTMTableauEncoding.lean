@@ -4423,7 +4423,7 @@ theorem operationalDecodeAgrees_zero
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
     OperationalDecodeAgreesAt M x t sigma hSat 0 (by omega) := by
-  refine { hState := ?_, hHead := ?_, hLeft := ?_, hRight := ?_ }
+  refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
   · simpa [operationalDecodeConfig, initialNTMConfig] using
       decodeInitial_state M x t sigma hSat
   · simpa [operationalDecodeConfig, initialNTMConfig] using
@@ -4450,7 +4450,7 @@ theorem operationalDecodeAgrees_halted_step
   subst a
   have hq := decodeState_true M x t sigma hSat s (by omega)
   have ha := decodeHead_true M x t sigma hSat s (by omega)
-  refine { hState := ?_, hHead := ?_, hLeft := ?_, hRight := ?_ }
+  refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
   · have hExact := ntmHalted_state_exact M x t s
       (decodeState M x t sigma hSat s (by omega))
       (decodeHead M x t sigma hSat s (by omega))
@@ -4684,7 +4684,7 @@ theorem operationalDecodeAgrees_active_step
         simpa [htr] using
           decodeHead_stay M x t s sigma hSat hs q a j
             (by simpa [q] using hActive) hj (by simpa [htr])
-      refine { hState := ?_, hHead := ?_, hLeft := ?_, hRight := ?_ }
+      refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
       · simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hStateNext]
       · have hop := tapeMove_stay_head M.machine.blank write
@@ -4732,7 +4732,7 @@ theorem operationalDecodeAgrees_active_step
         simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hOld, hNew] using hop
   | left =>
-      refine { hState := ?_, hHead := ?_, hLeft := ?_, hRight := ?_ }
+      refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
       · simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hStateNext]
       · have hop := tapeMove_left_head M.machine.blank write
@@ -4827,7 +4827,7 @@ theorem operationalDecodeAgrees_active_step
             simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
               NTM.stepBranch, hOld, hNext] using hop
   | right =>
-      refine { hState := ?_, hHead := ?_, hLeft := ?_, hRight := ?_ }
+      refine OperationalDecodeAgreesAt.mk ?_ ?_ ?_ ?_
       · simpa [operationalDecodeConfig, q, a, hnotHalt, hActive, hq, ha, j, htr,
           NTM.stepBranch, hStateNext]
       · have hop := tapeMove_right_head M.machine.blank write
