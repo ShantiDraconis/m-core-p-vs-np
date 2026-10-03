@@ -91,6 +91,7 @@ grep -q 'name = "mathlib"' lakefile.toml   || red "mathlib dependency missing fr
 grep -q 'git = "https://github.com/leanprover-community/mathlib4.git"' lakefile.toml   || red "mathlib repository mismatch"
 grep -q 'rev = "v4.19.0"' lakefile.toml   || red "mathlib pin mismatch"
 grep -q 'name = "P02"' lakefile.toml   || red "P02 lean_lib target missing from lakefile.toml"
+grep -q 'roots = \["P02"\]' lakefile.toml   || red "P02 lean_lib root is not canonical P02"
 echo "MANIFEST_OK: mathlib v4.19.0 + P02 target"
 
 echo "== L0 CRITICAL DECLARATIONS =="
