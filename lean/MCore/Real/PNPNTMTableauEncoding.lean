@@ -1,3 +1,4 @@
+import Mathlib.Tactic
 
 import MCore.Real.PNPNTMPathFrontier
 
@@ -2649,18 +2650,18 @@ structure NTMUniqueAt
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (s : Nat) : Prop where
   hState :
-    ∃! q : Fin (M.stateCount + 1),
+    ExistsUnique (fun q : Fin (M.stateCount + 1) =>
       sigma (ntmStateVar M t s q) = true
   hHead :
-    ∃! a : Option Bool,
+    ExistsUnique (fun a : Option Bool =>
       sigma (ntmHeadVar M t s a) = true
   hLeft :
     forall i : Nat, i < ntmRadius x t ->
-      ∃! b : Option Bool,
+      ExistsUnique (fun b : Option Bool =>
         sigma (ntmLeftVar M x t s i b) = true
   hRight :
     forall i : Nat, i < ntmRadius x t ->
-      ∃! b : Option Bool,
+      ExistsUnique (fun b : Option Bool =>
         sigma (ntmRightVar M x t s i b) = true
 
 theorem existsUnique_of_exact_decide
@@ -8381,10 +8382,10 @@ theorem boundedExec_varsLe
       (boundedExecTableauCNF_NTM M x t) := by
   unfold boundedExecTableauCNF_NTM
   apply CNFVarsLe_append
-  · exact initial_varsLe M x t
   · apply CNFVarsLe_append
+    · exact initial_varsLe M x t
     · exact transitions_varsLe M x t
-    · exact final_varsLe M x t
+  · exact final_varsLe M x t
 
 theorem boundedExec_maxVar_le
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
@@ -8413,7 +8414,8 @@ theorem ntmFinal_weight_le
           else none)
         (List.ofFn fun q : Fin (M.stateCount + 1) => q))
       (by simp)
-  omega
+  simpa [ntmFinalAcceptanceCNF, ntmCNFWeight, ntmClauseWeight,
+    ntmStateCount] using Nat.add_le_add_right hlen 1
 
 def tableauCaseConst (M : PolyNTMCandidate) : Nat :=
   4 * ntmStateCount M + 30 +
@@ -8585,8 +8587,8 @@ theorem ntmInitial_state_exists_unique
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    ∃! q : Fin (M.stateCount + 1),
-      sigma (ntmStateVar M t 0 q) = true := by
+    ExistsUnique (fun q : Fin (M.stateCount + 1) =>
+      sigma (ntmStateVar M t 0 q) = true) := by
   refine ⟨M.machine.initial, ?_, ?_⟩
   · simpa using
       ntmInitial_state_exact M x t sigma hSat M.machine.initial
@@ -8632,8 +8634,8 @@ theorem ntmInitial_head_exists_unique
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    ∃! a : Option Bool,
-      sigma (ntmHeadVar M t 0 a) = true := by
+    ExistsUnique (fun a : Option Bool =>
+      sigma (ntmHeadVar M t 0 a) = true) := by
   refine ⟨(inputTape x).head, ?_, ?_⟩
   · simpa using
       ntmInitial_head_exact M x t sigma hSat (inputTape x).head
@@ -8693,8 +8695,8 @@ theorem ntmInitial_left_exists_unique
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (i : Nat) (hi : i < ntmRadius x t) :
-    ∃! b : Option Bool,
-      sigma (ntmLeftVar M x t 0 i b) = true := by
+    ExistsUnique (fun b : Option Bool =>
+      sigma (ntmLeftVar M x t 0 i b) = true) := by
   let target := (inputTape x).left.getD i M.machine.blank
   refine ⟨target, ?_, ?_⟩
   · simpa [target] using
@@ -8755,8 +8757,8 @@ theorem ntmInitial_right_exists_unique
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true)
     (i : Nat) (hi : i < ntmRadius x t) :
-    ∃! b : Option Bool,
-      sigma (ntmRightVar M x t 0 i b) = true := by
+    ExistsUnique (fun b : Option Bool =>
+      sigma (ntmRightVar M x t 0 i b) = true) := by
   let target := (inputTape x).right.getD i M.machine.blank
   refine ⟨target, ?_, ?_⟩
   · simpa [target] using
