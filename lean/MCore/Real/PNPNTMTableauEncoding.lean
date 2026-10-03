@@ -3569,6 +3569,17 @@ theorem decodeState_choice
     simpa [qNext] using hExact qNext
   exact (decodeState_unique M x t sigma hSat (s + 1) (by omega) qNext htrue).symm
 
+theorem tape_ext
+    {α : Type}
+    {u v : Tape α}
+    (hLeft : u.left = v.left)
+    (hHead : u.head = v.head)
+    (hRight : u.right = v.right) :
+    u = v := by
+  cases u
+  cases v
+  simp_all
+
 theorem decodeTape_stay
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
     (sigma : Assignment)
@@ -3583,7 +3594,7 @@ theorem decodeTape_stay
       Tape.move M.machine.blank Direction.stay
         ((decodeConfig M x t sigma hSat s (by omega)).tape.write
           ((M.machine.transition q a).get j).2.1) := by
-  apply Tape.ext
+  apply tape_ext
   · simpa [decodeConfig, Tape.write, Tape.move] using
       decodeLeftList_stay M x t s sigma hSat hs q a j hActive hj hDir
   · simpa [decodeConfig, Tape.write, Tape.move] using
