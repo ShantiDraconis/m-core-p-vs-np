@@ -219,3 +219,4 @@ import MCore.Real.BridgeSeven
 import MCore.Real.Claim1To7Only
 import MCore.Real.P02CNFEncodingDeficitAudit
 import MCore.Real.P02Lane4SemanticGate
+import MCore.Real.P02TableauSourceRecovery
