@@ -8584,11 +8584,19 @@ theorem tableauVarCap_poly
           exact Nat.mul_le_mul_right 6 (Nat.mul_le_mul_right r ht1)
         _ = 6 * r^2 := by ring
     simp [Q, r]
+    have hpairs :
+        (t + 1) * r * 3 + (t + 1) * r * 3 <= 6 * r^2 := by
+      calc
+        (t + 1) * r * 3 + (t + 1) * r * 3
+            = (t + 1) * r * 6 := by ring
+        _ <= 6 * r^2 := h6r
     calc
       (t + 1) * Q + (t + 1) * 3 +
           (t + 1) * r * 3 + (t + 1) * r * 3
-          <= Q * r^2 + 3 * r^2 + 6 * r^2 := by
-            omega
+          = ((t + 1) * Q + (t + 1) * 3) +
+              ((t + 1) * r * 3 + (t + 1) * r * 3) := by ring
+      _ <= (Q * r^2 + 3 * r^2) + 6 * r^2 :=
+        Nat.add_le_add (Nat.add_le_add hq2 h32) hpairs
       _ = (Q + 9) * r^2 := by ring
   have hsq : t * Q + M.stateCount <= r * Q := by
     calc
