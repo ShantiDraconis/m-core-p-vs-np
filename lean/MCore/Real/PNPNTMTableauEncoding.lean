@@ -8447,42 +8447,94 @@ theorem boundedExec_weight_poly
     ntmCNFWeight (boundedExecTableauCNF_NTM M x t) <=
       tableauWeightCoeff M * (ntmRadius x t)^2 := by
   let r := ntmRadius x t
+  let Q := ntmStateCount M
+  let C := tableauCaseConst M
+  let L := tableauCaseLinear M
   have hr : 1 <= r := by
     simp [r, ntmRadius]
   have ht : t <= r := by
     simp [r, ntmRadius]
     omega
-  have hi := ntmInitial_weight_le M x t
-  have htr := ntmTransitions_weight_le M x t
-  have hf := ntmFinal_weight_le M t
-  have hcase := transitionCaseCap_linear M x t
-  have hstep :
-      ntmTransitionStepWeightCap M x t =
-        ntmStateCount M * 3 *
-          (tableauCaseConst M + tableauCaseLinear M * r) := by
-    simp [ntmTransitionStepWeightCap, hcase, r]
+  have hr_sq : r <= r^2 := by
+    have h := Nat.mul_le_mul_left r hr
+    simpa [pow_two, Nat.mul_comm] using h
+  have hi0 :
+      ntmCNFWeight (ntmInitialCNF M x t) <=
+        2 * Q + 6 + 12 * r := by
+    simpa [Q, r] using ntmInitial_weight_le M x t
+  have hconst : 2 * Q + 6 <= (2 * Q + 6) * r := by
+    have h := Nat.mul_le_mul_left (2 * Q + 6) hr
+    simpa using h
   have hi' :
       ntmCNFWeight (ntmInitialCNF M x t) <=
-        (2 * ntmStateCount M + 18) * r := by
-    nlinarith
+        (2 * Q + 18) * r := by
+    calc
+      ntmCNFWeight (ntmInitialCNF M x t)
+          <= 2 * Q + 6 + 12 * r := hi0
+      _ <= (2 * Q + 6) * r + 12 * r :=
+        Nat.add_le_add_right hconst (12 * r)
+      _ = (2 * Q + 18) * r := by ring
+  have hcase :
+      ntmTransitionCaseWeightCap M x t = C + L * r := by
+    simpa [C, L, r] using transitionCaseCap_linear M x t
+  have hstep :
+      ntmTransitionStepWeightCap M x t =
+        Q * 3 * (C + L * r) := by
+    simp [ntmTransitionStepWeightCap, hcase, Q]
+  have hC : C <= C * r := by
+    have h := Nat.mul_le_mul_left C hr
+    simpa using h
+  have hlin : C + L * r <= (C + L) * r := by
+    calc
+      C + L * r <= C * r + L * r :=
+        Nat.add_le_add_right hC (L * r)
+      _ = (C + L) * r := by ring
+  have hstep_mono :
+      Q * 3 * (C + L * r) <=
+        Q * 3 * ((C + L) * r) :=
+    Nat.mul_le_mul_left (Q * 3) hlin
+  have htr0 := ntmTransitions_weight_le M x t
+  rw [hstep] at htr0
+  have htr_prod :
+      t * (Q * 3 * (C + L * r)) <=
+        r * (Q * 3 * ((C + L) * r)) :=
+    Nat.mul_le_mul ht hstep_mono
   have htr' :
       ntmCNFWeight (ntmTransitionsCNF M x t) <=
-        (3 * ntmStateCount M *
-          (tableauCaseConst M + tableauCaseLinear M)) * r^2 := by
-    rw [hstep] at htr
-    have hlin :
-        tableauCaseConst M + tableauCaseLinear M * r <=
-          (tableauCaseConst M + tableauCaseLinear M) * r := by
-      nlinarith
-    nlinarith
+        (3 * Q * (C + L)) * r^2 := by
+    calc
+      ntmCNFWeight (ntmTransitionsCNF M x t)
+          <= t * (Q * 3 * (C + L * r)) := htr0
+      _ <= r * (Q * 3 * ((C + L) * r)) := htr_prod
+      _ = (3 * Q * (C + L)) * r^2 := by ring
+  have hf0 := ntmFinal_weight_le M t
+  have hfinal_const : Q <= Q * r := by
+    have h := Nat.mul_le_mul_left Q hr
+    simpa using h
+  have hfinal_r : Q * r <= Q * r^2 :=
+    Nat.mul_le_mul_left Q hr_sq
   have hf' :
-      ntmCNFWeight (ntmFinalAcceptanceCNF M t) <=
-        (ntmStateCount M + 1) * r^2 := by
-    nlinarith
+      ntmCNFWeight (ntmFinalAcceptanceCNF M t) <= Q * r^2 := by
+    calc
+      ntmCNFWeight (ntmFinalAcceptanceCNF M t)
+          <= Q := by simpa [Q] using hf0
+      _ <= Q * r := hfinal_const
+      _ <= Q * r^2 := hfinal_r
+  have hi2 :
+      ntmCNFWeight (ntmInitialCNF M x t) <=
+        (2 * Q + 18) * r^2 :=
+    Nat.le_trans hi' (Nat.mul_le_mul_left (2 * Q + 18) hr_sq)
   unfold boundedExecTableauCNF_NTM
   rw [ntmCNFWeight_append, ntmCNFWeight_append]
+  change
+    ntmCNFWeight (ntmInitialCNF M x t) +
+        ntmCNFWeight (ntmTransitionsCNF M x t) +
+        ntmCNFWeight (ntmFinalAcceptanceCNF M t) <=
+      tableauWeightCoeff M * r^2
+  have hsum :=
+    Nat.add_le_add (Nat.add_le_add hi2 htr') hf'
   unfold tableauWeightCoeff
-  nlinarith
+  simpa [Q, C, L, Nat.add_assoc, Nat.mul_add, Nat.add_mul] using hsum
 
 def tableauVarCoeff (M : PolyNTMCandidate) : Nat :=
   (ntmStateCount M + 9) +
@@ -8499,23 +8551,78 @@ theorem tableauVarCap_poly
   have hr : 1 <= r := by simp [r, ntmRadius]
   have ht1 : t + 1 <= r := by
     simp [r, ntmRadius]
-  have hstate : M.stateCount + 1 = Q := by
+  have hr_sq : r <= r^2 := by
+    have h := Nat.mul_le_mul_left r hr
+    simpa [pow_two, Nat.mul_comm] using h
+  have hQ : M.stateCount <= Q := by
     simp [Q, ntmStateCount]
   have hbase :
       ntmChoiceBase M x t <= (Q + 9) * r^2 := by
     unfold ntmChoiceBase ntmRightBase ntmLeftBase ntmHeadBase ntmStateSlots
+    have hq := Nat.mul_le_mul_right Q ht1
+    have h3 := Nat.mul_le_mul_right 3 ht1
+    have h6r0 := Nat.mul_le_mul_right (r * 6) ht1
+    have hq2 := Nat.le_trans hq (Nat.mul_le_mul_left Q hr_sq)
+    have h32 := Nat.le_trans h3 (Nat.mul_le_mul_left 3 hr_sq)
+    have h6r :
+        (t + 1) * r * 6 <= 6 * r^2 := by
+      calc
+        (t + 1) * r * 6 <= r * r * 6 := by
+          exact Nat.mul_le_mul_right 6 (Nat.mul_le_mul_right r ht1)
+        _ = 6 * r^2 := by ring
     simp [Q, r]
-    nlinarith
+    calc
+      (t + 1) * Q + (t + 1) * 3 +
+          (t + 1) * r * 3 + (t + 1) * r * 3
+          <= Q * r^2 + 3 * r^2 + 6 * r^2 := by
+            omega
+      _ = (Q + 9) * r^2 := by ring
+  have hsq : t * Q + M.stateCount <= r * Q := by
+    calc
+      t * Q + M.stateCount <= t * Q + Q :=
+        Nat.add_le_add_left hQ (t * Q)
+      _ = (t + 1) * Q := by ring
+      _ <= r * Q := Nat.mul_le_mul_right Q ht1
+  have hthree :
+      (t * Q + M.stateCount) * 3 + 2 <=
+        (3 * Q + 2) * r := by
+    have hmul3 := Nat.mul_le_mul_right 3 hsq
+    have htwo : 2 <= 2 * r := by
+      have h := Nat.mul_le_mul_left 2 hr
+      simpa using h
+    calc
+      (t * Q + M.stateCount) * 3 + 2
+          <= (r * Q) * 3 + 2 * r :=
+            Nat.add_le_add hmul3 htwo
+      _ = (3 * Q + 2) * r := by ring
+  have hmulB :=
+    Nat.mul_le_mul_right (B + 1) hthree
+  have hB : B <= B * r := by
+    have h := Nat.mul_le_mul_left B hr
+    simpa using h
   have hinner :
       (((t * Q + M.stateCount) * 3 + 2) * (B + 1) + B)
       <= (((3 * Q + 2) * (B + 1) + B) * r) := by
-    have hsq : t * Q + M.stateCount <= r * Q := by
-      rw [← hstate]
-      nlinarith
-    nlinarith
+    calc
+      (((t * Q + M.stateCount) * 3 + 2) * (B + 1) + B)
+          <= (((3 * Q + 2) * r) * (B + 1) + B * r) :=
+            Nat.add_le_add hmulB hB
+      _ = (((3 * Q + 2) * (B + 1) + B) * r) := by ring
+  have hinner2 :
+      (((t * Q + M.stateCount) * 3 + 2) * (B + 1) + B)
+      <= (((3 * Q + 2) * (B + 1) + B) * r^2) :=
+    Nat.le_trans hinner
+      (Nat.mul_le_mul_left
+        (((3 * Q + 2) * (B + 1) + B)) hr_sq)
+  have hone : 1 <= r^2 := by
+    have hp : 0 < r^2 := by positivity
+    omega
+  have hsum :=
+    Nat.add_le_add
+      (Nat.add_le_add hbase hinner2)
+      hone
   unfold tableauVarCap tableauVarCoeff
-  simp [Q, B] at *
-  nlinarith
+  simpa [Q, B, r, Nat.add_assoc, Nat.mul_add, Nat.add_mul] using hsum
 
 theorem boundedExec_maxVar_poly
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
@@ -8534,21 +8641,54 @@ theorem boundedExec_encoded_length_poly
       tableauEncodingCoeff M * (x.length + t + 1)^4 := by
   let f := boundedExecTableauCNF_NTM M x t
   let r := ntmRadius x t
+  let W := tableauWeightCoeff M
+  let V := tableauVarCoeff M
   have hr : 1 <= r := by simp [r, ntmRadius]
-  have hw := boundedExec_weight_poly M x t
-  have hv := boundedExec_maxVar_poly M x t
+  have hr4 : 1 <= r^4 := by
+    have hp : 0 < r^4 := by positivity
+    omega
+  have hw :
+      ntmCNFWeight f <= W * r^2 := by
+    simpa [f, W, r] using boundedExec_weight_poly M x t
+  have hv :
+      ntmCNFMaxVar f + 1 <= V * r^2 := by
+    simpa [f, V, r] using boundedExec_maxVar_poly M x t
   have henc := ntmCNFCircuit_encoding_le f
+  have hmul1 :
+      13 * ntmCNFWeight f <= 13 * (W * r^2) :=
+    Nat.mul_le_mul_left 13 hw
+  have hmul2 :
+      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) <=
+        13 * (W * r^2) * (V * r^2) :=
+    Nat.mul_le_mul hmul1 hv
+  have h13 : 13 * W * V <= 16 * W * V := by
+    exact Nat.mul_le_mul_right (W * V) (by omega)
+  have hprod :
+      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) <=
+        16 * W * V * r^4 := by
+    calc
+      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1)
+          <= 13 * (W * r^2) * (V * r^2) := hmul2
+      _ = (13 * W * V) * r^4 := by ring
+      _ <= (16 * W * V) * r^4 :=
+        Nat.mul_le_mul_right (r^4) h13
+  have hthree : 3 <= 3 * r^4 := by
+    have h := Nat.mul_le_mul_left 3 hr4
+    simpa using h
+  have hmain :
+      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) + 3 <=
+        (16 * W * V + 3) * r^4 := by
+    calc
+      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) + 3
+          <= 16 * W * V * r^4 + 3 * r^4 :=
+            Nat.add_le_add hprod hthree
+      _ = (16 * W * V + 3) * r^4 := by ring
   have hcirc :
       boundedExecCircuit_NTM M x t = ntmCNFCircuit f := by
     rfl
   rw [hcirc]
-  have hmain :
-      13 * ntmCNFWeight f * (ntmCNFMaxVar f + 1) + 3 <=
-        tableauEncodingCoeff M * r^4 := by
-    unfold tableauEncodingCoeff
-    nlinarith
   exact Nat.le_trans henc (by
-    simpa [f, r, ntmRadius, pow_succ, pow_two] using hmain)
+    simpa [tableauEncodingCoeff, W, V, f, r, ntmRadius] using hmain)
 
 theorem boundedExec_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
