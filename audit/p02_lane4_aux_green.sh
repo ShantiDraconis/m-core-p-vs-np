@@ -19,6 +19,14 @@ fi
 
 echo "SCAN_OK: 0 axiom/sorry/admit/opaque"
 
+echo "== P02-LANE-4: TOPOLOGICAL PREREQUISITE =="
+if [[ "${P02_LANE4_MCORE_ALREADY_GREEN:-0}" == "1" ]]; then
+  echo "MCORE_PREREQUISITE: reused from preflight L2"
+else
+  lake build MCore
+  echo "MCORE_PREREQUISITE: lake build MCore SUCCESS"
+fi
+
 echo "== P02-LANE-4: BASE DEPENDENCY KERNEL CHECK =="
 lake env lean lean/MCore/Real/PNPNTMTableauEncoding.lean
 
@@ -53,11 +61,10 @@ for f in "${FILES[@]}"; do
   lake env lean "$f"
 done
 
-echo "== P02-LANE-4: FULL MCORE BUILD =="
+echo "== P02-LANE-4: FULL MCORE BUILD STATUS =="
 if [[ "${P02_LANE4_MCORE_ALREADY_GREEN:-0}" == "1" ]]; then
   echo "lake build MCore SUCCESS (reused from preflight L2)"
 else
-  lake build MCore
   echo "lake build MCore SUCCESS"
 fi
 
