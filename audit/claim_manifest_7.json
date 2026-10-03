@@ -265,9 +265,16 @@
     "materialGaps": 1,
     "green": false,
     "build": "UNVERIFIED",
-    "architecture_commit": "fb0a25b819878ea9625847961e25ac93aaa8d04f",
-    "audit_commit": "90ccf90559f44aad9db767fd55a0b95435871865",
-    "materialAtoms": 2
+    "architecture_commit": "b082d5bcd959a7bd5a1921f3ecaf2755b23cae6f",
+    "audit_commit": "fe28de72067b6c18fddf55fea47d99bf8236a57b",
+    "materialAtoms": 2,
+    "deduplicated": true,
+    "deleted_legacy_wrappers": [
+      "RankPartToRankEquality",
+      "NoFalseFinalCertificate",
+      "AbstractRankInterfaceCounteraudit",
+      "ExternalInputProvenance"
+    ]
   },
   "P07_Poincare": {
     "state": "HISTORICALLY_SOLVED_EXTERNALLY",
