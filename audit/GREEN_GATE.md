@@ -41,3 +41,22 @@ A lane may be promoted from `GREEN=false` to `GREEN=true` only when **all** gate
 For P01-P06, RED `GreenCertificate.lean` templates now exist, but the gate must still fail because `terminal_endpoint_certified` is absent and `terminal_endpoint_closed = false`.
 
 This failure is intentional and preserves the fail-closed invariant.
+
+
+## Genuine material producer rule
+
+Alias is not construction.
+
+A lane remains RED if its alleged producer is introduced only by renaming or re-exporting the open frontier, including forms equivalent to:
+
+- `axiom producer : Frontier`
+- `opaque producer : Frontier`
+- `def producer : Frontier := by sorry`
+- `def producer : Frontier := existingOpenFrontier`
+- `abbrev producer := Frontier`
+
+GREEN requires a dedicated `NewMath/` module containing a genuine construction with no `axiom`, `sorry`, `admit`, or `opaque` in its dependency tree, followed by:
+
+`material_producer → material_producer_closes_frontier → terminal_endpoint_certified`.
+
+The `GreenCertificate` must consume that chain. Merely changing the name of the frontier or changing a Boolean status field never counts as closure.
