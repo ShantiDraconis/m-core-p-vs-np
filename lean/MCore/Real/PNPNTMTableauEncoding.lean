@@ -8508,18 +8508,18 @@ theorem boundedExec_weight_poly
       _ <= r * (Q * 3 * ((C + L) * r)) := htr_prod
       _ = (3 * Q * (C + L)) * r^2 := by ring
   have hf0 := ntmFinal_weight_le M t
-  have hfinal_const : Q <= Q * r := by
-    have h := Nat.mul_le_mul_left Q hr
+  have hfinal_const : Q + 1 <= (Q + 1) * r := by
+    have h := Nat.mul_le_mul_left (Q + 1) hr
     simpa using h
-  have hfinal_r : Q * r <= Q * r^2 :=
-    Nat.mul_le_mul_left Q hr_sq
+  have hfinal_r : (Q + 1) * r <= (Q + 1) * r^2 :=
+    Nat.mul_le_mul_left (Q + 1) hr_sq
   have hf' :
-      ntmCNFWeight (ntmFinalAcceptanceCNF M t) <= Q * r^2 := by
+      ntmCNFWeight (ntmFinalAcceptanceCNF M t) <= (Q + 1) * r^2 := by
     calc
       ntmCNFWeight (ntmFinalAcceptanceCNF M t)
-          <= Q := by simpa [Q] using hf0
-      _ <= Q * r := hfinal_const
-      _ <= Q * r^2 := hfinal_r
+          <= Q + 1 := by simpa [Q] using hf0
+      _ <= (Q + 1) * r := hfinal_const
+      _ <= (Q + 1) * r^2 := hfinal_r
   have hi2 :
       ntmCNFWeight (ntmInitialCNF M x t) <=
         (2 * Q + 18) * r^2 :=
@@ -8560,30 +8560,29 @@ theorem tableauVarCap_poly
       ntmChoiceBase M x t <= (Q + 9) * r^2 := by
     unfold ntmChoiceBase ntmRightBase ntmLeftBase ntmHeadBase ntmStateSlots
     have hq :
-      (t + 1) * Q <= r * Q :=
-    Nat.mul_le_mul_right Q ht1
-  have h3 :
-      (t + 1) * 3 <= r * 3 :=
-    Nat.mul_le_mul_right 3 ht1
-  have hq2 :
-      (t + 1) * Q <= Q * r^2 := by
-    calc
-      (t + 1) * Q <= r * Q := hq
-      _ <= r^2 * Q := Nat.mul_le_mul_right Q hr_sq
-      _ = Q * r^2 := by ring
-  have h32 :
-      (t + 1) * 3 <= 3 * r^2 := by
-    calc
-      (t + 1) * 3 <= r * 3 := h3
-      _ <= r^2 * 3 := Nat.mul_le_mul_right 3 hr_sq
-      _ = 3 * r^2 := by ring
-  have h6r :
+        (t + 1) * Q <= r * Q :=
+      Nat.mul_le_mul_right Q ht1
+    have h3 :
+        (t + 1) * 3 <= r * 3 :=
+      Nat.mul_le_mul_right 3 ht1
+    have hq2 :
+        (t + 1) * Q <= Q * r^2 := by
+      calc
+        (t + 1) * Q <= r * Q := hq
+        _ <= r^2 * Q := Nat.mul_le_mul_right Q hr_sq
+        _ = Q * r^2 := by ring
+    have h32 :
+        (t + 1) * 3 <= 3 * r^2 := by
+      calc
+        (t + 1) * 3 <= r * 3 := h3
+        _ <= r^2 * 3 := Nat.mul_le_mul_right 3 hr_sq
+        _ = 3 * r^2 := by ring
+    have h6r :
         (t + 1) * r * 6 <= 6 * r^2 := by
       calc
         (t + 1) * r * 6 <= r * r * 6 := by
           exact Nat.mul_le_mul_right 6 (Nat.mul_le_mul_right r ht1)
         _ = 6 * r^2 := by ring
-    simp [Q, r]
     have hpairs :
         (t + 1) * r * 3 + (t + 1) * r * 3 <= 6 * r^2 := by
       calc
@@ -8670,11 +8669,13 @@ theorem boundedExec_encoded_length_poly
         have h := Nat.mul_le_mul_left r hr
         simpa [pow_two, Nat.mul_comm] using h
       exact Nat.le_trans hr hr_sq
-    calc
-      1 <= (r^2)^2 := by
-        have h := Nat.mul_le_mul_left (r^2) hr2
-        simpa [pow_two, Nat.mul_comm] using h
-      _ = r^4 := by ring
+    have hmul : 1 * 1 <= (r^2) * (r^2) :=
+      Nat.mul_le_mul hr2 hr2
+    simpa using (show 1 <= r^4 by
+      calc
+        1 = 1 * 1 := by ring
+        _ <= (r^2) * (r^2) := hmul
+        _ = r^4 := by ring)
   have hw :
       ntmCNFWeight f <= W * r^2 := by
     simpa [f, W, r] using boundedExec_weight_poly M x t
