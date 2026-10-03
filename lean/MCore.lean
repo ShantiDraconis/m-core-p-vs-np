@@ -254,3 +254,5 @@ import P02.LANE4.AUX.R4_FIXED_FUEL
 import P02.LANE4.AUX.STRUCTURAL_CLOSURE
 
 import P02.LANE4.OPEN_MATH.FuelCounterexample
+
+import P02.LANE4.OPEN_MATH.SameBehaviorFromPolyBound
