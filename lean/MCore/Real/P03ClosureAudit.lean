@@ -101,6 +101,8 @@ namespace P03ClosureAudit
 #print axioms MCore.Real.P03UniformRangeDecoder.source_length_le_tableau_clause_count
 #print axioms MCore.Real.P03UniformRangeDecoder.source_length_le_reduction_length
 #print axioms MCore.Real.P03UniformRangeDecoder.recoverClockFromHeadVar_correct
+#print axioms MCore.Real.P03UniformRangeDecoder.genuineSourceCandidate
+#print axioms MCore.Real.P03UniformRangeDecoder.boundedSourceUnique_gives_extensional_recovery
 
 #print axioms MCore.Real.P03ClosureKernel.fail_closed_status_preserved
 
