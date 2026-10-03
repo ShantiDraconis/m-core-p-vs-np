@@ -3657,14 +3657,18 @@ theorem ntmPaddingAt_halted_step
     have hCopy :=
       ntmHalted_left_copy M x t s q a sigma hSat hs hq ha hHalt i hRadius
         M.machine.blank
-    simpa [hCopy] using hOld
+    rw [hCopy]
+
+    exact hOld
   · intro i hi hRadius
     have hOld : sigma (ntmRightVar M x t s i M.machine.blank) = true :=
       hP.rightBlank i (by omega) hRadius
     have hCopy :=
       ntmHalted_right_copy M x t s q a sigma hSat hs hq ha hHalt i hRadius
         M.machine.blank
-    simpa [hCopy] using hOld
+    rw [hCopy]
+
+    exact hOld
 
 
 structure NTMBlankTailAt
@@ -3772,13 +3776,17 @@ theorem ntmPaddingAt_active_step
         have hCopy :=
           ntmStay_left_copy_exact M x t s q a j sigma hSat hs hActive hj
             hDirStay i hRadius M.machine.blank
-        simpa [hCopy] using hOld
+        rw [hCopy]
+
+        exact hOld
       · intro i hi hRadius
         have hOld := hP.rightBlank i (by omega) hRadius
         have hCopy :=
           ntmStay_right_copy_exact M x t s q a j sigma hSat hs hActive hj
             hDirStay i hRadius M.machine.blank
-        simpa [hCopy] using hOld
+        rw [hCopy]
+
+        exact hOld
   | left =>
       have hDirLeft :
           ((M.machine.transition q a).get j).2.2 = Direction.left := by
@@ -3797,7 +3805,9 @@ theorem ntmPaddingAt_active_step
           have hCopy :=
             ntmLeft_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
               hDirLeft i hiShift M.machine.blank
-          simpa [hCopy] using hOld
+          rw [hCopy]
+
+          exact hOld
       · intro i hi hRadius
         have hne0 : i ≠ 0 := by
           intro hzero
@@ -3811,7 +3821,9 @@ theorem ntmPaddingAt_active_step
         have hCopy :=
           ntmLeft_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
             hDirLeft k hk M.machine.blank
-        simpa [hCopy] using hOld
+        rw [hCopy]
+
+        exact hOld
   | right =>
       have hDirRight :
           ((M.machine.transition q a).get j).2.2 = Direction.right := by
@@ -3830,7 +3842,9 @@ theorem ntmPaddingAt_active_step
         have hCopy :=
           ntmRight_shiftedLeft_exact M x t s q a j sigma hSat hs hActive hj
             hDirRight k hk M.machine.blank
-        simpa [hCopy] using hOld
+        rw [hCopy]
+
+        exact hOld
       · intro i hi hRadius
         by_cases hlast : i = ntmRadius x t - 1
         · subst i
@@ -3844,7 +3858,9 @@ theorem ntmPaddingAt_active_step
           have hCopy :=
             ntmRight_shiftedRight_exact M x t s q a j sigma hSat hs hActive hj
               hDirRight i hiShift M.machine.blank
-          simpa [hCopy] using hOld
+          rw [hCopy]
+
+          exact hOld
 
 theorem ntmPaddingAt_all
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
