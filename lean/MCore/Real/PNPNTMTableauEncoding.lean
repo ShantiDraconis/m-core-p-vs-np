@@ -4486,30 +4486,32 @@ theorem operationalTapeBound_step
     | stay =>
         refine { left_len := ?_, right_len := ?_ }
         · simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j,
-            htr, Tape.write, Tape.move] using
+            htr, NTM.stepBranch, Tape.write, Tape.move] using
             Nat.le_trans hB.left_len (by omega : x.length + s <= x.length + (s + 1))
         · simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j,
-            htr, Tape.write, Tape.move] using
+            htr, NTM.stepBranch, Tape.write, Tape.move] using
             Nat.le_trans hB.right_len (by omega : x.length + s <= x.length + (s + 1))
     | left =>
         have hlr := tapeMove_left_lengths M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
         refine { left_len := ?_, right_len := ?_ }
         · have := Nat.le_trans hlr.1 hB.left_len
-          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr] using
+          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
+            NTM.stepBranch] using
             Nat.le_trans this (by omega : x.length + s <= x.length + (s + 1))
         · have := Nat.le_trans hlr.2 (Nat.add_le_add_right hB.right_len 1)
           simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
-            Nat.add_assoc] using this
+            NTM.stepBranch, Nat.add_assoc] using this
     | right =>
         have hlr := tapeMove_right_lengths M.machine.blank write
           (operationalDecodeConfig M x t sigma hSat s (by omega)).tape
         refine { left_len := ?_, right_len := ?_ }
         · have := Nat.le_trans hlr.1 (Nat.add_le_add_right hB.left_len 1)
           simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
-            Nat.add_assoc] using this
+            NTM.stepBranch, Nat.add_assoc] using this
         · have := Nat.le_trans hlr.2 hB.right_len
-          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr] using
+          simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, htr,
+            NTM.stepBranch] using
             Nat.le_trans this (by omega : x.length + s <= x.length + (s + 1))
 
 theorem operationalTapeBound_all
