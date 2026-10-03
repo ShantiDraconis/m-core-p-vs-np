@@ -4920,6 +4920,11 @@ theorem ntmDecode_step
     let ha := decodeHead_true M x t sigma hSat s (by omega)
     let j := decodeChoiceIndex M x t s sigma hSat hs q a hq ha hActive
     let tr := (M.machine.transition q a).get j
+    have hStep :
+        operationalDecodeConfig M x t sigma hSat (s + 1) (by omega) =
+          M.machine.stepBranch
+            (operationalDecodeConfig M x t sigma hSat s (by omega)) tr := by
+      simp [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, tr]
     right
     constructor
     · intro hh
@@ -4943,7 +4948,8 @@ theorem ntmDecode_step
           M.machine.successors
               (operationalDecodeConfig M x t sigma hSat s (by omega)) := by
         simp [NTM.successors, hstates, hheads, htrmem]
-      simpa [operationalDecodeConfig, q, a, hHalt, hActive, hq, ha, j, tr] using hsucc
+      rw [hStep]
+      exact hsucc
 
 
 noncomputable def operationalPath
