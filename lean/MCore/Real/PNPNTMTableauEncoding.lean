@@ -4972,8 +4972,8 @@ theorem operationalDecodeAgrees_all
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
     (sigma : Assignment)
     (hSat : evalNTMCNF sigma (boundedExecTableauCNF_NTM M x t) = true) :
-    forall s : Nat, s <= t ->
-      OperationalDecodeAgreesAt M x t sigma hSat s (by assumption) := by
+    forall (s : Nat) (hs : s <= t),
+      OperationalDecodeAgreesAt M x t sigma hSat s hs := by
   intro s
   induction s with
   | zero =>
