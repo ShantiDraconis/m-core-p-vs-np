@@ -2618,8 +2618,10 @@ theorem ntmLeft_blankLeft_exact
     (j.val, (M.machine.transition q a).get j) sigma hEff hDir
   have hnil := eval_setLeft_neg_guard_to_nil M x t (s + 1) (ntmRadius x t - 1)
     (ntmChoiceVar M x t s q a j.val) M.machine.blank sigma hset hj
-  exact (eval_ntmSetLeftCell_nil_iff_at M x t (s + 1) sigma
-    (ntmRadius x t - 1) M.machine.blank).mp hnil
+  have hiff :=
+    eval_ntmSetLeftCell_nil_iff_at
+      M x t (s + 1) sigma (ntmRadius x t - 1) M.machine.blank
+  exact hiff.mp hnil
 
 theorem ntmLeft_writeRight0_exact
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
@@ -2640,8 +2642,10 @@ theorem ntmLeft_writeRight0_exact
   have hnil := eval_setRight_neg_guard_to_nil M x t (s + 1) 0
     (ntmChoiceVar M x t s q a j.val)
     ((M.machine.transition q a).get j).2.1 sigma hset hj
-  exact (eval_ntmSetRightCell_nil_iff_at M x t (s + 1) sigma 0
-    ((M.machine.transition q a).get j).2.1).mp hnil
+  have hiff :=
+    eval_ntmSetRightCell_nil_iff_at
+      M x t (s + 1) sigma 0 ((M.machine.transition q a).get j).2.1
+  exact hiff.mp hnil
 
 
 theorem boundedExec_initial_sat
