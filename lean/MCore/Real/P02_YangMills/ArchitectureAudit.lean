@@ -1,3 +1,4 @@
+import MCore.Real.P02_YangMills.GreenCertificate
 import MCore.Real.P02_YangMills.Architecture
 
 namespace MCore.Real.P02_YangMills.ArchitectureAudit
@@ -15,3 +16,6 @@ namespace MCore.Real.P02_YangMills.ArchitectureAudit
 #print axioms MCore.Real.P02_YangMills.Architecture.fail_closed
 
 end MCore.Real.P02_YangMills.ArchitectureAudit
+
+#print axioms MCore.Real.P02_YangMills.GreenCertificate.terminal_endpoint_not_certified
+#print axioms MCore.Real.P02_YangMills.GreenCertificate.build_not_verified
