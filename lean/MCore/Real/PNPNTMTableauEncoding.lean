@@ -5447,12 +5447,12 @@ theorem choiceIdxOfStep_active_spec
     (path ⟨s + 1, by omega⟩)
     (by simpa using hPath.2 ⟨s, hs⟩)
     hActive
-  rcases transition_mem_to_idx
-      (M.machine.transition
-        (path ⟨s, by omega⟩).state
-        (path ⟨s, by omega⟩).tape.head)
-      W.choose W.choose_spec.1 with ⟨j, hj, hget⟩
-  exact ⟨hj, hget⟩
+  let I := transition_mem_to_idx
+    (M.machine.transition
+      (path ⟨s, by omega⟩).state
+      (path ⟨s, by omega⟩).tape.head)
+    W.choose W.choose_spec.1
+  simpa [I] using I.choose_spec
 
 
 theorem foldl_max_ge_acc
@@ -5473,8 +5473,9 @@ theorem foldl_max_ge_of_mem
   | cons y ys ih =>
       simp only [List.mem_cons] at hx
       simp only [List.foldl_cons]
-      rcases hx with rfl | hx
-      · exact Nat.le_trans (Nat.le_max_right acc y)
+      rcases hx with hxy | hx
+      · subst x
+        exact Nat.le_trans (Nat.le_max_right acc y)
           (foldl_max_ge_acc ys (Nat.max acc y))
       · exact ih (Nat.max acc y) hx
 
