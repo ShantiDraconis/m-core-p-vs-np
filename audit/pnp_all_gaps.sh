@@ -57,6 +57,13 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/SourceOffsetLowerEnvelope.lean
   lean/MCore/Real/PNPDiscovery/BarrierArithmeticFrontier.lean
   lean/MCore/Real/PNPDiscovery/ArithmeticProducerClosure.lean
+  lean/MCore/Real/PNPDiscovery/StrictOrbitLengthGrowth.lean
+  lean/MCore/Real/PNPDiscovery/ArithmeticRouteFalsification.lean
+  lean/MCore/Real/PNPDiscovery/LayoutLeakage.lean
+  lean/MCore/Real/PNPDiscovery/AlphaRenameCore.lean
+  lean/MCore/Real/PNPDiscovery/LayoutAlphaEquivalence.lean
+  lean/MCore/Real/PNPDiscovery/TableauShapeLeakage.lean
+  lean/MCore/Real/PNPDiscovery/TransitionShapeFrontier.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -129,22 +136,26 @@ CLOSED_BRIDGES:
 BARRIER_FRONTIER:
   length mismatch OR clock mismatch OR head mismatch OR concrete source-cell mismatch
 
-NEXT_MATERIAL_PRESSURE:
-  1. CurrentDeepestMaterialProducer = ArithmeticBarrierBreakerProducer
-  2. For every M,hTotal,Hbar: find odd pair with SAME LENGTH
-  3. For its canonical first source mismatch j, prove successorSharedConeEnvelope <= sourceCellOffsetLowerEnvelope
-  4. This contradicts the barrier-required strict reverse inequality
+ROUTE_FALSIFIED:
+  ArithmeticBarrierBreakerProducer via same-orbit equal-length recurrence
+  reason: R_M strictly increases length at every step
 
-VISIBILITY_ORIENTATION:
-  q < SharedReadConePrefix + bit mismatch => prefixes differ (supports barrier)
-  shared-prefix equality => terminal-state recurrence (favorable route)
+CURRENT_FRONTIER:
+  1. Single-orbit locality route is blocked by layout/shape leakage
+  2. Radius mismatch -> initial CNF clause-count leak (alpha-invariant)
+  3. Equal-radius clock compensation -> EqualRadiusTransitionShapeGap (reducible counting)
+  4. Explore cross-seed equal-layout recurrence/collision
 
-FRONTIER_COMPRESSION:
-  CLOCK branch eliminated by length equality
-  HEAD branch eliminated on positive orbit (fixed 100 prefix)
-  TerminalParityBarrier -> LENGTH mismatch OR first SOURCE mismatch
-  equal-length SOURCE branch -> explicit lower-offset < successor-clock-envelope
-  ArithmeticBarrierBreakerProducer -> TotalExactDiagonalProducer
+STRICT_GROWTH:
+  R_M_strict_length_growth CLOSED
+  no_positive_odd_length_recurrence CLOSED
+  Arithmetic equal-length route CLOSED_BY_FALSIFICATION
+
+LAYOUT_LEAKAGE:
+  raw ID leakage CLOSED
+  HEAD/first LEFT alpha-equivalent modulo ID renaming
+  radius mismatch = alpha-invariant shape leakage
+  EqualRadiusTransitionShapeGap = REDUCIBLE structural frontier
 
 METHOD_AUDIT_OPEN:
   1. RelativizationFormalizationGap
