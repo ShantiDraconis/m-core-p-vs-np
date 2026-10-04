@@ -53,9 +53,16 @@ theorem initialLeftBlock_eq_of_length_clock
       ntmRadius x t = ntmRadius y t :=
     ntmRadius_eq_of_length_eq hLen
   rw [hRadius]
-  apply List.flatMap_congr_left
-  intro i hi
-  exact initialLeftCell_eq_of_length M x y t i hLen
+  have hfun :
+      (fun i =>
+        ntmSetLeftCell [] M x t 0 i
+          ((inputTape x).left.getD i M.machine.blank)) =
+      (fun i =>
+        ntmSetLeftCell [] M y t 0 i
+          ((inputTape y).left.getD i M.machine.blank)) := by
+    funext i
+    exact initialLeftCell_eq_of_length M x y t i hLen
+  rw [hfun]
 
 /-- Decompose the time-zero CNF into the four literal regions that matter for
 source-dependency analysis. -/
