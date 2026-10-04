@@ -5961,7 +5961,8 @@ theorem pathAssignment_left
         omega
       omega
     simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice]
-    simpa [List.getD] using ha
+    change ¬ a = (path ⟨s, by omega⟩).tape.left.getD i M.machine.blank
+    exact ha
 
 theorem pathAssignment_right
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
