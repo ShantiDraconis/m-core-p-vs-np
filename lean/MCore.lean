@@ -227,3 +227,7 @@ import MCore.Real.PNPDiscovery.SourcePrefixFrontier
 import MCore.Real.PNPDiscovery.RightCellInjectivity
 import MCore.Real.PNPDiscovery.LeftBlockElimination
 import MCore.Real.PNPDiscovery.SourceBitOffsets
+
+import MCore.Real.PNPDiscovery.TableauRegionMap
+import MCore.Real.PNPDiscovery.BitRegionMap
+import MCore.Real.PNPDiscovery.SourcePrefixPressure
