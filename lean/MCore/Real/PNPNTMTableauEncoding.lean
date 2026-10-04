@@ -8634,16 +8634,13 @@ theorem ntmTransitionStep_weight_le
     ntmCNFWeight (ntmTransitionStepCNF M x t s) <=
       ntmTransitionStepWeightCap M x t := by
   unfold ntmTransitionStepCNF ntmTransitionStepWeightCap
-  let rows :=
-    List.ofFn (fun q : Fin (M.stateCount + 1) =>
-      ntmAlphabet.flatMap fun a =>
-        ntmTransitionCaseCNF M x t s q a)
   have hrow :
-      ∀ row, row ∈ rows ->
-        ntmCNFWeight row <= 3 * ntmTransitionCaseWeightCap M x t := by
-    intro row hrow
-    rw [List.mem_ofFn] at hrow
-    rcases hrow with ⟨q, rfl⟩
+      ∀ q : Fin (M.stateCount + 1),
+        ntmCNFWeight
+          (ntmAlphabet.flatMap fun a =>
+            ntmTransitionCaseCNF M x t s q a) <=
+          3 * ntmTransitionCaseWeightCap M x t := by
+    intro q
     have ha := ntmCNFWeight_flatMap_list_le ntmAlphabet
       (ntmTransitionCaseWeightCap M x t)
       (fun a => ntmTransitionCaseCNF M x t s q a)
@@ -8651,9 +8648,30 @@ theorem ntmTransitionStep_weight_le
         intro a ha
         exact ntmTransitionCase_weight_le M x t s q a)
     simpa [ntmAlphabet] using ha
-  have hflat := ntmCNFWeight_flatten_le rows
-    (3 * ntmTransitionCaseWeightCap M x t) hrow
-  simpa [rows, ntmStateCount, Nat.mul_assoc] using hflat
+  have hflatten :
+      ntmCNFWeight
+        (List.ofFn (fun q : Fin (M.stateCount + 1) =>
+          ntmAlphabet.flatMap fun a =>
+            ntmTransitionCaseCNF M x t s q a)).flatten <=
+        (M.stateCount + 1) * (3 * ntmTransitionCaseWeightCap M x t) := by
+    induction M.stateCount + 1 with
+    | zero =>
+        simp [ntmCNFWeight]
+    | succ n ih =>
+        rw [List.ofFn_succ, List.flatten_cons, ntmCNFWeight_append]
+        have h0 := hrow (0 : Fin (n + 1))
+        have htail :
+            ntmCNFWeight
+              (List.ofFn (fun i : Fin n =>
+                ntmAlphabet.flatMap fun a =>
+                  ntmTransitionCaseCNF M x t s i.succ a)).flatten <=
+              n * (3 * ntmTransitionCaseWeightCap M x t) := by
+          apply ntmCNFWeight_flatMap_list_le
+          intro xs hxs
+          rcases List.mem_ofFn.mp hxs with ⟨i, rfl⟩
+          exact hrow i.succ
+        omega
+  simpa [ntmStateCount, Nat.mul_assoc] using hflatten
 
 theorem ntmTransitions_weight_le
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
