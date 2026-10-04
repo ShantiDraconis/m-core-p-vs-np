@@ -8370,6 +8370,7 @@ theorem ntmChoiceEffect_weight_le
         simpa [ntmSetRightCell] using
           ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
             (ntmRightVar M x t (s+1) 0) write]
+      simp only [List.length_cons, List.length_nil] at hsl hsr ⊢
       omega
   | right =>
       unfold ntmChoiceEffectCNF ntmRightEffectCNF ntmEffectWeightCap
@@ -8411,6 +8412,7 @@ theorem ntmChoiceEffect_weight_le
         simpa [ntmSetRightCell] using
           ntmSetSymbol_weight [ntmNeg (ntmChoiceVar M x t s q a j)]
             (ntmRightVar M x t (s+1) (ntmRadius x t - 1)) M.machine.blank]
+      simp only [List.length_cons, List.length_nil] at hsl hsr ⊢
       omega
 
 
