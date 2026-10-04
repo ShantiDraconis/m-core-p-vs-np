@@ -9123,39 +9123,50 @@ theorem activeChoice_varsLe
     CNFVarsLe (tableauVarCap M x t)
       (ntmActiveChoiceCNF M x t s q a) := by
   let entries := ntmIndexedTransitions (M.machine.transition q a)
-  simp only [ntmActiveChoiceCNF]
-  apply CNFVarsLe_append
-  · apply CNFVarsLe_cons
+  have hFirst :
+      CNFVarsLe (tableauVarCap M x t)
+        [ntmGuardChoiceClause M x t s q a] := by
+    apply CNFVarsLe_cons
     · unfold ntmGuardChoiceClause
       apply ClauseVarsLe_append
       · exact stateHeadGuard_varsLe M x t s q a (by omega)
       · intro l hl
         rw [List.mem_map] at hl
-        rcases hl with ⟨p,hp,rfl⟩
+        rcases hl with ⟨p, hp, rfl⟩
         have hpLt := indexedTransitions_index_lt (M.machine.transition q a)
           (by simpa [entries] using hp)
         have hb := ntmBranchBound_ge_transition_length M q a
         simpa using ntmChoiceVar_le_tableauVarCap M x t s q a p.1
           (by omega) (by omega)
     · exact CNFVarsLe_nil _
-  · apply CNFVarsLe_append
-    · intro cl hcl
-      rw [List.mem_flatMap] at hcl
-      rcases hcl with ⟨p,hp,hcl⟩
-      have hpLt := indexedTransitions_index_lt (M.machine.transition q a)
-        (by simpa [entries] using hp)
-      have hb := ntmBranchBound_ge_transition_length M q a
-      exact choiceGuardCNF_varsLe M x t s q a p.1
-        (by omega) (by omega) cl hcl
-    · apply CNFVarsLe_append
-      · exact atMostOne_varsLe M x t s q a (by omega)
-      · intro cl hcl
-        rw [List.mem_flatMap] at hcl
-        rcases hcl with ⟨p,hp,hcl⟩
-        have hpLt := indexedTransitions_index_lt (M.machine.transition q a)
-          (by simpa [entries] using hp)
-        have hb := ntmBranchBound_ge_transition_length M q a
-        exact choiceEffect_varsLe M x t s q a p hs (by omega) cl hcl
+  have hGuards :
+      CNFVarsLe (tableauVarCap M x t)
+        (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1)) := by
+    intro cl hcl
+    rw [List.mem_flatMap] at hcl
+    rcases hcl with ⟨p, hp, hcl⟩
+    have hpLt := indexedTransitions_index_lt (M.machine.transition q a)
+      (by simpa [entries] using hp)
+    have hb := ntmBranchBound_ge_transition_length M q a
+    exact choiceGuardCNF_varsLe M x t s q a p.1
+      (by omega) (by omega) cl hcl
+  have hAmo :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmAtMostOneChoiceCNF M x t s q a) :=
+    atMostOne_varsLe M x t s q a (by omega)
+  have hEffects :
+      CNFVarsLe (tableauVarCap M x t)
+        (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p)) := by
+    intro cl hcl
+    rw [List.mem_flatMap] at hcl
+    rcases hcl with ⟨p, hp, hcl⟩
+    have hpLt := indexedTransitions_index_lt (M.machine.transition q a)
+      (by simpa [entries] using hp)
+    have hb := ntmBranchBound_ge_transition_length M q a
+    exact choiceEffect_varsLe M x t s q a p hs (by omega) cl hcl
+  simpa [ntmActiveChoiceCNF, entries, List.append_assoc] using
+    CNFVarsLe_append
+      (CNFVarsLe_append (CNFVarsLe_append hFirst hGuards) hAmo) hEffects
 
 theorem transitionCase_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
