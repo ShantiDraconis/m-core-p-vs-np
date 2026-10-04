@@ -62,6 +62,13 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/StrictGrowthConsistency.lean
   lean/MCore/Real/PNPDiscovery/PerfectFlipRegimeAlignment.lean
   lean/MCore/Real/PNPDiscovery/UniversalSimulationPrerequisites.lean
+  lean/MCore/Real/PNPDiscovery/CanonicalClockNormalization.lean
+  lean/MCore/Real/PNPDiscovery/FiniteCandidateDescription.lean
+  lean/MCore/Real/PNPDiscovery/UnaryListSerialization.lean
+  lean/MCore/Real/PNPDiscovery/FiniteCandidateGodelWords.lean
+  lean/MCore/Real/PNPDiscovery/FiniteDescriptionInjectivity.lean
+  lean/MCore/Real/PNPDiscovery/NormalizedUniversalPrerequisites.lean
+  lean/MCore/Real/PNPDiscovery/ConcreteMachineInputPairing.lean
   lean/MCore/Real/PNPDiscovery/StrictLengthGrowth.lean
   lean/MCore/Real/PNPDiscovery/ArithmeticBreakerRouteFalsified.lean
   lean/MCore/Real/PNPDiscovery/LayoutDriftFrontier.lean
@@ -165,6 +172,24 @@ LAYOUT_LEAKAGE:
   HEAD/first LEFT alpha-equivalent modulo ID renaming
   radius mismatch = alpha-invariant shape leakage
   EqualRadiusTransitionShapeGap = REDUCIBLE structural frontier
+
+SELF_REFERENCE_FORCING:
+  CLOSED:
+    - canonical clock normalization for total candidates
+    - semantic preservation of DeclaredAccepts / CorrectAt
+    - finite normalized candidate description
+    - unary List Nat / List Bool serialization round-trip
+    - exact finite Godel word layout and size formulas
+    - concrete self-delimiting machine-code/input pairing
+  SUPERSEDED:
+    - raw CandidateCodebook over arbitrary PolyDTMCandidate
+      reason: timeBound is function-valued; normalize total candidates first
+  OPEN_ATOMS:
+    - DependentFiniteTableExtensionality / finite-table reconstructor
+    - NormalizedCandidateCodebook round-trip
+    - one fixed NormalizedUniversalSimulator
+    - explicit universal simulation overhead
+    - NormalizedSelfReferenceCompiler on valid finite codes
 
 METHOD_PREREQUISITE_OPEN:
   1. UniversalSimulationInfrastructureGap
