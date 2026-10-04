@@ -7190,7 +7190,8 @@ theorem pathAssignment_selected_effect_sat
               c.tape.left.getD i M.machine.blank := by
           rw [hnext]
           simp [NTM.stepBranch, Tape.write, Tape.move, htrDef]
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       have hrightEq :
           forall i : Nat, i < ntmRadius x t ->
             evalNTMCNF (pathAssignment M x t path hPath)
@@ -7208,40 +7209,48 @@ theorem pathAssignment_selected_effect_sat
               c.tape.right.getD i M.machine.blank := by
           rw [hnext]
           simp [NTM.stepBranch, Tape.write, Tape.move, htrDef]
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       rw [show
         ntmChoiceEffectCNF M x t s c.state c.tape.head (j, tr) =
           ntmStayEffectCNF
             [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
             M x t s qNext write by
         simp [ntmChoiceEffectCNF, htrDef]]
-      unfold ntmStayEffectCNF
-      rw [evalNTMCNF_append]
-      refine ⟨eval_setState_neg_guard_of_exact
-          (pathAssignment M x t path hPath) M t (s + 1)
-          (ntmChoiceVar M x t s c.state c.tape.head j)
-          qNext hchoice hstateExact, ?_⟩
-      rw [evalNTMCNF_append]
-      refine ⟨eval_setSymbol_neg_guard_of_exact
-          (pathAssignment M x t path hPath)
-          (ntmChoiceVar M x t s c.state c.tape.head j)
-          (ntmHeadVar M t (s + 1)) write hchoice hheadExact, ?_⟩
-      rw [evalNTMCNF_append]
-      constructor
-      · rw [show ntmCopyLeftAll
+      have hState := eval_setState_neg_guard_of_exact
+        (pathAssignment M x t path hPath) M t (s + 1)
+        (ntmChoiceVar M x t s c.state c.tape.head j)
+        qNext hchoice hstateExact
+      have hHead := eval_setSymbol_neg_guard_of_exact
+        (pathAssignment M x t path hPath)
+        (ntmChoiceVar M x t s c.state c.tape.head j)
+        (ntmHeadVar M t (s + 1)) write hchoice hheadExact
+      have hLeft :
+          evalNTMCNF (pathAssignment M x t path hPath)
+            (ntmCopyLeftAll
+              [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+              M x t s) = true := by
+        rw [show ntmCopyLeftAll
           [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)] M x t s =
           (List.range (ntmRadius x t)).flatMap (fun i =>
             ntmCopySymbolClauses
               [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
               (ntmLeftVar M x t s i) (ntmLeftVar M x t (s + 1) i)) by rfl]
         exact (evalNTMCNF_flatMap_range _ _ _).2 hleftEq
-      · rw [show ntmCopyRightAll
+      have hRight :
+          evalNTMCNF (pathAssignment M x t path hPath)
+            (ntmCopyRightAll
+              [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+              M x t s) = true := by
+        rw [show ntmCopyRightAll
           [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)] M x t s =
           (List.range (ntmRadius x t)).flatMap (fun i =>
             ntmCopySymbolClauses
               [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
               (ntmRightVar M x t s i) (ntmRightVar M x t (s + 1) i)) by rfl]
         exact (evalNTMCNF_flatMap_range _ _ _).2 hrightEq
+      simp only [ntmStayEffectCNF, evalNTMCNF_append]
+      exact ⟨⟨⟨hState, hHead⟩, hLeft⟩, hRight⟩
   | left =>
       have hrpos : 0 < ntmRadius x t := by simp [ntmRadius]
       have hheadEq :
