@@ -6810,7 +6810,8 @@ theorem pathAssignment_haltedStutter_sat
         have hhEq :
             (path ⟨s + 1, by omega⟩).tape.head = c.tape.head := by
           simpa [c, c'] using congrArg (fun z => z.tape.head) hEq
-        simpa [hhEq]
+        rw [hhEq]
+        simp [c]
       have hleft :
           evalNTMCNF sigma
             (ntmCopyLeftAll
@@ -6840,7 +6841,8 @@ theorem pathAssignment_haltedStutter_sat
             (path ⟨s + 1, by omega⟩).tape.left =
               c.tape.left := by
           simpa [c, c'] using congrArg (fun z => z.tape.left) hEq
-        simpa [hlEq]
+        rw [hlEq]
+        simp [c]
       have hright :
           evalNTMCNF sigma
             (ntmCopyRightAll
@@ -6870,7 +6872,8 @@ theorem pathAssignment_haltedStutter_sat
             (path ⟨s + 1, by omega⟩).tape.right =
               c.tape.right := by
           simpa [c, c'] using congrArg (fun z => z.tape.right) hEq
-        simpa [hrEq]
+        rw [hrEq]
+        simp [c]
       simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
       have hs0 := eval_setState_two_neg_guard_of_exact sigma M t (s + 1)
         (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
