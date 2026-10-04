@@ -252,3 +252,14 @@ import MCore.Real.PNPDiscovery.SourcePrefixEndExpansion
 import MCore.Real.PNPDiscovery.SourcePrefixEndEnvelope
 import MCore.Real.PNPDiscovery.SourceHiddenGrowthExpansion
 import MCore.Real.PNPDiscovery.VisibilityOrientationAudit
+
+import MCore.Real.PNPDiscovery.OrbitLevelAlignmentCorrection
+import MCore.Real.PNPDiscovery.SuccessorClockEnvelope
+import MCore.Real.PNPDiscovery.LengthSourceCompression
+import MCore.Real.PNPDiscovery.FirstSourceMismatch
+import MCore.Real.PNPDiscovery.FirstGlobalBreak
+import MCore.Real.PNPDiscovery.GlobalBreakSandwich
+import MCore.Real.PNPDiscovery.SourceOffsetVisibilityLaw
+import MCore.Real.PNPDiscovery.SourceOffsetLowerEnvelope
+import MCore.Real.PNPDiscovery.BarrierArithmeticFrontier
+import MCore.Real.PNPDiscovery.ArithmeticProducerClosure
