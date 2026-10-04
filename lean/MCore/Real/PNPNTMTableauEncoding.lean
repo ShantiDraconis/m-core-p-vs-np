@@ -8814,7 +8814,7 @@ theorem filterMap_length_le
           exact Nat.le_step ih
       | some y =>
           simp [List.filterMap_cons, hfx]
-          exact Nat.succ_le_succ ih
+          exact ih
 
 theorem final_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
@@ -8914,10 +8914,14 @@ theorem choiceGuardCNF_varsLe
   rcases hcl with rfl | rfl
   · intro l hl
     simp at hl
-    rcases hl with rfl | rfl <;> simpa using hc <;> simpa using hsvar
+    rcases hl with rfl | rfl
+    · simpa using hc
+    · simpa using hsvar
   · intro l hl
     simp at hl
-    rcases hl with rfl | rfl <;> simpa using hc <;> simpa using hhvar
+    rcases hl with rfl | rfl
+    · simpa using hc
+    · simpa using hhvar
 
 theorem atMostOne_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
