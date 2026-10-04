@@ -236,3 +236,8 @@ import MCore.Real.PNPDiscovery.SourcePrefixEncoderBridge
 import MCore.Real.PNPDiscovery.SourcePrefixCoverageClosed
 import MCore.Real.PNPDiscovery.SourcePrefixPressureClosed
 import MCore.Real.PNPDiscovery.FullSourceDichotomy
+
+import MCore.Real.PNPDiscovery.HeadParityPressure
+import MCore.Real.PNPDiscovery.SourceMismatchVisibility
+import MCore.Real.PNPDiscovery.SourceMismatchEncodingDichotomy
+import MCore.Real.PNPDiscovery.FiniteBitMismatchClosed
