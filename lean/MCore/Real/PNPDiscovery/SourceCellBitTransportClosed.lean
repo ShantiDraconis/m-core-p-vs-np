@@ -143,15 +143,15 @@ theorem sourceCellBitTransport_closed :
         head_eq := W.head_eq
         source_eq := W.prefix_eq
         within_radius := by omega }
-    have h :=
-      sourcePrefixClauseCoverage_closed M
-        (by
-          intro z
-          exact Classical.choice
-            (show Nonempty (DeclaredClockTotal M) from ⟨fun z => by
-              exact M.haltsWithin z⟩))
-        x y W.j A
-    simpa [sourcePrefixClauseEnd] using h
+    have hx :=
+      boundedExec_take_sourcePrefix N x tx W.j (by omega)
+    have hy :=
+      boundedExec_take_sourcePrefix N y ty W.j (by
+        simpa [ntmRadius, W.length_eq, W.clock_eq] using
+          (show W.j ≤ ntmRadius x tx by omega))
+    have hp := sourcePrefixClauses_eq M x y W.j A
+    simpa [Fx, Fy, sourcePrefixClauseEnd] using
+      (hx.trans (hp.trans hy.symm))
   have hPrefixBits : px = py := by
     rw [hpx, hpy]
     have hcstart :
