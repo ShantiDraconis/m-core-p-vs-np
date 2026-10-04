@@ -221,3 +221,9 @@ import MCore.Real.PNPDiscovery.ClockVsEncodingLayout
 import MCore.Real.PNPDiscovery.ParityDistinguishingBit
 import MCore.Real.PNPDiscovery.EncodingSpine
 import MCore.Real.PNPDiscovery.HeadBlockFrontier
+
+import MCore.Real.PNPDiscovery.SourceBlockFrontier
+import MCore.Real.PNPDiscovery.SourcePrefixFrontier
+import MCore.Real.PNPDiscovery.RightCellInjectivity
+import MCore.Real.PNPDiscovery.LeftBlockElimination
+import MCore.Real.PNPDiscovery.SourceBitOffsets
