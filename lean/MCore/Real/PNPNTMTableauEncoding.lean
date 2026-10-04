@@ -6810,8 +6810,7 @@ theorem pathAssignment_haltedStutter_sat
         have hhEq :
             (path ⟨s + 1, by omega⟩).tape.head = c.tape.head := by
           simpa [c, c'] using congrArg (fun z => z.tape.head) hEq
-        rw [hhEq]
-        simp [c]
+        simpa [c] using hhEq
       have hleft :
           evalNTMCNF sigma
             (ntmCopyLeftAll
@@ -6841,8 +6840,7 @@ theorem pathAssignment_haltedStutter_sat
             (path ⟨s + 1, by omega⟩).tape.left =
               c.tape.left := by
           simpa [c, c'] using congrArg (fun z => z.tape.left) hEq
-        rw [hlEq]
-        simp [c]
+        simpa [c] using congrArg (fun z => b = z.getD i M.machine.blank) hlEq
       have hright :
           evalNTMCNF sigma
             (ntmCopyRightAll
@@ -6872,8 +6870,7 @@ theorem pathAssignment_haltedStutter_sat
             (path ⟨s + 1, by omega⟩).tape.right =
               c.tape.right := by
           simpa [c, c'] using congrArg (fun z => z.tape.right) hEq
-        rw [hrEq]
-        simp [c]
+        simpa [c] using congrArg (fun z => b = z.getD i M.machine.blank) hrEq
       simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
       have hs0 := eval_setState_two_neg_guard_of_exact sigma M t (s + 1)
         (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
@@ -6926,17 +6923,21 @@ theorem pathTapeBound_step
   let c' := path ⟨s + 1, by omega⟩
   have hStep : NTMTableauStep M c c' := by
     simpa [c, c'] using hPath.2 ⟨s, hs⟩
+  have hBleft : c.tape.left.length <= x.length + s := by
+    simpa [c] using hBleft
+  have hBright : c.tape.right.length <= x.length + s := by
+    simpa [c] using hBright
   rcases hStep with hhalt | hactive
   · have heq := hhalt.2
     refine { left_len := ?_, right_len := ?_ }
     · have hlen : c'.tape.left.length = c.tape.left.length := by
         simpa using congrArg (fun z => z.tape.left.length) heq
       rw [hlen]
-      exact Nat.le_trans hB.left_len (by omega)
+      exact Nat.le_trans hBleft (by omega)
     · have hlen : c'.tape.right.length = c.tape.right.length := by
         simpa using congrArg (fun z => z.tape.right.length) heq
       rw [hlen]
-      exact Nat.le_trans hB.right_len (by omega)
+      exact Nat.le_trans hBright (by omega)
   · rcases active_step_transition_witness M c c' (Or.inr hactive)
       hactive.1 with ⟨tr, hmem, heq⟩
     rcases tr with ⟨qNext, write, d⟩
@@ -6948,11 +6949,11 @@ theorem pathTapeBound_step
         · have hl := congrArg (fun z => z.tape.left.length) heq'
           simp [NTM.stepBranch, Tape.write, Tape.move] at hl
           rw [hl]
-          exact Nat.le_trans hB.left_len (by omega)
+          exact Nat.le_trans hBleft (by omega)
         · have hr := congrArg (fun z => z.tape.right.length) heq'
           simp [NTM.stepBranch, Tape.write, Tape.move] at hr
           rw [hr]
-          exact Nat.le_trans hB.right_len (by omega)
+          exact Nat.le_trans hBright (by omega)
     | left =>
         have heq' :
             c' = M.machine.stepBranch c (qNext, write, Direction.left) := heq
@@ -6961,7 +6962,7 @@ theorem pathTapeBound_step
         · have hlEq := congrArg (fun z => z.tape.left.length) heq'
           simp [NTM.stepBranch] at hlEq
           rw [hlEq]
-          exact Nat.le_trans hlen.1 (Nat.le_trans hB.left_len (by omega))
+          exact Nat.le_trans hlen.1 (Nat.le_trans hBleft (by omega))
         · have hrEq := congrArg (fun z => z.tape.right.length) heq'
           simp [NTM.stepBranch] at hrEq
           rw [hrEq]
@@ -6978,7 +6979,7 @@ theorem pathTapeBound_step
         · have hrEq := congrArg (fun z => z.tape.right.length) heq'
           simp [NTM.stepBranch] at hrEq
           rw [hrEq]
-          exact Nat.le_trans hlen.2 (Nat.le_trans hB.right_len (by omega))
+          exact Nat.le_trans hlen.2 (Nat.le_trans hBright (by omega))
 
 theorem pathTapeBound_all
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
