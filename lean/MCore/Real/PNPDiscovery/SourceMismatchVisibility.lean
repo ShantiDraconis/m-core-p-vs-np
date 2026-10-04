@@ -111,11 +111,37 @@ theorem sourceMismatch_forces_clausePrefix_difference
   simp [firstKRightBlocks, List.range_succ] at hEq
   exact hCellDiff hEq
 
-/-- Clause-prefix difference forces encoded bit-prefix difference at the exact
-same source boundary. -/
-theorem sourceMismatch_forces_bitPrefix_difference
+/-- New encoding-localization frontier exposed by the previous theorem.
+The two clause prefixes are different, but their encoded lengths need not be
+definitionally equal because literal variable IDs are unary-encoded.  To make
+the mismatch visible to the shared read cone we must either prove equal
+encoded boundary lengths or exhibit a differing bit before the smaller
+boundary. -/
+def SourceMismatchBitLocalizationGap : Prop :=
+  ∀ (M : PolyDTMCandidate)
+    (x y : BitString)
+    (j : Nat),
+    x.length = y.length →
+    M.timeBound x.length = M.timeBound y.length →
+    sourceHeadSymbol x = sourceHeadSymbol y →
+    SourceRightPrefixAligned x y j →
+    sourceRightSymbol x j ≠ sourceRightSymbol y j →
+    j + 1 ≤ ntmRadius x (M.timeBound x.length) →
+    let N := complementToNTMCandidate M
+    let tx := M.timeBound x.length
+    let cend := sourcePrefixClauseEnd N x tx (j + 1)
+    let Fx := boundedExecTableauCNF_NTM N x tx
+    let Fy := boundedExecTableauCNF_NTM N y (M.timeBound y.length)
+    let bx := clauseBitOffset Fx cend
+    let by := clauseBitOffset Fy cend
+    ∃ q : Nat,
+      q < Nat.min bx by ∧
+      (encodeCircuit (ntmCNFCircuit Fx)).getD q false ≠
+        (encodeCircuit (ntmCNFCircuit Fy)).getD q false
+
+/-- We have already reduced this frontier to unequal concrete clause prefixes. -/
+theorem sourceMismatch_clause_frontier
     (M : PolyDTMCandidate)
-    (hTotal : DeclaredClockTotal M)
     (x y : BitString)
     (j : Nat)
     (hLen : x.length = y.length)
@@ -131,64 +157,17 @@ theorem sourceMismatch_forces_bitPrefix_difference
       j + 1 ≤ ntmRadius x (M.timeBound x.length)) :
     let N := complementToNTMCandidate M
     let tx := M.timeBound x.length
-    let boundary := sourcePrefixBitEnd N x tx (j + 1)
-    (R_M M hTotal x).take boundary ≠
-      (R_M M hTotal y).take boundary := by
-  dsimp
-  let N := complementToNTMCandidate M
-  let tx := M.timeBound x.length
-  let ty := M.timeBound y.length
-  let cend := sourcePrefixClauseEnd N x tx (j + 1)
-  let Fx := boundedExecTableauCNF_NTM N x tx
-  let Fy := boundedExecTableauCNF_NTM N y ty
-  have hClauseDiff :
-      Fx.take cend ≠ Fy.take cend := by
-    exact sourceMismatch_forces_clausePrefix_difference
-      M x y j hLen hClock hHead hPrev hDiff hRadius
-  have hBitDiff :
-      encodeCNFSpinePrefix (Fx.take cend) ≠
-        encodeCNFSpinePrefix (Fy.take cend) := by
-    intro h
-    have hEncEq :
-        encodeCircuit (ntmCNFCircuit (Fx.take cend)) =
-          encodeCircuit (ntmCNFCircuit (Fy.take cend)) := by
-      rw [encode_ntmCNFCircuit_split_at (Fx.take cend) (Fx.take cend).length]
-      rw [encode_ntmCNFCircuit_split_at (Fy.take cend) (Fy.take cend).length]
-      simp [h]
-    exact hClauseDiff (encode_ntmCNFCircuit_injective hEncEq)
-  unfold R_M complementSemanticReduction
-  simp only [PNPNTMTableauClosure.concreteNTMTableauProducer,
-    PNPNTMTableauClosure.ntmTableauProducerOfCertificates,
-    complementRunRealization, complementToNTMCandidate]
-  change
-    (encodeCircuit (ntmCNFCircuit Fx)).take
-        (sourcePrefixBitEnd N x tx (j + 1)) ≠
-      (encodeCircuit (ntmCNFCircuit Fy)).take
-        (sourcePrefixBitEnd N x tx (j + 1))
-  unfold sourcePrefixBitEnd tableauClauseBitOffset
-  change
-    (encodeCircuit (ntmCNFCircuit Fx)).take
-        (clauseBitOffset Fx cend) ≠
-      (encodeCircuit (ntmCNFCircuit Fy)).take
-        (clauseBitOffset Fx cend)
-  rw [take_clauseBitOffset Fx cend]
-  have hOffset :
-      clauseBitOffset Fx cend =
-        clauseBitOffset Fy cend := by
-    unfold clauseBitOffset
-    by_contra hneq
-    exact hClauseDiff
-      (by
-        have := congrArg List.length
-          (Classical.byContradiction (fun h => hClauseDiff h))
-        contradiction)
-  rw [hOffset]
-  rw [take_clauseBitOffset Fy cend]
-  exact hBitDiff
+    let ty := M.timeBound y.length
+    let cend := sourcePrefixClauseEnd N x tx (j + 1)
+    (boundedExecTableauCNF_NTM N x tx).take cend ≠
+      (boundedExecTableauCNF_NTM N y ty).take cend :=
+  sourceMismatch_forces_clausePrefix_difference
+    M x y j hLen hClock hHead hPrev hDiff hRadius
 
 #print axioms MCore.Real.PNPDiscovery.encodeCircuit_injective
 #print axioms MCore.Real.PNPDiscovery.ntmCNFCircuit_injective
 #print axioms MCore.Real.PNPDiscovery.sourceMismatch_forces_clausePrefix_difference
+#print axioms MCore.Real.PNPDiscovery.sourceMismatch_clause_frontier
 
 end PNPDiscovery
 end Real
