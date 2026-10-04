@@ -12,6 +12,7 @@ open CanonicalSATWitness
 open PNPNTMTableauEncoding
 open P02ComplementRunRealization
 open P02TableauDynamics
+open P03PerfectFlipConstruction
 
 /-- Exact unary length law, re-exported into the discovery namespace. -/
 theorem encodeNat_exact_length
