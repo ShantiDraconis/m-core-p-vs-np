@@ -8270,6 +8270,7 @@ theorem ntmInitial_weight_le
       _ <= ntmRadius x t * 6 + ntmRadius x t * 6 :=
         Nat.add_le_add hl hr
       _ = 12 * ntmRadius x t := by ring
+  simp only [List.length_nil, Nat.zero_add] at *
   omega
 
 theorem ntmHaltedStutter_weight_le
@@ -8280,6 +8281,7 @@ theorem ntmHaltedStutter_weight_le
   let guard : NTMClause :=
     [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
   simp only [ntmHaltedStutterCNF, ntmCNFWeight_append]
+  unfold ntmCopyHeadCell
   rw [ntmSetState_weight, ntmCopySymbol_weight,
       ntmCopyLeftAll_weight, ntmCopyRightAll_weight]
   simp [guard]
