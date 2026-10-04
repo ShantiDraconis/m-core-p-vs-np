@@ -8158,8 +8158,28 @@ theorem ntmSetState_weight
     (target : Fin (M.stateCount + 1)) :
     ntmCNFWeight (ntmSetStateClauses guard M t s target) =
       ntmStateCount M * (guard.length + 2) := by
-  unfold ntmSetStateClauses ntmCNFWeight ntmClauseWeight ntmStateCount
-  simp
+  have hfold :
+      ∀ (n : Nat) (f : Fin n -> NTMClause) (acc w : Nat),
+        (∀ i, ntmClauseWeight (f i) = w) ->
+        (List.ofFn f).foldl (fun z cl => z + ntmClauseWeight cl) acc =
+          acc + n * w := by
+    intro n
+    induction n with
+    | zero =>
+        intro f acc w hw
+        simp
+    | succ n ih =>
+        intro f acc w hw
+        rw [List.ofFn_succ]
+        simp only [List.foldl_cons]
+        rw [ih (fun i => f i.succ) (acc + ntmClauseWeight (f 0)) w
+          (fun i => hw i.succ)]
+        rw [hw 0]
+        omega
+  unfold ntmSetStateClauses ntmCNFWeight ntmStateCount
+  apply hfold
+  intro q
+  simp [ntmClauseWeight]
 
 theorem ntmSetSymbol_weight
     (guard : NTMClause)
