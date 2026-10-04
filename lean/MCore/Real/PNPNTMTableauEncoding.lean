@@ -2650,18 +2650,18 @@ structure NTMUniqueAt
     (s : Nat) : Prop where
   hState :
     ExistsUnique (fun q : Fin (M.stateCount + 1) =>
-      sigma (ntmStateVar M t s q) = true
+      sigma (ntmStateVar M t s q) = true)
   hHead :
     ExistsUnique (fun a : Option Bool =>
-      sigma (ntmHeadVar M t s a) = true
+      sigma (ntmHeadVar M t s a) = true)
   hLeft :
     forall i : Nat, i < ntmRadius x t ->
       ExistsUnique (fun b : Option Bool =>
-        sigma (ntmLeftVar M x t s i b) = true
+        sigma (ntmLeftVar M x t s i b) = true)
   hRight :
     forall i : Nat, i < ntmRadius x t ->
       ExistsUnique (fun b : Option Bool =>
-        sigma (ntmRightVar M x t s i b) = true
+        sigma (ntmRightVar M x t s i b) = true)
 
 theorem existsUnique_of_exact_decide
     {α : Type}
