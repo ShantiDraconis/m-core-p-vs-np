@@ -7849,18 +7849,9 @@ theorem foldl_clauseWeight_acc
       simp
   | cons cl cs ih =>
       simp only [List.foldl_cons]
-      calc
-        cs.foldl (fun z cl => z + ntmClauseWeight cl)
-            (acc + ntmClauseWeight cl) =
-          (acc + ntmClauseWeight cl) +
-            cs.foldl (fun z cl => z + ntmClauseWeight cl) 0 := ih _
-        _ = acc +
-            (ntmClauseWeight cl +
-              cs.foldl (fun z cl => z + ntmClauseWeight cl) 0) := by omega
-        _ = acc +
-            cs.foldl (fun z cl => z + ntmClauseWeight cl)
-              (ntmClauseWeight cl) := by
-          simp
+      rw [ih (acc + ntmClauseWeight cl)]
+      rw [ih (ntmClauseWeight cl)]
+      omega
 
 theorem encodeNat_length_exact
     (n : Nat) :
