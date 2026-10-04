@@ -7,6 +7,8 @@ namespace PNPDiscovery
 
 open CanonicalFinalProof
 open P02TotalCandidateKleeneReduction
+open P02TableauDynamics
+open P02ExactDiagonalFrontier
 
 /-- A stable reduction prefix that covers the complete shared read cone of one
 odd-separated positive orbit pair.  This is strictly structural. -/
