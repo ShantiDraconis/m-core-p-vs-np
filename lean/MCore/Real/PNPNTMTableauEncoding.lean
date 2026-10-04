@@ -5960,7 +5960,7 @@ theorem pathAssignment_left
         unfold ntmChoiceBase
         omega
       omega
-    simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
+    simp [pathAssignment, List.getD, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
 
 theorem pathAssignment_right
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
