@@ -43,6 +43,10 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/SourceGlobalBitOffset.lean
   lean/MCore/Real/PNPDiscovery/SourceCellBitTransport.lean
   lean/MCore/Real/PNPDiscovery/SourceCellBitTransportClosed.lean
+  lean/MCore/Real/PNPDiscovery/SourcePrefixEndExpansion.lean
+  lean/MCore/Real/PNPDiscovery/SourcePrefixEndEnvelope.lean
+  lean/MCore/Real/PNPDiscovery/SourceHiddenGrowthExpansion.lean
+  lean/MCore/Real/PNPDiscovery/VisibilityOrientationAudit.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -116,10 +120,15 @@ BARRIER_FRONTIER:
   length mismatch OR clock mismatch OR head mismatch OR concrete source-cell mismatch
 
 NEXT_MATERIAL_PRESSURE:
-  1. SOURCE_VISIBLE: localized mismatch q < SharedReadConePrefix
-  2. SOURCE_HIDDEN: SharedReadConePrefix ≤ q -> explicit clock-vs-offset growth
-  3. CLOCK/LENGTH normalization along odd orbit pairs
-  4. HEAD finite parity partition already compressed
+  1. ALL_DIFFERENCES_HIDDEN: prove shared-prefix equality for one odd pair
+  2. VISIBLE_SOURCE: this supports distinguishability; do NOT treat as contradiction
+  3. HIDDEN_SOURCE_GROWTH: minClock+1 < explicit sourcePrefixEndEnvelope
+  4. CLOCK/LENGTH normalization along odd orbit pairs
+  5. HEAD finite parity partition already compressed
+
+VISIBILITY_ORIENTATION:
+  q < SharedReadConePrefix + bit mismatch => prefixes differ (supports barrier)
+  shared-prefix equality => terminal-state recurrence (favorable route)
 
 METHOD_AUDIT_OPEN:
   1. RelativizationFormalizationGap
