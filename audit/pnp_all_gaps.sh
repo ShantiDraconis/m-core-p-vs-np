@@ -47,6 +47,16 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/SourcePrefixEndEnvelope.lean
   lean/MCore/Real/PNPDiscovery/SourceHiddenGrowthExpansion.lean
   lean/MCore/Real/PNPDiscovery/VisibilityOrientationAudit.lean
+  lean/MCore/Real/PNPDiscovery/OrbitLevelAlignmentCorrection.lean
+  lean/MCore/Real/PNPDiscovery/SuccessorClockEnvelope.lean
+  lean/MCore/Real/PNPDiscovery/LengthSourceCompression.lean
+  lean/MCore/Real/PNPDiscovery/FirstSourceMismatch.lean
+  lean/MCore/Real/PNPDiscovery/FirstGlobalBreak.lean
+  lean/MCore/Real/PNPDiscovery/GlobalBreakSandwich.lean
+  lean/MCore/Real/PNPDiscovery/SourceOffsetVisibilityLaw.lean
+  lean/MCore/Real/PNPDiscovery/SourceOffsetLowerEnvelope.lean
+  lean/MCore/Real/PNPDiscovery/BarrierArithmeticFrontier.lean
+  lean/MCore/Real/PNPDiscovery/ArithmeticProducerClosure.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -120,15 +130,21 @@ BARRIER_FRONTIER:
   length mismatch OR clock mismatch OR head mismatch OR concrete source-cell mismatch
 
 NEXT_MATERIAL_PRESSURE:
-  1. ALL_DIFFERENCES_HIDDEN: prove shared-prefix equality for one odd pair
-  2. VISIBLE_SOURCE: this supports distinguishability; do NOT treat as contradiction
-  3. HIDDEN_SOURCE_GROWTH: minClock+1 < explicit sourcePrefixEndEnvelope
-  4. CLOCK/LENGTH normalization along odd orbit pairs
-  5. HEAD finite parity partition already compressed
+  1. CurrentDeepestMaterialProducer = ArithmeticBarrierBreakerProducer
+  2. For every M,hTotal,Hbar: find odd pair with SAME LENGTH
+  3. For its canonical first source mismatch j, prove successorSharedConeEnvelope <= sourceCellOffsetLowerEnvelope
+  4. This contradicts the barrier-required strict reverse inequality
 
 VISIBILITY_ORIENTATION:
   q < SharedReadConePrefix + bit mismatch => prefixes differ (supports barrier)
   shared-prefix equality => terminal-state recurrence (favorable route)
+
+FRONTIER_COMPRESSION:
+  CLOCK branch eliminated by length equality
+  HEAD branch eliminated on positive orbit (fixed 100 prefix)
+  TerminalParityBarrier -> LENGTH mismatch OR first SOURCE mismatch
+  equal-length SOURCE branch -> explicit lower-offset < successor-clock-envelope
+  ArithmeticBarrierBreakerProducer -> TotalExactDiagonalProducer
 
 METHOD_AUDIT_OPEN:
   1. RelativizationFormalizationGap
