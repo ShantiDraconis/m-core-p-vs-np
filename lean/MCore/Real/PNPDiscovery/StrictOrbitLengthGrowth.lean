@@ -16,7 +16,7 @@ theorem sourceCellBitOffset_le_R_length
     (hTotal : DeclaredClockTotal M)
     (x : BitString)
     (j : Nat)
-    (hj : j ≤ ntmRadius x (M.timeBound x.length)) :
+    (hj : j < ntmRadius x (M.timeBound x.length)) :
     sourceCellBitOffset
         (complementToNTMCandidate M)
         x (M.timeBound x.length) j ≤
@@ -26,8 +26,8 @@ theorem sourceCellBitOffset_le_R_length
   have hfull :
       fullSourceCellBitOffset N x t j =
         sourceCellBitOffset N x t j := by
-    apply fullSourceCellBitOffset_eq_initial
-    omega
+    exact fullSourceCellBitOffset_eq_initial
+      N x t j hj
   unfold fullSourceCellBitOffset tableauClauseBitOffset
   rw [hfull]
   unfold clauseBitOffset
@@ -75,11 +75,11 @@ theorem R_M_strict_length_growth
     (x : BitString) :
     x.length < (R_M M hTotal x).length := by
   have hj :
-      x.length ≤ ntmRadius x (M.timeBound x.length) := by
+      x.length < ntmRadius x (M.timeBound x.length) := by
     simp [ntmRadius]
   have hLow :=
     sourceCellOffsetLowerEnvelope_le
-      M x (M.timeBound x.length) x.length hj
+      M x (M.timeBound x.length) x.length (Nat.le_of_lt hj)
   have hInside :=
     sourceCellBitOffset_le_R_length
       M hTotal x x.length hj
