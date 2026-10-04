@@ -290,3 +290,6 @@ import MCore.Real.PNPDiscovery.FiniteCandidateGodelWords
 import MCore.Real.PNPDiscovery.FiniteDescriptionInjectivity
 import MCore.Real.PNPDiscovery.NormalizedUniversalPrerequisites
 import MCore.Real.PNPDiscovery.ConcreteMachineInputPairing
+
+import MCore.Real.PNPDiscovery.PlusOneSemanticsAudit
+import MCore.Real.PNPDiscovery.ExactOpenMathMinCut
