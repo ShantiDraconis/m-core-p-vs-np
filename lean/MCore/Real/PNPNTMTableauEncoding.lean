@@ -6654,10 +6654,12 @@ theorem pathAssignment_activeChoice_sat_of_mismatch
   let entries := ntmIndexedTransitions (M.machine.transition q a)
   have hfirst :
       evalNTMCNF sigma [ntmGuardChoiceClause M x t s q a] = true := by
-    change evalNTMClause sigma (ntmGuardChoiceClause M x t s q a) = true
-    simpa [sigma] using
-      pathAssignment_guardChoiceClause_sat_of_mismatch
-        M x t s path hPath hs q a hmismatch
+    rw [evalNTMCNF_cons_iff]
+    constructor
+    · simpa [sigma] using
+        pathAssignment_guardChoiceClause_sat_of_mismatch
+          M x t s path hPath hs q a hmismatch
+    · rfl
   have hguards :
       evalNTMCNF sigma
         (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1)) = true := by
