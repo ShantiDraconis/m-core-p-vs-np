@@ -7750,7 +7750,7 @@ theorem pathAssignment_final_clause_sat
     unfold ntmAcceptingStateLits
     apply List.mem_filterMap.mpr
     refine ⟨q, ?_, ?_⟩
-    · exact List.mem_ofFn q
+    · exact (List.mem_ofFn).2 ⟨q, rfl⟩
     · simp [hqAcc]
   have hvar :
       pathAssignment M x t path hPath (ntmStateVar M t t q) = true := by
@@ -8115,7 +8115,7 @@ theorem ntmCNFWeight_append
           _ = acc +
               cs.foldl (fun z cl => z + ntmClauseWeight cl)
                 (ntmClauseWeight cl) := by
-            rw [ih (ntmClauseWeight cl)]
+            simp only [Nat.zero_add]
   rw [List.foldl_append]
   rw [hacc b (a.foldl (fun z cl => z + ntmClauseWeight cl) 0)]
 
@@ -8319,7 +8319,7 @@ theorem ntmChoiceEffect_weight_le
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
               (ntmLeftVar M x t s (i+1))
-              (ntmLeftVar M x t (s+1) i))
+              (ntmLeftVar M x t (s+1) i)))
       have hsr := ntmCNFWeight_flatMap_range_le
         (ntmRadius x t - 1) 24
         (fun i => ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
@@ -8331,7 +8331,7 @@ theorem ntmChoiceEffect_weight_le
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
               (ntmRightVar M x t s i)
-              (ntmRightVar M x t (s+1) (i+1)))
+              (ntmRightVar M x t (s+1) (i+1))))
       rw [show ntmCNFWeight
           (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
             M x t (s + 1) (ntmRadius x t - 1) M.machine.blank) = 9 by
