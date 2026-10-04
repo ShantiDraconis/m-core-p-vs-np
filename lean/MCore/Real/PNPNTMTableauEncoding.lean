@@ -7596,7 +7596,7 @@ theorem pathAssignment_activeChoice_actual_sat
           exact hpj hpeq
       exact eval_choiceEffect_of_choice_false sigma M x t s q a p hpFalse
   simp only [ntmActiveChoiceCNF, evalNTMCNF_append]
-  exact ⟨hfirst, hguards, hamo, heffects⟩
+  exact ⟨⟨⟨hfirst, hguards⟩, hamo⟩, heffects⟩
 
 
 theorem pathAssignment_transitionCase_sat
