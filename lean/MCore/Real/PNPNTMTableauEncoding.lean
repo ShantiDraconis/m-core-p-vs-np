@@ -6810,9 +6810,11 @@ theorem pathAssignment_haltedStutter_sat
         have hhEq :
             (path ⟨s + 1, by omega⟩).tape.head = c.tape.head := by
           simpa [c, c'] using congrArg (fun z => z.tape.head) hEq
-        constructor <;> intro hb
-        · simpa [c, hhEq] using hb
-        · simpa [c, hhEq] using hb
+        have hheadPath :
+            (path ⟨s + 1, by omega⟩).tape.head =
+              (path ⟨s, by omega⟩).tape.head := by
+          simpa [c] using hhEq
+        exact congrArg (fun z : Option Bool => decide (b = z)) hheadPath
       have hleft :
           evalNTMCNF sigma
             (ntmCopyLeftAll
@@ -7139,7 +7141,7 @@ theorem pathAssignment_selected_effect_sat
     simpa [c, j, tr] using hSpec.choose_spec
   have hnext : c' = M.machine.stepBranch c tr := by
     rw [htrEq]
-    exact hW.choose_spec.2.2
+    exact hW.choose_spec
   have hchoice :
       pathAssignment M x t path hPath
         (ntmChoiceVar M x t s c.state c.tape.head j) = true := by
