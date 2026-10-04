@@ -7851,16 +7851,20 @@ theorem ntmClauseMaxVar_ge_of_mem
     (hl : l ∈ cl) :
     l.var <= ntmClauseMaxVar cl := by
   unfold ntmClauseMaxVar
-  apply foldl_max_ge_of_mem (cl.map NTMLiteral.var) l.var 0
-  exact List.mem_map.mpr ⟨l, hl, rfl⟩
+  have hmem : l.var ∈ cl.map NTMLiteral.var :=
+    List.mem_map.mpr ⟨l, hl, rfl⟩
+  simpa [List.foldl_map] using
+    foldl_max_ge_of_mem (cl.map NTMLiteral.var) l.var 0 hmem
 
 theorem ntmCNFMaxVar_ge_clause
     (f : NTMCNF) (cl : NTMClause)
     (hcl : cl ∈ f) :
     ntmClauseMaxVar cl <= ntmCNFMaxVar f := by
   unfold ntmCNFMaxVar
-  apply foldl_max_ge_of_mem (f.map ntmClauseMaxVar) (ntmClauseMaxVar cl) 0
-  exact List.mem_map.mpr ⟨cl, hcl, rfl⟩
+  have hmem : ntmClauseMaxVar cl ∈ f.map ntmClauseMaxVar :=
+    List.mem_map.mpr ⟨cl, hcl, rfl⟩
+  simpa [List.foldl_map] using
+    foldl_max_ge_of_mem (f.map ntmClauseMaxVar) (ntmClauseMaxVar cl) 0 hmem
 
 theorem ntmClauseCircuit_encoding_le
     (cl : NTMClause) :
@@ -8037,22 +8041,28 @@ theorem ntmClauseMaxVar_le_of_varsLe
     (h : ClauseVarsLe cap cl) :
     ntmClauseMaxVar cl <= cap := by
   unfold ntmClauseMaxVar
-  apply foldl_max_le_of_all_le (cl.map NTMLiteral.var) 0 cap (by omega)
-  intro v hv
-  rw [List.mem_map] at hv
-  rcases hv with ⟨l, hl, rfl⟩
-  exact h l hl
+  have hmapped :
+      (cl.map NTMLiteral.var).foldl Nat.max 0 <= cap := by
+    apply foldl_max_le_of_all_le (cl.map NTMLiteral.var) 0 cap (by omega)
+    intro v hv
+    rw [List.mem_map] at hv
+    rcases hv with ⟨l, hl, rfl⟩
+    exact h l hl
+  simpa [List.foldl_map] using hmapped
 
 theorem ntmCNFMaxVar_le_of_varsLe
     (cap : Nat) (f : NTMCNF)
     (h : CNFVarsLe cap f) :
     ntmCNFMaxVar f <= cap := by
   unfold ntmCNFMaxVar
-  apply foldl_max_le_of_all_le (f.map ntmClauseMaxVar) 0 cap (by omega)
-  intro v hv
-  rw [List.mem_map] at hv
-  rcases hv with ⟨cl, hcl, rfl⟩
-  exact ntmClauseMaxVar_le_of_varsLe cap cl (h cl hcl)
+  have hmapped :
+      (f.map ntmClauseMaxVar).foldl Nat.max 0 <= cap := by
+    apply foldl_max_le_of_all_le (f.map ntmClauseMaxVar) 0 cap (by omega)
+    intro v hv
+    rw [List.mem_map] at hv
+    rcases hv with ⟨cl, hcl, rfl⟩
+    exact ntmClauseMaxVar_le_of_varsLe cap cl (h cl hcl)
+  simpa [List.foldl_map] using hmapped
 
 theorem literalVar_le_cap_state
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
