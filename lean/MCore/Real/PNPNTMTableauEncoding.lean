@@ -8765,22 +8765,7 @@ theorem filterMap_mem_exists
     {α β : Type} (f : α -> Option β) (xs : List α) (y : β)
     (hy : y ∈ xs.filterMap f) :
     ∃ x, x ∈ xs ∧ f x = some y := by
-  induction xs with
-  | nil =>
-      simp at hy
-  | cons x xs ih =>
-      simp only [List.filterMap_cons] at hy
-      cases hfx : f x with
-      | none =>
-          simp [hfx] at hy
-          rcases ih hy with ⟨z, hz, hfz⟩
-          exact ⟨z, by simp [hz], hfz⟩
-      | some z =>
-          simp [hfx] at hy
-          rcases hy with rfl | hy
-          · exact ⟨x, by simp, hfx⟩
-          · rcases ih hy with ⟨w, hw, hfw⟩
-            exact ⟨w, by simp [hw], hfw⟩
+  exact List.mem_filterMap.mp hy
 
 theorem filterMap_length_le
     {α β : Type} (f : α -> Option β) (xs : List α) :
@@ -8788,7 +8773,13 @@ theorem filterMap_length_le
   induction xs with
   | nil => simp
   | cons x xs ih =>
-      cases hfx : f x <;> simp [List.filterMap_cons, hfx, ih]
+      cases hfx : f x with
+      | none =>
+          simp [List.filterMap_cons, hfx]
+          exact Nat.le_step ih
+      | some y =>
+          simp [List.filterMap_cons, hfx]
+          exact Nat.succ_le_succ ih
 
 theorem final_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
