@@ -8728,38 +8728,53 @@ theorem copyRightAll_varsLe
 theorem initial_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
     CNFVarsLe (tableauVarCap M x t) (ntmInitialCNF M x t) := by
-  unfold ntmInitialCNF
-  apply CNFVarsLe_append
-  · apply setState_varsLe
+  have hState :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmSetStateClauses [] M t 0 M.machine.initial) := by
+    apply setState_varsLe
     · exact ClauseVarsLe_nil _
     · intro q
       exact Nat.le_of_lt (ntmStateVar_lt_tableauVarCap M x t 0 q (by omega))
-  · apply CNFVarsLe_append
-    · apply setSymbol_varsLe
-      · exact ClauseVarsLe_nil _
-      · intro a
-        exact Nat.le_of_lt (ntmHeadVar_lt_tableauVarCap M x t 0 a (by omega))
-    · apply CNFVarsLe_append
-      · intro cl hcl
-        rw [List.mem_flatMap] at hcl
-        rcases hcl with ⟨i, hi, hcl⟩
-        have hir : i < ntmRadius x t := List.mem_range.mp hi
-        exact setSymbol_varsLe _ [] (ntmLeftVar M x t 0 i)
-          ((inputTape x).left.getD i M.machine.blank)
-          (ClauseVarsLe_nil _)
-          (fun a => Nat.le_of_lt
-            (ntmLeftVar_lt_tableauVarCap M x t 0 i a (by omega) hir))
-          cl hcl
-      · intro cl hcl
-        rw [List.mem_flatMap] at hcl
-        rcases hcl with ⟨i, hi, hcl⟩
-        have hir : i < ntmRadius x t := List.mem_range.mp hi
-        exact setSymbol_varsLe _ [] (ntmRightVar M x t 0 i)
-          ((inputTape x).right.getD i M.machine.blank)
-          (ClauseVarsLe_nil _)
-          (fun a => Nat.le_of_lt
-            (ntmRightVar_lt_tableauVarCap M x t 0 i a (by omega) hir))
-          cl hcl
+  have hHead :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmSetSymbolClauses [] (ntmHeadVar M t 0) (inputTape x).head) := by
+    apply setSymbol_varsLe
+    · exact ClauseVarsLe_nil _
+    · intro a
+      exact Nat.le_of_lt (ntmHeadVar_lt_tableauVarCap M x t 0 a (by omega))
+  have hLeft :
+      CNFVarsLe (tableauVarCap M x t)
+        ((List.range (ntmRadius x t)).flatMap (fun i =>
+          ntmSetLeftCell [] M x t 0 i
+            ((inputTape x).left.getD i M.machine.blank))) := by
+    intro cl hcl
+    rw [List.mem_flatMap] at hcl
+    rcases hcl with ⟨i, hi, hcl⟩
+    have hir : i < ntmRadius x t := List.mem_range.mp hi
+    exact setSymbol_varsLe _ [] (ntmLeftVar M x t 0 i)
+      ((inputTape x).left.getD i M.machine.blank)
+      (ClauseVarsLe_nil _)
+      (fun a => Nat.le_of_lt
+        (ntmLeftVar_lt_tableauVarCap M x t 0 i a (by omega) hir))
+      cl hcl
+  have hRight :
+      CNFVarsLe (tableauVarCap M x t)
+        ((List.range (ntmRadius x t)).flatMap (fun i =>
+          ntmSetRightCell [] M x t 0 i
+            ((inputTape x).right.getD i M.machine.blank))) := by
+    intro cl hcl
+    rw [List.mem_flatMap] at hcl
+    rcases hcl with ⟨i, hi, hcl⟩
+    have hir : i < ntmRadius x t := List.mem_range.mp hi
+    exact setSymbol_varsLe _ [] (ntmRightVar M x t 0 i)
+      ((inputTape x).right.getD i M.machine.blank)
+      (ClauseVarsLe_nil _)
+      (fun a => Nat.le_of_lt
+        (ntmRightVar_lt_tableauVarCap M x t 0 i a (by omega) hir))
+      cl hcl
+  simpa [ntmInitialCNF, List.append_assoc] using
+    CNFVarsLe_append hState
+      (CNFVarsLe_append hHead (CNFVarsLe_append hLeft hRight))
 
 theorem filterMap_mem_exists
     {α β : Type} (f : α -> Option β) (xs : List α) (y : β)
