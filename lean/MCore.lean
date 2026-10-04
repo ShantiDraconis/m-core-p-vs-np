@@ -213,3 +213,7 @@ import MCore.Real.PNPDiscovery.ReadCone
 import MCore.Real.PNPDiscovery.ReadConeFrontier
 import MCore.Real.PNPDiscovery.PrefixPressure
 import MCore.Real.PNPDiscovery.BarrierPressure
+
+import MCore.Real.PNPDiscovery.EncodingDependencyMap
+import MCore.Real.PNPDiscovery.ReductionPrefixFormula
+import MCore.Real.PNPDiscovery.ClockVsEncodingLayout
