@@ -6,6 +6,7 @@ namespace PNPDiscovery
 
 open CanonicalFinalProof
 open P02TotalCandidateKleeneReduction
+open P02TableauDynamics
 
 /-- Concrete witness that two bitstrings are already distinguishable by their
 prefix of length k. -/
@@ -88,10 +89,10 @@ structure PrefixBreak
   stable_before : StablePrefixAt M hTotal k
   unstable_after : ¬ StablePrefixAt M hTotal (k + 1)
 
-/-- The next discovery obligation is to classify any PrefixBreak by the
-literal encoding component responsible for the first new bit.  No inhabitant
-is asserted here. -/
-def PrefixBreakClassificationGap : Prop :=
+/-- Mechanical witness-extraction interface for a PrefixBreak.  This is
+REDUCIBLE/CLOSED bookkeeping, not a new OPEN_MATH claim; the genuinely new
+next step is to classify the differing bit by a literal encoding region. -/
+def PrefixBreakWitnessExtraction : Prop :=
   ∀ M : PolyDTMCandidate, ∀ hTotal : DeclaredClockTotal M,
     ∀ B : PrefixBreak M hTotal,
       ∃ x y : BitString,
@@ -100,8 +101,8 @@ def PrefixBreakClassificationGap : Prop :=
         (R_M M hTotal x).take (B.k + 1) ≠
           (R_M M hTotal y).take (B.k + 1)
 
-theorem prefixBreakClassification_from_definition :
-    PrefixBreakClassificationGap := by
+theorem prefixBreakWitnessExtraction_closed :
+    PrefixBreakWitnessExtraction := by
   intro M hTotal B
   exact firstUnstableExtension_has_pair
     M hTotal B.k
@@ -110,7 +111,7 @@ theorem prefixBreakClassification_from_definition :
 #print axioms MCore.Real.PNPDiscovery.parityBarrier_distinguishingPrefix
 #print axioms MCore.Real.PNPDiscovery.stablePrefix_before_distinguishingPrefix
 #print axioms MCore.Real.PNPDiscovery.distinguishingPrefix_after_three
-#print axioms MCore.Real.PNPDiscovery.prefixBreakClassification_from_definition
+#print axioms MCore.Real.PNPDiscovery.prefixBreakWitnessExtraction_closed
 
 end PNPDiscovery
 end Real
