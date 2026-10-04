@@ -86,10 +86,9 @@ candidate has some concrete Cook--Levin orbit with a consecutive acceptance
 collision.
 -/
 def OrbitCollisionProducer : Prop :=
-  ∀ M : PolyDTMCandidate,
-    DeclaredClockTotal M →
-      ∃ seed : BitString, ∃ n : Nat,
-        AcceptanceCollision M ‹DeclaredClockTotal M› seed n
+  ∀ M : PolyDTMCandidate, ∀ hTotal : DeclaredClockTotal M,
+    ∃ seed : BitString, ∃ n : Nat,
+      AcceptanceCollision M hTotal seed n
 
 /--
 The new orbit-collision producer is sufficient for the exact open frontier.
