@@ -51,13 +51,20 @@ theorem initialRightPrefixCNF_eq
     initialRightPrefixCNF M x t k =
       initialRightPrefixCNF M y u k := by
   subst u
-  unfold initialRightPrefixCNF
-  apply List.flatMap_congr_left
-  intro i hi
-  have hik : i < k := by
-    simpa using (List.mem_range.mp hi)
-  exact initialRightCellBlock_eq
-    M x y t t i hLen rfl (hPrefix i hik)
+  induction k with
+  | zero =>
+      simp [initialRightPrefixCNF]
+  | succ k ih =>
+      have hPrev : SourceRightPrefixAligned x y k :=
+        sourceRightPrefixAligned_mono x y (Nat.le_succ k) hPrefix
+      have hCell :
+          initialRightCellBlock M x t k =
+            initialRightCellBlock M y t k :=
+        initialRightCellBlock_eq
+          M x y t t k hLen rfl
+          (hPrefix k (Nat.lt_succ_self k))
+      simpa [initialRightPrefixCNF, List.range_succ, hCell]
+        using ih hPrev
 
 /-- Failure of physical source-prefix alignment exposes a concrete source-cell
 index below k. -/
@@ -109,25 +116,18 @@ theorem sourcePrefixBreak_at_boundary
     omega
   simpa [hieq] using hDiff
 
-/-- Once length and clock agree, a first source-prefix break is transported
-verbatim to a first differing encoded right-cell block. -/
-theorem sourcePrefixBreak_gives_block_difference
-    (M : PolyNTMCandidate)
-    (x y : BitString)
-    (t : Nat)
-    (hLen : x.length = y.length)
-    (B : SourcePrefixBreak x y) :
-    initialRightCellBlock M x t B.k ≠
-      initialRightCellBlock M y t B.k := by
-  intro hEq
-  have hSource :
-      sourceRightSymbol x B.k =
-        sourceRightSymbol y B.k := by
-    by_contra h
-    exact h
-      (aligned_rightCell_difference_implies_source_difference
-        M x y t B.k hLen hEq)
-  exact (sourcePrefixBreak_at_boundary x y B) hSource
+/-- Missing local reverse lemma exposed by the kernel-oriented decomposition:
+for fixed layout, equality of encoded right-cell blocks should force equality
+of the represented source symbol.  This is intentionally a typed OPEN bridge
+until proved from ntmSetSymbolClauses. -/
+def RightCellBlockInjectivity : Prop :=
+  ∀ (M : PolyNTMCandidate) (x y : BitString)
+    (t i : Nat),
+    x.length = y.length →
+    initialRightCellBlock M x t i =
+      initialRightCellBlock M y t i →
+    sourceRightSymbol x i =
+      sourceRightSymbol y i
 
 /-- Source-side discovery state for an odd pair. -/
 structure OddSourceAlignment
@@ -157,7 +157,6 @@ def SourceAlignmentGrowthGap : Prop :=
 #print axioms MCore.Real.PNPDiscovery.initialRightPrefixCNF_eq
 #print axioms MCore.Real.PNPDiscovery.not_sourceRightPrefixAligned_exists
 #print axioms MCore.Real.PNPDiscovery.sourcePrefixBreak_at_boundary
-#print axioms MCore.Real.PNPDiscovery.sourcePrefixBreak_gives_block_difference
 
 end PNPDiscovery
 end Real
