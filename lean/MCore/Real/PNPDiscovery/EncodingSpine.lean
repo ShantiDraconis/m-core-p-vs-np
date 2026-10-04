@@ -49,10 +49,7 @@ theorem initialStateClauses_clock_independent
     (t u : Nat) :
     ntmSetStateClauses [] M t 0 M.machine.initial =
       ntmSetStateClauses [] M u 0 M.machine.initial := by
-  unfold ntmSetStateClauses
-  apply List.ofFn_inj.mpr
-  intro i
-  simp [ntmLitFor, ntmStateVar]
+  simp [ntmSetStateClauses, ntmStateVar]
 
 /-- Canonical candidate-only state prefix used by every reduction output. -/
 def initialStateEncodingPrefix
@@ -100,7 +97,17 @@ theorem reduction_has_initialStateEncodingPrefix
   unfold R_M complementSemanticReduction
   change
     encodeCircuit
-      (boundedExecCircuit_NTM N x t) =
+      (PNPNTMTableauClosure.concreteNTMTableauProducer.circuit
+        (complementRunRealization M hTotal).candidate
+        x
+        ((complementRunRealization M hTotal).candidate.timeBound x.length)) =
+      initialStateEncodingPrefix M ++
+        encodeCircuit (ntmCNFCircuit rest)
+  simp only [PNPNTMTableauClosure.concreteNTMTableauProducer,
+    PNPNTMTableauClosure.ntmTableauProducerOfCertificates,
+    complementRunRealization, complementToNTMCandidate]
+  change
+    encodeCircuit (boundedExecCircuit_NTM N x t) =
       initialStateEncodingPrefix M ++
         encodeCircuit (ntmCNFCircuit rest)
   unfold boundedExecCircuit_NTM
