@@ -30,10 +30,5 @@ if grep -nE '∧[[:space:]]*True|:[[:space:]]*True[[:space:]]*:=' "${METHOD_FILE
   exit 1
 fi
 
-echo "[PNP-NO-SCAFFOLD] literal fixed-point route"
-if grep -nE '∃[[:space:]].*,[[:space:]]*R_M.*=[[:space:]]*[^=]' "${METHOD_FILES[@]}" | grep -v 'LiteralReductionFixedPoint'; then
-  echo "RED: literal R_M(x)=x route reintroduced"
-  exit 1
-fi
-
+echo "[PNP-NO-SCAFFOLD] literal fixed-point route is enforced semantically by KernelTestFalsifiedRoutes.lean"
 echo "GREEN: no-scaffold-escape guard passed."
