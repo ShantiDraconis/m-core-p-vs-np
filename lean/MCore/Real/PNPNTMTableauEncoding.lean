@@ -8998,143 +8998,190 @@ theorem choiceEffect_varsLe
       (ntmChoiceEffectCNF M x t s q a entry) := by
   rcases entry with ⟨j, qNext, write, d⟩
   let guard := [ntmNeg (ntmChoiceVar M x t s q a j)]
-  have hg := choiceGuard_varsLe M x t s q a j (by omega) (by simpa using hj)
+  have hj' : j <= ntmBranchBound M := by simpa using hj
+  have hg := choiceGuard_varsLe M x t s q a j (by omega) hj'
+  have hState :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmSetStateClauses guard M t (s + 1) qNext) :=
+    setState_varsLe _ guard M t (s + 1) qNext hg
+      (fun r => Nat.le_of_lt
+        (ntmStateVar_lt_tableauVarCap M x t (s + 1) r (by omega)))
   cases d with
   | stay =>
-      simp only [ntmChoiceEffectCNF, ntmStayEffectCNF]
-      apply CNFVarsLe_append
-      · exact setState_varsLe _ guard M t (s + 1) qNext hg
-          (fun r => Nat.le_of_lt
-            (ntmStateVar_lt_tableauVarCap M x t (s + 1) r (by omega)))
-      · apply CNFVarsLe_append
-        · exact setSymbol_varsLe _ guard (ntmHeadVar M t (s + 1)) write hg
-            (fun b => Nat.le_of_lt
-              (ntmHeadVar_lt_tableauVarCap M x t (s + 1) b (by omega)))
-        · apply CNFVarsLe_append
-          · exact copyLeftAll_varsLe _ guard M x t s (by omega) hg
-              (by
-                intro u i b hu hi
-                exact Nat.le_of_lt
-                  (ntmLeftVar_lt_tableauVarCap M x t u i b hu hi))
-          · exact copyRightAll_varsLe _ guard M x t s (by omega) hg
-              (by
-                intro u i b hu hi
-                exact Nat.le_of_lt
-                  (ntmRightVar_lt_tableauVarCap M x t u i b hu hi))
+      have hHead :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmSetSymbolClauses guard (ntmHeadVar M t (s + 1)) write) :=
+        setSymbol_varsLe _ guard (ntmHeadVar M t (s + 1)) write hg
+          (fun b => Nat.le_of_lt
+            (ntmHeadVar_lt_tableauVarCap M x t (s + 1) b (by omega)))
+      have hLeft :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmCopyLeftAll guard M x t s) :=
+        copyLeftAll_varsLe _ guard M x t s (by omega) hg
+          (by
+            intro u i b hu hi
+            exact Nat.le_of_lt
+              (ntmLeftVar_lt_tableauVarCap M x t u i b hu hi))
+      have hRight :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmCopyRightAll guard M x t s) :=
+        copyRightAll_varsLe _ guard M x t s (by omega) hg
+          (by
+            intro u i b hu hi
+            exact Nat.le_of_lt
+              (ntmRightVar_lt_tableauVarCap M x t u i b hu hi))
+      simpa [ntmChoiceEffectCNF, ntmStayEffectCNF, guard, List.append_assoc] using
+        CNFVarsLe_append
+          (CNFVarsLe_append (CNFVarsLe_append hState hHead) hLeft) hRight
   | left =>
-      simp only [ntmChoiceEffectCNF, ntmLeftEffectCNF]
-      apply CNFVarsLe_append
-      · exact setState_varsLe _ guard M t (s + 1) qNext hg
-          (fun r => Nat.le_of_lt
-            (ntmStateVar_lt_tableauVarCap M x t (s + 1) r (by omega)))
-      · apply CNFVarsLe_append
-        · exact copySymbol_varsLe _ guard
-            (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)) hg
-            (fun b => Nat.le_of_lt
-              (ntmLeftVar_lt_tableauVarCap M x t s 0 b
-                (by omega) (by simp [ntmRadius])))
-            (fun b => Nat.le_of_lt
-              (ntmHeadVar_lt_tableauVarCap M x t (s + 1) b (by omega)))
-        · apply CNFVarsLe_append
-          · intro cl hcl
-            rw [List.mem_flatMap] at hcl
-            rcases hcl with ⟨i, hi, hcl⟩
-            have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
-            exact copySymbol_varsLe _ guard
-              (ntmLeftVar M x t s (i + 1))
-              (ntmLeftVar M x t (s + 1) i) hg
-              (fun b => Nat.le_of_lt
-                (ntmLeftVar_lt_tableauVarCap M x t s (i + 1) b
-                  (by omega) (by omega)))
-              (fun b => Nat.le_of_lt
-                (ntmLeftVar_lt_tableauVarCap M x t (s + 1) i b
-                  (by omega) (by omega)))
-              cl hcl
-          · apply CNFVarsLe_append
-            · exact setSymbol_varsLe _ guard
-                (ntmLeftVar M x t (s + 1) (ntmRadius x t - 1))
-                M.machine.blank hg
-                (fun b => Nat.le_of_lt
-                  (ntmLeftVar_lt_tableauVarCap M x t (s + 1)
-                    (ntmRadius x t - 1) b
-                    (by omega) (by simp [ntmRadius])))
-            · apply CNFVarsLe_append
-              · exact setSymbol_varsLe _ guard
-                  (ntmRightVar M x t (s + 1) 0) write hg
-                  (fun b => Nat.le_of_lt
-                    (ntmRightVar_lt_tableauVarCap M x t (s + 1) 0 b
-                      (by omega) (by simp [ntmRadius])))
-              · intro cl hcl
-                rw [List.mem_flatMap] at hcl
-                rcases hcl with ⟨i, hi, hcl⟩
-                have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
-                exact copySymbol_varsLe _ guard
-                  (ntmRightVar M x t s i)
-                  (ntmRightVar M x t (s + 1) (i + 1)) hg
-                  (fun b => Nat.le_of_lt
-                    (ntmRightVar_lt_tableauVarCap M x t s i b
-                      (by omega) (by omega)))
-                  (fun b => Nat.le_of_lt
-                    (ntmRightVar_lt_tableauVarCap M x t (s + 1) (i + 1) b
-                      (by omega) (by omega)))
-                  cl hcl
+      have hHead :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmCopySymbolClauses guard
+              (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1))) :=
+        copySymbol_varsLe _ guard
+          (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)) hg
+          (fun b => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t s 0 b
+              (by omega) (by simp [ntmRadius])))
+          (fun b => Nat.le_of_lt
+            (ntmHeadVar_lt_tableauVarCap M x t (s + 1) b (by omega)))
+      have hShiftLeft :
+          CNFVarsLe (tableauVarCap M x t)
+            ((List.range (ntmRadius x t - 1)).flatMap fun i =>
+              ntmCopyLeftCell guard M x t s (i + 1) (s + 1) i) := by
+        intro cl hcl
+        rw [List.mem_flatMap] at hcl
+        rcases hcl with ⟨i, hi, hcl⟩
+        have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
+        exact copySymbol_varsLe _ guard
+          (ntmLeftVar M x t s (i + 1))
+          (ntmLeftVar M x t (s + 1) i) hg
+          (fun b => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t s (i + 1) b
+              (by omega) (by omega)))
+          (fun b => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t (s + 1) i b
+              (by omega) (by omega)))
+          cl hcl
+      have hBlank :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmSetLeftCell guard M x t (s + 1)
+              (ntmRadius x t - 1) M.machine.blank) :=
+        setSymbol_varsLe _ guard
+          (ntmLeftVar M x t (s + 1) (ntmRadius x t - 1))
+          M.machine.blank hg
+          (fun b => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t (s + 1)
+              (ntmRadius x t - 1) b
+              (by omega) (by simp [ntmRadius])))
+      have hWrite :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmSetRightCell guard M x t (s + 1) 0 write) :=
+        setSymbol_varsLe _ guard
+          (ntmRightVar M x t (s + 1) 0) write hg
+          (fun b => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t (s + 1) 0 b
+              (by omega) (by simp [ntmRadius])))
+      have hShiftRight :
+          CNFVarsLe (tableauVarCap M x t)
+            ((List.range (ntmRadius x t - 1)).flatMap fun i =>
+              ntmCopyRightCell guard M x t s i (s + 1) (i + 1)) := by
+        intro cl hcl
+        rw [List.mem_flatMap] at hcl
+        rcases hcl with ⟨i, hi, hcl⟩
+        have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
+        exact copySymbol_varsLe _ guard
+          (ntmRightVar M x t s i)
+          (ntmRightVar M x t (s + 1) (i + 1)) hg
+          (fun b => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t s i b
+              (by omega) (by omega)))
+          (fun b => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t (s + 1) (i + 1) b
+              (by omega) (by omega)))
+          cl hcl
+      simpa [ntmChoiceEffectCNF, ntmLeftEffectCNF, guard, List.append_assoc] using
+        CNFVarsLe_append
+          (CNFVarsLe_append
+            (CNFVarsLe_append
+              (CNFVarsLe_append
+                (CNFVarsLe_append hState hHead) hShiftLeft) hBlank) hWrite)
+          hShiftRight
   | right =>
-      simp only [ntmChoiceEffectCNF, ntmRightEffectCNF]
-      apply CNFVarsLe_append
-      · exact setState_varsLe _ guard M t (s + 1) qNext hg
-          (fun r => Nat.le_of_lt
-            (ntmStateVar_lt_tableauVarCap M x t (s + 1) r (by omega)))
-      · apply CNFVarsLe_append
-        · exact copySymbol_varsLe _ guard
-            (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1)) hg
-            (fun b => Nat.le_of_lt
-              (ntmRightVar_lt_tableauVarCap M x t s 0 b
-                (by omega) (by simp [ntmRadius])))
-            (fun b => Nat.le_of_lt
-              (ntmHeadVar_lt_tableauVarCap M x t (s + 1) b (by omega)))
-        · apply CNFVarsLe_append
-          · exact setSymbol_varsLe _ guard
-              (ntmLeftVar M x t (s + 1) 0) write hg
-              (fun b => Nat.le_of_lt
-                (ntmLeftVar_lt_tableauVarCap M x t (s + 1) 0 b
-                  (by omega) (by simp [ntmRadius])))
-          · apply CNFVarsLe_append
-            · intro cl hcl
-              rw [List.mem_flatMap] at hcl
-              rcases hcl with ⟨i, hi, hcl⟩
-              have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
-              exact copySymbol_varsLe _ guard
-                (ntmLeftVar M x t s i)
-                (ntmLeftVar M x t (s + 1) (i + 1)) hg
-                (fun b => Nat.le_of_lt
-                  (ntmLeftVar_lt_tableauVarCap M x t s i b
-                    (by omega) (by omega)))
-                (fun b => Nat.le_of_lt
-                  (ntmLeftVar_lt_tableauVarCap M x t (s + 1) (i + 1) b
-                    (by omega) (by omega)))
-                cl hcl
-            · apply CNFVarsLe_append
-              · intro cl hcl
-                rw [List.mem_flatMap] at hcl
-                rcases hcl with ⟨i, hi, hcl⟩
-                have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
-                exact copySymbol_varsLe _ guard
-                  (ntmRightVar M x t s (i + 1))
-                  (ntmRightVar M x t (s + 1) i) hg
-                  (fun b => Nat.le_of_lt
-                    (ntmRightVar_lt_tableauVarCap M x t s (i + 1) b
-                      (by omega) (by omega)))
-                  (fun b => Nat.le_of_lt
-                    (ntmRightVar_lt_tableauVarCap M x t (s + 1) i b
-                      (by omega) (by omega)))
-                  cl hcl
-              · exact setSymbol_varsLe _ guard
-                  (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
-                  M.machine.blank hg
-                  (fun b => Nat.le_of_lt
-                    (ntmRightVar_lt_tableauVarCap M x t (s + 1)
-                      (ntmRadius x t - 1) b
-                      (by omega) (by simp [ntmRadius])))
+      have hHead :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmCopySymbolClauses guard
+              (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1))) :=
+        copySymbol_varsLe _ guard
+          (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1)) hg
+          (fun b => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t s 0 b
+              (by omega) (by simp [ntmRadius])))
+          (fun b => Nat.le_of_lt
+            (ntmHeadVar_lt_tableauVarCap M x t (s + 1) b (by omega)))
+      have hWrite :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmSetLeftCell guard M x t (s + 1) 0 write) :=
+        setSymbol_varsLe _ guard
+          (ntmLeftVar M x t (s + 1) 0) write hg
+          (fun b => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t (s + 1) 0 b
+              (by omega) (by simp [ntmRadius])))
+      have hShiftLeft :
+          CNFVarsLe (tableauVarCap M x t)
+            ((List.range (ntmRadius x t - 1)).flatMap fun i =>
+              ntmCopyLeftCell guard M x t s i (s + 1) (i + 1)) := by
+        intro cl hcl
+        rw [List.mem_flatMap] at hcl
+        rcases hcl with ⟨i, hi, hcl⟩
+        have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
+        exact copySymbol_varsLe _ guard
+          (ntmLeftVar M x t s i)
+          (ntmLeftVar M x t (s + 1) (i + 1)) hg
+          (fun b => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t s i b
+              (by omega) (by omega)))
+          (fun b => Nat.le_of_lt
+            (ntmLeftVar_lt_tableauVarCap M x t (s + 1) (i + 1) b
+              (by omega) (by omega)))
+          cl hcl
+      have hShiftRight :
+          CNFVarsLe (tableauVarCap M x t)
+            ((List.range (ntmRadius x t - 1)).flatMap fun i =>
+              ntmCopyRightCell guard M x t s (i + 1) (s + 1) i) := by
+        intro cl hcl
+        rw [List.mem_flatMap] at hcl
+        rcases hcl with ⟨i, hi, hcl⟩
+        have hir : i < ntmRadius x t - 1 := List.mem_range.mp hi
+        exact copySymbol_varsLe _ guard
+          (ntmRightVar M x t s (i + 1))
+          (ntmRightVar M x t (s + 1) i) hg
+          (fun b => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t s (i + 1) b
+              (by omega) (by omega)))
+          (fun b => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t (s + 1) i b
+              (by omega) (by omega)))
+          cl hcl
+      have hBlank :
+          CNFVarsLe (tableauVarCap M x t)
+            (ntmSetRightCell guard M x t (s + 1)
+              (ntmRadius x t - 1) M.machine.blank) :=
+        setSymbol_varsLe _ guard
+          (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
+          M.machine.blank hg
+          (fun b => Nat.le_of_lt
+            (ntmRightVar_lt_tableauVarCap M x t (s + 1)
+              (ntmRadius x t - 1) b
+              (by omega) (by simp [ntmRadius])))
+      simpa [ntmChoiceEffectCNF, ntmRightEffectCNF, guard, List.append_assoc] using
+        CNFVarsLe_append
+          (CNFVarsLe_append
+            (CNFVarsLe_append
+              (CNFVarsLe_append
+                (CNFVarsLe_append hState hHead) hWrite) hShiftLeft)
+            hShiftRight)
+          hBlank
 
 theorem activeChoice_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
