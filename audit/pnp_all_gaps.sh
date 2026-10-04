@@ -34,6 +34,10 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/SourcePrefixCoverageClosed.lean
   lean/MCore/Real/PNPDiscovery/SourcePrefixPressureClosed.lean
   lean/MCore/Real/PNPDiscovery/FullSourceDichotomy.lean
+  lean/MCore/Real/PNPDiscovery/HeadParityPressure.lean
+  lean/MCore/Real/PNPDiscovery/SourceMismatchVisibility.lean
+  lean/MCore/Real/PNPDiscovery/SourceMismatchEncodingDichotomy.lean
+  lean/MCore/Real/PNPDiscovery/FiniteBitMismatchClosed.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -101,6 +105,11 @@ CLOSED_BRIDGES:
 
 BARRIER_FRONTIER:
   length mismatch OR clock mismatch OR head mismatch OR concrete source-cell mismatch
+
+NEXT_MATERIAL_PRESSURE:
+  1. CLOCK/LENGTH normalization along odd orbit pairs
+  2. SOURCE bit mismatch visibility before SharedReadConePrefix
+  3. HEAD finite parity partition already compressed
 
 METHOD_AUDIT_OPEN:
   1. RelativizationFormalizationGap
