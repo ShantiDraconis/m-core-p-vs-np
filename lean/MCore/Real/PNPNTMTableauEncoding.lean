@@ -8204,7 +8204,7 @@ theorem ntmCopyLeftAll_weight
             (fun i => ntmCopyLeftCell guard M x t s i (s + 1) i)) +
             6 * (guard.length + 3)
             = n * (6 * (guard.length + 3)) + 6 * (guard.length + 3) := by
-                rw [ih]
+                simpa [ntmCopyLeftCell] using ih
         _ = (n + 1) * (6 * (guard.length + 3)) := by ring
 
 theorem ntmCopyRightAll_weight
@@ -8224,7 +8224,7 @@ theorem ntmCopyRightAll_weight
             (fun i => ntmCopyRightCell guard M x t s i (s + 1) i)) +
             6 * (guard.length + 3)
             = n * (6 * (guard.length + 3)) + 6 * (guard.length + 3) := by
-                rw [ih]
+                simpa [ntmCopyRightCell] using ih
         _ = (n + 1) * (6 * (guard.length + 3)) := by ring
 
 theorem ntmInitial_weight_le
@@ -8240,20 +8240,22 @@ theorem ntmInitial_weight_le
       ((inputTape x).left.getD i M.machine.blank))
     (by
       intro i hi
-      simpa [ntmSetLeftCell] using
-        ntmSetSymbol_weight ([] : NTMClause)
-          (ntmLeftVar M x t 0 i)
-          ((inputTape x).left.getD i M.machine.blank))
+      exact Nat.le_of_eq (by
+        simpa [ntmSetLeftCell] using
+          ntmSetSymbol_weight ([] : NTMClause)
+            (ntmLeftVar M x t 0 i)
+            ((inputTape x).left.getD i M.machine.blank)))
   have hr := ntmCNFWeight_flatMap_range_le
     (ntmRadius x t) 6
     (fun i => ntmSetRightCell [] M x t 0 i
       ((inputTape x).right.getD i M.machine.blank))
     (by
       intro i hi
-      simpa [ntmSetRightCell] using
-        ntmSetSymbol_weight ([] : NTMClause)
-          (ntmRightVar M x t 0 i)
-          ((inputTape x).right.getD i M.machine.blank))
+      exact Nat.le_of_eq (by
+        simpa [ntmSetRightCell] using
+          ntmSetSymbol_weight ([] : NTMClause)
+            (ntmRightVar M x t 0 i)
+            ((inputTape x).right.getD i M.machine.blank)))
   have hcells :
       ntmCNFWeight
           ((List.range (ntmRadius x t)).flatMap (fun i =>
@@ -8312,6 +8314,7 @@ theorem ntmChoiceEffect_weight_le
           M x t s (i + 1) (s + 1) i)
         (by
           intro i hi
+          exact Nat.le_of_eq (by
           simpa [ntmCopyLeftCell] using
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
@@ -8323,6 +8326,7 @@ theorem ntmChoiceEffect_weight_le
           M x t s i (s + 1) (i + 1))
         (by
           intro i hi
+          exact Nat.le_of_eq (by
           simpa [ntmCopyRightCell] using
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
@@ -8351,6 +8355,7 @@ theorem ntmChoiceEffect_weight_le
           M x t s i (s + 1) (i + 1))
         (by
           intro i hi
+          exact Nat.le_of_eq (by
           simpa [ntmCopyLeftCell] using
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
@@ -8362,6 +8367,7 @@ theorem ntmChoiceEffect_weight_le
           M x t s (i + 1) (s + 1) i)
         (by
           intro i hi
+          exact Nat.le_of_eq (by
           simpa [ntmCopyRightCell] using
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
@@ -8386,13 +8392,18 @@ theorem ntmIndexedTransitions_length
     {State Symbol : Type}
     (ts : List (State × Symbol × Direction)) :
     (ntmIndexedTransitions ts).length = ts.length := by
+  have haux :
+      ∀ (start : Nat),
+        (ntmIndexedTransitionsAux start ts).length = ts.length := by
+    induction ts with
+    | nil =>
+        intro start
+        rfl
+    | cons tr rest ih =>
+        intro start
+        simp [ntmIndexedTransitionsAux, ih (start + 1)]
   unfold ntmIndexedTransitions
-  generalize hstart : 0 = start
-  subst start
-  induction ts with
-  | nil => rfl
-  | cons tr rest ih =>
-      simp [ntmIndexedTransitionsAux, ih]
+  exact haux 0
 
 theorem ntmGuardChoiceClause_weight
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
