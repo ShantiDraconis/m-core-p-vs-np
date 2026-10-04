@@ -52,7 +52,7 @@ theorem ntmClauseCircuit_injective :
           simp only [ntmClauseCircuit] at h
           injection h with hHead hTail
           have hl : l = k := ntmLiteralCircuit_injective hHead
-          have hls : ls = ks := ih ks hTail
+          have hls : ls = ks := ih hTail
           subst k
           subst ks
           rfl
@@ -78,7 +78,7 @@ theorem ntmCNFCircuit_injective :
           simp only [ntmCNFCircuit] at h
           injection h with hHead hTail
           have hc : c = d := ntmClauseCircuit_injective hHead
-          have hcs : cs = ds := ih ds hTail
+          have hcs : cs = ds := ih hTail
           subst d
           subst ds
           rfl
