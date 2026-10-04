@@ -8872,33 +8872,41 @@ theorem haltedStutter_varsLe
       (ntmHaltedStutterCNF M x t s q a) := by
   let guard := [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
   have hg := stateHeadGuard_varsLe M x t s q a (by omega)
-  unfold ntmHaltedStutterCNF
-  apply CNFVarsLe_append
-  · apply setState_varsLe
-    · exact hg
-    · intro r
-      exact Nat.le_of_lt
-        (ntmStateVar_lt_tableauVarCap M x t (s+1) r (by omega))
-  · apply CNFVarsLe_append
-    · apply copySymbol_varsLe
-      · exact hg
-      · intro b
+  have hState :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmSetStateClauses guard M t (s + 1) q) := by
+    exact setState_varsLe _ guard M t (s + 1) q hg
+      (fun r => Nat.le_of_lt
+        (ntmStateVar_lt_tableauVarCap M x t (s + 1) r (by omega)))
+  have hHead :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmCopyHeadCell guard M t s (s + 1)) := by
+    unfold ntmCopyHeadCell
+    exact copySymbol_varsLe _ guard
+      (ntmHeadVar M t s) (ntmHeadVar M t (s + 1)) hg
+      (fun b => Nat.le_of_lt
+        (ntmHeadVar_lt_tableauVarCap M x t s b (by omega)))
+      (fun b => Nat.le_of_lt
+        (ntmHeadVar_lt_tableauVarCap M x t (s + 1) b (by omega)))
+  have hLeft :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmCopyLeftAll guard M x t s) :=
+    copyLeftAll_varsLe _ guard M x t s (by omega) hg
+      (by
+        intro u i b hu hi
         exact Nat.le_of_lt
-          (ntmHeadVar_lt_tableauVarCap M x t s b (by omega))
-      · intro b
+          (ntmLeftVar_lt_tableauVarCap M x t u i b hu hi))
+  have hRight :
+      CNFVarsLe (tableauVarCap M x t)
+        (ntmCopyRightAll guard M x t s) :=
+    copyRightAll_varsLe _ guard M x t s (by omega) hg
+      (by
+        intro u i b hu hi
         exact Nat.le_of_lt
-          (ntmHeadVar_lt_tableauVarCap M x t (s+1) b (by omega))
-    · apply CNFVarsLe_append
-      · exact copyLeftAll_varsLe _ guard M x t s (by omega) hg
-          (by
-            intro u i b hu hi
-            exact Nat.le_of_lt
-              (ntmLeftVar_lt_tableauVarCap M x t u i b hu hi))
-      · exact copyRightAll_varsLe _ guard M x t s (by omega) hg
-          (by
-            intro u i b hu hi
-            exact Nat.le_of_lt
-              (ntmRightVar_lt_tableauVarCap M x t u i b hu hi))
+          (ntmRightVar_lt_tableauVarCap M x t u i b hu hi))
+  simpa [ntmHaltedStutterCNF, guard, List.append_assoc] using
+    CNFVarsLe_append
+      (CNFVarsLe_append (CNFVarsLe_append hState hHead) hLeft) hRight
 
 theorem choiceGuardCNF_varsLe
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
