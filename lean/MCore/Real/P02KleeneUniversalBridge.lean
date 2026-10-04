@@ -81,20 +81,9 @@ theorem counterexample_fails
   have hflip :
       CanonicalSAT (counterexample B) ↔
         ¬ DeclaredAccepts M (counterexample B) := by
-    change
-      CanonicalSAT (B.realizer.bitsOf (fixedCode B)) ↔
-        ¬ DeclaredAccepts M (B.realizer.bitsOf (fixedCode B))
-    exact CanonicalSATFixedPointRealizer.flips_of_fixed
-      B.realizer
-      (fixedCode B)
-      (fixedCode_spec B)
+    apply B.realizer.flips_of_fixed
+    exact fixedCode_spec B
   intro hCorrect
-  change
-    M.machine.HaltsWithin
-        (M.timeBound (counterexample B).length)
-        (initialTMConfig M.machine (counterexample B)) ∧
-      (DeclaredAccepts M (counterexample B) ↔
-        CanonicalSAT (counterexample B)) at hCorrect
   rcases hCorrect with ⟨_, hSem⟩
   by_cases hAcc : DeclaredAccepts M (counterexample B)
   · have hSat : CanonicalSAT (counterexample B) :=
