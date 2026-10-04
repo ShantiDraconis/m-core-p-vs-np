@@ -241,3 +241,9 @@ import MCore.Real.PNPDiscovery.HeadParityPressure
 import MCore.Real.PNPDiscovery.SourceMismatchVisibility
 import MCore.Real.PNPDiscovery.SourceMismatchEncodingDichotomy
 import MCore.Real.PNPDiscovery.FiniteBitMismatchClosed
+
+import MCore.Real.PNPDiscovery.SourceBitVisibilityPressure
+import MCore.Real.PNPDiscovery.SymbolBlockLocalization
+import MCore.Real.PNPDiscovery.SourceGlobalBitOffset
+import MCore.Real.PNPDiscovery.SourceCellBitTransport
+import MCore.Real.PNPDiscovery.SourceCellBitTransportClosed
