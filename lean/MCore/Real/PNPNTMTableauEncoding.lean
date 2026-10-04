@@ -6724,10 +6724,10 @@ theorem eval_setState_two_neg_guard_of_exact
     evalNTMCNF sigma
       (ntmSetStateClauses [ntmNeg c1, ntmNeg c2] M t s target) = true := by
   unfold ntmSetStateClauses
-  apply (evalNTMCNF_map_flatten_ofFn sigma
+  apply (evalNTMCNF_ofFn sigma
     (fun r : Fin (M.stateCount + 1) =>
-      [[ntmNeg c1, ntmNeg c2] ++
-        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))]])).2
+      [ntmNeg c1, ntmNeg c2] ++
+        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))])).2
   intro r
   have hunit :
       evalNTMClause sigma
@@ -6782,14 +6782,19 @@ theorem pathAssignment_haltedStutter_sat
       let sigma := pathAssignment M x t path hPath
       have hstate0 :
           sigma (ntmStateVar M t s c.state) = true := by
-        simp [sigma, c, pathAssignment_state, hs]
+        dsimp [sigma]
+        rw [pathAssignment_state M x t path hPath s (by omega) c.state]
+        simp [c]
       have hhead0 :
           sigma (ntmHeadVar M t s c.tape.head) = true := by
-        simp [sigma, c, pathAssignment_head, hs]
+        dsimp [sigma]
+        rw [pathAssignment_head M x t path hPath s (by omega) c.tape.head]
+        simp [c]
       have hstateExact :
           forall r : Fin (M.stateCount + 1),
             sigma (ntmStateVar M t (s + 1) r) = decide (r = c.state) := by
         intro r
+        dsimp [sigma]
         rw [pathAssignment_state M x t path hPath (s + 1) (by omega) r]
         have hsEq : (path ⟨s + 1, by omega⟩).state = c.state := by
           simpa [c, c'] using congrArg Configuration.state hEq
@@ -6799,6 +6804,7 @@ theorem pathAssignment_haltedStutter_sat
             sigma (ntmHeadVar M t (s + 1) b) =
               sigma (ntmHeadVar M t s b) := by
         intro b
+        dsimp [sigma]
         rw [pathAssignment_head M x t path hPath (s + 1) (by omega) b]
         rw [pathAssignment_head M x t path hPath s (by omega) b]
         have hhEq :
@@ -6827,6 +6833,7 @@ theorem pathAssignment_haltedStutter_sat
           (ntmLeftVar M x t s i) (ntmLeftVar M x t (s + 1) i)
           hstate0 hhead0
         intro b
+        dsimp [sigma]
         rw [pathAssignment_left M x t path hPath (s + 1) (by omega) i hi b]
         rw [pathAssignment_left M x t path hPath s (by omega) i hi b]
         have hlEq :
@@ -6856,6 +6863,7 @@ theorem pathAssignment_haltedStutter_sat
           (ntmRightVar M x t s i) (ntmRightVar M x t (s + 1) i)
           hstate0 hhead0
         intro b
+        dsimp [sigma]
         rw [pathAssignment_right M x t path hPath (s + 1) (by omega) i hi b]
         rw [pathAssignment_right M x t path hPath s (by omega) i hi b]
         have hrEq :
@@ -6864,14 +6872,14 @@ theorem pathAssignment_haltedStutter_sat
           simpa [c, c'] using congrArg (fun z => z.tape.right) hEq
         simpa [hrEq]
       simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
-      refine ⟨eval_setState_two_neg_guard_of_exact sigma M t (s + 1)
-          (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
-          c.state hstate0 hhead0 hstateExact, ?_⟩
-      refine ⟨eval_copySymbol_two_neg_guard_of_eq sigma
-          (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
-          (ntmHeadVar M t s) (ntmHeadVar M t (s + 1))
-          hstate0 hhead0 hheadEq, ?_⟩
-      exact ⟨hleft, hright⟩
+      have hs0 := eval_setState_two_neg_guard_of_exact sigma M t (s + 1)
+        (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
+        c.state hstate0 hhead0 hstateExact
+      have hh0 := eval_copySymbol_two_neg_guard_of_eq sigma
+        (ntmStateVar M t s c.state) (ntmHeadVar M t s c.tape.head)
+        (ntmHeadVar M t s) (ntmHeadVar M t (s + 1))
+        hstate0 hhead0 hheadEq
+      exact ⟨⟨⟨hs0, hh0⟩, hleft⟩, hright⟩
     · have hg := pathAssignment_case_guard_true_of_mismatch
         M x t s path hPath hs q a (Or.inr ha)
       exact eval_haltedStutter_guard_true
@@ -6897,9 +6905,11 @@ theorem pathTapeBound_zero
   have h0 := hPath.1
   change path 0 = initialNTMConfig M.machine x at h0
   refine { left_len := ?_, right_len := ?_ }
-  · rw [h0]
+  · change (path 0).tape.left.length <= x.length + 0
+    rw [h0]
     cases x <;> simp [initialNTMConfig, inputTape]
-  · rw [h0]
+  · change (path 0).tape.right.length <= x.length + 0
+    rw [h0]
     cases x <;> simp [initialNTMConfig, inputTape]
 
 theorem pathTapeBound_step
@@ -7014,7 +7024,7 @@ theorem indexedTransitionsAux_get_mem
           have hj' : j < rest.length := by
             simpa using hj
           have hmem := ih (start + 1) j hj'
-          simpa [ntmIndexedTransitionsAux, Nat.add_assoc] using hmem
+          simpa [ntmIndexedTransitionsAux, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hmem
 
 theorem indexedTransitions_get_mem
     {State Symbol : Type}
@@ -7036,10 +7046,10 @@ theorem eval_setState_neg_guard_of_exact
     evalNTMCNF sigma
       (ntmSetStateClauses [ntmNeg cvar] M t s target) = true := by
   unfold ntmSetStateClauses
-  apply (evalNTMCNF_map_flatten_ofFn sigma
+  apply (evalNTMCNF_ofFn sigma
     (fun r : Fin (M.stateCount + 1) =>
-      [([ntmNeg cvar] ++
-        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))])])).2
+      [ntmNeg cvar] ++
+        [ntmLitFor (ntmStateVar M t s r) (decide (r = target))])).2
   intro r
   have hunit :
       evalNTMClause sigma
@@ -7058,15 +7068,18 @@ theorem eval_setSymbol_neg_guard_of_exact
     evalNTMCNF sigma
       (ntmSetSymbolClauses [ntmNeg cvar] varAt target) = true := by
   unfold ntmSetSymbolClauses
-  apply (evalNTMCNF_flatMap_list sigma ntmAlphabet
-    (fun b => [([ntmNeg cvar] ++
-      [ntmLitFor (varAt b) (decide (b = target))])])).2
-  intro b hb
-  have hunit :
-      evalNTMClause sigma [ntmLitFor (varAt b) (decide (b = target))] = true := by
-    exact (evalNTMClause_singleton_litFor sigma (varAt b)
-      (decide (b = target))).2 (hexact b)
-  simpa [evalNTMCNF, evalNTMClause, evalNTMLiteral, ntmNeg, hc] using hunit
+  induction ntmAlphabet with
+  | nil =>
+      rfl
+  | cons b bs ih =>
+      rw [List.map_cons, evalNTMCNF_cons_iff]
+      constructor
+      · have hunit :
+          evalNTMClause sigma [ntmLitFor (varAt b) (decide (b = target))] = true := by
+          exact (evalNTMClause_singleton_litFor sigma (varAt b)
+            (decide (b = target))).2 (hexact b)
+        simpa [evalNTMClause, evalNTMLiteral, ntmNeg, hc] using hunit
+      · exact ih
 
 theorem eval_copySymbol_neg_guard_of_eq
     (sigma : Assignment)
