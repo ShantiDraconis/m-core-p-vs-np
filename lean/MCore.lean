@@ -231,3 +231,8 @@ import MCore.Real.PNPDiscovery.SourceBitOffsets
 import MCore.Real.PNPDiscovery.TableauRegionMap
 import MCore.Real.PNPDiscovery.BitRegionMap
 import MCore.Real.PNPDiscovery.SourcePrefixPressure
+
+import MCore.Real.PNPDiscovery.SourcePrefixEncoderBridge
+import MCore.Real.PNPDiscovery.SourcePrefixCoverageClosed
+import MCore.Real.PNPDiscovery.SourcePrefixPressureClosed
+import MCore.Real.PNPDiscovery.FullSourceDichotomy
