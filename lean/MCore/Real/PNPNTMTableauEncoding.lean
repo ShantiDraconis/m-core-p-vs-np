@@ -5799,12 +5799,14 @@ theorem eval_copySymbol_guard_true
     (oldVar newVar : Option Bool -> Nat)
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmCopySymbolClauses guard oldVar newVar) = true := by
-  apply (evalNTMCNF_flatMap_list sigma ntmAlphabet
-    (fun a =>
-      [guard ++ [ntmNeg (oldVar a), ntmPos (newVar a)],
-       guard ++ [ntmPos (oldVar a), ntmNeg (newVar a)]])).2
-  intro a ha
-  simp [evalNTMCNF, evalNTMClause_append_of_left_true sigma guard _ hg]
+  apply evalNTMCNF_of_all_mem_true
+  intro cl hcl
+  unfold ntmCopySymbolClauses at hcl
+  rcases List.mem_flatMap.mp hcl with ⟨a, _, hmem⟩
+  simp only [List.mem_cons, List.mem_singleton] at hmem
+  rcases hmem with rfl | rfl
+  · exact evalNTMClause_append_of_left_true sigma guard _ hg
+  · exact evalNTMClause_append_of_left_true sigma guard _ hg
 
 theorem pathAssignment_state_neg_of_ne
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
