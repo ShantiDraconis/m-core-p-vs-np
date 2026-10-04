@@ -38,6 +38,7 @@ structure SourceMismatchWitness
 /-- Encoded mismatch payload for one concrete source-cell witness. -/
 structure EncodedSourceMismatch
     (M : PolyDTMCandidate)
+    (x y : BitString)
     (W : SourceMismatchWitness M x y) where
   sx : BitString
   sy : BitString
@@ -49,7 +50,7 @@ noncomputable def encodedSourceMismatch
     (M : PolyDTMCandidate)
     (x y : BitString)
     (W : SourceMismatchWitness M x y) :
-    EncodedSourceMismatch M W := by
+    EncodedSourceMismatch M x y W := by
   let N := complementToNTMCandidate M
   let tx := M.timeBound x.length
   let ty := M.timeBound y.length
