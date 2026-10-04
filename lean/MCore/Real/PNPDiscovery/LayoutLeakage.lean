@@ -7,6 +7,7 @@ namespace PNPDiscovery
 
 open CanonicalFinalProof
 open PNPNTMTableauEncoding
+open P02ComplementRunRealization
 
 /-- Canonical consecutive variable family starting at base B. -/
 def symbolVarsFromBase (B : Nat) : Option Bool → Nat :=
