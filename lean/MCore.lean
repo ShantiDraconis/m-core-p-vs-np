@@ -282,3 +282,11 @@ import MCore.Real.PNPDiscovery.StrictGrowthConsistency
 import MCore.Real.PNPDiscovery.PerfectFlipRegimeAlignment
 
 import MCore.Real.PNPDiscovery.UniversalSimulationPrerequisites
+
+import MCore.Real.PNPDiscovery.CanonicalClockNormalization
+import MCore.Real.PNPDiscovery.FiniteCandidateDescription
+import MCore.Real.PNPDiscovery.UnaryListSerialization
+import MCore.Real.PNPDiscovery.FiniteCandidateGodelWords
+import MCore.Real.PNPDiscovery.FiniteDescriptionInjectivity
+import MCore.Real.PNPDiscovery.NormalizedUniversalPrerequisites
+import MCore.Real.PNPDiscovery.ConcreteMachineInputPairing
