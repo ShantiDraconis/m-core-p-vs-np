@@ -44,6 +44,8 @@ structure SourcePrefixLayoutAlignment
     sourceHeadSymbol x = sourceHeadSymbol y
   source_eq :
     SourceRightPrefixAligned x y k
+  within_radius :
+    k ≤ ntmRadius x (M.timeBound x.length)
 
 /-- At clause level, aligned layout and first k source symbols force equality
 of all k right/source blocks. -/
