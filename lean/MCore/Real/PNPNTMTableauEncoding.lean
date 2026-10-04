@@ -6310,14 +6310,16 @@ theorem eval_setSymbol_guard_true
     (varAt : Option Bool -> Nat) (target : Option Bool)
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmSetSymbolClauses guard varAt target) = true := by
-  rw [show ntmSetSymbolClauses guard varAt target =
-      ntmAlphabet.flatMap (fun a =>
-        [guard ++ [ntmLitFor (varAt a) (decide (a = target))]]) by
-        simp [ntmSetSymbolClauses]]
-  apply (evalNTMCNF_flatMap_list sigma ntmAlphabet
-    (fun a => [guard ++ [ntmLitFor (varAt a) (decide (a = target))]])).2
-  intro a ha
-  simp [evalNTMCNF, evalNTMClause_append_of_left_true sigma guard _ hg]
+  change evalNTMCNF sigma
+      (ntmAlphabet.map (fun a =>
+        guard ++ [ntmLitFor (varAt a) (decide (a = target))])) = true
+  induction ntmAlphabet with
+  | nil =>
+      rfl
+  | cons a as ih =>
+      rw [List.map_cons]
+      rw [evalNTMCNF_cons_iff]
+      exact ⟨evalNTMClause_append_of_left_true sigma guard _ hg, ih⟩
 
 theorem eval_copySymbol_guard_true
     (sigma : Assignment) (guard : NTMClause)
