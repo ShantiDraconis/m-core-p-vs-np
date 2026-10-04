@@ -41,46 +41,6 @@ theorem positiveOrbit_sourceHead_eq
   rw [positiveOrbit_sourceHead_true M hTotal seed i]
   rw [positiveOrbit_sourceHead_true M hTotal seed j]
 
-/-- Major frontier compression:
-for positive odd-separated orbit points, CLOCK and HEAD are not independent
-branches.  If LENGTH aligns then CLOCK and HEAD align automatically, so a
-terminal parity barrier must break either LENGTH or a concrete source cell. -/
-theorem parityBarrier_length_or_source
-    (M : PolyDTMCandidate)
-    (hTotal : DeclaredClockTotal M)
-    (Hbar : TerminalParityBarrier M hTotal)
-    (seed : BitString)
-    (i d : Nat) :
-    let x := orbit M hTotal seed (i + 1)
-    let y := orbit M hTotal seed ((i + 1) + (2 * d + 1))
-    x.length ≠ y.length ∨
-    ∃ j : Nat,
-      j < ntmRadius x (M.timeBound x.length) ∧
-      sourceRightSymbol x j ≠ sourceRightSymbol y j := by
-  dsimp
-  have h :=
-    parityBarrier_source_break_dichotomy
-      M hTotal Hbar seed i d
-  rcases h with hLen | hClock | hHead | hSource
-  · exact Or.inl hLen
-  · exfalso
-    apply hClock
-    -- In this branch the original nested disjunction has already passed the
-    -- length test, but that witness is not retained by rcases.  Re-run the
-    -- exact split to retain it explicitly.
-    classical
-    let x := orbit M hTotal seed (i + 1)
-    let y := orbit M hTotal seed ((i + 1) + (2 * d + 1))
-    by_cases hxy : x.length = y.length
-    · exact clock_eq_of_length_eq M x y hxy
-    · exact False.elim (by
-        exact (show False from ?_))
-  · exfalso
-    exact hHead
-      (positiveOrbit_sourceHead_eq
-        M hTotal seed i (i + (2 * d + 1)))
-  · exact Or.inr hSource
-
 /-- Clean proof of the compressed dichotomy without relying on nested branch
 information from the older theorem. -/
 theorem parityBarrier_length_or_source_clean
