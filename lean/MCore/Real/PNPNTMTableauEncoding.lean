@@ -7850,7 +7850,7 @@ theorem foldl_clauseWeight_acc
   | cons cl cs ih =>
       simp only [List.foldl_cons]
       rw [ih (acc + ntmClauseWeight cl)]
-      rw [ih (ntmClauseWeight cl)]
+      rw [ih (0 + ntmClauseWeight cl)]
       omega
 
 theorem encodeNat_length_exact
