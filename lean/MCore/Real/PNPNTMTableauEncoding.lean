@@ -7736,7 +7736,10 @@ theorem pathAssignment_final_clause_sat
   have hmem :
       ntmPos (ntmStateVar M t t q) ∈ ntmAcceptingStateLits M t := by
     unfold ntmAcceptingStateLits
-    simp [hqAcc]
+    apply List.mem_filterMap.mpr
+    refine ⟨q, ?_, ?_⟩
+    · simp
+    · simp [hqAcc]
   have hvar :
       pathAssignment M x t path hPath (ntmStateVar M t t q) = true := by
     rw [pathAssignment_state M x t path hPath t (by omega) q]
@@ -7772,7 +7775,7 @@ theorem pathAssignment_boundedExec_sat
       ntmTransitionsCNF M x t ++
       ntmFinalAcceptanceCNF M t by rfl]
   rw [evalNTMCNF_append]
-  exact ⟨hi, (evalNTMCNF_append _ _ _).2 ⟨ht, hf⟩⟩
+  exact ⟨(evalNTMCNF_append _ _ _).2 ⟨hi, ht⟩, hf⟩
 
 theorem tableau_completeness_assignment
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
