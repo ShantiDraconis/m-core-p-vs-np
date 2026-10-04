@@ -7379,19 +7379,21 @@ theorem pathAssignment_selected_effect_sat
             [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
             M x t s qNext write by
         simp [ntmChoiceEffectCNF, htrDef]]
-      unfold ntmRightEffectCNF
-      rw [evalNTMCNF_append]
-      refine ⟨eval_setState_neg_guard_of_exact
-          (pathAssignment M x t path hPath) M t (s + 1)
-          (ntmChoiceVar M x t s c.state c.tape.head j)
-          qNext hchoice hstateExact, ?_⟩
-      refine ⟨eval_copySymbol_neg_guard_of_eq
-          (pathAssignment M x t path hPath)
-          (ntmChoiceVar M x t s c.state c.tape.head j)
-          (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1))
-          hchoice hheadEq, ?_⟩
-      refine ⟨?_, ?_⟩
-      · apply eval_setSymbol_neg_guard_of_exact _ _
+      have hState := eval_setState_neg_guard_of_exact
+        (pathAssignment M x t path hPath) M t (s + 1)
+        (ntmChoiceVar M x t s c.state c.tape.head j)
+        qNext hchoice hstateExact
+      have hHead := eval_copySymbol_neg_guard_of_eq
+        (pathAssignment M x t path hPath)
+        (ntmChoiceVar M x t s c.state c.tape.head j)
+        (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1))
+        hchoice hheadEq
+      have hWrite :
+          evalNTMCNF (pathAssignment M x t path hPath)
+            (ntmSetLeftCell
+              [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+              M x t (s + 1) 0 write) = true := by
+        apply eval_setSymbol_neg_guard_of_exact _ _
           (ntmLeftVar M x t (s + 1) 0) write hchoice
         intro b
         rw [pathAssignment_left M x t path hPath (s + 1) (by omega) 0 hrpos b]
@@ -7400,52 +7402,69 @@ theorem pathAssignment_selected_effect_sat
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_right_left_zero M.machine.blank write c.tape
         simpa [c', hcell]
-      · refine ⟨?_, ?_⟩
-        · rw [evalNTMCNF_flatMap_range]
-          intro i hi
-          apply eval_copySymbol_neg_guard_of_eq _ _ _ _ hchoice
-          intro b
-          rw [pathAssignment_left M x t path hPath (s + 1) (by omega) (i + 1) (by omega) b]
-          rw [pathAssignment_left M x t path hPath s (by omega) i (by omega) b]
-          have heq :
-              c'.tape.left.getD (i + 1) M.machine.blank =
-                c.tape.left.getD i M.machine.blank := by
-            rw [hnext]
-            simpa [NTM.stepBranch, htrDef] using
-              tapeMove_right_left_succ M.machine.blank write c.tape i
-          simpa [c, c', heq]
-        · refine ⟨?_, ?_⟩
-          · rw [evalNTMCNF_flatMap_range]
-            intro i hi
-            apply eval_copySymbol_neg_guard_of_eq _ _ _ _ hchoice
-            intro b
-            rw [pathAssignment_right M x t path hPath (s + 1) (by omega) i (by omega) b]
-            rw [pathAssignment_right M x t path hPath s (by omega) (i + 1) (by omega) b]
-            have heq :
-                c'.tape.right.getD i M.machine.blank =
-                  c.tape.right.getD (i + 1) M.machine.blank := by
-              rw [hnext]
-              simpa [NTM.stepBranch, htrDef] using
-                tapeMove_right_right_getD M.machine.blank write c.tape i
-            simpa [c, c', heq]
-          · apply eval_setSymbol_neg_guard_of_exact _ _
-              (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
-              M.machine.blank hchoice
-            intro b
-            rw [pathAssignment_right M x t path hPath (s + 1) (by omega)
-              (ntmRadius x t - 1) (by omega) b]
-            have hout := path_right_getD_outside M x t s (ntmRadius x t)
-              path hPath (by omega) (by simp [ntmRadius]; omega)
-            have hcell :
-                c'.tape.right.getD (ntmRadius x t - 1) M.machine.blank =
-                  M.machine.blank := by
-              rw [hnext]
-              have hm := tapeMove_right_right_getD M.machine.blank write c.tape
-                (ntmRadius x t - 1)
-              rw [hm]
-              simpa [c, Nat.sub_add_cancel (by simp [ntmRadius] : 1 <= ntmRadius x t)]
-                using hout
-            simpa [c', hcell]
+      have hShiftLeft :
+          evalNTMCNF (pathAssignment M x t path hPath)
+            ((List.range (ntmRadius x t - 1)).flatMap fun i =>
+              ntmCopyLeftCell
+                [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+                M x t s i (s + 1) (i + 1)) = true := by
+        rw [evalNTMCNF_flatMap_range]
+        intro i hi
+        apply eval_copySymbol_neg_guard_of_eq _ _ _ _ hchoice
+        intro b
+        rw [pathAssignment_left M x t path hPath (s + 1) (by omega) (i + 1) (by omega) b]
+        rw [pathAssignment_left M x t path hPath s (by omega) i (by omega) b]
+        have heq :
+            c'.tape.left.getD (i + 1) M.machine.blank =
+              c.tape.left.getD i M.machine.blank := by
+          rw [hnext]
+          simpa [NTM.stepBranch, htrDef] using
+            tapeMove_right_left_succ M.machine.blank write c.tape i
+        simpa [c, c', heq]
+      have hShiftRight :
+          evalNTMCNF (pathAssignment M x t path hPath)
+            ((List.range (ntmRadius x t - 1)).flatMap fun i =>
+              ntmCopyRightCell
+                [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+                M x t s (i + 1) (s + 1) i) = true := by
+        rw [evalNTMCNF_flatMap_range]
+        intro i hi
+        apply eval_copySymbol_neg_guard_of_eq _ _ _ _ hchoice
+        intro b
+        rw [pathAssignment_right M x t path hPath (s + 1) (by omega) i (by omega) b]
+        rw [pathAssignment_right M x t path hPath s (by omega) (i + 1) (by omega) b]
+        have heq :
+            c'.tape.right.getD i M.machine.blank =
+              c.tape.right.getD (i + 1) M.machine.blank := by
+          rw [hnext]
+          simpa [NTM.stepBranch, htrDef] using
+            tapeMove_right_right_getD M.machine.blank write c.tape i
+        simpa [c, c', heq]
+      have hBlank :
+          evalNTMCNF (pathAssignment M x t path hPath)
+            (ntmSetRightCell
+              [ntmNeg (ntmChoiceVar M x t s c.state c.tape.head j)]
+              M x t (s + 1) (ntmRadius x t - 1) M.machine.blank) = true := by
+        apply eval_setSymbol_neg_guard_of_exact _ _
+          (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
+          M.machine.blank hchoice
+        intro b
+        rw [pathAssignment_right M x t path hPath (s + 1) (by omega)
+          (ntmRadius x t - 1) (by omega) b]
+        have hout := path_right_getD_outside M x t s (ntmRadius x t)
+          path hPath (by omega) (by simp [ntmRadius]; omega)
+        have hcell :
+            c'.tape.right.getD (ntmRadius x t - 1) M.machine.blank =
+              M.machine.blank := by
+          rw [hnext]
+          have hm := tapeMove_right_right_getD M.machine.blank write c.tape
+            (ntmRadius x t - 1)
+          rw [hm]
+          simpa [c, Nat.sub_add_cancel (by simp [ntmRadius] : 1 <= ntmRadius x t)]
+            using hout
+        simpa [c', hcell]
+      simp only [ntmRightEffectCNF, evalNTMCNF_append]
+      exact ⟨⟨⟨⟨⟨hState, hHead⟩, hWrite⟩, hShiftLeft⟩, hShiftRight⟩, hBlank⟩
 
 
 theorem pathAssignment_actual_state_true
