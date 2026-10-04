@@ -27,6 +27,9 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/RightCellInjectivity.lean
   lean/MCore/Real/PNPDiscovery/LeftBlockElimination.lean
   lean/MCore/Real/PNPDiscovery/SourceBitOffsets.lean
+  lean/MCore/Real/PNPDiscovery/TableauRegionMap.lean
+  lean/MCore/Real/PNPDiscovery/BitRegionMap.lean
+  lean/MCore/Real/PNPDiscovery/SourcePrefixPressure.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -86,6 +89,9 @@ DISCOVERY_SUBFRONTIER:
   -> OrbitCollisionProducer
   -> TotalExactDiagonalProducer
   -> SATSeparationGap
+
+OPEN_BRIDGE_REDUCIBLE:
+  1. SourcePrefixCoverageGap -- list/encoding prefix transport; not P!=NP mathematics
 
 METHOD_AUDIT_OPEN:
   1. RelativizationFormalizationGap
