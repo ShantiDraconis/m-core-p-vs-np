@@ -8578,20 +8578,38 @@ def ntmTransitionStepWeightCap
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
   ntmStateCount M * 3 * ntmTransitionCaseWeightCap M x t
 
+theorem ntmCNFWeight_flatten_le
+    (xss : List NTMCNF) (K : Nat)
+    (h : ∀ xs, xs ∈ xss -> ntmCNFWeight xs <= K) :
+    ntmCNFWeight xss.flatten <= xss.length * K := by
+  induction xss with
+  | nil =>
+      simp [ntmCNFWeight]
+  | cons xs rest ih =>
+      rw [List.flatten_cons, ntmCNFWeight_append]
+      have hx := h xs (by simp)
+      have hr := ih (fun ys hys => h ys (by simp [hys]))
+      calc
+        ntmCNFWeight xs + ntmCNFWeight rest.flatten
+            <= K + rest.length * K := Nat.add_le_add hx hr
+        _ = (xs :: rest).length * K := by
+          simp [Nat.add_mul, Nat.add_comm]
+
 theorem ntmTransitionStep_weight_le
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat) :
     ntmCNFWeight (ntmTransitionStepCNF M x t s) <=
       ntmTransitionStepWeightCap M x t := by
   unfold ntmTransitionStepCNF ntmTransitionStepWeightCap
-  let qs := List.ofFn (fun q : Fin (M.stateCount + 1) => q)
-  have hq :
-      ntmCNFWeight
-        (qs.flatMap (fun q =>
-          ntmAlphabet.flatMap fun a =>
-            ntmTransitionCaseCNF M x t s q a))
-      <= qs.length * (3 * ntmTransitionCaseWeightCap M x t) := by
-    apply ntmCNFWeight_flatMap_list_le
-    intro q hqmem
+  let rows :=
+    List.ofFn (fun q : Fin (M.stateCount + 1) =>
+      ntmAlphabet.flatMap fun a =>
+        ntmTransitionCaseCNF M x t s q a)
+  have hrow :
+      ∀ row, row ∈ rows ->
+        ntmCNFWeight row <= 3 * ntmTransitionCaseWeightCap M x t := by
+    intro row hrow
+    rw [List.mem_ofFn] at hrow
+    rcases hrow with ⟨q, rfl⟩
     have ha := ntmCNFWeight_flatMap_list_le ntmAlphabet
       (ntmTransitionCaseWeightCap M x t)
       (fun a => ntmTransitionCaseCNF M x t s q a)
@@ -8599,7 +8617,9 @@ theorem ntmTransitionStep_weight_le
         intro a ha
         exact ntmTransitionCase_weight_le M x t s q a)
     simpa [ntmAlphabet] using ha
-  simpa [qs, ntmStateCount] using hq
+  have hflat := ntmCNFWeight_flatten_le rows
+    (3 * ntmTransitionCaseWeightCap M x t) hrow
+  simpa [rows, ntmStateCount, Nat.mul_assoc] using hflat
 
 theorem ntmTransitions_weight_le
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
