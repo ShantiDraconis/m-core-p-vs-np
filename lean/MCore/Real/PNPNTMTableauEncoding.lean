@@ -8115,7 +8115,7 @@ theorem ntmCNFWeight_append
           _ = acc +
               cs.foldl (fun z cl => z + ntmClauseWeight cl)
                 (ntmClauseWeight cl) := by
-            simp only [Nat.zero_add]
+            rw [ih (ntmClauseWeight cl)]
   rw [List.foldl_append]
   rw [hacc b (a.foldl (fun z cl => z + ntmClauseWeight cl) 0)]
 
@@ -8362,7 +8362,7 @@ theorem ntmChoiceEffect_weight_le
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
               (ntmLeftVar M x t s i)
-              (ntmLeftVar M x t (s+1) (i+1)))
+              (ntmLeftVar M x t (s+1) (i+1)))))
       have hsr := ntmCNFWeight_flatMap_range_le
         (ntmRadius x t - 1) 24
         (fun i => ntmCopyRightCell [ntmNeg (ntmChoiceVar M x t s q a j)]
@@ -8374,7 +8374,7 @@ theorem ntmChoiceEffect_weight_le
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
               (ntmRightVar M x t s (i+1))
-              (ntmRightVar M x t (s+1) i))
+              (ntmRightVar M x t (s+1) i))))
       rw [show ntmCNFWeight
           (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
             M x t (s + 1) 0 write) = 9 by
