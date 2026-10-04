@@ -9,6 +9,8 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open PNPNTMTableauEncoding
 open SourceRecovery
+open P02ComplementRunRealization
+open P02TableauDynamics
 
 /-- Number of encoded bits occupied by the first k CNF clauses, excluding the
 recursive encoding of the remaining suffix. -/
@@ -71,30 +73,52 @@ theorem sourceCell_clause_slice
     initialRightCellBlock, sourceRightSymbol] using
     (drop_rightBlockOffset_take_right M x t i hi)
 
-/-- Prefix immediately before source cell i is now a literal bitstring
-quantity, suitable for comparison against ReadConePrefix. -/
-def sourceCellVisible
-    (D : PolyDTMCandidate)
-    (M : PolyNTMCandidate)
+/-- Prefix immediately before source cell i is now a literal
+bitstring quantity.  Visibility must be measured against the clock on the
+actual complemented Cook--Levin output, not merely its initial CNF prefix. -/
+def sourceCellVisibleInReduction
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
     (x : BitString)
-    (t i : Nat) : Prop :=
-  sourceCellBitOffset M x t i <
-    D.timeBound
-      (encodeCircuit
-        (ntmCNFCircuit (ntmInitialCNF M x t))).length + 1
+    (i : Nat) : Prop :=
+  sourceCellBitOffset
+      (complementToNTMCandidate M)
+      x
+      (M.timeBound x.length)
+      i <
+    M.timeBound (R_M M hTotal x).length + 1
 
-/-- Visibility is precisely an arithmetic inequality. -/
-theorem sourceCellVisible_iff
-    (D : PolyDTMCandidate)
-    (M : PolyNTMCandidate)
+/-- Visibility is now exactly the arithmetic comparison used by the candidate
+read cone on R_M(x). -/
+theorem sourceCellVisibleInReduction_iff
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
     (x : BitString)
-    (t i : Nat) :
-    sourceCellVisible D M x t i ↔
-      sourceCellBitOffset M x t i <
-        D.timeBound
-          (encodeCircuit
-            (ntmCNFCircuit (ntmInitialCNF M x t))).length + 1 := by
+    (i : Nat) :
+    sourceCellVisibleInReduction M hTotal x i ↔
+      sourceCellBitOffset
+          (complementToNTMCandidate M)
+          x
+          (M.timeBound x.length)
+          i <
+        M.timeBound (R_M M hTotal x).length + 1 := by
   rfl
+
+/-- Exact numeric frontier for one source cell: either the candidate's read
+cone reaches the encoded cell boundary, or it does not. -/
+theorem sourceCell_visible_or_hidden
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x : BitString)
+    (i : Nat) :
+    sourceCellVisibleInReduction M hTotal x i ∨
+      M.timeBound (R_M M hTotal x).length + 1 ≤
+        sourceCellBitOffset
+          (complementToNTMCandidate M)
+          x
+          (M.timeBound x.length)
+          i := by
+  omega
 
 /-- The full complemented reduction retains the complete source, with no
 semantic assumption beyond the already-certified concrete reduction. -/
@@ -113,6 +137,7 @@ theorem reduction_source_recoverable
 #print axioms MCore.Real.PNPDiscovery.encode_ntmCNFCircuit_split_at
 #print axioms MCore.Real.PNPDiscovery.take_clauseBitOffset
 #print axioms MCore.Real.PNPDiscovery.sourceCell_clause_slice
+#print axioms MCore.Real.PNPDiscovery.sourceCell_visible_or_hidden
 #print axioms MCore.Real.PNPDiscovery.reduction_source_recoverable
 
 end PNPDiscovery
