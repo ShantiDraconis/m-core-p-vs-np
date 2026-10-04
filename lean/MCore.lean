@@ -247,3 +247,8 @@ import MCore.Real.PNPDiscovery.SymbolBlockLocalization
 import MCore.Real.PNPDiscovery.SourceGlobalBitOffset
 import MCore.Real.PNPDiscovery.SourceCellBitTransport
 import MCore.Real.PNPDiscovery.SourceCellBitTransportClosed
+
+import MCore.Real.PNPDiscovery.SourcePrefixEndExpansion
+import MCore.Real.PNPDiscovery.SourcePrefixEndEnvelope
+import MCore.Real.PNPDiscovery.SourceHiddenGrowthExpansion
+import MCore.Real.PNPDiscovery.VisibilityOrientationAudit
