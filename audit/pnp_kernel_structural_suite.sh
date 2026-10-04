@@ -8,6 +8,7 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/KernelTestOpenFrontier.lean
   lean/MCore/Real/PNPDiscovery/PlusOneSemanticsAudit.lean
   lean/MCore/Real/PNPDiscovery/ExactOpenMathMinCut.lean
+  lean/MCore/Real/PNPDiscovery/MaterialClosureCertificateContract.lean
 )
 
 echo "[PNP-KERNEL] proof-escape scan"
@@ -46,6 +47,9 @@ if grep -E 'sorryAx|(^|[^A-Za-z])axiom([^A-Za-z]|$)' "$OUT"; then
   echo "RED: nonstandard proof axiom detected"
   exit 1
 fi
+
+echo "[PNP-KERNEL] no-scaffold-escape guard"
+bash audit/pnp_no_scaffold_escape.sh
 
 echo "[PNP-KERNEL] root import check"
 lake env lean lean/MCore.lean
