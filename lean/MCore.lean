@@ -271,3 +271,8 @@ import MCore.Real.PNPDiscovery.AlphaRenameCore
 import MCore.Real.PNPDiscovery.LayoutAlphaEquivalence
 import MCore.Real.PNPDiscovery.TableauShapeLeakage
 import MCore.Real.PNPDiscovery.TransitionShapeFrontier
+
+import MCore.Real.PNPDiscovery.StrictLengthGrowth
+import MCore.Real.PNPDiscovery.ArithmeticBreakerRouteFalsified
+import MCore.Real.PNPDiscovery.LayoutDriftFrontier
+import MCore.Real.PNPDiscovery.LayoutBoundaryMismatch
