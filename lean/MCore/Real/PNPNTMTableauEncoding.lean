@@ -5883,9 +5883,10 @@ theorem pathAssignment_left
       have hinj := ntmLeftVar_injective M x t s s' i i' a
         ((path ⟨s', by omega⟩).tape.left.getD i' M.machine.blank)
         hi hi' heq
+      rcases hinj with ⟨hsEq, hiEq, haEq⟩
       subst s'
       subst i'
-      exact ha hinj.2.2
+      exact ha haEq
     have hnotState :
         ¬ PathAssignmentStateTrue M t path (ntmLeftVar M x t s i a) := by
       intro h
@@ -5943,9 +5944,10 @@ theorem pathAssignment_right
       have hinj := ntmRightVar_injective M x t s s' i i' a
         ((path ⟨s', by omega⟩).tape.right.getD i' M.machine.blank)
         hi hi' heq
+      rcases hinj with ⟨hsEq, hiEq, haEq⟩
       subst s'
       subst i'
-      exact ha hinj.2.2
+      exact ha haEq
     have hnotState :
         ¬ PathAssignmentStateTrue M t path (ntmRightVar M x t s i a) := by
       intro h
