@@ -5960,7 +5960,8 @@ theorem pathAssignment_left
         unfold ntmChoiceBase
         omega
       omega
-    simp [pathAssignment, List.getD, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
+    simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice]
+    simpa [List.getD] using ha
 
 theorem pathAssignment_right
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -6047,7 +6048,8 @@ theorem pathAssignment_right
         (path ⟨s', by omega⟩).tape.head
         (choiceIdxOfStep M t path hPath s' hs')
       omega
-    simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
+    simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice]
+    simpa [List.getD] using ha
 
 theorem pathAssignment_choice_selected
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -6193,7 +6195,17 @@ theorem pathAssignment_initial_left_sat
         (inputTape x).left.getD i M.machine.blank := by
     simpa [initialNTMConfig] using
       congrArg (fun c => c.tape.left.getD i M.machine.blank) h0
-  simpa [hleft]
+  constructor
+  · intro hb
+    calc
+      b = (path 0).tape.left.getD i M.machine.blank := by
+        simpa [List.getD] using hb
+      _ = (inputTape x).left.getD i M.machine.blank := hleft
+  · intro hb
+    calc
+      b = (inputTape x).left.getD i M.machine.blank := by
+        simpa [List.getD] using hb
+      _ = (path 0).tape.left.getD i M.machine.blank := hleft.symm
 
 theorem pathAssignment_initial_right_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -6215,7 +6227,17 @@ theorem pathAssignment_initial_right_sat
         (inputTape x).right.getD i M.machine.blank := by
     simpa [initialNTMConfig] using
       congrArg (fun c => c.tape.right.getD i M.machine.blank) h0
-  simpa [hright]
+  constructor
+  · intro hb
+    calc
+      b = (path 0).tape.right.getD i M.machine.blank := by
+        simpa [List.getD] using hb
+      _ = (inputTape x).right.getD i M.machine.blank := hright
+  · intro hb
+    calc
+      b = (inputTape x).right.getD i M.machine.blank := by
+        simpa [List.getD] using hb
+      _ = (path 0).tape.right.getD i M.machine.blank := hright.symm
 
 theorem pathAssignment_initial_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -6238,11 +6260,11 @@ theorem pathAssignment_initial_sat
           ((inputTape x).right.getD i M.machine.blank)) by
         rfl]
   rw [evalNTMCNF_append]
-  refine ⟨hs, ?_⟩
+  refine ⟨?_, hr⟩
   rw [evalNTMCNF_append]
-  refine ⟨hh, ?_⟩
+  refine ⟨?_, hl⟩
   rw [evalNTMCNF_append]
-  exact ⟨hl, hr⟩
+  exact ⟨hs, hh⟩
 
 
 theorem evalNTMClause_append_of_left_true
@@ -6258,6 +6280,32 @@ theorem evalNTMClause_append_of_left_true
       · exact Or.inl hl
       · exact Or.inr (ih hls)
 
+theorem evalNTMCNF_ofFn
+    {n : Nat}
+    (sigma : Assignment)
+    (f : Fin n -> NTMClause) :
+    evalNTMCNF sigma (List.ofFn f) = true <->
+      forall i : Fin n, evalNTMClause sigma (f i) = true := by
+  induction n with
+  | zero =>
+      constructor
+      · intro _ i
+        exact Fin.elim0 i
+      · intro _
+        rfl
+  | succ n ih =>
+      rw [List.ofFn_succ]
+      rw [evalNTMCNF_cons_iff]
+      constructor
+      · rintro ⟨h0, hs⟩ i
+        refine Fin.cases h0 ?_ i
+        intro j
+        exact (ih (fun k => f k.succ)).mp hs j
+      · intro h
+        constructor
+        · exact h 0
+        · exact (ih (fun k => f k.succ)).mpr (fun j => h j.succ)
+
 theorem eval_setState_guard_true
     (sigma : Assignment) (guard : NTMClause)
     (M : PolyNTMCandidate) (t s : Nat)
@@ -6268,19 +6316,23 @@ theorem eval_setState_guard_true
       List.ofFn (fun q : Fin (M.stateCount + 1) =>
         guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))]) by
         rfl]
-  apply (evalNTMCNF_map_flatten_ofFn sigma
+  apply (evalNTMCNF_ofFn sigma
     (fun q : Fin (M.stateCount + 1) =>
-      [guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))]])).2
+      guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))])).2
   intro q
-  simp [evalNTMCNF, evalNTMClause_append_of_left_true sigma guard _ hg]
+  exact evalNTMClause_append_of_left_true sigma guard _ hg
 
 theorem eval_setSymbol_guard_true
     (sigma : Assignment) (guard : NTMClause)
     (varAt : Option Bool -> Nat) (target : Option Bool)
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmSetSymbolClauses guard varAt target) = true := by
+  rw [show ntmSetSymbolClauses guard varAt target =
+      ntmAlphabet.flatMap (fun a =>
+        [guard ++ [ntmLitFor (varAt a) (decide (a = target))]]) by
+        simp [ntmSetSymbolClauses]]
   apply (evalNTMCNF_flatMap_list sigma ntmAlphabet
-    (fun a => [[guard ++ [ntmLitFor (varAt a) (decide (a = target))]]])).2
+    (fun a => [guard ++ [ntmLitFor (varAt a) (decide (a = target))]])).2
   intro a ha
   simp [evalNTMCNF, evalNTMClause_append_of_left_true sigma guard _ hg]
 
@@ -6306,10 +6358,11 @@ theorem pathAssignment_state_neg_of_ne
     (hne : q ≠ (path ⟨s, by omega⟩).state) :
     evalNTMLiteral (pathAssignment M x t path hPath)
       (ntmNeg (ntmStateVar M t s q)) = true := by
-  rw [show pathAssignment M x t path hPath (ntmStateVar M t s q) = false by
+  have hfalse :
+      pathAssignment M x t path hPath (ntmStateVar M t s q) = false := by
     rw [pathAssignment_state M x t path hPath s hs q]
-    simp [hne]]
-  simp [evalNTMLiteral, ntmNeg]
+    simp [hne]
+  simp [evalNTMLiteral, ntmNeg, hfalse]
 
 theorem pathAssignment_head_neg_of_ne
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
@@ -6321,10 +6374,11 @@ theorem pathAssignment_head_neg_of_ne
     (hne : a ≠ (path ⟨s, by omega⟩).tape.head) :
     evalNTMLiteral (pathAssignment M x t path hPath)
       (ntmNeg (ntmHeadVar M t s a)) = true := by
-  rw [show pathAssignment M x t path hPath (ntmHeadVar M t s a) = false by
+  have hfalse :
+      pathAssignment M x t path hPath (ntmHeadVar M t s a) = false := by
     rw [pathAssignment_head M x t path hPath s hs a]
-    simp [hne]]
-  simp [evalNTMLiteral, ntmNeg]
+    simp [hne]
+  simp [evalNTMLiteral, ntmNeg, hfalse]
 
 theorem pathAssignment_case_guard_true_of_mismatch
     (M : PolyNTMCandidate) (x : BitString) (t s : Nat)
