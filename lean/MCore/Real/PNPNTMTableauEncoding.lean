@@ -5499,7 +5499,15 @@ theorem ntmBranchBound_ge_transition_length
     (M.machine.transition q a).length <= ntmBranchBound M := by
   unfold ntmBranchBound
   apply foldl_max_ge_of_mem
-  simp [ntmAlphabet]
+  apply List.mem_flatMap.mpr
+  refine ⟨q, List.mem_ofFn.mpr ⟨q, rfl⟩, ?_⟩
+  apply List.mem_map.mpr
+  refine ⟨a, ?_, rfl⟩
+  cases a with
+  | none =>
+      simp [ntmAlphabet]
+  | some b =>
+      cases b <;> simp [ntmAlphabet]
 
 theorem choiceIdxOfStep_lt_branchBound_succ
     (M : PolyNTMCandidate)
