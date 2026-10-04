@@ -6474,25 +6474,37 @@ theorem eval_rightEffect_guard_true
     evalNTMCNF sigma (ntmRightEffectCNF guard M x t s qNext write) = true := by
   unfold ntmRightEffectCNF
   simp only [evalNTMCNF_append]
-  refine ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg, ?_⟩
-  refine ⟨eval_copySymbol_guard_true sigma guard
-    (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1)) hg, ?_⟩
-  refine ⟨eval_setSymbol_guard_true sigma guard
-    (ntmLeftVar M x t (s + 1) 0) write hg, ?_⟩
-  refine ⟨?_, ?_⟩
-  · rw [evalNTMCNF_flatMap_range]
+  have hState :=
+    eval_setState_guard_true sigma guard M t (s + 1) qNext hg
+  have hHead :=
+    eval_copySymbol_guard_true sigma guard
+      (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1)) hg
+  have hWrite :=
+    eval_setSymbol_guard_true sigma guard
+      (ntmLeftVar M x t (s + 1) 0) write hg
+  have hShiftLeft :
+      evalNTMCNF sigma
+        ((List.range (ntmRadius x t - 1)).flatMap (fun i =>
+          ntmCopyLeftCell guard M x t s i (s + 1) (i + 1))) = true := by
+    rw [evalNTMCNF_flatMap_range]
     intro i hi
     exact eval_copySymbol_guard_true sigma guard
       (ntmLeftVar M x t s i)
       (ntmLeftVar M x t (s + 1) (i + 1)) hg
-  · refine ⟨?_, eval_setSymbol_guard_true sigma guard
-      (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
-      M.machine.blank hg⟩
+  have hShiftRight :
+      evalNTMCNF sigma
+        ((List.range (ntmRadius x t - 1)).flatMap (fun i =>
+          ntmCopyRightCell guard M x t s (i + 1) (s + 1) i)) = true := by
     rw [evalNTMCNF_flatMap_range]
     intro i hi
     exact eval_copySymbol_guard_true sigma guard
       (ntmRightVar M x t s (i + 1))
       (ntmRightVar M x t (s + 1) i) hg
+  have hBlank :=
+    eval_setSymbol_guard_true sigma guard
+      (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
+      M.machine.blank hg
+  exact ⟨⟨⟨⟨⟨hState, hHead⟩, hWrite⟩, hShiftLeft⟩, hShiftRight⟩, hBlank⟩
 
 theorem eval_choiceEffect_of_choice_false
     (sigma : Assignment)
