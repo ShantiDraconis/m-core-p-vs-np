@@ -6196,17 +6196,8 @@ theorem pathAssignment_initial_left_sat
         (inputTape x).left.getD i M.machine.blank := by
     simpa [initialNTMConfig] using
       congrArg (fun c => c.tape.left.getD i M.machine.blank) h0
-  constructor
-  · intro hb
-    calc
-      b = (path 0).tape.left.getD i M.machine.blank := by
-        simpa [List.getD] using hb
-      _ = (inputTape x).left.getD i M.machine.blank := hleft
-  · intro hb
-    calc
-      b = (inputTape x).left.getD i M.machine.blank := by
-        simpa [List.getD] using hb
-      _ = (path 0).tape.left.getD i M.machine.blank := hleft.symm
+  simpa using
+    congrArg (fun z : Option Bool => decide (b = z)) hleft
 
 theorem pathAssignment_initial_right_sat
     (M : PolyNTMCandidate) (x : BitString) (t : Nat)
