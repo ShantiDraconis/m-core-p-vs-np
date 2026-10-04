@@ -7928,7 +7928,8 @@ theorem ntmStateVar_lt_tableauVarCap
     ntmStateVar M t s q < tableauVarCap M x t := by
   have h1 := ntmStateVar_lt_headBase M t s q hs
   have h2 : ntmHeadBase M t <= ntmChoiceBase M x t := by
-    simp [ntmChoiceBase, ntmRightBase, ntmLeftBase]
+    unfold ntmChoiceBase ntmRightBase ntmLeftBase
+    omega
   unfold tableauVarCap
   omega
 
@@ -7938,7 +7939,8 @@ theorem ntmHeadVar_lt_tableauVarCap
     ntmHeadVar M t s a < tableauVarCap M x t := by
   have h1 := (ntmHeadVar_range M x t s a hs).2
   have h2 : ntmLeftBase M x t <= ntmChoiceBase M x t := by
-    simp [ntmChoiceBase, ntmRightBase]
+    unfold ntmChoiceBase ntmRightBase
+    omega
   unfold tableauVarCap
   omega
 
@@ -8071,7 +8073,7 @@ theorem ntmClauseWeight_append
     (a b : NTMClause) :
     ntmClauseWeight (a ++ b) =
       ntmClauseWeight a + b.length := by
-  simp [ntmClauseWeight]
+  simp [ntmClauseWeight, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
 
 theorem ntmCNFWeight_append
     (a b : NTMCNF) :
@@ -8090,7 +8092,8 @@ theorem ntmCNFWeight_flatMap_range_le
   induction n with
   | zero => simp [ntmCNFWeight]
   | succ n ih =>
-      rw [List.range_succ, List.flatMap_append, ntmCNFWeight_append]
+      simp only [List.range_succ, List.flatMap_append, List.flatMap_singleton,
+        ntmCNFWeight_append]
       have hprev := ih (fun i hi => h i (by omega))
       have hlast := h n (by omega)
       calc
@@ -8112,7 +8115,8 @@ theorem ntmCNFWeight_flatMap_list_le
       calc
         ntmCNFWeight (f a) + ntmCNFWeight (as.flatMap f)
             <= K + as.length * K := Nat.add_le_add ha ht
-        _ = (a :: as).length * K := by simp [Nat.add_mul]
+        _ = (a :: as).length * K := by
+          simp [Nat.add_mul, Nat.add_comm]
 
 theorem ntmSetState_weight
     (guard : NTMClause)
