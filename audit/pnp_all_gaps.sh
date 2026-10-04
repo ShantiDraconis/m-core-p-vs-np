@@ -57,6 +57,10 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/SourceOffsetLowerEnvelope.lean
   lean/MCore/Real/PNPDiscovery/BarrierArithmeticFrontier.lean
   lean/MCore/Real/PNPDiscovery/ArithmeticProducerClosure.lean
+  lean/MCore/Real/PNPDiscovery/StrictLengthGrowth.lean
+  lean/MCore/Real/PNPDiscovery/ArithmeticBreakerRouteFalsified.lean
+  lean/MCore/Real/PNPDiscovery/LayoutDriftFrontier.lean
+  lean/MCore/Real/PNPDiscovery/LayoutBoundaryMismatch.lean
   lean/MCore/Real/PNPDiscovery/StrictOrbitLengthGrowth.lean
   lean/MCore/Real/PNPDiscovery/ArithmeticRouteFalsification.lean
   lean/MCore/Real/PNPDiscovery/LayoutLeakage.lean
