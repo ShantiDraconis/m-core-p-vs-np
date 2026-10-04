@@ -8104,8 +8104,18 @@ theorem ntmCNFWeight_append
     | cons cl cs ih =>
         intro acc
         simp only [List.foldl_cons]
-        rw [ih (acc + ntmClauseWeight cl), ih (ntmClauseWeight cl)]
-        omega
+        calc
+          cs.foldl (fun z cl => z + ntmClauseWeight cl)
+              (acc + ntmClauseWeight cl) =
+            (acc + ntmClauseWeight cl) +
+              cs.foldl (fun z cl => z + ntmClauseWeight cl) 0 := ih _
+          _ = acc +
+              (ntmClauseWeight cl +
+                cs.foldl (fun z cl => z + ntmClauseWeight cl) 0) := by omega
+          _ = acc +
+              cs.foldl (fun z cl => z + ntmClauseWeight cl)
+                (ntmClauseWeight cl) := by
+            rw [ih (ntmClauseWeight cl)]
   rw [List.foldl_append]
   rw [hacc b (a.foldl (fun z cl => z + ntmClauseWeight cl) 0)]
 
@@ -8157,7 +8167,8 @@ theorem ntmSetSymbol_weight
     ntmCNFWeight (ntmSetSymbolClauses guard varAt target) =
       3 * (guard.length + 2) := by
   cases target <;>
-    simp [ntmSetSymbolClauses, ntmAlphabet, ntmCNFWeight, ntmClauseWeight]
+    simp [ntmSetSymbolClauses, ntmAlphabet, ntmCNFWeight, ntmClauseWeight] <;>
+    omega
 
 theorem ntmCopySymbol_weight
     (guard : NTMClause)
