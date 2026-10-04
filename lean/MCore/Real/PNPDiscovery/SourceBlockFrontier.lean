@@ -81,7 +81,18 @@ theorem sourceRightSymbol_of_lt
     sourceRightSymbol (b :: bs) i =
       some (bs.getD i false) := by
   unfold sourceRightSymbol
-  simp [inputTape, map_some_getD_of_lt bs i hi]
+  simp only [inputTape]
+  induction bs generalizing i with
+  | nil =>
+      simp at hi
+  | cons c cs ih =>
+      cases i with
+      | zero =>
+          simp [List.getD_cons_zero]
+      | succ i =>
+          have hi' : i < cs.length := by
+            simpa using hi
+          simpa [List.getD_cons_succ] using ih i hi'
 
 /-- Past the source tail, the canonical right side is blank. -/
 theorem sourceRightSymbol_of_ge
@@ -91,10 +102,18 @@ theorem sourceRightSymbol_of_ge
     (hi : bs.length ≤ i) :
     sourceRightSymbol (b :: bs) i = none := by
   unfold sourceRightSymbol
-  simp [inputTape]
-  have hmap : (bs.map some).length ≤ i := by
-    simpa using hi
-  exact List.getD_eq_default_of_le hmap
+  simp only [inputTape]
+  induction bs generalizing i with
+  | nil =>
+      simp
+  | cons c cs ih =>
+      cases i with
+      | zero =>
+          simp at hi
+      | succ i =>
+          have hi' : cs.length ≤ i := by
+            simpa using hi
+          simpa [List.getD_cons_succ] using ih i hi'
 
 /-- Local dependency record for one encoded source cell. -/
 structure SourceCellAlignment
