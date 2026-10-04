@@ -69,6 +69,8 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/FiniteDescriptionInjectivity.lean
   lean/MCore/Real/PNPDiscovery/NormalizedUniversalPrerequisites.lean
   lean/MCore/Real/PNPDiscovery/ConcreteMachineInputPairing.lean
+  lean/MCore/Real/PNPDiscovery/PlusOneSemanticsAudit.lean
+  lean/MCore/Real/PNPDiscovery/ExactOpenMathMinCut.lean
   lean/MCore/Real/PNPDiscovery/StrictLengthGrowth.lean
   lean/MCore/Real/PNPDiscovery/ArithmeticBreakerRouteFalsified.lean
   lean/MCore/Real/PNPDiscovery/LayoutDriftFrontier.lean
@@ -124,6 +126,12 @@ fi
 
 echo "[PNP-DISCOVERY] GAP LEDGER"
 cat <<'EOF'
+EXACT_MATERIAL_MINCUT:
+  GLOBAL = SATInNPPhysicalGap AND ExactSeparationOpenAtom
+  ExactSeparationOpenAtom = TotalExactDiagonalProducer
+  TotalExactDiagonalProducer <-> UniversalFailure canonical SAT
+  Therefore separation-side OPEN_MATH count = 1 exact atom.
+
 MATERIAL_OPEN:
   1. SATInNPPhysicalGap = Nonempty P01MachineConstruction
   2. SATSeparationGap = UniversalFailure canonical SAT
@@ -172,6 +180,14 @@ LAYOUT_LEAKAGE:
   HEAD/first LEFT alpha-equivalent modulo ID renaming
   radius mismatch = alpha-invariant shape leakage
   EqualRadiusTransitionShapeGap = REDUCIBLE structural frontier
+
+PLUS_ONE_AUDIT:
+  stateCount+1 = actual nonempty state cardinality
+  encodeNat n length n+1 = unary terminator bit
+  ntmRadius = |x|+t+1 = head cell plus t reachable positions
+  SharedReadConePrefix = minClock+1 = same head-cell accounting
+  (n+1)^k = positive-base polynomial-bound convention
+  equal radius cancels +1 exactly: |x|+t = |y|+u
 
 SELF_REFERENCE_FORCING:
   CLOSED:
