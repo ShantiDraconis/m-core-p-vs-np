@@ -1,5 +1,3 @@
-import Mathlib.Tactic
-
 import MCore.Real.PNPNTMPathFrontier
 
 namespace MCore
