@@ -7860,7 +7860,7 @@ theorem foldl_clauseWeight_acc
         _ = acc +
             cs.foldl (fun z cl => z + ntmClauseWeight cl)
               (ntmClauseWeight cl) := by
-          simpa using congrArg (fun z => acc + z) (ih (ntmClauseWeight cl)).symm
+          simp
 
 theorem encodeNat_length_exact
     (n : Nat) :
