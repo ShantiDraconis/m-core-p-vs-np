@@ -203,3 +203,5 @@ import MCore.Real.SevenLaneGreenGate
 import MCore.Real.SixOpenFrontierRegistry
 
 import MCore.Real.SevenLaneClaimBoundary
+
+import MCore.Real.PNPDiscovery.OrbitCollision
