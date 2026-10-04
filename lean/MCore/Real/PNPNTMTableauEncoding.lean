@@ -5464,6 +5464,17 @@ theorem foldl_max_ge_acc
       simp only [List.foldl_cons]
       exact Nat.le_trans (Nat.le_max_left acc x) (ih (Nat.max acc x))
 
+theorem foldl_max_mono_acc
+    (xs : List Nat) {a b : Nat}
+    (hab : a <= b) :
+    xs.foldl Nat.max a <= xs.foldl Nat.max b := by
+  induction xs generalizing a b with
+  | nil =>
+      simpa using hab
+  | cons x xs ih =>
+      simp only [List.foldl_cons]
+      exact ih (Nat.max_le_max hab (Nat.le_refl x))
+
 theorem foldl_max_ge_of_mem
     (xs : List Nat) (x acc : Nat)
     (hx : x ∈ xs) :
@@ -7872,22 +7883,16 @@ theorem ntmClauseCircuit_encoding_le
       10 * ntmClauseWeight cl * (ntmClauseMaxVar cl + 1) := by
   induction cl with
   | nil =>
-      simp [ntmClauseCircuit, ntmClauseWeight, encodeCircuit]
+      simp [ntmClauseCircuit, ntmClauseWeight, ntmClauseMaxVar, encodeCircuit]
   | cons l ls ih =>
-      have hlmax : l.var <= ntmClauseMaxVar (l :: ls) := by
-        unfold ntmClauseMaxVar
-        simp only [List.foldl_cons]
-        exact Nat.le_max_right _ _
+      have hlmax : l.var <= ntmClauseMaxVar (l :: ls) :=
+        ntmClauseMaxVar_ge_of_mem (l :: ls) l (by simp)
       have htail :
           ntmClauseMaxVar ls <= ntmClauseMaxVar (l :: ls) := by
         unfold ntmClauseMaxVar
-        simp only [List.foldl_cons]
-        induction ls with
-        | nil => simp
-        | cons a as ihls =>
-            simp only [List.foldl_cons]
-            exact foldl_max_ge_acc (as.map NTMLiteral.var)
-              (Nat.max (Nat.max 0 l.var) a.var)
+        simpa [List.foldl_map] using
+          foldl_max_mono_acc (ls.map NTMLiteral.var)
+            (Nat.le_max_left 0 l.var)
       have hlit := ntmLiteralCircuit_encoding_le l
       simp [ntmClauseCircuit, encodeCircuit, ntmClauseWeight] at ih ⊢
       nlinarith
@@ -7907,13 +7912,9 @@ theorem ntmCNFCircuit_encoding_le
       have htailmax :
           ntmCNFMaxVar fs <= ntmCNFMaxVar (cl :: fs) := by
         unfold ntmCNFMaxVar
-        simp only [List.foldl_cons]
-        induction fs with
-        | nil => simp
-        | cons a as as ihfs =>
-            simp only [List.foldl_cons]
-            exact foldl_max_ge_acc (as.map ntmClauseMaxVar)
-              (Nat.max (Nat.max 0 (ntmClauseMaxVar cl)) (ntmClauseMaxVar a))
+        simpa [List.foldl_map] using
+          foldl_max_mono_acc (fs.map ntmClauseMaxVar)
+            (Nat.le_max_left 0 (ntmClauseMaxVar cl))
       have hcl := ntmClauseCircuit_encoding_le cl
       simp [ntmCNFCircuit, encodeCircuit, ntmCNFWeight, ntmClauseWeight] at ih ⊢
       nlinarith
