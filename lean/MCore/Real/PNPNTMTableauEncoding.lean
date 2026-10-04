@@ -6810,7 +6810,9 @@ theorem pathAssignment_haltedStutter_sat
         have hhEq :
             (path ⟨s + 1, by omega⟩).tape.head = c.tape.head := by
           simpa [c, c'] using congrArg (fun z => z.tape.head) hEq
-        simpa [c] using hhEq
+        constructor <;> intro hb
+        · simpa [c, hhEq] using hb
+        · simpa [c, hhEq] using hb
       have hleft :
           evalNTMCNF sigma
             (ntmCopyLeftAll
@@ -6924,9 +6926,9 @@ theorem pathTapeBound_step
   have hStep : NTMTableauStep M c c' := by
     simpa [c, c'] using hPath.2 ⟨s, hs⟩
   have hBleft : c.tape.left.length <= x.length + s := by
-    simpa [c] using hBleft
+    simpa [c] using hB.left_len
   have hBright : c.tape.right.length <= x.length + s := by
-    simpa [c] using hBright
+    simpa [c] using hB.right_len
   rcases hStep with hhalt | hactive
   · have heq := hhalt.2
     refine { left_len := ?_, right_len := ?_ }
