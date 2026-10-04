@@ -217,3 +217,7 @@ import MCore.Real.PNPDiscovery.BarrierPressure
 import MCore.Real.PNPDiscovery.EncodingDependencyMap
 import MCore.Real.PNPDiscovery.ReductionPrefixFormula
 import MCore.Real.PNPDiscovery.ClockVsEncodingLayout
+
+import MCore.Real.PNPDiscovery.ParityDistinguishingBit
+import MCore.Real.PNPDiscovery.EncodingSpine
+import MCore.Real.PNPDiscovery.HeadBlockFrontier
