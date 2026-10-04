@@ -208,3 +208,8 @@ import MCore.Real.PNPDiscovery.OrbitCollision
 
 import MCore.Real.PNPDiscovery.OrbitArithmetic
 import MCore.Real.PNPDiscovery.TerminalStateFrontier
+
+import MCore.Real.PNPDiscovery.ReadCone
+import MCore.Real.PNPDiscovery.ReadConeFrontier
+import MCore.Real.PNPDiscovery.PrefixPressure
+import MCore.Real.PNPDiscovery.BarrierPressure
