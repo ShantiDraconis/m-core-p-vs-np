@@ -5473,7 +5473,7 @@ theorem foldl_max_mono_acc
       simpa using hab
   | cons x xs ih =>
       simp only [List.foldl_cons]
-      exact ih (Nat.max_le_max hab (Nat.le_refl x))
+      exact ih (max_le_max hab (Nat.le_refl x))
 
 theorem foldl_max_ge_of_mem
     (xs : List Nat) (x acc : Nat)
@@ -7636,9 +7636,10 @@ theorem pathAssignment_activeChoice_actual_sat
       have hpVal :
           trp = (M.machine.transition q a).get
             ⟨j, by simpa using hpLt⟩ := by
-        apply indexedTransitions_index_value (M.machine.transition q a) j trp
-        · simpa [entries] using hp
-        · simpa using hpLt
+        exact indexedTransitions_index_value
+          (M.machine.transition q a) j trp
+          (by simpa [entries] using hp)
+          (by simpa using hpLt)
       subst trp
       simpa [q, a, j] using
         pathAssignment_selected_effect_sat M x t s path hPath hs hActive
@@ -7749,7 +7750,7 @@ theorem pathAssignment_final_clause_sat
     unfold ntmAcceptingStateLits
     apply List.mem_filterMap.mpr
     refine ⟨q, ?_, ?_⟩
-    · simp
+    · exact List.mem_ofFn q
     · simp [hqAcc]
   have hvar :
       pathAssignment M x t path hPath (ntmStateVar M t t q) = true := by
