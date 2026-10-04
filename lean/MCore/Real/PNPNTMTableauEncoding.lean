@@ -7849,10 +7849,18 @@ theorem foldl_clauseWeight_acc
       simp
   | cons cl cs ih =>
       simp only [List.foldl_cons]
-      have h1 := ih (acc + ntmClauseWeight cl)
-      have h2 := ih (ntmClauseWeight cl)
-      rw [h1, h2]
-      omega
+      calc
+        cs.foldl (fun z cl => z + ntmClauseWeight cl)
+            (acc + ntmClauseWeight cl) =
+          (acc + ntmClauseWeight cl) +
+            cs.foldl (fun z cl => z + ntmClauseWeight cl) 0 := ih _
+        _ = acc +
+            (ntmClauseWeight cl +
+              cs.foldl (fun z cl => z + ntmClauseWeight cl) 0) := by omega
+        _ = acc +
+            cs.foldl (fun z cl => z + ntmClauseWeight cl)
+              (ntmClauseWeight cl) := by
+          exact congrArg (fun z => acc + z) (ih (ntmClauseWeight cl)).symm
 
 theorem encodeNat_length_exact
     (n : Nat) :
@@ -8190,12 +8198,13 @@ theorem ntmSetState_weight
         rw [Nat.succ_mul]
         omega
   unfold ntmSetStateClauses ntmCNFWeight ntmStateCount
-  exact hfold (M.stateCount + 1)
-    (fun q => guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))])
-    0 (guard.length + 2)
-    (by
-      intro q
-      simp [ntmClauseWeight])
+  simpa only [Nat.zero_add] using
+    hfold (M.stateCount + 1)
+      (fun q => guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))])
+      0 (guard.length + 2)
+      (by
+        intro q
+        simp [ntmClauseWeight])
 
 theorem ntmSetSymbol_weight
     (guard : NTMClause)
@@ -8561,9 +8570,22 @@ theorem ntmActiveChoice_weight_le
         ntmBranchBound M * ntmEffectWeightCap M x t :=
     Nat.mul_le_mul_right (ntmEffectWeightCap M x t) hm
   simp only [ntmActiveChoiceCNF, ntmCNFWeight_append]
-  rw [hfirst]
   unfold ntmActiveChoiceWeightCap
-  omega
+  calc
+    ntmCNFWeight [ntmGuardChoiceClause M x t s q a] +
+          ntmCNFWeight
+            (entries.flatMap (fun p => ntmChoiceGuardCNF M x t s q a p.1)) +
+        ntmCNFWeight (ntmAtMostOneChoiceCNF M x t s q a) +
+      ntmCNFWeight
+        (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))
+        <= (m + 3) + (m * 6) + (3 * m ^ 2) +
+          (m * ntmEffectWeightCap M x t) := by
+            omega
+    _ <= 3 +
+        7 * ntmBranchBound M +
+        3 * (ntmBranchBound M) ^ 2 +
+        ntmBranchBound M * ntmEffectWeightCap M x t := by
+          omega
 
 def ntmHaltedWeightCap
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) : Nat :=
