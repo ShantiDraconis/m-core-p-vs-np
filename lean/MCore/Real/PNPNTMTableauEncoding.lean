@@ -6699,11 +6699,11 @@ theorem eval_haltedStutter_guard_true
     evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true := by
   let guard := [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
   simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
+  refine ⟨?_, eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+  refine ⟨?_, eval_copyLeftAll_guard_true sigma guard M x t s hg⟩
   exact ⟨eval_setState_guard_true sigma guard M t (s + 1) q hg,
     eval_copySymbol_guard_true sigma guard
-      (ntmHeadVar M t s) (ntmHeadVar M t (s + 1)) hg,
-    eval_copyLeftAll_guard_true sigma guard M x t s hg,
-    eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+      (ntmHeadVar M t s) (ntmHeadVar M t (s + 1)) hg⟩
 
 theorem evalNTMClause_two_neg_prefix_of_tail_true
     (sigma : Assignment) (c1 c2 : Nat) (cl : NTMClause)
