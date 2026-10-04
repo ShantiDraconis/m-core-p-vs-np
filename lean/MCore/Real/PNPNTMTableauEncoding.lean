@@ -8115,7 +8115,7 @@ theorem ntmCNFWeight_append
           _ = acc +
               cs.foldl (fun z cl => z + ntmClauseWeight cl)
                 (ntmClauseWeight cl) := by
-            simpa only [Nat.zero_add]
+            exact congrArg (fun z => acc + z) (ih (ntmClauseWeight cl)).symm
   rw [List.foldl_append]
   rw [hacc b (a.foldl (fun z cl => z + ntmClauseWeight cl) 0)]
 
@@ -8175,11 +8175,15 @@ theorem ntmSetState_weight
         rw [ih (fun i => f i.succ) (acc + ntmClauseWeight (f 0)) w
           (fun i => hw i.succ)]
         rw [hw 0]
+        rw [Nat.succ_mul]
         omega
   unfold ntmSetStateClauses ntmCNFWeight ntmStateCount
-  apply hfold
-  intro q
-  simp [ntmClauseWeight]
+  exact hfold (M.stateCount + 1)
+    (fun q => guard ++ [ntmLitFor (ntmStateVar M t s q) (decide (q = target))])
+    0 (guard.length + 2)
+    (by
+      intro q
+      simp [ntmClauseWeight])
 
 theorem ntmSetSymbol_weight
     (guard : NTMClause)
@@ -8394,7 +8398,7 @@ theorem ntmChoiceEffect_weight_le
             ntmCopySymbol_weight
               [ntmNeg (ntmChoiceVar M x t s q a j)]
               (ntmRightVar M x t s (i+1))
-              (ntmRightVar M x t (s+1) i))))
+              (ntmRightVar M x t (s+1) i)))
       rw [show ntmCNFWeight
           (ntmSetLeftCell [ntmNeg (ntmChoiceVar M x t s q a j)]
             M x t (s + 1) 0 write) = 9 by
