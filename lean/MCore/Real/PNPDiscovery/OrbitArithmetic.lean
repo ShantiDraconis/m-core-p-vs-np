@@ -161,9 +161,9 @@ theorem collisionFree_sat_second_succ
     intro hNext
     exact (hFlip.mp hNext) hNow
 
-/-- Minimal genuinely new discovery target after all currently CLOSED orbit
-logic is stripped away.  It does not mention P != NP, UniversalFailure,
-ExactDiagonalWitness, or any Kleene/fixed-point wrapper. -/
+/-- Audit target: this formulation removes endpoint vocabulary, but it is
+still equivalent to OrbitCollisionProducer.  It is therefore classified as
+EQUIVALENT_GAP, not as mathematical progress. -/
 def ObservableRecurrenceProducer : Prop :=
   ∀ M : PolyDTMCandidate, ∀ hTotal : DeclaredClockTotal M,
     ∃ seed : BitString, ∃ i d : Nat,
@@ -194,6 +194,22 @@ theorem observableRecurrence_closes_exact_frontier
   orbit_collision_producer_to_exact
     (observableRecurrence_to_collision B)
 
+/-- Reverse audit direction: an adjacent collision is the odd recurrence with
+distance one.  Hence ObservableRecurrenceProducer is only a change of language. -/
+theorem collision_to_observableRecurrence
+    (B : OrbitCollisionProducer) :
+    ObservableRecurrenceProducer := by
+  intro M hTotal
+  rcases B M hTotal with ⟨seed, n, hCollision⟩
+  refine ⟨seed, n, 0, ?_⟩
+  simpa [AcceptanceCollision, Nat.mul_zero, Nat.zero_add] using hCollision
+
+theorem observableRecurrence_iff_collision :
+    ObservableRecurrenceProducer ↔ OrbitCollisionProducer := by
+  constructor
+  · exact observableRecurrence_to_collision
+  · exact collision_to_observableRecurrence
+
 #print axioms MCore.Real.PNPDiscovery.reductionMap_eq_R_M
 #print axioms MCore.Real.PNPDiscovery.orbit_eq_genericOrbit
 #print axioms MCore.Real.PNPDiscovery.canonicalSAT_orbit_succ
@@ -203,6 +219,8 @@ theorem observableRecurrence_closes_exact_frontier
 #print axioms MCore.Real.PNPDiscovery.collisionFree_sat_second_succ
 #print axioms MCore.Real.PNPDiscovery.observableRecurrence_to_collision
 #print axioms MCore.Real.PNPDiscovery.observableRecurrence_closes_exact_frontier
+#print axioms MCore.Real.PNPDiscovery.collision_to_observableRecurrence
+#print axioms MCore.Real.PNPDiscovery.observableRecurrence_iff_collision
 
 end PNPDiscovery
 end Real
