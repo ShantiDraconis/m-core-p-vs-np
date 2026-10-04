@@ -8976,9 +8976,9 @@ theorem choiceEffect_varsLe
     (hj : entry.1 <= ntmBranchBound M) :
     CNFVarsLe (tableauVarCap M x t)
       (ntmChoiceEffectCNF M x t s q a entry) := by
-  let guard := [ntmNeg (ntmChoiceVar M x t s q a entry.1)]
-  have hg := choiceGuard_varsLe M x t s q a entry.1 (by omega) hj
   rcases entry with ⟨j, qNext, write, d⟩
+  let guard := [ntmNeg (ntmChoiceVar M x t s q a j)]
+  have hg := choiceGuard_varsLe M x t s q a j (by omega) (by simpa using hj)
   cases d with
   | stay =>
       simp only [ntmChoiceEffectCNF, ntmStayEffectCNF]
