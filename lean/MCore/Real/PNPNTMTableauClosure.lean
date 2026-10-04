@@ -6,6 +6,7 @@ namespace MCore
 namespace Real
 namespace PNPNTMTableauClosure
 
+open CircuitK1
 open CanonicalFinalProof
 open PNPNTMTableauFrontier
 open PNPNTMTableauEncoding
