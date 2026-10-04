@@ -7318,10 +7318,10 @@ theorem pathAssignment_selected_effect_sat
         have hcell :
             c'.tape.left.getD (ntmRadius x t - 1) M.machine.blank =
               M.machine.blank := by
-          rw [hnext]
-          have hm := tapeMove_left_left_getD M.machine.blank write c.tape
-            (ntmRadius x t - 1)
-          rw [hm]
+          rw [hnext, htrDef]
+          simp only [NTM.stepBranch]
+          rw [tapeMove_left_left_getD M.machine.blank write c.tape
+            (ntmRadius x t - 1)]
           simpa [c, Nat.sub_add_cancel (by simp [ntmRadius] : 1 <= ntmRadius x t)]
             using hout
         simpa [c'] using
@@ -7465,10 +7465,10 @@ theorem pathAssignment_selected_effect_sat
         have hcell :
             c'.tape.right.getD (ntmRadius x t - 1) M.machine.blank =
               M.machine.blank := by
-          rw [hnext]
-          have hm := tapeMove_right_right_getD M.machine.blank write c.tape
-            (ntmRadius x t - 1)
-          rw [hm]
+          rw [hnext, htrDef]
+          simp only [NTM.stepBranch]
+          rw [tapeMove_right_right_getD M.machine.blank write c.tape
+            (ntmRadius x t - 1)]
           simpa [c, Nat.sub_add_cancel (by simp [ntmRadius] : 1 <= ntmRadius x t)]
             using hout
         simpa [c'] using
