@@ -205,3 +205,6 @@ import MCore.Real.SixOpenFrontierRegistry
 import MCore.Real.SevenLaneClaimBoundary
 
 import MCore.Real.PNPDiscovery.OrbitCollision
+
+import MCore.Real.PNPDiscovery.OrbitArithmetic
+import MCore.Real.PNPDiscovery.TerminalStateFrontier
