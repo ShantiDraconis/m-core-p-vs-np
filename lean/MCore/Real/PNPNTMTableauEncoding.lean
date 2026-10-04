@@ -7265,7 +7265,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_left_head M.machine.blank write c.tape
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       rw [show
         ntmChoiceEffectCNF M x t s c.state c.tape.head (j, tr) =
           ntmLeftEffectCNF
@@ -7299,7 +7300,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_left_left_getD M.machine.blank write c.tape i
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       have hBlank :
           evalNTMCNF (pathAssignment M x t path hPath)
             (ntmSetLeftCell
@@ -7322,7 +7324,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hm]
           simpa [c, Nat.sub_add_cancel (by simp [ntmRadius] : 1 <= ntmRadius x t)]
             using hout
-        simpa [c', hcell]
+        simpa [c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) hcell
       have hWrite :
           evalNTMCNF (pathAssignment M x t path hPath)
             (ntmSetRightCell
@@ -7336,7 +7339,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_left_right_zero M.machine.blank write c.tape
-        simpa [c', hcell]
+        simpa [c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) hcell
       have hShiftRight :
           evalNTMCNF (pathAssignment M x t path hPath)
             ((List.range (ntmRadius x t - 1)).flatMap fun i =>
@@ -7355,7 +7359,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_left_right_succ M.machine.blank write c.tape i
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       simp only [ntmLeftEffectCNF, evalNTMCNF_append]
       exact ⟨⟨⟨⟨⟨hState, hHead⟩, hShiftLeft⟩, hBlank⟩, hWrite⟩, hShiftRight⟩
   | right =>
@@ -7372,7 +7377,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_right_head M.machine.blank write c.tape
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       rw [show
         ntmChoiceEffectCNF M x t s c.state c.tape.head (j, tr) =
           ntmRightEffectCNF
@@ -7401,7 +7407,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_right_left_zero M.machine.blank write c.tape
-        simpa [c', hcell]
+        simpa [c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) hcell
       have hShiftLeft :
           evalNTMCNF (pathAssignment M x t path hPath)
             ((List.range (ntmRadius x t - 1)).flatMap fun i =>
@@ -7420,7 +7427,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_right_left_succ M.machine.blank write c.tape i
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       have hShiftRight :
           evalNTMCNF (pathAssignment M x t path hPath)
             ((List.range (ntmRadius x t - 1)).flatMap fun i =>
@@ -7439,7 +7447,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hnext]
           simpa [NTM.stepBranch, htrDef] using
             tapeMove_right_right_getD M.machine.blank write c.tape i
-        simpa [c, c', heq]
+        simpa [c, c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) heq
       have hBlank :
           evalNTMCNF (pathAssignment M x t path hPath)
             (ntmSetRightCell
@@ -7462,7 +7471,8 @@ theorem pathAssignment_selected_effect_sat
           rw [hm]
           simpa [c, Nat.sub_add_cancel (by simp [ntmRadius] : 1 <= ntmRadius x t)]
             using hout
-        simpa [c', hcell]
+        simpa [c'] using
+          congrArg (fun z : Option Bool => decide (b = z)) hcell
       simp only [ntmRightEffectCNF, evalNTMCNF_append]
       exact ⟨⟨⟨⟨⟨hState, hHead⟩, hWrite⟩, hShiftLeft⟩, hShiftRight⟩, hBlank⟩
 
