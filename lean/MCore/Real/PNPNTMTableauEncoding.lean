@@ -7907,7 +7907,7 @@ theorem ntmClauseCircuit_encoding_le
             (Nat.le_max_left 0 l.var)
       have hlit := ntmLiteralCircuit_encoding_le l
       simp [ntmClauseCircuit, encodeCircuit, ntmClauseWeight] at ih ⊢
-      nlinarith
+      omega
 
 theorem ntmCNFCircuit_encoding_le
     (f : NTMCNF) :
@@ -7950,7 +7950,7 @@ theorem ntmCNFCircuit_encoding_le
         simp [ntmClauseWeight]
       have hmpos : 1 <= ntmCNFMaxVar (cl :: fs) + 1 := by omega
       simp [ntmCNFCircuit, encodeCircuit, ntmCNFWeight, ntmClauseWeight] at ih' hcl' hweight ⊢
-      nlinarith
+      omega
 
 
 def tableauVarCap
@@ -8210,7 +8210,7 @@ theorem ntmCopySymbol_weight
     ntmCNFWeight (ntmCopySymbolClauses guard oldVar newVar) =
       6 * (guard.length + 3) := by
   simp [ntmCopySymbolClauses, ntmAlphabet, ntmCNFWeight, ntmClauseWeight]
-  ring
+  omega
 
 theorem ntmCopyLeftAll_weight
     (guard : NTMClause)
@@ -8319,7 +8319,6 @@ theorem ntmHaltedStutter_weight_le
   rw [ntmSetState_weight, ntmCopySymbol_weight,
       ntmCopyLeftAll_weight, ntmCopyRightAll_weight]
   simp [guard]
-  ring_nf
   omega
 
 def ntmEffectWeightCap
@@ -8553,7 +8552,7 @@ theorem ntmActiveChoice_weight_le
           exact ntmChoiceEffect_weight_le M x t s q a p)
   have hm2 :
       m ^ 2 <= (ntmBranchBound M) ^ 2 := by
-    simpa [pow_two] using Nat.mul_le_mul hm hm
+    simpa [Nat.pow_succ, Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using Nat.mul_le_mul hm hm
   have heffect_mono :
       m * ntmEffectWeightCap M x t <=
         ntmBranchBound M * ntmEffectWeightCap M x t :=
@@ -9357,7 +9356,7 @@ theorem transitionCaseCap_linear
   unfold ntmTransitionCaseWeightCap ntmHaltedWeightCap
     ntmActiveChoiceWeightCap ntmEffectWeightCap
     tableauCaseConst tableauCaseLinear
-  ring
+  omega
 
 def tableauWeightCoeff (M : PolyNTMCandidate) : Nat :=
   (2 * ntmStateCount M + 18) +
@@ -9380,7 +9379,7 @@ theorem boundedExec_weight_poly
     omega
   have hr_sq : r <= r^2 := by
     have h := Nat.mul_le_mul_left r hr
-    simpa [pow_two, Nat.mul_comm] using h
+    simpa [Nat.pow_succ, Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using h
   have hi0 :
       ntmCNFWeight (ntmInitialCNF M x t) <=
         2 * Q + 6 + 12 * r := by
@@ -9476,7 +9475,7 @@ theorem tableauVarCap_poly
     simp [r, ntmRadius]
   have hr_sq : r <= r^2 := by
     have h := Nat.mul_le_mul_left r hr
-    simpa [pow_two, Nat.mul_comm] using h
+    simpa [Nat.pow_succ, Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using h
   have hQ : M.stateCount <= Q := by
     simp [Q, ntmStateCount]
   have hbase :
@@ -9590,7 +9589,7 @@ theorem boundedExec_encoded_length_poly
     have hr2 : 1 <= r^2 := by
       have hr_sq : r <= r^2 := by
         have h := Nat.mul_le_mul_left r hr
-        simpa [pow_two, Nat.mul_comm] using h
+        simpa [Nat.pow_succ, Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using h
       exact Nat.le_trans hr hr_sq
     have hmul : 1 * 1 <= (r^2) * (r^2) :=
       Nat.mul_le_mul hr2 hr2
