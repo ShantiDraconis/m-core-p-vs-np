@@ -70,30 +70,43 @@ structure UniversalSimulationInfrastructure where
 def UniversalSimulationInfrastructureGap : Prop :=
   Nonempty UniversalSimulationInfrastructure
 
-/-- Stronger self-reference compiler needed after universal simulation:
-given a code-transformer, produce a hardened candidate whose own code is fed
-to that transformer, with semantic equality in the actual candidate model.
-This is a Kleene-style program fixed point, NOT the already-falsified literal
-input equation R_M(x)=x. -/
+/-- A total transformer on valid candidate codes.  It may change the machine,
+but it must map every genuine candidate code to another genuine candidate
+code in the same hardened model. -/
+structure CandidateCodeTransformer
+    (C : CandidateCodebook) where
+  transform : BitString → BitString
+  valid :
+    ∀ M : PolyDTMCandidate,
+      ∃ N : PolyDTMCandidate,
+        C.decode (transform (C.encode M)) = some N
+
+/-- Extensional behavioral equivalence of two hardened deterministic
+candidates on canonical inputs. -/
+def CandidateBehaviorEquivalent
+    (A B : PolyDTMCandidate) : Prop :=
+  ∀ x : BitString,
+    DeclaredAccepts A x ↔ DeclaredAccepts B x
+
+/-- Genuine Kleene-style self-reference contract.
+For every valid code transformer F, construct a candidate Q such that applying
+F to Q's own code decodes to some candidate N behaviorally equivalent to Q.
+This is program self-reference, not an input fixed point of R_M. -/
 structure CandidateSelfReferenceCompiler
-    (I : UniversalSimulationInfrastructure) where
-  specialize :
-    (BitString → BitString) → PolyDTMCandidate
-  selfReference :
-    ∀ transform : BitString → BitString,
-      DeclaredAccepts
-          (specialize transform)
-          (transform (I.codebook.encode (specialize transform))) ↔
-        DeclaredAccepts
-          I.universal.simulator
-          (I.pairing.pack
-            (I.codebook.encode (specialize transform))
-            (transform
-              (I.codebook.encode (specialize transform))))
+    (C : CandidateCodebook) where
+  fixedPoint :
+    CandidateCodeTransformer C → PolyDTMCandidate
+  realizes :
+    ∀ F : CandidateCodeTransformer C,
+      ∃ N : PolyDTMCandidate,
+        C.decode
+            (F.transform
+              (C.encode (fixedPoint F))) = some N ∧
+        CandidateBehaviorEquivalent (fixedPoint F) N
 
 def CandidateSelfReferenceCompilerGap : Prop :=
-  ∃ I : UniversalSimulationInfrastructure,
-    Nonempty (CandidateSelfReferenceCompiler I)
+  ∃ C : CandidateCodebook,
+    Nonempty (CandidateSelfReferenceCompiler C)
 
 /-- Audit: the self-reference contract is explicitly distinct from the
 falsified Cook--Levin input fixed-point route.  It asserts no equality
