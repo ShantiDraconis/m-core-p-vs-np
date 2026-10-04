@@ -38,6 +38,11 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/SourceMismatchVisibility.lean
   lean/MCore/Real/PNPDiscovery/SourceMismatchEncodingDichotomy.lean
   lean/MCore/Real/PNPDiscovery/FiniteBitMismatchClosed.lean
+  lean/MCore/Real/PNPDiscovery/SourceBitVisibilityPressure.lean
+  lean/MCore/Real/PNPDiscovery/SymbolBlockLocalization.lean
+  lean/MCore/Real/PNPDiscovery/SourceGlobalBitOffset.lean
+  lean/MCore/Real/PNPDiscovery/SourceCellBitTransport.lean
+  lean/MCore/Real/PNPDiscovery/SourceCellBitTransportClosed.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -99,6 +104,10 @@ DISCOVERY_SUBFRONTIER:
   -> SATSeparationGap
 
 CLOSED_BRIDGES:
+  SourceCellBitTransportGap
+  SourceCellMismatchLocalizationGap
+  SourceCellNumericLocalization
+  SymbolBlock target-length invariance/injectivity
   SourcePrefixClauseCoverageGap
   SourcePrefixCoverageGap
   RightCellBlockInjectivity
@@ -107,9 +116,10 @@ BARRIER_FRONTIER:
   length mismatch OR clock mismatch OR head mismatch OR concrete source-cell mismatch
 
 NEXT_MATERIAL_PRESSURE:
-  1. CLOCK/LENGTH normalization along odd orbit pairs
-  2. SOURCE bit mismatch visibility before SharedReadConePrefix
-  3. HEAD finite parity partition already compressed
+  1. SOURCE_VISIBLE: localized mismatch q < SharedReadConePrefix
+  2. SOURCE_HIDDEN: SharedReadConePrefix ≤ q -> explicit clock-vs-offset growth
+  3. CLOCK/LENGTH normalization along odd orbit pairs
+  4. HEAD finite parity partition already compressed
 
 METHOD_AUDIT_OPEN:
   1. RelativizationFormalizationGap
