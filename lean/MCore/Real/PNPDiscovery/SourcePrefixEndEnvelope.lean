@@ -153,7 +153,7 @@ theorem encodeSpine_initialLeftBlock_le
   unfold initialLeftBlock
   apply encodeSpine_flatMap_range_le
   intro i hi
-  unfold initialRightCellBlock
+  unfold ntmSetLeftCell
   change
     (encodedSymbolBlock
       (ntmLeftVar M x t 0 i)
@@ -188,17 +188,15 @@ polynomial expression in input length, clock, source index and machine data. -/
 theorem sourcePrefixBitEnd_le_envelope
     (D : PolyDTMCandidate)
     (x : BitString)
-    (t j : Nat) :
+    (t j : Nat)
+    (hj : j + 1 ≤ ntmRadius x t) :
     sourcePrefixBitEnd
         (complementToNTMCandidate D)
         x t (j + 1) ≤
       sourcePrefixEndEnvelope D x.length t j := by
   let M := complementToNTMCandidate D
   unfold sourcePrefixBitEnd tableauClauseBitOffset clauseBitOffset
-  rw [boundedExec_take_sourcePrefix M x t (j + 1)
-    (by
-      simp [ntmRadius]
-      omega : j + 1 ≤ ntmRadius x t)]
+  rw [boundedExec_take_sourcePrefix M x t (j + 1) hj]
   unfold sourcePrefixClauses
   repeat rw [encodeCNFSpinePrefix_append]
   simp only [List.length_append]
