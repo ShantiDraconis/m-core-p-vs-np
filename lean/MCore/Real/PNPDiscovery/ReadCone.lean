@@ -1,4 +1,5 @@
 import MCore.Real.PNPDiscovery.TerminalStateFrontier
+import MCore.Real.MachineRunLemmas
 
 namespace MCore
 namespace Real
@@ -171,6 +172,117 @@ theorem readCone_invisibility
     terminalState M x = terminalState M y := by
   exact terminalState_of_prefix M x y hLen hCone
 
+
+/-- Equal total input length was stronger than necessary.  For total
+candidates, agreement through the smaller declared clock suffices: the run
+with the smaller clock has already halted, and the larger-fuel run stutters
+thereafter. -/
+theorem terminalState_of_shared_min_cone
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x y : BitString)
+    (hPrefix :
+      x.take (Nat.min (M.timeBound x.length) (M.timeBound y.length) + 1) =
+        y.take (Nat.min (M.timeBound x.length) (M.timeBound y.length) + 1)) :
+    terminalState M x = terminalState M y := by
+  let tx := M.timeBound x.length
+  let ty := M.timeBound y.length
+  by_cases hxy : tx ≤ ty
+  · have hmin : Nat.min tx ty = tx := Nat.min_eq_left hxy
+    have hp :
+        x.take (tx + 1) = y.take (tx + 1) := by
+      simpa [tx, ty, hmin] using hPrefix
+    have hLocal :
+        (M.machine.run tx (initialTMConfig M.machine x)).state =
+          (M.machine.run tx (initialTMConfig M.machine y)).state := by
+      exact run_state_local
+        M.machine tx
+        (initialTMConfig M.machine x)
+        (initialTMConfig M.machine y)
+        rfl
+        (initialTape_window_of_prefix tx x y hp)
+    have hHaltX :
+        M.machine.halting
+          (M.machine.run tx (initialTMConfig M.machine x)).state = true := by
+      exact hTotal x
+    have hHaltY :
+        M.machine.halting
+          (M.machine.run tx (initialTMConfig M.machine y)).state = true := by
+      rw [← hLocal]
+      exact hHaltX
+    have hExtend :
+        M.machine.run ty (initialTMConfig M.machine y) =
+          M.machine.run tx (initialTMConfig M.machine y) := by
+      exact MachineRunLemmas.run_to_larger_fuel_of_halt
+        M.machine
+        (initialTMConfig M.machine y)
+        (M.machine.run tx (initialTMConfig M.machine y))
+        hxy
+        rfl
+        hHaltY
+    unfold terminalState
+    change
+      (M.machine.run tx (initialTMConfig M.machine x)).state =
+        (M.machine.run ty (initialTMConfig M.machine y)).state
+    rw [hExtend]
+    exact hLocal
+  · have hyx : ty ≤ tx := by omega
+    have hmin : Nat.min tx ty = ty := Nat.min_eq_right hyx
+    have hp :
+        y.take (ty + 1) = x.take (ty + 1) := by
+      have := hPrefix
+      simpa [tx, ty, hmin] using this.symm
+    have hLocal :
+        (M.machine.run ty (initialTMConfig M.machine y)).state =
+          (M.machine.run ty (initialTMConfig M.machine x)).state := by
+      exact run_state_local
+        M.machine ty
+        (initialTMConfig M.machine y)
+        (initialTMConfig M.machine x)
+        rfl
+        (initialTape_window_of_prefix ty y x hp)
+    have hHaltY :
+        M.machine.halting
+          (M.machine.run ty (initialTMConfig M.machine y)).state = true := by
+      exact hTotal y
+    have hHaltX :
+        M.machine.halting
+          (M.machine.run ty (initialTMConfig M.machine x)).state = true := by
+      rw [← hLocal]
+      exact hHaltY
+    have hExtend :
+        M.machine.run tx (initialTMConfig M.machine x) =
+          M.machine.run ty (initialTMConfig M.machine x) := by
+      exact MachineRunLemmas.run_to_larger_fuel_of_halt
+        M.machine
+        (initialTMConfig M.machine x)
+        (M.machine.run ty (initialTMConfig M.machine x))
+        hyx
+        rfl
+        hHaltX
+    unfold terminalState
+    change
+      (M.machine.run tx (initialTMConfig M.machine x)).state =
+        (M.machine.run ty (initialTMConfig M.machine y)).state
+    rw [hExtend]
+    exact hLocal.symm
+
+/-- Shared cone size for two possibly different-length inputs. -/
+def SharedReadConePrefix
+    (M : PolyDTMCandidate)
+    (x y : BitString) : Nat :=
+  Nat.min (M.timeBound x.length) (M.timeBound y.length) + 1
+
+theorem sharedReadCone_invisibility
+    (M : PolyDTMCandidate)
+    (hTotal : DeclaredClockTotal M)
+    (x y : BitString)
+    (hCone :
+      x.take (SharedReadConePrefix M x y) =
+        y.take (SharedReadConePrefix M x y)) :
+    terminalState M x = terminalState M y := by
+  exact terminalState_of_shared_min_cone M hTotal x y hCone
+
 theorem readCone_acceptance_invisibility
     (M : PolyDTMCandidate)
     (x y : BitString)
@@ -187,6 +299,8 @@ theorem readCone_acceptance_invisibility
 #print axioms MCore.Real.PNPDiscovery.run_state_local
 #print axioms MCore.Real.PNPDiscovery.initialTape_window_of_prefix
 #print axioms MCore.Real.PNPDiscovery.terminalState_of_prefix
+#print axioms MCore.Real.PNPDiscovery.terminalState_of_shared_min_cone
+#print axioms MCore.Real.PNPDiscovery.sharedReadCone_invisibility
 #print axioms MCore.Real.PNPDiscovery.readCone_invisibility
 #print axioms MCore.Real.PNPDiscovery.readCone_acceptance_invisibility
 
