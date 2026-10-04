@@ -7141,7 +7141,7 @@ theorem pathAssignment_selected_effect_sat
     simpa [c, j, tr] using hSpec.choose_spec
   have hnext : c' = M.machine.stepBranch c tr := by
     rw [htrEq]
-    exact hW.choose_spec
+    exact hW.choose_spec.2
   have hchoice :
       pathAssignment M x t path hPath
         (ntmChoiceVar M x t s c.state c.tape.head j) = true := by
