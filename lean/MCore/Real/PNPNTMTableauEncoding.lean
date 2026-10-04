@@ -6421,10 +6421,10 @@ theorem eval_stayEffect_guard_true
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmStayEffectCNF guard M x t s qNext write) = true := by
   simp only [ntmStayEffectCNF, evalNTMCNF_append]
+  refine ⟨?_, eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+  refine ⟨?_, eval_copyLeftAll_guard_true sigma guard M x t s hg⟩
   exact ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg,
-    eval_setSymbol_guard_true sigma guard (ntmHeadVar M t (s + 1)) write hg,
-    eval_copyLeftAll_guard_true sigma guard M x t s hg,
-    eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+    eval_setSymbol_guard_true sigma guard (ntmHeadVar M t (s + 1)) write hg⟩
 
 theorem eval_leftEffect_guard_true
     (sigma : Assignment) (guard : NTMClause)
