@@ -263,3 +263,11 @@ import MCore.Real.PNPDiscovery.SourceOffsetVisibilityLaw
 import MCore.Real.PNPDiscovery.SourceOffsetLowerEnvelope
 import MCore.Real.PNPDiscovery.BarrierArithmeticFrontier
 import MCore.Real.PNPDiscovery.ArithmeticProducerClosure
+
+import MCore.Real.PNPDiscovery.StrictOrbitLengthGrowth
+import MCore.Real.PNPDiscovery.ArithmeticRouteFalsification
+import MCore.Real.PNPDiscovery.LayoutLeakage
+import MCore.Real.PNPDiscovery.AlphaRenameCore
+import MCore.Real.PNPDiscovery.LayoutAlphaEquivalence
+import MCore.Real.PNPDiscovery.TableauShapeLeakage
+import MCore.Real.PNPDiscovery.TransitionShapeFrontier
