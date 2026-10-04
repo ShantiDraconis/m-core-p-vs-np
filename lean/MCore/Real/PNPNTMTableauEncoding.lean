@@ -8448,7 +8448,7 @@ theorem ntmAtMostOne_weight_le
             by_cases h : j < k
             · simp [h, ntmCNFWeight, ntmClauseWeight]
             · simp [h, ntmCNFWeight]))
-      simp)
+      simpa [Nat.mul_comm])
   have houter' :
       ntmCNFWeight
         (ids.flatMap fun j =>
@@ -8501,8 +8501,10 @@ theorem ntmActiveChoice_weight_le
         (fun p => ntmChoiceGuardCNF M x t s q a p.1)
         (by
           intro p hp
-          simpa using ntmChoiceGuard_weight M x t s q a p.1)
-  have hamo := ntmAtMostOne_weight_le M x t s q a
+          exact Nat.le_of_eq (ntmChoiceGuard_weight M x t s q a p.1))
+  have hamo :
+      ntmCNFWeight (ntmAtMostOneChoiceCNF M x t s q a) <= 3 * m ^ 2 := by
+    simpa [m] using ntmAtMostOne_weight_le M x t s q a
   have heffects :
       ntmCNFWeight
         (entries.flatMap (fun p => ntmChoiceEffectCNF M x t s q a p))
