@@ -280,3 +280,5 @@ import MCore.Real.PNPDiscovery.LayoutBoundaryMismatch
 import MCore.Real.PNPDiscovery.ArithmeticRouteFalsified
 import MCore.Real.PNPDiscovery.StrictGrowthConsistency
 import MCore.Real.PNPDiscovery.PerfectFlipRegimeAlignment
+
+import MCore.Real.PNPDiscovery.UniversalSimulationPrerequisites
