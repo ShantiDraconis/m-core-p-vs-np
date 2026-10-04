@@ -5893,11 +5893,25 @@ theorem eval_stayEffect_guard_true
     (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmStayEffectCNF guard M x t s qNext write) = true := by
-  simp only [ntmStayEffectCNF, evalNTMCNF_append]
-  exact ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg,
-    eval_setSymbol_guard_true sigma guard (ntmHeadVar M t (s + 1)) write hg,
-    eval_copyLeftAll_guard_true sigma guard M x t s hg,
-    eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+  let A := ntmSetStateClauses guard M t (s + 1) qNext
+  let B := ntmSetSymbolClauses guard (ntmHeadVar M t (s + 1)) write
+  let C := ntmCopyLeftAll guard M x t s
+  let D := ntmCopyRightAll guard M x t s
+  have hA : evalNTMCNF sigma A = true := by
+    simpa [A] using eval_setState_guard_true sigma guard M t (s + 1) qNext hg
+  have hB : evalNTMCNF sigma B = true := by
+    simpa [B] using eval_setSymbol_guard_true sigma guard (ntmHeadVar M t (s + 1)) write hg
+  have hC : evalNTMCNF sigma C = true := by
+    simpa [C] using eval_copyLeftAll_guard_true sigma guard M x t s hg
+  have hD : evalNTMCNF sigma D = true := by
+    simpa [D] using eval_copyRightAll_guard_true sigma guard M x t s hg
+  have hAB : evalNTMCNF sigma (A ++ B) = true :=
+    (evalNTMCNF_append sigma A B).2 ⟨hA, hB⟩
+  have hABC : evalNTMCNF sigma ((A ++ B) ++ C) = true :=
+    (evalNTMCNF_append sigma (A ++ B) C).2 ⟨hAB, hC⟩
+  have hABCD : evalNTMCNF sigma (((A ++ B) ++ C) ++ D) = true :=
+    (evalNTMCNF_append sigma ((A ++ B) ++ C) D).2 ⟨hABC, hD⟩
+  simpa [A, B, C, D, ntmStayEffectCNF, List.append_assoc] using hABCD
 
 theorem eval_leftEffect_guard_true
     (sigma : Assignment) (guard : NTMClause)
@@ -5905,27 +5919,46 @@ theorem eval_leftEffect_guard_true
     (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmLeftEffectCNF guard M x t s qNext write) = true := by
-  unfold ntmLeftEffectCNF
-  simp only [evalNTMCNF_append]
-  refine ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg, ?_⟩
-  refine ⟨eval_copySymbol_guard_true sigma guard
-    (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)) hg, ?_⟩
-  refine ⟨?_, ?_⟩
-  · rw [evalNTMCNF_flatMap_range]
-    intro i hi
-    exact eval_copySymbol_guard_true sigma guard
-      (ntmLeftVar M x t s (i + 1))
-      (ntmLeftVar M x t (s + 1) i) hg
-  · refine ⟨eval_setSymbol_guard_true sigma guard
-      (ntmLeftVar M x t (s + 1) (ntmRadius x t - 1))
-      M.machine.blank hg, ?_⟩
-    refine ⟨eval_setSymbol_guard_true sigma guard
-      (ntmRightVar M x t (s + 1) 0) write hg, ?_⟩
+  let A := ntmSetStateClauses guard M t (s + 1) qNext
+  let B := ntmCopySymbolClauses guard
+    (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1))
+  let C := (List.range (ntmRadius x t - 1)).flatMap fun i =>
+    ntmCopyLeftCell guard M x t s (i + 1) (s + 1) i
+  let D := ntmSetLeftCell guard M x t (s + 1) (ntmRadius x t - 1) M.machine.blank
+  let E := ntmSetRightCell guard M x t (s + 1) 0 write
+  let F := (List.range (ntmRadius x t - 1)).flatMap fun i =>
+    ntmCopyRightCell guard M x t s i (s + 1) (i + 1)
+  have hA : evalNTMCNF sigma A = true := by
+    simpa [A] using eval_setState_guard_true sigma guard M t (s + 1) qNext hg
+  have hB : evalNTMCNF sigma B = true := by
+    simpa [B] using eval_copySymbol_guard_true sigma guard
+      (ntmLeftVar M x t s 0) (ntmHeadVar M t (s + 1)) hg
+  have hC : evalNTMCNF sigma C = true := by
+    rw [show C = (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+      ntmCopyLeftCell guard M x t s (i + 1) (s + 1) i) by rfl]
     rw [evalNTMCNF_flatMap_range]
     intro i hi
     exact eval_copySymbol_guard_true sigma guard
-      (ntmRightVar M x t s i)
-      (ntmRightVar M x t (s + 1) (i + 1)) hg
+      (ntmLeftVar M x t s (i + 1)) (ntmLeftVar M x t (s + 1) i) hg
+  have hD : evalNTMCNF sigma D = true := by
+    simpa [D] using eval_setSymbol_guard_true sigma guard
+      (ntmLeftVar M x t (s + 1) (ntmRadius x t - 1)) M.machine.blank hg
+  have hE : evalNTMCNF sigma E = true := by
+    simpa [E] using eval_setSymbol_guard_true sigma guard
+      (ntmRightVar M x t (s + 1) 0) write hg
+  have hF : evalNTMCNF sigma F = true := by
+    rw [show F = (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+      ntmCopyRightCell guard M x t s i (s + 1) (i + 1)) by rfl]
+    rw [evalNTMCNF_flatMap_range]
+    intro i hi
+    exact eval_copySymbol_guard_true sigma guard
+      (ntmRightVar M x t s i) (ntmRightVar M x t (s + 1) (i + 1)) hg
+  have hAB := (evalNTMCNF_append sigma A B).2 ⟨hA, hB⟩
+  have hABC := (evalNTMCNF_append sigma (A ++ B) C).2 ⟨hAB, hC⟩
+  have hABCD := (evalNTMCNF_append sigma ((A ++ B) ++ C) D).2 ⟨hABC, hD⟩
+  have hABCDE := (evalNTMCNF_append sigma (((A ++ B) ++ C) ++ D) E).2 ⟨hABCD, hE⟩
+  have hABCDEF := (evalNTMCNF_append sigma ((((A ++ B) ++ C) ++ D) ++ E) F).2 ⟨hABCDE, hF⟩
+  simpa [A, B, C, D, E, F, ntmLeftEffectCNF, List.append_assoc] using hABCDEF
 
 theorem eval_rightEffect_guard_true
     (sigma : Assignment) (guard : NTMClause)
@@ -5933,27 +5966,46 @@ theorem eval_rightEffect_guard_true
     (qNext : Fin (M.stateCount + 1)) (write : Option Bool)
     (hg : evalNTMClause sigma guard = true) :
     evalNTMCNF sigma (ntmRightEffectCNF guard M x t s qNext write) = true := by
-  unfold ntmRightEffectCNF
-  simp only [evalNTMCNF_append]
-  refine ⟨eval_setState_guard_true sigma guard M t (s + 1) qNext hg, ?_⟩
-  refine ⟨eval_copySymbol_guard_true sigma guard
-    (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1)) hg, ?_⟩
-  refine ⟨eval_setSymbol_guard_true sigma guard
-    (ntmLeftVar M x t (s + 1) 0) write hg, ?_⟩
-  refine ⟨?_, ?_⟩
-  · rw [evalNTMCNF_flatMap_range]
-    intro i hi
-    exact eval_copySymbol_guard_true sigma guard
-      (ntmLeftVar M x t s i)
-      (ntmLeftVar M x t (s + 1) (i + 1)) hg
-  · refine ⟨?_, eval_setSymbol_guard_true sigma guard
-      (ntmRightVar M x t (s + 1) (ntmRadius x t - 1))
-      M.machine.blank hg⟩
+  let A := ntmSetStateClauses guard M t (s + 1) qNext
+  let B := ntmCopySymbolClauses guard
+    (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1))
+  let C := ntmSetLeftCell guard M x t (s + 1) 0 write
+  let D := (List.range (ntmRadius x t - 1)).flatMap fun i =>
+    ntmCopyLeftCell guard M x t s i (s + 1) (i + 1)
+  let E := (List.range (ntmRadius x t - 1)).flatMap fun i =>
+    ntmCopyRightCell guard M x t s (i + 1) (s + 1) i
+  let F := ntmSetRightCell guard M x t (s + 1) (ntmRadius x t - 1) M.machine.blank
+  have hA : evalNTMCNF sigma A = true := by
+    simpa [A] using eval_setState_guard_true sigma guard M t (s + 1) qNext hg
+  have hB : evalNTMCNF sigma B = true := by
+    simpa [B] using eval_copySymbol_guard_true sigma guard
+      (ntmRightVar M x t s 0) (ntmHeadVar M t (s + 1)) hg
+  have hC : evalNTMCNF sigma C = true := by
+    simpa [C] using eval_setSymbol_guard_true sigma guard
+      (ntmLeftVar M x t (s + 1) 0) write hg
+  have hD : evalNTMCNF sigma D = true := by
+    rw [show D = (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+      ntmCopyLeftCell guard M x t s i (s + 1) (i + 1)) by rfl]
     rw [evalNTMCNF_flatMap_range]
     intro i hi
     exact eval_copySymbol_guard_true sigma guard
-      (ntmRightVar M x t s (i + 1))
-      (ntmRightVar M x t (s + 1) i) hg
+      (ntmLeftVar M x t s i) (ntmLeftVar M x t (s + 1) (i + 1)) hg
+  have hE : evalNTMCNF sigma E = true := by
+    rw [show E = (List.range (ntmRadius x t - 1)).flatMap (fun i =>
+      ntmCopyRightCell guard M x t s (i + 1) (s + 1) i) by rfl]
+    rw [evalNTMCNF_flatMap_range]
+    intro i hi
+    exact eval_copySymbol_guard_true sigma guard
+      (ntmRightVar M x t s (i + 1)) (ntmRightVar M x t (s + 1) i) hg
+  have hF : evalNTMCNF sigma F = true := by
+    simpa [F] using eval_setSymbol_guard_true sigma guard
+      (ntmRightVar M x t (s + 1) (ntmRadius x t - 1)) M.machine.blank hg
+  have hAB := (evalNTMCNF_append sigma A B).2 ⟨hA, hB⟩
+  have hABC := (evalNTMCNF_append sigma (A ++ B) C).2 ⟨hAB, hC⟩
+  have hABCD := (evalNTMCNF_append sigma ((A ++ B) ++ C) D).2 ⟨hABC, hD⟩
+  have hABCDE := (evalNTMCNF_append sigma (((A ++ B) ++ C) ++ D) E).2 ⟨hABCD, hE⟩
+  have hABCDEF := (evalNTMCNF_append sigma ((((A ++ B) ++ C) ++ D) ++ E) F).2 ⟨hABCDE, hF⟩
+  simpa [A, B, C, D, E, F, ntmRightEffectCNF, List.append_assoc] using hABCDEF
 
 theorem eval_choiceEffect_of_choice_false
     (sigma : Assignment)
@@ -6144,12 +6196,23 @@ theorem eval_haltedStutter_guard_true
         [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)] = true) :
     evalNTMCNF sigma (ntmHaltedStutterCNF M x t s q a) = true := by
   let guard := [ntmNeg (ntmStateVar M t s q), ntmNeg (ntmHeadVar M t s a)]
-  simp only [ntmHaltedStutterCNF, evalNTMCNF_append]
-  exact ⟨eval_setState_guard_true sigma guard M t (s + 1) q hg,
-    eval_copySymbol_guard_true sigma guard
-      (ntmHeadVar M t s) (ntmHeadVar M t (s + 1)) hg,
-    eval_copyLeftAll_guard_true sigma guard M x t s hg,
-    eval_copyRightAll_guard_true sigma guard M x t s hg⟩
+  let A := ntmSetStateClauses guard M t (s + 1) q
+  let B := ntmCopyHeadCell guard M t s (s + 1)
+  let C := ntmCopyLeftAll guard M x t s
+  let D := ntmCopyRightAll guard M x t s
+  have hA : evalNTMCNF sigma A = true := by
+    simpa [A, guard] using eval_setState_guard_true sigma guard M t (s + 1) q hg
+  have hB : evalNTMCNF sigma B = true := by
+    simpa [B, guard, ntmCopyHeadCell] using eval_copySymbol_guard_true sigma guard
+      (ntmHeadVar M t s) (ntmHeadVar M t (s + 1)) hg
+  have hC : evalNTMCNF sigma C = true := by
+    simpa [C, guard] using eval_copyLeftAll_guard_true sigma guard M x t s hg
+  have hD : evalNTMCNF sigma D = true := by
+    simpa [D, guard] using eval_copyRightAll_guard_true sigma guard M x t s hg
+  have hAB := (evalNTMCNF_append sigma A B).2 ⟨hA, hB⟩
+  have hABC := (evalNTMCNF_append sigma (A ++ B) C).2 ⟨hAB, hC⟩
+  have hABCD := (evalNTMCNF_append sigma ((A ++ B) ++ C) D).2 ⟨hABC, hD⟩
+  simpa [guard, A, B, C, D, ntmHaltedStutterCNF, List.append_assoc] using hABCD
 
 theorem evalNTMClause_two_neg_prefix_of_tail_true
     (sigma : Assignment) (c1 c2 : Nat) (cl : NTMClause)
