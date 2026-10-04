@@ -7840,6 +7840,20 @@ def ntmClauseMaxVar (cl : NTMClause) : Nat :=
 def ntmCNFMaxVar (f : NTMCNF) : Nat :=
   f.foldl (fun acc cl => Nat.max acc (ntmClauseMaxVar cl)) 0
 
+theorem foldl_clauseWeight_acc
+    (xs : NTMCNF) (acc : Nat) :
+    xs.foldl (fun z cl => z + ntmClauseWeight cl) acc =
+      acc + xs.foldl (fun z cl => z + ntmClauseWeight cl) 0 := by
+  induction xs generalizing acc with
+  | nil =>
+      simp
+  | cons cl cs ih =>
+      simp only [List.foldl_cons]
+      have h1 := ih (acc + ntmClauseWeight cl)
+      have h2 := ih (ntmClauseWeight cl)
+      rw [h1, h2]
+      omega
+
 theorem encodeNat_length_exact
     (n : Nat) :
     (encodeNat n).length = n + 1 := by
@@ -7917,7 +7931,28 @@ theorem ntmCNFCircuit_encoding_le
           foldl_max_mono_acc (fs.map ntmClauseMaxVar)
             (Nat.le_max_left 0 (ntmClauseMaxVar cl))
       have hcl := ntmClauseCircuit_encoding_le cl
-      simp [ntmCNFCircuit, encodeCircuit, ntmCNFWeight, ntmClauseWeight] at ih ⊢
+      have hcl' :
+          (encodeCircuit (ntmClauseCircuit cl)).length <=
+            10 * ntmClauseWeight cl * (ntmCNFMaxVar (cl :: fs) + 1) := by
+        exact Nat.le_trans hcl
+          (Nat.mul_le_mul_left (10 * ntmClauseWeight cl)
+            (Nat.add_le_add_right hclmax 1))
+      have ih' :
+          (encodeCircuit (ntmCNFCircuit fs)).length <=
+            13 * ntmCNFWeight fs * (ntmCNFMaxVar (cl :: fs) + 1) + 3 := by
+        exact Nat.le_trans ih
+          (Nat.add_le_add_right
+            (Nat.mul_le_mul_left (13 * ntmCNFWeight fs)
+              (Nat.add_le_add_right htailmax 1)) 3)
+      have hweight :
+          fs.foldl (fun z c => z + ntmClauseWeight c) (ntmClauseWeight cl) =
+            ntmClauseWeight cl +
+              fs.foldl (fun z c => z + ntmClauseWeight c) 0 :=
+        foldl_clauseWeight_acc fs (ntmClauseWeight cl)
+      have hwpos : 1 <= ntmClauseWeight cl := by
+        simp [ntmClauseWeight]
+      have hmpos : 1 <= ntmCNFMaxVar (cl :: fs) + 1 := by omega
+      simp [ntmCNFCircuit, encodeCircuit, ntmCNFWeight, ntmClauseWeight] at ih' hcl' hweight ⊢
       nlinarith
 
 
@@ -8092,32 +8127,9 @@ theorem ntmCNFWeight_append
     (a b : NTMCNF) :
     ntmCNFWeight (a ++ b) = ntmCNFWeight a + ntmCNFWeight b := by
   unfold ntmCNFWeight
-  have hacc :
-      ∀ (xs : NTMCNF) (acc : Nat),
-        xs.foldl (fun z cl => z + ntmClauseWeight cl) acc =
-          acc + xs.foldl (fun z cl => z + ntmClauseWeight cl) 0 := by
-    intro xs
-    induction xs with
-    | nil =>
-        intro acc
-        simp
-    | cons cl cs ih =>
-        intro acc
-        simp only [List.foldl_cons]
-        calc
-          cs.foldl (fun z cl => z + ntmClauseWeight cl)
-              (acc + ntmClauseWeight cl) =
-            (acc + ntmClauseWeight cl) +
-              cs.foldl (fun z cl => z + ntmClauseWeight cl) 0 := ih _
-          _ = acc +
-              (ntmClauseWeight cl +
-                cs.foldl (fun z cl => z + ntmClauseWeight cl) 0) := by omega
-          _ = acc +
-              cs.foldl (fun z cl => z + ntmClauseWeight cl)
-                (ntmClauseWeight cl) := by
-            exact congrArg (fun z => acc + z) (ih (ntmClauseWeight cl)).symm
   rw [List.foldl_append]
-  rw [hacc b (a.foldl (fun z cl => z + ntmClauseWeight cl) 0)]
+  exact foldl_clauseWeight_acc b
+    (a.foldl (fun z cl => z + ntmClauseWeight cl) 0)
 
 theorem ntmCNFWeight_flatMap_range_le
     (n K : Nat) (f : Nat -> NTMCNF)
