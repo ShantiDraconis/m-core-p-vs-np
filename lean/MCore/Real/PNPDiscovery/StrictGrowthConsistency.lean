@@ -74,24 +74,6 @@ theorem operational_source_available
       some x := by
   exact R_M_source_recover M hTotal x
 
-/-- Remaining operational obstruction: not source recovery, but realization of
-the self-simulation/negation inside the candidate's declared successor clock. -/
-def SelfSimulationBudgetGap : Prop :=
-  ∀ M : PolyDTMCandidate, ∀ hTotal : DeclaredClockTotal M,
-    ∀ x : BitString,
-      ∃ cost : Nat,
-        cost ≤ M.timeBound (R_M M hTotal x).length ∧
-        True
-
-/-- This placeholder cost interface intentionally does NOT claim progress:
-until cost is tied to a concrete universal simulation trace, it is only a
-typed slot and must not be used to derive PerfectFlip or its negation. -/
-def ConcreteSelfSimulationTraceGap : Prop :=
-  ∀ M : PolyDTMCandidate, ∀ hTotal : DeclaredClockTotal M,
-    ∀ x : BitString,
-      ∃ trace : List Nat,
-        trace.length ≤ M.timeBound (R_M M hTotal x).length
-
 #print axioms MCore.Real.PNPDiscovery.toyLength_strict
 #print axioms MCore.Real.PNPDiscovery.toyObs_flips
 #print axioms MCore.Real.PNPDiscovery.operationalSelfSimulation_iff_perfectFlip
