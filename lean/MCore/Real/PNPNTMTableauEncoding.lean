@@ -7955,7 +7955,8 @@ theorem ntmLeftVar_lt_tableauVarCap
     ntmLeftVar M x t s i a < tableauVarCap M x t := by
   have h1 := (ntmLeftVar_range M x t s i a hs hi).2
   have h2 : ntmRightBase M x t <= ntmChoiceBase M x t := by
-    simp [ntmChoiceBase]
+    unfold ntmChoiceBase
+    omega
   unfold tableauVarCap
   omega
 
@@ -8090,11 +8091,22 @@ theorem ntmCNFWeight_append
     (a b : NTMCNF) :
     ntmCNFWeight (a ++ b) = ntmCNFWeight a + ntmCNFWeight b := by
   unfold ntmCNFWeight
-  induction a with
-  | nil => simp
-  | cons c cs ih =>
-      simp only [List.foldl_cons, List.cons_append]
-      simpa [Nat.add_assoc] using ih
+  have hacc :
+      ∀ (xs : NTMCNF) (acc : Nat),
+        xs.foldl (fun z cl => z + ntmClauseWeight cl) acc =
+          acc + xs.foldl (fun z cl => z + ntmClauseWeight cl) 0 := by
+    intro xs
+    induction xs with
+    | nil =>
+        intro acc
+        simp
+    | cons cl cs ih =>
+        intro acc
+        simp only [List.foldl_cons]
+        rw [ih (acc + ntmClauseWeight cl), ih (ntmClauseWeight cl)]
+        omega
+  rw [List.foldl_append]
+  rw [hacc b (a.foldl (fun z cl => z + ntmClauseWeight cl) 0)]
 
 theorem ntmCNFWeight_flatMap_range_le
     (n K : Nat) (f : Nat -> NTMCNF)
