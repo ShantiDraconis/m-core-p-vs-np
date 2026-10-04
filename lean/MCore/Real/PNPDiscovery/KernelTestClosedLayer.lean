@@ -59,7 +59,6 @@ example (x y : BitString) (t u : Nat)
     x.length + t = y.length + u :=
   equalRadius_cancels_plusOne x y t u h
 
-#print axioms MCore.Real.PNPDiscovery.KernelTestClosedLayer
 #print axioms MCore.Real.PNPDiscovery.exactMaterialMinCut_closes
 #print axioms MCore.Real.PNPDiscovery.canonicalClock_declaredAccepts_iff
 #print axioms MCore.Real.PNPDiscovery.finiteDescription_semantic_roundTrip_closed
