@@ -22,6 +22,11 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/ParityDistinguishingBit.lean
   lean/MCore/Real/PNPDiscovery/EncodingSpine.lean
   lean/MCore/Real/PNPDiscovery/HeadBlockFrontier.lean
+  lean/MCore/Real/PNPDiscovery/SourceBlockFrontier.lean
+  lean/MCore/Real/PNPDiscovery/SourcePrefixFrontier.lean
+  lean/MCore/Real/PNPDiscovery/RightCellInjectivity.lean
+  lean/MCore/Real/PNPDiscovery/LeftBlockElimination.lean
+  lean/MCore/Real/PNPDiscovery/SourceBitOffsets.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -71,7 +76,9 @@ MATERIAL_OPEN:
   2. SATSeparationGap = UniversalFailure canonical SAT
 
 DISCOVERY_SUBFRONTIER:
-  HeadAlignment + state/head prefix coverage
+  state block CLOSED -> head(clock, first symbol) -> left block CLOSED
+  -> source-cell offsets / source-prefix alignment
+  -> HeadAlignment + state/head prefix coverage
   -> PrefixDominanceProducer
   -> SharedReadConeCollisionProducer
   -> TerminalStateRecurrenceProducer
