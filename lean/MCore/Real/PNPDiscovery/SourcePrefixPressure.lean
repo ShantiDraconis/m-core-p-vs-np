@@ -17,26 +17,6 @@ def firstKRightBlocks
   (List.range k).flatMap fun i =>
     initialRightCellBlock M x t i
 
-/-- Uniform three-clause source cells let us truncate the full right block
-exactly at a cell boundary. -/
-theorem take_rightBlock_firstK
-    (M : PolyNTMCandidate)
-    (x : BitString)
-    (t k : Nat)
-    (hk : k ≤ ntmRadius x t) :
-    (((List.range (ntmRadius x t)).flatMap fun i =>
-        initialRightCellBlock M x t i).take (3 * k)) =
-      firstKRightBlocks M x t k := by
-  induction k with
-  | zero =>
-      simp [firstKRightBlocks]
-  | succ k ih =>
-      have hk' : k ≤ ntmRadius x t := by omega
-      have hklt : k < ntmRadius x t := by omega
-      rw [List.range_eq_take_range hk]
-      simp [firstKRightBlocks]
-      sorry
-
 /-- Clause boundary immediately after the first k right/source cells. -/
 def sourcePrefixClauseEnd
     (M : PolyNTMCandidate)
