@@ -61,6 +61,7 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/ArithmeticRouteFalsified.lean
   lean/MCore/Real/PNPDiscovery/StrictGrowthConsistency.lean
   lean/MCore/Real/PNPDiscovery/PerfectFlipRegimeAlignment.lean
+  lean/MCore/Real/PNPDiscovery/UniversalSimulationPrerequisites.lean
   lean/MCore/Real/PNPDiscovery/StrictLengthGrowth.lean
   lean/MCore/Real/PNPDiscovery/ArithmeticBreakerRouteFalsified.lean
   lean/MCore/Real/PNPDiscovery/LayoutDriftFrontier.lean
@@ -164,6 +165,18 @@ LAYOUT_LEAKAGE:
   HEAD/first LEFT alpha-equivalent modulo ID renaming
   radius mismatch = alpha-invariant shape leakage
   EqualRadiusTransitionShapeGap = REDUCIBLE structural frontier
+
+METHOD_PREREQUISITE_OPEN:
+  1. UniversalSimulationInfrastructureGap
+     - self-delimiting pair parser/round-trip
+     - CandidateCodebook encode/decode round-trip
+     - one fixed hardened universal PolyDTMCandidate
+     - exact simulation correctness
+     - explicit polynomial overhead
+  2. CandidateSelfReferenceCompilerGap
+     - valid candidate-code transformers
+     - Kleene-style behavioral fixed point on own code
+  NOTE: these are method prerequisites, NOT material P!=NP premises.
 
 METHOD_AUDIT_OPEN:
   1. RelativizationFormalizationGap
