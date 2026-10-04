@@ -16,6 +16,12 @@ FILES=(
   lean/MCore/Real/PNPDiscovery/ReadConeFrontier.lean
   lean/MCore/Real/PNPDiscovery/PrefixPressure.lean
   lean/MCore/Real/PNPDiscovery/BarrierPressure.lean
+  lean/MCore/Real/PNPDiscovery/EncodingDependencyMap.lean
+  lean/MCore/Real/PNPDiscovery/ReductionPrefixFormula.lean
+  lean/MCore/Real/PNPDiscovery/ClockVsEncodingLayout.lean
+  lean/MCore/Real/PNPDiscovery/ParityDistinguishingBit.lean
+  lean/MCore/Real/PNPDiscovery/EncodingSpine.lean
+  lean/MCore/Real/PNPDiscovery/HeadBlockFrontier.lean
 )
 
 echo "[PNP-DISCOVERY] proof escape scan"
@@ -65,7 +71,9 @@ MATERIAL_OPEN:
   2. SATSeparationGap = UniversalFailure canonical SAT
 
 DISCOVERY_SUBFRONTIER:
-  SharedReadConeCollisionProducer
+  HeadAlignment + state/head prefix coverage
+  -> PrefixDominanceProducer
+  -> SharedReadConeCollisionProducer
   -> TerminalStateRecurrenceProducer
   -> ObservableRecurrenceProducer
   -> OrbitCollisionProducer
