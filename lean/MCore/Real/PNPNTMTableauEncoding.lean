@@ -5476,7 +5476,7 @@ theorem foldl_max_ge_of_mem
       rcases hx with rfl | hx
       · exact Nat.le_trans (Nat.le_max_right acc y)
           (foldl_max_ge_acc ys (Nat.max acc y))
-      · exact ih hx
+      · exact ih (Nat.max acc y) hx
 
 theorem foldl_max_le_of_all_le
     (xs : List Nat) (acc cap : Nat)
@@ -5488,7 +5488,7 @@ theorem foldl_max_le_of_all_le
       simpa using hacc
   | cons x xs ih =>
       apply ih (Nat.max acc x)
-      · exact Nat.max_le hacc (hall x (by simp))
+      · exact (Nat.max_le).2 ⟨hacc, hall x (by simp)⟩
       · intro y hy
         exact hall y (by simp [hy])
 
