@@ -5874,7 +5874,7 @@ theorem pathAssignment_head
         unfold ntmChoiceBase ntmRightBase
         omega
       omega
-    simp [pathAssignment, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
+    simpa [pathAssignment, List.getD, hnotState, hnotHead, hnotLeft, hnotRight, hnotChoice, ha]
 
 
 theorem pathAssignment_left
@@ -5894,7 +5894,24 @@ theorem pathAssignment_left
           (ntmLeftVar M x t s i
             ((path ⟨s, by omega⟩).tape.left.getD i M.machine.blank)) := by
       exact ⟨s, hs, i, hi, rfl⟩
-    simp [pathAssignment, hLeft]
+    have hP :
+        PathAssignmentStateTrue M t path
+            (ntmLeftVar M x t s i
+              ((path ⟨s, by omega⟩).tape.left.getD i M.machine.blank)) ∨
+          PathAssignmentHeadTrue M t path
+            (ntmLeftVar M x t s i
+              ((path ⟨s, by omega⟩).tape.left.getD i M.machine.blank)) ∨
+          PathAssignmentLeftTrue M x t path
+            (ntmLeftVar M x t s i
+              ((path ⟨s, by omega⟩).tape.left.getD i M.machine.blank)) ∨
+          PathAssignmentRightTrue M x t path
+            (ntmLeftVar M x t s i
+              ((path ⟨s, by omega⟩).tape.left.getD i M.machine.blank)) ∨
+          PathAssignmentChoiceTrue M x t path hPath
+            (ntmLeftVar M x t s i
+              ((path ⟨s, by omega⟩).tape.left.getD i M.machine.blank)) :=
+      Or.inr (Or.inr (Or.inl hLeft))
+    simpa [pathAssignment, List.getD, hP]
   · have hnotLeft :
         ¬ PathAssignmentLeftTrue M x t path (ntmLeftVar M x t s i a) := by
       intro h
@@ -5914,7 +5931,8 @@ theorem pathAssignment_left
         (path ⟨s', by omega⟩).state hs'
       have hl := (ntmLeftVar_range M x t s i a hs hi).1
       have hb : ntmHeadBase M t <= ntmLeftBase M x t := by
-        simp [ntmLeftBase]
+        unfold ntmLeftBase
+        omega
       omega
     have hnotHead :
         ¬ PathAssignmentHeadTrue M t path (ntmLeftVar M x t s i a) := by
@@ -5961,7 +5979,24 @@ theorem pathAssignment_right
           (ntmRightVar M x t s i
             ((path ⟨s, by omega⟩).tape.right.getD i M.machine.blank)) := by
       exact ⟨s, hs, i, hi, rfl⟩
-    simp [pathAssignment, hRight]
+    have hP :
+        PathAssignmentStateTrue M t path
+            (ntmRightVar M x t s i
+              ((path ⟨s, by omega⟩).tape.right.getD i M.machine.blank)) ∨
+          PathAssignmentHeadTrue M t path
+            (ntmRightVar M x t s i
+              ((path ⟨s, by omega⟩).tape.right.getD i M.machine.blank)) ∨
+          PathAssignmentLeftTrue M x t path
+            (ntmRightVar M x t s i
+              ((path ⟨s, by omega⟩).tape.right.getD i M.machine.blank)) ∨
+          PathAssignmentRightTrue M x t path
+            (ntmRightVar M x t s i
+              ((path ⟨s, by omega⟩).tape.right.getD i M.machine.blank)) ∨
+          PathAssignmentChoiceTrue M x t path hPath
+            (ntmRightVar M x t s i
+              ((path ⟨s, by omega⟩).tape.right.getD i M.machine.blank)) :=
+      Or.inr (Or.inr (Or.inr (Or.inl hRight)))
+    simpa [pathAssignment, List.getD, hP]
   · have hnotRight :
         ¬ PathAssignmentRightTrue M x t path (ntmRightVar M x t s i a) := by
       intro h
@@ -5981,7 +6016,8 @@ theorem pathAssignment_right
         (path ⟨s', by omega⟩).state hs'
       have hr := (ntmRightVar_range M x t s i a hs hi).1
       have hb : ntmHeadBase M t <= ntmRightBase M x t := by
-        simp [ntmRightBase, ntmLeftBase]
+        unfold ntmRightBase ntmLeftBase
+        omega
       omega
     have hnotHead :
         ¬ PathAssignmentHeadTrue M t path (ntmRightVar M x t s i a) := by
@@ -5991,7 +6027,8 @@ theorem pathAssignment_right
         (path ⟨s', by omega⟩).tape.head hs').2
       have hr := (ntmRightVar_range M x t s i a hs hi).1
       have hb : ntmLeftBase M x t <= ntmRightBase M x t := by
-        simp [ntmRightBase]
+        unfold ntmRightBase
+        omega
       omega
     have hnotLeft :
         ¬ PathAssignmentLeftTrue M x t path (ntmRightVar M x t s i a) := by
