@@ -106,6 +106,39 @@ def rightConfig
   apply Fin.ext
   exact hidx
 
+/-- While phase A is active, one sequential step is exactly one A-step,
+embedded in the left state space. -/
+theorem sequential_step_left_active
+    {a b : Nat}
+    (A : TM (Fin (a + 1)) (Option Bool))
+    (B : TM (Fin (b + 1)) (Option Bool))
+    (cfg : Configuration (Fin (a + 1)) (Option Bool))
+    (hactive : A.halting cfg.state = false) :
+    (sequentialTM A B).step (leftConfig (b := b) cfg) =
+      leftConfig (b := b) (A.step cfg) := by
+  simp [TM.step, sequentialTM, leftConfig, leftState, hactive]
+
+/-- Once in phase B, one sequential step is exactly one B-step,
+embedded in the right state space. -/
+theorem sequential_step_right
+    {a b : Nat}
+    (A : TM (Fin (a + 1)) (Option Bool))
+    (B : TM (Fin (b + 1)) (Option Bool))
+    (cfg : Configuration (Fin (b + 1)) (Option Bool)) :
+    (sequentialTM A B).step (rightConfig (a := a) cfg) =
+      rightConfig (a := a) (B.step cfg) := by
+  have hnot : ¬ ((a + 1) + cfg.state.1 < a + 1) := by
+    omega
+  have hidx : (a + 1) + cfg.state.1 - (a + 1) = cfg.state.1 := by
+    omega
+  simp only [TM.step, sequentialTM, rightConfig, rightState, hnot, dite_false]
+  have hstate :
+      (⟨(a + 1) + cfg.state.1 - (a + 1), by omega⟩ : Fin (b + 1)) =
+        cfg.state := by
+    apply Fin.ext
+    exact hidx
+  simp [hstate]
+
 /-- The bridge is physical: when A is halted, one step enters B.initial and
 preserves the entire tape exactly. -/
 theorem sequential_bridge_step
@@ -139,6 +172,8 @@ def SEQUENTIAL_RUN_SIMULATION_OPEN_MATH : Prop :=
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_blank
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_halting_left
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_halting_right
+#print axioms MCore.Real.P02SequentialCompositionMachine.sequential_step_left_active
+#print axioms MCore.Real.P02SequentialCompositionMachine.sequential_step_right
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_bridge_step
 
 end P02SequentialCompositionMachine
