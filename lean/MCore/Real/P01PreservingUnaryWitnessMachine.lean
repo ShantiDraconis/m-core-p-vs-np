@@ -278,6 +278,21 @@ theorem preservingRead_first_true_cycle
       encodeNat, TM.run, TM.step, Tape.write, Tape.move,
       List.replicate_succ, List.append_assoc]
 
+/-- The second unary true performs one complete physical marker advance from
+the canonical one-bit traversed prefix and returns to indexSome.  This is the
+first nontrivial material cycle after preservingRead_first_true_cycle. -/
+theorem preservingRead_second_true_cycle
+    (b0 b1 : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 10
+      (indexSomeConfig [b0] (b1 :: tail) (n + 1)) =
+      indexSomeConfig [b0, b1] tail n := by
+  cases b0 <;> cases b1 <;> cases n <;>
+    simp [preservingUnaryReadMachine, indexSomeConfig, encodeNat,
+      TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_second_true_cycle
+
 /-- Exact final tape for zero index: the witness is unchanged; the unary false
 terminator is erased and the original witness separator remains blank. -/
 def zeroDoneTape (witness : BitString) : Tape (Option Bool) :=
