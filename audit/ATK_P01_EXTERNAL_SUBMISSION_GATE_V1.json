@@ -1,0 +1,42 @@
+{
+  "schema": "ATK_P01_EXTERNAL_SUBMISSION_GATE_V1",
+  "branch": "atk/p01-preserving-unary-reader-20261001",
+  "state": "SOURCE_READY",
+  "actions": 0,
+  "modules": [
+    "P01PreservingUnaryWitnessMarker",
+    "P01InputNodePreservingPlan",
+    "P01PreservingMarkerIteration",
+    "P01PreservingUnaryWitnessMachine",
+    "P01PreservingUnaryReaderCertificate",
+    "P01WitnessIndexedReadGlobal"
+  ],
+  "static_audit": {
+    "sorry": 0,
+    "admit": 0,
+    "sorryAx": 0,
+    "axiom_declarations": 0,
+    "opaque_declarations": 0,
+    "unsafe": 0,
+    "implemented_by": 0,
+    "native_decide": 0,
+    "classical_choice": 0,
+    "classical_dec": 0
+  },
+  "material_status": {
+    "indexed_witness_read": "GREEN_MATERIAL",
+    "marker_advance_rewind": "GREEN_MATERIAL",
+    "zero_index": "GREEN_MATERIAL",
+    "universal_preserving_reader": "OPEN_MATERIAL",
+    "p01_machine_construction": "OPEN_MATERIAL"
+  },
+  "next_required_theorems": [
+    "general successor-cycle theorem for preservingUnaryReadMachine",
+    "iterated unary-cycle theorem",
+    "final selected-bit correctness theorem",
+    "full rewind/witness-preservation theorem",
+    "universal polynomial halting theorem",
+    "PreservingUnaryReaderGap inhabitant"
+  ],
+  "external_rule": "Only CLOSED_BY_MATERIAL_PRODUCER may promote EXTERNAL_PROVED."
+}
