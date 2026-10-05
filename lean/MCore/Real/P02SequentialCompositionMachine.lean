@@ -67,18 +67,74 @@ def sequentialTM
     (sequentialTM A B).blank = none :=
   rfl
 
-/-- Exact machine-level next leaf: prove the composed evaluator simulates A
-until A halts, performs one bridge step, then simulates B on the same tape. -/
+/-- Embed a phase-A configuration into the sequential machine. -/
+def leftConfig
+    {a b : Nat}
+    (cfg : Configuration (Fin (a + 1)) (Option Bool)) :
+    Configuration (Fin (a + b + 2)) (Option Bool) :=
+  { state := leftState cfg.state
+    tape := cfg.tape }
+
+/-- Embed a phase-B configuration into the sequential machine. -/
+def rightConfig
+    {a b : Nat}
+    (cfg : Configuration (Fin (b + 1)) (Option Bool)) :
+    Configuration (Fin (a + b + 2)) (Option Bool) :=
+  { state := rightState cfg.state
+    tape := cfg.tape }
+
+@[simp] theorem sequential_halting_left
+    {a b : Nat}
+    (A : TM (Fin (a + 1)) (Option Bool))
+    (B : TM (Fin (b + 1)) (Option Bool))
+    (q : Fin (a + 1)) :
+    (sequentialTM A B).halting (leftState q) = false := by
+  simp [sequentialTM, leftState]
+
+@[simp] theorem sequential_halting_right
+    {a b : Nat}
+    (A : TM (Fin (a + 1)) (Option Bool))
+    (B : TM (Fin (b + 1)) (Option Bool))
+    (q : Fin (b + 1)) :
+    (sequentialTM A B).halting (rightState q) = B.halting q := by
+  simp [sequentialTM, rightState]
+  congr
+  omega
+
+/-- The bridge is physical: when A is halted, one step enters B.initial and
+preserves the entire tape exactly. -/
+theorem sequential_bridge_step
+    {a b : Nat}
+    (A : TM (Fin (a + 1)) (Option Bool))
+    (B : TM (Fin (b + 1)) (Option Bool))
+    (cfg : Configuration (Fin (a + 1)) (Option Bool))
+    (hhalt : A.halting cfg.state = true) :
+    (sequentialTM A B).step (leftConfig (b := b) cfg) =
+      rightConfig (a := a)
+        { state := B.initial
+          tape := cfg.tape } := by
+  simp [TM.step, sequentialTM, leftConfig, rightConfig, leftState, rightState,
+    hhalt, Tape.write, Tape.move]
+
+/-- Remaining simulation theorem: phase A must be simulated until its halting
+configuration, then the bridge theorem above and phase-B simulation compose.
+This is now the only machine-level leaf for sequential composition. -/
 def SEQUENTIAL_RUN_SIMULATION_OPEN_MATH : Prop :=
   ∀ {a b : Nat}
     (A : TM (Fin (a + 1)) (Option Bool))
     (B : TM (Fin (b + 1)) (Option Bool))
     (cfg : Configuration (Fin (a + 1)) (Option Bool))
-    (fuelA fuelB : Nat),
-    True
+    (fuel : Nat),
+    (sequentialTM A B).run fuel (leftConfig (b := b) cfg) =
+      leftConfig (b := b) (A.run fuel cfg) ∨
+    ∃ k : Nat, k ≤ fuel ∧
+      A.halting (A.run k cfg).state = true
 
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_initial
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_blank
+#print axioms MCore.Real.P02SequentialCompositionMachine.sequential_halting_left
+#print axioms MCore.Real.P02SequentialCompositionMachine.sequential_halting_right
+#print axioms MCore.Real.P02SequentialCompositionMachine.sequential_bridge_step
 
 end P02SequentialCompositionMachine
 end Real
