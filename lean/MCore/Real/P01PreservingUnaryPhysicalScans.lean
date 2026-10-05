@@ -28,11 +28,9 @@ theorem seekBlanks_run_replicate
       simp [preservingUnaryReadMachine, TM.run, TM.step,
         Tape.write, Tape.move]
   | succ k ih =>
-      rw [Nat.succ_add]
-      simp only [TM.run]
-      simp [preservingUnaryReadMachine, TM.step, Tape.write, Tape.move,
-        List.replicate_succ, List.append_assoc]
-      simpa [List.replicate_succ, List.append_assoc] using
+      simpa [Nat.succ_eq_add_one, List.replicate_succ,
+        preservingUnaryReadMachine, TM.run, TM.step,
+        Tape.write, Tape.move, List.append_assoc] using
         ih (right := none :: right)
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalScans.seekBlanks_run_replicate
