@@ -6,6 +6,7 @@ namespace Real
 namespace P01PreservingUnaryWitnessMachine
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01WitnessIndexedRead
 
 /-!
