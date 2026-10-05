@@ -13,3 +13,5 @@ lake env lean /tmp/P02SequentialCompositionPriorityAudit.lean 2>&1 | tee /tmp/p0
 ! grep -E 'sorryAx' /tmp/p02-eq-comp-priority.log
 ! grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02SequentialCompositionMachine.lean
 echo P02_EQUALITY_COMPOSITION_PRIORITY_KERNEL_GREEN
+
+# retrigger-priority-run-20261005-2
