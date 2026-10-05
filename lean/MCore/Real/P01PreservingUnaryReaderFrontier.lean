@@ -25,11 +25,10 @@ canonical loop configuration to the next while extending the traversed prefix
 by exactly the next witness bit. -/
 def SuccessorCycleObligation : Prop :=
   ∀ (pref : BitString) (b : Bool) (suffix : BitString) (n : Nat),
-    ∃ steps : Nat,
-      steps ≤ (pref.length + n + suffix.length + 1)^2 + 16 ∧
-      preservingUnaryReadMachine.run steps
-          (indexSomeConfig pref (b :: suffix) (n + 1)) =
-        indexSomeConfig (pref ++ [b]) suffix n
+    pref ≠ [] →
+    preservingUnaryReadMachine.run (4 * pref.length + 8)
+        (indexSomeConfig pref (b :: suffix) (n + 1)) =
+      indexSomeConfig (pref ++ [b]) suffix n
 
 /-- The terminal target remains the existing universal material contract. -/
 def UniversalReaderMaterialTarget : Prop :=
