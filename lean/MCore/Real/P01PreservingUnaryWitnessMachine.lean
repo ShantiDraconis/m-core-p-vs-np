@@ -286,7 +286,11 @@ theorem preservingRead_second_true_cycle_guess_false :
     preservingUnaryReadMachine.run 10
       (indexSomeConfig [false] (false :: []) (0 + 1)) ≠
       indexSomeConfig [false, false] [] 0 := by
-  decide
+  intro h
+  have hs := congrArg (fun c => c.state) h
+  simp [preservingUnaryReadMachine, indexSomeConfig, encodeNat,
+    TM.run, TM.step, Tape.write, Tape.move,
+    List.replicate_succ, List.append_assoc] at hs
 
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_second_true_cycle_guess_false
 
