@@ -1,0 +1,19 @@
+name: P02 Priority G2 Kernel
+on:
+  push:
+    branches:
+      - atk/p02-g2-universal-failure-material-20261005
+    paths:
+      - 'lean/MCore/Real/P02UniversalFailureWitnessMaterial.lean'
+      - 'scripts/run-p02-g2-priority.sh'
+      - '.github/workflows/p02-priority-g2.yml'
+  workflow_dispatch:
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Run G2 priority kernel
+        run: bash scripts/run-p02-g2-priority.sh
