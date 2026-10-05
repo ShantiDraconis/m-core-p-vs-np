@@ -144,6 +144,55 @@ theorem shift_carry_return_run_three
     simp [shiftReadConfig, returnBitsConfig, preservingUnaryReadMachine,
       TM.run, TM.step, Tape.write, Tape.move]
 
+/-- Rightward scan configuration after the marker shift.  The list `bits`
+is exactly the remaining Boolean segment to cross before the erased unary
+blank region. -/
+def returnBitsScanConfig
+    (bits : BitString) (suffix : BitString)
+    (rightTail : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  match bits with
+  | [] =>
+      { state := .returnBits
+        tape := { left := none :: suffix.map some, head := none, right := rightTail } }
+  | x :: xs =>
+      { state := .returnBits
+        tape :=
+          { left := none :: suffix.map some
+            head := some x
+            right := xs.map some ++ rightTail } }
+
+@[simp] theorem returnBitsScanConfig_state
+    (bits suffix : BitString) (rightTail : List (Option Bool)) :
+    (returnBitsScanConfig bits suffix rightTail).state = .returnBits := by
+  cases bits <;> rfl
+
+theorem returnBits_step_cons
+    (x : Bool) (xs suffix : BitString)
+    (rightTail : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      (returnBitsScanConfig (x :: xs) suffix rightTail) =
+    returnBitsScanConfig xs suffix rightTail := by
+  cases xs <;>
+    simp [returnBitsScanConfig, preservingUnaryReadMachine, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
+
+/-- Exact finite scan across all restored Boolean cells. -/
+theorem returnBits_run
+    (bits suffix : BitString)
+    (rightTail : List (Option Bool)) :
+    preservingUnaryReadMachine.run bits.length
+      (returnBitsScanConfig bits suffix rightTail) =
+    returnBitsScanConfig [] suffix rightTail := by
+  induction bits with
+  | nil => rfl
+  | cons x xs ih =>
+      rw [List.length_cons]
+      simp only [TM.run, returnBitsScanConfig_state]
+      simp [preservingUnaryReadMachine]
+      rw [returnBits_step_cons]
+      exact ih
+
 /-- Exact finite scan of the traversed witness-prefix tail. -/
 theorem seekBits_run
     (remaining suffix : BitString)
