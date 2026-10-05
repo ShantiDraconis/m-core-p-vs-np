@@ -33,7 +33,7 @@ def FixedVerifierCorrect : Prop :=
           tape := verifierInputTape (witnessBits w) (encodeCircuit phi) }).state = true ↔
       verifyWitness phi w = true
 
-theorem fixedVerifierResiduals_close
+def fixedVerifierResiduals_close
     (hhalts : FixedVerifierHalts)
     (hcorrect : FixedVerifierCorrect) :
     PhysicalVerifierRealization := by
