@@ -68,7 +68,10 @@ theorem seekBlanks_run
         _ = seekBlanksConfig 0 ((passed + 1) + remaining) traversed b tail n :=
               ih (passed := passed + 1)
         _ = seekBlanksConfig 0 (passed + Nat.succ remaining) traversed b tail n := by
-              simp [Nat.succ_eq_add_one, Nat.add_assoc]
+              have hNat : passed + (1 + remaining) = passed + (remaining + 1) := by
+                omega
+              simpa [Nat.succ_eq_add_one] using
+                congrArg (fun k => seekBlanksConfig 0 k traversed b tail n) hNat
 
 /-- With no erased blank left, the next step sees the first traversed bit. -/
 def seekBitsEntryConfig
