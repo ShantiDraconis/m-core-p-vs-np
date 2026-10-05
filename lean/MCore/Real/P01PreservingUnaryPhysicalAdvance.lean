@@ -297,19 +297,22 @@ theorem returnFromMarker_to_returnBits
 /-- One physical returnBits step preserves the current bit and moves right. -/
 theorem returnBits_step_cons
     (x : Bool) (xs : BitString) (leftAcc : List (Option Bool))
-    (blankPad : Nat) (n : Nat) :
+    (blankPad : Nat) (n : Nat) (hpad : 0 < blankPad) :
     preservingUnaryReadMachine.step
       (returnBitsConfig (x :: xs) leftAcc blankPad n) =
       returnBitsConfig xs (some x :: leftAcc) blankPad n := by
-  cases xs <;>
-    simp [returnBitsConfig, preservingUnaryReadMachine, TM.step,
-      Tape.write, Tape.move, List.append_assoc]
+  cases blankPad with
+  | zero => omega
+  | succ k =>
+      cases xs <;>
+        simp [returnBitsConfig, preservingUnaryReadMachine, TM.step,
+          Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
 
 /-- Exact physical scan of all restored bits until the blank separator is under
 the head.  The scanned sequence is reversed into the physical left stack. -/
 theorem returnBits_run
     (remaining : BitString) (leftAcc : List (Option Bool))
-    (blankPad : Nat) (n : Nat) :
+    (blankPad : Nat) (n : Nat) (hpad : 0 < blankPad) :
     preservingUnaryReadMachine.run remaining.length
       (returnBitsConfig remaining leftAcc blankPad n) =
       returnBitsConfig [] (remaining.reverse.map some ++ leftAcc) blankPad n := by
@@ -326,7 +329,7 @@ theorem returnBits_run
                 simp [TM.run, preservingUnaryReadMachine]
         _ = preservingUnaryReadMachine.run xs.length
             (returnBitsConfig xs (some x :: leftAcc) blankPad n) := by
-              rw [returnBits_step_cons]
+              rw [returnBits_step_cons x xs leftAcc blankPad n hpad]
         _ = returnBitsConfig []
             (xs.reverse.map some ++ (some x :: leftAcc)) blankPad n :=
               ih (leftAcc := some x :: leftAcc)
@@ -428,7 +431,15 @@ theorem returnBlanks_run
               ih (leftAcc := none :: leftAcc)
         _ = returnBlanksConfig 0
             (List.replicate (Nat.succ k) none ++ leftAcc) n := by
-              simp [List.replicate_succ, List.append_assoc]
+              have hrep :
+                  List.replicate k none ++ none :: leftAcc =
+                    none :: (List.replicate k none ++ leftAcc) := by
+                induction k with
+                | zero => rfl
+                | succ k ihk =>
+                    simp [List.replicate_succ, ihk, List.append_assoc]
+              simpa [List.replicate_succ] using
+                congrArg (fun z => returnBlanksConfig 0 z n) hrep
 
 /-- Once the blank region is exhausted, returnBlanks sees the next encoded
 unary symbol and returns to indexSome without moving the head. -/
