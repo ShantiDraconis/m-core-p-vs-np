@@ -1,0 +1,56 @@
+name: P02 G2 Counterexample Attack
+
+on:
+  push:
+    branches:
+      - atk/p02-g2-counterexample-attack-20261006
+    paths:
+      - 'lean/MCore/Real/P02G2CounterexampleAttack.lean'
+      - '.github/workflows/p02-g2-counterexample-attack.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        uses: leanprover/lean-action@v1
+
+      - name: Build exposed 0-of-2 frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02G2CounterexampleAttack
+
+      - name: Hygiene and axiom audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/P02G2CounterexampleAttack.lean
+
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' "$file"; then
+            echo 'AUDIT_FAIL proof escape'
+            exit 1
+          fi
+
+          if grep -En '^[[:space:]]*def[[:space:]]+closeG2([[:space:]:=]|$)' "$file"; then
+            echo 'AUDIT_FAIL premature closeG2 producer'
+            exit 1
+          fi
+
+          cat > /tmp/P02G2CounterexampleAttackAudit.lean <<'EOF'
+          import MCore.Real.P02G2CounterexampleAttack
+          #print axioms MCore.Real.P02G2CounterexampleAttack.counterexampleMaterial_iff_terminal
+          #print axioms MCore.Real.P02G2CounterexampleAttack.witnessOfCounterexampleMaterial
+          EOF
+
+          lake env lean /tmp/P02G2CounterexampleAttackAudit.lean 2>&1 | tee /tmp/p02-g2-counterexample-attack.log
+
+          if grep -q 'sorryAx' /tmp/p02-g2-counterexample-attack.log; then
+            echo 'AUDIT_FAIL sorryAx'
+            exit 1
+          fi
+
+          echo 'T7_G2_COUNTEREXAMPLE_EXPOSED_OPEN_MATH_0_OF_2'
