@@ -70,26 +70,25 @@ theorem preservingRead_nonzero_exact
           (indexSomeConfig [a] (moved ++ b :: suffix) moved.length) =
         indexSomeConfig (a :: moved) (b :: suffix) 0 := by
     simpa using hiter
-  have hfuel :
-      8 + iteratedCycleFuel [a] moved +
-          (2 * (a :: moved).length + 3) +
-          (4 * (a :: moved).length + 2) =
-        8 + (iteratedCycleFuel [a] moved +
-          ((2 * (a :: moved).length + 3) +
-            (4 * (a :: moved).length + 2))) := by
-    omega
-  rw [hfuel]
   let kIter := iteratedCycleFuel [a] moved
   let kFinal := 2 * (a :: moved).length + 3
   let kRewind := 4 * (a :: moved).length + 2
-  change preservingUnaryReadMachine.run
-      (8 + (kIter + (kFinal + kRewind)))
-      { state := preservingUnaryReadMachine.initial
-        tape := P01WitnessIndexedRead.witnessReadTape
-          ((a :: moved) ++ b :: suffix) (moved.length + 1) } =
-    haltedConfig b ((a :: moved) ++ b :: suffix)
-      ((a :: moved).length + 2)
   calc
+    preservingUnaryReadMachine.run
+        (8 + iteratedCycleFuel [a] moved +
+          (2 * (a :: moved).length + 3) +
+          (4 * (a :: moved).length + 2))
+        { state := preservingUnaryReadMachine.initial
+          tape := P01WitnessIndexedRead.witnessReadTape
+            ((a :: moved) ++ b :: suffix) (moved.length + 1) }
+        =
+      preservingUnaryReadMachine.run (8 + (kIter + (kFinal + kRewind)))
+        { state := preservingUnaryReadMachine.initial
+          tape := P01WitnessIndexedRead.witnessReadTape
+            ((a :: moved) ++ b :: suffix) (moved.length + 1) } := by
+          congr 1
+          dsimp [kIter, kFinal, kRewind]
+          omega
     preservingUnaryReadMachine.run (8 + (kIter + (kFinal + kRewind)))
         { state := preservingUnaryReadMachine.initial
           tape := P01WitnessIndexedRead.witnessReadTape
