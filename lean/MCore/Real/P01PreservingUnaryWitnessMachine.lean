@@ -22,7 +22,7 @@ Protocol on witnessReadTape witness i:
   one witness cell deeper;
 * at the false terminator the selected witness bit is remembered in one of two
   finite states;
-* the marker is moved back across the traversed prefix, restoring every witness
+* the marker is moved back across the traversed pref, restoring every witness
   cell exactly;
 * erased unary cells and the false terminator are consumed; the result is
   encoded only by haltFalse / haltTrue.
@@ -92,7 +92,7 @@ def preservingUnaryReadMachine : TM PreservingReadState (Option Bool) :=
           | some b => (.reject, some b, .stay)
 
       -- later true / final false: erased unary markers are blanks, followed by
-      -- the traversed Boolean prefix, followed by the witness marker blank
+      -- the traversed Boolean pref, followed by the witness marker blank
       | .seekBlanks =>
           match symbol with
           | none => (.seekBlanks, none, .left)
@@ -177,7 +177,7 @@ def preservingUnaryReadMachine : TM PreservingReadState (Option Bool) :=
           | none => (.rewindInspectTrue, none, .right)
           | some b => (.reject, some b, .stay)
 
-      -- restore traversed witness prefix by moving the marker right
+      -- restore traversed witness pref by moving the marker right
       | .rewindInspectFalse =>
           match symbol with
           | some false => (.rewindCarryFF, none, .left)
@@ -235,32 +235,32 @@ def preservingReadAccepting : PreservingReadState → Bool
 
 
 /-- Canonical loop configuration after at least one unary true has already
-advanced the witness marker.  `prefix` is the traversed witness prefix and
+advanced the witness marker.  `pref` is the traversed witness pref and
 therefore has the same length as the erased unary-true region. -/
 def indexSomeConfig
-    (prefix suffix : BitString) (n : Nat) :
+    (pref suffix : BitString) (n : Nat) :
     Configuration PreservingReadState (Option Bool) :=
   match encodeNat n with
   | [] =>
       { state := .reject
         tape :=
           { left :=
-              List.replicate prefix.length none ++
-                prefix.map some ++ none :: suffix.map some
+              List.replicate pref.length none ++
+                pref.map some ++ none :: suffix.map some
             head := none
             right := [] } }
   | bit :: rest =>
       { state := .indexSome
         tape :=
           { left :=
-              List.replicate prefix.length none ++
-                prefix.map some ++ none :: suffix.map some
+              List.replicate pref.length none ++
+                pref.map some ++ none :: suffix.map some
             head := some bit
             right := rest.map some } }
 
 @[simp] theorem indexSomeConfig_state
-    (prefix suffix : BitString) (n : Nat) :
-    (indexSomeConfig prefix suffix n).state = .indexSome := by
+    (pref suffix : BitString) (n : Nat) :
+    (indexSomeConfig pref suffix n).state = .indexSome := by
   cases n <;> rfl
 
 /-- The first unary true establishes the general loop invariant in exactly
