@@ -134,11 +134,40 @@ theorem step_right
     exact hidx
   simp [hstate, hblank]
 
+/-- Exact phase-B simulation for arbitrary fuel. Once the composed machine
+has crossed the bridge, every remaining step is exactly a B-step. -/
+theorem run_right
+    {a b : Nat}
+    (A : TM (Fin (a + 1)) (Option Bool))
+    (B : TM (Fin (b + 1)) (Option Bool))
+    (cfg : Configuration (Fin (b + 1)) (Option Bool))
+    (hblank : B.blank = none)
+    (fuel : Nat) :
+    (sequentialTM A B).run fuel (rightConfig (a := a) cfg) =
+      rightConfig (a := a) (B.run fuel cfg) := by
+  induction fuel generalizing cfg with
+  | zero =>
+      rfl
+  | succ fuel ih =>
+      rw [TM.run]
+      rw [halting_right]
+      by_cases hhalt : B.halting cfg.state = true
+      · simp only [hhalt, if_pos]
+        rw [MachineRunLemmas.run_halted B cfg hhalt (fuel + 1)]
+      · have hfalse : B.halting cfg.state = false := by
+          cases h : B.halting cfg.state <;> simp_all
+        simp only [hfalse, Bool.false_eq_true, if_false]
+        rw [step_right A B cfg hblank]
+        rw [ih]
+        rw [TM.run]
+        simp [hfalse]
+
 #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.halting_left
 #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.halting_right
 #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.step_left_active
 #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.bridge_step
 #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.step_right
+#print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.run_right
 
 end P02DeterministicReductionCompositionMaterial
 end Real
