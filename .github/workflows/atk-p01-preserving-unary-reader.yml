@@ -1,0 +1,57 @@
+name: ATK P01 Preserving Unary Reader
+
+on:
+  push:
+    branches:
+      - atk/p01-final-plus-preserving-reader-20261005
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Verify toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lean --version
+          lake --version
+      - name: Build preserving marker primitive
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01PreservingUnaryWitnessMarker
+          lake build MCore.Real.P01InputNodePreservingPlan
+          lake build MCore.Real.P01PreservingUnaryWitnessMachine
+          lake build MCore.Real.P01PreservingUnaryReaderCertificate
+          lake build MCore.Real.P01PreservingMarkerIteration
+          lake build MCore.Real.P01WitnessIndexedReadGlobal
+          lake build MCore.Real.P01PreservingUnaryPhysicalRuns
+          lake build MCore.Real.P01PreservingUnaryReaderMaterial
+          lake build MCore.Real.P01PreservingUnaryReaderFrontier
+          if grep -En '(^|[[:space:]])(sorry|admit|sorryAx)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P01PreservingUnaryReaderFrontier.lean; then
+            exit 1
+          fi
+          echo FRONTIER_HYGIENE_GREEN
+          bash audit/p01_external_submission_gate.sh
+      - name: Axiom / placeholder hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '\b(sorry|admit|sorryAx)\b' --include='*.lean' lean/MCore/Real/P01PreservingUnaryWitnessMarker.lean; then
+            exit 1
+          fi
+          echo HYGIENE_GREEN
