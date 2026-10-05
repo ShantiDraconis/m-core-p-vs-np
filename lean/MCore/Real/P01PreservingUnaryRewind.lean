@@ -120,6 +120,22 @@ def cleanupScanConfig
             head := none
             right := List.replicate k none ++ [some false] } }
 
+@[simp] theorem cleanupScanConfig_state_false
+    (witness : BitString) (crossed remaining : Nat) :
+    (cleanupScanConfig false witness crossed remaining).state = .cleanupFalse := by
+  cases remaining <;> rfl
+
+@[simp] theorem cleanupScanConfig_state_true
+    (witness : BitString) (crossed remaining : Nat) :
+    (cleanupScanConfig true witness crossed remaining).state = .cleanupTrue := by
+  cases remaining <;> rfl
+
+@[simp] theorem preserving_not_halt_cleanupFalse :
+    preservingUnaryReadMachine.halting .cleanupFalse = false := rfl
+
+@[simp] theorem preserving_not_halt_cleanupTrue :
+    preservingUnaryReadMachine.halting .cleanupTrue = false := rfl
+
 def haltedConfig
     (selected : Bool) (witness : BitString) (leftBlanks : Nat) :
     Configuration PreservingReadState (Option Bool) :=
@@ -171,7 +187,9 @@ theorem cleanup_scan_run
               (cleanupScanConfig false witness (crossed + 1) remaining) := by
           rw [show remaining + 2 = (remaining + 1) + 1 by omega]
           rw [TM.run]
-          simp [cleanupScanConfig, preservingUnaryReadMachine, hstep]
+          simp only [cleanupScanConfig_state_false,
+            preserving_not_halt_cleanupFalse, Bool.false_eq_true, if_false]
+          rw [hstep]
         rw [hrun]
         have h := ih (crossed := crossed + 1)
         simpa [haltedConfig] using h
@@ -190,7 +208,9 @@ theorem cleanup_scan_run
               (cleanupScanConfig true witness (crossed + 1) remaining) := by
           rw [show remaining + 2 = (remaining + 1) + 1 by omega]
           rw [TM.run]
-          simp [cleanupScanConfig, preservingUnaryReadMachine, hstep]
+          simp only [cleanupScanConfig_state_true,
+            preserving_not_halt_cleanupTrue, Bool.false_eq_true, if_false]
+          rw [hstep]
         rw [hrun]
         have h := ih (crossed := crossed + 1)
         simpa [haltedConfig] using h
@@ -216,8 +236,9 @@ theorem preservingRead_rewind_cleanup
     have h :=
       rewind_all_active b x xs (b :: suffix) k
     have hblanks : pref.length = k + 1 := hk
-    rw [hlen, hblanks]
-    simpa [hrev, List.append_assoc] using h
+    have hrevrev : (x :: xs).reverse = pref := by
+      rw [← hrev, List.reverse_reverse]
+    simpa [hlen, hblanks, hrevrev, List.append_assoc] using h
   have hclean :
       preservingUnaryReadMachine.run (k + 2)
         (rewindDoneConfig b (pref ++ b :: suffix) k) =
@@ -225,15 +246,41 @@ theorem preservingRead_rewind_cleanup
     rw [show k + 2 = 1 + (k + 1) by omega]
     rw [run_add, rewind_done_enter_cleanup]
     have h := cleanup_scan_run b (pref ++ b :: suffix) 2 k
-    have hklen : pref.length = k + 1 := by omega
-    convert h using 1 <;> omega
+    have hcount : 2 + k + 1 = pref.length + 2 := by omega
+    rw [← hcount]
+    exact h
   have hfuel :
       4 * pref.length + 2 = 1 + (3 * pref.length + (k + 2)) := by
     omega
-  rw [show (a :: rest) = pref by rfl]
-  rw [hfuel, run_add, hentry]
-  rw [run_add, hrew]
-  exact hclean
+  change preservingUnaryReadMachine.run (4 * pref.length + 2)
+      (selectedConfig pref b suffix) =
+    haltedConfig b (pref ++ b :: suffix) (pref.length + 2)
+  rw [hfuel]
+  calc
+    preservingUnaryReadMachine.run
+        (1 + (3 * pref.length + (k + 2)))
+        (selectedConfig pref b suffix)
+        =
+      preservingUnaryReadMachine.run
+        (3 * pref.length + (k + 2))
+        (preservingUnaryReadMachine.run 1
+          (selectedConfig pref b suffix)) := by
+            rw [run_add]
+    _ =
+      preservingUnaryReadMachine.run
+        (3 * pref.length + (k + 2))
+        (rewindActiveConfig b x xs (b :: suffix) pref.length) := by
+          rw [hentry]
+    _ =
+      preservingUnaryReadMachine.run (k + 2)
+        (preservingUnaryReadMachine.run (3 * pref.length)
+          (rewindActiveConfig b x xs (b :: suffix) pref.length)) := by
+          rw [run_add]
+    _ =
+      preservingUnaryReadMachine.run (k + 2)
+        (rewindDoneConfig b (pref ++ b :: suffix) k) := by
+          rw [hrew]
+    _ = haltedConfig b (pref ++ b :: suffix) (pref.length + 2) := hclean
 
 #print axioms MCore.Real.P01PreservingUnaryRewind.preservingRead_rewind_cleanup
 
