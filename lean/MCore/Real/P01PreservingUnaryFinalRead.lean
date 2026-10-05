@@ -259,12 +259,52 @@ theorem preservingRead_final_select
         (((((1 + (rest.length + 1)) + 1) + rest.length) + 1) + 1)
         (indexSomeConfig pref (b :: suffix) 0) =
       selectedConfig pref b suffix := by
-    rw [run_add, h0]
-    rw [run_add, h1]
-    rw [run_add, h2]
-    rw [run_add, h3]
-    rw [run_add, h4]
-    exact h5
+    calc
+      preservingUnaryReadMachine.run
+          (((((1 + (rest.length + 1)) + 1) + rest.length) + 1) + 1)
+          (indexSomeConfig pref (b :: suffix) 0)
+          =
+        preservingUnaryReadMachine.run
+          ((((rest.length + 1) + 1) + rest.length) + 1 + 1)
+          (preservingUnaryReadMachine.run 1
+            (indexSomeConfig pref (b :: suffix) 0)) := by
+              rw [show (((((1 + (rest.length + 1)) + 1) + rest.length) + 1) + 1) =
+                1 + ((((rest.length + 1) + 1) + rest.length) + 1 + 1) by omega]
+              rw [run_add]
+      _ =
+        preservingUnaryReadMachine.run
+          ((((rest.length + 1) + 1) + rest.length) + 1 + 1)
+          (finalSeekBlanksConfig rest.length pref (b :: suffix) right0) := by
+            rw [h0]
+      _ =
+        preservingUnaryReadMachine.run
+          (((1 + rest.length) + 1) + 1)
+          { state := .finalSeekBlanks
+            tape :=
+              { left := rest.map some ++ none :: (b :: suffix).map some
+                head := some a
+                right := right1 } } := by
+            rw [show ((((rest.length + 1) + 1) + rest.length) + 1 + 1) =
+              (rest.length + 1) + (((1 + rest.length) + 1) + 1) by omega]
+            rw [run_add, h1]
+      _ =
+        preservingUnaryReadMachine.run
+          ((rest.length + 1) + 1)
+          (finalSeekBitsConfig rest (b :: suffix) (some a :: right1)) := by
+            rw [show (((1 + rest.length) + 1) + 1) =
+              1 + ((rest.length + 1) + 1) by omega]
+            rw [run_add, h2]
+      _ =
+        preservingUnaryReadMachine.run 2
+          (finalSeekBitsConfig [] (b :: suffix) right2) := by
+            rw [show ((rest.length + 1) + 1) = rest.length + 2 by omega]
+            rw [run_add, h3]
+      _ =
+        preservingUnaryReadMachine.run 1
+          (finalReadConfig b suffix right2) := by
+            rw [show 2 = 1 + 1 by omega]
+            rw [run_add, h4]
+      _ = selectedConfig pref b suffix := h5
 
   have hfuel :
       (((((1 + (rest.length + 1)) + 1) + rest.length) + 1) + 1) =
