@@ -91,3 +91,16 @@ jobs:
           fi
           echo P02_DETERMINISTIC_REDUCTION_COMPOSITION_CORE_GREEN
           echo P02_SAT_TERMINAL_EXPOSED_GREEN
+      - name: Force SAT inhabitant
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          if lake env lean probe/P02TerminalSATInhabitantExpectedFailure.lean > /tmp/p02-sat-inhabitant.log 2>&1; then
+            echo P02_SAT_INHABITANT_UNEXPECTEDLY_CONSTRUCTED
+            cat /tmp/p02-sat-inhabitant.log
+            exit 2
+          else
+            cat /tmp/p02-sat-inhabitant.log
+            echo P02_SAT_INHABITANT_STILL_OPEN
+          fi
