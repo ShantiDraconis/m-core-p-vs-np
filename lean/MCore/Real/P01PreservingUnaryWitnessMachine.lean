@@ -332,7 +332,7 @@ theorem indexSome_run_advance
     preservingUnaryReadMachine.run (4 * traversed.length + 8)
       (indexSomeConfig traversed (b :: tail) (n + 1)) =
       indexSomeConfig (traversed ++ [b]) tail n := by
-  induction traversed using List.reverseRecOn with
+  induction traversed using List.reverse_induction with
   | nil =>
       exact (htrav rfl).elim
   | append_singleton pref a ih =>
