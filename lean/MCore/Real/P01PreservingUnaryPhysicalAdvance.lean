@@ -55,11 +55,20 @@ theorem seekBlanks_run
   | zero =>
       rfl
   | succ remaining ih =>
-      simp only [TM.run, seekBlanksConfig_state]
-      simp [preservingUnaryReadMachine]
-      rw [seekBlanks_step_succ]
-      simpa [Nat.succ_eq_add_one, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
-        (ih (passed := passed + 1))
+      calc
+        preservingUnaryReadMachine.run (Nat.succ remaining)
+            (seekBlanksConfig (Nat.succ remaining) passed traversed b tail n) =
+          preservingUnaryReadMachine.run remaining
+            (preservingUnaryReadMachine.step
+              (seekBlanksConfig (remaining + 1) passed traversed b tail n)) := by
+                simp [TM.run, preservingUnaryReadMachine, Nat.succ_eq_add_one]
+        _ = preservingUnaryReadMachine.run remaining
+            (seekBlanksConfig remaining (passed + 1) traversed b tail n) := by
+              rw [seekBlanks_step_succ]
+        _ = seekBlanksConfig 0 ((passed + 1) + remaining) traversed b tail n :=
+              ih (passed := passed + 1)
+        _ = seekBlanksConfig 0 (passed + Nat.succ remaining) traversed b tail n := by
+              congr 2 <;> omega
 
 /-- With no erased blank left, the next step sees the first traversed bit. -/
 def seekBitsEntryConfig
@@ -97,7 +106,7 @@ def seekBitsConfig
   | [] =>
       { state := .seekBits
         tape :=
-          { left := none :: (b :: tail).map some
+          { left := (b :: tail).map some
             head := none
             right :=
               passedRev.map some ++
@@ -150,12 +159,20 @@ theorem seekBits_run
   | nil =>
       rfl
   | cons y ys ih =>
-      rw [List.length_cons]
-      simp only [TM.run, seekBitsConfig_state]
-      simp [preservingUnaryReadMachine]
-      rw [seekBits_step_cons]
-      rw [ih]
-      simp [List.reverse_cons, List.append_assoc]
+      calc
+        preservingUnaryReadMachine.run (y :: ys).length
+            (seekBitsConfig (y :: ys) passedRev blankPad b tail n) =
+          preservingUnaryReadMachine.run ys.length
+            (preservingUnaryReadMachine.step
+              (seekBitsConfig (y :: ys) passedRev blankPad b tail n)) := by
+                simp [TM.run, preservingUnaryReadMachine]
+        _ = preservingUnaryReadMachine.run ys.length
+            (seekBitsConfig ys (y :: passedRev) blankPad b tail n) := by
+              rw [seekBits_step_cons]
+        _ = seekBitsConfig [] (ys.reverse ++ (y :: passedRev)) blankPad b tail n :=
+              ih (passedRev := y :: passedRev)
+        _ = seekBitsConfig [] ((y :: ys).reverse ++ passedRev) blankPad b tail n := by
+              simp [List.reverse_cons, List.append_assoc]
 
 /-- At the marker blank, one physical step enters shiftRead and moves onto the
 next witness bit that will be shifted across the marker. -/
