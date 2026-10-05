@@ -67,24 +67,26 @@ def ConcreteSearchClosure.toReaderCertificate
 
 structure LoopInvariant where
   input : ReaderInput
-  stepA stepB : Nat
-  stepA_lt_stepB : Nat.lt stepA stepB
-  stepB_le_budget : stepB ≤ budget input
-  repeated_state :
-    (preservingUnaryReadMachine.run stepA input.initialConfig).state =
-    (preservingUnaryReadMachine.run stepB input.initialConfig).state
+  stepA : Nat
+  stepB : Nat
+
+def LoopInvariant.Valid (I : LoopInvariant) : Prop :=
+  I.stepA < I.stepB ∧
+  I.stepB ≤ budget I.input ∧
+  (preservingUnaryReadMachine.run I.stepA I.input.initialConfig).state =
+    (preservingUnaryReadMachine.run I.stepB I.input.initialConfig).state
 
 inductive SearchResult
   | found : ConcreteSearchClosure → SearchResult
   | exhausted : ExhaustionCertificate → SearchResult
-  | loopDetected : LoopInvariant → SearchResult
+  | loopDetected : (I : LoopInvariant) → I.Valid → SearchResult
   | open : SearchResult
 
 structure TruncationLaw where
   exhaustionProducesClosure :
     ExhaustionCertificate → ConcreteSearchClosure
   loopProducesClosure :
-    LoopInvariant → ConcreteSearchClosure
+    ∀ I : LoopInvariant, I.Valid → ConcreteSearchClosure
 
 def SearchResult.close?
     (L : TruncationLaw) :
@@ -92,8 +94,8 @@ def SearchResult.close?
   | .found C => some (ConcreteSearchClosure.toReaderCertificate C)
   | .exhausted E =>
       some (ConcreteSearchClosure.toReaderCertificate (L.exhaustionProducesClosure E))
-  | .loopDetected I =>
-      some (ConcreteSearchClosure.toReaderCertificate (L.loopProducesClosure I))
+  | .loopDetected I hI =>
+      some (ConcreteSearchClosure.toReaderCertificate (L.loopProducesClosure I hI))
   | .open => none
 
 theorem open_does_not_close (L : TruncationLaw) :
@@ -106,9 +108,9 @@ theorem exhaustion_closes
   ⟨ConcreteSearchClosure.toReaderCertificate (L.exhaustionProducesClosure E)⟩
 
 theorem loop_closes
-    (L : TruncationLaw) (I : LoopInvariant) :
+    (L : TruncationLaw) (I : LoopInvariant) (hI : I.Valid) :
     PreservingUnaryReaderGap := by
-  let C : ConcreteSearchClosure := L.loopProducesClosure I
+  let C : ConcreteSearchClosure := L.loopProducesClosure I hI
   exact ⟨ConcreteSearchClosure.toReaderCertificate C⟩
 
 #print axioms MCore.Real.P01PreservingUnaryTruncationLawV2.ConcreteSearchClosure.toReaderCertificate
