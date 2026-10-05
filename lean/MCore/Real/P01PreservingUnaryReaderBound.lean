@@ -1,4 +1,3 @@
-import Mathlib
 import MCore.Real.P01PreservingUnaryIteration
 import MCore.Real.P01PreservingUnaryFinalRead
 import MCore.Real.P01PreservingUnaryRewind
@@ -28,7 +27,7 @@ theorem iteratedCycleFuel_closed
       rw [iteratedCycleFuel_cons]
       rw [ih]
       simp [successorCycleFuel]
-      ring
+      omega
 
 /-- Exact total fuel of the nonzero physical reader path, expressed only in
 the requested index. -/
@@ -56,7 +55,7 @@ theorem nonzero_physical_fuel_identity
     nonzeroReaderFuel i := by
   obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hi)
   simp [nonzeroReaderFuel]
-  ring
+  omega
 
 /-- The certificate-size quadratic dominates the zero and nonzero physical
 reader costs for every valid witness/index pair. -/
@@ -65,9 +64,13 @@ theorem nonzeroReaderFuel_le_timeBound
     nonzeroReaderFuel i ≤
       preservingUnaryReaderTimeBound
         (witness.length + (encodeNat i).length) := by
+  have hi2 : i ^ 2 ≤
+      (witness.length + (i + 1) + 1) ^ 2 := by
+    have hle : i ≤ witness.length + (i + 1) + 1 := by omega
+    exact Nat.pow_le_pow_left hle 2
   simp [nonzeroReaderFuel, preservingUnaryReaderTimeBound,
     CanonicalSATWitness.encodeNat_length]
-  nlinarith [Nat.zero_le witness.length, Nat.zero_le i]
+  omega
 
 theorem zeroFuel_le_timeBound
     (witness : BitString) :
