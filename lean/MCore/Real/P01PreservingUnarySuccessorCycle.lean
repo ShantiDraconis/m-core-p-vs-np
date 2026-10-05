@@ -52,6 +52,17 @@ theorem replicate_two_more_none
   | succ pad ih =>
       simp [List.replicate_succ, List.append_assoc]
 
+theorem indexSome_true_step
+    (a b : Bool) (rest suffix : BitString) (n : Nat) :
+    preservingUnaryReadMachine.step
+      (indexSomeConfig (a :: rest) (b :: suffix) (n + 1)) =
+    seekBlanksConfig rest.length (a :: rest) (b :: suffix)
+      (none :: (encodeNat n).map some) := by
+  cases a <;> cases b <;> cases n <;>
+    simp [indexSomeConfig, seekBlanksConfig, encodeNat,
+      preservingUnaryReadMachine, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
 theorem seekBlanks_step_succ
     (pad : Nat) (pref suffix : BitString)
     (right : List (Option Bool)) :
@@ -116,6 +127,20 @@ def seekBitsConfig
     (right : List (Option Bool)) :
     (seekBitsConfig remaining suffix right).state = .seekBits := by
   cases remaining <;> rfl
+
+theorem seekBlanks_first_bit_step
+    (c : Bool) (cs suffix : BitString)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      { state := PreservingReadState.seekBlanks
+        tape :=
+          { left := cs.map some ++ none :: suffix.map some
+            head := some c
+            right := right } } =
+    seekBitsConfig cs suffix (some c :: right) := by
+  cases cs <;>
+    simp [seekBitsConfig, preservingUnaryReadMachine, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
 
 theorem seekBits_step_cons
     (c : Bool) (cs suffix : BitString)
@@ -305,6 +330,18 @@ theorem returnBlanks_run
       rw [hih]
       rw [replicate_none_push pad leftBase]
       simp [List.replicate_succ, List.append_assoc]
+
+theorem returnBits_blank_to_returnBlanks
+    (pad : Nat) (rebuilt suffix : BitString)
+    (bit : Bool) (rest : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      (returnBitsScanConfig rebuilt [] suffix
+        (List.replicate (pad + 1) none ++ some bit :: rest)) =
+    returnBlanksScanConfig (pad + 1)
+      (none :: rebuilt.map some ++ none :: suffix.map some) bit rest := by
+  simp [returnBitsScanConfig, returnBlanksScanConfig,
+    preservingUnaryReadMachine, TM.step, Tape.write, Tape.move,
+    List.replicate_succ, List.append_assoc]
 
 /-- Once the next unary symbol is under the head, returnBlanks re-enters the
 canonical indexSome control state without changing the tape. -/
