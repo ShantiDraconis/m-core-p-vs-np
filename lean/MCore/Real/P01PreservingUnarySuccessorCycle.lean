@@ -382,24 +382,34 @@ theorem forwardPhase_run
         List.replicate (a :: rest).length none ++
         none :: (encodeNat n).map some) := by
   let pref : BitString := a :: rest
+  let right0 : List (Option Bool) := none :: (encodeNat n).map some
+  let right1 : List (Option Bool) :=
+    List.replicate pref.length none ++ right0
+  let right2 : List (Option Bool) :=
+    pref.reverse.map some ++ right1
+
   have hp : pref.length = rest.length + 1 := by
     simp [pref]
 
   have h0 :
       preservingUnaryReadMachine.run 1
         (indexSomeConfig pref (b :: suffix) (n + 1)) =
-      seekBlanksConfig rest.length pref (b :: suffix)
-        (none :: (encodeNat n).map some) := by
+      seekBlanksConfig rest.length pref (b :: suffix) right0 := by
     rw [TM.run]
     simp [indexSomeConfig_state, preservingUnaryReadMachine]
-    simpa [pref] using indexSome_true_step a b rest suffix n
+    simpa [pref, right0] using indexSome_true_step a b rest suffix n
 
-  have h1 :=
-    seekBlanks_run_to_first_bit rest.length a rest (b :: suffix)
-      (none :: (encodeNat n).map some)
-
-  let right1 : List (Option Bool) :=
-    List.replicate pref.length none ++ none :: (encodeNat n).map some
+  have h1 :
+      preservingUnaryReadMachine.run (rest.length + 1)
+        (seekBlanksConfig rest.length pref (b :: suffix) right0) =
+      { state := PreservingReadState.seekBlanks
+        tape :=
+          { left := rest.map some ++ none :: (b :: suffix).map some
+            head := some a
+            right := right1 } } := by
+    have h :=
+      seekBlanks_run_to_first_bit rest.length a rest (b :: suffix) right0
+    simpa [right1, pref, hp, right0, List.append_assoc] using h
 
   have h2 :
       preservingUnaryReadMachine.run 1
@@ -411,15 +421,15 @@ theorem forwardPhase_run
       seekBitsConfig rest (b :: suffix) (some a :: right1) := by
     rw [TM.run]
     simp only [preserving_not_halt_seekBlanks, Bool.false_eq_true, if_false]
-    simpa [right1] using
-      seekBlanks_first_bit_step a rest (b :: suffix) right1
+    exact seekBlanks_first_bit_step a rest (b :: suffix) right1
 
-  have h3 :=
-    seekBits_run rest (b :: suffix) (some a :: right1)
-
-  let right2 : List (Option Bool) :=
-    pref.reverse.map some ++
-      List.replicate pref.length none ++ none :: (encodeNat n).map some
+  have h3 :
+      preservingUnaryReadMachine.run rest.length
+        (seekBitsConfig rest (b :: suffix) (some a :: right1)) =
+      seekBitsConfig [] (b :: suffix) right2 := by
+    have h := seekBits_run rest (b :: suffix) (some a :: right1)
+    simpa [right2, pref, List.reverse_cons, List.map_append,
+      List.append_assoc] using h
 
   have h4 :
       preservingUnaryReadMachine.run 1
@@ -430,23 +440,51 @@ theorem forwardPhase_run
       Bool.false_eq_true, if_false]
     exact seekBits_marker_step b suffix right2
 
-  have h5 := shift_carry_return_run_three b suffix right2
+  have h5 :
+      preservingUnaryReadMachine.run 3
+        (shiftReadConfig b suffix right2) =
+      returnBitsConfig b suffix right2 :=
+    shift_carry_return_run_three b suffix right2
 
-  rw [show (a :: rest) = pref by rfl]
-  unfold forwardPhaseFuel
-  rw [show 2 * pref.length + 5 =
-    1 + ((rest.length + 1) + (1 + (rest.length + (1 + 3)))) by omega]
-  rw [run_add, h0]
-  rw [run_add]
-  simpa [pref, hp, right1, List.append_assoc] using h1
-  rw [run_add]
-  rw [h2]
-  rw [run_add]
-  simpa [pref, right1, right2, List.reverse_cons, List.map_append,
-    List.append_assoc] using h3
-  rw [run_add]
-  rw [h4]
-  simpa [right2] using h5
+  have h01 :
+      preservingUnaryReadMachine.run (1 + (rest.length + 1))
+        (indexSomeConfig pref (b :: suffix) (n + 1)) =
+      { state := PreservingReadState.seekBlanks
+        tape :=
+          { left := rest.map some ++ none :: (b :: suffix).map some
+            head := some a
+            right := right1 } } := by
+    rw [run_add, h0, h1]
+
+  have h012 :
+      preservingUnaryReadMachine.run ((1 + (rest.length + 1)) + 1)
+        (indexSomeConfig pref (b :: suffix) (n + 1)) =
+      seekBitsConfig rest (b :: suffix) (some a :: right1) := by
+    rw [run_add, h01, h2]
+
+  have h0123 :
+      preservingUnaryReadMachine.run
+        (((1 + (rest.length + 1)) + 1) + rest.length)
+        (indexSomeConfig pref (b :: suffix) (n + 1)) =
+      seekBitsConfig [] (b :: suffix) right2 := by
+    rw [run_add, h012, h3]
+
+  have h01234 :
+      preservingUnaryReadMachine.run
+        ((((1 + (rest.length + 1)) + 1) + rest.length) + 1)
+        (indexSomeConfig pref (b :: suffix) (n + 1)) =
+      shiftReadConfig b suffix right2 := by
+    rw [run_add, h0123, h4]
+
+  have hall :
+      preservingUnaryReadMachine.run
+        (((((1 + (rest.length + 1)) + 1) + rest.length) + 1) + 3)
+        (indexSomeConfig pref (b :: suffix) (n + 1)) =
+      returnBitsConfig b suffix right2 := by
+    rw [run_add, h01234, h5]
+
+  simpa [forwardPhaseFuel, pref, hp, right0, right1, right2,
+    List.append_assoc] using hall
 
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.forwardPhase_run
 
