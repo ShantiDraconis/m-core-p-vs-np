@@ -7,105 +7,127 @@ namespace P01PreservingUnarySuccessorCycle
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
-open P01WitnessIndexedRead
-open P01PreservingUnaryWitnessMachine
 open MachineRunLemmas
+open P01PreservingUnaryWitnessMachine
 
-/-!
-Material decomposition of one nonzero preserving-reader cycle.
+@[simp] theorem preserving_not_halt_seekBlanks :
+    preservingUnaryReadMachine.halting .seekBlanks = false := rfl
 
-These are concrete machine configurations.  They expose the four finite
-phases needed for the universal successor proof:
-erased-unary blanks, traversed prefix bits, witness-marker shift, and return.
-No endpoint claim is introduced here.
--/
+@[simp] theorem preserving_not_halt_seekBits :
+    preservingUnaryReadMachine.halting .seekBits = false := rfl
 
-/-- After consuming the current unary true, the machine scans the erased
-unary blanks to the left. -/
+/-- Configuration while crossing erased unary blanks.
+`pad` counts blanks still to the left of the blank currently under the head.
+The right side is explicit because every left move pushes one blank onto it. -/
 def seekBlanksConfig
-    (pad : Nat) (pref : BitString) (b : Bool) (suffix : BitString)
-    (n : Nat) :
+    (pad : Nat) (pref suffix : BitString)
+    (right : List (Option Bool)) :
     Configuration PreservingReadState (Option Bool) :=
   { state := .seekBlanks
     tape :=
-      { left :=
-          List.replicate pad none ++
-            pref.map some ++ none :: some b :: suffix.map some
+      { left := List.replicate pad none ++ pref.map some ++ none :: suffix.map some
         head := none
-        right := none :: (encodeNat n).map some } }
+        right := right } }
 
-/-- State reached after all erased unary blanks have been crossed and the
-first traversed witness bit is at the head. -/
-def seekPrefixHeadConfig
-    (prefTail : BitString) (first : Bool)
-    (b : Bool) (suffix : BitString) (pad : Nat) (n : Nat) :
-    Configuration PreservingReadState (Option Bool) :=
-  { state := .seekBlanks
-    tape :=
-      { left :=
-          prefTail.map some ++ none :: some b :: suffix.map some
-        head := some first
-        right := List.replicate (pad + 2) none ++ (encodeNat n).map some } }
+@[simp] theorem seekBlanksConfig_state
+    (pad : Nat) (pref suffix : BitString)
+    (right : List (Option Bool)) :
+    (seekBlanksConfig pad pref suffix right).state = .seekBlanks := rfl
 
-/-- After consuming the first traversed bit, seekBits crosses the remaining
-prefix and stops at the unique witness marker. -/
-def seekBitsConfig
-    (remaining : BitString) (processedRev : List (Option Bool))
-    (b : Bool) (suffix : BitString) (rightTail : List (Option Bool)) :
-    Configuration PreservingReadState (Option Bool) :=
-  match remaining with
-  | [] =>
-      { state := .seekBits
-        tape :=
-          { left := some b :: suffix.map some
-            head := none
-            right := processedRev ++ rightTail } }
-  | x :: xs =>
-      { state := .seekBits
-        tape :=
-          { left := xs.map some ++ none :: some b :: suffix.map some
-            head := some x
-            right := processedRev ++ rightTail } }
-
-/-- Crossing one erased blank preserves every Boolean payload cell. -/
-theorem seekBlanks_step
-    (pad : Nat) (pref : BitString) (b : Bool) (suffix : BitString)
-    (n : Nat) :
+theorem seekBlanks_step_succ
+    (pad : Nat) (pref suffix : BitString)
+    (right : List (Option Bool)) :
     preservingUnaryReadMachine.step
-      (seekBlanksConfig (pad + 1) pref b suffix n) =
-      seekBlanksConfig pad pref b suffix n := by
+      (seekBlanksConfig (pad + 1) pref suffix right) =
+    seekBlanksConfig pad pref suffix (none :: right) := by
   simp [seekBlanksConfig, preservingUnaryReadMachine, TM.step,
     Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
 
-/-- Crossing all erased blanks reaches the first traversed Boolean without
-changing the witness payload. -/
-theorem seekBlanks_run
-    (pad : Nat) (first : Bool) (prefTail : BitString)
-    (b : Bool) (suffix : BitString) (n : Nat) :
+/-- Crossing the current blank plus all `pad` blanks to its left reaches the
+first traversed witness bit. -/
+theorem seekBlanks_run_to_first_bit
+    (pad : Nat) (c : Bool) (cs suffix : BitString)
+    (right : List (Option Bool)) :
     preservingUnaryReadMachine.run (pad + 1)
-      (seekBlanksConfig pad (first :: prefTail) b suffix n) =
-      seekPrefixHeadConfig prefTail first b suffix pad n := by
-  induction pad with
+      (seekBlanksConfig pad (c :: cs) suffix right) =
+    { state := .seekBlanks
+      tape :=
+        { left := cs.map some ++ none :: suffix.map some
+          head := some c
+          right := List.replicate (pad + 1) none ++ right } } := by
+  induction pad generalizing right with
   | zero =>
-      simp [seekBlanksConfig, seekPrefixHeadConfig,
-        preservingUnaryReadMachine, TM.run, TM.step,
+      simp [seekBlanksConfig, preservingUnaryReadMachine, TM.run, TM.step,
         Tape.write, Tape.move]
   | succ pad ih =>
       rw [show Nat.succ pad + 1 = 1 + (pad + 1) by omega]
       rw [run_add]
       have h1 :
           preservingUnaryReadMachine.run 1
-            (seekBlanksConfig (Nat.succ pad) (first :: prefTail) b suffix n) =
-          seekBlanksConfig pad (first :: prefTail) b suffix n := by
+            (seekBlanksConfig (Nat.succ pad) (c :: cs) suffix right) =
+          seekBlanksConfig pad (c :: cs) suffix (none :: right) := by
         rw [TM.run]
-        simp [seekBlanksConfig, preservingUnaryReadMachine,
-          TM.step, Tape.write, Tape.move,
-          List.replicate_succ, List.append_assoc]
+        simp only [seekBlanksConfig_state, preserving_not_halt_seekBlanks,
+          Bool.false_eq_true, if_false]
+        simpa [Nat.succ_eq_add_one] using
+          seekBlanks_step_succ pad (c :: cs) suffix right
       rw [h1]
-      simpa using ih
+      simpa [List.replicate_succ, List.append_assoc] using
+        (ih (right := none :: right))
 
-#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBlanks_step
-#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBlanks_run
+/-- Configuration while seekBits crosses the Boolean prefix toward the unique
+witness marker. -/
+def seekBitsConfig
+    (remaining suffix : BitString)
+    (right : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  match remaining with
+  | [] =>
+      { state := .seekBits
+        tape := { left := suffix.map some, head := none, right := right } }
+  | c :: cs =>
+      { state := .seekBits
+        tape :=
+          { left := cs.map some ++ none :: suffix.map some
+            head := some c
+            right := right } }
+
+@[simp] theorem seekBitsConfig_state
+    (remaining suffix : BitString)
+    (right : List (Option Bool)) :
+    (seekBitsConfig remaining suffix right).state = .seekBits := by
+  cases remaining <;> rfl
+
+theorem seekBits_step_cons
+    (c : Bool) (cs suffix : BitString)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      (seekBitsConfig (c :: cs) suffix right) =
+    seekBitsConfig cs suffix (some c :: right) := by
+  cases cs <;>
+    simp [seekBitsConfig, preservingUnaryReadMachine, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
+
+/-- Exact finite scan of the traversed witness-prefix tail. -/
+theorem seekBits_run
+    (remaining suffix : BitString)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.run remaining.length
+      (seekBitsConfig remaining suffix right) =
+    seekBitsConfig [] suffix (remaining.reverse.map some ++ right) := by
+  induction remaining generalizing right with
+  | nil =>
+      rfl
+  | cons c cs ih =>
+      rw [List.length_cons]
+      simp only [TM.run, seekBitsConfig_state, preserving_not_halt_seekBits,
+        Bool.false_eq_true, if_false]
+      rw [seekBits_step_cons]
+      rw [ih]
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBlanks_run_to_first_bit
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBits_run
 
 end P01PreservingUnarySuccessorCycle
 end Real
