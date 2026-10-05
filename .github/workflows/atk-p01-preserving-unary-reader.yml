@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - atk/p01-preserving-unary-reader-20261001
+      - atk/p01-preserving-terminal-materialize-20261005
   workflow_dispatch:
 
 permissions:
@@ -40,6 +41,7 @@ jobs:
           lake build MCore.Real.P01PreservingMarkerIteration
           lake build MCore.Real.P01WitnessIndexedReadGlobal
           lake build MCore.Real.P01PreservingUnaryReaderFrontier
+          grep -RInE '\b(sorry|admit|sorryAx|axiom)\b' --include='*.lean' lean/MCore/Real/P01PreservingUnaryReaderFrontier.lean && exit 1 || true
           bash audit/p01_external_submission_gate.sh
       - name: Axiom / placeholder hygiene
         shell: bash
