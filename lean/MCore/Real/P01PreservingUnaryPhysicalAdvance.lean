@@ -252,10 +252,11 @@ theorem carry_to_returnFromMarker
     simp [carryConfig, returnFromMarkerConfig, preservingUnaryReadMachine,
       TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
 
-/-- returnFromMarker crosses the marker blank and enters returnBits. -/
+/-- returnFromMarker crosses the marker blank and enters returnBits.
+The whole sequence still to cross is represented explicitly; its first element
+is the selected bit restored onto the old marker cell. -/
 def returnBitsConfig
     (remaining : BitString)
-    (selected : Bool)
     (blankPad : Nat)
     (tail : BitString) (n : Nat) :
     Configuration PreservingReadState (Option Bool) :=
@@ -263,16 +264,16 @@ def returnBitsConfig
   | [] =>
       { state := .returnBits
         tape :=
-          { left := tail.map some
+          { left := none :: tail.map some
             head := none
-            right := some selected ::
+            right :=
               List.replicate blankPad none ++ (encodeNat n).map some } }
   | x :: xs =>
       { state := .returnBits
         tape :=
-          { left := tail.map some
+          { left := none :: tail.map some
             head := some x
-            right := xs.map some ++ some selected ::
+            right := xs.map some ++
               List.replicate blankPad none ++ (encodeNat n).map some } }
 
 theorem returnFromMarker_to_returnBits
@@ -281,11 +282,10 @@ theorem returnFromMarker_to_returnBits
     (tail : BitString) (n : Nat) :
     preservingUnaryReadMachine.run 1
       (returnFromMarkerConfig selected passedRev blankPad tail n) =
-      returnBitsConfig passedRev selected blankPad tail n := by
-  cases passedRev <;>
-    simp [returnFromMarkerConfig, returnBitsConfig,
-      preservingUnaryReadMachine, TM.run, TM.step,
-      Tape.write, Tape.move, List.append_assoc]
+      returnBitsConfig (selected :: passedRev) blankPad tail n := by
+  simp [returnFromMarkerConfig, returnBitsConfig,
+    preservingUnaryReadMachine, TM.run, TM.step,
+    Tape.write, Tape.move, List.append_assoc]
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.shiftRead_to_carry
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.carry_to_returnFromMarker
