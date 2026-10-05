@@ -1,0 +1,35 @@
+{
+  "schema": "ATK_P01_EXTERNAL_SUBMISSION_GATE_V3",
+  "branch": "atk/p01-preserving-unary-reader-20261001",
+  "head": "a2555241310fb28b25c2dfd532eb11d2e08d6db4",
+  "status": "GREEN_LOCAL_COMPONENTS",
+  "run_id": 37321575904,
+  "job_id": 111801683964,
+  "validation": {
+    "lean": "4.19.0",
+    "workflow": "SUCCESS",
+    "strict_submission_gate": "GREEN",
+    "hygiene": "GREEN",
+    "build": "GREEN",
+    "actions_triggered_by_push": true,
+    "new_actions_requested_by_assistant": 0,
+    "preserving_machine_axioms": [
+      "propext"
+    ],
+    "sorryAx": false,
+    "indexed_read_gap_closed": "GREEN_MATERIAL"
+  },
+  "external_status": {
+    "PreservingUnaryReaderGap": "OPEN_MATERIAL",
+    "P01MachineConstruction": "OPEN_MATERIAL"
+  },
+  "exact_next_cut": [
+    "successor-cycle from indexSomeConfig",
+    "iterated unary cycles",
+    "final selected-bit correctness",
+    "full rewind / witness preservation",
+    "polynomial halting bound",
+    "def preservingUnaryReaderCertificate",
+    "theorem preservingUnaryReaderGap_closed"
+  ]
+}
