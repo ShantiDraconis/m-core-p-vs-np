@@ -61,6 +61,17 @@ def SuccessorCyclePhysicalEquality : Prop :=
         (indexSomeConfig pref (b :: suffix) (n + 1)) =
       indexSomeConfig (pref ++ [b]) suffix n
 
+theorem successorCyclePhysicalEquality_closes_frontier
+    (hphys : SuccessorCyclePhysicalEquality) :
+    SuccessorCycleObligation := by
+  intro pref b suffix n hpref
+  refine ⟨successorCycleSteps pref,
+    successorCycleSteps_bound pref suffix n hpref, ?_⟩
+  exact hphys pref b suffix n hpref
+
+#print axioms MCore.Real.P01PreservingUnaryReaderFrontier.successorCycleSteps_bound
+#print axioms MCore.Real.P01PreservingUnaryReaderFrontier.successorCyclePhysicalEquality_closes_frontier
+
 /-- The terminal target remains the existing universal material contract. -/
 def UniversalReaderMaterialTarget : Prop :=
   PreservingUnaryReaderGap
