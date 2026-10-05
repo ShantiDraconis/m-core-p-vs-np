@@ -99,7 +99,12 @@ def rightConfig
     (sequentialTM A B).halting (rightState q) = B.halting q := by
   have hnot : ¬ ((a + 1) + q.1 < a + 1) := by
     omega
-  simp [sequentialTM, rightState, hnot]
+  have hidx : (a + 1) + q.1 - (a + 1) = q.1 := by
+    omega
+  simp only [sequentialTM, rightState, hnot, dite_false]
+  apply congrArg B.halting
+  apply Fin.ext
+  exact hidx
 
 /-- The bridge is physical: when A is halted, one step enters B.initial and
 preserves the entire tape exactly. -/
