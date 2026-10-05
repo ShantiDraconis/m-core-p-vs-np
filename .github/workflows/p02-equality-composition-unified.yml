@@ -1,0 +1,37 @@
+name: P02 Equality Composition Unified
+
+on:
+  push:
+    branches:
+      - atk/p02-equality-composition-unified
+    paths:
+      - 'lean/MCore/Real/P02EqualityCompositionUnified.lean'
+      - '.github/workflows/p02-equality-composition-unified.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Build unified equality composition
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02EqualityCompositionUnified
+      - name: Audit unified equality composition
+        run: |
+          set -euo pipefail
+          cat > P02EqualityCompositionUnifiedAudit.lean <<'EOF'
+          import MCore.Real.P02EqualityCompositionUnified
+          #print axioms MCore.Real.P02EqualityCompositionUnified.hosted_priority_same_formula
+          #print axioms MCore.Real.P02EqualityCompositionUnified.SequentialCompositionUnified
+          #print axioms MCore.Real.P02EqualityCompositionUnified.unified_implies_priority
+          #print axioms MCore.Real.P02EqualityCompositionUnified.unifiedEqualityProducer
+          #print axioms MCore.Real.P02EqualityCompositionUnified.unified_satInP_implies_p_eq_np
+          EOF
+          lake env lean P02EqualityCompositionUnifiedAudit.lean 2>&1 | tee /tmp/p02-unified.log
+          if grep -E 'sorryAx' /tmp/p02-unified.log; then exit 1; fi
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02EqualityCompositionUnified.lean; then exit 1; fi
+          echo P02_EQUALITY_COMPOSITION_UNIFIED_GREEN
