@@ -1,0 +1,37 @@
+name: ATK P02 Total Semantic Failure
+
+on:
+  push:
+    branches:
+      - atk/p02-universal-failure-odd-parity-20261005
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        uses: leanprover/lean-action@v1
+      - name: Verify toolchain
+        run: |
+          set -euo pipefail
+          lean --version
+          lake --version
+      - name: Build P02 total semantic failure mincut
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02TotalCandidateFailureMinCut
+      - name: Axiom and placeholder audit
+        run: |
+          set -euo pipefail
+          cat > P02TotalCandidateFailureMinCutAudit.lean <<'EOF'
+          import MCore.Real.P02TotalCandidateFailureMinCut
+          #print axioms MCore.Real.P02TotalCandidateFailureMinCut.TotalSemanticFailureProducer.toFailureGenerator
+          #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_implies_universalFailure
+          #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_closes_internal_endpoint
+          EOF
+          lake env lean P02TotalCandidateFailureMinCutAudit.lean 2>&1 | tee /tmp/p02-total-semantic-axioms.log
+          if grep -E 'sorryAx' /tmp/p02-total-semantic-axioms.log; then exit 1; fi
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02TotalCandidateFailureMinCut.lean; then exit 1; fi
+          echo P02_TOTAL_SEMANTIC_FAILURE_MINCUT_GREEN
