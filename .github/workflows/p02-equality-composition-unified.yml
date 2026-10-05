@@ -12,17 +12,33 @@ on:
 jobs:
   kernel:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
-      - name: Build unified equality composition
+
+      - name: Install Lean toolchain
+        shell: bash
         run: |
           set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+          "$HOME/.elan/bin/elan" default "$(cat lean-toolchain)"
+          "$HOME/.elan/bin/lean" --version
+          "$HOME/.elan/bin/lake" --version
+
+      - name: Kernel build unified formula
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P02EqualityCompositionUnified
-      - name: Audit unified equality composition
+
+      - name: Kernel axiom audit
+        shell: bash
         run: |
           set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
           cat > P02EqualityCompositionUnifiedAudit.lean <<'EOF'
           import MCore.Real.P02EqualityCompositionUnified
           #print axioms MCore.Real.P02EqualityCompositionUnified.hosted_priority_same_formula
@@ -32,6 +48,12 @@ jobs:
           #print axioms MCore.Real.P02EqualityCompositionUnified.unified_satInP_implies_p_eq_np
           EOF
           lake env lean P02EqualityCompositionUnifiedAudit.lean 2>&1 | tee /tmp/p02-unified.log
-          if grep -E 'sorryAx' /tmp/p02-unified.log; then exit 1; fi
-          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02EqualityCompositionUnified.lean; then exit 1; fi
+          if grep -E 'sorryAx' /tmp/p02-unified.log; then
+            echo 'AUDIT_FAIL sorryAx'
+            exit 1
+          fi
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02EqualityCompositionUnified.lean; then
+            echo 'AUDIT_FAIL source hygiene'
+            exit 1
+          fi
           echo P02_EQUALITY_COMPOSITION_UNIFIED_GREEN
