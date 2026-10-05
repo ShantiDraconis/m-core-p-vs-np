@@ -1,3 +1,4 @@
+import Mathlib
 import MCore.Real.P01PreservingUnaryIteration
 import MCore.Real.P01PreservingUnaryFinalRead
 import MCore.Real.P01PreservingUnaryRewind
@@ -40,7 +41,9 @@ def preservingUnaryReaderTimeBound : TimeBound :=
 
 theorem preservingUnaryReaderTimeBound_poly :
     PolynomialTimeBound preservingUnaryReaderTimeBound := by
-  exact ⟨20, 2, by intro n; rfl⟩
+  refine ⟨20, 2, ?_⟩
+  intro n
+  exact le_rfl
 
 /-- The exact physical nonzero-path accounting collapses to nonzeroReaderFuel. -/
 theorem nonzero_physical_fuel_identity
@@ -51,8 +54,9 @@ theorem nonzero_physical_fuel_identity
       (2 * i + 3) +
       (4 * i + 2) =
     nonzeroReaderFuel i := by
-  dsimp [nonzeroReaderFuel]
-  omega
+  obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hi)
+  simp [nonzeroReaderFuel]
+  ring
 
 /-- The certificate-size quadratic dominates the zero and nonzero physical
 reader costs for every valid witness/index pair. -/
@@ -63,7 +67,7 @@ theorem nonzeroReaderFuel_le_timeBound
         (witness.length + (encodeNat i).length) := by
   simp [nonzeroReaderFuel, preservingUnaryReaderTimeBound,
     CanonicalSATWitness.encodeNat_length]
-  nlinarith
+  nlinarith [Nat.zero_le witness.length, Nat.zero_le i]
 
 theorem zeroFuel_le_timeBound
     (witness : BitString) :
