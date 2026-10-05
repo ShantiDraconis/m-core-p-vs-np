@@ -937,8 +937,7 @@ theorem indexSome_forall
               (4 * (first :: prefTail).length + 8) +
                 indexSomeFuel
                   (first :: (prefTail ++ [selected])).length n by
-              simp [indexSomeFuel]
-              omega]
+              simp [indexSomeFuel]]
           rw [run_add]
           rw [indexSome_run_advance
             (first :: prefTail) selected restTail n (by simp)]
@@ -949,7 +948,8 @@ theorem indexSome_forall
               (first :: (prefTail ++ [selected])) restTail n) = _
           rw [ih (prefTail := prefTail ++ [selected])
             (rest := restTail) htail]
-          simp [List.getD_cons_succ, List.map_append, List.append_assoc]
+          simpa [List.getD_cons_succ, List.map_append, List.append_assoc,
+            Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
 
 def preservingUnaryExactFuel : Nat → Nat
   | 0 => 5
