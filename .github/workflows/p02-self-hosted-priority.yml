@@ -1,0 +1,24 @@
+name: P02 Self Hosted Priority
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - atk/p02-g2-universal-failure-material-20261005
+      - atk/p02-equality-material-atoms-20261005
+    paths:
+      - 'lean/MCore/Real/P02UniversalFailureWitnessMaterial.lean'
+      - 'lean/MCore/Real/P02SequentialCompositionMachine.lean'
+      - 'scripts/runner/**'
+      - '.github/workflows/p02-self-hosted-priority.yml'
+
+jobs:
+  kernel:
+    runs-on: [self-hosted, linux, x64, p02, lean419, mcore]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Runner health
+        run: bash scripts/runner/health-p02-runner.sh
+      - name: Build and audit P02 priority kernels
+        run: bash scripts/runner/run-p02-dual-kernel.sh
