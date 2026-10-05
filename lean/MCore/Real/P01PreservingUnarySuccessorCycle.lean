@@ -368,6 +368,88 @@ theorem returnBlanks_to_indexSome
   simp [returnBlanksScanConfig, preservingUnaryReadMachine, TM.step,
     Tape.write, Tape.move]
 
+def forwardPhaseFuel (pref : BitString) : Nat :=
+  2 * pref.length + 5
+
+/-- Physical forward half of a later unary cycle:
+indexSome(true) -> selected next witness bit -> returnBits. -/
+theorem forwardPhase_run
+    (a b : Bool) (rest suffix : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run (forwardPhaseFuel (a :: rest))
+      (indexSomeConfig (a :: rest) (b :: suffix) (n + 1)) =
+    returnBitsConfig b suffix
+      ((a :: rest).reverse.map some ++
+        List.replicate (a :: rest).length none ++
+        none :: (encodeNat n).map some) := by
+  let pref : BitString := a :: rest
+  have hp : pref.length = rest.length + 1 := by
+    simp [pref]
+
+  have h0 :
+      preservingUnaryReadMachine.run 1
+        (indexSomeConfig pref (b :: suffix) (n + 1)) =
+      seekBlanksConfig rest.length pref (b :: suffix)
+        (none :: (encodeNat n).map some) := by
+    rw [TM.run]
+    simp [indexSomeConfig_state, preservingUnaryReadMachine]
+    simpa [pref] using indexSome_true_step a b rest suffix n
+
+  have h1 :=
+    seekBlanks_run_to_first_bit rest.length a rest (b :: suffix)
+      (none :: (encodeNat n).map some)
+
+  let right1 : List (Option Bool) :=
+    List.replicate pref.length none ++ none :: (encodeNat n).map some
+
+  have h2 :
+      preservingUnaryReadMachine.run 1
+        { state := PreservingReadState.seekBlanks
+          tape :=
+            { left := rest.map some ++ none :: (b :: suffix).map some
+              head := some a
+              right := right1 } } =
+      seekBitsConfig rest (b :: suffix) (some a :: right1) := by
+    rw [TM.run]
+    simp only [preserving_not_halt_seekBlanks, Bool.false_eq_true, if_false]
+    simpa [right1] using
+      seekBlanks_first_bit_step a rest (b :: suffix) right1
+
+  have h3 :=
+    seekBits_run rest (b :: suffix) (some a :: right1)
+
+  let right2 : List (Option Bool) :=
+    pref.reverse.map some ++
+      List.replicate pref.length none ++ none :: (encodeNat n).map some
+
+  have h4 :
+      preservingUnaryReadMachine.run 1
+        (seekBitsConfig [] (b :: suffix) right2) =
+      shiftReadConfig b suffix right2 := by
+    rw [TM.run]
+    simp only [seekBitsConfig_state, preserving_not_halt_seekBits,
+      Bool.false_eq_true, if_false]
+    exact seekBits_marker_step b suffix right2
+
+  have h5 := shift_carry_return_run_three b suffix right2
+
+  rw [show (a :: rest) = pref by rfl]
+  unfold forwardPhaseFuel
+  rw [show 2 * pref.length + 5 =
+    1 + ((rest.length + 1) + (1 + (rest.length + (1 + 3)))) by omega]
+  rw [run_add, h0]
+  rw [run_add]
+  simpa [pref, hp, right1, List.append_assoc] using h1
+  rw [run_add]
+  rw [h2]
+  rw [run_add]
+  simpa [pref, right1, right2, List.reverse_cons, List.map_append,
+    List.append_assoc] using h3
+  rw [run_add]
+  rw [h4]
+  simpa [right2] using h5
+
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.forwardPhase_run
+
 def returnPhaseFuel (pref : BitString) : Nat :=
   2 * pref.length + 3
 
