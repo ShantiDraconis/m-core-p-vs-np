@@ -214,39 +214,6 @@ theorem returnBits_run
       rw [hih]
       simp [List.reverse_cons, List.append_assoc]
 
-/-- Configuration while crossing the erased unary blank region on the way
-back to the next unary symbol. -/
-def returnBlanksConfig
-    (pad : Nat) (rebuilt suffix : BitString) (n : Nat) :
-    Configuration PreservingReadState (Option Bool) :=
-  match encodeNat n with
-  | [] =>
-      { state := .reject
-        tape := { left := [], head := none, right := [] } }
-  | bit :: rest =>
-      { state := .returnBlanks
-        tape :=
-          { left :=
-              List.replicate (rebuilt.length + 1 - pad) none ++
-                rebuilt.map some ++ none :: suffix.map some
-            head := none
-            right :=
-              List.replicate pad none ++ some bit :: rest.map some } }
-
-@[simp] theorem preserving_not_halt_returnBlanks :
-    preservingUnaryReadMachine.halting .returnBlanks = false := rfl
-
-/-- One rightward blank move decreases the remaining blank count. -/
-theorem returnBlanks_step_succ
-    (pad : Nat) (rebuilt suffix : BitString) (n : Nat) :
-    preservingUnaryReadMachine.step
-      (returnBlanksConfig (pad + 1) rebuilt suffix n) =
-    returnBlanksConfig pad rebuilt suffix n := by
-  cases n <;>
-    simp [returnBlanksConfig, encodeNat, preservingUnaryReadMachine,
-      TM.step, Tape.write, Tape.move, List.replicate_succ,
-      List.append_assoc, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
-
 /-- Exact finite scan of the traversed witness-prefix tail. -/
 theorem seekBits_run
     (remaining suffix : BitString)
@@ -335,6 +302,7 @@ theorem returnBlanks_to_indexSome
   simp [returnBlanksScanConfig, preservingUnaryReadMachine, TM.step,
     Tape.write, Tape.move]
 
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBits_run
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBlanks_run
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBlanks_to_indexSome
 
