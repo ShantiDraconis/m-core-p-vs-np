@@ -52,7 +52,7 @@ theorem preservingRead_nonzero_exact
         (4 * (a :: moved).length + 2)
     preservingUnaryReadMachine.run fuel
       { state := preservingUnaryReadMachine.initial
-        tape := witnessReadTape witness i } =
+        tape := P01WitnessIndexedRead.witnessReadTape witness i } =
       haltedConfig b witness ((a :: moved).length + 2) := by
   subst i
   dsimp
@@ -65,24 +65,61 @@ theorem preservingRead_nonzero_exact
     preservingRead_final_select a b moved suffix
   have hrew :=
     preservingRead_rewind_cleanup a moved b suffix
-  rw [show
-      8 + iteratedCycleFuel [a] moved +
-          (2 * (a :: moved).length + 3) +
-          (4 * (a :: moved).length + 2)
-        =
-      8 + (iteratedCycleFuel [a] moved +
-        ((2 * (a :: moved).length + 3) +
-          (4 * (a :: moved).length + 2))) by omega]
-  rw [run_add, h0]
-  rw [run_add]
   have hiter' :
       preservingUnaryReadMachine.run (iteratedCycleFuel [a] moved)
           (indexSomeConfig [a] (moved ++ b :: suffix) moved.length) =
         indexSomeConfig (a :: moved) (b :: suffix) 0 := by
     simpa using hiter
-  rw [hiter']
-  rw [run_add, hfinal]
-  exact hrew
+  let kIter := iteratedCycleFuel [a] moved
+  let kFinal := 2 * (a :: moved).length + 3
+  let kRewind := 4 * (a :: moved).length + 2
+  have hfuel :
+      8 + iteratedCycleFuel [a] moved +
+          (2 * (a :: moved).length + 3) +
+          (4 * (a :: moved).length + 2) =
+        8 + (kIter + (kFinal + kRewind)) := by
+    dsimp [kIter, kFinal, kRewind]
+    omega
+  rw [hfuel]
+  calc
+    preservingUnaryReadMachine.run (8 + (kIter + (kFinal + kRewind)))
+        { state := preservingUnaryReadMachine.initial
+          tape := P01WitnessIndexedRead.witnessReadTape
+            ((a :: moved) ++ b :: suffix) (moved.length + 1) }
+        =
+      preservingUnaryReadMachine.run (kIter + (kFinal + kRewind))
+        (preservingUnaryReadMachine.run 8
+          { state := preservingUnaryReadMachine.initial
+            tape := P01WitnessIndexedRead.witnessReadTape
+              ((a :: moved) ++ b :: suffix) (moved.length + 1) }) := by
+          rw [run_add]
+    _ =
+      preservingUnaryReadMachine.run (kIter + (kFinal + kRewind))
+        (indexSomeConfig [a] (moved ++ b :: suffix) moved.length) := by
+          rw [h0]
+    _ =
+      preservingUnaryReadMachine.run (kFinal + kRewind)
+        (preservingUnaryReadMachine.run kIter
+          (indexSomeConfig [a] (moved ++ b :: suffix) moved.length)) := by
+          rw [run_add]
+    _ =
+      preservingUnaryReadMachine.run (kFinal + kRewind)
+        (indexSomeConfig (a :: moved) (b :: suffix) 0) := by
+          rw [hiter']
+    _ =
+      preservingUnaryReadMachine.run kRewind
+        (preservingUnaryReadMachine.run kFinal
+          (indexSomeConfig (a :: moved) (b :: suffix) 0)) := by
+          rw [run_add]
+    _ =
+      preservingUnaryReadMachine.run kRewind
+        (selectedConfig (a :: moved) b suffix) := by
+          dsimp [kFinal]
+          rw [hfinal]
+    _ = haltedConfig b ((a :: moved) ++ b :: suffix)
+          ((a :: moved).length + 2) := by
+          dsimp [kRewind]
+          exact hrew
 
 /-- The exact nonzero run returns the selected witness bit in the halting
 control state and restores the complete witness region. -/
@@ -95,7 +132,7 @@ theorem preservingRead_nonzero_material
       b = witness.getD i false ∧
       preservingUnaryReadMachine.run fuel
         { state := preservingUnaryReadMachine.initial
-          tape := witnessReadTape witness i } =
+          tape := P01WitnessIndexedRead.witnessReadTape witness i } =
         haltedConfig b witness leftBlanks := by
   obtain ⟨pref, b, suffix, hsplit, hlen, hbit⟩ :=
     witness_split_at_index witness i hi
