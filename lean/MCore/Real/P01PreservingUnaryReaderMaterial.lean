@@ -19,7 +19,7 @@ def preservingUnaryTimeBound : TimeBound :=
 
 theorem preservingUnaryTimeBound_poly :
     PolynomialTimeBound preservingUnaryTimeBound := by
-  exact ⟨16, 2, by intro n; rfl⟩
+  exact ⟨16, 2, by intro n; exact Nat.le_refl _⟩
 
 theorem encodeNat_length (i : Nat) :
     (encodeNat i).length = i + 1 := by
@@ -42,7 +42,7 @@ theorem preservingUnaryExactFuel_le_timeBound
       (witness.length + (encodeNat i).length + 1) ^ 2 := by
     exact Nat.pow_le_pow_left hil 2
   unfold preservingUnaryTimeBound
-  exact le_trans hq (Nat.mul_le_mul_left 16 hsq)
+  exact Nat.le_trans hq (Nat.mul_le_mul_left 16 hsq)
 
 theorem preservingUnary_run_timeBound
     (witness : BitString) (i : Nat)
