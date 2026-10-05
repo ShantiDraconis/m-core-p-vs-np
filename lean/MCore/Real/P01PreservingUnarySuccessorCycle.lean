@@ -47,6 +47,26 @@ def seekPrefixHeadConfig
         head := some first
         right := List.replicate (pad + 1) none ++ (encodeNat n).map some } }
 
+/-- After consuming the first traversed bit, seekBits crosses the remaining
+prefix and stops at the unique witness marker. -/
+def seekBitsConfig
+    (remaining : BitString) (processedRev : List (Option Bool))
+    (b : Bool) (suffix : BitString) (rightTail : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  match remaining with
+  | [] =>
+      { state := .seekBits
+        tape :=
+          { left := some b :: suffix.map some
+            head := none
+            right := processedRev ++ rightTail } }
+  | x :: xs =>
+      { state := .seekBits
+        tape :=
+          { left := xs.map some ++ none :: some b :: suffix.map some
+            head := some x
+            right := processedRev ++ rightTail } }
+
 /-- Crossing one erased blank preserves every Boolean payload cell. -/
 theorem seekBlanks_step
     (pad : Nat) (pref : BitString) (b : Bool) (suffix : BitString)
