@@ -87,10 +87,11 @@ theorem step_left_active
     (A : TM (Fin (a + 1)) (Option Bool))
     (B : TM (Fin (b + 1)) (Option Bool))
     (cfg : Configuration (Fin (a + 1)) (Option Bool))
+    (hblank : A.blank = none)
     (hactive : A.halting cfg.state = false) :
     (sequentialTM A B).step (leftConfig (b := b) cfg) =
       leftConfig (b := b) (A.step cfg) := by
-  simp [TM.step, sequentialTM, leftConfig, leftState, hactive]
+  simp [TM.step, sequentialTM, leftConfig, leftState, hactive, hblank]
 
 theorem bridge_step
     {a b : Nat}
