@@ -278,20 +278,17 @@ theorem preservingRead_first_true_cycle
       encodeNat, TM.run, TM.step, Tape.write, Tape.move,
       List.replicate_succ, List.append_assoc]
 
-/-- The second unary true performs one complete physical marker advance from
-the canonical one-bit traversed prefix and returns to indexSome.  This is the
-first nontrivial material cycle after preservingRead_first_true_cycle. -/
-theorem preservingRead_second_true_cycle
-    (b0 b1 : Bool) (tail : BitString) (n : Nat) :
+/-- Falsification of the previous guessed 10-step second-cycle endpoint.
+The concrete TM does not reach the guessed canonical configuration in 10 steps,
+already on the minimal false/false/n=0 instance.  Therefore the run length or
+the canonical tape layout must be corrected before induction. -/
+theorem preservingRead_second_true_cycle_guess_false :
     preservingUnaryReadMachine.run 10
-      (indexSomeConfig [b0] (b1 :: tail) (n + 1)) =
-      indexSomeConfig [b0, b1] tail n := by
-  cases b0 <;> cases b1 <;> cases n <;>
-    simp [preservingUnaryReadMachine, indexSomeConfig, encodeNat,
-      TM.run, TM.step, Tape.write, Tape.move,
-      List.replicate_succ, List.append_assoc]
+      (indexSomeConfig [false] (false :: []) (0 + 1)) ≠
+      indexSomeConfig [false, false] [] 0 := by
+  decide
 
-#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_second_true_cycle
+#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_second_true_cycle_guess_false
 
 /-- Exact final tape for zero index: the witness is unchanged; the unary false
 terminator is erased and the original witness separator remains blank. -/
