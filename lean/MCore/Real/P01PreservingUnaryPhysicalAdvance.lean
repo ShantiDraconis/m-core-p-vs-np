@@ -498,24 +498,23 @@ theorem indexSome_run_advance
       rw [hL]
       have hcost :
           4 * L + 8 =
-            1 + xs.length + 1 + 1 + xs.length + 1 + 1 + 1 + 1 +
-              (L + 1) + 1 + L + 1 := by
+            1 + (xs.length + (1 + (1 + (xs.length +
+              (1 + (1 + (1 + (1 + ((L + 1) + (1 + (L + 1))))))))))) := by
         simp [L]
         omega
       rw [hcost]
-      repeat' rw [run_add]
-      rw [hentry]
-      rw [seekBlanks_run]
-      rw [seekBlanks_zero_step_to_bits]
-      rw [seekBits_entry_step]
-      rw [seekBits_run]
-      rw [seekBits_marker_to_shiftRead]
-      rw [shiftRead_to_carry]
-      rw [carry_to_returnFromMarker]
-      rw [returnFromMarker_to_returnBits]
-      rw [returnBits_run _ _ _ _ hpad]
-      rw [returnBits_to_returnBlanks _ _ _ hpad]
-      rw [returnBlanks_run]
+      rw [run_add, hentry]
+      rw [run_add, seekBlanks_run]
+      rw [run_add, seekBlanks_zero_step_to_bits]
+      rw [run_add, seekBits_entry_step]
+      rw [run_add, seekBits_run]
+      rw [run_add, seekBits_marker_to_shiftRead]
+      rw [run_add, shiftRead_to_carry]
+      rw [run_add, carry_to_returnFromMarker]
+      rw [run_add, returnFromMarker_to_returnBits]
+      rw [run_add, returnBits_run _ _ _ _ hpad]
+      rw [run_add, returnBits_to_returnBlanks _ _ _ hpad]
+      rw [run_add, returnBlanks_run]
       rw [returnBlanks_zero_to_indexSome]
       simp [L, indexSomeConfig, List.map_append, List.reverse_cons,
         List.append_assoc, List.replicate_succ, encodeNat]
