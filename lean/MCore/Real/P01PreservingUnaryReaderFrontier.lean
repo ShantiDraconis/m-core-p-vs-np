@@ -2,6 +2,7 @@ import MCore.Real.P01PreservingUnaryWitnessMachine
 import MCore.Real.P01PreservingUnaryReaderCertificate
 import MCore.Real.P01FinalCertificate
 import MCore.Real.MachineRunLemmas
+import MCore.Real.P01PreservingUnaryPhysicalRuns
 
 namespace MCore
 namespace Real
@@ -89,8 +90,22 @@ theorem successorCyclePhysicalEquality_closes_frontier
     successorCycleSteps_bound pref suffix n hpref, ?_⟩
   exact hphys pref b suffix n hpref
 
+theorem successorCyclePhysicalEquality_material :
+    SuccessorCyclePhysicalEquality := by
+  intro pref b suffix n hpref
+  exact
+    P01PreservingUnaryPhysicalRuns.indexSome_run_advance
+      pref b suffix n hpref
+
+theorem successorCycleObligation_material :
+    SuccessorCycleObligation :=
+  successorCyclePhysicalEquality_closes_frontier
+    successorCyclePhysicalEquality_material
+
 #print axioms MCore.Real.P01PreservingUnaryReaderFrontier.successorCycleSteps_bound
 #print axioms MCore.Real.P01PreservingUnaryReaderFrontier.successorCyclePhysicalEquality_closes_frontier
+#print axioms MCore.Real.P01PreservingUnaryReaderFrontier.successorCyclePhysicalEquality_material
+#print axioms MCore.Real.P01PreservingUnaryReaderFrontier.successorCycleObligation_material
 
 /-- The terminal target remains the existing universal material contract. -/
 def UniversalReaderMaterialTarget : Prop :=
