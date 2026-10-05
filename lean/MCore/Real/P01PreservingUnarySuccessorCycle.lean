@@ -229,6 +229,19 @@ theorem returnBits_step_cons
     simp [returnBitsScanConfig, preservingUnaryReadMachine, TM.step,
       Tape.write, Tape.move, List.append_assoc]
 
+theorem returnBitsConfig_as_scan
+    (pref : BitString) (b : Bool) (suffix : BitString) (n : Nat) :
+    returnBitsConfig b suffix
+        (pref.reverse.map some ++
+          List.replicate pref.length none ++
+          none :: (encodeNat n).map some) =
+      returnBitsScanConfig [] (b :: pref.reverse) suffix
+        (List.replicate pref.length none ++ (encodeNat n).map some) := by
+  simp [returnBitsConfig, returnBitsScanConfig, List.map_append,
+    List.append_assoc]
+  rw [replicate_none_push pref.length ((encodeNat n).map some)]
+  rfl
+
 /-- Exact finite scan across all restored Boolean cells. -/
 theorem returnBits_run
     (processed bits suffix : BitString)
@@ -354,6 +367,44 @@ theorem returnBlanks_to_indexSome
       tape := { left := leftBase, head := some bit, right := rest } } := by
   simp [returnBlanksScanConfig, preservingUnaryReadMachine, TM.step,
     Tape.write, Tape.move]
+
+def returnPhaseFuel (pref : BitString) : Nat :=
+  2 * pref.length + 3
+
+/-- Full physical return phase after the next witness bit has been selected.
+It restores the marker/prefix representation and re-enters indexSome. -/
+theorem returnPhase_run
+    (pref : BitString) (b : Bool) (suffix : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run (returnPhaseFuel pref)
+      (returnBitsConfig b suffix
+        (pref.reverse.map some ++
+          List.replicate pref.length none ++
+          none :: (encodeNat n).map some)) =
+      indexSomeConfig (pref ++ [b]) suffix n := by
+  unfold returnPhaseFuel
+  cases n with
+  | zero =>
+      have hbridge := returnBitsConfig_as_scan pref b suffix 0
+      rw [hbridge]
+      rw [show 2 * pref.length + 3 =
+        (pref.length + 1) + (1 + (pref.length + 1)) by omega]
+      rw [run_add]
+      have hbits :=
+        returnBits_run [] (b :: pref.reverse) suffix
+          (List.replicate pref.length none ++ (encodeNat 0).map some)
+      simpa [encodeNat, List.reverse_cons, List.append_assoc] using hbits
+  | succ n =>
+      have hbridge := returnBitsConfig_as_scan pref b suffix (n + 1)
+      rw [hbridge]
+      rw [show 2 * pref.length + 3 =
+        (pref.length + 1) + (1 + (pref.length + 1)) by omega]
+      rw [run_add]
+      have hbits :=
+        returnBits_run [] (b :: pref.reverse) suffix
+          (List.replicate pref.length none ++ (encodeNat (n + 1)).map some)
+      simpa [encodeNat, List.reverse_cons, List.append_assoc] using hbits
+
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnPhase_run
 
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBits_run
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBlanks_run
