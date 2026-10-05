@@ -8,10 +8,10 @@ open CanonicalCircuitBits
 open P01PreservingUnaryWitnessMachine
 open MachineRunLemmas
 
-/-- State after consuming the next unary true and moving left into the erased
-unary region.  The remaining blank count is explicit. -/
+/-- seekBlanks configuration with k additional erased unary blanks still to the
+left of the blank currently under the head. -/
 def seekBlanksConfig
-    (blankCount : Nat)
+    (k : Nat)
     (traversed : BitString)
     (b : Bool) (tail : BitString)
     (n : Nat) :
@@ -19,82 +19,93 @@ def seekBlanksConfig
   { state := .seekBlanks
     tape :=
       { left :=
-          List.replicate blankCount none ++
+          List.replicate k none ++
             traversed.map some ++ none :: (b :: tail).map some
         head := none
-        right := none :: (encodeNat n).map some } }
-
-/-- State after the erased unary blanks have been crossed. -/
-def seekBitsConfig
-    (remaining : BitString)
-    (passed : BitString)
-    (b : Bool) (tail : BitString)
-    (n : Nat) :
-    Configuration PreservingReadState (Option Bool) :=
-  match remaining with
-  | [] =>
-      { state := .seekBits
-        tape :=
-          { left := none :: (b :: tail).map some
-            head := none
-            right := passed.reverse.map some ++
-              List.replicate passed.length none ++ none :: (encodeNat n).map some } }
-  | x :: xs =>
-      { state := .seekBits
-        tape :=
-          { left := xs.map some ++ none :: (b :: tail).map some
-            head := some x
-            right := passed.reverse.map some ++
-              List.replicate (passed.length + 1) none ++ none :: (encodeNat n).map some } }
+        right :=
+          List.replicate (traversed.length - k) none ++
+            none :: (encodeNat n).map some } }
 
 @[simp] theorem seekBlanksConfig_state
-    (blankCount : Nat) (traversed : BitString)
-    (b : Bool) (tail : BitString) (n : Nat) :
-    (seekBlanksConfig blankCount traversed b tail n).state = .seekBlanks := rfl
-
-/-- One blank is crossed by seekBlanks. -/
-theorem seekBlanks_step_succ
     (k : Nat) (traversed : BitString)
     (b : Bool) (tail : BitString) (n : Nat) :
+    (seekBlanksConfig k traversed b tail n).state = .seekBlanks := rfl
+
+/-- One erased unary blank is crossed. -/
+theorem seekBlanks_step_succ
+    (k : Nat) (traversed : BitString)
+    (b : Bool) (tail : BitString) (n : Nat)
+    (hk : k < traversed.length) :
     preservingUnaryReadMachine.step
       (seekBlanksConfig (k + 1) traversed b tail n) =
       seekBlanksConfig k traversed b tail n := by
   simp [seekBlanksConfig, preservingUnaryReadMachine, TM.step,
     Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+  omega
 
-/-- Crossing exactly the erased unary region leaves the head on the first
-traversed witness bit (or the marker if traversed is empty). -/
-theorem seekBlanks_run
-    (k : Nat) (traversed : BitString)
-    (b : Bool) (tail : BitString) (n : Nat) :
-    preservingUnaryReadMachine.run k
-      (seekBlanksConfig k traversed b tail n) =
-      seekBlanksConfig 0 traversed b tail n := by
-  induction k with
-  | zero => rfl
-  | succ k ih =>
-      rw [Nat.succ_eq_add_one]
-      rw [TM.run]
-      simp only [seekBlanksConfig_state]
-      simp [preservingUnaryReadMachine]
-      rw [seekBlanks_step_succ]
-      exact ih
+/-- After all erased unary blanks have been crossed, the head is on the first
+traversed witness bit.  This representation is only used for a nonempty prefix. -/
+def seekBitsEntryConfig
+    (x : Bool) (xs : BitString)
+    (b : Bool) (tail : BitString)
+    (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .seekBlanks
+    tape :=
+      { left := xs.map some ++ none :: (b :: tail).map some
+        head := some x
+        right := List.replicate (xs.length + 2) none ++
+          (encodeNat n).map some } }
 
-/-- Enter seekBits from the first traversed witness cell. -/
-theorem seekBlanks_zero_to_seekBits
+/-- Concrete bridge from the final blank-crossing configuration to the first
+traversed witness bit. -/
+theorem seekBlanks_zero_step_to_bits
     (x : Bool) (xs : BitString)
     (b : Bool) (tail : BitString) (n : Nat) :
     preservingUnaryReadMachine.run 1
       (seekBlanksConfig 0 (x :: xs) b tail n) =
-      seekBitsConfig (x :: xs) [] b tail n := by
-  simp [seekBlanksConfig, seekBitsConfig, preservingUnaryReadMachine,
-    TM.run, TM.step, Tape.write, Tape.move]
+      seekBitsEntryConfig x xs b tail n := by
+  simp [seekBlanksConfig, seekBitsEntryConfig, preservingUnaryReadMachine,
+    TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
+    List.append_assoc]
 
-/-- This file intentionally stops at the first reusable material scan.
-The remaining seekBits/return scans are derived in the next forward step. -/
+/-- The seekBlanks state now sees a witness bit and enters seekBits in one
+physical step. -/
+def seekBitsConfig
+    (xs : BitString)
+    (passedHead : Bool)
+    (b : Bool) (tail : BitString)
+    (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  match xs with
+  | [] =>
+      { state := .seekBits
+        tape :=
+          { left := none :: (b :: tail).map some
+            head := none
+            right := some passedHead ::
+              List.replicate 2 none ++ (encodeNat n).map some } }
+  | y :: ys =>
+      { state := .seekBits
+        tape :=
+          { left := ys.map some ++ none :: (b :: tail).map some
+            head := some y
+            right := some passedHead ::
+              List.replicate 2 none ++ (encodeNat n).map some } }
+
+theorem seekBits_entry_step
+    (x : Bool) (xs : BitString)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 1
+      (seekBitsEntryConfig x xs b tail n) =
+      seekBitsConfig xs x b tail n := by
+  cases xs <;>
+    simp [seekBitsEntryConfig, seekBitsConfig, preservingUnaryReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
+      List.append_assoc]
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_step_succ
-#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_run
-#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_zero_to_seekBits
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_zero_step_to_bits
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_entry_step
 
 end MCore.Real.P01PreservingUnaryPhysicalAdvance
