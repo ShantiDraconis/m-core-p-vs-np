@@ -34,6 +34,15 @@ def seekBlanksConfig
     (right : List (Option Bool)) :
     (seekBlanksConfig pad pref suffix right).state = .seekBlanks := rfl
 
+theorem replicate_none_push
+    (pad : Nat) (right : List (Option Bool)) :
+    List.replicate pad none ++ none :: right =
+      none :: List.replicate pad none ++ right := by
+  induction pad with
+  | zero => rfl
+  | succ pad ih =>
+      simp [List.replicate_succ, ih, List.append_assoc]
+
 theorem seekBlanks_step_succ
     (pad : Nat) (pref suffix : BitString)
     (right : List (Option Bool)) :
@@ -73,6 +82,7 @@ theorem seekBlanks_run_to_first_bit
           seekBlanks_step_succ pad (c :: cs) suffix right
       rw [h1]
       have hih := ih (right := none :: right)
+      rw [replicate_none_push (pad + 1) right] at hih
       simpa [List.replicate_succ, List.append_assoc, Nat.succ_eq_add_one] using hih
 
 /-- Configuration while seekBits crosses the Boolean prefix toward the unique
