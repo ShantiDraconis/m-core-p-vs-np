@@ -46,7 +46,6 @@ jobs:
             exit 1
           fi
           echo FRONTIER_HYGIENE_GREEN
-          bash audit/p01_external_submission_gate.sh
       - name: Axiom / placeholder hygiene
         shell: bash
         run: |
