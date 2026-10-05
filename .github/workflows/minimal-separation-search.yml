@@ -27,6 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.PNPMaterialAtoms
           lake build MCore.MinimalSeparationSearch
       - name: Hygiene
         if: always()
