@@ -121,6 +121,68 @@ theorem seekBits_entry_step
     simp [seekBitsEntryConfig, seekBitsConfig, preservingUnaryReadMachine,
       TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
 
+
+@[simp] theorem seekBitsConfig_state
+    (remaining passedRev : BitString) (blankPad : Nat)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    (seekBitsConfig remaining passedRev blankPad b tail n).state = .seekBits := by
+  cases remaining <;> rfl
+
+/-- One traversed witness bit is crossed by seekBits. -/
+theorem seekBits_step_cons
+    (y : Bool) (ys passedRev : BitString) (blankPad : Nat)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.step
+      (seekBitsConfig (y :: ys) passedRev blankPad b tail n) =
+      seekBitsConfig ys (y :: passedRev) blankPad b tail n := by
+  cases ys <;>
+    simp [seekBitsConfig, preservingUnaryReadMachine, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
+
+/-- Scan all traversed witness bits until the marker blank is under the head. -/
+theorem seekBits_run
+    (remaining passedRev : BitString) (blankPad : Nat)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run remaining.length
+      (seekBitsConfig remaining passedRev blankPad b tail n) =
+      seekBitsConfig [] (remaining.reverse ++ passedRev) blankPad b tail n := by
+  induction remaining generalizing passedRev with
+  | nil =>
+      rfl
+  | cons y ys ih =>
+      rw [List.length_cons]
+      simp only [TM.run, seekBitsConfig_state]
+      simp [preservingUnaryReadMachine]
+      rw [seekBits_step_cons]
+      rw [ih]
+      simp [List.reverse_cons, List.append_assoc]
+
+/-- At the marker blank, one physical step enters shiftRead and moves onto the
+next witness bit that will be shifted across the marker. -/
+def shiftReadConfig
+    (passedRev : BitString) (blankPad : Nat)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .shiftRead
+    tape :=
+      { left := tail.map some
+        head := some b
+        right := none :: passedRev.map some ++
+          List.replicate blankPad none ++ (encodeNat n).map some } }
+
+theorem seekBits_marker_to_shiftRead
+    (passedRev : BitString) (blankPad : Nat)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 1
+      (seekBitsConfig [] passedRev blankPad b tail n) =
+      shiftReadConfig passedRev blankPad b tail n := by
+  simp [seekBitsConfig, shiftReadConfig, preservingUnaryReadMachine,
+    TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_step_cons
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_run
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_marker_to_shiftRead
+
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_step_succ
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_run
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_zero_step_to_bits
