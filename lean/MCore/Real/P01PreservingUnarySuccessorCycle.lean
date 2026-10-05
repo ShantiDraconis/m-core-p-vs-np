@@ -83,7 +83,7 @@ theorem seekBlanks_run_to_first_bit
       rw [h1]
       have hih := ih (right := none :: right)
       rw [replicate_none_push (pad + 1) right] at hih
-      simpa [List.replicate_succ, List.append_assoc, Nat.succ_eq_add_one] using hih
+      simpa [List.replicate_succ, List.append_assoc, Nat.one_add] using hih
 
 /-- Configuration while seekBits crosses the Boolean prefix toward the unique
 witness marker. -/
