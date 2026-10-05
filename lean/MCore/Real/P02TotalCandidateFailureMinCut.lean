@@ -113,9 +113,15 @@ noncomputable def totalSemanticFailureProducer_of_universalFailure
     { counterexample := pick
       disagrees := ?_ }
   intro M hTotal
+  dsimp
   let x : BitString := pick M hTotal
   have hBad : ¬ M.CorrectAt CanonicalSAT x := by
     exact Classical.choose_spec (hFail M)
+  change ¬ (M.accepting
+      (M.machine.run
+        (M.timeBound x.length)
+        (initialTMConfig M.machine x)).state = true ↔
+      CanonicalSAT x)
   intro hSem
   apply hBad
   exact ⟨hTotal x, hSem⟩
