@@ -180,6 +180,7 @@ jobs:
             MCore.Real.P01InputNodePreservingPlan \
             MCore.Real.P01PreservingUnaryWitnessMachine \
             MCore.Real.P01PreservingUnaryPhysicalAdvance \
+            MCore.Real.P01PreservingUnaryPhysicalRewind \
             MCore.Real.P01PreservingUnaryReaderCertificate \
             MCore.Real.P01PreservingMarkerIteration 2>&1 | tee audit/P01-PreservingUnaryReader-targeted.log
 
@@ -191,12 +192,15 @@ jobs:
           import MCore.Real.P01InputNodePreservingPlan
           import MCore.Real.P01PreservingUnaryWitnessMachine
           import MCore.Real.P01PreservingUnaryPhysicalAdvance
+          import MCore.Real.P01PreservingUnaryPhysicalRewind
           import MCore.Real.P01PreservingUnaryReaderCertificate
           import MCore.Real.P01PreservingMarkerIteration
           #print axioms MCore.Real.P01PreservingUnaryWitnessMarker.marker_tape_roundTrip
           #print axioms MCore.Real.P01InputNodePreservingPlan.evalStep_input_encoded
           #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_first_true_cycle
           #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_correct
+          #print axioms MCore.Real.P01PreservingUnaryPhysicalRewind.rewind_run
+          #print axioms MCore.Real.P01PreservingUnaryPhysicalRewind.cleanup_run
           #print axioms MCore.Real.P01PreservingUnaryReaderCertificate.input_semantic_from_reader_bit
           #print axioms MCore.Real.P01PreservingMarkerIteration.advanceN_exposes_getD
           EOF
