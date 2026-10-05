@@ -3,6 +3,7 @@ import MCore.Real.MachineRunLemmas
 
 namespace MCore.Real.P01PreservingUnaryPhysicalRewind
 
+open CanonicalFinalProof
 open P01PreservingUnaryWitnessMachine
 open P01PreservingUnaryPhysicalFinal
 open MachineRunLemmas
