@@ -483,8 +483,15 @@ theorem forwardPhase_run
       returnBitsConfig b suffix right2 := by
     rw [run_add, h01234, h5]
 
-  simpa [forwardPhaseFuel, pref, hp, right0, right1, right2,
-    List.append_assoc] using hall
+  have hfuel :
+      (((((1 + (rest.length + 1)) + 1) + rest.length) + 1) + 3) =
+        forwardPhaseFuel pref := by
+    unfold forwardPhaseFuel
+    rw [hp]
+    omega
+  rw [← hfuel]
+  simpa [pref, right0, right1, right2, List.reverse_cons,
+    List.map_append, List.append_assoc] using hall
 
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.forwardPhase_run
 
