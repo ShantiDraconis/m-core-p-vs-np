@@ -84,13 +84,15 @@ theorem payload_halting_roundtrip
     (enc : EncodedMachine)
     (q : Fin (enc.stateCount + 1)) :
     (payloadToMachine (machinePayload enc)).halting q = enc.halting q := by
-  simp [payloadToMachine, machinePayload, list_ofFn_getD]
+  change (List.ofFn enc.halting).getD q.val false = enc.halting q
+  exact list_ofFn_getD enc.halting q false
 
 theorem payload_accepting_roundtrip
     (enc : EncodedMachine)
     (q : Fin (enc.stateCount + 1)) :
     (payloadToMachine (machinePayload enc)).accepting q = enc.accepting q := by
-  simp [payloadToMachine, machinePayload, list_ofFn_getD]
+  change (List.ofFn enc.accepting).getD q.val false = enc.accepting q
+  exact list_ofFn_getD enc.accepting q false
 
 #print axioms MCore.Real.P02MachineSerialization.list_ofFn_getD
 #print axioms MCore.Real.P02MachineSerialization.payload_halting_roundtrip
