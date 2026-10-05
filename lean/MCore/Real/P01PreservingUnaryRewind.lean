@@ -190,9 +190,21 @@ theorem cleanup_scan_run
           simp only [cleanupScanConfig_state_false,
             preserving_not_halt_cleanupFalse, Bool.false_eq_true, if_false]
           rw [hstep]
-        rw [hrun]
         have h := ih (crossed := crossed + 1)
-        simpa [haltedConfig] using h
+        calc
+          preservingUnaryReadMachine.run (Nat.succ remaining + 1)
+              (cleanupScanConfig false witness crossed (Nat.succ remaining))
+              =
+            preservingUnaryReadMachine.run (remaining + 2)
+              (cleanupScanConfig false witness crossed (remaining + 1)) := by
+                congr 2 <;> omega
+          _ =
+            preservingUnaryReadMachine.run (remaining + 1)
+              (cleanupScanConfig false witness (crossed + 1) remaining) := hrun
+          _ = haltedConfig false witness ((crossed + 1) + remaining + 1) := h
+          _ = haltedConfig false witness (crossed + Nat.succ remaining + 1) := by
+                congr 1
+                omega
       · have hstep :
             preservingUnaryReadMachine.step
               (cleanupScanConfig true witness crossed (remaining + 1)) =
@@ -211,9 +223,21 @@ theorem cleanup_scan_run
           simp only [cleanupScanConfig_state_true,
             preserving_not_halt_cleanupTrue, Bool.false_eq_true, if_false]
           rw [hstep]
-        rw [hrun]
         have h := ih (crossed := crossed + 1)
-        simpa [haltedConfig] using h
+        calc
+          preservingUnaryReadMachine.run (Nat.succ remaining + 1)
+              (cleanupScanConfig true witness crossed (Nat.succ remaining))
+              =
+            preservingUnaryReadMachine.run (remaining + 2)
+              (cleanupScanConfig true witness crossed (remaining + 1)) := by
+                congr 2 <;> omega
+          _ =
+            preservingUnaryReadMachine.run (remaining + 1)
+              (cleanupScanConfig true witness (crossed + 1) remaining) := hrun
+          _ = haltedConfig true witness ((crossed + 1) + remaining + 1) := h
+          _ = haltedConfig true witness (crossed + Nat.succ remaining + 1) := by
+                congr 1
+                omega
 
 /-- Full physical rewind and cleanup for every nonempty traversed prefix. -/
 theorem preservingRead_rewind_cleanup
