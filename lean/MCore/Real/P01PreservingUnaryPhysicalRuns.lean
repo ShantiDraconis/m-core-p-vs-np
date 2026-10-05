@@ -319,7 +319,7 @@ theorem indexSome_cycle_bits
     pref.reverse.map some ++ (none :: after)
   let returnedBits : BitString := b :: pref.reverse
   let restoredLeft : List (Option Bool) :=
-    none :: (returnedBits.reverse.map some ++ (none :: witnessSuffix))
+    none :: (pref.map some ++ (some b :: none :: witnessSuffix))
 
   let C0 : Configuration PreservingReadState (Option Bool) :=
     indexSomeBitsConfig pref (b :: witnessTail) (true :: next :: sourceTail)
@@ -401,14 +401,15 @@ theorem indexSome_cycle_bits
 
   have h45 : preservingUnaryReadMachine.run 3 C4 = C5 := by
     dsimp [C4, C5, stream, returnedBits, pref]
-    simpa [returnBitsTape, List.reverse_cons, List.map_append,
+    simpa [pref, returnBitsTape, List.reverse_cons, List.map_append,
       List.append_assoc] using
       shift_carry_return_to_stream b witnessSuffix
         (pref.reverse.map some ++ (none :: after))
 
   have h56 : preservingUnaryReadMachine.run (m + 3) C5 = C6 := by
     dsimp [C5, C6, returnedBits, restoredLeft, pref, m]
-    simpa [List.reverse_cons, List.map_append, List.append_assoc] using
+    simpa [pref, List.reverse_cons, List.reverse_reverse,
+      List.map_append, List.append_assoc] using
       returnBits_over_bits (b :: pref.reverse)
         (none :: witnessSuffix) after
 
@@ -432,9 +433,8 @@ theorem indexSome_cycle_bits
     have h :=
       replicate_none_extend m
         ((pref ++ [b]).map some ++ (none :: witnessSuffix))
-    dsimp [restoredLeft, returnedBits, pref, m] at h ⊢
-    simpa [List.reverse_cons, List.reverse_reverse,
-      List.map_append, List.append_assoc] using h
+    dsimp [restoredLeft, pref, m] at h ⊢
+    simpa [List.map_append, List.append_assoc] using h
 
   have h7eq : C7e = C7 := by
     dsimp [C7e, C7, indexSomeBitsConfig, indexSomeBitsTape, src]
