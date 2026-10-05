@@ -3,6 +3,7 @@ import MCore.Real.P01PreservingUnaryReaderResiduals
 namespace MCore.Real.P01PreservingUnaryTruncationLawV2
 
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open P01WitnessIndexedRead
 open P01PreservingUnaryWitnessMachine
 open P01PreservingUnaryReaderCertificate
@@ -52,17 +53,17 @@ structure ConcreteSearchClosure where
   preservation : PreservationCertificate
 
 def ConcreteSearchClosure.toReaderCertificate
-    (C : ConcreteSearchClosure) : ConcreteClosureWitness :=
-  residuals_close_preserving_unary_reader
-    (by
-      intro witness i hi
-      exact C.exhaustion.halts ⟨witness, i, hi⟩)
-    (by
-      intro witness i hi
-      exact C.correctness.correct ⟨witness, i, hi⟩)
-    (by
-      intro witness i hi
-      exact C.preservation.preserves ⟨witness, i, hi⟩)
+    (C : ConcreteSearchClosure) : ConcreteClosureWitness := by
+  let hhalts : PreservingUnaryHalts := by
+    intro witness i hi
+    exact C.exhaustion.halts ⟨witness, i, hi⟩
+  let hcorrect : PreservingUnaryCorrect := by
+    intro witness i hi
+    exact C.correctness.correct ⟨witness, i, hi⟩
+  let hpreserves : PreservingUnaryPreservesWitness := by
+    intro witness i hi
+    exact C.preservation.preserves ⟨witness, i, hi⟩
+  exact residuals_close_preserving_unary_reader hhalts hcorrect hpreserves
 
 structure LoopInvariant where
   input : ReaderInput
@@ -88,23 +89,26 @@ structure TruncationLaw where
 def SearchResult.close?
     (L : TruncationLaw) :
     SearchResult → Option ConcreteClosureWitness
-  | .found C => some C.toReaderCertificate
-  | .exhausted E => some (L.exhaustionProducesClosure E).toReaderCertificate
-  | .loopDetected I => some (L.loopProducesClosure I).toReaderCertificate
+  | .found C => some (ConcreteSearchClosure.toReaderCertificate C)
+  | .exhausted E =>
+      some (ConcreteSearchClosure.toReaderCertificate (L.exhaustionProducesClosure E))
+  | .loopDetected I =>
+      some (ConcreteSearchClosure.toReaderCertificate (L.loopProducesClosure I))
   | .open => none
 
 theorem open_does_not_close (L : TruncationLaw) :
-    SearchResult.open.close? L = none := by rfl
+    SearchResult.close? L SearchResult.open = none := by
+  rfl
 
 theorem exhaustion_closes
     (L : TruncationLaw) (E : ExhaustionCertificate) :
     PreservingUnaryReaderGap :=
-  ⟨(L.exhaustionProducesClosure E).toReaderCertificate⟩
+  ⟨ConcreteSearchClosure.toReaderCertificate (L.exhaustionProducesClosure E)⟩
 
 theorem loop_closes
     (L : TruncationLaw) (I : LoopInvariant) :
     PreservingUnaryReaderGap :=
-  ⟨(L.loopProducesClosure I).toReaderCertificate⟩
+  ⟨ConcreteSearchClosure.toReaderCertificate (L.loopProducesClosure I)⟩
 
 #print axioms MCore.Real.P01PreservingUnaryTruncationLawV2.ConcreteSearchClosure.toReaderCertificate
 #print axioms MCore.Real.P01PreservingUnaryTruncationLawV2.open_does_not_close
