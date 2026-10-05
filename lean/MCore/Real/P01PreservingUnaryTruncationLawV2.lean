@@ -70,9 +70,9 @@ structure LoopInvariant where
   first second : Nat
   first_lt_second : first < second
   second_le_budget : second ≤ budget input
-  repeated_config :
-    preservingUnaryReadMachine.run first input.initialConfig =
-    preservingUnaryReadMachine.run second input.initialConfig
+  repeated_state :
+    (preservingUnaryReadMachine.run first input.initialConfig).state =
+    (preservingUnaryReadMachine.run second input.initialConfig).state
 
 inductive SearchResult
   | found : ConcreteSearchClosure → SearchResult
@@ -107,8 +107,9 @@ theorem exhaustion_closes
 
 theorem loop_closes
     (L : TruncationLaw) (I : LoopInvariant) :
-    PreservingUnaryReaderGap :=
-  ⟨ConcreteSearchClosure.toReaderCertificate (L.loopProducesClosure I)⟩
+    PreservingUnaryReaderGap := by
+  let C : ConcreteSearchClosure := L.loopProducesClosure I
+  exact ⟨ConcreteSearchClosure.toReaderCertificate C⟩
 
 #print axioms MCore.Real.P01PreservingUnaryTruncationLawV2.ConcreteSearchClosure.toReaderCertificate
 #print axioms MCore.Real.P01PreservingUnaryTruncationLawV2.open_does_not_close
