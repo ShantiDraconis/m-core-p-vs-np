@@ -588,6 +588,7 @@ theorem returnPhase_run
       rw [returnBlanks_to_indexSome]
       simp [indexSomeConfig, encodeNat, pref, hp, List.replicate_succ,
         List.append_assoc, replicate_none_push]
+      rfl
 
 def successorCycleFuel (pref : BitString) : Nat :=
   4 * pref.length + 8
