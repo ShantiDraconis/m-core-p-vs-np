@@ -67,12 +67,12 @@ def ConcreteSearchClosure.toReaderCertificate
 
 structure LoopInvariant where
   input : ReaderInput
-  first second : Nat
-  first_lt_second : first < second
-  second_le_budget : second ≤ budget input
+  stepA stepB : Nat
+  stepA_lt_stepB : Nat.lt stepA stepB
+  stepB_le_budget : stepB ≤ budget input
   repeated_state :
-    (preservingUnaryReadMachine.run first input.initialConfig).state =
-    (preservingUnaryReadMachine.run second input.initialConfig).state
+    (preservingUnaryReadMachine.run stepA input.initialConfig).state =
+    (preservingUnaryReadMachine.run stepB input.initialConfig).state
 
 inductive SearchResult
   | found : ConcreteSearchClosure → SearchResult
