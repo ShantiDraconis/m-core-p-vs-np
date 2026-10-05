@@ -470,6 +470,58 @@ theorem returnBlanks_zero_to_indexSome
     simp [returnBlanksConfig, preservingUnaryReadMachine, encodeNat,
       TM.run, TM.step, Tape.write, Tape.move]
 
+
+/-- Universal physical marker cycle.  A nonempty traversed prefix of length L
+costs exactly 4*L+8 steps and extends the canonical prefix by one witness bit. -/
+theorem indexSome_run_advance
+    (traversed : BitString) (b : Bool) (tail : BitString) (n : Nat)
+    (htrav : traversed ≠ []) :
+    preservingUnaryReadMachine.run (4 * traversed.length + 8)
+      (indexSomeConfig traversed (b :: tail) (n + 1)) =
+      indexSomeConfig (traversed ++ [b]) tail n := by
+  cases traversed with
+  | nil =>
+      exact (htrav rfl).elim
+  | cons x xs =>
+      let L := xs.length + 1
+      have hL : (x :: xs).length = L := by
+        simp [L]
+      have hpad : 0 < L + 1 := by
+        omega
+      have hentry :
+          preservingUnaryReadMachine.run 1
+            (indexSomeConfig (x :: xs) (b :: tail) (n + 1)) =
+          seekBlanksConfig xs.length 0 (x :: xs) b tail n := by
+        simp [indexSomeConfig, seekBlanksConfig, preservingUnaryReadMachine,
+          encodeNat, TM.run, TM.step, Tape.write, Tape.move,
+          List.replicate_succ, List.append_assoc]
+      rw [hL]
+      have hcost :
+          4 * L + 8 =
+            1 + xs.length + 1 + 1 + xs.length + 1 + 1 + 1 + 1 +
+              (L + 1) + 1 + L + 1 := by
+        simp [L]
+        omega
+      rw [hcost]
+      repeat' rw [run_add]
+      rw [hentry]
+      rw [seekBlanks_run]
+      rw [seekBlanks_zero_step_to_bits]
+      rw [seekBits_entry_step]
+      rw [seekBits_run]
+      rw [seekBits_marker_to_shiftRead]
+      rw [shiftRead_to_carry]
+      rw [carry_to_returnFromMarker]
+      rw [returnFromMarker_to_returnBits]
+      rw [returnBits_run _ _ _ _ hpad]
+      rw [returnBits_to_returnBlanks _ _ _ hpad]
+      rw [returnBlanks_run]
+      rw [returnBlanks_zero_to_indexSome]
+      simp [L, indexSomeConfig, List.map_append, List.reverse_cons,
+        List.append_assoc, List.replicate_succ, encodeNat]
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.indexSome_run_advance
+
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBits_to_returnBlanks
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBlanks_step_succ
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBlanks_run
