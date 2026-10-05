@@ -13,7 +13,7 @@ theorem close_separation_from_first_real_open_math
     {Language : Type}
     {P NP : Language → Prop}
     (h : FirstRealOpenMath P NP) :
-    SeparationFinal P NP := by
+    ClosedDiscriminant.SeparationFinal P NP := by
   rcases h with ⟨w⟩
   exact typeB_closes_separation w
 
