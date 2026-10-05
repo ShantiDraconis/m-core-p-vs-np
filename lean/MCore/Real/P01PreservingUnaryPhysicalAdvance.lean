@@ -471,6 +471,166 @@ theorem returnBlanks_zero_to_indexSome
       TM.run, TM.step, Tape.write, Tape.move]
 
 
+
+/-- Final nonzero read: scan the erased unary-true blanks leftward. -/
+def finalSeekBlanksConfig
+    (remaining passed : Nat)
+    (traversed : BitString)
+    (selected : Bool) (tail : BitString) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .finalSeekBlanks
+    tape :=
+      { left :=
+          List.replicate remaining none ++
+            traversed.map some ++ none :: (selected :: tail).map some
+        head := none
+        right := List.replicate passed none ++ [some false] } }
+
+@[simp] theorem finalSeekBlanksConfig_state
+    (remaining passed : Nat) (traversed : BitString)
+    (selected : Bool) (tail : BitString) :
+    (finalSeekBlanksConfig remaining passed traversed selected tail).state =
+      .finalSeekBlanks := rfl
+
+theorem finalSeekBlanks_step_succ
+    (remaining passed : Nat) (traversed : BitString)
+    (selected : Bool) (tail : BitString) :
+    preservingUnaryReadMachine.step
+      (finalSeekBlanksConfig (remaining + 1) passed traversed selected tail) =
+      finalSeekBlanksConfig remaining (passed + 1) traversed selected tail := by
+  simp [finalSeekBlanksConfig, preservingUnaryReadMachine, TM.step,
+    Tape.write, Tape.move, List.replicate_succ, List.append_assoc,
+    Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+
+theorem finalSeekBlanks_run
+    (remaining passed : Nat) (traversed : BitString)
+    (selected : Bool) (tail : BitString) :
+    preservingUnaryReadMachine.run remaining
+      (finalSeekBlanksConfig remaining passed traversed selected tail) =
+      finalSeekBlanksConfig 0 (passed + remaining) traversed selected tail := by
+  induction remaining generalizing passed with
+  | zero => rfl
+  | succ remaining ih =>
+      calc
+        preservingUnaryReadMachine.run (Nat.succ remaining)
+            (finalSeekBlanksConfig (Nat.succ remaining) passed traversed selected tail) =
+          preservingUnaryReadMachine.run remaining
+            (preservingUnaryReadMachine.step
+              (finalSeekBlanksConfig (remaining + 1) passed traversed selected tail)) := by
+                simp [TM.run, preservingUnaryReadMachine, Nat.succ_eq_add_one]
+        _ = preservingUnaryReadMachine.run remaining
+            (finalSeekBlanksConfig remaining (passed + 1) traversed selected tail) := by
+              rw [finalSeekBlanks_step_succ]
+        _ = finalSeekBlanksConfig 0 ((passed + 1) + remaining)
+            traversed selected tail := ih (passed := passed + 1)
+        _ = finalSeekBlanksConfig 0 (passed + Nat.succ remaining)
+            traversed selected tail := by
+              have h : (passed + 1) + remaining = passed + Nat.succ remaining := by omega
+              exact congrArg
+                (fun k => finalSeekBlanksConfig 0 k traversed selected tail) h
+
+/-- Entry to finalSeekBits after all erased blanks have been crossed. -/
+def finalSeekBitsEntryConfig
+    (x : Bool) (xs : BitString) (passed : Nat)
+    (selected : Bool) (tail : BitString) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .finalSeekBlanks
+    tape :=
+      { left := xs.map some ++ none :: (selected :: tail).map some
+        head := some x
+        right := List.replicate (passed + 1) none ++ [some false] } }
+
+theorem finalSeekBlanks_zero_step_to_bits
+    (x : Bool) (xs : BitString) (passed : Nat)
+    (selected : Bool) (tail : BitString) :
+    preservingUnaryReadMachine.run 1
+      (finalSeekBlanksConfig 0 passed (x :: xs) selected tail) =
+      finalSeekBitsEntryConfig x xs (passed + 1) selected tail := by
+  simp [finalSeekBlanksConfig, finalSeekBitsEntryConfig,
+    preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move,
+    List.replicate_succ, List.append_assoc, Nat.add_assoc]
+
+def finalSeekBitsConfig
+    (remaining passedRev : BitString) (blankPad : Nat)
+    (selected : Bool) (tail : BitString) :
+    Configuration PreservingReadState (Option Bool) :=
+  match remaining with
+  | [] =>
+      { state := .finalSeekBits
+        tape :=
+          { left := (selected :: tail).map some
+            head := none
+            right := passedRev.map some ++
+              List.replicate blankPad none ++ [some false] } }
+  | y :: ys =>
+      { state := .finalSeekBits
+        tape :=
+          { left := ys.map some ++ none :: (selected :: tail).map some
+            head := some y
+            right := passedRev.map some ++
+              List.replicate blankPad none ++ [some false] } }
+
+@[simp] theorem finalSeekBitsConfig_state
+    (remaining passedRev : BitString) (blankPad : Nat)
+    (selected : Bool) (tail : BitString) :
+    (finalSeekBitsConfig remaining passedRev blankPad selected tail).state =
+      .finalSeekBits := by
+  cases remaining <;> rfl
+
+theorem finalSeekBits_entry_step
+    (x : Bool) (xs : BitString) (passed : Nat)
+    (selected : Bool) (tail : BitString) :
+    preservingUnaryReadMachine.run 1
+      (finalSeekBitsEntryConfig x xs passed selected tail) =
+      finalSeekBitsConfig xs [x] passed selected tail := by
+  cases xs <;>
+    simp [finalSeekBitsEntryConfig, finalSeekBitsConfig,
+      preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move,
+      List.append_assoc]
+
+theorem finalSeekBits_step_cons
+    (y : Bool) (ys passedRev : BitString) (blankPad : Nat)
+    (selected : Bool) (tail : BitString) :
+    preservingUnaryReadMachine.step
+      (finalSeekBitsConfig (y :: ys) passedRev blankPad selected tail) =
+      finalSeekBitsConfig ys (y :: passedRev) blankPad selected tail := by
+  cases ys <;>
+    simp [finalSeekBitsConfig, preservingUnaryReadMachine, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
+
+theorem finalSeekBits_run
+    (remaining passedRev : BitString) (blankPad : Nat)
+    (selected : Bool) (tail : BitString) :
+    preservingUnaryReadMachine.run remaining.length
+      (finalSeekBitsConfig remaining passedRev blankPad selected tail) =
+      finalSeekBitsConfig [] (remaining.reverse ++ passedRev)
+        blankPad selected tail := by
+  induction remaining generalizing passedRev with
+  | nil => rfl
+  | cons y ys ih =>
+      calc
+        preservingUnaryReadMachine.run (y :: ys).length
+            (finalSeekBitsConfig (y :: ys) passedRev blankPad selected tail) =
+          preservingUnaryReadMachine.run ys.length
+            (preservingUnaryReadMachine.step
+              (finalSeekBitsConfig (y :: ys) passedRev blankPad selected tail)) := by
+                simp [TM.run, preservingUnaryReadMachine]
+        _ = preservingUnaryReadMachine.run ys.length
+            (finalSeekBitsConfig ys (y :: passedRev) blankPad selected tail) := by
+              rw [finalSeekBits_step_cons]
+        _ = finalSeekBitsConfig [] (ys.reverse ++ (y :: passedRev))
+            blankPad selected tail := ih (passedRev := y :: passedRev)
+        _ = finalSeekBitsConfig [] ((y :: ys).reverse ++ passedRev)
+            blankPad selected tail := by
+              simp [List.reverse_cons, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.finalSeekBlanks_step_succ
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.finalSeekBlanks_run
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.finalSeekBlanks_zero_step_to_bits
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.finalSeekBits_entry_step
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.finalSeekBits_step_cons
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.finalSeekBits_run
+
 /-- Universal physical marker cycle.  A nonempty traversed prefix of length L
 costs exactly 4*L+8 steps and extends the canonical prefix by one witness bit. -/
 theorem indexSome_run_advance
