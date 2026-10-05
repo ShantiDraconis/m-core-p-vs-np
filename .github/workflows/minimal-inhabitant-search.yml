@@ -27,8 +27,8 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$HOME/.elan/bin:$PATH"
-          lake build MCore.MinimalInhabitantSearch
           lake build MCore.Real.PhysicalVerifierResiduals
+          lake build MCore.MinimalInhabitantSearch
       - name: Hygiene
         if: always()
         run: |
