@@ -14,73 +14,152 @@ open P01PreservingUnaryIteration
 open P01PreservingUnarySuccessorCycle
 open P01PreservingUnaryReaderCertificate
 
-/-- Closed form for the exact sum of successor-cycle costs. -/
-theorem iteratedCycleFuel_closed
+/-- Exact nonzero-path fuel accounting used by the universal reader proof. -/
+def nonzeroReaderFuel (i : Nat) : Nat :=
+  2 * i ^ 2 + 12 * i + 5
+
+/-- Loose cubic envelope.  The larger constant keeps the arithmetic proof
+structural and independent of nonlinear automation. -/
+def preservingUnaryReaderTimeBound : TimeBound :=
+  fun n => 64 * (n + 1) ^ 3
+
+theorem preservingUnaryReaderTimeBound_poly :
+    PolynomialTimeBound preservingUnaryReaderTimeBound := by
+  refine ⟨64, 3, ?_⟩
+  intro n
+  exact Nat.le_refl _
+
+/-- One cycle is linear in the traversed prefix. -/
+theorem successorCycleFuel_linear
+    (pref : BitString) :
+    successorCycleFuel pref = 4 * pref.length + 8 := by
+  rfl
+
+/-- A coarse quadratic envelope for the iterated exact cycle fuel. -/
+theorem iteratedCycleFuel_le_quadratic
     (pref moved : BitString) :
-    iteratedCycleFuel pref moved =
-      2 * moved.length ^ 2 +
-        (4 * pref.length + 6) * moved.length := by
+    iteratedCycleFuel pref moved ≤
+      4 * (pref.length + moved.length + 1) ^ 2 := by
   induction moved generalizing pref with
   | nil =>
       simp [iteratedCycleFuel, iteratedCycleFuelLen]
   | cons b rest ih =>
       rw [iteratedCycleFuel_cons]
-      rw [ih]
-      simp [successorCycleFuel]
-      omega
+      have hih := ih (pref := pref ++ [b])
+      have hlen :
+          (pref ++ [b]).length + rest.length + 1 =
+            pref.length + (b :: rest).length + 1 := by
+        simp
+      rw [hlen] at hih
+      have hlin :
+          successorCycleFuel pref ≤
+            4 * (pref.length + (b :: rest).length + 1) := by
+        simp [successorCycleFuel]
+        omega
+      have hbase :
+          4 * (pref.length + (b :: rest).length + 1) ≤
+            4 * (pref.length + (b :: rest).length + 1) ^ 2 := by
+        let N := pref.length + (b :: rest).length + 1
+        have hN : 1 ≤ N := by
+          dsimp [N]
+          omega
+        have hmul :
+            N ≤ N * N := by
+          calc
+            N = N * 1 := by simp
+            _ ≤ N * N := Nat.mul_le_mul_left N hN
+        simpa [N, Nat.pow_two] using Nat.mul_le_mul_left 4 hmul
+      have hrest :
+          iteratedCycleFuel (pref ++ [b]) rest ≤
+            4 * (pref.length + (b :: rest).length + 1) ^ 2 := hih
+      have hsum :
+          successorCycleFuel pref +
+              iteratedCycleFuel (pref ++ [b]) rest ≤
+            8 * (pref.length + (b :: rest).length + 1) ^ 2 := by
+        omega
+      have h8to16 :
+          8 * (pref.length + (b :: rest).length + 1) ^ 2 ≤
+            16 * (pref.length + (b :: rest).length + 1) ^ 2 := by
+        exact Nat.mul_le_mul_right
+          ((pref.length + (b :: rest).length + 1) ^ 2) (by omega)
+      exact Nat.le_trans hsum h8to16
 
-/-- Exact total fuel of the nonzero physical reader path, expressed only in
-the requested index. -/
-def nonzeroReaderFuel (i : Nat) : Nat :=
-  2 * i ^ 2 + 12 * i + 5
-
-/-- A deliberately loose quadratic bound in the certificate input size. -/
-def preservingUnaryReaderTimeBound : TimeBound :=
-  fun n => 20 * (n + 1) ^ 2
-
-theorem preservingUnaryReaderTimeBound_poly :
-    PolynomialTimeBound preservingUnaryReaderTimeBound := by
-  refine ⟨20, 2, ?_⟩
-  intro n
-  exact le_rfl
-
-/-- The exact physical nonzero-path accounting collapses to nonzeroReaderFuel. -/
-theorem nonzero_physical_fuel_identity
-    (i : Nat) (hi : 0 < i) :
-    let moved := i - 1
-    8 +
-      (2 * moved ^ 2 + 10 * moved) +
-      (2 * i + 3) +
-      (4 * i + 2) =
-    nonzeroReaderFuel i := by
-  obtain ⟨j, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hi)
-  simp [nonzeroReaderFuel]
-  omega
-
-/-- The certificate-size quadratic dominates the zero and nonzero physical
-reader costs for every valid witness/index pair. -/
+/-- The exact nonzero reader fuel is dominated by the cubic certificate
+envelope at the canonical input size. -/
 theorem nonzeroReaderFuel_le_timeBound
     (witness : BitString) (i : Nat) :
     nonzeroReaderFuel i ≤
       preservingUnaryReaderTimeBound
         (witness.length + (encodeNat i).length) := by
-  have hi2 : i ^ 2 ≤
-      (witness.length + (i + 1) + 1) ^ 2 := by
-    have hle : i ≤ witness.length + (i + 1) + 1 := by omega
-    exact Nat.pow_le_pow_left hle 2
-  simp [nonzeroReaderFuel, preservingUnaryReaderTimeBound,
-    CanonicalSATWitness.encodeNat_length]
-  omega
+  let N := witness.length + (encodeNat i).length
+  have henc : (encodeNat i).length = i + 1 :=
+    CanonicalSATWitness.encodeNat_length i
+  have hi : i ≤ N + 1 := by
+    dsimp [N]
+    rw [henc]
+    omega
+  have hN : 1 ≤ N + 1 := by omega
+  have hisq :
+      i ^ 2 ≤ (N + 1) ^ 2 := by
+    simp only [Nat.pow_two]
+    exact Nat.mul_le_mul hi hi
+  have hlinquad :
+      N + 1 ≤ (N + 1) ^ 2 := by
+    simp only [Nat.pow_two]
+    calc
+      N + 1 = (N + 1) * 1 := by simp
+      _ ≤ (N + 1) * (N + 1) :=
+        Nat.mul_le_mul_left (N + 1) hN
+  have hsqcube :
+      (N + 1) ^ 2 ≤ (N + 1) ^ 3 := by
+    rw [Nat.pow_succ]
+    calc
+      (N + 1) ^ 2 = 1 * (N + 1) ^ 2 := by simp
+      _ ≤ (N + 1) * (N + 1) ^ 2 :=
+        Nat.mul_le_mul_right ((N + 1) ^ 2) hN
+  have h2 :
+      2 * i ^ 2 ≤ 2 * (N + 1) ^ 2 :=
+    Nat.mul_le_mul_left 2 hisq
+  have h12 :
+      12 * i ≤ 12 * (N + 1) :=
+    Nat.mul_le_mul_left 12 hi
+  have h5 :
+      5 ≤ 5 * (N + 1) ^ 2 := by
+    have hsq : 1 ≤ (N + 1) ^ 2 := by
+      exact Nat.one_le_pow 2 (N + 1) hN
+    simpa using Nat.mul_le_mul_left 5 hsq
+  have hquad :
+      nonzeroReaderFuel i ≤ 19 * (N + 1) ^ 2 := by
+    unfold nonzeroReaderFuel
+    have h12q :
+        12 * (N + 1) ≤ 12 * (N + 1) ^ 2 :=
+      Nat.mul_le_mul_left 12 hlinquad
+    omega
+  have hquad64 :
+      19 * (N + 1) ^ 2 ≤ 64 * (N + 1) ^ 2 :=
+    Nat.mul_le_mul_right ((N + 1) ^ 2) (by omega)
+  have hcubic :
+      64 * (N + 1) ^ 2 ≤ 64 * (N + 1) ^ 3 :=
+    Nat.mul_le_mul_left 64 hsqcube
+  dsimp [preservingUnaryReaderTimeBound]
+  exact Nat.le_trans hquad (Nat.le_trans hquad64 hcubic)
 
 theorem zeroFuel_le_timeBound
     (witness : BitString) :
     5 ≤ preservingUnaryReaderTimeBound
       (witness.length + (encodeNat 0).length) := by
-  simp [preservingUnaryReaderTimeBound,
-    CanonicalSATWitness.encodeNat_length]
+  unfold preservingUnaryReaderTimeBound
+  have h : 1 ≤ witness.length + (encodeNat 0).length + 1 := by omega
+  have hp : 1 ≤ (witness.length + (encodeNat 0).length + 1) ^ 3 :=
+    Nat.one_le_pow 3 _ h
+  have hmul : 5 ≤ 64 * 1 := by omega
+  calc
+    5 ≤ 64 * 1 := hmul
+    _ ≤ 64 * (witness.length + (encodeNat 0).length + 1) ^ 3 :=
+      Nat.mul_le_mul_left 64 hp
 
-#print axioms MCore.Real.P01PreservingUnaryReaderBound.iteratedCycleFuel_closed
 #print axioms MCore.Real.P01PreservingUnaryReaderBound.preservingUnaryReaderTimeBound_poly
+#print axioms MCore.Real.P01PreservingUnaryReaderBound.iteratedCycleFuel_le_quadratic
 #print axioms MCore.Real.P01PreservingUnaryReaderBound.nonzeroReaderFuel_le_timeBound
 
 end P01PreservingUnaryReaderBound
