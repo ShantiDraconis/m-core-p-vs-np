@@ -8,6 +8,7 @@ on:
       - 'lean/MCore/Real/P02EqualityCompositionUnified.lean'
       - 'lean/MCore/Real/P02DeterministicReductionCompositionMaterial.lean'
       - 'lean/MCore/Real/P02TerminalForcingSAT.lean'
+      - 'probe/P02TerminalSATKernelQuestions.lean'
       - '.github/workflows/p02-equality-composition-unified.yml'
   workflow_dispatch:
 
@@ -91,6 +92,19 @@ jobs:
           fi
           echo P02_DETERMINISTIC_REDUCTION_COMPOSITION_CORE_GREEN
           echo P02_SAT_TERMINAL_EXPOSED_GREEN
+      - name: Ask kernel SAT terminal questions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          if lake env lean probe/P02TerminalSATKernelQuestions.lean > /tmp/p02-sat-questions.log 2>&1; then
+            echo 'UNEXPECTED_SAT_TERMINAL_INHABITANT_PASS'
+            cat /tmp/p02-sat-questions.log
+            exit 1
+          fi
+          cat /tmp/p02-sat-questions.log
+          grep -q 'unsolved goals' /tmp/p02-sat-questions.log
+          echo P02_SAT_TERMINAL_GOALS_EXPOSED
       - name: Force SAT inhabitant
         shell: bash
         run: |
