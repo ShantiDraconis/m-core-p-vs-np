@@ -344,6 +344,21 @@ theorem indexSome_run_advance
 
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.indexSome_run_advance
 
+/-- Fourth physical marker cycle: a traversed prefix of length three costs
+exactly twenty steps.  Together with the 12- and 16-step cases this tests the
+linear cycle-cost law 4 * traversed.length + 8. -/
+theorem preservingRead_fourth_true_cycle_twenty
+    (b0 b1 b2 b3 : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 20
+      (indexSomeConfig [b0, b1, b2] (b3 :: tail) (n + 1)) =
+      indexSomeConfig [b0, b1, b2, b3] tail n := by
+  cases b0 <;> cases b1 <;> cases b2 <;> cases b3 <;> cases n <;>
+    simp [preservingUnaryReadMachine, indexSomeConfig, encodeNat,
+      TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_fourth_true_cycle_twenty
+
 /-- Exact final tape for zero index: the witness is unchanged; the unary false
 terminator is erased and the original witness separator remains blank. -/
 def zeroDoneTape (witness : BitString) : Tape (Option Bool) :=
