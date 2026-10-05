@@ -51,3 +51,16 @@ jobs:
             exit 1
           fi
           echo P02_G2_TERMINAL_EXPOSED_GREEN
+      - name: Force G2 inhabitant
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          if lake env lean probe/P02TerminalG2InhabitantExpectedFailure.lean > /tmp/p02-g2-inhabitant.log 2>&1; then
+            echo P02_G2_INHABITANT_UNEXPECTEDLY_CONSTRUCTED
+            cat /tmp/p02-g2-inhabitant.log
+            exit 2
+          else
+            cat /tmp/p02-g2-inhabitant.log
+            echo P02_G2_INHABITANT_STILL_OPEN
+          fi
