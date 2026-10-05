@@ -46,7 +46,12 @@ theorem universalSim_some_iff
   by_cases h :
       enc.toTM.halting
         (enc.toTM.run fuel (initialTMConfig enc.toTM x)).state = true
-  · simp [h]
+  · simp only [h, if_pos, Option.some.injEq, Prod.mk.injEq]
+    constructor
+    · rintro ⟨hb, hk⟩
+      exact ⟨hk.symm, h, hb.symm⟩
+    · rintro ⟨hk, _, hb⟩
+      exact ⟨hb.symm, hk.symm⟩
   · have hf :
         enc.toTM.halting
           (enc.toTM.run fuel (initialTMConfig enc.toTM x)).state = false := by
