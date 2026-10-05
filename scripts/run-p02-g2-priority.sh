@@ -12,3 +12,5 @@ lake env lean /tmp/P02UniversalFailureWitnessPriorityAudit.lean 2>&1 | tee /tmp/
 ! grep -E 'sorryAx' /tmp/p02-g2-priority.log
 ! grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02UniversalFailureWitnessMaterial.lean
 echo P02_G2_PRIORITY_KERNEL_GREEN
+
+# retrigger-priority-run-20261005-2
