@@ -39,7 +39,7 @@ theorem successorCycleFuel_linear
 theorem iteratedCycleFuel_le_quadratic
     (pref moved : BitString) :
     iteratedCycleFuel pref moved ≤
-      4 * (pref.length + moved.length + 1) ^ 2 := by
+      64 * (pref.length + moved.length + 1) ^ 2 := by
   induction moved generalizing pref with
   | nil =>
       simp [iteratedCycleFuel, iteratedCycleFuelLen]
@@ -50,6 +50,7 @@ theorem iteratedCycleFuel_le_quadratic
           (pref ++ [b]).length + rest.length + 1 =
             pref.length + (b :: rest).length + 1 := by
         simp
+        omega
       rw [hlen] at hih
       have hlin :
           successorCycleFuel pref ≤
@@ -71,18 +72,22 @@ theorem iteratedCycleFuel_le_quadratic
         simpa [N, Nat.pow_two] using Nat.mul_le_mul_left 4 hmul
       have hrest :
           iteratedCycleFuel (pref ++ [b]) rest ≤
-            4 * (pref.length + (b :: rest).length + 1) ^ 2 := hih
+            64 * (pref.length + (b :: rest).length + 1) ^ 2 := hih
+      have hlin64 :
+          successorCycleFuel pref ≤
+            64 * (pref.length + (b :: rest).length + 1) ^ 2 := by
+        exact Nat.le_trans hlin
+          (Nat.le_trans hbase
+            (Nat.mul_le_mul_right
+              ((pref.length + (b :: rest).length + 1) ^ 2) (by omega)))
       have hsum :
           successorCycleFuel pref +
               iteratedCycleFuel (pref ++ [b]) rest ≤
-            8 * (pref.length + (b :: rest).length + 1) ^ 2 := by
+            128 * (pref.length + (b :: rest).length + 1) ^ 2 := by
         omega
-      have h8to16 :
-          8 * (pref.length + (b :: rest).length + 1) ^ 2 ≤
-            16 * (pref.length + (b :: rest).length + 1) ^ 2 := by
-        exact Nat.mul_le_mul_right
-          ((pref.length + (b :: rest).length + 1) ^ 2) (by omega)
-      exact Nat.le_trans hsum h8to16
+      exact Nat.le_trans hsum
+        (Nat.mul_le_mul_right
+          ((pref.length + (b :: rest).length + 1) ^ 2) (by omega))
 
 /-- The exact nonzero reader fuel is dominated by the cubic certificate
 envelope at the canonical input size. -/
@@ -112,21 +117,23 @@ theorem nonzeroReaderFuel_le_timeBound
         Nat.mul_le_mul_left (N + 1) hN
   have hsqcube :
       (N + 1) ^ 2 ≤ (N + 1) ^ 3 := by
-    rw [Nat.pow_succ]
     calc
       (N + 1) ^ 2 = 1 * (N + 1) ^ 2 := by simp
       _ ≤ (N + 1) * (N + 1) ^ 2 :=
         Nat.mul_le_mul_right ((N + 1) ^ 2) hN
+      _ = (N + 1) ^ 3 := by
+        simp [Nat.pow_succ, Nat.mul_comm]
   have h2 :
       2 * i ^ 2 ≤ 2 * (N + 1) ^ 2 :=
     Nat.mul_le_mul_left 2 hisq
   have h12 :
       12 * i ≤ 12 * (N + 1) :=
     Nat.mul_le_mul_left 12 hi
+  have hsq : 1 ≤ (N + 1) ^ 2 := by
+    simp [Nat.pow_two]
+    exact Nat.mul_pos hN hN
   have h5 :
       5 ≤ 5 * (N + 1) ^ 2 := by
-    have hsq : 1 ≤ (N + 1) ^ 2 := by
-      exact Nat.one_le_pow 2 (N + 1) hN
     simpa using Nat.mul_le_mul_left 5 hsq
   have hquad :
       nonzeroReaderFuel i ≤ 19 * (N + 1) ^ 2 := by
@@ -150,8 +157,23 @@ theorem zeroFuel_le_timeBound
       (witness.length + (encodeNat 0).length) := by
   unfold preservingUnaryReaderTimeBound
   have h : 1 ≤ witness.length + (encodeNat 0).length + 1 := by omega
-  have hp : 1 ≤ (witness.length + (encodeNat 0).length + 1) ^ 3 :=
-    Nat.one_le_pow 3 _ h
+  have hp : 1 ≤ (witness.length + (encodeNat 0).length + 1) ^ 3 := by
+    have h2 :
+        1 ≤ (witness.length + (encodeNat 0).length + 1) ^ 2 := by
+      simp [Nat.pow_two]
+      exact Nat.mul_pos h h
+    calc
+      1 ≤ (witness.length + (encodeNat 0).length + 1) ^ 2 := h2
+      _ ≤ (witness.length + (encodeNat 0).length + 1) ^ 3 := by
+        calc
+          (witness.length + (encodeNat 0).length + 1) ^ 2 =
+              1 * (witness.length + (encodeNat 0).length + 1) ^ 2 := by simp
+          _ ≤ (witness.length + (encodeNat 0).length + 1) *
+                (witness.length + (encodeNat 0).length + 1) ^ 2 :=
+              Nat.mul_le_mul_right
+                ((witness.length + (encodeNat 0).length + 1) ^ 2) h
+          _ = (witness.length + (encodeNat 0).length + 1) ^ 3 := by
+              simp [Nat.pow_succ, Nat.mul_comm]
   have hmul : 5 ≤ 64 * 1 := by omega
   calc
     5 ≤ 64 * 1 := hmul
