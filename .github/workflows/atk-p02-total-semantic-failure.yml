@@ -23,18 +23,23 @@ jobs:
           set -euo pipefail
           lake build MCore.Real.P02TotalCandidateFailureMinCut
           lake build MCore.Real.P02SemanticInvariantCore
+          lake build MCore.Real.P02SemanticNegationReduction
       - name: Axiom and placeholder audit
         run: |
           set -euo pipefail
           cat > P02TotalCandidateFailureMinCutAudit.lean <<'EOF'
           import MCore.Real.P02TotalCandidateFailureMinCut
           import MCore.Real.P02SemanticInvariantCore
+          import MCore.Real.P02SemanticNegationReduction
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.TotalSemanticFailureProducer.toFailureGenerator
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_implies_universalFailure
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_closes_internal_endpoint
           #print axioms MCore.Real.P02SemanticInvariantCore.invariantPoint_gives_semantic_failure
           #print axioms MCore.Real.P02SemanticInvariantCore.invariantFamily_to_totalSemanticFailure
           #print axioms MCore.Real.P02SemanticInvariantCore.totalInvariantPoint_closes_G2
+          #print axioms MCore.Real.P02SemanticNegationReduction.semanticNegationBits_flip
+          #print axioms MCore.Real.P02SemanticNegationReduction.semanticNegationReduction
+          #print axioms MCore.Real.P02SemanticNegationReduction.semanticNegationInvariant_closes_G2
           EOF
           lake env lean P02TotalCandidateFailureMinCutAudit.lean 2>&1 | tee /tmp/p02-total-semantic-axioms.log
           if grep -E 'sorryAx' /tmp/p02-total-semantic-axioms.log; then exit 1; fi
