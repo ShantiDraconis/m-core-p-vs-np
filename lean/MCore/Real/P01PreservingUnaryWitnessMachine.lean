@@ -309,6 +309,20 @@ theorem preservingRead_second_true_cycle_twelve
 
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_second_true_cycle_twelve
 
+/-- Third physical marker cycle: a traversed prefix of length two costs
+exactly sixteen steps and extends the canonical prefix by one witness bit. -/
+theorem preservingRead_third_true_cycle_sixteen
+    (b0 b1 b2 : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 16
+      (indexSomeConfig [b0, b1] (b2 :: tail) (n + 1)) =
+      indexSomeConfig [b0, b1, b2] tail n := by
+  cases b0 <;> cases b1 <;> cases b2 <;> cases n <;>
+    simp [preservingUnaryReadMachine, indexSomeConfig, encodeNat,
+      TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_third_true_cycle_sixteen
+
 /-- Exact final tape for zero index: the witness is unchanged; the unary false
 terminator is erased and the original witness separator remains blank. -/
 def zeroDoneTape (witness : BitString) : Tape (Option Bool) :=
