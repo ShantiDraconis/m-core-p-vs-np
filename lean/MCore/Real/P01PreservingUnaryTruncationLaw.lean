@@ -31,12 +31,14 @@ def initialSearchState
 
 abbrev IsBlocking := ReaderSearchState → Prop
 
+/-- Finite complete search space for all reachable reader states. -/
 structure CompleteSearchSpace
     (Reachable : ReaderSearchState → Prop) where
   states : List ReaderSearchState
   complete : ∀ s, Reachable s → s ∈ states
   nodup : states.Nodup
 
+/-- A strict natural-valued descent certificate for every declared loop edge. -/
 structure LoopMeasure
     (LoopEdge : ReaderSearchState → ReaderSearchState → Prop) where
   measure : ReaderSearchState → Nat
@@ -49,48 +51,43 @@ theorem loopEdge_wellFounded
     WellFounded (fun b a => LoopEdge a b) := by
   exact WellFounded.onFun M.measure Nat.lt_wfRel.wf
 
+/-- A detected repetition carries only the structural loop evidence.
+It deliberately does NOT contain a closure witness. -/
 structure LoopInvariant
     (LoopEdge : ReaderSearchState → ReaderSearchState → Prop)
     (M : LoopMeasure LoopEdge) where
   state : ReaderSearchState
   repeats : Prop
   repeats_proof : repeats
-  closure : ConcreteClosureWitness
 
+/-- A found blocker is evidence that search did not close. -/
+structure MinimalBlock
+    (IsBlocking : ReaderSearchState → Prop) where
+  state : ReaderSearchState
+  blocking : IsBlocking state
+
+/-- Exhaustion is a proof over the entire candidate space, not search = none. -/
+structure ExhaustionCertificate
+    (IsBlocking : ReaderSearchState → Prop) where
+  exhausted : ∀ s, ¬ IsBlocking s
+
+/-- Total search result. None of the constructors smuggles in the theorem witness. -/
 inductive SearchResult
     (IsBlocking : ReaderSearchState → Prop)
     (LoopEdge : ReaderSearchState → ReaderSearchState → Prop)
     (M : LoopMeasure LoopEdge) where
   | found :
-      (s : ReaderSearchState) →
-      IsBlocking s →
-      ConcreteClosureWitness →
+      MinimalBlock IsBlocking →
       SearchResult IsBlocking LoopEdge M
   | exhausted :
-      (∀ s, ¬ IsBlocking s) →
-      ConcreteClosureWitness →
+      ExhaustionCertificate IsBlocking →
       SearchResult IsBlocking LoopEdge M
   | loopDetected :
       LoopInvariant LoopEdge M →
       SearchResult IsBlocking LoopEdge M
 
-def SearchResult.toClosure
-    {IsBlocking : ReaderSearchState → Prop}
-    {LoopEdge : ReaderSearchState → ReaderSearchState → Prop}
-    {M : LoopMeasure LoopEdge} :
-    SearchResult IsBlocking LoopEdge M → ConcreteClosureWitness
-  | .found _ _ h => h
-  | .exhausted _ h => h
-  | .loopDetected h => h.closure
-
-theorem searchResult_closes_reader
-    {IsBlocking : ReaderSearchState → Prop}
-    {LoopEdge : ReaderSearchState → ReaderSearchState → Prop}
-    {M : LoopMeasure LoopEdge}
-    (r : SearchResult IsBlocking LoopEdge M) :
-    PreservingUnaryReaderGap :=
-  ⟨r.toClosure⟩
-
+/-- The truncation law only proves total decidable classification.
+It does not claim that a classified outcome proves the reader. -/
 structure TruncationLaw
     (Reachable : ReaderSearchState → Prop)
     (IsBlocking : ReaderSearchState → Prop)
@@ -100,30 +97,90 @@ structure TruncationLaw
   loopMeasure : LoopMeasure LoopEdge
   runSearch : SearchResult IsBlocking LoopEdge loopMeasure
 
+/-- Material producer needed to resolve a genuine minimal blocker. -/
+def FoundBlockClosureProducer
+    {IsBlocking : ReaderSearchState → Prop} : Prop :=
+  ∀ _m : MinimalBlock IsBlocking, ConcreteClosureWitness
+
+/-- Material theorem required before proven exhaustion may close the reader. -/
+def ExhaustionClosureProducer
+    {IsBlocking : ReaderSearchState → Prop} : Prop :=
+  ∀ _e : ExhaustionCertificate IsBlocking, ConcreteClosureWitness
+
+/-- Material theorem required before loop detection may close the reader.
+This is the exact fail-closed replacement for "loop means proved". -/
+def LoopClosureProducer
+    {LoopEdge : ReaderSearchState → ReaderSearchState → Prop}
+    {M : LoopMeasure LoopEdge} : Prop :=
+  ∀ _l : LoopInvariant LoopEdge M, ConcreteClosureWitness
+
+/-- Exact producer package for turning a total search classification into closure.
+All three branches must be materially discharged. -/
+structure SearchClosureProducers
+    {IsBlocking : ReaderSearchState → Prop}
+    {LoopEdge : ReaderSearchState → ReaderSearchState → Prop}
+    (M : LoopMeasure LoopEdge) where
+  found : FoundBlockClosureProducer (IsBlocking := IsBlocking)
+  exhausted : ExhaustionClosureProducer (IsBlocking := IsBlocking)
+  loopDetected : LoopClosureProducer (LoopEdge := LoopEdge) (M := M)
+
+def SearchResult.toClosure
+    {IsBlocking : ReaderSearchState → Prop}
+    {LoopEdge : ReaderSearchState → ReaderSearchState → Prop}
+    {M : LoopMeasure LoopEdge}
+    (P : SearchClosureProducers (IsBlocking := IsBlocking)
+      (LoopEdge := LoopEdge) M) :
+    SearchResult IsBlocking LoopEdge M → ConcreteClosureWitness
+  | .found m => P.found m
+  | .exhausted e => P.exhausted e
+  | .loopDetected l => P.loopDetected l
+
+theorem searchResult_closes_reader
+    {IsBlocking : ReaderSearchState → Prop}
+    {LoopEdge : ReaderSearchState → ReaderSearchState → Prop}
+    {M : LoopMeasure LoopEdge}
+    (P : SearchClosureProducers (IsBlocking := IsBlocking)
+      (LoopEdge := LoopEdge) M)
+    (r : SearchResult IsBlocking LoopEdge M) :
+    PreservingUnaryReaderGap :=
+  ⟨r.toClosure P⟩
+
 theorem truncationLaw_closes_reader
     {Reachable : ReaderSearchState → Prop}
     {IsBlocking : ReaderSearchState → Prop}
     {LoopEdge : ReaderSearchState → ReaderSearchState → Prop}
-    (L : TruncationLaw Reachable IsBlocking LoopEdge) :
+    (L : TruncationLaw Reachable IsBlocking LoopEdge)
+    (P : SearchClosureProducers (IsBlocking := IsBlocking)
+      (LoopEdge := LoopEdge) L.loopMeasure) :
     PreservingUnaryReaderGap :=
-  searchResult_closes_reader L.runSearch
+  searchResult_closes_reader P L.runSearch
 
+/-- Structural truncation producer: total search only. This does NOT close the gap. -/
 def ExactTruncationProducer : Prop :=
   ∃ (Reachable IsBlocking : ReaderSearchState → Prop)
     (LoopEdge : ReaderSearchState → ReaderSearchState → Prop),
     Nonempty (TruncationLaw Reachable IsBlocking LoopEdge)
 
-theorem exact_truncation_producer_closes
-    (h : ExactTruncationProducer) :
+/-- Exact material producer still required after truncation is constructed. -/
+def ExactTruncationClosureProducer : Prop :=
+  ∃ (Reachable IsBlocking : ReaderSearchState → Prop)
+    (LoopEdge : ReaderSearchState → ReaderSearchState → Prop)
+    (L : TruncationLaw Reachable IsBlocking LoopEdge),
+    Nonempty
+      (SearchClosureProducers (IsBlocking := IsBlocking)
+        (LoopEdge := LoopEdge) L.loopMeasure)
+
+theorem exact_truncation_closure_producer_closes
+    (h : ExactTruncationClosureProducer) :
     PreservingUnaryReaderGap := by
-  rcases h with ⟨Reachable, IsBlocking, LoopEdge, L⟩
-  rcases L with ⟨law⟩
-  exact truncationLaw_closes_reader law
+  rcases h with ⟨Reachable, IsBlocking, LoopEdge, L, P⟩
+  rcases P with ⟨producers⟩
+  exact truncationLaw_closes_reader L producers
 
 #print axioms MCore.Real.P01PreservingUnaryTruncationLaw.loopEdge_wellFounded
 #print axioms MCore.Real.P01PreservingUnaryTruncationLaw.searchResult_closes_reader
 #print axioms MCore.Real.P01PreservingUnaryTruncationLaw.truncationLaw_closes_reader
-#print axioms MCore.Real.P01PreservingUnaryTruncationLaw.exact_truncation_producer_closes
+#print axioms MCore.Real.P01PreservingUnaryTruncationLaw.exact_truncation_closure_producer_closes
 
 end P01PreservingUnaryTruncationLaw
 end Real
