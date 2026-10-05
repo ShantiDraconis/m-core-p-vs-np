@@ -512,8 +512,29 @@ theorem indexSome_run_advance
       rw [run_add, shiftRead_to_carry]
       rw [run_add, carry_to_returnFromMarker]
       rw [run_add, returnFromMarker_to_returnBits]
-      rw [run_add, returnBits_run _ _ _ _ hpad]
+      change preservingUnaryReadMachine.run
+        ((L + 1) + (1 + (L + 1)))
+        (returnBitsConfig (b :: (xs.reverse ++ [x]))
+          (none :: tail.map some) (L + 1) n) =
+        indexSomeConfig ((x :: xs) ++ [b]) tail n
+      have hrem :
+          (b :: (xs.reverse ++ [x])).length = L + 1 := by
+        simp [L]
+      have hbits :
+          preservingUnaryReadMachine.run (L + 1)
+            (returnBitsConfig (b :: (xs.reverse ++ [x]))
+              (none :: tail.map some) (L + 1) n) =
+          returnBitsConfig []
+            ((b :: (xs.reverse ++ [x])).reverse.map some ++
+              (none :: tail.map some)) (L + 1) n := by
+        simpa [hrem] using
+          (returnBits_run
+            (b :: (xs.reverse ++ [x]))
+            (none :: tail.map some) (L + 1) n hpad)
+      rw [run_add, hbits]
       rw [run_add, returnBits_to_returnBlanks _ _ _ hpad]
+      have hsub : (L + 1) - 1 = L := by omega
+      rw [hsub]
       rw [run_add, returnBlanks_run]
       rw [returnBlanks_zero_to_indexSome]
       simp [L, indexSomeConfig, List.map_append, List.reverse_cons,
