@@ -1,0 +1,38 @@
+name: P02 G2 Kernel Search
+
+on:
+  push:
+    branches:
+      - atk/p02-g2-universal-failure-material-20261005
+    paths:
+      - 'probe/P02KernelSearchG2.lean'
+      - '.github/workflows/p02-g2-kernel-search.yml'
+  workflow_dispatch:
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+          "$HOME/.elan/bin/elan" default "$(cat lean-toolchain)"
+      - name: Build terminal
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P02TerminalForcingG2
+      - name: Ask Lean search
+        run: |
+          set +e
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake env lean probe/P02KernelSearchG2.lean 2>&1 | tee /tmp/g2-search.log
+          rc=${PIPESTATUS[0]}
+          echo "LEAN_RC=$rc"
+          grep -E "Try this|no goals|failed|tactic|UniversalFailureWitness|library_search|aesop|exact" /tmp/g2-search.log || true
+          exit 0
