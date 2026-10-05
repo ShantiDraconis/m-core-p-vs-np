@@ -12,6 +12,8 @@ import MCore.Real.P02SequentialCompositionMachine
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_blank
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_halting_left
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_halting_right
+#print axioms MCore.Real.P02SequentialCompositionMachine.sequential_step_left_active
+#print axioms MCore.Real.P02SequentialCompositionMachine.sequential_step_right
 #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_bridge_step
 EOF
 
