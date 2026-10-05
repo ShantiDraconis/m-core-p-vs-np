@@ -73,14 +73,13 @@ theorem preservingRead_nonzero_exact
   let kIter := iteratedCycleFuel [a] moved
   let kFinal := 2 * (a :: moved).length + 3
   let kRewind := 4 * (a :: moved).length + 2
-  have hfuel :
-      8 + iteratedCycleFuel [a] moved +
-          (2 * (a :: moved).length + 3) +
-          (4 * (a :: moved).length + 2) =
-        8 + (kIter + (kFinal + kRewind)) := by
-    dsimp [kIter, kFinal, kRewind]
-    omega
-  rw [hfuel]
+  change preservingUnaryReadMachine.run
+      (8 + (kIter + (kFinal + kRewind)))
+      { state := preservingUnaryReadMachine.initial
+        tape := P01WitnessIndexedRead.witnessReadTape
+          ((a :: moved) ++ b :: suffix) (moved.length + 1) } =
+    haltedConfig b ((a :: moved) ++ b :: suffix)
+      ((a :: moved).length + 2)
   calc
     preservingUnaryReadMachine.run (8 + (kIter + (kFinal + kRewind)))
         { state := preservingUnaryReadMachine.initial
