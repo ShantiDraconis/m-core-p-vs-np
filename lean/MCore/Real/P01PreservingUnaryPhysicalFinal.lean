@@ -3,6 +3,7 @@ import MCore.Real.MachineRunLemmas
 
 namespace MCore.Real.P01PreservingUnaryPhysicalFinal
 
+open CanonicalFinalProof
 open CanonicalCircuitBits
 open P01PreservingUnaryWitnessMachine
 open MachineRunLemmas
