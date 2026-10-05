@@ -8,9 +8,6 @@ open CanonicalFinalProof
 open P02EqualityBranchMaterialFrontier
 open P02EqualityMaterialAtomsMaterial
 
-abbrev CanonicalSAT : BitLanguage :=
-  SATBits circuitBitEncoding
-
 /-- Hosted and priority were testing the same mathematical obligation:
 given one concrete NP realization and its certified Cook--Levin material,
 a deterministic polynomial-time SAT decider lifts to a deterministic
@@ -19,7 +16,7 @@ def HostedCompositionFormula : Prop :=
   ∀ {L : BitLanguage}
     (R : PolyNTMRealization L)
     (C : CookLevinMaterial R),
-      InP CanonicalSAT → InP L
+      InP P02EqualityBranchMaterialFrontier.CanonicalSAT → InP L
 
 def PriorityCompositionFormula : Prop :=
   HostedCompositionFormula
@@ -50,7 +47,7 @@ def unifiedEqualityProducer
     compose := comp }
 
 theorem unified_satInP_implies_p_eq_np
-    (hSAT : InP CanonicalSAT)
+    (hSAT : InP P02EqualityBranchMaterialFrontier.CanonicalSAT)
     (cook : UniversalCookLevinMaterializer)
     (comp : DeterministicReductionComposition) :
     ∀ L : BitLanguage, InP L ↔ InNP L :=
