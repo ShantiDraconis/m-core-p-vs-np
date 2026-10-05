@@ -892,6 +892,106 @@ theorem indexSome_false_finalize
   simpa [C0, C8, pref, restoredWitness, m,
     List.map_append, List.append_assoc] using h08
 
+
+def indexSomeFuel (prefLen : Nat) : Nat → Nat
+  | 0 => 6 * prefLen + 5
+  | n + 1 => (4 * prefLen + 8) + indexSomeFuel (prefLen + 1) n
+
+theorem indexSome_forall
+    (first : Bool) (prefTail rest : BitString) (n : Nat)
+    (h : n < rest.length) :
+    preservingUnaryReadMachine.run
+      (indexSomeFuel (first :: prefTail).length n)
+      (indexSomeConfig (first :: prefTail) rest n) =
+      { state := haltState (rest.getD n false)
+        tape :=
+          { left :=
+              List.replicate ((first :: prefTail).length + n + 2) none ++
+                ((first :: prefTail) ++ rest).map some
+            head := none
+            right := [] } } := by
+  induction n generalizing prefTail rest with
+  | zero =>
+      cases rest with
+      | nil =>
+          simp at h
+      | cons selected restTail =>
+          have hf :
+              indexSomeFuel (first :: prefTail).length 0 =
+                indexSomeFinalizeFuel (first :: prefTail) := by
+            simp [indexSomeFuel, indexSomeFinalizeFuel]
+          rw [hf]
+          have hfin :=
+            indexSome_false_finalize
+              (first :: prefTail) selected restTail (by simp)
+          simpa [List.map_append, List.append_assoc] using hfin
+  | succ n ih =>
+      cases rest with
+      | nil =>
+          simp at h
+      | cons selected restTail =>
+          have htail : n < restTail.length := by
+            simpa using h
+          rw [show
+            indexSomeFuel (first :: prefTail).length (n + 1) =
+              (4 * (first :: prefTail).length + 8) +
+                indexSomeFuel
+                  (first :: (prefTail ++ [selected])).length n by
+              simp [indexSomeFuel]
+              omega]
+          rw [run_add]
+          rw [indexSome_run_advance
+            (first :: prefTail) selected restTail n (by simp)]
+          change preservingUnaryReadMachine.run
+            (indexSomeFuel
+              (first :: (prefTail ++ [selected])).length n)
+            (indexSomeConfig
+              (first :: (prefTail ++ [selected])) restTail n) = _
+          rw [ih (prefTail := prefTail ++ [selected])
+            (rest := restTail) htail]
+          simp [List.getD_cons_succ, List.map_append, List.append_assoc]
+          omega
+
+def preservingUnaryExactFuel : Nat → Nat
+  | 0 => 5
+  | n + 1 => 8 + indexSomeFuel 1 n
+
+theorem preservingUnary_run_exact
+    (witness : BitString) (i : Nat)
+    (hi : i < witness.length) :
+    preservingUnaryReadMachine.run (preservingUnaryExactFuel i)
+      { state := preservingUnaryReadMachine.initial
+        tape := witnessReadTape witness i } =
+      { state := haltState (witness.getD i false)
+        tape :=
+          { left := List.replicate (i + 2) none ++ witness.map some
+            head := none
+            right := [] } } := by
+  cases witness with
+  | nil =>
+      simp at hi
+  | cons b tail =>
+      cases i with
+      | zero =>
+          simpa [preservingUnaryExactFuel, zeroDoneTape, haltState,
+            List.replicate_succ, List.append_assoc] using
+            preservingRead_zero_run_five b tail
+      | succ n =>
+          have hn : n < tail.length := by
+            simpa using hi
+          rw [show
+            preservingUnaryExactFuel (n + 1) =
+              8 + indexSomeFuel ([b] : BitString).length n by
+                rfl]
+          rw [run_add]
+          rw [preservingRead_first_true_cycle b tail n]
+          rw [indexSome_forall b [] tail n hn]
+          simp [List.getD_cons_succ, List.map_append, List.append_assoc]
+          omega
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.indexSome_forall
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.preservingUnary_run_exact
+
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.finalSeekBits_over_bits
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.rewind_over_bits
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.rewind_empty_to_cleanup
