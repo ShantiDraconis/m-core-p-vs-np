@@ -29,66 +29,6 @@ theorem preservingUnaryReaderTimeBound_poly :
   intro n
   exact Nat.le_refl _
 
-/-- One cycle is linear in the traversed prefix. -/
-theorem successorCycleFuel_linear
-    (pref : BitString) :
-    successorCycleFuel pref = 4 * pref.length + 8 := by
-  rfl
-
-/-- A coarse quadratic envelope for the iterated exact cycle fuel. -/
-theorem iteratedCycleFuel_le_quadratic
-    (pref moved : BitString) :
-    iteratedCycleFuel pref moved ≤
-      64 * (pref.length + moved.length + 1) ^ 2 := by
-  induction moved generalizing pref with
-  | nil =>
-      simp [iteratedCycleFuel, iteratedCycleFuelLen]
-  | cons b rest ih =>
-      rw [iteratedCycleFuel_cons]
-      have hih := ih (pref := pref ++ [b])
-      have hlen :
-          (pref ++ [b]).length + rest.length + 1 =
-            pref.length + (b :: rest).length + 1 := by
-        simp
-        omega
-      rw [hlen] at hih
-      have hlin :
-          successorCycleFuel pref ≤
-            4 * (pref.length + (b :: rest).length + 1) := by
-        simp [successorCycleFuel]
-        omega
-      have hbase :
-          4 * (pref.length + (b :: rest).length + 1) ≤
-            4 * (pref.length + (b :: rest).length + 1) ^ 2 := by
-        let N := pref.length + (b :: rest).length + 1
-        have hN : 1 ≤ N := by
-          dsimp [N]
-          omega
-        have hmul :
-            N ≤ N * N := by
-          calc
-            N = N * 1 := by simp
-            _ ≤ N * N := Nat.mul_le_mul_left N hN
-        simpa [N, Nat.pow_two] using Nat.mul_le_mul_left 4 hmul
-      have hrest :
-          iteratedCycleFuel (pref ++ [b]) rest ≤
-            64 * (pref.length + (b :: rest).length + 1) ^ 2 := hih
-      have hlin64 :
-          successorCycleFuel pref ≤
-            64 * (pref.length + (b :: rest).length + 1) ^ 2 := by
-        exact Nat.le_trans hlin
-          (Nat.le_trans hbase
-            (Nat.mul_le_mul_right
-              ((pref.length + (b :: rest).length + 1) ^ 2) (by omega)))
-      have hsum :
-          successorCycleFuel pref +
-              iteratedCycleFuel (pref ++ [b]) rest ≤
-            128 * (pref.length + (b :: rest).length + 1) ^ 2 := by
-        omega
-      exact Nat.le_trans hsum
-        (Nat.mul_le_mul_right
-          ((pref.length + (b :: rest).length + 1) ^ 2) (by omega))
-
 /-- The exact nonzero reader fuel is dominated by the cubic certificate
 envelope at the canonical input size. -/
 theorem nonzeroReaderFuel_le_timeBound
@@ -181,7 +121,6 @@ theorem zeroFuel_le_timeBound
       Nat.mul_le_mul_left 64 hp
 
 #print axioms MCore.Real.P01PreservingUnaryReaderBound.preservingUnaryReaderTimeBound_poly
-#print axioms MCore.Real.P01PreservingUnaryReaderBound.iteratedCycleFuel_le_quadratic
 #print axioms MCore.Real.P01PreservingUnaryReaderBound.nonzeroReaderFuel_le_timeBound
 
 end P01PreservingUnaryReaderBound
