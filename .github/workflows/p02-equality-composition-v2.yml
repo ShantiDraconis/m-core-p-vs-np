@@ -1,0 +1,36 @@
+name: P02 Equality Composition V2
+
+on:
+  push:
+    branches:
+      - atk/p02-equality-recover-green-20261005
+    paths:
+      - 'lean/MCore/Real/P02SequentialCompositionV2.lean'
+      - '.github/workflows/p02-equality-composition-v2.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Build V2 composition
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02SequentialCompositionV2
+      - name: Audit V2 axioms
+        run: |
+          set -euo pipefail
+          cat > P02SequentialCompositionV2Audit.lean <<'EOF'
+          import MCore.Real.P02SequentialCompositionV2
+          #print axioms MCore.Real.P02SequentialCompositionV2.halting_left
+          #print axioms MCore.Real.P02SequentialCompositionV2.halting_right
+          #print axioms MCore.Real.P02SequentialCompositionV2.step_left_active
+          #print axioms MCore.Real.P02SequentialCompositionV2.bridge_step
+          EOF
+          lake env lean P02SequentialCompositionV2Audit.lean 2>&1 | tee /tmp/p02-v2.log
+          if grep -E 'sorryAx' /tmp/p02-v2.log; then exit 1; fi
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02SequentialCompositionV2.lean; then exit 1; fi
+          echo P02_EQUALITY_COMPOSITION_V2_GREEN
