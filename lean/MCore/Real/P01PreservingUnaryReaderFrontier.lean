@@ -48,8 +48,26 @@ theorem successorCycleSteps_bound
     cases pref with
     | nil => contradiction
     | cons _ xs => simp
+  let m := pref.length + n + suffix.length + 1
+  have hpm : pref.length ≤ m := by
+    dsimp [m]
+    omega
+  have hm2 : 2 ≤ m := by
+    dsimp [m]
+    omega
+  have h4pm : 4 * pref.length ≤ 4 * m :=
+    Nat.mul_le_mul_left 4 hpm
+  have hquad : 4 * m ≤ m ^ 2 + 8 := by
+    by_cases h4 : 4 ≤ m
+    · have hmul : 4 * m ≤ m * m :=
+        Nat.mul_le_mul_right m h4
+      simpa [Nat.pow_two] using
+        Nat.le_trans hmul (Nat.le_add_right (m * m) 8)
+    · have hm_cases : m = 2 ∨ m = 3 := by omega
+      rcases hm_cases with rfl | rfl <;> decide
   unfold successorCycleSteps
-  nlinarith
+  dsimp [m] at h4pm hquad ⊢
+  omega
 
 /-- Physical equality still to be proved against the real transition graph.
 Keeping it separate prevents the polynomial side condition from obscuring the
