@@ -72,8 +72,8 @@ theorem seekBlanks_run_to_first_bit
         simpa [Nat.succ_eq_add_one] using
           seekBlanks_step_succ pad (c :: cs) suffix right
       rw [h1]
-      simpa [List.replicate_succ, List.append_assoc] using
-        (ih (right := none :: right))
+      have hih := ih (right := none :: right)
+      simpa [List.replicate_succ, List.append_assoc, Nat.succ_eq_add_one] using hih
 
 /-- Configuration while seekBits crosses the Boolean prefix toward the unique
 witness marker. -/
@@ -123,7 +123,8 @@ theorem seekBits_run
       simp only [TM.run, seekBitsConfig_state, preserving_not_halt_seekBits,
         Bool.false_eq_true, if_false]
       rw [seekBits_step_cons]
-      rw [ih]
+      have hih := ih (right := some c :: right)
+      rw [hih]
       simp [List.reverse_cons, List.map_append, List.append_assoc]
 
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBlanks_run_to_first_bit
