@@ -950,7 +950,6 @@ theorem indexSome_forall
           rw [ih (prefTail := prefTail ++ [selected])
             (rest := restTail) htail]
           simp [List.getD_cons_succ, List.map_append, List.append_assoc]
-          omega
 
 def preservingUnaryExactFuel : Nat → Nat
   | 0 => 5
@@ -973,9 +972,15 @@ theorem preservingUnary_run_exact
   | cons b tail =>
       cases i with
       | zero =>
-          simpa [preservingUnaryExactFuel, zeroDoneTape, haltState,
-            List.replicate_succ, List.append_assoc] using
-            preservingRead_zero_run_five b tail
+          cases b with
+          | false =>
+              simpa [preservingUnaryExactFuel, zeroDoneTape, haltState,
+                List.replicate_succ, List.append_assoc] using
+                preservingRead_zero_run_five false tail
+          | true =>
+              simpa [preservingUnaryExactFuel, zeroDoneTape, haltState,
+                List.replicate_succ, List.append_assoc] using
+                preservingRead_zero_run_five true tail
       | succ n =>
           have hn : n < tail.length := by
             simpa using hi
