@@ -589,6 +589,27 @@ theorem returnPhase_run
       simp [indexSomeConfig, encodeNat, pref, hp, List.replicate_succ,
         List.append_assoc, replicate_none_push]
 
+def successorCycleFuel (pref : BitString) : Nat :=
+  4 * pref.length + 8
+
+/-- Exact universal physical successor cycle on every reachable nonempty
+prefix.  No endpoint axiom is used: the theorem is the composition of the
+material forward and return phases. -/
+theorem preservingRead_indexSome_one_cycle
+    (a b : Bool) (rest suffix : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run (successorCycleFuel (a :: rest))
+      (indexSomeConfig (a :: rest) (b :: suffix) (n + 1)) =
+    indexSomeConfig ((a :: rest) ++ [b]) suffix n := by
+  rw [show successorCycleFuel (a :: rest) =
+    forwardPhaseFuel (a :: rest) + returnPhaseFuel (a :: rest) by
+      simp [successorCycleFuel, forwardPhaseFuel, returnPhaseFuel]
+      omega]
+  rw [run_add]
+  rw [forwardPhase_run]
+  exact returnPhase_run a b rest suffix n
+
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.preservingRead_indexSome_one_cycle
+
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnPhase_run
 
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBits_run
