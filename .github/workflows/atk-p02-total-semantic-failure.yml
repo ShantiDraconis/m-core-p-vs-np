@@ -25,6 +25,7 @@ jobs:
           lake build MCore.Real.P02SemanticInvariantCore
           lake build MCore.Real.P02SemanticNegationReduction
           lake build MCore.Real.P02SemanticNegationCounterexample
+          lake build MCore.Real.P02ExactnessKernelFinalRefutation
       - name: Axiom and placeholder audit
         run: |
           set -euo pipefail
@@ -33,6 +34,7 @@ jobs:
           import MCore.Real.P02SemanticInvariantCore
           import MCore.Real.P02SemanticNegationReduction
           import MCore.Real.P02SemanticNegationCounterexample
+          import MCore.Real.P02ExactnessKernelFinalRefutation
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.TotalSemanticFailureProducer.toFailureGenerator
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_implies_universalFailure
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_closes_internal_endpoint
@@ -47,6 +49,12 @@ jobs:
           #print axioms MCore.Real.P02SemanticNegationCounterexample.secondBitCandidate_total
           #print axioms MCore.Real.P02SemanticNegationCounterexample.secondBit_semanticNegation_flips
           #print axioms MCore.Real.P02SemanticNegationCounterexample.semanticNegationInvariant_open_math_refuted
+          #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.semantic_negation_invariant_refuted
+          #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.mincut_exact_form
+          #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.realization_refutes_universalFailure
+          #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.realization_refutes_totalSemanticFailure
+          #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.G2_exactness_closed_by_refutation
+          #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.refutationWitness_iff_sat_in_p
           EOF
           lake env lean P02TotalCandidateFailureMinCutAudit.lean 2>&1 | tee /tmp/p02-total-semantic-axioms.log
           if grep -E 'sorryAx' /tmp/p02-total-semantic-axioms.log; then exit 1; fi
