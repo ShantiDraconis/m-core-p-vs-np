@@ -64,7 +64,9 @@ theorem successorCycleSteps_bound
       simpa [Nat.pow_two] using
         Nat.le_trans hmul (Nat.le_add_right (m * m) 8)
     · have hm_cases : m = 2 ∨ m = 3 := by omega
-      rcases hm_cases with rfl | rfl <;> decide
+      rcases hm_cases with hm | hm
+      · simp [hm]
+      · simp [hm]
   unfold successorCycleSteps
   dsimp [m] at h4pm hquad ⊢
   omega
