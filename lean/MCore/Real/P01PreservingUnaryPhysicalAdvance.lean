@@ -201,6 +201,96 @@ theorem seekBits_marker_to_shiftRead
   simp [seekBitsConfig, shiftReadConfig, preservingUnaryReadMachine,
     TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
 
+
+/-- Configuration immediately after shiftRead has erased the selected witness
+cell and moved right onto the marker blank. -/
+def carryConfig
+    (selected : Bool)
+    (passedRev : BitString) (blankPad : Nat)
+    (tail : BitString) (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := if selected then .carryTrue else .carryFalse
+    tape :=
+      { left := none :: tail.map some
+        head := none
+        right := passedRev.map some ++
+          List.replicate blankPad none ++ (encodeNat n).map some } }
+
+/-- shiftRead performs the physical erase-and-carry step. -/
+theorem shiftRead_to_carry
+    (passedRev : BitString) (blankPad : Nat)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 1
+      (shiftReadConfig passedRev blankPad b tail n) =
+      carryConfig b passedRev blankPad tail n := by
+  cases b <;>
+    simp [shiftReadConfig, carryConfig, preservingUnaryReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
+
+/-- After carrying the selected bit back onto the marker cell, control enters
+returnFromMarker and moves left to the new marker blank. -/
+def returnFromMarkerConfig
+    (selected : Bool)
+    (passedRev : BitString) (blankPad : Nat)
+    (tail : BitString) (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .returnFromMarker
+    tape :=
+      { left := tail.map some
+        head := none
+        right := some selected :: passedRev.map some ++
+          List.replicate blankPad none ++ (encodeNat n).map some } }
+
+theorem carry_to_returnFromMarker
+    (selected : Bool)
+    (passedRev : BitString) (blankPad : Nat)
+    (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 1
+      (carryConfig selected passedRev blankPad tail n) =
+      returnFromMarkerConfig selected passedRev blankPad tail n := by
+  cases selected <;>
+    simp [carryConfig, returnFromMarkerConfig, preservingUnaryReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
+
+/-- returnFromMarker crosses the marker blank and enters returnBits. -/
+def returnBitsConfig
+    (remaining : BitString)
+    (selected : Bool)
+    (blankPad : Nat)
+    (tail : BitString) (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  match remaining with
+  | [] =>
+      { state := .returnBits
+        tape :=
+          { left := tail.map some
+            head := none
+            right := some selected ::
+              List.replicate blankPad none ++ (encodeNat n).map some } }
+  | x :: xs =>
+      { state := .returnBits
+        tape :=
+          { left := tail.map some
+            head := some x
+            right := xs.map some ++ some selected ::
+              List.replicate blankPad none ++ (encodeNat n).map some } }
+
+theorem returnFromMarker_to_returnBits
+    (selected : Bool)
+    (passedRev : BitString) (blankPad : Nat)
+    (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 1
+      (returnFromMarkerConfig selected passedRev blankPad tail n) =
+      returnBitsConfig passedRev selected blankPad tail n := by
+  cases passedRev <;>
+    simp [returnFromMarkerConfig, returnBitsConfig,
+      preservingUnaryReadMachine, TM.run, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.shiftRead_to_carry
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.carry_to_returnFromMarker
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnFromMarker_to_returnBits
+
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_step_cons
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_run
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_marker_to_shiftRead
