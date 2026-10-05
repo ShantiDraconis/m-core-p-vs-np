@@ -493,6 +493,383 @@ theorem indexSome_run_advance
       simpa [indexSomeConfig_eq_bits, encodeNat] using
         indexSome_cycle_bits first b true prefTail suffix (encodeNat n)
 
+
+def finalSeekBitsTape := seekBitsTape
+
+theorem finalSeekBlanks_over_blanks
+    (k : Nat) (b : Bool)
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.run (k + 1)
+      { state := .finalSeekBlanks
+        tape :=
+          { left := List.replicate k none ++ (some b :: left)
+            head := none
+            right := right } } =
+      { state := .finalSeekBlanks
+        tape :=
+          { left := left
+            head := some b
+            right := List.replicate (k + 1) none ++ right } } := by
+  induction k generalizing right with
+  | zero =>
+      simp [preservingUnaryReadMachine, TM.run, TM.step,
+        Tape.write, Tape.move]
+  | succ k ih =>
+      rw [show Nat.succ k + 1 = (k + 1) + 1 by omega]
+      rw [TM.run]
+      simp only [show preservingUnaryReadMachine.halting (.finalSeekBlanks) = false by rfl,
+        Bool.false_eq_true, if_false]
+      change preservingUnaryReadMachine.run (k + 1)
+        { state := .finalSeekBlanks
+          tape :=
+            { left := List.replicate k none ++ (some b :: left)
+              head := none
+              right := none :: right } } =
+        { state := .finalSeekBlanks
+          tape :=
+            { left := left
+              head := some b
+              right := List.replicate (Nat.succ k + 1) none ++ right } }
+      rw [ih (none :: right)]
+      apply congrArg
+        (fun r : List (Option Bool) =>
+          ({ state := .finalSeekBlanks
+             tape := { left := left, head := some b, right := r } } :
+            Configuration PreservingReadState (Option Bool)))
+      simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
+        replicate_none_extend k right
+
+theorem finalSeekBlanks_step_bit
+    (first b : Bool) (bits : BitString)
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      { state := .finalSeekBlanks
+        tape :=
+          { left := bits.map some ++ (none :: some b :: left)
+            head := some first
+            right := right } } =
+      { state := .finalSeekBits
+        tape := finalSeekBitsTape bits b left (some first :: right) } := by
+  cases bits <;>
+    simp [finalSeekBitsTape, seekBitsTape, preservingUnaryReadMachine,
+      TM.step, Tape.write, Tape.move]
+
+theorem finalSeekBits_step_cons
+    (x b : Bool) (xs : BitString)
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      { state := .finalSeekBits
+        tape := finalSeekBitsTape (x :: xs) b left right } =
+      { state := .finalSeekBits
+        tape := finalSeekBitsTape xs b left (some x :: right) } := by
+  cases xs <;>
+    simp [finalSeekBitsTape, seekBitsTape, preservingUnaryReadMachine,
+      TM.step, Tape.write, Tape.move]
+
+theorem finalSeekBits_over_bits
+    (bits : BitString) (b : Bool)
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.run (bits.length + 1)
+      { state := .finalSeekBits
+        tape := finalSeekBitsTape bits b left right } =
+      { state := .finalRead
+        tape :=
+          { left := left
+            head := some b
+            right := none :: (bits.reverse.map some ++ right) } } := by
+  induction bits generalizing right with
+  | nil =>
+      simp [finalSeekBitsTape, seekBitsTape, preservingUnaryReadMachine,
+        TM.run, TM.step, Tape.write, Tape.move]
+  | cons x xs ih =>
+      rw [show (x :: xs).length + 1 = (xs.length + 1) + 1 by simp]
+      rw [TM.run]
+      simp only [show preservingUnaryReadMachine.halting (.finalSeekBits) = false by rfl,
+        Bool.false_eq_true, if_false]
+      rw [finalSeekBits_step_cons]
+      rw [ih (some x :: right)]
+      apply congrArg
+        (fun r : List (Option Bool) =>
+          ({ state := .finalRead
+             tape := { left := left, head := some b, right := r } } :
+            Configuration PreservingReadState (Option Bool)))
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+def rewindInspectState : Bool → PreservingReadState
+  | false => .rewindInspectFalse
+  | true => .rewindInspectTrue
+
+def cleanupState : Bool → PreservingReadState
+  | false => .cleanupFalse
+  | true => .cleanupTrue
+
+def haltState : Bool → PreservingReadState
+  | false => .haltFalse
+  | true => .haltTrue
+
+def rewindConfig
+    (result : Bool) (left : List (Option Bool))
+    (bits : BitString) (after : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := rewindInspectState result
+    tape := rightStreamTape (none :: left) (bits.map some ++ after) }
+
+theorem finalRead_to_rewind
+    (result : Bool) (left : List (Option Bool))
+    (bits : BitString) (after : List (Option Bool)) :
+    preservingUnaryReadMachine.run 2
+      { state := .finalRead
+        tape :=
+          { left := left
+            head := some result
+            right := none :: (bits.map some ++ after) } } =
+      rewindConfig result (some result :: left) bits after := by
+  cases result <;> cases bits <;>
+    simp [rewindConfig, rewindInspectState, rightStreamTape,
+      preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
+theorem rewind_step_cons
+    (result x : Bool) (xs : BitString)
+    (left : List (Option Bool)) (after : List (Option Bool)) :
+    preservingUnaryReadMachine.run 3
+      (rewindConfig result left (x :: xs) after) =
+      rewindConfig result (some x :: left) xs after := by
+  cases result <;> cases x <;> cases xs <;> cases after <;>
+    simp [rewindConfig, rewindInspectState, rightStreamTape,
+      preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move,
+      List.append_assoc]
+
+theorem rewind_over_bits
+    (result : Bool) (bits : BitString)
+    (left : List (Option Bool)) (after : List (Option Bool)) :
+    preservingUnaryReadMachine.run (3 * bits.length)
+      (rewindConfig result left bits after) =
+      rewindConfig result (bits.reverse.map some ++ left) [] after := by
+  induction bits generalizing left with
+  | nil =>
+      rfl
+  | cons x xs ih =>
+      rw [show 3 * (x :: xs).length = 3 + 3 * xs.length by
+        simp
+        omega]
+      rw [run_add]
+      rw [rewind_step_cons]
+      rw [ih (some x :: left)]
+      apply congrArg
+        (fun l : List (Option Bool) =>
+          rewindConfig result l [] after)
+      simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+theorem cleanup_run_halts
+    (result : Bool) (k : Nat)
+    (left : List (Option Bool)) :
+    preservingUnaryReadMachine.run (k + 1)
+      { state := cleanupState result
+        tape := rightStreamTape left
+          (List.replicate k none ++ [some false]) } =
+      { state := haltState result
+        tape :=
+          { left := List.replicate (k + 1) none ++ left
+            head := none
+            right := [] } } := by
+  induction k generalizing left with
+  | zero =>
+      cases result <;>
+        simp [cleanupState, haltState, rightStreamTape,
+          preservingUnaryReadMachine, TM.run, TM.step,
+          Tape.write, Tape.move]
+  | succ k ih =>
+      rw [show Nat.succ k + 1 = 1 + (k + 1) by omega]
+      rw [run_add]
+      have hstep :
+          preservingUnaryReadMachine.run 1
+            { state := cleanupState result
+              tape := rightStreamTape left
+                (List.replicate (Nat.succ k) none ++ [some false]) } =
+            { state := cleanupState result
+              tape := rightStreamTape (none :: left)
+                (List.replicate k none ++ [some false]) } := by
+        cases result <;>
+          simp [cleanupState, rightStreamTape, preservingUnaryReadMachine,
+            TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
+            List.append_assoc]
+      rw [hstep]
+      rw [ih (none :: left)]
+      apply congrArg
+        (fun l : List (Option Bool) =>
+          ({ state := haltState result
+             tape := { left := l, head := none, right := [] } } :
+            Configuration PreservingReadState (Option Bool)))
+      simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
+        replicate_none_extend k left
+
+def indexSomeFinalizeFuel (pref : BitString) : Nat :=
+  6 * pref.length + 5
+
+theorem indexSome_false_finalize
+    (pref : BitString) (selected : Bool) (rest : BitString)
+    (hpref : pref ≠ []) :
+    preservingUnaryReadMachine.run (indexSomeFinalizeFuel pref)
+      (indexSomeConfig pref (selected :: rest) 0) =
+      { state := haltState selected
+        tape :=
+          { left :=
+              List.replicate (pref.length + 2) none ++
+                pref.map some ++ some selected :: rest.map some
+            head := none
+            right := [] } } := by
+  rcases pref with _ | ⟨first, prefTail⟩
+  · contradiction
+  let m : Nat := prefTail.length
+  let pref : BitString := first :: prefTail
+  let witnessSuffix : List (Option Bool) := rest.map some
+  let after : List (Option Bool) :=
+    List.replicate (m + 1) none ++ [some false]
+  let restoredWitness : List (Option Bool) :=
+    pref.map some ++ (some selected :: witnessSuffix)
+
+  let C0 : Configuration PreservingReadState (Option Bool) :=
+    indexSomeConfig pref (selected :: rest) 0
+  let C1 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalSeekBlanks
+      tape :=
+        { left :=
+            List.replicate m none ++
+              (some first ::
+                (prefTail.map some ++
+                  (none :: some selected :: witnessSuffix)))
+          head := none
+          right := [some false] } }
+  let C2 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalSeekBlanks
+      tape :=
+        { left :=
+            prefTail.map some ++ (none :: some selected :: witnessSuffix)
+          head := some first
+          right := List.replicate (m + 1) none ++ [some false] } }
+  let C3 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalSeekBits
+      tape := finalSeekBitsTape prefTail selected witnessSuffix
+        (some first :: (List.replicate (m + 1) none ++ [some false])) }
+  let C4 : Configuration PreservingReadState (Option Bool) :=
+    { state := .finalRead
+      tape :=
+        { left := witnessSuffix
+          head := some selected
+          right := none :: (pref.reverse.map some ++ after) } }
+  let C5 : Configuration PreservingReadState (Option Bool) :=
+    rewindConfig selected (some selected :: witnessSuffix) pref.reverse after
+  let C6 : Configuration PreservingReadState (Option Bool) :=
+    rewindConfig selected restoredWitness [] after
+  let C7 : Configuration PreservingReadState (Option Bool) :=
+    { state := cleanupState selected
+      tape := rightStreamTape (none :: none :: restoredWitness)
+        (List.replicate m none ++ [some false]) }
+  let C8 : Configuration PreservingReadState (Option Bool) :=
+    { state := haltState selected
+      tape :=
+        { left := List.replicate (m + 3) none ++ restoredWitness
+          head := none
+          right := [] } }
+
+  have h01 : preservingUnaryReadMachine.run 1 C0 = C1 := by
+    dsimp [C0, C1, pref, m, witnessSuffix]
+    simp [indexSomeConfig, encodeNat, preservingUnaryReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
+  have h12 : preservingUnaryReadMachine.run (m + 1) C1 = C2 := by
+    dsimp [C1, C2]
+    simpa using
+      finalSeekBlanks_over_blanks m first
+        (prefTail.map some ++ (none :: some selected :: witnessSuffix))
+        [some false]
+
+  have h23 : preservingUnaryReadMachine.run 1 C2 = C3 := by
+    dsimp [C2, C3]
+    simpa [TM.run] using
+      finalSeekBlanks_step_bit first selected prefTail witnessSuffix
+        (List.replicate (m + 1) none ++ [some false])
+
+  have h34 : preservingUnaryReadMachine.run (m + 1) C3 = C4 := by
+    dsimp [C3, C4, pref, after, m]
+    simpa [pref, List.reverse_cons, List.map_append,
+      List.append_assoc] using
+      finalSeekBits_over_bits prefTail selected witnessSuffix
+        (some first ::
+          (List.replicate (prefTail.length + 1) none ++ [some false]))
+
+  have h45 : preservingUnaryReadMachine.run 2 C4 = C5 := by
+    dsimp [C4, C5, pref, after]
+    simpa [pref, List.reverse_cons, List.map_append,
+      List.append_assoc] using
+      finalRead_to_rewind selected witnessSuffix pref.reverse after
+
+  have h56 :
+      preservingUnaryReadMachine.run (3 * pref.length) C5 = C6 := by
+    dsimp [C5, C6, restoredWitness]
+    simpa [pref, List.reverse_reverse, List.map_append,
+      List.append_assoc] using
+      rewind_over_bits selected pref.reverse
+        (some selected :: witnessSuffix) after
+
+  have h67 : preservingUnaryReadMachine.run 1 C6 = C7 := by
+    dsimp [C6, C7, rewindConfig, rewindInspectState, cleanupState,
+      restoredWitness, after, pref, m]
+    cases selected <;>
+      simp [rightStreamTape, preservingUnaryReadMachine,
+        TM.run, TM.step, Tape.write, Tape.move,
+        List.replicate_succ, List.append_assoc]
+
+  have h78 : preservingUnaryReadMachine.run (m + 1) C7 = C8 := by
+    dsimp [C7, C8]
+    simpa using
+      cleanup_run_halts selected m (none :: none :: restoredWitness)
+
+  have h02 :
+      preservingUnaryReadMachine.run (1 + (m + 1)) C0 = C2 := by
+    rw [run_add, h01, h12]
+  have h03 :
+      preservingUnaryReadMachine.run ((1 + (m + 1)) + 1) C0 = C3 := by
+    rw [run_add, h02, h23]
+  have h04 :
+      preservingUnaryReadMachine.run (((1 + (m + 1)) + 1) + (m + 1)) C0 = C4 := by
+    rw [run_add, h03, h34]
+  have h05 :
+      preservingUnaryReadMachine.run
+        ((((1 + (m + 1)) + 1) + (m + 1)) + 2) C0 = C5 := by
+    rw [run_add, h04, h45]
+  have h06 :
+      preservingUnaryReadMachine.run
+        (((((1 + (m + 1)) + 1) + (m + 1)) + 2) +
+          (3 * pref.length)) C0 = C6 := by
+    rw [run_add, h05, h56]
+  have h07 :
+      preservingUnaryReadMachine.run
+        ((((((1 + (m + 1)) + 1) + (m + 1)) + 2) +
+          (3 * pref.length)) + 1) C0 = C7 := by
+    rw [run_add, h06, h67]
+  have h08 :
+      preservingUnaryReadMachine.run
+        (((((((1 + (m + 1)) + 1) + (m + 1)) + 2) +
+          (3 * pref.length)) + 1) + (m + 1)) C0 = C8 := by
+    rw [run_add, h07, h78]
+
+  have hFuel :
+      indexSomeFinalizeFuel pref =
+        (((((((1 + (m + 1)) + 1) + (m + 1)) + 2) +
+          (3 * pref.length)) + 1) + (m + 1)) := by
+    dsimp [indexSomeFinalizeFuel, pref, m]
+    omega
+  rw [hFuel]
+  simpa [C0, C8, pref, restoredWitness, m,
+    List.map_append, List.append_assoc] using h08
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.finalSeekBits_over_bits
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.rewind_over_bits
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.cleanup_run_halts
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.indexSome_false_finalize
+
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.indexSome_run_advance
 
 end P01PreservingUnaryPhysicalRuns
