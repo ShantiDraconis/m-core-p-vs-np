@@ -1,0 +1,53 @@
+name: P02 G2 Terminal Forcing
+
+on:
+  push:
+    branches:
+      - atk/p02-g2-universal-failure-material-20261005
+    paths:
+      - 'lean/MCore/Real/P02TerminalForcingG2.lean'
+      - '.github/workflows/p02-g2-terminal-forcing.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+          "$HOME/.elan/bin/elan" default "$(cat lean-toolchain)"
+      - name: Build terminal G2 forcing
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P02TerminalForcingG2
+      - name: Audit terminal G2 forcing
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > P02TerminalForcingG2Audit.lean <<'EOF'
+          import MCore.Real.P02TerminalForcingG2
+          #print axioms MCore.Real.P02TerminalForcingG2.failureLaw_iff_correctAt
+          #print axioms MCore.Real.P02TerminalForcingG2.universalFailureWitnessOf
+          #print axioms MCore.Real.P02TerminalForcingG2.g2_terminal_iff_witness
+          #print axioms MCore.Real.P02TerminalForcingG2.g2_terminal_implies_p_ne_np
+          EOF
+          lake env lean P02TerminalForcingG2Audit.lean 2>&1 | tee /tmp/p02-g2-terminal.log
+          if grep -E 'sorryAx' /tmp/p02-g2-terminal.log; then
+            echo 'AUDIT_FAIL G2 terminal sorryAx'
+            exit 1
+          fi
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02TerminalForcingG2.lean; then
+            echo 'AUDIT_FAIL G2 source hygiene'
+            exit 1
+          fi
+          echo P02_G2_TERMINAL_EXPOSED_GREEN
