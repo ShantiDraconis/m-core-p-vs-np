@@ -1,0 +1,36 @@
+name: Minimal Separation Search
+
+on:
+  push:
+    branches:
+      - work/pnp-minimal-separation-20261005
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Resolve
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
+      - name: Probe fixed SAT min-cut
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.MinimalSeparationSearch
+      - name: Hygiene
+        if: always()
+        run: |
+          set -euo pipefail
+          if grep -nE '^[[:space:]]*(sorry|admit|axiom)[[:space:]]' lean/MCore/MinimalSeparationSearch.lean; then exit 1; fi
+          echo MINIMAL_SEPARATION_HYGIENE_GREEN
