@@ -545,7 +545,7 @@ theorem finalSeekBlanks_zero_step_to_bits
     (selected : Bool) (tail : BitString) :
     preservingUnaryReadMachine.run 1
       (finalSeekBlanksConfig 0 passed (x :: xs) selected tail) =
-      finalSeekBitsEntryConfig x xs (passed + 1) selected tail := by
+      finalSeekBitsEntryConfig x xs passed selected tail := by
   simp [finalSeekBlanksConfig, finalSeekBitsEntryConfig,
     preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move,
     List.replicate_succ, List.append_assoc, Nat.add_assoc]
@@ -582,7 +582,7 @@ theorem finalSeekBits_entry_step
     (selected : Bool) (tail : BitString) :
     preservingUnaryReadMachine.run 1
       (finalSeekBitsEntryConfig x xs passed selected tail) =
-      finalSeekBitsConfig xs [x] passed selected tail := by
+      finalSeekBitsConfig xs [x] (passed + 1) selected tail := by
   cases xs <;>
     simp [finalSeekBitsEntryConfig, finalSeekBitsConfig,
       preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move,
