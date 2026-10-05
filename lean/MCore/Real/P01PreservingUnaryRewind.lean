@@ -9,137 +9,222 @@ open P01PreservingUnaryWitnessMachine
 open P01PreservingUnaryFinalRead
 open MachineRunLemmas
 
-/-- Canonical rewind state.  The selected bit is stored in control; the
-remaining traversed prefix is physically on Tape.right in reverse order. -/
-def rewindConfig
-    (selected : Bool) (remaining suffix : BitString)
-    (blanks : Nat) :
+/-- Active rewind state.  remaining is in the physical order encountered by
+the head; restored is already reconstructed in logical witness order. -/
+def rewindActiveConfig
+    (selected x : Bool) (xs restored : BitString) (blanks : Nat) :
     Configuration PreservingReadState (Option Bool) :=
-  match remaining with
-  | [] =>
-      { state := if selected then .rewindInspectTrue else .rewindInspectFalse
-        tape :=
-          { left := suffix.map some
-            head := none
-            right := List.replicate blanks none ++ [some false] } }
-  | x :: xs =>
-      { state := if selected then .rewindInspectTrue else .rewindInspectFalse
-        tape :=
-          { left := none :: suffix.map some
-            head := some x
-            right := xs.map some ++ List.replicate blanks none ++ [some false] } }
+  { state := if selected then .rewindInspectTrue else .rewindInspectFalse
+    tape :=
+      { left := none :: restored.map some
+        head := some x
+        right := xs.map some ++ List.replicate blanks none ++ [some false] } }
 
-@[simp] theorem rewindConfig_state_false
-    (remaining suffix : BitString) (blanks : Nat) :
-    (rewindConfig false remaining suffix blanks).state = .rewindInspectFalse := by
-  cases remaining <;> rfl
+/-- State after the last traversed witness bit has been restored.  The head is
+on the first erased unary blank; blankTail counts the blanks still to its
+right before the false terminator. -/
+def rewindDoneConfig
+    (selected : Bool) (witness : BitString) (blankTail : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := if selected then .rewindInspectTrue else .rewindInspectFalse
+    tape :=
+      { left := none :: witness.map some
+        head := none
+        right := List.replicate blankTail none ++ [some false] } }
 
-@[simp] theorem rewindConfig_state_true
-    (remaining suffix : BitString) (blanks : Nat) :
-    (rewindConfig true remaining suffix blanks).state = .rewindInspectTrue := by
-  cases remaining <;> rfl
+@[simp] theorem rewindActive_state_false
+    (x : Bool) (xs restored : BitString) (blanks : Nat) :
+    (rewindActiveConfig false x xs restored blanks).state = .rewindInspectFalse := rfl
 
-/-- Enter the rewind scanner from the selected-bit state. -/
-theorem selected_to_rewind
-    (pref : BitString) (b : Bool) (suffix : BitString) :
-    preservingUnaryReadMachine.run 1 (selectedConfig pref b suffix) =
-      rewindConfig b pref.reverse suffix pref.length := by
-  cases b <;> cases pref <;>
-    simp [selectedConfig, rewindConfig, preservingUnaryReadMachine,
-      TM.run, TM.step, Tape.write, Tape.move,
-      List.replicate_succ, List.append_assoc]
+@[simp] theorem rewindActive_state_true
+    (x : Bool) (xs restored : BitString) (blanks : Nat) :
+    (rewindActiveConfig true x xs restored blanks).state = .rewindInspectTrue := rfl
 
-/-- One physical rewind cell restores the bit currently under the head and
-moves the marker one cell right. -/
-theorem rewind_one_cell
-    (selected x : Bool) (xs suffix : BitString) (blanks : Nat) :
+/-- One selected-state step enters the active rewind scanner. -/
+theorem selected_to_rewind_active
+    (pref : BitString) (b : Bool) (suffix : BitString)
+    (hp : pref ≠ []) :
+    ∃ x xs,
+      pref.reverse = x :: xs ∧
+      preservingUnaryReadMachine.run 1 (selectedConfig pref b suffix) =
+        rewindActiveConfig b x xs (b :: suffix) pref.length := by
+  have hrev : pref.reverse ≠ [] := by
+    simpa using hp
+  cases h : pref.reverse with
+  | nil =>
+      exact False.elim (hrev h)
+  | cons x xs =>
+      refine ⟨x, xs, h, ?_⟩
+      cases b <;>
+        simp [selectedConfig, rewindActiveConfig, h,
+          preservingUnaryReadMachine, TM.run, TM.step,
+          Tape.write, Tape.move, List.append_assoc]
+
+/-- One nonterminal rewind cell. -/
+theorem rewind_one_cell_more
+    (selected x y : Bool) (ys restored : BitString) (blanks : Nat) :
     preservingUnaryReadMachine.run 3
-      (rewindConfig selected (x :: xs) suffix blanks) =
-      rewindConfig selected xs (x :: suffix) blanks := by
-  cases selected <;> cases x <;> cases xs <;>
-    simp [rewindConfig, preservingUnaryReadMachine,
+      (rewindActiveConfig selected x (y :: ys) restored blanks) =
+      rewindActiveConfig selected y ys (x :: restored) blanks := by
+  cases selected <;> cases x <;> cases y <;>
+    simp [rewindActiveConfig, preservingUnaryReadMachine,
       TM.run, TM.step, Tape.write, Tape.move,
       List.append_assoc]
 
-/-- Rewind every traversed bit. -/
-theorem rewind_all
-    (selected : Bool) (remaining suffix : BitString) (blanks : Nat) :
-    preservingUnaryReadMachine.run (3 * remaining.length)
-      (rewindConfig selected remaining suffix blanks) =
-      rewindConfig selected [] (remaining.reverse ++ suffix) blanks := by
-  induction remaining generalizing suffix with
-  | nil => rfl
-  | cons x xs ih =>
+/-- Last rewind cell.  At least one erased unary blank exists for every
+reachable nonzero index. -/
+theorem rewind_one_cell_last
+    (selected x : Bool) (restored : BitString) (blankTail : Nat) :
+    preservingUnaryReadMachine.run 3
+      (rewindActiveConfig selected x [] restored (blankTail + 1)) =
+      rewindDoneConfig selected (x :: restored) blankTail := by
+  cases selected <;> cases x <;>
+    simp [rewindActiveConfig, rewindDoneConfig, preservingUnaryReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
+/-- Rewind an arbitrary nonempty physical prefix. -/
+theorem rewind_all_active
+    (selected x : Bool) (xs restored : BitString) (blankTail : Nat) :
+    preservingUnaryReadMachine.run (3 * (x :: xs).length)
+      (rewindActiveConfig selected x xs restored (blankTail + 1)) =
+      rewindDoneConfig selected ((x :: xs).reverse ++ restored) blankTail := by
+  induction xs generalizing x restored with
+  | nil =>
+      simpa using rewind_one_cell_last selected x restored blankTail
+  | cons y ys ih =>
       rw [List.length_cons]
-      rw [show 3 * (xs.length + 1) = 3 + 3 * xs.length by omega]
+      rw [show 3 * (List.length (y :: ys) + 1) =
+        3 + 3 * List.length (y :: ys) by omega]
       rw [run_add]
-      rw [rewind_one_cell]
-      have h := ih (suffix := x :: suffix)
+      rw [rewind_one_cell_more]
+      have h := ih (x := y) (restored := x :: restored)
       simpa [List.reverse_cons, List.append_assoc] using h
 
-def cleanupStartConfig
-    (selected : Bool) (witness : BitString) (blanks : Nat) :
+/-- Cleanup scanner after rewindInspect sees the first unary blank. -/
+def cleanupScanConfig
+    (selected : Bool) (witness : BitString)
+    (crossed remaining : Nat) :
     Configuration PreservingReadState (Option Bool) :=
-  { state := if selected then .cleanupTrue else .cleanupFalse
-    tape :=
-      { left := witness.map some
-        head := none
-        right := List.replicate blanks none ++ [some false] } }
-
-theorem rewind_done_to_cleanup
-    (selected : Bool) (witness : BitString) (blanks : Nat) :
-    preservingUnaryReadMachine.run 1
-      (rewindConfig selected [] witness blanks) =
-      cleanupStartConfig selected witness blanks := by
-  cases selected <;>
-    simp [rewindConfig, cleanupStartConfig, preservingUnaryReadMachine,
-      TM.run, TM.step, Tape.write, Tape.move]
+  match remaining with
+  | 0 =>
+      { state := if selected then .cleanupTrue else .cleanupFalse
+        tape :=
+          { left := List.replicate crossed none ++ witness.map some
+            head := some false
+            right := [] } }
+  | k + 1 =>
+      { state := if selected then .cleanupTrue else .cleanupFalse
+        tape :=
+          { left := List.replicate crossed none ++ witness.map some
+            head := none
+            right := List.replicate k none ++ [some false] } }
 
 def haltedConfig
-    (selected : Bool) (witness : BitString) :
+    (selected : Bool) (witness : BitString) (leftBlanks : Nat) :
     Configuration PreservingReadState (Option Bool) :=
   { state := if selected then .haltTrue else .haltFalse
     tape :=
-      { left := List.replicate witness.length none ++ witness.map some
+      { left := List.replicate leftBlanks none ++ witness.map some
         head := none
         right := [] } }
 
-/-- Cleanup crosses all erased unary blanks and consumes the false terminator. -/
-theorem cleanup_run
-    (selected : Bool) (witness : BitString) (blanks : Nat) :
-    preservingUnaryReadMachine.run (blanks + 1)
-      (cleanupStartConfig selected witness blanks) =
-      haltedConfig selected witness := by
-  induction blanks with
+theorem rewind_done_enter_cleanup
+    (selected : Bool) (witness : BitString) (blankTail : Nat) :
+    preservingUnaryReadMachine.run 1
+      (rewindDoneConfig selected witness blankTail) =
+      cleanupScanConfig selected witness 2 blankTail := by
+  cases selected <;> cases blankTail <;>
+    simp [rewindDoneConfig, cleanupScanConfig, preservingUnaryReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
+/-- Cleanup crosses every remaining blank and then erases the false
+terminator. -/
+theorem cleanup_scan_run
+    (selected : Bool) (witness : BitString)
+    (crossed remaining : Nat) :
+    preservingUnaryReadMachine.run (remaining + 1)
+      (cleanupScanConfig selected witness crossed remaining) =
+      haltedConfig selected witness (crossed + remaining + 1) := by
+  induction remaining generalizing crossed with
   | zero =>
       cases selected <;>
-        simp [cleanupStartConfig, haltedConfig, preservingUnaryReadMachine,
-          TM.run, TM.step, Tape.write, Tape.move]
-  | succ blanks ih =>
-      cases selected <;>
-        simp [cleanupStartConfig, haltedConfig, preservingUnaryReadMachine,
+        simp [cleanupScanConfig, haltedConfig, preservingUnaryReadMachine,
           TM.run, TM.step, Tape.write, Tape.move,
-          List.replicate_succ, List.append_assoc] at ih ⊢
+          List.replicate_succ, List.append_assoc]
+  | succ remaining ih =>
+      cases selected <;>
+        simp only [cleanupScanConfig, preservingUnaryReadMachine, TM.run]
+      · have hstep :
+            preservingUnaryReadMachine.step
+              (cleanupScanConfig false witness crossed (remaining + 1)) =
+            cleanupScanConfig false witness (crossed + 1) remaining := by
+          simp [cleanupScanConfig, preservingUnaryReadMachine,
+            TM.step, Tape.write, Tape.move,
+            List.replicate_succ, List.append_assoc]
+        rw [show Nat.succ remaining + 1 = 1 + (remaining + 1) by omega]
+        rw [run_add]
+        rw [TM.run]
+        simp [cleanupScanConfig, preservingUnaryReadMachine]
+        rw [hstep]
+        have h := ih (crossed := crossed + 1)
+        simpa [haltedConfig] using h
+      · have hstep :
+            preservingUnaryReadMachine.step
+              (cleanupScanConfig true witness crossed (remaining + 1)) =
+            cleanupScanConfig true witness (crossed + 1) remaining := by
+          simp [cleanupScanConfig, preservingUnaryReadMachine,
+            TM.step, Tape.write, Tape.move,
+            List.replicate_succ, List.append_assoc]
+        rw [show Nat.succ remaining + 1 = 1 + (remaining + 1) by omega]
+        rw [run_add]
+        rw [TM.run]
+        simp [cleanupScanConfig, preservingUnaryReadMachine]
+        rw [hstep]
+        have h := ih (crossed := crossed + 1)
+        simpa [haltedConfig] using h
 
-/-- Full physical rewind and cleanup from selectedConfig to a halting state. -/
+/-- Full physical rewind and cleanup for every nonempty traversed prefix. -/
 theorem preservingRead_rewind_cleanup
-    (pref : BitString) (b : Bool) (suffix : BitString) :
-    preservingUnaryReadMachine.run (1 + 3 * pref.length + 1 + pref.length + 1)
-      (selectedConfig pref b suffix) =
-      haltedConfig b (pref ++ b :: suffix) := by
-  rw [show 1 + 3 * pref.length + 1 + pref.length + 1 =
-    1 + (3 * pref.length + (1 + (pref.length + 1))) by omega]
-  rw [run_add]
-  rw [selected_to_rewind]
-  rw [show 3 * pref.length + (1 + (pref.length + 1)) =
-    3 * pref.length + (1 + (pref.length + 1)) by rfl]
-  rw [run_add]
-  rw [rewind_all]
-  rw [run_add]
-  rw [rewind_done_to_cleanup]
-  have hclean :=
-    cleanup_run b (pref.reverse.reverse ++ suffix) pref.length
-  simpa [List.reverse_reverse, List.append_assoc] using hclean
+    (a : Bool) (rest : BitString) (b : Bool) (suffix : BitString) :
+    preservingUnaryReadMachine.run (4 * (a :: rest).length + 2)
+      (selectedConfig (a :: rest) b suffix) =
+      haltedConfig b ((a :: rest) ++ b :: suffix) ((a :: rest).length + 2) := by
+  let pref : BitString := a :: rest
+  have hp : pref ≠ [] := by simp [pref]
+  obtain ⟨x, xs, hrev, hentry⟩ :=
+    selected_to_rewind_active pref b suffix hp
+  have hlen : (x :: xs).length = pref.length := by
+    rw [← hrev, List.length_reverse]
+  have hpos : 0 < pref.length := by simp [pref]
+  obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hpos)
+  have hrew :
+      preservingUnaryReadMachine.run (3 * pref.length)
+        (rewindActiveConfig b x xs (b :: suffix) pref.length) =
+      rewindDoneConfig b (pref ++ b :: suffix) k := by
+    subst pref
+    subst hk
+    have h :=
+      rewind_all_active b x xs (b :: suffix) k
+    rw [← hlen] at h
+    simpa [hrev, List.append_assoc] using h
+  have hclean :
+      preservingUnaryReadMachine.run (k + 2)
+        (rewindDoneConfig b (pref ++ b :: suffix) k) =
+      haltedConfig b (pref ++ b :: suffix) (pref.length + 2) := by
+    rw [show k + 2 = 1 + (k + 1) by omega]
+    rw [run_add, rewind_done_enter_cleanup]
+    have h := cleanup_scan_run b (pref ++ b :: suffix) 2 k
+    have hklen : pref.length = k + 1 := by omega
+    simpa [hklen] using h
+  have hfuel :
+      4 * pref.length + 2 = 1 + (3 * pref.length + (k + 2)) := by
+    omega
+  rw [show (a :: rest) = pref by rfl]
+  rw [hfuel, run_add, hentry]
+  rw [run_add, hrew]
+  exact hclean
 
 #print axioms MCore.Real.P01PreservingUnaryRewind.preservingRead_rewind_cleanup
 
