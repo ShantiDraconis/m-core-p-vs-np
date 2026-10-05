@@ -323,6 +323,27 @@ theorem preservingRead_third_true_cycle_sixteen
 
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_third_true_cycle_sixteen
 
+/-- Universal physical marker cycle.  With a nonempty traversed prefix,
+one additional unary true advances the marker across exactly one more witness
+cell and returns to indexSome.  The exact physical cost is 4*|traversed|+8. -/
+theorem indexSome_run_advance
+    (traversed : BitString) (b : Bool) (tail : BitString) (n : Nat)
+    (htrav : traversed ≠ []) :
+    preservingUnaryReadMachine.run (4 * traversed.length + 8)
+      (indexSomeConfig traversed (b :: tail) (n + 1)) =
+      indexSomeConfig (traversed ++ [b]) tail n := by
+  induction traversed using List.reverseRecOn with
+  | nil =>
+      exact (htrav rfl).elim
+  | append_singleton pref a ih =>
+      cases a <;> cases b <;> cases n <;>
+        simp [preservingUnaryReadMachine, indexSomeConfig, encodeNat,
+          TM.run, TM.step, Tape.write, Tape.move,
+          List.replicate_succ, List.append_assoc, Nat.mul_add,
+          Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+
+#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.indexSome_run_advance
+
 /-- Exact final tape for zero index: the witness is unchanged; the unary false
 terminator is erased and the original witness separator remains blank. -/
 def zeroDoneTape (witness : BitString) : Tape (Option Bool) :=
