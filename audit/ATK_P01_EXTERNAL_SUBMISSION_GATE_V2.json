@@ -1,0 +1,29 @@
+{
+  "schema": "ATK_P01_EXTERNAL_SUBMISSION_GATE_V2",
+  "branch": "atk/p01-preserving-unary-reader-20261001",
+  "head": "ccbe50572c1a8c3ee5c04276819128fe8df94ab6",
+  "status": "GREEN",
+  "run_id": 37321268370,
+  "job_id": 111800638058,
+  "validation": {
+    "toolchain": "Lean 4.19.0",
+    "build_preserving_marker_primitive": "GREEN",
+    "strict_submission_gate": "GREEN",
+    "hygiene": "GREEN",
+    "indexed_read_gap_closed": "GREEN_MATERIAL",
+    "indexed_read_axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  "corrections": [
+    "removed invalid lake exe cache get from workflow",
+    "renamed reserved Lean 4.19 identifier prefix to pref",
+    "opened CanonicalCircuitBits for encodeNat"
+  ],
+  "external_status": {
+    "PreservingUnaryReaderGap": "OPEN_MATERIAL",
+    "P01MachineConstruction": "OPEN_MATERIAL"
+  },
+  "next_exact_obligation": "general successor-cycle theorem for preservingUnaryReadMachine, followed by iterated cycles, final selected-bit correctness, full rewind preservation, polynomial halting, and PreservingUnaryReaderGap inhabitant"
+}
