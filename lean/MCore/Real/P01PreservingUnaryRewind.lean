@@ -54,7 +54,7 @@ theorem selected_to_rewind_active
   | nil =>
       exact False.elim (hrev h)
   | cons x xs =>
-      refine ⟨x, xs, h, ?_⟩
+      refine ⟨x, xs, rfl, ?_⟩
       cases b <;>
         simp [selectedConfig, rewindActiveConfig, h,
           preservingUnaryReadMachine, TM.run, TM.step,
@@ -160,28 +160,38 @@ theorem cleanup_scan_run
             preservingUnaryReadMachine.step
               (cleanupScanConfig false witness crossed (remaining + 1)) =
             cleanupScanConfig false witness (crossed + 1) remaining := by
-          simp [cleanupScanConfig, preservingUnaryReadMachine,
-            TM.step, Tape.write, Tape.move,
-            List.replicate_succ, List.append_assoc]
-        rw [show Nat.succ remaining + 1 = 1 + (remaining + 1) by omega]
-        rw [run_add]
-        rw [TM.run]
-        simp [cleanupScanConfig, preservingUnaryReadMachine]
-        rw [hstep]
+          cases remaining <;>
+            simp [cleanupScanConfig, preservingUnaryReadMachine,
+              TM.step, Tape.write, Tape.move,
+              List.replicate_succ, List.append_assoc]
+        have hrun :
+            preservingUnaryReadMachine.run (remaining + 2)
+              (cleanupScanConfig false witness crossed (remaining + 1)) =
+            preservingUnaryReadMachine.run (remaining + 1)
+              (cleanupScanConfig false witness (crossed + 1) remaining) := by
+          rw [show remaining + 2 = (remaining + 1) + 1 by omega]
+          rw [TM.run]
+          simp [cleanupScanConfig, preservingUnaryReadMachine, hstep]
+        rw [hrun]
         have h := ih (crossed := crossed + 1)
         simpa [haltedConfig] using h
       · have hstep :
             preservingUnaryReadMachine.step
               (cleanupScanConfig true witness crossed (remaining + 1)) =
             cleanupScanConfig true witness (crossed + 1) remaining := by
-          simp [cleanupScanConfig, preservingUnaryReadMachine,
-            TM.step, Tape.write, Tape.move,
-            List.replicate_succ, List.append_assoc]
-        rw [show Nat.succ remaining + 1 = 1 + (remaining + 1) by omega]
-        rw [run_add]
-        rw [TM.run]
-        simp [cleanupScanConfig, preservingUnaryReadMachine]
-        rw [hstep]
+          cases remaining <;>
+            simp [cleanupScanConfig, preservingUnaryReadMachine,
+              TM.step, Tape.write, Tape.move,
+              List.replicate_succ, List.append_assoc]
+        have hrun :
+            preservingUnaryReadMachine.run (remaining + 2)
+              (cleanupScanConfig true witness crossed (remaining + 1)) =
+            preservingUnaryReadMachine.run (remaining + 1)
+              (cleanupScanConfig true witness (crossed + 1) remaining) := by
+          rw [show remaining + 2 = (remaining + 1) + 1 by omega]
+          rw [TM.run]
+          simp [cleanupScanConfig, preservingUnaryReadMachine, hstep]
+        rw [hrun]
         have h := ih (crossed := crossed + 1)
         simpa [haltedConfig] using h
 
@@ -203,11 +213,10 @@ theorem preservingRead_rewind_cleanup
       preservingUnaryReadMachine.run (3 * pref.length)
         (rewindActiveConfig b x xs (b :: suffix) pref.length) =
       rewindDoneConfig b (pref ++ b :: suffix) k := by
-    subst pref
-    subst hk
     have h :=
       rewind_all_active b x xs (b :: suffix) k
-    rw [← hlen] at h
+    have hblanks : pref.length = k + 1 := hk
+    rw [hlen, hblanks]
     simpa [hrev, List.append_assoc] using h
   have hclean :
       preservingUnaryReadMachine.run (k + 2)
@@ -217,7 +226,7 @@ theorem preservingRead_rewind_cleanup
     rw [run_add, rewind_done_enter_cleanup]
     have h := cleanup_scan_run b (pref ++ b :: suffix) 2 k
     have hklen : pref.length = k + 1 := by omega
-    simpa [hklen] using h
+    convert h using 1 <;> omega
   have hfuel :
       4 * pref.length + 2 = 1 + (3 * pref.length + (k + 2)) := by
     omega
