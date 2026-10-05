@@ -24,6 +24,24 @@ def DeclaredClockTotal (M : PolyDTMCandidate) : Prop :=
 /-- The only lower-bound content left after timeout failures are discharged:
 for every candidate that really halts at its declared clock, produce one input
 where its Boolean answer disagrees with canonical SAT. -/
+
+/-- Non-totality exposes a concrete timeout input without requiring extra tactics. -/
+theorem exists_timeout_of_not_total
+    (M : PolyDTMCandidate)
+    (h : ¬ DeclaredClockTotal M) :
+    ∃ x : BitString,
+      ¬ M.machine.HaltsWithin
+        (M.timeBound x.length)
+        (initialTMConfig M.machine x) := by
+  classical
+  apply Classical.byContradiction
+  intro hNo
+  apply h
+  intro x
+  apply Classical.byContradiction
+  intro hx
+  exact hNo ⟨x, hx⟩
+
 structure TotalSemanticFailureProducer where
   counterexample :
     ∀ (M : PolyDTMCandidate), DeclaredClockTotal M → BitString
@@ -48,13 +66,7 @@ noncomputable def TotalSemanticFailureProducer.toFailureGenerator
       if h : DeclaredClockTotal M then
         P.counterexample M h
       else
-        Classical.choose (show ∃ x : BitString,
-            ¬ M.machine.HaltsWithin
-              (M.timeBound x.length)
-              (initialTMConfig M.machine x) by
-          by_contra hnone
-          push_neg at hnone
-          exact h hnone)
+        Classical.choose (exists_timeout_of_not_total M h)
   refine
     { counterexample := pick
       fails := ?_ }
@@ -65,13 +77,7 @@ noncomputable def TotalSemanticFailureProducer.toFailureGenerator
     rw [hPick]
     intro hCorrect
     exact P.disagrees M hTotal hCorrect.2
-  · have hex : ∃ x : BitString,
-        ¬ M.machine.HaltsWithin
-          (M.timeBound x.length)
-          (initialTMConfig M.machine x) := by
-      by_contra hnone
-      push_neg at hnone
-      exact hTotal hnone
+  · have hex := exists_timeout_of_not_total M hTotal
     have hPick :
         ¬ M.machine.HaltsWithin
           (M.timeBound (pick M).length)
@@ -98,6 +104,7 @@ UniversalFailure field, or endpoint proposition. -/
 def TOTAL_SEMANTIC_FAILURE_OPEN_MATH : Prop :=
   Nonempty TotalSemanticFailureProducer
 
+#print axioms MCore.Real.P02TotalCandidateFailureMinCut.exists_timeout_of_not_total
 #print axioms MCore.Real.P02TotalCandidateFailureMinCut.TotalSemanticFailureProducer.toFailureGenerator
 #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_implies_universalFailure
 #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_closes_internal_endpoint
