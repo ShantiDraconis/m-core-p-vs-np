@@ -491,7 +491,7 @@ theorem returnPhase_run
     simpa [List.reverse_cons, List.length_reverse, List.append_assoc] using h
 
   rw [show 2 * pref.length + 3 =
-    (pref.length + 1) + (1 + (rest.length + 1)) by omega]
+    (pref.length + 1) + (1 + (pref.length + 1)) by omega]
   rw [run_add, hbits]
 
   cases n with
@@ -510,7 +510,6 @@ theorem returnPhase_run
         simpa [pref, encodeNat, hp, Nat.succ_eq_add_one] using
           returnBits_blank_to_returnBlanks rest.length (pref ++ [b]) suffix false []
       rw [hblank]
-      rw [show rest.length + 1 = pref.length by omega]
       rw [run_add]
       rw [returnBlanks_run]
       rw [TM.run]
