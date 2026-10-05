@@ -8,10 +8,11 @@ open CanonicalCircuitBits
 open P01PreservingUnaryWitnessMachine
 open MachineRunLemmas
 
-/-- seekBlanks configuration with k additional erased unary blanks still to the
-left of the blank currently under the head. -/
+/-- Exact seekBlanks state: `remaining` erased blanks are still to the left,
+while `passed` erased blanks have already been crossed and sit to the right.
+The current head is itself a blank. -/
 def seekBlanksConfig
-    (k : Nat)
+    (remaining passed : Nat)
     (traversed : BitString)
     (b : Bool) (tail : BitString)
     (n : Nat) :
@@ -19,34 +20,53 @@ def seekBlanksConfig
   { state := .seekBlanks
     tape :=
       { left :=
-          List.replicate k none ++
+          List.replicate remaining none ++
             traversed.map some ++ none :: (b :: tail).map some
         head := none
         right :=
-          List.replicate (traversed.length - k) none ++
-            none :: (encodeNat n).map some } }
+          List.replicate (passed + 1) none ++
+            (encodeNat n).map some } }
 
 @[simp] theorem seekBlanksConfig_state
-    (k : Nat) (traversed : BitString)
+    (remaining passed : Nat) (traversed : BitString)
     (b : Bool) (tail : BitString) (n : Nat) :
-    (seekBlanksConfig k traversed b tail n).state = .seekBlanks := rfl
+    (seekBlanksConfig remaining passed traversed b tail n).state =
+      .seekBlanks := rfl
 
-/-- One erased unary blank is crossed. -/
+/-- One physical left move transfers one erased blank from remaining to passed. -/
 theorem seekBlanks_step_succ
-    (k : Nat) (traversed : BitString)
-    (b : Bool) (tail : BitString) (n : Nat)
-    (hk : k < traversed.length) :
+    (remaining passed : Nat) (traversed : BitString)
+    (b : Bool) (tail : BitString) (n : Nat) :
     preservingUnaryReadMachine.step
-      (seekBlanksConfig (k + 1) traversed b tail n) =
-      seekBlanksConfig k traversed b tail n := by
+      (seekBlanksConfig (remaining + 1) passed traversed b tail n) =
+      seekBlanksConfig remaining (passed + 1) traversed b tail n := by
   simp [seekBlanksConfig, preservingUnaryReadMachine, TM.step,
-    Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
-  omega
+    Tape.write, Tape.move, List.replicate_succ, List.append_assoc,
+    Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
 
-/-- After all erased unary blanks have been crossed, the head is on the first
-traversed witness bit.  This representation is only used for a nonempty prefix. -/
+/-- Scan all remaining erased blanks. -/
+theorem seekBlanks_run
+    (remaining passed : Nat) (traversed : BitString)
+    (b : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run remaining
+      (seekBlanksConfig remaining passed traversed b tail n) =
+      seekBlanksConfig 0 (passed + remaining) traversed b tail n := by
+  induction remaining generalizing passed with
+  | zero =>
+      simp [seekBlanksConfig]
+  | succ remaining ih =>
+      rw [Nat.succ_eq_add_one]
+      rw [TM.run]
+      simp only [seekBlanksConfig_state]
+      simp [preservingUnaryReadMachine]
+      rw [seekBlanks_step_succ]
+      simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+        (ih (passed := passed + 1))
+
+/-- With no erased blank left, the next step sees the first traversed bit. -/
 def seekBitsEntryConfig
     (x : Bool) (xs : BitString)
+    (passed : Nat)
     (b : Bool) (tail : BitString)
     (n : Nat) :
     Configuration PreservingReadState (Option Bool) :=
@@ -54,57 +74,57 @@ def seekBitsEntryConfig
     tape :=
       { left := xs.map some ++ none :: (b :: tail).map some
         head := some x
-        right := List.replicate (xs.length + 2) none ++
-          (encodeNat n).map some } }
+        right :=
+          List.replicate (passed + 1) none ++ (encodeNat n).map some } }
 
-/-- Concrete bridge from the final blank-crossing configuration to the first
-traversed witness bit. -/
 theorem seekBlanks_zero_step_to_bits
-    (x : Bool) (xs : BitString)
+    (x : Bool) (xs : BitString) (passed : Nat)
     (b : Bool) (tail : BitString) (n : Nat) :
     preservingUnaryReadMachine.run 1
-      (seekBlanksConfig 0 (x :: xs) b tail n) =
-      seekBitsEntryConfig x xs b tail n := by
+      (seekBlanksConfig 0 passed (x :: xs) b tail n) =
+      seekBitsEntryConfig x xs (passed + 1) b tail n := by
   simp [seekBlanksConfig, seekBitsEntryConfig, preservingUnaryReadMachine,
     TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
-    List.append_assoc]
+    List.append_assoc, Nat.add_assoc]
 
-/-- The seekBlanks state now sees a witness bit and enters seekBits in one
-physical step. -/
+/-- seekBits state after one traversed bit has been crossed. -/
 def seekBitsConfig
-    (xs : BitString)
-    (passedHead : Bool)
+    (remaining : BitString)
+    (passedRev : BitString)
+    (blankPad : Nat)
     (b : Bool) (tail : BitString)
     (n : Nat) :
     Configuration PreservingReadState (Option Bool) :=
-  match xs with
+  match remaining with
   | [] =>
       { state := .seekBits
         tape :=
           { left := none :: (b :: tail).map some
             head := none
-            right := some passedHead ::
-              List.replicate 2 none ++ (encodeNat n).map some } }
+            right :=
+              passedRev.map some ++
+                List.replicate blankPad none ++ (encodeNat n).map some } }
   | y :: ys =>
       { state := .seekBits
         tape :=
           { left := ys.map some ++ none :: (b :: tail).map some
             head := some y
-            right := some passedHead ::
-              List.replicate 2 none ++ (encodeNat n).map some } }
+            right :=
+              passedRev.map some ++
+                List.replicate blankPad none ++ (encodeNat n).map some } }
 
 theorem seekBits_entry_step
-    (x : Bool) (xs : BitString)
+    (x : Bool) (xs : BitString) (passed : Nat)
     (b : Bool) (tail : BitString) (n : Nat) :
     preservingUnaryReadMachine.run 1
-      (seekBitsEntryConfig x xs b tail n) =
-      seekBitsConfig xs x b tail n := by
+      (seekBitsEntryConfig x xs passed b tail n) =
+      seekBitsConfig xs [x] passed b tail n := by
   cases xs <;>
     simp [seekBitsEntryConfig, seekBitsConfig, preservingUnaryReadMachine,
-      TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
-      List.append_assoc]
+      TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_step_succ
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_run
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBlanks_zero_step_to_bits
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.seekBits_entry_step
 
