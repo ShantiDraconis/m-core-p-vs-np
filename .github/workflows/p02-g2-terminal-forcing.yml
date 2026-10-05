@@ -6,6 +6,7 @@ on:
       - atk/p02-g2-universal-failure-material-20261005
     paths:
       - 'lean/MCore/Real/P02TerminalForcingG2.lean'
+      - 'probe/P02TerminalG2KernelQuestions.lean'
       - '.github/workflows/p02-g2-terminal-forcing.yml'
   workflow_dispatch:
 
@@ -51,6 +52,19 @@ jobs:
             exit 1
           fi
           echo P02_G2_TERMINAL_EXPOSED_GREEN
+      - name: Ask kernel G2 terminal questions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          if lake env lean probe/P02TerminalG2KernelQuestions.lean > /tmp/p02-g2-questions.log 2>&1; then
+            echo 'UNEXPECTED_G2_TERMINAL_INHABITANT_PASS'
+            cat /tmp/p02-g2-questions.log
+            exit 1
+          fi
+          cat /tmp/p02-g2-questions.log
+          grep -q 'unsolved goals' /tmp/p02-g2-questions.log
+          echo P02_G2_TERMINAL_GOALS_EXPOSED
       - name: Force G2 inhabitant
         shell: bash
         run: |
