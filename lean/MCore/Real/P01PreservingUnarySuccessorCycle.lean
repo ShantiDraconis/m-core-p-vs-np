@@ -43,6 +43,15 @@ theorem replicate_none_push
   | succ pad ih =>
       simp [List.replicate_succ, ih, List.append_assoc]
 
+theorem replicate_two_more_none
+    (pad : Nat) (right : List (Option Bool)) :
+    List.replicate (pad + 2) none ++ right =
+      none :: none :: (List.replicate pad none ++ right) := by
+  induction pad with
+  | zero => rfl
+  | succ pad ih =>
+      simp [List.replicate_succ, List.append_assoc]
+
 theorem seekBlanks_step_succ
     (pad : Nat) (pref suffix : BitString)
     (right : List (Option Bool)) :
@@ -204,7 +213,7 @@ theorem returnBits_run
     returnBitsScanConfig (bits.reverse ++ processed) [] suffix rightTail := by
   induction bits generalizing processed with
   | nil =>
-      simp [returnBitsScanConfig]
+      rfl
   | cons x xs ih =>
       rw [List.length_cons]
       simp only [TM.run, returnBitsScanConfig_state,
