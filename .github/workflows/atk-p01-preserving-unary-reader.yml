@@ -41,7 +41,10 @@ jobs:
           lake build MCore.Real.P01PreservingMarkerIteration
           lake build MCore.Real.P01WitnessIndexedReadGlobal
           lake build MCore.Real.P01PreservingUnaryReaderFrontier
-          grep -RInE '\b(sorry|admit|sorryAx|axiom)\b' --include='*.lean' lean/MCore/Real/P01PreservingUnaryReaderFrontier.lean && exit 1 || true
+          if grep -En '(^|[[:space:]])(sorry|admit|sorryAx)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P01PreservingUnaryReaderFrontier.lean; then
+            exit 1
+          fi
+          echo FRONTIER_HYGIENE_GREEN
           bash audit/p01_external_submission_gate.sh
       - name: Axiom / placeholder hygiene
         shell: bash
