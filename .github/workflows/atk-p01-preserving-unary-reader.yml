@@ -45,6 +45,7 @@ jobs:
           lake build MCore.Real.P01PreservingUnaryIteration
           lake build MCore.Real.P01PreservingUnaryFinalRead
           lake build MCore.Real.P01PreservingUnaryRewind
+          lake build MCore.Real.P01PreservingUnaryReaderBound
           bash audit/p01_external_submission_gate.sh
       - name: Axiom / placeholder hygiene
         shell: bash
