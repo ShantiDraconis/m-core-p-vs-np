@@ -150,6 +150,13 @@ theorem run_right
       rfl
   | succ fuel ih =>
       rw [TM.run]
+      change
+        (if (sequentialTM A B).halting (rightState cfg.state) = true then
+            rightConfig (a := a) cfg
+          else
+            (sequentialTM A B).run fuel
+              ((sequentialTM A B).step (rightConfig (a := a) cfg))) =
+          rightConfig (a := a) (B.run (fuel + 1) cfg)
       rw [halting_right]
       by_cases hhalt : B.halting cfg.state = true
       · simp only [hhalt, if_pos]
