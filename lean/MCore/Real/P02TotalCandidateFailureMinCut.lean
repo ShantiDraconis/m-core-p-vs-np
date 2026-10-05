@@ -98,6 +98,37 @@ theorem totalSemanticFailureProducer_closes_internal_endpoint
   target_failure_implies_p_ne_np hNP
     (totalSemanticFailureProducer_implies_universalFailure P)
 
+
+/-- Exactness audit: on declared-total candidates, any canonical universal
+failure is necessarily semantic, so G2 reconstructs the total semantic
+producer. This proves the mincut is an exact normal form, not an easier theorem. -/
+noncomputable def totalSemanticFailureProducer_of_universalFailure
+    (hFail : UniversalFailure CanonicalSAT) :
+    TotalSemanticFailureProducer := by
+  classical
+  let pick :
+      ∀ (M : PolyDTMCandidate), DeclaredClockTotal M → BitString :=
+    fun M hTotal => Classical.choose (hFail M)
+  refine
+    { counterexample := pick
+      disagrees := ?_ }
+  intro M hTotal
+  let x : BitString := pick M hTotal
+  have hBad : ¬ M.CorrectAt CanonicalSAT x := by
+    exact Classical.choose_spec (hFail M)
+  intro hSem
+  apply hBad
+  exact ⟨hTotal x, hSem⟩
+
+theorem totalSemanticFailureProducer_iff_universalFailure :
+    Nonempty TotalSemanticFailureProducer ↔
+      UniversalFailure CanonicalSAT := by
+  constructor
+  · rintro ⟨P⟩
+    exact totalSemanticFailureProducer_implies_universalFailure P
+  · intro h
+    exact ⟨totalSemanticFailureProducer_of_universalFailure h⟩
+
 /-- This is the narrowed material frontier. It contains no not-in-P field,
 UniversalFailure field, or endpoint proposition. -/
 def TOTAL_SEMANTIC_FAILURE_OPEN_MATH : Prop :=
@@ -107,6 +138,8 @@ def TOTAL_SEMANTIC_FAILURE_OPEN_MATH : Prop :=
 #print axioms MCore.Real.P02TotalCandidateFailureMinCut.TotalSemanticFailureProducer.toFailureGenerator
 #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_implies_universalFailure
 #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_closes_internal_endpoint
+#print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_of_universalFailure
+#print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_iff_universalFailure
 
 end P02TotalCandidateFailureMinCut
 end Real
