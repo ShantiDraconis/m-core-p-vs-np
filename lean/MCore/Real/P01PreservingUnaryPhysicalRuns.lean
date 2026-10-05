@@ -624,7 +624,7 @@ theorem finalRead_to_rewind
             head := some result
             right := none :: (bits.map some ++ after) } } =
       rewindConfig result (some result :: left) bits after := by
-  cases result <;> cases bits <;>
+  cases result <;> cases bits <;> cases after <;>
     simp [rewindConfig, rewindInspectState, rightStreamTape,
       preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
@@ -689,7 +689,7 @@ theorem cleanup_run_halts
             { state := cleanupState result
               tape := rightStreamTape (none :: left)
                 (List.replicate k none ++ [some false]) } := by
-        cases result <;>
+        cases k <;> cases result <;>
           simp [cleanupState, rightStreamTape, preservingUnaryReadMachine,
             TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
             List.append_assoc]
@@ -700,8 +700,17 @@ theorem cleanup_run_halts
           ({ state := haltState result
              tape := { left := l, head := none, right := [] } } :
             Configuration PreservingReadState (Option Bool)))
-      simpa [Nat.succ_eq_add_one, Nat.add_assoc] using
-        replicate_none_extend k left
+      have hidx : 1 + (k + 1) = k + 2 := by omega
+      rw [hidx]
+      exact replicate_none_extend k left
+
+theorem replicate_none_two_extend
+    (k : Nat) (left : List (Option Bool)) :
+    List.replicate (k + 1) none ++ (none :: none :: left) =
+      List.replicate (k + 3) none ++ left := by
+  exact
+    (replicate_none_extend k (none :: left)).trans
+      (replicate_none_extend (k + 1) left)
 
 def indexSomeFinalizeFuel (pref : BitString) : Nat :=
   6 * pref.length + 5
@@ -815,16 +824,25 @@ theorem indexSome_false_finalize
 
   have h67 : preservingUnaryReadMachine.run 1 C6 = C7 := by
     dsimp [C6, C7, rewindConfig, rewindInspectState, cleanupState,
-      restoredWitness, after, pref, m]
+      restoredWitness, after, pref]
+    have hrep :
+        List.replicate (m + 1) none ++ [some false] =
+          none :: (List.replicate m none ++ [some false]) := by
+      simp [List.replicate_succ]
+    rw [hrep]
     cases selected <;>
       simp [rightStreamTape, preservingUnaryReadMachine,
-        TM.run, TM.step, Tape.write, Tape.move,
-        List.replicate_succ, List.append_assoc]
+        TM.run, TM.step, Tape.write, Tape.move]
 
   have h78 : preservingUnaryReadMachine.run (m + 1) C7 = C8 := by
     dsimp [C7, C8]
-    simpa using
-      cleanup_run_halts selected m (none :: none :: restoredWitness)
+    rw [cleanup_run_halts selected m (none :: none :: restoredWitness)]
+    apply congrArg
+      (fun l : List (Option Bool) =>
+        ({ state := haltState selected
+           tape := { left := l, head := none, right := [] } } :
+          Configuration PreservingReadState (Option Bool)))
+    exact replicate_none_two_extend m restoredWitness
 
   have h02 :
       preservingUnaryReadMachine.run (1 + (m + 1)) C0 = C2 := by
