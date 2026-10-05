@@ -16,7 +16,7 @@ jobs:
       - name: Build material witness frontier
         run: |
           set -euo pipefail
-          lake build MCore.Real.P02UniversalFailureWitnessMaterial MCore.Real.P02ClockBridgeMaterial
+          lake build MCore.Real.P02UniversalFailureWitnessMaterial MCore.Real.P02ClockBridgeMaterial MCore.Real.P02FiniteMachineDescription
       - name: Axiom and placeholder audit
         run: |
           set -euo pipefail
