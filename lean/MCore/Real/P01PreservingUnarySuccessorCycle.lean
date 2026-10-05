@@ -173,7 +173,7 @@ def returnBitsScanConfig
         tape :=
           { left := processed.map some ++ none :: suffix.map some
             head := some x
-            right := xs.map some ++ rightTail } }
+            right := xs.map some ++ none :: rightTail } }
 
 @[simp] theorem returnBitsScanConfig_state
     (processed remaining suffix : BitString)
