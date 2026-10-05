@@ -1,0 +1,36 @@
+name: P02 G2 Terminal Questions
+
+on:
+  push:
+    branches:
+      - atk/p02-g2-universal-failure-material-20261005
+    paths:
+      - 'probe/P02TerminalQuestionsG2.lean'
+      - '.github/workflows/p02-g2-terminal-questions.yml'
+  workflow_dispatch:
+
+jobs:
+  ask-kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+          "$HOME/.elan/bin/elan" default "$(cat lean-toolchain)"
+      - name: Ask G2 terminal
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          if lake env lean probe/P02TerminalQuestionsG2.lean > /tmp/g2q.log 2>&1; then
+            cat /tmp/g2q.log
+            echo "UNEXPECTED_G2_INHABITANT_PASS"
+            exit 2
+          else
+            cat /tmp/g2q.log
+            echo "G2_TERMINAL_GOALS_EXPOSED"
+          fi
