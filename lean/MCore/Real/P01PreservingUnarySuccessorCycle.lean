@@ -108,6 +108,42 @@ theorem seekBits_step_cons
     simp [seekBitsConfig, preservingUnaryReadMachine, TM.step,
       Tape.write, Tape.move, List.append_assoc]
 
+/-- Configuration with the selected next witness bit under shiftRead. -/
+def shiftReadConfig
+    (b : Bool) (suffix : BitString)
+    (right : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .shiftRead
+    tape := { left := suffix.map some, head := some b, right := none :: right } }
+
+/-- Configuration after the marker has moved across b and the machine has
+returned onto b, ready to scan right across the traversed bits. -/
+def returnBitsConfig
+    (b : Bool) (suffix : BitString)
+    (right : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  { state := .returnBits
+    tape := { left := none :: suffix.map some, head := some b, right := right } }
+
+theorem seekBits_marker_step
+    (b : Bool) (suffix : BitString)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      (seekBitsConfig [] (b :: suffix) right) =
+    shiftReadConfig b suffix right := by
+  simp [seekBitsConfig, shiftReadConfig, preservingUnaryReadMachine,
+    TM.step, Tape.write, Tape.move]
+
+theorem shift_carry_return_run_three
+    (b : Bool) (suffix : BitString)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 3
+      (shiftReadConfig b suffix right) =
+    returnBitsConfig b suffix right := by
+  cases b <;>
+    simp [shiftReadConfig, returnBitsConfig, preservingUnaryReadMachine,
+      TM.run, TM.step, Tape.write, Tape.move]
+
 /-- Exact finite scan of the traversed witness-prefix tail. -/
 theorem seekBits_run
     (remaining suffix : BitString)
@@ -128,6 +164,8 @@ theorem seekBits_run
       simp [List.reverse_cons, List.map_append, List.append_assoc]
 
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBlanks_run_to_first_bit
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBits_marker_step
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.shift_carry_return_run_three
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBits_run
 
 end P01PreservingUnarySuccessorCycle
