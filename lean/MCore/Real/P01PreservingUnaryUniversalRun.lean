@@ -70,6 +70,15 @@ theorem preservingRead_nonzero_exact
           (indexSomeConfig [a] (moved ++ b :: suffix) moved.length) =
         indexSomeConfig (a :: moved) (b :: suffix) 0 := by
     simpa using hiter
+  have hfuel :
+      8 + iteratedCycleFuel [a] moved +
+          (2 * (a :: moved).length + 3) +
+          (4 * (a :: moved).length + 2) =
+        8 + (iteratedCycleFuel [a] moved +
+          ((2 * (a :: moved).length + 3) +
+            (4 * (a :: moved).length + 2))) := by
+    omega
+  rw [hfuel]
   let kIter := iteratedCycleFuel [a] moved
   let kFinal := 2 * (a :: moved).length + 3
   let kRewind := 4 * (a :: moved).length + 2
