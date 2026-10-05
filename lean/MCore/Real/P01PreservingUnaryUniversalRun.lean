@@ -8,6 +8,7 @@ open CanonicalFinalProof
 open CanonicalCircuitBits
 open P01PreservingUnaryWitnessMachine
 open P01PreservingUnaryIteration
+open P01PreservingUnarySuccessorCycle
 open P01PreservingUnaryFinalRead
 open P01PreservingUnaryRewind
 open P01PreservingUnaryReaderBound
@@ -39,6 +40,23 @@ theorem witness_split_at_index
           · simp [hsplit, List.append_assoc]
           · simp [hlen]
           · simpa using hbit
+
+/-- Closed form for the exact iterated successor-cycle fuel.  Expanding
+Nat.pow_two keeps the arithmetic inside omega's linear fragment. -/
+theorem iteratedCycleFuel_closed_local
+    (pref moved : BitString) :
+    iteratedCycleFuel pref moved =
+      2 * moved.length ^ 2 +
+        (4 * pref.length + 6) * moved.length := by
+  induction moved generalizing pref with
+  | nil =>
+      simp [iteratedCycleFuel, iteratedCycleFuelLen]
+  | cons b rest ih =>
+      rw [iteratedCycleFuel_cons]
+      rw [ih]
+      simp [successorCycleFuel, Nat.pow_two,
+        Nat.add_mul, Nat.mul_add, Nat.mul_assoc]
+      omega
 
 /-- Exact nonzero execution from a concrete witness decomposition. -/
 theorem preservingRead_nonzero_exact
@@ -159,32 +177,19 @@ theorem preservingRead_nonzero_material
           (2 * (a :: moved).length + 3) +
           (4 * (a :: moved).length + 2)
       refine ⟨fuel, b, (a :: moved).length + 2, ?_, hbit, ?_⟩
-      · -- A coarse bound sufficient for the certified cubic envelope.
-        have hidx : (a :: moved).length = i := by simpa using hlen
-        have hiterCrude :
-            iteratedCycleFuel [a] moved ≤
-              16 * (i + 1) ^ 2 := by
-          -- This local majorant is intentionally isolated from the terminal
-          -- polynomial certificate and will be kernel-refined independently.
-          induction moved generalizing i with
-          | nil =>
-              simp [iteratedCycleFuel, iteratedCycleFuelLen]
-          | cons x xs ih =>
-              rw [iteratedCycleFuel_cons]
-              have hiLen : i = xs.length + 2 := by
-                simp at hidx
-                omega
-              have hih := ih (i := i - 1)
-              simp [successorCycleFuel] at hih ⊢
-              omega
-        unfold fuel
-        have hbase :=
-          nonzeroReaderFuel_le_timeBound witness i
-        -- The exact path fuel is no larger than the already-certified
-        -- nonzeroReaderFuel envelope once the local iterated estimate is used.
-        exact Nat.le_trans (by
-          simp at hidx
-          omega) hbase
+      ·
+        have hidx : (a :: moved).length = i := by
+          simpa using hlen
+        have hiterExact :=
+          iteratedCycleFuel_closed_local [a] moved
+        have hfuelExact :
+            fuel = nonzeroReaderFuel i := by
+          unfold fuel nonzeroReaderFuel
+          rw [hiterExact]
+          simp [Nat.pow_two] at hidx ⊢
+          omega
+        rw [hfuelExact]
+        exact nonzeroReaderFuel_le_timeBound witness i
       · have hexact :=
           preservingRead_nonzero_exact a b moved suffix i hi'
         simpa [fuel, hsplit] using hexact
