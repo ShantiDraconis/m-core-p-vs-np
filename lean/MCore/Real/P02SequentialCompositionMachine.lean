@@ -97,9 +97,9 @@ def rightConfig
     (B : TM (Fin (b + 1)) (Option Bool))
     (q : Fin (b + 1)) :
     (sequentialTM A B).halting (rightState q) = B.halting q := by
-  simp [sequentialTM, rightState]
-  congr
-  omega
+  have hnot : ¬ ((a + 1) + q.1 < a + 1) := by
+    omega
+  simp [sequentialTM, rightState, hnot]
 
 /-- The bridge is physical: when A is halted, one step enters B.initial and
 preserves the entire tape exactly. -/
