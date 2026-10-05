@@ -16,7 +16,7 @@ open P01PreservingUnaryWitnessMarker
 This file connects the exact semantic input-node transition with the reversible
 physical marker primitive.
 
-The representation separates the already traversed witness prefix from the
+The representation separates the already traversed witness pref from the
 remaining suffix.  Moving the marker one cell to the right changes only where
 the unique marker blank sits; the Boolean payload is unchanged.  Rewinding
 performs the inverse transformation.
@@ -28,13 +28,13 @@ the `false` terminator, and invoke the inverse moves while consuming/restoring
 the unary counter as required by the evaluator layout.
 -/
 
-/-- Physical local witness view.  `prefix` is in logical left-to-right order;
+/-- Physical local witness view.  `pref` is in logical left-to-right order;
 because Tape.left stores nearest cells first, it appears reversed physically. -/
 def witnessMarkerLayout
     (outerLeft : List (Option Bool))
-    (prefix suffix : BitString)
+    (pref suffix : BitString)
     (outerRight : List (Option Bool)) : Tape (Option Bool) :=
-  { left := prefix.reverse.map some ++ outerLeft
+  { left := pref.reverse.map some ++ outerLeft
     head := none
     right := suffix.map some ++ outerRight }
 
@@ -48,64 +48,64 @@ def witnessMarkerLayout
         right := witness.map some ++ outerRight } := by
   simp [witnessMarkerLayout]
 
-/-- One physical marker advance extends the traversed prefix by exactly one
+/-- One physical marker advance extends the traversed pref by exactly one
 witness bit. -/
 theorem markerAdvance_layout
     (outerLeft : List (Option Bool))
-    (prefix : BitString)
+    (pref : BitString)
     (b : Bool) (suffix : BitString)
     (outerRight : List (Option Bool)) :
     markerAdvanceMachine.run 3
       { state := markerAdvanceMachine.initial
         tape :=
-          witnessMarkerLayout outerLeft prefix (b :: suffix) outerRight } =
+          witnessMarkerLayout outerLeft pref (b :: suffix) outerRight } =
       { state := .halt
         tape :=
-          witnessMarkerLayout outerLeft (prefix ++ [b]) suffix outerRight } := by
+          witnessMarkerLayout outerLeft (pref ++ [b]) suffix outerRight } := by
   have h :=
     markerAdvance_run_three
-      (prefix.reverse.map some ++ outerLeft) b
+      (pref.reverse.map some ++ outerLeft) b
       (suffix.map some ++ outerRight)
   simpa [witnessMarkerLayout, markerBefore, markerAfter,
     List.reverse_append, List.map_append, List.append_assoc] using h
 
 /-- One physical rewind removes exactly the last traversed witness bit from the
-prefix and restores the marker immediately before it. -/
+pref and restores the marker immediately before it. -/
 theorem markerRewind_layout
     (outerLeft : List (Option Bool))
-    (prefix : BitString)
+    (pref : BitString)
     (b : Bool) (suffix : BitString)
     (outerRight : List (Option Bool)) :
     markerRewindMachine.run 3
       { state := markerRewindMachine.initial
         tape :=
-          witnessMarkerLayout outerLeft (prefix ++ [b]) suffix outerRight } =
+          witnessMarkerLayout outerLeft (pref ++ [b]) suffix outerRight } =
       { state := .halt
         tape :=
-          witnessMarkerLayout outerLeft prefix (b :: suffix) outerRight } := by
+          witnessMarkerLayout outerLeft pref (b :: suffix) outerRight } := by
   have h :=
     markerRewind_run_three
-      (prefix.reverse.map some ++ outerLeft) b
+      (pref.reverse.map some ++ outerLeft) b
       (suffix.map some ++ outerRight)
   simpa [witnessMarkerLayout, markerBefore, markerAfter,
     List.reverse_append, List.map_append, List.append_assoc] using h
 
 /-- Kernel-level conservation law: the logical Boolean witness represented on
-both sides of the marker is always exactly prefix ++ suffix. -/
-def witnessPayload (prefix suffix : BitString) : BitString :=
-  prefix ++ suffix
+both sides of the marker is always exactly pref ++ suffix. -/
+def witnessPayload (pref suffix : BitString) : BitString :=
+  pref ++ suffix
 
 theorem witnessPayload_advance
-    (prefix : BitString) (b : Bool) (suffix : BitString) :
-    witnessPayload prefix (b :: suffix) =
-      witnessPayload (prefix ++ [b]) suffix := by
+    (pref : BitString) (b : Bool) (suffix : BitString) :
+    witnessPayload pref (b :: suffix) =
+      witnessPayload (pref ++ [b]) suffix := by
   simp [witnessPayload, List.append_assoc]
 
 theorem witnessPayload_rewind
-    (prefix : BitString) (b : Bool) (suffix : BitString) :
-    witnessPayload (prefix ++ [b]) suffix =
-      witnessPayload prefix (b :: suffix) :=
-  (witnessPayload_advance prefix b suffix).symm
+    (pref : BitString) (b : Bool) (suffix : BitString) :
+    witnessPayload (pref ++ [b]) suffix =
+      witnessPayload pref (b :: suffix) :=
+  (witnessPayload_advance pref b suffix).symm
 
 /-- The semantic half of the sole missing evalStep input case.  The unary index
 is decoded from tape data, and the unread tail is preserved exactly. -/
@@ -127,9 +127,9 @@ logical shape the unary physical driver must realize. -/
 theorem witness_index_decomposition
     (witness : BitString) (i : Nat)
     (h : i < witness.length) :
-    ∃ prefix b suffix,
-      witness = prefix ++ b :: suffix ∧
-      prefix.length = i ∧
+    ∃ pref b suffix,
+      witness = pref ++ b :: suffix ∧
+      pref.length = i ∧
       witness.getD i false = b := by
   induction witness generalizing i with
   | nil =>
@@ -144,25 +144,25 @@ theorem witness_index_decomposition
       | succ i =>
           have hi : i < tail.length := by
             simpa using Nat.succ_lt_succ_iff.mp h
-          obtain ⟨prefix, b, suffix, hsplit, hlen, hget⟩ :=
+          obtain ⟨pref, b, suffix, hsplit, hlen, hget⟩ :=
             ih i hi
-          refine ⟨head :: prefix, b, suffix, ?_, ?_, ?_⟩
+          refine ⟨head :: pref, b, suffix, ?_, ?_, ?_⟩
           · simp [hsplit, List.append_assoc]
           · simp [hlen]
           · simpa [List.getD_cons_succ] using hget
 
-/-- Consequently, moving a marker through exactly the decomposition prefix
+/-- Consequently, moving a marker through exactly the decomposition pref
 does not change the represented witness and positions the marker immediately
 before the selected bit.  This theorem is representation-level; the per-cell
 physical realization is markerAdvance_layout above. -/
 theorem selected_marker_layout
     (outerLeft outerRight : List (Option Bool))
-    (witness prefix suffix : BitString)
+    (witness pref suffix : BitString)
     (b : Bool)
-    (hw : witness = prefix ++ b :: suffix) :
-    witnessPayload prefix (b :: suffix) = witness ∧
-    (witnessMarkerLayout outerLeft prefix (b :: suffix) outerRight).head = none ∧
-    (witnessMarkerLayout outerLeft prefix (b :: suffix) outerRight).right =
+    (hw : witness = pref ++ b :: suffix) :
+    witnessPayload pref (b :: suffix) = witness ∧
+    (witnessMarkerLayout outerLeft pref (b :: suffix) outerRight).head = none ∧
+    (witnessMarkerLayout outerLeft pref (b :: suffix) outerRight).right =
       some b :: (suffix.map some ++ outerRight) := by
   subst witness
   constructor
