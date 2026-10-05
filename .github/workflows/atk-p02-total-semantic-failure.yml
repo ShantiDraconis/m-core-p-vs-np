@@ -36,6 +36,8 @@ jobs:
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.TotalSemanticFailureProducer.toFailureGenerator
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_implies_universalFailure
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_closes_internal_endpoint
+          #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_of_universalFailure
+          #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_iff_universalFailure
           #print axioms MCore.Real.P02SemanticInvariantCore.invariantPoint_gives_semantic_failure
           #print axioms MCore.Real.P02SemanticInvariantCore.invariantFamily_to_totalSemanticFailure
           #print axioms MCore.Real.P02SemanticInvariantCore.totalInvariantPoint_closes_G2
