@@ -15,7 +15,7 @@ theorem polynomialMajorant_poly (c e : Nat) :
     PolynomialTimeBound (polynomialMajorant c e) := by
   refine ⟨c, e, ?_⟩
   intro n
-  exact le_rfl
+  exact Nat.le_refl _
 
 def withMajorantClock
     (M : PolyDTMCandidate)
