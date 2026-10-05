@@ -42,7 +42,7 @@ theorem preservingRead_iterated_cycles
       indexSomeConfig ((a :: seed) ++ moved) suffix (n - moved.length) := by
   induction moved generalizing a seed n with
   | nil =>
-      rfl
+      simp [iteratedCycleFuel, iteratedCycleFuelLen, TM.run]
   | cons b rest ih =>
       have hn : 0 < n := by
         have hpos : 0 < (b :: rest).length := by simp
@@ -50,12 +50,42 @@ theorem preservingRead_iterated_cycles
       obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.ne_of_gt hn)
       have hrest : rest.length ≤ k := by
         simpa using hcount
-      rw [iteratedCycleFuel_cons]
-      rw [run_add]
-      rw [preservingRead_indexSome_one_cycle]
+      have hcycle :=
+        preservingRead_indexSome_one_cycle a b seed (rest ++ suffix) k
       have hih :=
         ih (a := a) (seed := seed ++ [b]) (n := k) hrest
-      simpa [List.append_assoc] using hih
+      have hfuel :
+          iteratedCycleFuel (a :: seed) (b :: rest) =
+            successorCycleFuel (a :: seed) +
+              iteratedCycleFuel ((a :: seed) ++ [b]) rest := by
+        exact iteratedCycleFuel_cons (a :: seed) b rest
+      rw [hfuel]
+      calc
+        preservingUnaryReadMachine.run
+            (successorCycleFuel (a :: seed) +
+              iteratedCycleFuel ((a :: seed) ++ [b]) rest)
+            (indexSomeConfig (a :: seed) ((b :: rest) ++ suffix) (k + 1))
+            =
+          preservingUnaryReadMachine.run
+            (iteratedCycleFuel ((a :: seed) ++ [b]) rest)
+            (preservingUnaryReadMachine.run
+              (successorCycleFuel (a :: seed))
+              (indexSomeConfig (a :: seed) (b :: (rest ++ suffix)) (k + 1))) := by
+                rw [run_add]
+                rfl
+        _ =
+          preservingUnaryReadMachine.run
+            (iteratedCycleFuel ((a :: seed) ++ [b]) rest)
+            (indexSomeConfig ((a :: seed) ++ [b]) (rest ++ suffix) k) := by
+              rw [hcycle]
+        _ =
+          indexSomeConfig (((a :: seed) ++ [b]) ++ rest)
+            suffix (k - rest.length) := by
+              exact hih
+        _ =
+          indexSomeConfig ((a :: seed) ++ (b :: rest))
+            suffix ((k + 1) - (b :: rest).length) := by
+              simp [List.append_assoc]
 
 #print axioms MCore.Real.P01PreservingUnaryIteration.preservingRead_iterated_cycles
 
