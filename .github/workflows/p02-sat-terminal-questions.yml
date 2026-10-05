@@ -1,0 +1,36 @@
+name: P02 SAT Terminal Questions
+
+on:
+  push:
+    branches:
+      - atk/p02-equality-composition-unified
+    paths:
+      - 'probe/P02TerminalQuestionsSAT.lean'
+      - '.github/workflows/p02-sat-terminal-questions.yml'
+  workflow_dispatch:
+
+jobs:
+  ask-kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install "$(cat lean-toolchain)"
+          "$HOME/.elan/bin/elan" default "$(cat lean-toolchain)"
+      - name: Ask SAT terminal
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          if lake env lean probe/P02TerminalQuestionsSAT.lean > /tmp/satq.log 2>&1; then
+            cat /tmp/satq.log
+            echo "UNEXPECTED_SAT_INHABITANT_PASS"
+            exit 2
+          else
+            cat /tmp/satq.log
+            echo "SAT_TERMINAL_GOALS_EXPOSED"
+          fi
