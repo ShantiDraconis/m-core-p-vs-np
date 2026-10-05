@@ -40,6 +40,7 @@ jobs:
           lake build MCore.Real.P01PreservingUnaryReaderCertificate
           lake build MCore.Real.P01PreservingMarkerIteration
           lake build MCore.Real.P01WitnessIndexedReadGlobal
+          lake build MCore.Real.P01PreservingUnaryPhysicalRuns
           lake build MCore.Real.P01PreservingUnaryReaderFrontier
           if grep -En '(^|[[:space:]])(sorry|admit|sorryAx)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P01PreservingUnaryReaderFrontier.lean; then
             exit 1
