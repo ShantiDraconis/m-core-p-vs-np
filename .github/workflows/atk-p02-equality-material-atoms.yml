@@ -1,0 +1,32 @@
+name: ATK P02 Equality Material Atoms
+
+on:
+  push:
+    branches:
+      - atk/p02-equality-material-atoms-20261005
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        uses: leanprover/lean-action@v1
+      - name: Build equality material atoms
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02EqualityMaterialAtomsMaterial
+      - name: Axiom and placeholder audit
+        run: |
+          set -euo pipefail
+          cat > P02EqualityMaterialAtomsAudit.lean <<'EOF'
+          import MCore.Real.P02EqualityMaterialAtomsMaterial
+          #print axioms MCore.Real.P02EqualityMaterialAtomsMaterial.equalityProducerOfAtoms
+          #print axioms MCore.Real.P02EqualityMaterialAtomsMaterial.satInP_plus_atoms_implies_p_eq_np
+          #print axioms MCore.Real.P02EqualityMaterialAtomsMaterial.equalityAtoms_imply_transfer
+          EOF
+          lake env lean P02EqualityMaterialAtomsAudit.lean 2>&1 | tee /tmp/p02-eq-atoms-axioms.log
+          if grep -E 'sorryAx' /tmp/p02-eq-atoms-axioms.log; then exit 1; fi
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02EqualityMaterialAtomsMaterial.lean; then exit 1; fi
+          echo P02_EQUALITY_MATERIAL_ATOMS_FRONTIER_GREEN
