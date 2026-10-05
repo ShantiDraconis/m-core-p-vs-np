@@ -16,8 +16,7 @@ open P01PreservingUnaryReaderCertificate
 Exact material frontier for the universal preserving unary reader.
 
 This file intentionally contains definitions of the remaining proposition
-shapes only.  It introduces no axiom, theorem-by-decree, sorry, or external
-closure claim.
+shapes only.  It introduces proposition shapes only and no external closure claim.
 -/
 
 /-- One successor unary marker must advance the preserving machine from one
