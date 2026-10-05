@@ -512,10 +512,11 @@ theorem indexSome_run_advance
       rw [run_add, shiftRead_to_carry]
       rw [run_add, carry_to_returnFromMarker]
       rw [run_add, returnFromMarker_to_returnBits]
+      simp only [L, Nat.zero_add] at *
       change preservingUnaryReadMachine.run
-        ((L + 1) + (1 + (L + 1)))
+        ((xs.length + 1 + 1) + (1 + (xs.length + 1 + 1)))
         (returnBitsConfig (b :: (xs.reverse ++ [x]))
-          (none :: tail.map some) (L + 1) n) =
+          (none :: tail.map some) (xs.length + 1 + 1) n) =
         indexSomeConfig ((x :: xs) ++ [b]) tail n
       have hrem :
           (b :: (xs.reverse ++ [x])).length = L + 1 := by
