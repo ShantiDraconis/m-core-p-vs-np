@@ -49,8 +49,8 @@ theorem universalSim_some_iff
   · simp only [h, if_pos, Option.some.injEq, Prod.mk.injEq]
     constructor
     · rintro ⟨hb, hk⟩
-      exact ⟨hk.symm, h, hb.symm⟩
-    · rintro ⟨hk, _, hb⟩
+      exact ⟨hk.symm, hb.symm⟩
+    · rintro ⟨hk, hb⟩
       exact ⟨hb.symm, hk.symm⟩
   · have hf :
         enc.toTM.halting
