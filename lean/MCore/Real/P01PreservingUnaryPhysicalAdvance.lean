@@ -265,7 +265,7 @@ def returnBitsConfig
         tape :=
           { left := leftAcc
             head := none
-            right := List.replicate blankPad none ++ (encodeNat n).map some } }
+            right := List.replicate (blankPad - 1) none ++ (encodeNat n).map some } }
   | x :: xs =>
       { state := .returnBits
         tape :=
@@ -376,15 +376,13 @@ def returnBlanksConfig
 
 /-- Crossing the separator blank enters returnBlanks. -/
 theorem returnBits_to_returnBlanks
-    (leftAcc : List (Option Bool)) (blankPad : Nat) (n : Nat) :
+    (leftAcc : List (Option Bool)) (blankPad : Nat) (n : Nat)
+    (hpad : 0 < blankPad) :
     preservingUnaryReadMachine.run 1
       (returnBitsConfig [] leftAcc blankPad n) =
-      returnBlanksConfig blankPad (none :: leftAcc) n := by
+      returnBlanksConfig (blankPad - 1) (none :: leftAcc) n := by
   cases blankPad with
-  | zero =>
-      cases n <;>
-        simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
-          encodeNat, TM.run, TM.step, Tape.write, Tape.move]
+  | zero => omega
   | succ k =>
       simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
         TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
@@ -404,6 +402,17 @@ theorem returnBlanks_step_succ
   | succ k =>
       simp [returnBlanksConfig, preservingUnaryReadMachine, TM.step,
         Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+
+/-- Prepending one blank after a replicated blank block is the same as
+prepending it before the block. -/
+theorem replicate_none_append_cons
+    (k : Nat) (leftAcc : List (Option Bool)) :
+    List.replicate k none ++ none :: leftAcc =
+      none :: (List.replicate k none ++ leftAcc) := by
+  induction k generalizing leftAcc with
+  | zero => rfl
+  | succ k ih =>
+      simp [List.replicate_succ, ih, List.append_assoc]
 
 /-- Scan all erased unary blanks and land on the next unary symbol. -/
 theorem returnBlanks_run
@@ -431,15 +440,9 @@ theorem returnBlanks_run
               ih (leftAcc := none :: leftAcc)
         _ = returnBlanksConfig 0
             (List.replicate (Nat.succ k) none ++ leftAcc) n := by
-              have hrep :
-                  List.replicate k none ++ none :: leftAcc =
-                    none :: (List.replicate k none ++ leftAcc) := by
-                induction k with
-                | zero => rfl
-                | succ k ihk =>
-                    simp [List.replicate_succ, ihk, List.append_assoc]
               simpa [List.replicate_succ] using
-                congrArg (fun z => returnBlanksConfig 0 z n) hrep
+                congrArg (fun z => returnBlanksConfig 0 z n)
+                  (replicate_none_append_cons k leftAcc)
 
 /-- Once the blank region is exhausted, returnBlanks sees the next encoded
 unary symbol and returns to indexSome without moving the head. -/
