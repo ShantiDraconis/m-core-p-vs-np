@@ -538,8 +538,10 @@ theorem indexSome_run_advance
       rw [hsub]
       rw [run_add, returnBlanks_run]
       rw [returnBlanks_zero_to_indexSome]
-      simp [L, indexSomeConfig, List.map_append, List.reverse_cons,
-        List.append_assoc, List.replicate_succ, encodeNat]
+      cases n <;>
+        simp [L, indexSomeConfig, List.map_append, List.reverse_cons,
+          List.append_assoc, List.replicate_succ, encodeNat,
+          replicate_none_append_cons]
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.indexSome_run_advance
 
