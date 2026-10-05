@@ -556,6 +556,7 @@ theorem returnPhase_run
       rw [returnBlanks_to_indexSome]
       simp [indexSomeConfig, encodeNat, pref, hp, List.replicate_succ,
         List.append_assoc, replicate_none_push]
+      rfl
   | succ n =>
       rw [run_add]
       have hblank :
@@ -572,7 +573,6 @@ theorem returnPhase_run
           returnBits_blank_to_returnBlanks rest.length (pref ++ [b]) suffix
             true ((encodeNat n).map some)
       rw [hblank]
-      rw [show rest.length + 1 = pref.length by omega]
       rw [run_add]
       rw [returnBlanks_run]
       rw [TM.run]
