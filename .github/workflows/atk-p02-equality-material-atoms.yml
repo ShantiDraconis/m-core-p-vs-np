@@ -17,14 +17,18 @@ jobs:
         run: |
           set -euo pipefail
           lake build MCore.Real.P02EqualityMaterialAtomsMaterial
+          lake build MCore.Real.P02SequentialCompositionMachine
       - name: Axiom and placeholder audit
         run: |
           set -euo pipefail
           cat > P02EqualityMaterialAtomsAudit.lean <<'EOF'
           import MCore.Real.P02EqualityMaterialAtomsMaterial
+          import MCore.Real.P02SequentialCompositionMachine
           #print axioms MCore.Real.P02EqualityMaterialAtomsMaterial.equalityProducerOfAtoms
           #print axioms MCore.Real.P02EqualityMaterialAtomsMaterial.satInP_plus_atoms_implies_p_eq_np
           #print axioms MCore.Real.P02EqualityMaterialAtomsMaterial.equalityAtoms_imply_transfer
+          #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_initial
+          #print axioms MCore.Real.P02SequentialCompositionMachine.sequential_blank
           EOF
           lake env lean P02EqualityMaterialAtomsAudit.lean 2>&1 | tee /tmp/p02-eq-atoms-axioms.log
           if grep -E 'sorryAx' /tmp/p02-eq-atoms-axioms.log; then exit 1; fi
