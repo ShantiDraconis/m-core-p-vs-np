@@ -53,14 +53,12 @@ theorem seekBlanks_run
       seekBlanksConfig 0 (passed + remaining) traversed b tail n := by
   induction remaining generalizing passed with
   | zero =>
-      simp [seekBlanksConfig]
+      rfl
   | succ remaining ih =>
-      rw [Nat.succ_eq_add_one]
-      rw [TM.run]
-      simp only [seekBlanksConfig_state]
+      simp only [TM.run, seekBlanksConfig_state]
       simp [preservingUnaryReadMachine]
       rw [seekBlanks_step_succ]
-      simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+      simpa [Nat.succ_eq_add_one, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
         (ih (passed := passed + 1))
 
 /-- With no erased blank left, the next step sees the first traversed bit. -/
@@ -118,7 +116,7 @@ theorem seekBits_entry_step
     (b : Bool) (tail : BitString) (n : Nat) :
     preservingUnaryReadMachine.run 1
       (seekBitsEntryConfig x xs passed b tail n) =
-      seekBitsConfig xs [x] passed b tail n := by
+      seekBitsConfig xs [x] (passed + 1) b tail n := by
   cases xs <;>
     simp [seekBitsEntryConfig, seekBitsConfig, preservingUnaryReadMachine,
       TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
