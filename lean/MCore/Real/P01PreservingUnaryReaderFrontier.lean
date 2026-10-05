@@ -1,5 +1,6 @@
 import MCore.Real.P01PreservingUnaryWitnessMachine
 import MCore.Real.P01PreservingUnaryReaderCertificate
+import MCore.Real.P01FinalCertificate
 
 namespace MCore
 namespace Real
@@ -24,10 +25,11 @@ canonical loop configuration to the next while extending the traversed prefix
 by exactly the next witness bit. -/
 def SuccessorCycleObligation : Prop :=
   ∀ (pref : BitString) (b : Bool) (suffix : BitString) (n : Nat),
-    preservingUnaryReadMachine.run
-        (2 * pref.length + 7)
-        (indexSomeConfig pref (b :: suffix) (n + 1)) =
-      indexSomeConfig (pref ++ [b]) suffix n
+    ∃ steps : Nat,
+      steps ≤ (pref.length + n + suffix.length + 1)^2 + 16 ∧
+      preservingUnaryReadMachine.run steps
+          (indexSomeConfig pref (b :: suffix) (n + 1)) =
+        indexSomeConfig (pref ++ [b]) suffix n
 
 /-- The terminal target remains the existing universal material contract. -/
 def UniversalReaderMaterialTarget : Prop :=
