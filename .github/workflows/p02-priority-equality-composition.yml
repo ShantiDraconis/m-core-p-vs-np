@@ -1,0 +1,19 @@
+name: P02 Priority Equality Composition
+on:
+  push:
+    branches:
+      - atk/p02-equality-material-atoms-20261005
+    paths:
+      - 'lean/MCore/Real/P02SequentialCompositionMachine.lean'
+      - 'scripts/run-p02-equality-composition-priority.sh'
+      - '.github/workflows/p02-priority-equality-composition.yml'
+  workflow_dispatch:
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Run equality composition priority kernel
+        run: bash scripts/run-p02-equality-composition-priority.sh
