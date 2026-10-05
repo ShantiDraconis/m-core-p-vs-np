@@ -26,6 +26,7 @@ jobs:
           lake build MCore.Real.P02SemanticNegationReduction
           lake build MCore.Real.P02SemanticNegationCounterexample
           lake build MCore.Real.P02ExactnessKernelFinalRefutation
+          lake build MCore.Real.P02TwoSidedExactnessAudit
       - name: Axiom and placeholder audit
         run: |
           set -euo pipefail
@@ -35,6 +36,7 @@ jobs:
           import MCore.Real.P02SemanticNegationReduction
           import MCore.Real.P02SemanticNegationCounterexample
           import MCore.Real.P02ExactnessKernelFinalRefutation
+          import MCore.Real.P02TwoSidedExactnessAudit
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.TotalSemanticFailureProducer.toFailureGenerator
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_implies_universalFailure
           #print axioms MCore.Real.P02TotalCandidateFailureMinCut.totalSemanticFailureProducer_closes_internal_endpoint
@@ -55,6 +57,12 @@ jobs:
           #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.realization_refutes_totalSemanticFailure
           #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.G2_exactness_closed_by_refutation
           #print axioms MCore.Real.P02ExactnessKernelFinalRefutation.refutationWitness_iff_sat_in_p
+          #print axioms MCore.Real.P02TwoSidedExactnessAudit.canonicalSAT_inNP
+          #print axioms MCore.Real.P02TwoSidedExactnessAudit.sat_in_p_implies_p_eq_np
+          #print axioms MCore.Real.P02TwoSidedExactnessAudit.sat_not_in_p_implies_p_ne_np
+          #print axioms MCore.Real.P02TwoSidedExactnessAudit.orient_from_canonicalSAT
+          #print axioms MCore.Real.P02TwoSidedExactnessAudit.g2_refutation_witness_iff_sat_in_p
+          #print axioms MCore.Real.P02TwoSidedExactnessAudit.g2_proved_implies_p_ne_np
           EOF
           lake env lean P02TotalCandidateFailureMinCutAudit.lean 2>&1 | tee /tmp/p02-total-semantic-axioms.log
           if grep -E 'sorryAx' /tmp/p02-total-semantic-axioms.log; then exit 1; fi
