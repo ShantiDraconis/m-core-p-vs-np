@@ -334,6 +334,122 @@ theorem returnBits_run
             ((x :: xs).reverse.map some ++ leftAcc) blankPad n := by
               simp [List.reverse_cons, List.map_append, List.append_assoc]
 
+
+/-- returnBlanks configuration after returnBits has crossed the separator.
+When `remaining` is zero, the head is the next unary symbol. -/
+def returnBlanksConfig
+    (remaining : Nat)
+    (leftAcc : List (Option Bool))
+    (n : Nat) :
+    Configuration PreservingReadState (Option Bool) :=
+  match remaining with
+  | 0 =>
+      match encodeNat n with
+      | [] =>
+          { state := .reject
+            tape := { left := leftAcc, head := none, right := [] } }
+      | bit :: rest =>
+          { state := .returnBlanks
+            tape :=
+              { left := leftAcc
+                head := some bit
+                right := rest.map some } }
+  | k + 1 =>
+      { state := .returnBlanks
+        tape :=
+          { left := leftAcc
+            head := none
+            right := List.replicate k none ++ (encodeNat n).map some } }
+
+@[simp] theorem returnBlanksConfig_state
+    (remaining : Nat) (leftAcc : List (Option Bool)) (n : Nat) :
+    (returnBlanksConfig remaining leftAcc n).state =
+      if remaining = 0 ∧ encodeNat n = [] then .reject else .returnBlanks := by
+  cases remaining with
+  | zero =>
+      cases h : encodeNat n <;> simp [returnBlanksConfig, h]
+  | succ k =>
+      simp [returnBlanksConfig]
+
+/-- Crossing the separator blank enters returnBlanks. -/
+theorem returnBits_to_returnBlanks
+    (leftAcc : List (Option Bool)) (blankPad : Nat) (n : Nat) :
+    preservingUnaryReadMachine.run 1
+      (returnBitsConfig [] leftAcc blankPad n) =
+      returnBlanksConfig blankPad (none :: leftAcc) n := by
+  cases blankPad with
+  | zero =>
+      cases n <;>
+        simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
+          encodeNat, TM.run, TM.step, Tape.write, Tape.move]
+  | succ k =>
+      simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
+        TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
+        List.append_assoc]
+
+/-- One erased blank is crossed by returnBlanks. -/
+theorem returnBlanks_step_succ
+    (k : Nat) (leftAcc : List (Option Bool)) (n : Nat) :
+    preservingUnaryReadMachine.step
+      (returnBlanksConfig (k + 1) leftAcc n) =
+      returnBlanksConfig k (none :: leftAcc) n := by
+  cases k with
+  | zero =>
+      cases n <;>
+        simp [returnBlanksConfig, preservingUnaryReadMachine, encodeNat,
+          TM.step, Tape.write, Tape.move]
+  | succ k =>
+      simp [returnBlanksConfig, preservingUnaryReadMachine, TM.step,
+        Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+
+/-- Scan all erased unary blanks and land on the next unary symbol. -/
+theorem returnBlanks_run
+    (remaining : Nat) (leftAcc : List (Option Bool)) (n : Nat) :
+    preservingUnaryReadMachine.run remaining
+      (returnBlanksConfig remaining leftAcc n) =
+      returnBlanksConfig 0 (List.replicate remaining none ++ leftAcc) n := by
+  induction remaining generalizing leftAcc with
+  | zero =>
+      rfl
+  | succ k ih =>
+      calc
+        preservingUnaryReadMachine.run (Nat.succ k)
+            (returnBlanksConfig (Nat.succ k) leftAcc n) =
+          preservingUnaryReadMachine.run k
+            (preservingUnaryReadMachine.step
+              (returnBlanksConfig (k + 1) leftAcc n)) := by
+                simp [TM.run, returnBlanksConfig, preservingUnaryReadMachine,
+                  Nat.succ_eq_add_one]
+        _ = preservingUnaryReadMachine.run k
+            (returnBlanksConfig k (none :: leftAcc) n) := by
+              rw [returnBlanks_step_succ]
+        _ = returnBlanksConfig 0
+            (List.replicate k none ++ (none :: leftAcc)) n :=
+              ih (leftAcc := none :: leftAcc)
+        _ = returnBlanksConfig 0
+            (List.replicate (Nat.succ k) none ++ leftAcc) n := by
+              simp [List.replicate_succ, List.append_assoc]
+
+/-- Once the blank region is exhausted, returnBlanks sees the next encoded
+unary symbol and returns to indexSome without moving the head. -/
+theorem returnBlanks_zero_to_indexSome
+    (leftAcc : List (Option Bool)) (n : Nat) :
+    preservingUnaryReadMachine.run 1
+      (returnBlanksConfig 0 leftAcc n) =
+      { state := .indexSome
+        tape :=
+          { left := leftAcc
+            head := (encodeNat n).head?
+            right := (encodeNat n).tail.map some } } := by
+  cases n <;>
+    simp [returnBlanksConfig, preservingUnaryReadMachine, encodeNat,
+      TM.run, TM.step, Tape.write, Tape.move]
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBits_to_returnBlanks
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBlanks_step_succ
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBlanks_run
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBlanks_zero_to_indexSome
+
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnFromMarker_to_returnBits
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBits_step_cons
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBits_run
