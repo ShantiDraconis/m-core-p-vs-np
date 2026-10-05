@@ -45,7 +45,7 @@ def seekPrefixHeadConfig
       { left :=
           prefTail.map some ++ none :: some b :: suffix.map some
         head := some first
-        right := List.replicate (pad + 1) none ++ (encodeNat n).map some } }
+        right := List.replicate (pad + 2) none ++ (encodeNat n).map some } }
 
 /-- After consuming the first traversed bit, seekBits crosses the remaining
 prefix and stops at the unique witness marker. -/
