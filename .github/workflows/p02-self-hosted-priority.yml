@@ -1,4 +1,4 @@
-name: P02 Self Hosted Equality Composition
+name: P02 Hosted Equality Composition
 
 on:
   workflow_dispatch:
@@ -12,11 +12,22 @@ on:
 
 jobs:
   kernel:
-    runs-on: [self-hosted, linux, x64, p02, lean419, mcore]
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - name: Install Lean toolchain
+        shell: bash
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
       - name: Runner health
-        run: bash scripts/runner/health-p02-runner.sh
+        shell: bash
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          bash scripts/runner/health-p02-runner.sh
       - name: Build and audit equality composition
-        run: bash scripts/runner/run-p02-dual-kernel.sh
+        shell: bash
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          bash scripts/runner/run-p02-dual-kernel.sh
