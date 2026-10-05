@@ -29,6 +29,7 @@ jobs:
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P01PreservingUnaryReaderResiduals
           lake build MCore.Real.P01PreservingUnaryTruncationLawV2
+          lake build MCore.Real.P01PreservingUnaryPhysicalProbe
           lake build MCore.Real.PhysicalVerifierResiduals
           lake build MCore.MinimalInhabitantSearch
       - name: Hygiene
