@@ -994,8 +994,55 @@ theorem preservingUnary_run_exact
           simp [List.getD_cons_succ, List.map_append, List.append_assoc]
           omega
 
+
+theorem indexSomeFuel_le (m n : Nat) :
+    indexSomeFuel m n ≤
+      (4 * (m + n) + 8) * n + 6 * (m + n) + 5 := by
+  induction n generalizing m with
+  | zero =>
+      simp [indexSomeFuel]
+  | succ n ih =>
+      simp only [indexSomeFuel]
+      have h := ih (m + 1)
+      rw [show m + 1 + n = m + (n + 1) by omega] at h
+      have hstep :
+          (4 * (m + (n + 1)) + 8) * n +
+              6 * (m + (n + 1)) + 5 +
+              (4 * m + 8) ≤
+            (4 * (m + (n + 1)) + 8) * (n + 1) +
+              6 * (m + (n + 1)) + 5 := by
+        rw [Nat.mul_succ]
+        omega
+      omega
+
+theorem preservingUnaryExactFuel_le_quadratic (i : Nat) :
+    preservingUnaryExactFuel i ≤ 16 * (i + 1) ^ 2 := by
+  cases i with
+  | zero =>
+      simp [preservingUnaryExactFuel]
+  | succ n =>
+      simp only [preservingUnaryExactFuel]
+      have h := indexSomeFuel_le 1 n
+      have e1 :
+          (4 * (1 + n) + 8) * n =
+            4 * (n * n) + 12 * n := by
+        simp only [Nat.add_mul, Nat.mul_add, Nat.mul_one, Nat.one_mul,
+          Nat.mul_assoc]
+        omega
+      have e2 :
+          16 * (n + 1 + 1) ^ 2 =
+            16 * (n * n) + 64 * n + 64 := by
+        simp only [Nat.pow_two, Nat.add_mul, Nat.mul_add, Nat.mul_one,
+          Nat.one_mul, Nat.mul_assoc]
+        omega
+      rw [e1] at h
+      rw [e2]
+      omega
+
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.indexSome_forall
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.preservingUnary_run_exact
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.indexSomeFuel_le
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.preservingUnaryExactFuel_le_quadratic
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.finalSeekBits_over_bits
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.rewind_over_bits
