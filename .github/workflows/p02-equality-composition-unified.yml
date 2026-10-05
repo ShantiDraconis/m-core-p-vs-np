@@ -6,6 +6,7 @@ on:
       - atk/p02-equality-composition-unified
     paths:
       - 'lean/MCore/Real/P02EqualityCompositionUnified.lean'
+      - 'lean/MCore/Real/P02DeterministicReductionCompositionMaterial.lean'
       - '.github/workflows/p02-equality-composition-unified.yml'
   workflow_dispatch:
 
@@ -33,6 +34,7 @@ jobs:
           set -euo pipefail
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P02EqualityCompositionUnified
+          lake build MCore.Real.P02DeterministicReductionCompositionMaterial
 
       - name: Kernel axiom audit
         shell: bash
@@ -56,4 +58,22 @@ jobs:
             echo 'AUDIT_FAIL source hygiene'
             exit 1
           fi
+          cat > P02DeterministicReductionCompositionMaterialAudit.lean <<'EOF'
+          import MCore.Real.P02DeterministicReductionCompositionMaterial
+          #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.halting_left
+          #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.halting_right
+          #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.step_left_active
+          #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.bridge_step
+          #print axioms MCore.Real.P02DeterministicReductionCompositionMaterial.step_right
+          EOF
+          lake env lean P02DeterministicReductionCompositionMaterialAudit.lean 2>&1 | tee /tmp/p02-t3.log
+          if grep -E 'sorryAx' /tmp/p02-t3.log; then
+            echo 'AUDIT_FAIL T3 sorryAx'
+            exit 1
+          fi
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' lean/MCore/Real/P02DeterministicReductionCompositionMaterial.lean; then
+            echo 'AUDIT_FAIL T3 source hygiene'
+            exit 1
+          fi
           echo P02_EQUALITY_COMPOSITION_UNIFIED_GREEN
+          echo P02_DETERMINISTIC_REDUCTION_COMPOSITION_CORE_GREEN
