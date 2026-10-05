@@ -660,6 +660,16 @@ theorem rewind_over_bits
           rewindConfig result l [] after)
       simp [List.reverse_cons, List.map_append, List.append_assoc]
 
+theorem rewind_empty_to_cleanup
+    (result : Bool) (left stream : List (Option Bool)) :
+    preservingUnaryReadMachine.run 1
+      (rewindConfig result left [] (none :: stream)) =
+      { state := cleanupState result
+        tape := rightStreamTape (none :: none :: left) stream } := by
+  cases result <;> cases stream <;>
+    simp [rewindConfig, rewindInspectState, cleanupState, rightStreamTape,
+      preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
 theorem cleanup_run_halts
     (result : Bool) (k : Nat)
     (left : List (Option Bool)) :
@@ -823,16 +833,15 @@ theorem indexSome_false_finalize
         (some selected :: witnessSuffix) after
 
   have h67 : preservingUnaryReadMachine.run 1 C6 = C7 := by
-    dsimp [C6, C7, rewindConfig, rewindInspectState, cleanupState,
-      restoredWitness, after, pref]
     have hrep :
         List.replicate (m + 1) none ++ [some false] =
           none :: (List.replicate m none ++ [some false]) := by
       simp [List.replicate_succ]
+    dsimp [C6, C7, after]
     rw [hrep]
-    cases selected <;>
-      simp [rightStreamTape, preservingUnaryReadMachine,
-        TM.run, TM.step, Tape.write, Tape.move]
+    exact
+      rewind_empty_to_cleanup selected restoredWitness
+        (List.replicate m none ++ [some false])
 
   have h78 : preservingUnaryReadMachine.run (m + 1) C7 = C8 := by
     dsimp [C7, C8]
@@ -885,6 +894,7 @@ theorem indexSome_false_finalize
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.finalSeekBits_over_bits
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.rewind_over_bits
+#print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.rewind_empty_to_cleanup
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.cleanup_run_halts
 #print axioms MCore.Real.P01PreservingUnaryPhysicalRuns.indexSome_false_finalize
 
