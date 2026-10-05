@@ -252,40 +252,91 @@ theorem carry_to_returnFromMarker
     simp [carryConfig, returnFromMarkerConfig, preservingUnaryReadMachine,
       TM.run, TM.step, Tape.write, Tape.move, List.append_assoc]
 
-/-- returnFromMarker crosses the marker blank and enters returnBits.
-The whole sequence still to cross is represented explicitly; its first element
-is the selected bit restored onto the old marker cell. -/
+/-- returnBits scans right across the restored selected bit and the traversed
+prefix.  `leftAcc` is the exact physical left stack accumulated so far. -/
 def returnBitsConfig
     (remaining : BitString)
-    (blankPad : Nat)
-    (tail : BitString) (n : Nat) :
+    (leftAcc : List (Option Bool))
+    (blankPad : Nat) (n : Nat) :
     Configuration PreservingReadState (Option Bool) :=
   match remaining with
   | [] =>
       { state := .returnBits
         tape :=
-          { left := none :: tail.map some
+          { left := leftAcc
             head := none
-            right :=
-              List.replicate blankPad none ++ (encodeNat n).map some } }
+            right := List.replicate blankPad none ++ (encodeNat n).map some } }
   | x :: xs =>
       { state := .returnBits
         tape :=
-          { left := none :: tail.map some
+          { left := leftAcc
             head := some x
             right := xs.map some ++
               List.replicate blankPad none ++ (encodeNat n).map some } }
 
+/-- returnFromMarker crosses the marker blank.  The selected bit becomes the
+first returnBits head and the moved marker blank is now in the left stack. -/
 theorem returnFromMarker_to_returnBits
     (selected : Bool)
     (passedRev : BitString) (blankPad : Nat)
     (tail : BitString) (n : Nat) :
     preservingUnaryReadMachine.run 1
       (returnFromMarkerConfig selected passedRev blankPad tail n) =
-      returnBitsConfig (selected :: passedRev) blankPad tail n := by
+      returnBitsConfig (selected :: passedRev) (none :: tail.map some)
+        blankPad n := by
   simp [returnFromMarkerConfig, returnBitsConfig,
     preservingUnaryReadMachine, TM.run, TM.step,
     Tape.write, Tape.move, List.append_assoc]
+
+@[simp] theorem returnBitsConfig_state
+    (remaining : BitString) (leftAcc : List (Option Bool))
+    (blankPad : Nat) (n : Nat) :
+    (returnBitsConfig remaining leftAcc blankPad n).state = .returnBits := by
+  cases remaining <;> rfl
+
+/-- One physical returnBits step preserves the current bit and moves right. -/
+theorem returnBits_step_cons
+    (x : Bool) (xs : BitString) (leftAcc : List (Option Bool))
+    (blankPad : Nat) (n : Nat) :
+    preservingUnaryReadMachine.step
+      (returnBitsConfig (x :: xs) leftAcc blankPad n) =
+      returnBitsConfig xs (some x :: leftAcc) blankPad n := by
+  cases xs <;>
+    simp [returnBitsConfig, preservingUnaryReadMachine, TM.step,
+      Tape.write, Tape.move, List.append_assoc]
+
+/-- Exact physical scan of all restored bits until the blank separator is under
+the head.  The scanned sequence is reversed into the physical left stack. -/
+theorem returnBits_run
+    (remaining : BitString) (leftAcc : List (Option Bool))
+    (blankPad : Nat) (n : Nat) :
+    preservingUnaryReadMachine.run remaining.length
+      (returnBitsConfig remaining leftAcc blankPad n) =
+      returnBitsConfig [] (remaining.reverse.map some ++ leftAcc) blankPad n := by
+  induction remaining generalizing leftAcc with
+  | nil =>
+      rfl
+  | cons x xs ih =>
+      calc
+        preservingUnaryReadMachine.run (x :: xs).length
+            (returnBitsConfig (x :: xs) leftAcc blankPad n) =
+          preservingUnaryReadMachine.run xs.length
+            (preservingUnaryReadMachine.step
+              (returnBitsConfig (x :: xs) leftAcc blankPad n)) := by
+                simp [TM.run, preservingUnaryReadMachine]
+        _ = preservingUnaryReadMachine.run xs.length
+            (returnBitsConfig xs (some x :: leftAcc) blankPad n) := by
+              rw [returnBits_step_cons]
+        _ = returnBitsConfig []
+            (xs.reverse.map some ++ (some x :: leftAcc)) blankPad n :=
+              ih (leftAcc := some x :: leftAcc)
+        _ = returnBitsConfig []
+            ((x :: xs).reverse.map some ++ leftAcc) blankPad n := by
+              simp [List.reverse_cons, List.map_append, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnFromMarker_to_returnBits
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBits_step_cons
+#print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.returnBits_run
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.shiftRead_to_carry
 #print axioms MCore.Real.P01PreservingUnaryPhysicalAdvance.carry_to_returnFromMarker
