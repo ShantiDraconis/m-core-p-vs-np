@@ -294,6 +294,21 @@ theorem preservingRead_second_true_cycle_guess_false :
 
 #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_second_true_cycle_guess_false
 
+/-- The second unary true returns to the canonical indexSome state in
+exactly twelve physical steps.  This is the first nontrivial full marker cycle
+after the initial eight-step setup. -/
+theorem preservingRead_second_true_cycle_twelve
+    (b0 b1 : Bool) (tail : BitString) (n : Nat) :
+    preservingUnaryReadMachine.run 12
+      (indexSomeConfig [b0] (b1 :: tail) (n + 1)) =
+      indexSomeConfig [b0, b1] tail n := by
+  cases b0 <;> cases b1 <;> cases n <;>
+    simp [preservingUnaryReadMachine, indexSomeConfig, encodeNat,
+      TM.run, TM.step, Tape.write, Tape.move,
+      List.replicate_succ, List.append_assoc]
+
+#print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_second_true_cycle_twelve
+
 /-- Exact final tape for zero index: the witness is unchanged; the unary false
 terminator is erased and the original witness separator remains blank. -/
 def zeroDoneTape (witness : BitString) : Tape (Option Bool) :=
