@@ -386,9 +386,14 @@ theorem returnBits_to_returnBlanks
   | succ k =>
       cases k with
       | zero =>
-          cases h : encodeNat n <;>
-            simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
-              TM.run, TM.step, Tape.write, Tape.move, h]
+          have hnonempty : encodeNat n ≠ [] := by
+            cases n <;> simp [encodeNat]
+          cases h : encodeNat n with
+          | nil =>
+              exact (hnonempty h).elim
+          | cons bit rest =>
+              simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
+                TM.run, TM.step, Tape.write, Tape.move, h]
       | succ k =>
           simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
             TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
