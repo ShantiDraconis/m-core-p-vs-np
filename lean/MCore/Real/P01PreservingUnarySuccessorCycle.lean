@@ -266,6 +266,78 @@ theorem seekBits_run
       rw [hih]
       simp [List.reverse_cons, List.map_append, List.append_assoc]
 
+/-- Configuration for the final rightward scan across erased unary blanks.
+`pad` counts blanks including the blank currently under the head. -/
+def returnBlanksScanConfig
+    (pad : Nat)
+    (leftBase : List (Option Bool))
+    (bit : Bool) (rest : List (Option Bool)) :
+    Configuration PreservingReadState (Option Bool) :=
+  match pad with
+  | 0 =>
+      { state := .returnBlanks
+        tape := { left := leftBase, head := some bit, right := rest } }
+  | k + 1 =>
+      { state := .returnBlanks
+        tape :=
+          { left := leftBase
+            head := none
+            right := List.replicate k none ++ some bit :: rest } }
+
+@[simp] theorem returnBlanksScanConfig_state
+    (pad : Nat) (leftBase : List (Option Bool))
+    (bit : Bool) (rest : List (Option Bool)) :
+    (returnBlanksScanConfig pad leftBase bit rest).state = .returnBlanks := by
+  cases pad <;> rfl
+
+@[simp] theorem preserving_not_halt_returnBlanks :
+    preservingUnaryReadMachine.halting .returnBlanks = false := rfl
+
+theorem returnBlanks_step_succ
+    (pad : Nat) (leftBase : List (Option Bool))
+    (bit : Bool) (rest : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      (returnBlanksScanConfig (pad + 1) leftBase bit rest) =
+    returnBlanksScanConfig pad (none :: leftBase) bit rest := by
+  cases pad <;>
+    simp [returnBlanksScanConfig, preservingUnaryReadMachine, TM.step,
+      Tape.write, Tape.move, List.replicate_succ, List.append_assoc]
+
+/-- Crossing exactly `pad` erased blanks preserves the Boolean payload and
+moves all blanks onto Tape.left. -/
+theorem returnBlanks_run
+    (pad : Nat) (leftBase : List (Option Bool))
+    (bit : Bool) (rest : List (Option Bool)) :
+    preservingUnaryReadMachine.run pad
+      (returnBlanksScanConfig pad leftBase bit rest) =
+    returnBlanksScanConfig 0
+      (List.replicate pad none ++ leftBase) bit rest := by
+  induction pad generalizing leftBase with
+  | zero => rfl
+  | succ pad ih =>
+      rw [TM.run]
+      simp only [returnBlanksScanConfig_state, preserving_not_halt_returnBlanks,
+        Bool.false_eq_true, if_false]
+      rw [show Nat.succ pad = pad + 1 by omega]
+      rw [returnBlanks_step_succ]
+      rw [ih]
+      simp [List.replicate_succ, List.append_assoc]
+
+/-- Once the next unary symbol is under the head, returnBlanks re-enters the
+canonical indexSome control state without changing the tape. -/
+theorem returnBlanks_to_indexSome
+    (leftBase : List (Option Bool))
+    (bit : Bool) (rest : List (Option Bool)) :
+    preservingUnaryReadMachine.step
+      (returnBlanksScanConfig 0 leftBase bit rest) =
+    { state := .indexSome
+      tape := { left := leftBase, head := some bit, right := rest } } := by
+  simp [returnBlanksScanConfig, preservingUnaryReadMachine, TM.step,
+    Tape.write, Tape.move]
+
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBlanks_run
+#print axioms MCore.Real.P01PreservingUnarySuccessorCycle.returnBlanks_to_indexSome
+
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBlanks_run_to_first_bit
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.seekBits_marker_step
 #print axioms MCore.Real.P01PreservingUnarySuccessorCycle.shift_carry_return_run_three
