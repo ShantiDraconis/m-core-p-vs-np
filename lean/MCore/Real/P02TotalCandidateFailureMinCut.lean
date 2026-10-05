@@ -21,10 +21,6 @@ def DeclaredClockTotal (M : PolyDTMCandidate) : Prop :=
       (M.timeBound x.length)
       (initialTMConfig M.machine x)
 
-/-- The only lower-bound content left after timeout failures are discharged:
-for every candidate that really halts at its declared clock, produce one input
-where its Boolean answer disagrees with canonical SAT. -/
-
 /-- Non-totality exposes a concrete timeout input without requiring extra tactics. -/
 theorem exists_timeout_of_not_total
     (M : PolyDTMCandidate)
@@ -42,6 +38,9 @@ theorem exists_timeout_of_not_total
   intro hx
   exact hNo ⟨x, hx⟩
 
+/-- The only lower-bound content left after timeout failures are discharged:
+for every candidate that really halts at its declared clock, produce one input
+where its Boolean answer disagrees with canonical SAT. -/
 structure TotalSemanticFailureProducer where
   counterexample :
     ∀ (M : PolyDTMCandidate), DeclaredClockTotal M → BitString
