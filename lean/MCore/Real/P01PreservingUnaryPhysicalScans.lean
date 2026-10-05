@@ -97,7 +97,15 @@ theorem seekBlanks_run_replicate
                 (seekBlanksConfig pad leftBits bit (none :: right)) := by rw [hrun1]
       rw [htotal]
       rw [ih (none :: right)]
-      simp [List.replicate_succ, List.append_assoc]
+      have hrep :
+          List.replicate pad none ++ none :: right =
+            none :: (List.replicate pad none ++ right) := by
+        induction pad with
+        | zero => rfl
+        | succ pad ihpad =>
+            simp [List.replicate_succ, ihpad, List.append_assoc]
+      rw [hrep]
+      rfl
 
 #print axioms MCore.Real.P01PreservingUnaryPhysicalScans.seekBlanks_step_succ
 #print axioms MCore.Real.P01PreservingUnaryPhysicalScans.seekBlanks_step_zero
