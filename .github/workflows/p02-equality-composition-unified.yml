@@ -7,6 +7,7 @@ on:
     paths:
       - 'lean/MCore/Real/P02EqualityCompositionUnified.lean'
       - 'lean/MCore/Real/P02DeterministicReductionCompositionMaterial.lean'
+      - 'lean/MCore/Real/P02TerminalForcingSAT.lean'
       - '.github/workflows/p02-equality-composition-unified.yml'
   workflow_dispatch:
 
@@ -35,6 +36,7 @@ jobs:
           export PATH="$HOME/.elan/bin:$PATH"
           lake build MCore.Real.P02EqualityCompositionUnified
           lake build MCore.Real.P02DeterministicReductionCompositionMaterial
+          lake build MCore.Real.P02TerminalForcingSAT
 
       - name: Kernel axiom audit
         shell: bash
@@ -76,4 +78,16 @@ jobs:
             exit 1
           fi
           echo P02_EQUALITY_COMPOSITION_UNIFIED_GREEN
+          cat > P02TerminalForcingSATAudit.lean <<'EOF'
+          import MCore.Real.P02TerminalForcingSAT
+          #print axioms MCore.Real.P02TerminalForcingSAT.SATSolverData.toRealization
+          #print axioms MCore.Real.P02TerminalForcingSAT.satSolverData_iff_realization
+          #print axioms MCore.Real.P02TerminalForcingSAT.satSolverOfData
+          EOF
+          lake env lean P02TerminalForcingSATAudit.lean 2>&1 | tee /tmp/p02-sat-terminal.log
+          if grep -E 'sorryAx' /tmp/p02-sat-terminal.log; then
+            echo 'AUDIT_FAIL SAT terminal sorryAx'
+            exit 1
+          fi
           echo P02_DETERMINISTIC_REDUCTION_COMPOSITION_CORE_GREEN
+          echo P02_SAT_TERMINAL_EXPOSED_GREEN
