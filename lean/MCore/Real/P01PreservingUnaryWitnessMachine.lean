@@ -235,32 +235,32 @@ def preservingReadAccepting : PreservingReadState → Bool
 
 
 /-- Canonical loop configuration after at least one unary true has already
-advanced the witness marker.  `prefix` is the traversed witness prefix and
+advanced the witness marker.  `traversed` is the traversed witness prefix and
 therefore has the same length as the erased unary-true region. -/
 def indexSomeConfig
-    (prefix suffix : BitString) (n : Nat) :
+    (traversed suffix : BitString) (n : Nat) :
     Configuration PreservingReadState (Option Bool) :=
   match encodeNat n with
   | [] =>
       { state := .reject
         tape :=
           { left :=
-              List.replicate prefix.length none ++
-                prefix.map some ++ none :: suffix.map some
+              List.replicate traversed.length none ++
+                traversed.map some ++ none :: suffix.map some
             head := none
             right := [] } }
   | bit :: rest =>
       { state := .indexSome
         tape :=
           { left :=
-              List.replicate prefix.length none ++
-                prefix.map some ++ none :: suffix.map some
+              List.replicate traversed.length none ++
+                traversed.map some ++ none :: suffix.map some
             head := some bit
             right := rest.map some } }
 
 @[simp] theorem indexSomeConfig_state
-    (prefix suffix : BitString) (n : Nat) :
-    (indexSomeConfig prefix suffix n).state = .indexSome := by
+    (traversed suffix : BitString) (n : Nat) :
+    (indexSomeConfig traversed suffix n).state = .indexSome := by
   cases n <;> rfl
 
 /-- The first unary true establishes the general loop invariant in exactly
