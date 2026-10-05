@@ -294,9 +294,16 @@ theorem returnBlanks_run
       rw [TM.run]
       simp only [returnBlanksScanConfig_state, preserving_not_halt_returnBlanks,
         Bool.false_eq_true, if_false]
-      rw [show Nat.succ pad = pad + 1 by omega]
-      rw [returnBlanks_step_succ]
-      rw [ih]
+      have hstep :
+          preservingUnaryReadMachine.step
+            (returnBlanksScanConfig (Nat.succ pad) leftBase bit rest) =
+          returnBlanksScanConfig pad (none :: leftBase) bit rest := by
+        simpa [Nat.succ_eq_add_one] using
+          returnBlanks_step_succ pad leftBase bit rest
+      rw [hstep]
+      have hih := ih (leftBase := none :: leftBase)
+      rw [hih]
+      rw [replicate_none_push pad leftBase]
       simp [List.replicate_succ, List.append_assoc]
 
 /-- Once the next unary symbol is under the head, returnBlanks re-enters the
