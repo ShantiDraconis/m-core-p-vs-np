@@ -384,9 +384,15 @@ theorem returnBits_to_returnBlanks
   cases blankPad with
   | zero => omega
   | succ k =>
-      simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
-        TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
-        List.append_assoc]
+      cases k with
+      | zero =>
+          cases h : encodeNat n <;>
+            simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
+              TM.run, TM.step, Tape.write, Tape.move, h]
+      | succ k =>
+          simp [returnBitsConfig, returnBlanksConfig, preservingUnaryReadMachine,
+            TM.run, TM.step, Tape.write, Tape.move, List.replicate_succ,
+            List.append_assoc]
 
 /-- One erased blank is crossed by returnBlanks. -/
 theorem returnBlanks_step_succ
