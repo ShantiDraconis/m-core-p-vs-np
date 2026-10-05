@@ -179,6 +179,7 @@ jobs:
           lake build MCore.Real.P01PreservingUnaryWitnessMarker \
             MCore.Real.P01InputNodePreservingPlan \
             MCore.Real.P01PreservingUnaryWitnessMachine \
+            MCore.Real.P01PreservingUnaryPhysicalScans \
             MCore.Real.P01PreservingUnaryReaderCertificate \
             MCore.Real.P01PreservingMarkerIteration 2>&1 | tee audit/P01-PreservingUnaryReader-targeted.log
 
@@ -189,6 +190,7 @@ jobs:
           import MCore.Real.P01PreservingUnaryWitnessMarker
           import MCore.Real.P01InputNodePreservingPlan
           import MCore.Real.P01PreservingUnaryWitnessMachine
+          import MCore.Real.P01PreservingUnaryPhysicalScans
           import MCore.Real.P01PreservingUnaryReaderCertificate
           import MCore.Real.P01PreservingMarkerIteration
           #print axioms MCore.Real.P01PreservingUnaryWitnessMarker.marker_tape_roundTrip
