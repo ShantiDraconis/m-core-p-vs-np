@@ -1,18 +1,11 @@
 name: P01 Manual State Codec
 
-on:
-  push:
-    branches:
-      - atk/p01-verifier-phase-mincut-clean-20260930
-    paths:
-      - 'lean/MCore/Real/P01ManualStateCodecBase.lean'
-      - 'lean/MCore/Real/P01ManualStateCodecComposite.lean'
-      - 'lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean'
-      - '.github/workflows/p01-manual-state-codec.yml'
-      - 'lean-toolchain'
-      - 'lakefile.lean'
-  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+on:
+  workflow_dispatch:
 permissions:
   contents: read
 
