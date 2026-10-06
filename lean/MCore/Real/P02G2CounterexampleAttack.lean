@@ -67,8 +67,21 @@ theorem not_correctAt_iff_timeout_or_mismatch
     (x : BitString) :
     ¬ M.CorrectAt P02TerminalForcingG2.CanonicalSAT x ↔
       DeclaredTimeout M x ∨ SemanticMismatch M x := by
-  classical
-  simp [PolyDTMCandidate.CorrectAt, DeclaredTimeout, SemanticMismatch]
+  constructor
+  · intro h
+    by_cases hhalt :
+        M.machine.HaltsWithin
+          (M.timeBound x.length)
+          (initialTMConfig M.machine x)
+    · right
+      intro hsem
+      exact h ⟨hhalt, hsem⟩
+    · left
+      exact hhalt
+  · intro h hcorrect
+    rcases h with htimeout | hmismatch
+    · exact htimeout hcorrect.1
+    · exact hmismatch hcorrect.2
 
 /-- Pointwise formulation: each candidate has some concrete failing input. -/
 def POINTWISE_FAILURE_OPEN_MATH : Prop :=
