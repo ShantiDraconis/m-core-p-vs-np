@@ -6,6 +6,7 @@ on:
       - atk/p02-lane4-reuse-t10-audit-20261003
     paths:
       - 'lean/MCore/Real/P02DeterministicRejectionTableau.lean'
+      - 'lean/MCore/Real/P02SemanticSelfSubstitution.lean'
       - '.github/workflows/p02-deterministic-rejection-tableau-v2.yml'
   workflow_dispatch:
 
@@ -29,6 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           lake build MCore.Real.P02DeterministicRejectionTableau
+          lake build MCore.Real.P02SemanticSelfSubstitution
       - name: Axiom audit
         run: |
           set -euo pipefail
@@ -49,4 +51,17 @@ jobs:
             echo 'AUDIT_FAIL sorryAx'
             exit 1
           fi
+          cat > /tmp/P02SemanticAudit.lean <<'EOF'
+          import MCore.Real.P02SemanticSelfSubstitution
+          #print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCode_semantics
+          #print axioms MCore.Real.P02SemanticSelfSubstitution.correctAt_rejectCode_flip
+          #print axioms MCore.Real.P02SemanticSelfSubstitution.semantic_closure_forces_failure
+          #print axioms MCore.Real.P02SemanticSelfSubstitution.semanticCollisionProducer_implies_universal_failure
+          EOF
+          lake env lean /tmp/P02SemanticAudit.lean 2>&1 | tee /tmp/p02-semantic.log
+          if grep -q 'sorryAx' /tmp/p02-semantic.log; then
+            echo 'AUDIT_FAIL semantic sorryAx'
+            exit 1
+          fi
           echo 'P02_DETERMINISTIC_REJECTION_TABLEAU_V2_GREEN'
+          echo 'P02_SEMANTIC_SELF_SUBSTITUTION_GREEN'
