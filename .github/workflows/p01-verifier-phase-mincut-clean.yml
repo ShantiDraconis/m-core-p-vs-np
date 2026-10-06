@@ -1,44 +1,11 @@
 name: P01 Verifier Phase Min-Cut Clean
 
-on:
-  push:
-    branches:
-      - atk/p01-verifier-phase-mincut-clean-20260930
-    paths:
-      - 'lean/MCore/Real/P01VerifierPhaseMinCutStructural.lean'
-      - 'lean/MCore/Real/P01ManualStateCodecBase.lean'
-      - 'lean/MCore/Real/P01ManualStateCodecComposite.lean'
-      - 'lean/MCore/Real/P01CheckedVerifierManualFiniteState.lean'
-      - 'lean/MCore/Real/P01CheckedVerifierGlobalCoreV2.lean'
-      - 'lean/MCore/Real/P01ExactBoundedCircuitProducer.lean'
-      - 'lean/MCore/Real/P01ExactBoundedReject.lean'
-      - 'lean/MCore/Real/P01ExactVerifierGlobalBudget.lean'
-      - 'lean/MCore/Real/P01ExactVerifierCanonicalRun.lean'
-      - 'lean/MCore/Real/P01RawTotalizationMinCut.lean'
-      - 'lean/MCore/Real/P01RawBaseExact.lean'
-      - 'lean/MCore/Real/P01RawRecursiveBudget.lean'
-      - 'lean/MCore/Real/P01RawEvalSink.lean'
-      - 'lean/MCore/Real/P01RawRecursiveSteps.lean'
-      - 'lean/MCore/Real/P01RawDecodeInduction.lean'
-      - 'lean/MCore/Real/P01RawTotalizationProducer.lean'
-      - 'lean/MCore/Real/P01RawSourceSplit.lean'
-      - 'lean/MCore/Real/P01RawDecodeFailureShape.lean'
-      - 'lean/MCore/Real/P01RawDecodeFailureDescent.lean'
-      - 'lean/MCore/Real/P01RawDecoderSound.lean'
-      - 'lean/MCore/Real/P01RawDeadEnd.lean'
-      - 'lean/MCore/Real/P01RawVerifierLift.lean'
-      - 'lean/MCore/Real/P01RawMalformedTag.lean'
-      - 'lean/MCore/Real/P01RawMalformedUnary.lean'
-      - 'lean/MCore/Real/P01RawResidualReject.lean'
-      - 'lean/MCore/Real/P01RawLocalReject.lean'
-      - 'lean/MCore/Real/P01RawPreparedRejectLift.lean'
-      - '.github/workflows/p01-verifier-phase-mincut-clean.yml'
-      - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
-      - 'lean/MCore/Real/P01IntegratedAssembly.lean'
-      - 'lean-toolchain'
-      - 'lakefile.lean'
-  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+on:
+  workflow_dispatch:
 permissions:
   contents: read
 
