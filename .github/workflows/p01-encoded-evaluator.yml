@@ -1,27 +1,11 @@
 name: ATK P01 encoded evaluator
 
-on:
-  push:
-    branches:
-      - atk/next-p01-integrated-machine-20260929
-      - atk/p01-frame-pop-read-20260929
-      - atk/next-p01-integrated-machine-v2-20260929
-    paths:
-      - 'lean/MCore/Real/P01EncodedEvaluator.lean'
-      - 'lean/MCore/Real/P01EncodedStackEvaluator.lean'
-      - 'lean/MCore/Real/P01EncodedFrameTape.lean'
-      - 'lean/MCore/Real/P01EvalFramePushMachine.lean'
-      - 'lean/MCore/Real/P01EvalFramePopMachine.lean'
-      - 'lean/MCore/Real/P01EvalFramePopMachineV2.lean'
-      - 'lean/MCore/Real/P01DeterministicNTMEmbedding.lean'
-      - 'lean/MCore/Real/P01EvalCursorConsume.lean'
-      - 'lean/MCore/Real/P01SourceCursorInvariant.lean'
-      - 'lean/MCore/Real/P01NTMPhaseSeq.lean'
-      - 'lean/MCore/Real/P01EvalTagPhysicalRefinement.lean'
-      - 'lean/MCore/Real/P01WitnessIndexedReadPreserving.lean'
-      - '.github/workflows/p01-encoded-evaluator.yml'
-  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+on:
+  workflow_dispatch:
 permissions:
   contents: read
 
