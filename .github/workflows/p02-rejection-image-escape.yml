@@ -104,3 +104,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02TerminalFractionConvergence.lean 2>&1 | tee P02TerminalFractionConvergence.log
           if grep -E 'sorryAx' P02TerminalFractionConvergence.log; then exit 1; fi
+
+      - name: Build open-closed duality
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02OpenClosedDuality.lean 2>&1 | tee P02OpenClosedDuality.log
+          if grep -E 'sorryAx' P02OpenClosedDuality.log; then exit 1; fi
