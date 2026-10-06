@@ -1,0 +1,44 @@
+name: Structural No Reopen
+
+on:
+  push:
+    branches:
+      - atk/structural-fixed-point-20261006
+    paths:
+      - 'lean/MCore/Real/StructuralNoReopen.lean'
+      - '.github/workflows/structural-no-reopen.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Build
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.StructuralNoReopen
+      - name: Audit
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/StructuralNoReopen.lean
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' "$file"; then
+            echo 'AUDIT_FAIL proof escape'
+            exit 1
+          fi
+          cat > /tmp/StructuralNoReopenAudit.lean <<'EOF'
+          import MCore.Real.StructuralNoReopen
+          #print axioms MCore.Real.StructuralNoReopen.gainZero_fixed_point
+          #print axioms MCore.Real.StructuralNoReopen.close_from_positive_break
+          #print axioms MCore.Real.StructuralNoReopen.no_reopen_zero_gain_chain
+          #print axioms MCore.Real.StructuralNoReopen.g2_no_reopen
+          #print axioms MCore.Real.StructuralNoReopen.g2_close_from_positive_break
+          EOF
+          lake env lean /tmp/StructuralNoReopenAudit.lean 2>&1 | tee /tmp/no-reopen.log
+          if grep -q 'sorryAx' /tmp/no-reopen.log; then
+            echo 'AUDIT_FAIL sorryAx'
+            exit 1
+          fi
+          echo 'STRUCTURAL_NO_REOPEN_GREEN'
