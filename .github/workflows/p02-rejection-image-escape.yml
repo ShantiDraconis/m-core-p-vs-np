@@ -110,3 +110,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02OpenClosedDuality.lean 2>&1 | tee P02OpenClosedDuality.log
           if grep -E 'sorryAx' P02OpenClosedDuality.log; then exit 1; fi
+
+      - name: Build terminal self-difference collapse
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02OpenClosedIrreflexiveCollapse.lean 2>&1 | tee P02OpenClosedIrreflexiveCollapse.log
+          if grep -E 'sorryAx' P02OpenClosedIrreflexiveCollapse.log; then exit 1; fi
