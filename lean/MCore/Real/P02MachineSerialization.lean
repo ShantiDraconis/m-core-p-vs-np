@@ -117,10 +117,14 @@ theorem payload_transition_roundtrip
             simpa [payloadTransitionList, machinePayload] using
               (list_ofFn_getD
                 (fun i => transitionEntry enc i (some true)) q transitionDefault)
+  have hentry :
+      (payloadTransitionList (machinePayload enc) s)[q.val]?.getD transitionDefault =
+        transitionEntry enc q s := by
+    simpa only [List.getD_eq_getElem?_getD] using hget
   unfold payloadToMachine
   dsimp only
   rcases htrans : enc.transition q s with ⟨q', w, d⟩
-  simp [hget, transitionEntry, htrans, Nat.mod_eq_of_lt q'.isLt]
+  simp [hentry, transitionEntry, htrans, Nat.mod_eq_of_lt q'.isLt]
 
 theorem payload_toTM_run_roundtrip
     (enc : EncodedMachine)
