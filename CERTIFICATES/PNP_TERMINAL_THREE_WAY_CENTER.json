@@ -1,0 +1,18 @@
+{
+  "certificate": "PNP_TERMINAL_THREE_WAY_CENTER",
+  "three_way_center": {
+    "phase_0": "ClosedStart",
+    "phase_1": "ClosedMiddle",
+    "phase_2": "ClosedEnd",
+    "center": "Endpoint"
+  },
+  "claims": [
+    "all three phase payloads are equivalent to Endpoint",
+    "boolean orientation preserves Endpoint",
+    "conjuncture phase+orientation collapses to Endpoint",
+    "three-way recurrence plus a Boolean label does not create an arbitrary inhabitant"
+  ],
+  "open_bridge_active": 0,
+  "endpoint": "CandidateCodeSemanticFixedPoint",
+  "endpoint_status": "OPEN_MATH"
+}
