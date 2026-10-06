@@ -44,3 +44,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02RejectionImageOrbit.lean 2>&1 | tee P02RejectionImageOrbit.log
           if grep -E 'sorryAx' P02RejectionImageOrbit.log; then exit 1; fi
+
+      - name: Build active bridge closure
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02ActiveBridgeClosure 2>&1 | tee P02ActiveBridgeClosure.log
+          if grep -E 'sorryAx' P02ActiveBridgeClosure.log; then exit 1; fi
