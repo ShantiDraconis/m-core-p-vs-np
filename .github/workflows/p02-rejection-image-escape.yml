@@ -152,3 +152,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02EndpointLatticeCube.lean 2>&1 | tee P02EndpointLatticeCube.log
           if grep -E 'sorryAx' P02EndpointLatticeCube.log; then exit 1; fi
+
+      - name: Build candidate-code fixed-point counterprobe
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02CandidateCodeFixedPointCounterprobe.lean 2>&1 | tee P02CandidateCodeFixedPointCounterprobe.log
+          if grep -E 'sorryAx' P02CandidateCodeFixedPointCounterprobe.log; then exit 1; fi
