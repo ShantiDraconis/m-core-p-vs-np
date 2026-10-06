@@ -56,3 +56,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02FiniteClockNormalization.lean 2>&1 | tee P02FiniteClockNormalization.log
           if grep -E 'sorryAx' P02FiniteClockNormalization.log; then exit 1; fi
+
+      - name: Build finite candidate description
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02FiniteCandidateDescription.lean 2>&1 | tee P02FiniteCandidateDescription.log
+          if grep -E 'sorryAx' P02FiniteCandidateDescription.log; then exit 1; fi
