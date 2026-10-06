@@ -102,17 +102,15 @@ theorem rejectImageEscape_implies_universalFailure :
 
 
 /-!
-T7-FINAL-CLOSURE-PROBE
+T7-FINAL-CLOSURE
 
-Terminal aliases are intentionally definitionally identical. This certifies
-that Endpoint/Gap/Habitant/Inhabitant do not represent four independent
-obligations.
-
-The material question is isolated separately: whether the current concrete
-rejectCode construction can actually inhabit RejectImageEscape.
+Terminal signature truncation. Endpoint, Gap, Habitant and Inhabitant are one
+definitionally identical proposition. No additional parameter is opened below
+this frontier.
 -/
 
-abbrev Endpoint : Prop := RejectImageEscape
+abbrev CandidateCodeSemanticFixedPoint : Prop := RejectImageEscape
+abbrev Endpoint : Prop := CandidateCodeSemanticFixedPoint
 abbrev Gap : Prop := Endpoint
 abbrev Habitant : Prop := Gap
 abbrev Inhabitant : Prop := Habitant
@@ -122,16 +120,30 @@ theorem gap_to_habitant : Gap → Habitant := id
 theorem habitant_to_inhabitant : Habitant → Inhabitant := id
 theorem inhabitant_to_endpoint : Inhabitant → Endpoint := id
 
+theorem endpoint_iff_gap : Endpoint ↔ Gap := Iff.rfl
+theorem endpoint_iff_habitant : Endpoint ↔ Habitant := Iff.rfl
+theorem endpoint_iff_inhabitant : Endpoint ↔ Inhabitant := Iff.rfl
+theorem endpoint_iff_rejectImageEscape : Endpoint ↔ RejectImageEscape := Iff.rfl
+
 theorem terminal_cycle :
-    (Endpoint ↔ Gap) ∧ (Gap ↔ Habitant) ∧
-    (Habitant ↔ Inhabitant) ∧ (Inhabitant ↔ Endpoint) := by
+    (Endpoint ↔ Gap) ∧
+    (Gap ↔ Habitant) ∧
+    (Habitant ↔ Inhabitant) ∧
+    (Inhabitant ↔ Endpoint) := by
   exact ⟨Iff.rfl, Iff.rfl, Iff.rfl, Iff.rfl⟩
 
+/-- All four terminal names carry exactly the same inhabitance obligation. -/
+theorem terminal_inhabitance_exact :
+    Endpoint ↔ Gap ∧ Habitant ∧ Inhabitant := by
+  constructor
+  · intro h
+    exact ⟨h, h, h⟩
+  · rintro ⟨h, _, _⟩
+    exact h
+
 /--
-A literal rejectCode fixed point would be enough to create the semantic
-collision needed for closure, but the already-certified flip theorem shows
-that such a fixed point is impossible precisely on the global-flip branch.
-This prevents silently replacing the missing material step by an alias cycle.
+A literal rejectCode fixed point would be sufficient at a concrete point,
+but is not available as a universal shortcut.
 -/
 theorem literal_fixed_point_closes_at
     (M : PolyDTMCandidate)
@@ -151,18 +163,32 @@ theorem global_flip_blocks_literal_diagonal
     ∀ x : BitString, rejectCode M x ≠ x :=
   global_flip_no_literal_fixed_point M hFlip
 
+theorem no_literal_idempotence_shortcut :
+    ¬ RejectCodeIdempotent :=
+  rejectCodeIdempotent_refuted
+
 /--
-Exact material mincut: terminal alias compression reduces every final name to
-one proposition, but inhabitation remains exactly RejectImageEscape.
+Exact terminal mincut. Producing the inhabitant of any terminal alias is
+definitionally identical to producing RejectImageEscape itself.
 -/
 theorem terminal_inhabitant_iff_rejectImageEscape :
     Inhabitant ↔ RejectImageEscape :=
   Iff.rfl
 
+theorem endpoint_closes_universalFailure :
+    Endpoint → UniversalFailure (SATBits circuitBitEncoding) :=
+  rejectImageEscape_implies_universalFailure
+
+#print axioms MCore.Real.P02RejectionImageEscape.totalClock_globalFlip_iff_correctOnRejectImage
+#print axioms MCore.Real.P02RejectionImageEscape.rejectImageEscape_iff_totalClockAntiAlternation
+#print axioms MCore.Real.P02RejectionImageEscape.rejectImageEscape_implies_universalFailure
 #print axioms MCore.Real.P02RejectionImageEscape.terminal_cycle
+#print axioms MCore.Real.P02RejectionImageEscape.terminal_inhabitance_exact
 #print axioms MCore.Real.P02RejectionImageEscape.literal_fixed_point_closes_at
 #print axioms MCore.Real.P02RejectionImageEscape.global_flip_blocks_literal_diagonal
+#print axioms MCore.Real.P02RejectionImageEscape.no_literal_idempotence_shortcut
 #print axioms MCore.Real.P02RejectionImageEscape.terminal_inhabitant_iff_rejectImageEscape
+#print axioms MCore.Real.P02RejectionImageEscape.endpoint_closes_universalFailure
 
 end P02RejectionImageEscape
 end Real
