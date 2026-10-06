@@ -1,0 +1,25 @@
+name: P02 G2 Truncation Boundary
+
+on:
+  push:
+    branches:
+      - atk/p02-g2-universal-failure-material-20261005
+    paths:
+      - 'probe/P02G2TruncationBoundary.lean'
+      - '.github/workflows/p02-g2-truncation-boundary.yml'
+  workflow_dispatch:
+
+jobs:
+  expose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        uses: leanprover/lean-action@v1
+      - name: Expose truncation axioms
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02TerminalForcingG2 MCore.Real.P02ClockBridgeMaterial MCore.Real.P02FiniteMachineDescription
+          lake env lean probe/P02G2TruncationBoundary.lean 2>&1 | tee /tmp/g2-truncation.log
+          grep -E "universalDisagreementForcado|closeG2Forcado|sorryAx|declaration uses 'sorry'" /tmp/g2-truncation.log || true
