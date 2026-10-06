@@ -262,6 +262,89 @@ theorem global_flip_no_literal_fixed_point
   rw [hfix] at h
   cases hb : observedBit M x <;> simp_all
 
+
+/-!
+KERNEL PROBE: expose the specific rejectCode invariant that could break
+global alternation. These are deliberately stated as propositions, not assumed
+as axioms. The gate should reveal which reductions are kernel-derivable from
+the current tableau construction.
+-/
+
+/-- Candidate invariant A: the encoded rejection transform does not increase
+the candidate's own clock requirement. -/
+def RejectCodeClockNonexpansive : Prop :=
+  ∀ M : PolyDTMCandidate, ∀ x : BitString,
+    M.timeBound (rejectCode M x).length ≤ M.timeBound x.length
+
+/-- Candidate invariant B: rejectCode is idempotent. This is intentionally
+separated because literal idempotence would be much stronger than semantic
+closure. -/
+def RejectCodeIdempotent : Prop :=
+  ∀ M : PolyDTMCandidate, ∀ x : BitString,
+    rejectCode M (rejectCode M x) = rejectCode M x
+
+/-- Candidate invariant C: own-clock halting is preserved by rejectCode. -/
+def RejectCodePreservesOwnClockHalts : Prop :=
+  ∀ M : PolyDTMCandidate, ∀ x : BitString,
+    OwnClockHalts M x → OwnClockHalts M (rejectCode M x)
+
+/-- Exact execution-level invariant requested from the kernel: on total-clock
+machines, some source x must make the rejectCode observation collapse to the
+same output bit. This is intentionally phrased through concrete run/clock
+semantics rather than as TotalClockAntiAlternation itself. -/
+def RejectCodeRunCollapse : Prop :=
+  ∀ M : PolyDTMCandidate,
+    (∀ y : BitString, OwnClockHalts M y) →
+      ∃ x : BitString,
+        M.accepting
+            (M.machine.run
+              (M.timeBound (rejectCode M x).length)
+              (initialTMConfig M.machine (rejectCode M x))).state =
+          M.accepting
+            (M.machine.run
+              (M.timeBound x.length)
+              (initialTMConfig M.machine x)).state
+
+theorem rejectCodeRunCollapse_iff_totalClockSemanticCollision :
+    RejectCodeRunCollapse ↔ TotalClockSemanticCollision := by
+  rfl
+
+theorem rejectCodeRunCollapse_implies_antiAlternation :
+    RejectCodeRunCollapse → TotalClockAntiAlternation := by
+  intro H
+  exact totalClockCollision_iff_antiAlternation.mp
+    (rejectCodeRunCollapse_iff_totalClockSemanticCollision.mp H)
+
+/-- If literal idempotence were available, it would immediately contradict
+global flip at rejectCode x. This theorem isolates that route without claiming
+idempotence is true. -/
+theorem idempotence_breaks_global_flip
+    (M : PolyDTMCandidate)
+    (hid : ∀ x : BitString,
+      rejectCode M (rejectCode M x) = rejectCode M x) :
+    ¬ (∀ x : BitString,
+      observedBit M (rejectCode M x) = !(observedBit M x)) := by
+  intro hflip
+  let x0 : BitString := []
+  have h1 := hflip (rejectCode M x0)
+  rw [hid x0] at h1
+  cases hb : observedBit M (rejectCode M x0) <;> simp_all
+
+/-- This is the exact clock-collapse shape suggested for the kernel to expose.
+It does not assert that the current tableau construction proves it. -/
+def RejectCodeClockCollapse : Prop :=
+  ∀ M : PolyDTMCandidate,
+    (∀ y : BitString, OwnClockHalts M y) →
+      ∃ x : BitString,
+        M.timeBound (rejectCode M x).length ≤ M.timeBound x.length ∧
+        SemanticClosureAt M x
+
+theorem rejectCodeClockCollapse_implies_runCollapse :
+    RejectCodeClockCollapse → RejectCodeRunCollapse := by
+  intro H M htotal
+  rcases H M htotal with ⟨x, _, hclose⟩
+  exact ⟨x, hclose⟩
+
 theorem totalClockSemanticCollision_implies_universal_failure :
     TotalClockSemanticCollision →
       UniversalFailure (SATBits circuitBitEncoding) := by
@@ -315,6 +398,10 @@ theorem terminalSplit_implies_universal_failure :
 #print axioms MCore.Real.P02SemanticSelfSubstitution.totalClockCollision_iff_antiAlternation
 #print axioms MCore.Real.P02SemanticSelfSubstitution.toy_no_semantic_collision
 #print axioms MCore.Real.P02SemanticSelfSubstitution.global_flip_no_literal_fixed_point
+#print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeRunCollapse_iff_totalClockSemanticCollision
+#print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeRunCollapse_implies_antiAlternation
+#print axioms MCore.Real.P02SemanticSelfSubstitution.idempotence_breaks_global_flip
+#print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeClockCollapse_implies_runCollapse
 #print axioms MCore.Real.P02SemanticSelfSubstitution.terminalSplit_implies_universal_failure
 
 end P02SemanticSelfSubstitution
