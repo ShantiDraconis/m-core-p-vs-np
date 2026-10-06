@@ -1,0 +1,15 @@
+{
+  "certificate": "PNP_TERMINAL_FIXED_FRONTIER",
+  "open_bridge_active": 0,
+  "open_math_active": 1,
+  "remaining": "MCore.Real.P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint",
+  "closed_if_and_only_if": "kernel-valid proof of CandidateCodeSemanticFixedPoint or an independent theorem implying RejectImageEscape",
+  "forbidden_promotions": [
+    "sorry",
+    "sorryAx",
+    "admit",
+    "axiom equivalent to endpoint",
+    "conditional wrapper relabeled as proof",
+    "structural fixed-point evidence relabeled as theorem truth"
+  ]
+}
