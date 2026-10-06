@@ -5,6 +5,8 @@ namespace MCore
 namespace Real
 namespace StructuralNoReopen
 
+-- Frozen no-reopen policy: gain-zero routes are classification-only.
+
 open CanonicalFinalProof
 open P02TerminalForcingG2
 
