@@ -1,0 +1,34 @@
+{
+  "certificate": "PNP_ENDPOINT_LATTICE_CUBE_14",
+  "ordered_states": {
+    "length_1": ["OPEN","CLOSED"],
+    "length_2": ["OPEN+CLOSED","CLOSED+OPEN","OPEN+OPEN","CLOSED+CLOSED"],
+    "length_3": [
+      "OPEN+OPEN+OPEN",
+      "CLOSED+CLOSED+CLOSED",
+      "OPEN+OPEN+CLOSED",
+      "OPEN+CLOSED+OPEN",
+      "CLOSED+OPEN+OPEN",
+      "OPEN+CLOSED+CLOSED",
+      "CLOSED+OPEN+CLOSED",
+      "CLOSED+CLOSED+OPEN"
+    ]
+  },
+  "count": 14,
+  "newly_certified_missing_states": 10,
+  "full": "OPEN+OPEN+CLOSED+CLOSED",
+  "full_multiplicity": [2,2],
+  "full_canonical": "FULL",
+  "full_payload": "GLOBAL_EXTERNAL_CERTIFICATE",
+  "kernel_claims": [
+    "cube14.length = 14",
+    "ordered permutations remain syntactically distinct",
+    "multiplicity evaluation identifies permutations with same counts",
+    "mixed triples canonicalize to FULL",
+    "pure OPEN triple canonicalizes to OPEN",
+    "pure CLOSED triple canonicalizes to CLOSED",
+    "OPEN+OPEN+CLOSED+CLOSED canonicalizes to FULL",
+    "FullWordCertificate iff GLOBAL_EXTERNAL_CERTIFICATE",
+    "FullWordCertificate iff MATH"
+  ]
+}
