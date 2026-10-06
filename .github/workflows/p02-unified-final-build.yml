@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake env lean lean/MCore/Real/P02UnifiedTheory.lean 2>&1 | tee P02UnifiedTheory.log
+          lake build MCore.Real.P02RejectionImageEscape MCore.Real.P02UnifiedTheory 2>&1 | tee P02UnifiedTheory.log
           if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' P02UnifiedTheory.log; then
             echo "Forbidden proof residue detected"
             exit 1
