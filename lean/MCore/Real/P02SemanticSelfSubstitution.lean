@@ -288,6 +288,36 @@ def RejectCodePreservesOwnClockHalts : Prop :=
   ∀ M : PolyDTMCandidate, ∀ x : BitString,
     OwnClockHalts M x → OwnClockHalts M (rejectCode M x)
 
+
+/-- On the total-clock branch, preservation of halting by rejectCode is
+automatic and therefore carries zero additional information. -/
+theorem totalClock_trivially_preserves_rejectCode_halting
+    (M : PolyDTMCandidate)
+    (htotal : ∀ y : BitString, OwnClockHalts M y) :
+    ∀ x : BitString,
+      OwnClockHalts M x → OwnClockHalts M (rejectCode M x) := by
+  intro x _
+  exact htotal (rejectCode M x)
+
+/-- PolynomialTimeBound is only an upper-bound condition; it does not impose
+monotonicity on the clock function. -/
+def nonmonotonePolyClock : TimeBound :=
+  fun n => if n = 0 then 1 else 0
+
+theorem nonmonotonePolyClock_poly :
+    PolynomialTimeBound nonmonotonePolyClock := by
+  refine ⟨1, 0, ?_⟩
+  intro n
+  simp [nonmonotonePolyClock]
+  split <;> simp_all
+
+theorem nonmonotonePolyClock_not_monotone :
+    ¬ (∀ a b : Nat, a ≤ b →
+      nonmonotonePolyClock a ≤ nonmonotonePolyClock b) := by
+  intro H
+  have h := H 0 1 (by omega)
+  simp [nonmonotonePolyClock] at h
+
 /-- Exact execution-level invariant requested from the kernel: on total-clock
 machines, some source x must make the rejectCode observation collapse to the
 same output bit. This is intentionally phrased through concrete run/clock
@@ -402,6 +432,9 @@ theorem terminalSplit_implies_universal_failure :
 #print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeRunCollapse_implies_antiAlternation
 #print axioms MCore.Real.P02SemanticSelfSubstitution.idempotence_breaks_global_flip
 #print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeClockCollapse_implies_runCollapse
+#print axioms MCore.Real.P02SemanticSelfSubstitution.totalClock_trivially_preserves_rejectCode_halting
+#print axioms MCore.Real.P02SemanticSelfSubstitution.nonmonotonePolyClock_poly
+#print axioms MCore.Real.P02SemanticSelfSubstitution.nonmonotonePolyClock_not_monotone
 #print axioms MCore.Real.P02SemanticSelfSubstitution.terminalSplit_implies_universal_failure
 
 end P02SemanticSelfSubstitution
