@@ -228,6 +228,40 @@ theorem totalClockCollision_iff_antiAlternation :
       (no_semantic_collision_iff_global_flip M).mp hnone
     exact H M htotal hflip
 
+
+/-- Negative control: a finite Boolean state space can alternate forever
+without a one-step collision. Therefore Boolean finiteness/pigeonhole alone
+cannot prove TotalClockAntiAlternation. -/
+def toyFlipMap (b : Bool) : Bool := !b
+
+def toyObservedBit (b : Bool) : Bool := b
+
+theorem toy_global_flip :
+    ∀ b : Bool,
+      toyObservedBit (toyFlipMap b) = !(toyObservedBit b) := by
+  intro b
+  cases b <;> rfl
+
+theorem toy_no_semantic_collision :
+    ¬ ∃ b : Bool,
+      toyObservedBit (toyFlipMap b) = toyObservedBit b := by
+  rintro ⟨b, hb⟩
+  cases b <;> simp [toyFlipMap, toyObservedBit] at hb
+
+/-- Under a global flip law, a literal fixed point of the transform is
+impossible. Any successful anti-alternation proof must therefore use a
+property stronger than existence of x with rejectCode M x = x. -/
+theorem global_flip_no_literal_fixed_point
+    (M : PolyDTMCandidate)
+    (hflip :
+      ∀ x : BitString,
+        observedBit M (rejectCode M x) = !(observedBit M x)) :
+    ∀ x : BitString, rejectCode M x ≠ x := by
+  intro x hfix
+  have h := hflip x
+  rw [hfix] at h
+  cases hb : observedBit M x <;> simp_all
+
 theorem totalClockSemanticCollision_implies_universal_failure :
     TotalClockSemanticCollision →
       UniversalFailure (SATBits circuitBitEncoding) := by
@@ -279,6 +313,8 @@ theorem terminalSplit_implies_universal_failure :
 #print axioms MCore.Real.P02SemanticSelfSubstitution.not_semanticClosureAt_iff_flip
 #print axioms MCore.Real.P02SemanticSelfSubstitution.no_semantic_collision_iff_global_flip
 #print axioms MCore.Real.P02SemanticSelfSubstitution.totalClockCollision_iff_antiAlternation
+#print axioms MCore.Real.P02SemanticSelfSubstitution.toy_no_semantic_collision
+#print axioms MCore.Real.P02SemanticSelfSubstitution.global_flip_no_literal_fixed_point
 #print axioms MCore.Real.P02SemanticSelfSubstitution.terminalSplit_implies_universal_failure
 
 end P02SemanticSelfSubstitution
