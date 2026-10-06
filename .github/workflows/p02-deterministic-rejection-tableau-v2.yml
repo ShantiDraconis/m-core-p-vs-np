@@ -1,0 +1,52 @@
+name: P02 Deterministic Rejection Tableau V2
+
+on:
+  push:
+    branches:
+      - atk/p02-lane4-reuse-t10-audit-20261003
+    paths:
+      - 'lean/MCore/Real/P02DeterministicRejectionTableau.lean'
+      - '.github/workflows/p02-deterministic-rejection-tableau-v2.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
+      - name: Build target
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02DeterministicRejectionTableau
+      - name: Axiom audit
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/P02DeterministicRejectionTableau.lean
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' "$file"; then
+            echo 'AUDIT_FAIL proof escape'
+            exit 1
+          fi
+          cat > /tmp/P02RejectAudit.lean <<'EOF'
+          import MCore.Real.P02DeterministicRejectionTableau
+          #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_runBranches_eq
+          #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_acceptsWithin_iff_rejects_at_fuel
+          #print axioms MCore.Real.P02DeterministicRejectionTableau.rejection_tableau_correctness
+          #print axioms MCore.Real.P02DeterministicRejectionTableau.rejection_tableau_encoded_length_poly
+          EOF
+          lake env lean /tmp/P02RejectAudit.lean 2>&1 | tee /tmp/p02-reject-v2.log
+          if grep -q 'sorryAx' /tmp/p02-reject-v2.log; then
+            echo 'AUDIT_FAIL sorryAx'
+            exit 1
+          fi
+          echo 'P02_DETERMINISTIC_REJECTION_TABLEAU_V2_GREEN'
