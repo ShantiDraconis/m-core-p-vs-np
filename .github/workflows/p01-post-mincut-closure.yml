@@ -1,15 +1,11 @@
 name: P01 Post-MinCut Closure
 
-on:
-  push:
-    branches:
-      - atk/p01-post-mincut-advance-20261001
-    paths:
-      - 'lean/MCore/Real/P01PostMinCutClosure.lean'
-      - 'audit/ATK_P01_POST_MINCUT_FRONTIER_720596c0.json'
-      - '.github/workflows/p01-post-mincut-closure.yml'
-  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+on:
+  workflow_dispatch:
 permissions:
   contents: read
 
