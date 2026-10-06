@@ -1,12 +1,14 @@
 name: ATK hard gate
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
-  push:
-    branches:
-      - 'attack/hard-pnp-next-theoremkernel'
   workflow_dispatch:
 jobs:
   hard:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - name: Install Lean
