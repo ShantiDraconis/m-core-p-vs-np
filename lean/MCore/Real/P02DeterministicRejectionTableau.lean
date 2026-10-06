@@ -86,7 +86,12 @@ theorem complement_runBranches_to_tm_run
             [config].filter (fun c =>
               !((complementToNTM M).accepting c.state ||
                 (complementToNTM M).rejecting c.state)) = [] := by
-          simp [hstop]
+          have hor :
+              (complementToNTM M).accepting config.state ||
+                (complementToNTM M).rejecting config.state = true := hstop
+          cases ha : (complementToNTM M).accepting config.state <;>
+            cases hr : (complementToNTM M).rejecting config.state <;>
+            simp_all
         calc
           (complementToNTM M).runBranches (n + 1) [config]
               = (complementToNTM M).runBranches n [config] := by
@@ -114,7 +119,12 @@ theorem complement_runBranches_to_tm_run
             [config].filter (fun c =>
               !((complementToNTM M).accepting c.state ||
                 (complementToNTM M).rejecting c.state)) = [config] := by
-          simp [hstop]
+          have hor :
+              (complementToNTM M).accepting config.state ||
+                (complementToNTM M).rejecting config.state = false := hstop
+          cases ha : (complementToNTM M).accepting config.state <;>
+            cases hr : (complementToNTM M).rejecting config.state <;>
+            simp_all
         calc
           (complementToNTM M).runBranches (n + 1) [config]
               = (complementToNTM M).runBranches n
@@ -149,30 +159,29 @@ theorem complement_acceptsWithin_iff_rejects_at_fuel
         reached = M.machine.run t (initialTMConfig M.machine x) := by
       simpa using hmem
     subst reached
+    have hacc' :
+        Bool.and
+          (M.machine.halting
+            (M.machine.run t (initialTMConfig M.machine x)).state)
+          (!(M.accepting
+            (M.machine.run t (initialTMConfig M.machine x)).state)) = true := by
+      simpa [complementToNTM, CanonicalPSubsetNP.toNTM] using hacc
     have hhalt :
         M.machine.halting
           (M.machine.run t (initialTMConfig M.machine x)).state = true := by
-      have hacc' :
-          Bool.and
-            (M.machine.halting
-              (M.machine.run t (initialTMConfig M.machine x)).state)
-            (!(M.accepting
-              (M.machine.run t (initialTMConfig M.machine x)).state)) = true := by
-        simpa [complementToNTM, CanonicalPSubsetNP.toNTM] using hacc
-      exact (Bool.and_eq_true.mp hacc').1
+      cases hh : M.machine.halting
+          (M.machine.run t (initialTMConfig M.machine x)).state <;>
+        cases ha : M.accepting
+          (M.machine.run t (initialTMConfig M.machine x)).state <;>
+        simp_all
     have hrejected :
         M.accepting
           (M.machine.run t (initialTMConfig M.machine x)).state = false := by
-      have hacc' :
-          Bool.and
-            (M.machine.halting
-              (M.machine.run t (initialTMConfig M.machine x)).state)
-            (!(M.accepting
-              (M.machine.run t (initialTMConfig M.machine x)).state)) = true := by
-        simpa [complementToNTM, CanonicalPSubsetNP.toNTM] using hacc
-      have hn := (Bool.and_eq_true.mp hacc').2
-      cases hv : M.accepting
-          (M.machine.run t (initialTMConfig M.machine x)).state <;> simp_all
+      cases hh : M.machine.halting
+          (M.machine.run t (initialTMConfig M.machine x)).state <;>
+        cases ha : M.accepting
+          (M.machine.run t (initialTMConfig M.machine x)).state <;>
+        simp_all
     exact ⟨hhalt, hrejected⟩
   · rintro ⟨hhalt, hrejected⟩
     refine ⟨M.machine.run t (initialTMConfig M.machine x), ?_, ?_⟩
