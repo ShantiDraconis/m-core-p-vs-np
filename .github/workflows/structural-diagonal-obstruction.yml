@@ -1,0 +1,42 @@
+name: Structural Diagonal Obstruction
+
+on:
+  push:
+    branches:
+      - atk/structural-fixed-point-20261006
+    paths:
+      - 'lean/MCore/Real/StructuralDiagonalObstruction.lean'
+      - '.github/workflows/structural-diagonal-obstruction.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Build
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.StructuralDiagonalObstruction
+      - name: Audit
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/StructuralDiagonalObstruction.lean
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' "$file"; then
+            echo 'AUDIT_FAIL proof escape'
+            exit 1
+          fi
+          cat > /tmp/StructuralDiagonalObstructionAudit.lean <<'EOF'
+          import MCore.Real.StructuralDiagonalObstruction
+          #print axioms MCore.Real.StructuralDiagonalObstruction.strict_length_no_literal_fixed_point
+          #print axioms MCore.Real.StructuralDiagonalObstruction.iterateCode_length_strict
+          #print axioms MCore.Real.StructuralDiagonalObstruction.strict_length_no_positive_cycle
+          EOF
+          lake env lean /tmp/StructuralDiagonalObstructionAudit.lean 2>&1 | tee /tmp/diag-obstruction.log
+          if grep -q 'sorryAx' /tmp/diag-obstruction.log; then
+            echo 'AUDIT_FAIL sorryAx'
+            exit 1
+          fi
+          echo 'STRUCTURAL_DIAGONAL_OBSTRUCTION_GREEN'
