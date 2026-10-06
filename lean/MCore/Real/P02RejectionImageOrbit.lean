@@ -90,6 +90,32 @@ theorem oddSemanticRecurrence_implies_escape :
     (rejectCodeRunCollapse_implies_antiAlternation
       (oddSemanticRecurrence_iff_runCollapse.mp H))
 
+
+/--
+Exact terminal reduction: the compressed terminal endpoint is inhabited
+exactly when the one-step semantic recurrence exists. This introduces no new
+parameter family; it identifies the material content of the endpoint.
+-/
+theorem terminalEndpoint_iff_oddSemanticRecurrence :
+    P02RejectionImageEscape.Endpoint ↔ RejectImageOddSemanticRecurrence := by
+  change RejectImageEscape ↔ RejectImageOddSemanticRecurrence
+  constructor
+  · intro hEscape
+    have hAnti :
+        TotalClockAntiAlternation :=
+      (rejectImageEscape_iff_totalClockAntiAlternation.mp hEscape)
+    have hCollision :
+        TotalClockSemanticCollision :=
+      (totalClockCollision_iff_antiAlternation.mpr hAnti)
+    have hRun :
+        RejectCodeRunCollapse :=
+      (rejectCodeRunCollapse_iff_totalClockSemanticCollision.mpr hCollision)
+    exact oddSemanticRecurrence_iff_runCollapse.mpr hRun
+  · intro hRec
+    exact oddSemanticRecurrence_implies_escape hRec
+
+#print axioms MCore.Real.P02RejectionImageOrbit.terminalEndpoint_iff_oddSemanticRecurrence
+
 #print axioms MCore.Real.P02RejectionImageOrbit.globalFlip_twoStep_preserves
 #print axioms MCore.Real.P02RejectionImageOrbit.correctOnRejectImage_twoStep_preserves
 #print axioms MCore.Real.P02RejectionImageOrbit.globalFlip_oddSemanticRecurrence_impossible
