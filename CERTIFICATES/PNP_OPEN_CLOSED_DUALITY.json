@@ -1,0 +1,16 @@
+{
+  "certificate": "PNP_OPEN_CLOSED_DUALITY",
+  "definitions": {
+    "OpenMath": "Endpoint",
+    "ClosedMath": "not OpenMath"
+  },
+  "kernel_claims": [
+    "OpenMath iff not ClosedMath",
+    "ClosedMath iff not OpenMath",
+    "OpenMath iff ClosedMath implies False",
+    "the full triple identification is inconsistent"
+  ],
+  "open_bridge_active": 0,
+  "endpoint": "CandidateCodeSemanticFixedPoint",
+  "endpoint_status": "OPEN_MATH"
+}
