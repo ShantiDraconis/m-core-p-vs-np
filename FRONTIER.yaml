@@ -1,5 +1,10 @@
 frontier:
   - id: PNP-SIGNATURE-ADAPTER
-    status: OPEN_BRIDGE
+    status: GREEN_REUSE
+    evidence: lean/MCore/Attack/CanonicalTerminalProducer.lean::canonicalModelMatch
   - id: PNP-ASYMPTOTIC-BOUNDARY
-    status: OPEN_BRIDGE
+    status: BYPASSED_NOT_ACTIVE_ROUTE
+    evidence: active canonical G2 route uses RejectImageEscape -> UniversalFailure -> PneqNP; legacy C12 bridge remains unproved but is not a dependency of this route
+  - id: PNP-REJECT-IMAGE-ESCAPE
+    status: OPEN_MATH
+    evidence: lean/MCore/Real/P02RejectionImageEscape.lean::RejectImageEscape
