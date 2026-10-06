@@ -26,9 +26,17 @@ jobs:
           set -euo pipefail
           bash audit/preflight_local.sh 2>&1 | tee audit/P02-LANE4-PREFLIGHT.log
 
+      - name: T7 RunCollapse probe
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02RunCollapseProbe.lean 2>&1 | tee audit/P02-RUNCOLLAPSE-PROBE.log
+          if grep -E 'sorryAx' audit/P02-RUNCOLLAPSE-PROBE.log; then exit 1; fi
+
       - name: Upload preflight log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: p02-lane4-preflight
-          path: audit/P02-LANE4-PREFLIGHT.log
+          path: |
+            audit/P02-LANE4-PREFLIGHT.log
+            audit/P02-RUNCOLLAPSE-PROBE.log
