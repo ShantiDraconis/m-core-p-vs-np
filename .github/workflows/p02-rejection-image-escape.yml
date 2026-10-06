@@ -86,3 +86,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02TerminalHabitantCycle.lean 2>&1 | tee P02TerminalHabitantCycle.log
           if grep -E 'sorryAx' P02TerminalHabitantCycle.log; then exit 1; fi
+
+      - name: Build terminal conjuncture nucleus
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02TerminalConjunctureNucleus.lean 2>&1 | tee P02TerminalConjunctureNucleus.log
+          if grep -E 'sorryAx' P02TerminalConjunctureNucleus.log; then exit 1; fi
