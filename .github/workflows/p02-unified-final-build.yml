@@ -17,10 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Lean
-        uses: leanprover/lean-action@v1
-        with:
-          use-mathlib-cache: true
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Resolve dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get || true
 
       - name: Build unified P02 closure stack
         shell: bash
