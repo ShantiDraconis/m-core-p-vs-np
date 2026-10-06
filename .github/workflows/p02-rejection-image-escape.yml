@@ -122,3 +122,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02OpenToClosedCollapse.lean 2>&1 | tee P02OpenToClosedCollapse.log
           if grep -E 'sorryAx' P02OpenToClosedCollapse.log; then exit 1; fi
+
+      - name: Build user final closure probe
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02UserFinalClosureProbe.lean 2>&1 | tee P02UserFinalClosureProbe.log
+          if grep -E 'sorryAx' P02UserFinalClosureProbe.log; then exit 1; fi
