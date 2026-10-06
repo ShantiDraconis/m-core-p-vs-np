@@ -18,7 +18,7 @@ Flow/W/non-collapsing are carried as concrete data, but the decisive field is
 hdiag_real: it must be derived from those concrete definitions, not assumed
 from UniversalFailure/FailureLaw/SelectorFails or an equivalent endpoint.
 -/
-structure G2PerelmanBreak (A W : Type) [Preorder W] where
+structure G2PerelmanBreak (A W : Type) [LE W] where
   seed : PolyDTMCandidate → A
   Flow : A → Nat → A
   W_func : A → W
@@ -47,7 +47,7 @@ Material diagonal disagreement: once hdiag_real is concrete, CorrectAt at the
 diagonal input is contradictory by propositional computation.
 -/
 theorem hdiag_real_implies_not_correctAt
-    {A W : Type} [Preorder W]
+    {A W : Type} [LE W]
     (B : G2PerelmanBreak A W)
     (M : PolyDTMCandidate) :
     ¬ M.CorrectAt
@@ -77,7 +77,7 @@ A material break immediately inhabits the exact terminal G2 selector+law.
 No endpoint-equivalent hypothesis is used.
 -/
 theorem perelman_break_closes_g2_terminal
-    {A W : Type} [Preorder W]
+    {A W : Type} [LE W]
     (B : G2PerelmanBreak A W) :
     P02TerminalForcingG2.G2_TERMINAL := by
   refine ⟨B.diagonalInput, ?_⟩
@@ -88,7 +88,7 @@ theorem perelman_break_closes_g2_terminal
 The same material break gives the exact UniversalFailureWitness inhabitant.
 -/
 def perelmanBreakWitness
-    {A W : Type} [Preorder W]
+    {A W : Type} [LE W]
     (B : G2PerelmanBreak A W) :
     P02UniversalFailureWitnessMaterial.UniversalFailureWitness :=
   P02TerminalForcingG2.universalFailureWitnessOf
@@ -100,7 +100,7 @@ def perelmanBreakWitness
 Consequently, a fully material G2 break closes the repository's P≠NP endpoint.
 -/
 theorem perelman_break_closes_p_ne_np
-    {A W : Type} [Preorder W]
+    {A W : Type} [LE W]
     (B : G2PerelmanBreak A W) :
     PneqNP :=
   P02TerminalForcingG2.g2_terminal_implies_p_ne_np
