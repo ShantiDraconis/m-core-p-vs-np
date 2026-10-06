@@ -82,7 +82,7 @@ def SelfCodeFixedPointLaw
     (selfCode : PolyDTMCandidate → BitString) : Prop :=
   ∀ M : PolyDTMCandidate,
     ∃ clock : EncodedClock M,
-      (CanonicalSAT (selfCode M) ↔
+      (P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M) ↔
         RejectsAtMajorant M clock (selfCode M))
 
 /-- The fixed-point law alone is already strong enough to force disagreement
@@ -91,13 +91,13 @@ theorem fixedPointLaw_implies_disagreement
     (selfCode : PolyDTMCandidate → BitString)
     (hFix : SelfCodeFixedPointLaw selfCode) :
     ∀ M : PolyDTMCandidate,
-      ¬ M.CorrectAt CanonicalSAT (selfCode M) := by
+      ¬ M.CorrectAt P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M) := by
   intro M hCorrect
   rcases hFix M with ⟨clock, hFixM⟩
   have hDecision :=
     correctAt_clockedDecision_iff
-      M clock CanonicalSAT (selfCode M) hCorrect
-  by_cases hSat : CanonicalSAT (selfCode M)
+      M clock P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M) hCorrect
+  by_cases hSat : P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M)
   · have hTrue : clockedDecision M clock (selfCode M) = true :=
       hDecision.mpr hSat
     have hReject : RejectsAtMajorant M clock (selfCode M) :=
@@ -112,7 +112,7 @@ theorem fixedPointLaw_implies_disagreement
       cases hVal : clockedDecision M clock (selfCode M) with
       | false => exact hVal
       | true =>
-          have hSat' : CanonicalSAT (selfCode M) :=
+          have hSat' : P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M) :=
             hDecision.mp hVal
           exact False.elim (hSat hSat')
     exact hNotReject hFalse
