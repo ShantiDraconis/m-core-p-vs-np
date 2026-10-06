@@ -1,0 +1,20 @@
+{
+  "certificate": "PNP_TERMINAL_FRACTION_CONVERGENCE",
+  "routes": {
+    "0/1": "1/1",
+    "0/2": "2/2"
+  },
+  "fixed_points": ["1/1","2/2"],
+  "kernel_claims": [
+    "0/1 converges to 1/1",
+    "0/2 converges to 2/2",
+    "1/1 is fixed",
+    "2/2 is fixed",
+    "all four route labels carry Endpoint",
+    "both converged paths have the same terminal payload"
+  ],
+  "open_bridge_active": 0,
+  "endpoint": "CandidateCodeSemanticFixedPoint",
+  "endpoint_status": "OPEN_MATH",
+  "publication_rule": "Do not promote endpoint to CLOSED without a kernel inhabitant."
+}
