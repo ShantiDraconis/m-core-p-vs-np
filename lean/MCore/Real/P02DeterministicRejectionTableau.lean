@@ -10,6 +10,8 @@ namespace P02DeterministicRejectionTableau
 open CanonicalFinalProof
 open CanonicalPSubsetNP
 open PNPNTMTableauEncoding
+open CircuitK1
+open CanonicalCircuitBits
 
 /-- Deterministic embedding with terminal labels swapped.
 Transitions and stopping states are unchanged; only accept/reject meaning flips. -/
@@ -23,59 +25,29 @@ def complementToNTM
     accepting := B.rejecting
     rejecting := B.accepting }
 
-theorem complement_stop_eq_base_stop
+theorem complement_accept_or_reject_eq_halting
     (M : PolyDTMCandidate)
     (q : Fin (M.stateCount + 1)) :
     ((complementToNTM M).accepting q ||
       (complementToNTM M).rejecting q) =
-    ((CanonicalPSubsetNP.toNTM M).accepting q ||
-      (CanonicalPSubsetNP.toNTM M).rejecting q) := by
-  simp [complementToNTM, Bool.or_comm]
+      M.machine.halting q := by
+  rw [show
+    ((complementToNTM M).accepting q ||
+      (complementToNTM M).rejecting q) =
+      ((CanonicalPSubsetNP.toNTM M).accepting q ||
+        (CanonicalPSubsetNP.toNTM M).rejecting q) by
+      simp [complementToNTM, Bool.or_comm]]
+  exact CanonicalPSubsetNP.accept_or_reject_eq_halting M q
 
-theorem complement_successors_eq
+theorem complement_successors_to_tm
     (M : PolyDTMCandidate)
     (config :
       Configuration
         (Fin (M.stateCount + 1))
         (Option Bool)) :
     (complementToNTM M).successors config =
-      (CanonicalPSubsetNP.toNTM M).successors config := by
+      [M.machine.step config] := by
   rfl
-
-theorem complement_runBranches_eq
-    (M : PolyDTMCandidate)
-    (fuel : Nat)
-    (configs :
-      List
-        (Configuration
-          (Fin (M.stateCount + 1))
-          (Option Bool))) :
-    (complementToNTM M).runBranches fuel configs =
-      (CanonicalPSubsetNP.toNTM M).runBranches fuel configs := by
-  induction fuel generalizing configs with
-  | zero =>
-      rfl
-  | succ n ih =>
-      simp only [NTM.runBranches]
-      have hpred :
-          (fun c : Configuration (Fin (M.stateCount + 1)) (Option Bool) =>
-            ((complementToNTM M).accepting c.state ||
-              (complementToNTM M).rejecting c.state)) =
-          (fun c : Configuration (Fin (M.stateCount + 1)) (Option Bool) =>
-            ((CanonicalPSubsetNP.toNTM M).accepting c.state ||
-              (CanonicalPSubsetNP.toNTM M).rejecting c.state)) := by
-        funext c
-        exact complement_stop_eq_base_stop M c.state
-      rw [hpred]
-      have hsucc :
-          (fun c : Configuration (Fin (M.stateCount + 1)) (Option Bool) =>
-            (complementToNTM M).successors c) =
-          (fun c : Configuration (Fin (M.stateCount + 1)) (Option Bool) =>
-            (CanonicalPSubsetNP.toNTM M).successors c) := by
-        funext c
-        exact complement_successors_eq M c
-      rw [hsucc]
-      exact ih _
 
 def complementCandidate
     (M : PolyDTMCandidate) :
@@ -95,8 +67,68 @@ theorem complement_runBranches_to_tm_run
         (Option Bool)) :
     (complementToNTM M).runBranches fuel [config] =
       [M.machine.run fuel config] := by
-  rw [complement_runBranches_eq]
-  exact CanonicalPSubsetNP.runBranches_to_tm_run M fuel config
+  induction fuel generalizing config with
+  | zero =>
+      rfl
+  | succ n ih =>
+      by_cases h : M.machine.halting config.state = true
+      · have hstop :
+          ((complementToNTM M).accepting config.state ||
+            (complementToNTM M).rejecting config.state) = true := by
+          rw [complement_accept_or_reject_eq_halting]
+          exact h
+        have hHalted :
+            [config].filter (fun c =>
+              (complementToNTM M).accepting c.state ||
+                (complementToNTM M).rejecting c.state) = [config] := by
+          simp [hstop]
+        have hActive :
+            [config].filter (fun c =>
+              !((complementToNTM M).accepting c.state ||
+                (complementToNTM M).rejecting c.state)) = [] := by
+          simp [hstop]
+        calc
+          (complementToNTM M).runBranches (n + 1) [config]
+              = (complementToNTM M).runBranches n [config] := by
+                  rw [NTM.runBranches]
+                  rw [hActive, hHalted]
+                  rfl
+          _ = [M.machine.run n config] := ih config
+          _ = [config] := by
+                rw [CanonicalPSubsetNP.tm_run_of_halted M config h n]
+          _ = [M.machine.run (n + 1) config] := by
+                simp [TM.run, h]
+      · have hFalse : M.machine.halting config.state = false := by
+          cases hval : M.machine.halting config.state <;> simp_all
+        have hstop :
+          ((complementToNTM M).accepting config.state ||
+            (complementToNTM M).rejecting config.state) = false := by
+          rw [complement_accept_or_reject_eq_halting]
+          exact hFalse
+        have hHalted :
+            [config].filter (fun c =>
+              (complementToNTM M).accepting c.state ||
+                (complementToNTM M).rejecting c.state) = [] := by
+          simp [hstop]
+        have hActive :
+            [config].filter (fun c =>
+              !((complementToNTM M).accepting c.state ||
+                (complementToNTM M).rejecting c.state)) = [config] := by
+          simp [hstop]
+        calc
+          (complementToNTM M).runBranches (n + 1) [config]
+              = (complementToNTM M).runBranches n
+                  ((complementToNTM M).successors config) := by
+                  rw [NTM.runBranches]
+                  rw [hActive, hHalted]
+                  rfl
+          _ = (complementToNTM M).runBranches n
+                  [M.machine.step config] := by
+                rw [complement_successors_to_tm]
+          _ = [M.machine.run n (M.machine.step config)] :=
+                ih (M.machine.step config)
+          _ = [M.machine.run (n + 1) config] := by
+                simp [TM.run, h]
 
 theorem complement_acceptsWithin_iff_rejects_at_fuel
     (M : PolyDTMCandidate)
@@ -117,21 +149,46 @@ theorem complement_acceptsWithin_iff_rejects_at_fuel
         reached = M.machine.run t (initialTMConfig M.machine x) := by
       simpa using hmem
     subst reached
-    have hterm :
+    have hhalt :
         M.machine.halting
-          (M.machine.run t (initialTMConfig M.machine x)).state = true ∧
+          (M.machine.run t (initialTMConfig M.machine x)).state = true := by
+      have hacc' :
+          Bool.and
+            (M.machine.halting
+              (M.machine.run t (initialTMConfig M.machine x)).state)
+            (!(M.accepting
+              (M.machine.run t (initialTMConfig M.machine x)).state)) = true := by
+        simpa [complementToNTM, CanonicalPSubsetNP.toNTM] using hacc
+      exact (Bool.and_eq_true.mp hacc').1
+    have hrejected :
         M.accepting
           (M.machine.run t (initialTMConfig M.machine x)).state = false := by
-      simpa [complementToNTM, CanonicalPSubsetNP.toNTM,
-        Bool.and_eq_true] using hacc
-    exact ⟨hterm.1, hterm.2⟩
+      have hacc' :
+          Bool.and
+            (M.machine.halting
+              (M.machine.run t (initialTMConfig M.machine x)).state)
+            (!(M.accepting
+              (M.machine.run t (initialTMConfig M.machine x)).state)) = true := by
+        simpa [complementToNTM, CanonicalPSubsetNP.toNTM] using hacc
+      have hn := (Bool.and_eq_true.mp hacc').2
+      cases hv : M.accepting
+          (M.machine.run t (initialTMConfig M.machine x)).state <;> simp_all
+    exact ⟨hhalt, hrejected⟩
   · rintro ⟨hhalt, hrejected⟩
     refine ⟨M.machine.run t (initialTMConfig M.machine x), ?_, ?_⟩
     · rw [complement_runBranches_to_tm_run M t
         (initialTMConfig M.machine x)]
       simp
-    · simp [complementToNTM, CanonicalPSubsetNP.toNTM,
-        hhalt, hrejected]
+    · change
+        Bool.and
+          (M.machine.halting
+            (M.machine.run t (initialTMConfig M.machine x)).state)
+          (!(M.accepting
+            (M.machine.run t (initialTMConfig M.machine x)).state)) = true
+      have hh :
+          M.machine.halting
+            (M.machine.run t (initialTMConfig M.machine x)).state = true := hhalt
+      simp [hh, hrejected]
 
 /-- Concrete SAT circuit whose satisfiability means that the deterministic
 candidate has halted and rejected the supplied input within the given fuel. -/
@@ -163,7 +220,7 @@ theorem rejection_tableau_encoded_length_poly
         (x.length + t + 1)^4 := by
   exact boundedExec_encoded_length_poly (complementCandidate M) x t
 
-#print axioms MCore.Real.P02DeterministicRejectionTableau.complement_runBranches_eq
+#print axioms MCore.Real.P02DeterministicRejectionTableau.complement_runBranches_to_tm_run
 #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_acceptsWithin_iff_rejects_at_fuel
 #print axioms MCore.Real.P02DeterministicRejectionTableau.rejection_tableau_correctness
 #print axioms MCore.Real.P02DeterministicRejectionTableau.rejection_tableau_encoded_length_poly
