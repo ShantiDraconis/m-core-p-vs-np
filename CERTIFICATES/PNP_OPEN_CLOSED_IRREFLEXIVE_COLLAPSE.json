@@ -1,0 +1,13 @@
+{
+  "certificate": "PNP_OPEN_CLOSED_IRREFLEXIVE_COLLAPSE",
+  "claims": [
+    "OpenMath != OpenMath is impossible",
+    "ClosedMath != ClosedMath is impossible",
+    "either self-disequality implies False",
+    "the full terminal conjunction with open=closed and self-disequality is inconsistent",
+    "the consistent remainder is OpenMath iff not ClosedMath and ClosedMath iff not OpenMath"
+  ],
+  "open_bridge_active": 0,
+  "endpoint": "CandidateCodeSemanticFixedPoint",
+  "endpoint_status": "OPEN_MATH"
+}
