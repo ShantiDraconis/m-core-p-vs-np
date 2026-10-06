@@ -125,6 +125,184 @@ theorem payload_toTM_run_roundtrip
   simp only [EncodedMachine.toTM]
   rw [hInit, hTrans, hHalt]
 
+
+theorem payload_machine_roundtrip
+    (enc : EncodedMachine) :
+    payloadToMachine (machinePayload enc) = enc := by
+  cases enc with
+  | mk n initial transition halting accepting =>
+      simp only [machinePayload, payloadToMachine]
+      apply P02FiniteMachineDescription.EncodedMachine.ext
+      · rfl
+      · exact payload_initial_roundtrip
+      · funext q s
+        exact payload_transition_roundtrip _ q s
+      · funext q
+        exact payload_halting_roundtrip _ q
+      · funext q
+        exact payload_accepting_roundtrip _ q
+
+def encodeOptionBool : Option Bool → BitString
+  | none => [false, false]
+  | some false => [false, true]
+  | some true => [true, false]
+
+def decodeOptionBool : BitString → Option (Option Bool × BitString)
+  | false :: false :: rest => some (none, rest)
+  | false :: true :: rest => some (some false, rest)
+  | true :: false :: rest => some (some true, rest)
+  | _ => none
+
+@[simp] theorem decodeOptionBool_encode_append
+    (s : Option Bool) (tail : BitString) :
+    decodeOptionBool (encodeOptionBool s ++ tail) = some (s, tail) := by
+  cases s with
+  | none => rfl
+  | some b => cases b <;> rfl
+
+def encodeDirection : Direction → BitString
+  | .left => [false, false]
+  | .stay => [false, true]
+  | .right => [true, false]
+
+def decodeDirection : BitString → Option (Direction × BitString)
+  | false :: false :: rest => some (.left, rest)
+  | false :: true :: rest => some (.stay, rest)
+  | true :: false :: rest => some (.right, rest)
+  | _ => none
+
+@[simp] theorem decodeDirection_encode_append
+    (d : Direction) (tail : BitString) :
+    decodeDirection (encodeDirection d ++ tail) = some (d, tail) := by
+  cases d <;> rfl
+
+def encodeTransitionEntry (e : TransitionEntry) : BitString :=
+  encodeNat e.next ++ encodeOptionBool e.write ++ encodeDirection e.move
+
+def decodeTransitionEntry : BitString → Option (TransitionEntry × BitString)
+  | bits => do
+      let (next, r1) ← decodeNat bits
+      let (write, r2) ← decodeOptionBool r1
+      let (move, r3) ← decodeDirection r2
+      some ({ next := next, write := write, move := move }, r3)
+
+@[simp] theorem decodeTransitionEntry_encode_append
+    (e : TransitionEntry) (tail : BitString) :
+    decodeTransitionEntry (encodeTransitionEntry e ++ tail) = some (e, tail) := by
+  cases e
+  simp [encodeTransitionEntry, decodeTransitionEntry, List.append_assoc,
+    decodeNat_encodeNat_append]
+
+def encodeRawList {α : Type} (enc : α → BitString) : List α → BitString
+  | [] => []
+  | x :: xs => enc x ++ encodeRawList enc xs
+
+def decodeN {α : Type}
+    (dec : BitString → Option (α × BitString)) :
+    Nat → BitString → Option (List α × BitString)
+  | 0, bits => some ([], bits)
+  | n + 1, bits => do
+      let (x, r1) ← dec bits
+      let (xs, r2) ← decodeN dec n r1
+      some (x :: xs, r2)
+
+theorem decodeN_encodeRawList_append
+    {α : Type}
+    (enc : α → BitString)
+    (dec : BitString → Option (α × BitString))
+    (h : ∀ x tail, dec (enc x ++ tail) = some (x, tail)) :
+    ∀ xs tail,
+      decodeN dec xs.length (encodeRawList enc xs ++ tail) = some (xs, tail) := by
+  intro xs
+  induction xs with
+  | nil =>
+      intro tail
+      rfl
+  | cons x xs ih =>
+      intro tail
+      simp only [encodeRawList, List.length_cons]
+      rw [List.append_assoc, h x (encodeRawList enc xs ++ tail)]
+      simp [decodeN, ih tail]
+
+def encodeTransitionList (xs : List TransitionEntry) : BitString :=
+  encodeNat xs.length ++ encodeRawList encodeTransitionEntry xs
+
+def decodeTransitionList (bits : BitString) :
+    Option (List TransitionEntry × BitString) := do
+  let (n, rest) ← decodeNat bits
+  decodeN decodeTransitionEntry n rest
+
+@[simp] theorem decodeTransitionList_encode_append
+    (xs : List TransitionEntry) (tail : BitString) :
+    decodeTransitionList (encodeTransitionList xs ++ tail) = some (xs, tail) := by
+  simp [encodeTransitionList, decodeTransitionList, List.append_assoc,
+    decodeNat_encodeNat_append,
+    decodeN_encodeRawList_append encodeTransitionEntry decodeTransitionEntry
+      decodeTransitionEntry_encode_append]
+
+def encodeBoolList (xs : List Bool) : BitString :=
+  encodeNat xs.length ++ xs
+
+def decodeBoolList (bits : BitString) : Option (List Bool × BitString) := do
+  let (n, rest) ← decodeNat bits
+  if h : n ≤ rest.length then
+    some (rest.take n, rest.drop n)
+  else
+    none
+
+@[simp] theorem decodeBoolList_encode_append
+    (xs : List Bool) (tail : BitString) :
+    decodeBoolList (encodeBoolList xs ++ tail) = some (xs, tail) := by
+  simp [encodeBoolList, decodeBoolList, List.append_assoc,
+    decodeNat_encodeNat_append]
+
+def encodePayload (p : MachinePayload) : BitString :=
+  encodeNat p.stateCount ++
+  encodeNat p.initial ++
+  encodeTransitionList p.transitionNone ++
+  encodeTransitionList p.transitionFalse ++
+  encodeTransitionList p.transitionTrue ++
+  encodeBoolList p.halting ++
+  encodeBoolList p.accepting
+
+def decodePayload (bits : BitString) : Option (MachinePayload × BitString) := do
+  let (stateCount, r1) ← decodeNat bits
+  let (initial, r2) ← decodeNat r1
+  let (transitionNone, r3) ← decodeTransitionList r2
+  let (transitionFalse, r4) ← decodeTransitionList r3
+  let (transitionTrue, r5) ← decodeTransitionList r4
+  let (halting, r6) ← decodeBoolList r5
+  let (accepting, r7) ← decodeBoolList r6
+  some
+    ({ stateCount := stateCount
+       initial := initial
+       transitionNone := transitionNone
+       transitionFalse := transitionFalse
+       transitionTrue := transitionTrue
+       halting := halting
+       accepting := accepting }, r7)
+
+@[simp] theorem decodePayload_encode_append
+    (p : MachinePayload) (tail : BitString) :
+    decodePayload (encodePayload p ++ tail) = some (p, tail) := by
+  cases p
+  simp [encodePayload, decodePayload, List.append_assoc,
+    decodeNat_encodeNat_append]
+
+def encodeMachine (enc : EncodedMachine) : BitString :=
+  encodePayload (machinePayload enc)
+
+def decodeMachine (bits : BitString) : Option EncodedMachine :=
+  match decodePayload bits with
+  | some (p, []) => some (payloadToMachine p)
+  | _ => none
+
+theorem decodeMachine_encodeMachine
+    (enc : EncodedMachine) :
+    decodeMachine (encodeMachine enc) = some enc := by
+  simp [decodeMachine, encodeMachine, payload_machine_roundtrip]
+
+
 #print axioms MCore.Real.P02MachineSerialization.list_ofFn_getD
 #print axioms MCore.Real.P02MachineSerialization.payload_initial_roundtrip
 #print axioms MCore.Real.P02MachineSerialization.payload_transition_roundtrip
