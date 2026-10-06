@@ -134,3 +134,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02TerminalEquivalenceAudit.lean 2>&1 | tee P02TerminalEquivalenceAudit.log
           if grep -E 'sorryAx' P02TerminalEquivalenceAudit.log; then exit 1; fi
+
+      - name: Build RPA dual confirmation
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02RPADualConfirmation.lean 2>&1 | tee P02RPADualConfirmation.log
+          if grep -E 'sorryAx' P02RPADualConfirmation.log; then exit 1; fi
