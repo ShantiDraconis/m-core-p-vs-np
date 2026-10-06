@@ -23,6 +23,11 @@ jobs:
           set -euo pipefail
           lake update
 
+      - name: Build semantic dependency
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02SemanticSelfSubstitution
+
       - name: Build rejection image frontier
         run: |
           set -euo pipefail
