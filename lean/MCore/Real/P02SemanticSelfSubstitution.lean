@@ -1,4 +1,5 @@
 import MCore.Real.P02DeterministicRejectionTableau
+import MCore.Real.FailProofFiniteAttack
 
 namespace MCore
 namespace Real
@@ -360,6 +361,21 @@ theorem idempotence_breaks_global_flip
   rw [hid x0] at h1
   cases hb : observedBit M (rejectCode M x0) <;> simp_all
 
+
+/-- Concrete counterexample to universal idempotence of rejectCode. -/
+theorem rejectCode_not_idempotent_on_alwaysReject :
+    rejectCode
+        FailProofFiniteAttack.alwaysRejectCandidate
+        (rejectCode FailProofFiniteAttack.alwaysRejectCandidate []) ≠
+      rejectCode FailProofFiniteAttack.alwaysRejectCandidate [] := by
+  native_decide
+
+theorem rejectCodeIdempotent_refuted :
+    ¬ RejectCodeIdempotent := by
+  intro H
+  exact rejectCode_not_idempotent_on_alwaysReject
+    (H FailProofFiniteAttack.alwaysRejectCandidate [])
+
 /-- This is the exact clock-collapse shape suggested for the kernel to expose.
 It does not assert that the current tableau construction proves it. -/
 def RejectCodeClockCollapse : Prop :=
@@ -431,6 +447,8 @@ theorem terminalSplit_implies_universal_failure :
 #print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeRunCollapse_iff_totalClockSemanticCollision
 #print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeRunCollapse_implies_antiAlternation
 #print axioms MCore.Real.P02SemanticSelfSubstitution.idempotence_breaks_global_flip
+#print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCode_not_idempotent_on_alwaysReject
+#print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeIdempotent_refuted
 #print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCodeClockCollapse_implies_runCollapse
 #print axioms MCore.Real.P02SemanticSelfSubstitution.totalClock_trivially_preserves_rejectCode_halting
 #print axioms MCore.Real.P02SemanticSelfSubstitution.nonmonotonePolyClock_poly
