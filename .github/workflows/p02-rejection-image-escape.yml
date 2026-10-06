@@ -62,3 +62,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02FiniteCandidateDescription.lean 2>&1 | tee P02FiniteCandidateDescription.log
           if grep -E 'sorryAx' P02FiniteCandidateDescription.log; then exit 1; fi
+
+      - name: Build diagonal no-shortcut
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02DiagonalNoShortcut.lean 2>&1 | tee P02DiagonalNoShortcut.log
+          if grep -E 'sorryAx' P02DiagonalNoShortcut.log; then exit 1; fi
