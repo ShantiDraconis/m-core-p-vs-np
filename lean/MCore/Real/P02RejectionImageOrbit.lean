@@ -5,6 +5,7 @@ namespace Real
 namespace P02RejectionImageOrbit
 
 open CanonicalFinalProof
+open CanonicalSATBoundary
 open CanonicalCircuitBits
 open P02SemanticSelfSubstitution
 open P02RejectionImageEscape
