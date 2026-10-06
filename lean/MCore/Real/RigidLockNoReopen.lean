@@ -68,7 +68,7 @@ theorem detected_gain0_is_structural_evidence
 A proposed "smaller theorem" that is itself equivalent to P has not reduced
 the terminal obligation.
 -/
-theorem equivalent_subtarget_has_zero_terminal_gain
+def equivalent_subtarget_has_zero_terminal_gain
     {P Pmin : Prop}
     (hEq : Pmin ↔ P) :
     GainZero P where
