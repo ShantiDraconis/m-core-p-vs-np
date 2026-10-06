@@ -67,15 +67,13 @@ orientation cannot produce an arbitrary proposition without an inhabitant. -/
 def ThreeWayCenterCreatesInhabitant : Prop :=
   ∀ P : Prop,
     ((P ↔ P) ∧ (P ↔ P) ∧ (P ↔ P)) →
-    (Bool → P) →
+    Bool →
     P
 
 theorem three_way_center_does_not_create_inhabitant :
     ¬ ThreeWayCenterCreatesInhabitant := by
   intro H
-  have hf : Bool → False := fun _ => False.elim (by
-    exact H False ⟨Iff.rfl, Iff.rfl, Iff.rfl⟩ (fun _ => by contradiction))
-  exact hf false
+  exact H False ⟨Iff.rfl, Iff.rfl, Iff.rfl⟩ false
 
 #print axioms MCore.Real.P02TerminalThreeWayCenter.three_ways_hit_same_center
 #print axioms MCore.Real.P02TerminalThreeWayCenter.orientation_preserves_center
