@@ -11,8 +11,7 @@ on:
 
 jobs:
   search:
-    if: false # TRUNCATED_REAL: search loop intentionally disabled
-    if: false # forward-only: terminal inhabitant search disabled; material construction only
+    if: false # TRUNCATED_REAL: terminal inhabitant search disabled
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
