@@ -1,0 +1,21 @@
+{
+  "certificate": "PNP_TERMINAL_CONJUNCTURE_NUCLEUS",
+  "phases": ["0","1","2"],
+  "interpretation": {
+    "0": "ClosedStart",
+    "1": "ClosedMiddle",
+    "2": "ClosedEnd"
+  },
+  "kernel_claims": [
+    "ClosedStart iff ClosedMiddle",
+    "ClosedEnd iff ClosedMiddle",
+    "(ClosedStart and ClosedEnd) iff Endpoint",
+    "phasePayload p iff Endpoint",
+    "rotatePhase preserves phasePayload",
+    "rotatePhase^3 = identity"
+  ],
+  "open_bridge_active": 0,
+  "terminal_endpoint": "CandidateCodeSemanticFixedPoint",
+  "endpoint_status": "OPEN_MATH",
+  "note": "The 0/1/2 recurrence classifies and preserves the terminal signature; it does not manufacture an inhabitant."
+}
