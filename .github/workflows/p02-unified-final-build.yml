@@ -47,6 +47,25 @@ jobs:
             exit 1
           fi
 
+      - name: Build fail-proof compression
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FailProofAllGaps MCore.Real.FailProofFiniteAttack MCore.Real.CanonicalSATBoundary
+
+      - name: Build lane4 preflight and collapse probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash audit/preflight_local.sh
+          lake env lean lean/MCore/Real/P02RunCollapseProbe.lean
+
+      - name: Build rejection image dependency stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02SemanticSelfSubstitution MCore.Real.P02RejectionImageEscape MCore.Real.P02ActiveBridgeClosure
+
       - name: Kernel axiom audit
         shell: bash
         run: |
