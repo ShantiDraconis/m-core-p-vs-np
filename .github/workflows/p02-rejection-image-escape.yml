@@ -74,3 +74,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02FinalRootConditional.lean 2>&1 | tee P02FinalRootConditional.log
           if grep -E 'sorryAx' P02FinalRootConditional.log; then exit 1; fi
+
+      - name: Build terminal recurrence theorem
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02TerminalRecurrenceTheorem.lean 2>&1 | tee P02TerminalRecurrenceTheorem.log
+          if grep -E 'sorryAx' P02TerminalRecurrenceTheorem.log; then exit 1; fi
