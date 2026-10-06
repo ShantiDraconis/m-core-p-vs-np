@@ -1,0 +1,53 @@
+name: Structural Fixed Point
+
+on:
+  push:
+    branches:
+      - atk/structural-fixed-point-20261006
+    paths:
+      - 'lean/MCore/Real/StructuralFixedPoint.lean'
+      - '.github/workflows/structural-fixed-point.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+
+      - name: Build structural fixed point
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.StructuralFixedPoint
+
+      - name: Audit axioms and proof escapes
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/StructuralFixedPoint.lean
+
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' "$file"; then
+            echo 'AUDIT_FAIL proof escape'
+            exit 1
+          fi
+
+          cat > /tmp/StructuralFixedPointAudit.lean <<'EOF'
+          import MCore.Real.StructuralFixedPoint
+          #print axioms MCore.Real.StructuralFixedPoint.no_escape_from_terminal
+          #print axioms MCore.Real.StructuralFixedPoint.zero_gain_chain
+          #print axioms MCore.Real.StructuralFixedPoint.pointwise_iff_uniform_selector
+          #print axioms MCore.Real.StructuralFixedPoint.neg_and_iff_neg_or_neg
+          #print axioms MCore.Real.StructuralFixedPoint.g2_structural_fixed_point
+          EOF
+
+          lake env lean /tmp/StructuralFixedPointAudit.lean 2>&1 | tee /tmp/structural-fixed-point.log
+
+          if grep -q 'sorryAx' /tmp/structural-fixed-point.log; then
+            echo 'AUDIT_FAIL sorryAx'
+            exit 1
+          fi
+
+          echo 'STRUCTURAL_FIXED_POINT_GREEN'
+          echo 'PARAMETER_EXPANSION_GAIN=0'
+          echo 'STRUCTURAL_ESCAPE=0'
