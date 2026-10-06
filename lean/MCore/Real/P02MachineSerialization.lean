@@ -117,9 +117,11 @@ theorem payload_transition_roundtrip
             simpa [payloadTransitionList, machinePayload] using
               (list_ofFn_getD
                 (fun i => transitionEntry enc i (some true)) q transitionDefault)
+  unfold payloadToMachine
+  dsimp only
+  rw [hget]
   rcases htrans : enc.transition q s with ⟨q', w, d⟩
-  simp [payloadToMachine, hget, transitionEntry, htrans,
-    Nat.mod_eq_of_lt q'.isLt]
+  simp [transitionEntry, htrans, Nat.mod_eq_of_lt q'.isLt]
 
 theorem payload_toTM_run_roundtrip
     (enc : EncodedMachine)
@@ -137,33 +139,6 @@ theorem payload_toTM_run_roundtrip
   simp only [EncodedMachine.toTM]
   rw [hInit, hTrans, hHalt]
 
-
-theorem payload_machine_roundtrip
-    (enc : EncodedMachine) :
-    payloadToMachine (machinePayload enc) = enc := by
-  have hInit :
-      (payloadToMachine (machinePayload enc)).initial = enc.initial :=
-    payload_initial_roundtrip enc
-  have hTrans :
-      (payloadToMachine (machinePayload enc)).transition = enc.transition := by
-    funext q s
-    exact payload_transition_roundtrip enc q s
-  have hHalt :
-      (payloadToMachine (machinePayload enc)).halting = enc.halting := by
-    funext q
-    exact payload_halting_roundtrip enc q
-  have hAccept :
-      (payloadToMachine (machinePayload enc)).accepting = enc.accepting := by
-    funext q
-    exact payload_accepting_roundtrip enc q
-  cases enc with
-  | mk n initial transition halting accepting =>
-      simp only [machinePayload, payloadToMachine] at hInit hTrans hHalt hAccept ⊢
-      cases hInit
-      cases hTrans
-      cases hHalt
-      cases hAccept
-      rfl
 
 def encodeOptionBool : Option Bool → BitString
   | none => [false, false]
@@ -320,15 +295,26 @@ def decodeMachine (bits : BitString) : Option EncodedMachine :=
   | some (p, []) => some (payloadToMachine p)
   | _ => none
 
-theorem decodeMachine_encodeMachine
+theorem decodeMachine_encodeMachine_operational
     (enc : EncodedMachine) :
-    decodeMachine (encodeMachine enc) = some enc := by
+    ∃ dec : EncodedMachine,
+      decodeMachine (encodeMachine enc) = some dec ∧
+      dec.stateCount = enc.stateCount ∧
+      dec.accepting = enc.accepting ∧
+      (∀ (k : Nat)
+          (cfg : Configuration (Fin (enc.stateCount + 1)) (Option Bool)),
+        dec.toTM.run k cfg = enc.toTM.run k cfg) := by
   have hPayload :
       decodePayload (encodePayload (machinePayload enc)) =
         some (machinePayload enc, []) := by
     simpa using
       (decodePayload_encode_append (machinePayload enc) ([] : BitString))
-  simp [decodeMachine, encodeMachine, hPayload, payload_machine_roundtrip]
+  refine ⟨payloadToMachine (machinePayload enc), ?_, rfl, ?_, ?_⟩
+  · simp [decodeMachine, encodeMachine, hPayload]
+  · funext q
+    exact payload_accepting_roundtrip enc q
+  · intro k cfg
+    exact payload_toTM_run_roundtrip enc k cfg
 
 
 #print axioms MCore.Real.P02MachineSerialization.list_ofFn_getD
@@ -337,6 +323,7 @@ theorem decodeMachine_encodeMachine
 #print axioms MCore.Real.P02MachineSerialization.payload_halting_roundtrip
 #print axioms MCore.Real.P02MachineSerialization.payload_accepting_roundtrip
 #print axioms MCore.Real.P02MachineSerialization.payload_toTM_run_roundtrip
+#print axioms MCore.Real.P02MachineSerialization.decodeMachine_encodeMachine_operational
 
 end P02MachineSerialization
 end Real
