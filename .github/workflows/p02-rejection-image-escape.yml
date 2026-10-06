@@ -50,3 +50,9 @@ jobs:
           set -euo pipefail
           lake build MCore.Real.P02ActiveBridgeClosure 2>&1 | tee P02ActiveBridgeClosure.log
           if grep -E 'sorryAx' P02ActiveBridgeClosure.log; then exit 1; fi
+
+      - name: Build finite clock normalization
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02FiniteClockNormalization.lean 2>&1 | tee P02FiniteClockNormalization.log
+          if grep -E 'sorryAx' P02FiniteClockNormalization.log; then exit 1; fi
