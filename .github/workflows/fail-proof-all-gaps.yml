@@ -2,6 +2,10 @@ name: fail-proof-all-gaps
 
 on: [push, pull_request]
 
+concurrency:
+  group: pnp-fail-proof-all-gaps-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   canonical-model:
     runs-on: ubuntu-latest
