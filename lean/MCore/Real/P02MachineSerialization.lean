@@ -99,15 +99,27 @@ theorem payload_transition_roundtrip
     (s : Option Bool) :
     (payloadToMachine (machinePayload enc)).transition q s =
       enc.transition q s := by
-  rcases h : enc.transition q s with ⟨q', w, d⟩
-  cases s with
-  | none =>
-      simp [payloadToMachine, machinePayload, payloadTransitionList,
-        transitionEntry, h, list_ofFn_getD, Nat.mod_eq_of_lt q'.isLt]
-  | some b =>
-      cases b <;>
-        simp [payloadToMachine, machinePayload, payloadTransitionList,
-          transitionEntry, h, list_ofFn_getD, Nat.mod_eq_of_lt q'.isLt]
+  have hget :
+      (payloadTransitionList (machinePayload enc) s).getD q.val transitionDefault =
+        transitionEntry enc q s := by
+    cases s with
+    | none =>
+        simpa [payloadTransitionList, machinePayload] using
+          (list_ofFn_getD
+            (fun i => transitionEntry enc i none) q transitionDefault)
+    | some b =>
+        cases b with
+        | false =>
+            simpa [payloadTransitionList, machinePayload] using
+              (list_ofFn_getD
+                (fun i => transitionEntry enc i (some false)) q transitionDefault)
+        | true =>
+            simpa [payloadTransitionList, machinePayload] using
+              (list_ofFn_getD
+                (fun i => transitionEntry enc i (some true)) q transitionDefault)
+  rcases htrans : enc.transition q s with ⟨q', w, d⟩
+  simp [payloadToMachine, hget, transitionEntry, htrans,
+    Nat.mod_eq_of_lt q'.isLt]
 
 theorem payload_toTM_run_roundtrip
     (enc : EncodedMachine)
@@ -129,18 +141,29 @@ theorem payload_toTM_run_roundtrip
 theorem payload_machine_roundtrip
     (enc : EncodedMachine) :
     payloadToMachine (machinePayload enc) = enc := by
+  have hInit :
+      (payloadToMachine (machinePayload enc)).initial = enc.initial :=
+    payload_initial_roundtrip enc
+  have hTrans :
+      (payloadToMachine (machinePayload enc)).transition = enc.transition := by
+    funext q s
+    exact payload_transition_roundtrip enc q s
+  have hHalt :
+      (payloadToMachine (machinePayload enc)).halting = enc.halting := by
+    funext q
+    exact payload_halting_roundtrip enc q
+  have hAccept :
+      (payloadToMachine (machinePayload enc)).accepting = enc.accepting := by
+    funext q
+    exact payload_accepting_roundtrip enc q
   cases enc with
   | mk n initial transition halting accepting =>
-      simp only [machinePayload, payloadToMachine]
-      apply P02FiniteMachineDescription.EncodedMachine.ext
-      · rfl
-      · exact payload_initial_roundtrip
-      · funext q s
-        exact payload_transition_roundtrip _ q s
-      · funext q
-        exact payload_halting_roundtrip _ q
-      · funext q
-        exact payload_accepting_roundtrip _ q
+      simp only [machinePayload, payloadToMachine] at hInit hTrans hHalt hAccept ⊢
+      cases hInit
+      cases hTrans
+      cases hHalt
+      cases hAccept
+      rfl
 
 def encodeOptionBool : Option Bool → BitString
   | none => [false, false]
@@ -220,9 +243,9 @@ theorem decodeN_encodeRawList_append
       rfl
   | cons x xs ih =>
       intro tail
-      simp only [encodeRawList, List.length_cons]
-      rw [List.append_assoc, h x (encodeRawList enc xs ++ tail)]
-      simp [decodeN, ih tail]
+      simp only [encodeRawList, List.length_cons, decodeN, List.append_assoc]
+      rw [h x (encodeRawList enc xs ++ tail)]
+      simp [ih tail]
 
 def encodeTransitionList (xs : List TransitionEntry) : BitString :=
   encodeNat xs.length ++ encodeRawList encodeTransitionEntry xs
@@ -300,7 +323,12 @@ def decodeMachine (bits : BitString) : Option EncodedMachine :=
 theorem decodeMachine_encodeMachine
     (enc : EncodedMachine) :
     decodeMachine (encodeMachine enc) = some enc := by
-  simp [decodeMachine, encodeMachine, payload_machine_roundtrip]
+  have hPayload :
+      decodePayload (encodePayload (machinePayload enc)) =
+        some (machinePayload enc, []) := by
+    simpa using
+      (decodePayload_encode_append (machinePayload enc) ([] : BitString))
+  simp [decodeMachine, encodeMachine, hPayload, payload_machine_roundtrip]
 
 
 #print axioms MCore.Real.P02MachineSerialization.list_ofFn_getD
