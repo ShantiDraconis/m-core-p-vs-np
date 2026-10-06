@@ -47,6 +47,11 @@ theorem universalSim_some_iff
       enc.toTM.halting
         (enc.toTM.run fuel (initialTMConfig enc.toTM x)).state = true
   · simp [h]
+    constructor
+    · rintro ⟨hb, hk⟩
+      exact ⟨hk.symm, hb.symm⟩
+    · rintro ⟨hk, hb⟩
+      exact ⟨hb.symm, hk.symm⟩
   · have hf :
         enc.toTM.halting
           (enc.toTM.run fuel (initialTMConfig enc.toTM x)).state = false := by
