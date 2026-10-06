@@ -57,6 +57,9 @@ jobs:
           #print axioms MCore.Real.P02SemanticSelfSubstitution.correctAt_rejectCode_flip
           #print axioms MCore.Real.P02SemanticSelfSubstitution.semantic_closure_forces_failure
           #print axioms MCore.Real.P02SemanticSelfSubstitution.semanticCollisionProducer_implies_universal_failure
+          #print axioms MCore.Real.P02SemanticSelfSubstitution.nonhalting_input_forces_failure
+          #print axioms MCore.Real.P02SemanticSelfSubstitution.totalClockSemanticCollision_implies_universal_failure
+          #print axioms MCore.Real.P02SemanticSelfSubstitution.terminalSplit_implies_universal_failure
           EOF
           lake env lean /tmp/P02SemanticAudit.lean 2>&1 | tee /tmp/p02-semantic.log
           if grep -q 'sorryAx' /tmp/p02-semantic.log; then
