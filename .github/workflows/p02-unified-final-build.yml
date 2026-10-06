@@ -20,7 +20,17 @@ jobs:
       - name: Setup Lean
         uses: leanprover/lean-action@v1
         with:
-          use-mathlib-cache: true
+          build: false
+          test: false
+          lint: false
+          use-mathlib-cache: false
+
+      - name: Resolve pinned dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake update
+          lake exe cache get || true
 
       - name: Build complete unified theory
         shell: bash
