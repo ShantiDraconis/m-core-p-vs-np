@@ -1,0 +1,31 @@
+name: P02 G2 Truncation Frontier
+
+on:
+  push:
+    branches:
+      - atk/p02-g2-universal-failure-material-20261005
+    paths:
+      - 'probe/P02TruncationFrontier.lean'
+      - '.github/workflows/p02-g2-truncation-frontier.yml'
+  workflow_dispatch:
+
+jobs:
+  frontier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        uses: leanprover/lean-action@v1
+      - name: Build material dependencies
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P02TerminalForcingG2 MCore.Real.P02ClockBridgeMaterial MCore.Real.P02FiniteMachineDescription
+      - name: Expose truncation frontier
+        run: |
+          set +e
+          lake env lean probe/P02TruncationFrontier.lean 2>&1 | tee /tmp/p02-truncation.log
+          rc=${PIPESTATUS[0]}
+          echo "LEAN_RC=$rc"
+          grep -E "universalDisagreementForcado|closeG2Forcado|sorryAx|correctAt_mono_clock|projectFiniteMachine_toTM" /tmp/p02-truncation.log || true
+          exit 0
