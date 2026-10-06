@@ -129,6 +129,45 @@ def witnessOfCounterexampleMaterial
     UniversalFailureWitness :=
   P02TerminalForcingG2.universalFailureWitnessOf counterexample fails
 
+
+/-! ### T7 terminal-cycle compression
+
+These names are deliberately definitionally identical.  The purpose of this
+block is to prevent reopening the same terminal obligation under fresh labels.
+-/
+
+abbrev Endpoint : Prop := COUNTEREXAMPLE_MATERIAL_OPEN_MATH
+abbrev Gap : Prop := Endpoint
+abbrev Habitant : Prop := Gap
+abbrev Inhabitant : Prop := Habitant
+
+theorem endpoint_to_gap : Endpoint → Gap := id
+theorem gap_to_habitant : Gap → Habitant := id
+theorem habitant_to_inhabitant : Habitant → Inhabitant := id
+theorem inhabitant_to_endpoint : Inhabitant → Endpoint := id
+
+theorem endpoint_iff_gap : Endpoint ↔ Gap := Iff.rfl
+theorem gap_iff_habitant : Gap ↔ Habitant := Iff.rfl
+theorem habitant_iff_inhabitant : Habitant ↔ Inhabitant := Iff.rfl
+theorem terminal_cycle : Endpoint ↔ Inhabitant := Iff.rfl
+
+/-- The compressed endpoint is exactly the already-audited G2 terminal. -/
+theorem endpoint_iff_g2_terminal :
+    Endpoint ↔ P02TerminalForcingG2.G2_TERMINAL :=
+  counterexampleMaterial_iff_terminal
+
+/-- The compressed endpoint is exactly nonemptiness of the material universal
+failure witness. -/
+theorem endpoint_iff_universal_failure_witness :
+    Endpoint ↔ Nonempty UniversalFailureWitness := by
+  rw [endpoint_iff_g2_terminal]
+  exact P02TerminalForcingG2.g2_terminal_iff_witness
+
+/-- No extra proof obligation is introduced by the terminal names: inhabiting
+any one of them is exactly inhabiting the material endpoint. -/
+theorem inhabitant_iff_material_endpoint :
+    Inhabitant ↔ COUNTEREXAMPLE_MATERIAL_OPEN_MATH := Iff.rfl
+
 #print axioms MCore.Real.P02G2CounterexampleAttack.not_correctAt_iff_timeout_or_mismatch
 #print axioms MCore.Real.P02G2CounterexampleAttack.pointwiseFailure_iff_counterexampleMaterial
 #print axioms MCore.Real.P02G2CounterexampleAttack.counterexampleSelector_nonempty
