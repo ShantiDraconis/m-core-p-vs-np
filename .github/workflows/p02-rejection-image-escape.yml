@@ -1,0 +1,25 @@
+name: P02 Rejection Image Escape
+
+on:
+  push:
+    branches:
+      - atk/p02-lane4-reuse-t10-audit-20261003
+  workflow_dispatch:
+
+jobs:
+  image-escape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+
+      - name: Build rejection image frontier
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02RejectionImageEscape.lean 2>&1 | tee P02RejectionImageEscape.log
+          if grep -E 'sorryAx' P02RejectionImageEscape.log; then exit 1; fi
