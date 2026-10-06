@@ -119,9 +119,8 @@ theorem payload_transition_roundtrip
                 (fun i => transitionEntry enc i (some true)) q transitionDefault)
   unfold payloadToMachine
   dsimp only
-  rw [hget]
   rcases htrans : enc.transition q s with ⟨q', w, d⟩
-  simp [transitionEntry, htrans, Nat.mod_eq_of_lt q'.isLt]
+  simp [hget, transitionEntry, htrans, Nat.mod_eq_of_lt q'.isLt]
 
 theorem payload_toTM_run_roundtrip
     (enc : EncodedMachine)
@@ -295,26 +294,31 @@ def decodeMachine (bits : BitString) : Option EncodedMachine :=
   | some (p, []) => some (payloadToMachine p)
   | _ => none
 
-theorem decodeMachine_encodeMachine_operational
+theorem decodeMachine_encodeMachine_target
     (enc : EncodedMachine) :
-    ∃ dec : EncodedMachine,
-      decodeMachine (encodeMachine enc) = some dec ∧
-      dec.stateCount = enc.stateCount ∧
-      dec.accepting = enc.accepting ∧
-      (∀ (k : Nat)
-          (cfg : Configuration (Fin (enc.stateCount + 1)) (Option Bool)),
-        dec.toTM.run k cfg = enc.toTM.run k cfg) := by
+    decodeMachine (encodeMachine enc) =
+      some (payloadToMachine (machinePayload enc)) := by
   have hPayload :
       decodePayload (encodePayload (machinePayload enc)) =
         some (machinePayload enc, []) := by
     simpa using
       (decodePayload_encode_append (machinePayload enc) ([] : BitString))
-  refine ⟨payloadToMachine (machinePayload enc), ?_, rfl, ?_, ?_⟩
-  · simp [decodeMachine, encodeMachine, hPayload]
-  · funext q
-    exact payload_accepting_roundtrip enc q
-  · intro k cfg
-    exact payload_toTM_run_roundtrip enc k cfg
+  simp [decodeMachine, encodeMachine, hPayload]
+
+theorem decoded_accepting_roundtrip
+    (enc : EncodedMachine)
+    (q : Fin (enc.stateCount + 1)) :
+    (payloadToMachine (machinePayload enc)).accepting q =
+      enc.accepting q :=
+  payload_accepting_roundtrip enc q
+
+theorem decoded_run_roundtrip
+    (enc : EncodedMachine)
+    (k : Nat)
+    (cfg : Configuration (Fin (enc.stateCount + 1)) (Option Bool)) :
+    (payloadToMachine (machinePayload enc)).toTM.run k cfg =
+      enc.toTM.run k cfg :=
+  payload_toTM_run_roundtrip enc k cfg
 
 
 #print axioms MCore.Real.P02MachineSerialization.list_ofFn_getD
@@ -323,7 +327,8 @@ theorem decodeMachine_encodeMachine_operational
 #print axioms MCore.Real.P02MachineSerialization.payload_halting_roundtrip
 #print axioms MCore.Real.P02MachineSerialization.payload_accepting_roundtrip
 #print axioms MCore.Real.P02MachineSerialization.payload_toTM_run_roundtrip
-#print axioms MCore.Real.P02MachineSerialization.decodeMachine_encodeMachine_operational
+#print axioms MCore.Real.P02MachineSerialization.decodeMachine_encodeMachine_target
+#print axioms MCore.Real.P02MachineSerialization.decoded_run_roundtrip
 
 end P02MachineSerialization
 end Real
