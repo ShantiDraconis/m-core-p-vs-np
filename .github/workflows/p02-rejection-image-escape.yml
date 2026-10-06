@@ -140,3 +140,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02RPADualConfirmation.lean 2>&1 | tee P02RPADualConfirmation.log
           if grep -E 'sorryAx' P02RPADualConfirmation.log; then exit 1; fi
+
+      - name: Build endpoint lattice
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02EndpointLattice.lean 2>&1 | tee P02EndpointLattice.log
+          if grep -E 'sorryAx' P02EndpointLattice.log; then exit 1; fi
