@@ -5,6 +5,8 @@ namespace MCore
 namespace Real
 namespace P02DeterministicRejectionTableau
 
+-- Dedicated kernel gate trigger; semantics unchanged.
+
 open CanonicalFinalProof
 open CanonicalPSubsetNP
 open PNPNTMTableauEncoding
