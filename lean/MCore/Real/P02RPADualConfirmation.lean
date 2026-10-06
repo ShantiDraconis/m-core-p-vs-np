@@ -99,9 +99,8 @@ theorem global_external_contains_endpoint
 theorem global_external_closes_pneqnp
     (h : GLOBAL_EXTERNAL_CERTIFICATE) :
     PneqNP := by
-  exact P02FinalRootConditional.FINAL_ROOT
-    ((P02DiagonalNoShortcut.candidateCodeSemanticFixedPoint_implies_escape
-      (global_external_contains_endpoint h)))
+  exact P02ActiveBridgeClosure.rejectImageEscape_closes_pneqnp
+    (global_external_contains_endpoint h)
 
 #print axioms MCore.Real.P02RPADualConfirmation.activeRPA_nonempty_iff_endpoint
 #print axioms MCore.Real.P02RPADualConfirmation.rpa_five_view_identity
