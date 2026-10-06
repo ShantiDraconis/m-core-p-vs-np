@@ -163,6 +163,71 @@ def TotalClockSemanticCollision : Prop :=
     (∀ x : BitString, OwnClockHalts M x) →
       ∃ x : BitString, SemanticClosureAt M x
 
+
+/-- Observable Boolean produced by M on input x at M's own clock. -/
+def observedBit
+    (M : PolyDTMCandidate)
+    (x : BitString) : Bool :=
+  M.accepting
+    (M.machine.run
+      (M.timeBound x.length)
+      (initialTMConfig M.machine x)).state
+
+theorem semanticClosureAt_iff_observed_eq
+    (M : PolyDTMCandidate)
+    (x : BitString) :
+    SemanticClosureAt M x ↔
+      observedBit M (rejectCode M x) = observedBit M x := by
+  rfl
+
+/-- For Booleans, failure of semantic closure is exactly a bit flip. -/
+theorem not_semanticClosureAt_iff_flip
+    (M : PolyDTMCandidate)
+    (x : BitString) :
+    ¬ SemanticClosureAt M x ↔
+      observedBit M (rejectCode M x) = !(observedBit M x) := by
+  rw [semanticClosureAt_iff_observed_eq]
+  cases h0 : observedBit M x <;>
+    cases h1 : observedBit M (rejectCode M x) <;>
+    simp_all
+
+/-- Global absence of collisions is exactly global alternation along rejectCode. -/
+theorem no_semantic_collision_iff_global_flip
+    (M : PolyDTMCandidate) :
+    (¬ ∃ x : BitString, SemanticClosureAt M x) ↔
+      (∀ x : BitString,
+        observedBit M (rejectCode M x) = !(observedBit M x)) := by
+  constructor
+  · intro H x
+    exact (not_semanticClosureAt_iff_flip M x).mp (by
+      intro hx
+      exact H ⟨x, hx⟩)
+  · intro H hex
+    rcases hex with ⟨x, hx⟩
+    have hflip := H x
+    have hnot := (not_semanticClosureAt_iff_flip M x).mpr hflip
+    exact hnot hx
+
+/-- Exact anti-alternation formulation of the total-clock residual. -/
+def TotalClockAntiAlternation : Prop :=
+  ∀ M : PolyDTMCandidate,
+    (∀ x : BitString, OwnClockHalts M x) →
+      ¬ (∀ x : BitString,
+        observedBit M (rejectCode M x) = !(observedBit M x))
+
+theorem totalClockCollision_iff_antiAlternation :
+    TotalClockSemanticCollision ↔ TotalClockAntiAlternation := by
+  constructor
+  · intro H M htotal hflip
+    rcases H M htotal with ⟨x, hclose⟩
+    have hnot := (not_semanticClosureAt_iff_flip M x).mpr (hflip x)
+    exact hnot hclose
+  · intro H M htotal
+    by_contra hnone
+    have hflip :=
+      (no_semantic_collision_iff_global_flip M).mp hnone
+    exact H M htotal hflip
+
 theorem totalClockSemanticCollision_implies_universal_failure :
     TotalClockSemanticCollision →
       UniversalFailure (SATBits circuitBitEncoding) := by
@@ -211,6 +276,9 @@ theorem terminalSplit_implies_universal_failure :
 #print axioms MCore.Real.P02SemanticSelfSubstitution.semanticCollisionProducer_implies_universal_failure
 #print axioms MCore.Real.P02SemanticSelfSubstitution.nonhalting_input_forces_failure
 #print axioms MCore.Real.P02SemanticSelfSubstitution.totalClockSemanticCollision_implies_universal_failure
+#print axioms MCore.Real.P02SemanticSelfSubstitution.not_semanticClosureAt_iff_flip
+#print axioms MCore.Real.P02SemanticSelfSubstitution.no_semantic_collision_iff_global_flip
+#print axioms MCore.Real.P02SemanticSelfSubstitution.totalClockCollision_iff_antiAlternation
 #print axioms MCore.Real.P02SemanticSelfSubstitution.terminalSplit_implies_universal_failure
 
 end P02SemanticSelfSubstitution
