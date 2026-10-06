@@ -1,0 +1,15 @@
+{
+  "certificate": "PNP_TERMINAL_EQUIVALENCE_AUDIT",
+  "exact_forms": [
+    "FINAL_OPEN_MATH",
+    "UniversalFailure CanonicalSAT",
+    "UniversalSATLowerBound",
+    "TotalExactDiagonalProducer",
+    "Nonempty NormalizedAdversary",
+    "Nonempty UniversalCounterexampleProducer",
+    "not InP CanonicalSAT"
+  ],
+  "classification": "EXACTLY_ONE_TERMINAL_MATHEMATICAL_FRONTIER",
+  "open_bridge_active": 0,
+  "note": "These are exact normal forms, not independent producers."
+}
