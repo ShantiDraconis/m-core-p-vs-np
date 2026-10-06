@@ -1,19 +1,11 @@
 name: ATK P01 integrated assembly active
 
-on:
-  push:
-    branches:
-      - atk/next-p01-integrated-machine-v2-20260929
-    paths:
-      - 'lean/MCore/Real/P01GuessedWitnessRelation.lean'
-      - 'lean/MCore/Real/P01NTMRunLaws.lean'
-      - 'lean/MCore/Real/P01NTMSeqRun.lean'
-      - 'lean/MCore/Real/P01IntegratedAssembly.lean'
-      - 'lean/MCore/Real/P01WitnessPrepGlobal.lean'
-      - 'lean/MCore.lean'
-      - '.github/workflows/p01-integrated-assembly-active.yml'
-  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+on:
+  workflow_dispatch:
 permissions:
   contents: read
 
