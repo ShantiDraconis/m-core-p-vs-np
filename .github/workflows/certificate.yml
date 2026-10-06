@@ -2,6 +2,10 @@ name: certificate
 on:
   workflow_dispatch:
 
+concurrency:
+  group: certificate-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   c12:
     runs-on: ubuntu-latest
