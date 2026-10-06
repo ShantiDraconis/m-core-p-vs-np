@@ -5,6 +5,8 @@ namespace MCore
 namespace Real
 namespace RigidLockNoReopen
 
+-- Active rigid lock: structural evidence only, never endpoint truth.
+
 open CanonicalFinalProof
 open P02TerminalForcingG2
 open StructuralNoReopen
