@@ -33,3 +33,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02RejectionImageEscape.lean 2>&1 | tee P02RejectionImageEscape.log
           if grep -E 'sorryAx' P02RejectionImageEscape.log; then exit 1; fi
+
+      - name: Build rejection image orbit
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02RejectionImageOrbit.lean 2>&1 | tee P02RejectionImageOrbit.log
+          if grep -E 'sorryAx' P02RejectionImageOrbit.log; then exit 1; fi
