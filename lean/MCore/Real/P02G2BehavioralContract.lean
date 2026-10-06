@@ -97,25 +97,8 @@ theorem fixedPointLaw_implies_disagreement
   have hDecision :=
     correctAt_clockedDecision_iff
       M clock P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M) hCorrect
-  by_cases hSat : P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M)
-  · have hTrue : clockedDecision M clock (selfCode M) = true :=
-      hDecision.mpr hSat
-    have hReject : RejectsAtMajorant M clock (selfCode M) :=
-      hFixM.mp hSat
-    unfold RejectsAtMajorant at hReject
-    rw [hTrue] at hReject
-    contradiction
-  · have hNotReject : ¬ RejectsAtMajorant M clock (selfCode M) := by
-      intro hReject
-      exact hSat (hFixM.mpr hReject)
-    have hFalse : clockedDecision M clock (selfCode M) = false := by
-      cases hVal : clockedDecision M clock (selfCode M) with
-      | false => exact hVal
-      | true =>
-          have hSat' : P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCode M) :=
-            hDecision.mp hVal
-          exact False.elim (hSat hSat')
-    exact hNotReject hFalse
+  cases hDecisionValue : clockedDecision M clock (selfCode M) <;>
+    simp_all [RejectsAtMajorant]
 
 /-- Behavioral contract replacing the opaque sorryAx by an explicit,
     typed material obligation. -/
