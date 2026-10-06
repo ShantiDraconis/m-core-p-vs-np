@@ -133,7 +133,7 @@ structure FinalizationRecord (P : Prop) where
   state : FinalizationState
   endpoint : Prop
   endpoint_eq : endpoint ↔ P
-  materialProof : Option P
+  materialProof : Option (PLift P)
 
 def g2ExposedRecord :
     FinalizationRecord P02TerminalForcingG2.G2_TERMINAL where
