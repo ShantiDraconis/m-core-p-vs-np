@@ -4,6 +4,9 @@ namespace MCore
 namespace Real
 namespace StructuralFixedPoint
 
+open CanonicalFinalProof
+open P02TerminalForcingG2
+
 /--
 A refinement is conservative when its expanded target and the terminal
 proposition can be translated in both directions without additional
