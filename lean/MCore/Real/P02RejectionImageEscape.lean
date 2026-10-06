@@ -100,6 +100,70 @@ theorem rejectImageEscape_implies_universalFailure :
     (totalClockCollision_iff_antiAlternation.mpr
       (rejectImageEscape_iff_totalClockAntiAlternation.mp H))
 
+
+/-!
+T7-FINAL-CLOSURE-PROBE
+
+Terminal aliases are intentionally definitionally identical. This certifies
+that Endpoint/Gap/Habitant/Inhabitant do not represent four independent
+obligations.
+
+The material question is isolated separately: whether the current concrete
+rejectCode construction can actually inhabit RejectImageEscape.
+-/
+
+abbrev Endpoint : Prop := RejectImageEscape
+abbrev Gap : Prop := Endpoint
+abbrev Habitant : Prop := Gap
+abbrev Inhabitant : Prop := Habitant
+
+theorem endpoint_to_gap : Endpoint → Gap := id
+theorem gap_to_habitant : Gap → Habitant := id
+theorem habitant_to_inhabitant : Habitant → Inhabitant := id
+theorem inhabitant_to_endpoint : Inhabitant → Endpoint := id
+
+theorem terminal_cycle :
+    (Endpoint ↔ Gap) ∧ (Gap ↔ Habitant) ∧
+    (Habitant ↔ Inhabitant) ∧ (Inhabitant ↔ Endpoint) := by
+  exact ⟨Iff.rfl, Iff.rfl, Iff.rfl, Iff.rfl⟩
+
+/--
+A literal rejectCode fixed point would be enough to create the semantic
+collision needed for closure, but the already-certified flip theorem shows
+that such a fixed point is impossible precisely on the global-flip branch.
+This prevents silently replacing the missing material step by an alias cycle.
+-/
+theorem literal_fixed_point_closes_at
+    (M : PolyDTMCandidate)
+    (hTotal : ∀ y : BitString, OwnClockHalts M y)
+    (x : BitString)
+    (hfix : rejectCode M x = x) :
+    ¬ M.CorrectAt (SATBits circuitBitEncoding) (rejectCode M x) := by
+  apply semantic_closure_forces_failure M x (hTotal x)
+  unfold SemanticClosureAt
+  rw [hfix]
+
+theorem global_flip_blocks_literal_diagonal
+    (M : PolyDTMCandidate)
+    (hFlip :
+      ∀ x : BitString,
+        observedBit M (rejectCode M x) = !(observedBit M x)) :
+    ∀ x : BitString, rejectCode M x ≠ x :=
+  global_flip_no_literal_fixed_point M hFlip
+
+/--
+Exact material mincut: terminal alias compression reduces every final name to
+one proposition, but inhabitation remains exactly RejectImageEscape.
+-/
+theorem terminal_inhabitant_iff_rejectImageEscape :
+    Inhabitant ↔ RejectImageEscape :=
+  Iff.rfl
+
+#print axioms MCore.Real.P02RejectionImageEscape.terminal_cycle
+#print axioms MCore.Real.P02RejectionImageEscape.literal_fixed_point_closes_at
+#print axioms MCore.Real.P02RejectionImageEscape.global_flip_blocks_literal_diagonal
+#print axioms MCore.Real.P02RejectionImageEscape.terminal_inhabitant_iff_rejectImageEscape
+
 #print axioms MCore.Real.P02RejectionImageEscape.totalClock_globalFlip_iff_correctOnRejectImage
 #print axioms MCore.Real.P02RejectionImageEscape.rejectImageEscape_iff_totalClockAntiAlternation
 #print axioms MCore.Real.P02RejectionImageEscape.rejectImageEscape_implies_universalFailure
