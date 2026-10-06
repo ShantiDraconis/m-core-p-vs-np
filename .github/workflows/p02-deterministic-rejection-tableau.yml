@@ -16,6 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
       - name: Resolve pinned dependencies
         run: |
           set -euo pipefail
