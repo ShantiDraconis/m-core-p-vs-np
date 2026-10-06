@@ -102,8 +102,10 @@ theorem normalized_observedBit_eq
     (hx : OwnClockHalts M x) :
     observedBit (normalizedCandidate M) x =
       observedBit M x := by
-  unfold observedBit normalizedCandidate
-  rw [normalized_run_eq M x hx]
+  have hrun := normalized_run_eq M x hx
+  have hacc :=
+    congrArg (fun c => M.accepting c.state) hrun
+  simpa [observedBit, normalizedCandidate] using hacc
 
 theorem normalized_semantics_on_total
     (M : PolyDTMCandidate)
