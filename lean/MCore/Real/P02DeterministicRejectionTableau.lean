@@ -31,13 +31,9 @@ theorem complement_accept_or_reject_eq_halting
     ((complementToNTM M).accepting q ||
       (complementToNTM M).rejecting q) =
       M.machine.halting q := by
-  rw [show
-    ((complementToNTM M).accepting q ||
-      (complementToNTM M).rejecting q) =
-      ((CanonicalPSubsetNP.toNTM M).accepting q ||
-        (CanonicalPSubsetNP.toNTM M).rejecting q) by
-      simp [complementToNTM, Bool.or_comm]]
-  exact CanonicalPSubsetNP.accept_or_reject_eq_halting M q
+  cases h : M.machine.halting q <;>
+    cases a : M.accepting q <;>
+    simp [complementToNTM, CanonicalPSubsetNP.toNTM, h, a]
 
 theorem complement_successors_to_tm
     (M : PolyDTMCandidate)
@@ -82,16 +78,19 @@ theorem complement_runBranches_to_tm_run
               (complementToNTM M).accepting c.state ||
                 (complementToNTM M).rejecting c.state) = [config] := by
           simp [hstop]
+        have hActivePoint :
+            Bool.not
+              ((complementToNTM M).accepting config.state ||
+                (complementToNTM M).rejecting config.state) = false := by
+          rw [hstop]
+          rfl
         have hActive :
             [config].filter (fun c =>
               !((complementToNTM M).accepting c.state ||
                 (complementToNTM M).rejecting c.state)) = [] := by
-          have hor :
-              (complementToNTM M).accepting config.state ||
-                (complementToNTM M).rejecting config.state = true := hstop
-          cases ha : (complementToNTM M).accepting config.state <;>
-            cases hr : (complementToNTM M).rejecting config.state <;>
-            simp_all
+          simp only [List.filter_cons, List.filter_nil]
+          rw [hActivePoint]
+          rfl
         calc
           (complementToNTM M).runBranches (n + 1) [config]
               = (complementToNTM M).runBranches n [config] := by
@@ -115,16 +114,19 @@ theorem complement_runBranches_to_tm_run
               (complementToNTM M).accepting c.state ||
                 (complementToNTM M).rejecting c.state) = [] := by
           simp [hstop]
+        have hActivePoint :
+            Bool.not
+              ((complementToNTM M).accepting config.state ||
+                (complementToNTM M).rejecting config.state) = true := by
+          rw [hstop]
+          rfl
         have hActive :
             [config].filter (fun c =>
               !((complementToNTM M).accepting c.state ||
                 (complementToNTM M).rejecting c.state)) = [config] := by
-          have hor :
-              (complementToNTM M).accepting config.state ||
-                (complementToNTM M).rejecting config.state = false := hstop
-          cases ha : (complementToNTM M).accepting config.state <;>
-            cases hr : (complementToNTM M).rejecting config.state <;>
-            simp_all
+          simp only [List.filter_cons, List.filter_nil]
+          rw [hActivePoint]
+          rfl
         calc
           (complementToNTM M).runBranches (n + 1) [config]
               = (complementToNTM M).runBranches n
@@ -215,10 +217,9 @@ theorem rejection_tableau_correctness
       M.machine.HaltsWithin t (initialTMConfig M.machine x) ∧
       M.accepting
         (M.machine.run t (initialTMConfig M.machine x)).state = false := by
-  rw [show boundedRejectCircuit_DTM M x t =
-      boundedExecCircuit_NTM (complementCandidate M) x t by rfl]
-  rw [tableau_correctness_iff]
-  exact complement_acceptsWithin_iff_rejects_at_fuel M x t
+  simpa [boundedRejectCircuit_DTM] using
+    (tableau_correctness_iff (complementCandidate M) x t).trans
+      (complement_acceptsWithin_iff_rejects_at_fuel M x t)
 
 theorem rejection_tableau_encoded_length_poly
     (M : PolyDTMCandidate)
@@ -227,7 +228,8 @@ theorem rejection_tableau_encoded_length_poly
     (encodeCircuit (boundedRejectCircuit_DTM M x t)).length ≤
       tableauEncodingCoeff (complementCandidate M) *
         (x.length + t + 1)^4 := by
-  exact boundedExec_encoded_length_poly (complementCandidate M) x t
+  simpa [boundedRejectCircuit_DTM] using
+    boundedExec_encoded_length_poly (complementCandidate M) x t
 
 #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_runBranches_to_tm_run
 #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_acceptsWithin_iff_rejects_at_fuel
