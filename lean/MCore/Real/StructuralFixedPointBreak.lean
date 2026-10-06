@@ -6,6 +6,8 @@ namespace MCore
 namespace Real
 namespace StructuralFixedPointBreak
 
+-- Revalidated against the corrected StructuralFixedPoint base.
+
 open CanonicalFinalProof
 open P02TerminalForcingG2
 
