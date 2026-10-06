@@ -1,0 +1,24 @@
+{
+  "certificate": "PNP_RPA_DUAL_CONFIRMATION",
+  "views": [
+    "OPEN_MATH + CLOSED_MATH",
+    "OPEN_BRIDGE + CLOSED_BRIDGE",
+    "MATH",
+    "FINAL_ROOT",
+    "GLOBAL_EXTERNAL_CERTIFICATE"
+  ],
+  "kernel_claims": [
+    "a complete RPA transition contains both OPEN and CLOSED witnesses",
+    "Nonempty ActiveRPA iff Endpoint",
+    "OPEN_BRIDGE iff OPEN_MATH",
+    "CLOSED_BRIDGE iff CLOSED_MATH",
+    "MATH iff Endpoint",
+    "FINAL_ROOT_RPA iff MATH",
+    "GLOBAL_EXTERNAL_CERTIFICATE iff FINAL_ROOT_RPA",
+    "GLOBAL_EXTERNAL_CERTIFICATE implies PneqNP"
+  ],
+  "open_bridge_active": 0,
+  "mathematical_endpoint": "RejectImageEscape",
+  "endpoint_inhabited": false,
+  "publication_rule": "The RPA chain is closed structurally; the external certificate exists iff the terminal endpoint is actually inhabited."
+}
