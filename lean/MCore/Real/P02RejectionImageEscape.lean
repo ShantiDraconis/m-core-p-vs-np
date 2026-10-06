@@ -164,51 +164,6 @@ theorem terminal_inhabitant_iff_rejectImageEscape :
 #print axioms MCore.Real.P02RejectionImageEscape.global_flip_blocks_literal_diagonal
 #print axioms MCore.Real.P02RejectionImageEscape.terminal_inhabitant_iff_rejectImageEscape
 
-/-!
-T7-FINAL-CLOSURE: terminal signature truncation.
-
-The exact remaining endpoint already has a material definition above:
-`RejectImageEscape`.  The aliases below certify that Endpoint, Gap, Habitant
-and Inhabitant are not four independent proof obligations.
--/
-
-abbrev CandidateCodeSemanticFixedPoint : Prop := RejectImageEscape
-abbrev Endpoint : Prop := CandidateCodeSemanticFixedPoint
-abbrev Gap : Prop := Endpoint
-abbrev Habitant : Prop := Gap
-abbrev Inhabitant : Prop := Habitant
-
-theorem endpoint_to_gap : Endpoint → Gap := id
-theorem gap_to_habitant : Gap → Habitant := id
-theorem habitant_to_inhabitant : Habitant → Inhabitant := id
-theorem inhabitant_to_endpoint : Inhabitant → Endpoint := id
-
-theorem endpoint_iff_gap : Endpoint ↔ Gap := Iff.rfl
-theorem endpoint_iff_habitant : Endpoint ↔ Habitant := Iff.rfl
-theorem endpoint_iff_inhabitant : Endpoint ↔ Inhabitant := Iff.rfl
-theorem endpoint_iff_rejectImageEscape : Endpoint ↔ RejectImageEscape := Iff.rfl
-
-theorem terminal_cycle :
-    Endpoint ↔ (Gap ∧ Habitant ∧ Inhabitant) := by
-  constructor
-  · intro h
-    exact ⟨h, h, h⟩
-  · rintro ⟨h, _, _⟩
-    exact h
-
-/--
-A literal fixed-point/idempotence shortcut is not a valid producer for this
-endpoint.  The concrete rejectCode transform is already known not to be
-universally idempotent.
--/
-theorem no_literal_idempotence_shortcut :
-    ¬ RejectCodeIdempotent :=
-  rejectCodeIdempotent_refuted
-
-#print axioms MCore.Real.P02RejectionImageEscape.totalClock_globalFlip_iff_correctOnRejectImage
-#print axioms MCore.Real.P02RejectionImageEscape.rejectImageEscape_iff_totalClockAntiAlternation
-#print axioms MCore.Real.P02RejectionImageEscape.rejectImageEscape_implies_universalFailure
-
 end P02RejectionImageEscape
 end Real
 end MCore
