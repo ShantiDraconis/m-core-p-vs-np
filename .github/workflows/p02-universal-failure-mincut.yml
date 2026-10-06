@@ -1,26 +1,7 @@
 name: P02 Universal Failure Min-Cut
 
 on:
-  push:
-    branches:
-      - atk/p01-post-mincut-advance-20261001
-      - atk/p02-consolidated-kernel-20261001
-    paths:
-      - 'lean/MCore/Real/P02UniversalFailureMinCut.lean'
-      - 'lean/MCore/Real/P02ExplicitClockNormalForm.lean'
-      - 'lean/MCore/Real/P02KleeneUniversalBridge.lean'
-      - 'lean/MCore/Real/P02FailureNormalForms.lean'
-      - 'audit/ATK_P02_FAILURE_NORMAL_FORM_V1.json'
-      - 'lean/MCore/Real/P02OperatorKernel.lean'
-      - 'lean/MCore/Real/P02FinalCompression.lean'
-      - 'lean/MCore/Real/P02UniversalLowerBound.lean'
-      - 'lean/MCore/Real/P02CanonicalClockReduction.lean'
-      - 'lean/MCore/Real/P02KleeneKernel.lean'
-      - 'lean/MCore/Real/P02EffectiveAlignment.lean'
-      - 'lean/MCore/Real/P02UniversalLowerBoundMaster.lean'
-      - '.github/workflows/p02-universal-failure-mincut.yml'
   workflow_dispatch:
-
 permissions:
   contents: read
 
