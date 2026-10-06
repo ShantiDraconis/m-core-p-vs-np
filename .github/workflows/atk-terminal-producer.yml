@@ -1,13 +1,15 @@
 name: atk-terminal-producer
 
-on:
-  push:
-    branches: [attack/terminal-producer-20260921]
-  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+on:
+  workflow_dispatch:
 jobs:
   pnp-terminal:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
