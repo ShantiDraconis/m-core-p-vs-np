@@ -18,6 +18,11 @@ jobs:
           test: false
           lint: false
 
+      - name: Resolve dependencies
+        run: |
+          set -euo pipefail
+          lake update
+
       - name: Build rejection image frontier
         run: |
           set -euo pipefail
