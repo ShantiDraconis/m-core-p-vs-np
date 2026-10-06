@@ -1,7 +1,10 @@
 name: P02 Rejection Image Escape
-
 on:
   workflow_dispatch:
+
+concurrency:
+  group: p02-rejection-image-escape-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   image-escape:
