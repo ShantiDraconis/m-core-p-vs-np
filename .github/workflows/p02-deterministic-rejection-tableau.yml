@@ -16,6 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
+      - name: Resolve pinned dependencies
+        run: |
+          set -euo pipefail
+          lake update
       - name: Build
         run: |
           set -euo pipefail
