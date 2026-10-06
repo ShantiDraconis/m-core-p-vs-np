@@ -99,45 +99,15 @@ theorem payload_transition_roundtrip
     (s : Option Bool) :
     (payloadToMachine (machinePayload enc)).transition q s =
       enc.transition q s := by
+  rcases h : enc.transition q s with ⟨q', w, d⟩
   cases s with
   | none =>
-      change
-        (let e :=
-            (List.ofFn (fun q => transitionEntry enc q none)).getD
-              q.val transitionDefault
-          let q'' : Fin (enc.stateCount + 1) :=
-            ⟨e.next % (enc.stateCount + 1),
-              Nat.mod_lt _ (Nat.succ_pos _)⟩
-          (q'', e.write, e.move)) = enc.transition q none
-      rw [list_ofFn_getD]
-      rcases h : enc.transition q none with ⟨q', w, d⟩
-      simp [transitionEntry, h, Nat.mod_eq_of_lt q'.isLt]
+      simp [payloadToMachine, machinePayload, payloadTransitionList,
+        transitionEntry, h, list_ofFn_getD, Nat.mod_eq_of_lt q'.isLt]
   | some b =>
-      cases b with
-      | false =>
-          change
-            (let e :=
-                (List.ofFn (fun q => transitionEntry enc q (some false))).getD
-                  q.val transitionDefault
-              let q'' : Fin (enc.stateCount + 1) :=
-                ⟨e.next % (enc.stateCount + 1),
-                  Nat.mod_lt _ (Nat.succ_pos _)⟩
-              (q'', e.write, e.move)) = enc.transition q (some false)
-          rw [list_ofFn_getD]
-          rcases h : enc.transition q (some false) with ⟨q', w, d⟩
-          simp [transitionEntry, h, Nat.mod_eq_of_lt q'.isLt]
-      | true =>
-          change
-            (let e :=
-                (List.ofFn (fun q => transitionEntry enc q (some true))).getD
-                  q.val transitionDefault
-              let q'' : Fin (enc.stateCount + 1) :=
-                ⟨e.next % (enc.stateCount + 1),
-                  Nat.mod_lt _ (Nat.succ_pos _)⟩
-              (q'', e.write, e.move)) = enc.transition q (some true)
-          rw [list_ofFn_getD]
-          rcases h : enc.transition q (some true) with ⟨q', w, d⟩
-          simp [transitionEntry, h, Nat.mod_eq_of_lt q'.isLt]
+      cases b <;>
+        simp [payloadToMachine, machinePayload, payloadTransitionList,
+          transitionEntry, h, list_ofFn_getD, Nat.mod_eq_of_lt q'.isLt]
 
 theorem payload_toTM_run_roundtrip
     (enc : EncodedMachine)
