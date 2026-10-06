@@ -39,7 +39,7 @@ jobs:
           fi
           cat > /tmp/P02RejectAudit.lean <<'EOF'
           import MCore.Real.P02DeterministicRejectionTableau
-          #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_runBranches_eq
+          #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_runBranches_to_tm_run
           #print axioms MCore.Real.P02DeterministicRejectionTableau.complement_acceptsWithin_iff_rejects_at_fuel
           #print axioms MCore.Real.P02DeterministicRejectionTableau.rejection_tableau_correctness
           #print axioms MCore.Real.P02DeterministicRejectionTableau.rejection_tableau_encoded_length_poly
