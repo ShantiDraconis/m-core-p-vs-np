@@ -116,9 +116,27 @@ theorem semantic_closure_forces_failure
       have hsrcFalse := hflip.mp hcodeTrue
       simp_all
 
-/-- Exact positive material remaining after the rejection-tableau gate:
-for every candidate, find one source input on which it halts and whose
-rejection code has the same observed acceptance bit. -/
+/-- Own-clock halting predicate used to separate the trivial nonhalting
+failure branch from the genuinely semantic branch. -/
+def OwnClockHalts
+    (M : PolyDTMCandidate)
+    (x : BitString) : Prop :=
+  M.machine.HaltsWithin
+    (M.timeBound x.length)
+    (initialTMConfig M.machine x)
+
+/-- Any own-clock nonhalting input already falsifies CorrectAt directly. -/
+theorem nonhalting_input_forces_failure
+    (M : PolyDTMCandidate)
+    (x : BitString)
+    (hx : ¬ OwnClockHalts M x) :
+    ¬ M.CorrectAt (SATBits circuitBitEncoding) x := by
+  intro hCorrect
+  exact hx hCorrect.1
+
+/-- Strong sufficient producer retained for comparison. It is not the exact
+remaining frontier because candidates with a nonhalting input already fail
+CorrectAt without any semantic collision. -/
 def SemanticCollisionProducer : Prop :=
   ∀ M : PolyDTMCandidate,
     ∃ x : BitString,
@@ -136,10 +154,64 @@ theorem semanticCollisionProducer_implies_universal_failure :
   refine ⟨rejectCode M x, ?_⟩
   exact semantic_closure_forces_failure M x hx hclose
 
+
+/-- Exact residual after discharging the trivial nonhalting branch:
+only candidates that halt at their own clock on every input need a semantic
+collision. -/
+def TotalClockSemanticCollision : Prop :=
+  ∀ M : PolyDTMCandidate,
+    (∀ x : BitString, OwnClockHalts M x) →
+      ∃ x : BitString, SemanticClosureAt M x
+
+theorem totalClockSemanticCollision_implies_universal_failure :
+    TotalClockSemanticCollision →
+      UniversalFailure (SATBits circuitBitEncoding) := by
+  intro H
+  intro M
+  classical
+  by_cases htotal : ∀ x : BitString, OwnClockHalts M x
+  · rcases H M htotal with ⟨x, hclose⟩
+    refine ⟨rejectCode M x, ?_⟩
+    exact semantic_closure_forces_failure M x (htotal x) hclose
+  · push_neg at htotal
+    rcases htotal with ⟨x, hx⟩
+    exact ⟨x, nonhalting_input_forces_failure M x hx⟩
+
+/-- Equivalent split form of the remaining sufficient material. -/
+def TerminalSemanticSplit : Prop :=
+  ∀ M : PolyDTMCandidate,
+    (∃ x : BitString, ¬ OwnClockHalts M x) ∨
+      (∃ x : BitString, OwnClockHalts M x ∧ SemanticClosureAt M x)
+
+theorem totalClockSemanticCollision_implies_terminalSplit :
+    TotalClockSemanticCollision → TerminalSemanticSplit := by
+  intro H M
+  classical
+  by_cases htotal : ∀ x : BitString, OwnClockHalts M x
+  · right
+    rcases H M htotal with ⟨x, hclose⟩
+    exact ⟨x, htotal x, hclose⟩
+  · left
+    push_neg at htotal
+    exact htotal
+
+theorem terminalSplit_implies_universal_failure :
+    TerminalSemanticSplit →
+      UniversalFailure (SATBits circuitBitEncoding) := by
+  intro H M
+  rcases H M with hnonhalt | hcollision
+  · rcases hnonhalt with ⟨x, hx⟩
+    exact ⟨x, nonhalting_input_forces_failure M x hx⟩
+  · rcases hcollision with ⟨x, hx, hclose⟩
+    exact ⟨rejectCode M x, semantic_closure_forces_failure M x hx hclose⟩
+
 #print axioms MCore.Real.P02SemanticSelfSubstitution.rejectCode_semantics
 #print axioms MCore.Real.P02SemanticSelfSubstitution.correctAt_rejectCode_flip
 #print axioms MCore.Real.P02SemanticSelfSubstitution.semantic_closure_forces_failure
 #print axioms MCore.Real.P02SemanticSelfSubstitution.semanticCollisionProducer_implies_universal_failure
+#print axioms MCore.Real.P02SemanticSelfSubstitution.nonhalting_input_forces_failure
+#print axioms MCore.Real.P02SemanticSelfSubstitution.totalClockSemanticCollision_implies_universal_failure
+#print axioms MCore.Real.P02SemanticSelfSubstitution.terminalSplit_implies_universal_failure
 
 end P02SemanticSelfSubstitution
 end Real
