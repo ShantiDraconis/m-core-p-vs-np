@@ -1,0 +1,14 @@
+{
+  "certificate": "PNP_OPEN_TO_CLOSED_COLLAPSE",
+  "definition": "OpenTendsClosed := OpenMath -> ClosedMath",
+  "with_closed_math": "ClosedMath := not OpenMath",
+  "kernel_claims": [
+    "OpenTendsClosed iff (OpenMath -> not OpenMath)",
+    "OpenTendsClosed implies not OpenMath",
+    "OpenMath plus OpenTendsClosed implies False",
+    "OpenTendsClosed excludes an Endpoint inhabitant"
+  ],
+  "open_bridge_active": 0,
+  "endpoint": "CandidateCodeSemanticFixedPoint",
+  "endpoint_status": "OPEN_MATH"
+}
