@@ -1,0 +1,27 @@
+{
+  "certificate": "PNP_ENDPOINT_LATTICE",
+  "non_idempotent_layer": "n*OPEN + m*CLOSED",
+  "examples": [
+    "OPEN",
+    "CLOSED",
+    "OPEN+CLOSED = DUAL_ENDPOINT_STATE",
+    "OPEN+OPEN = OPEN^2",
+    "CLOSED+CLOSED = CLOSED^2",
+    "2*OPEN+CLOSED",
+    "OPEN+2*CLOSED",
+    "2*OPEN+2*CLOSED"
+  ],
+  "idempotent_quotient": ["EMPTY","OPEN","CLOSED","FULL"],
+  "laws": [
+    "OPEN+OPEN=OPEN",
+    "CLOSED+CLOSED=CLOSED",
+    "OPEN+CLOSED=FULL",
+    "CLOSED+OPEN=FULL",
+    "every canonical state is one of EMPTY/OPEN/CLOSED/FULL",
+    "positive multiplicity on both sides canonicalizes to FULL",
+    "FULL iff dual-maximal"
+  ],
+  "full_payload": "GLOBAL_EXTERNAL_CERTIFICATE",
+  "full_certified_state_iff_global_external": true,
+  "full_certified_state_iff_math": true
+}
