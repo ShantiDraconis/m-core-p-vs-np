@@ -1,11 +1,14 @@
 name: material-unification-v2
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
-  push:
-    branches: ['atk/p01-indexed-read-global-20260928']
   workflow_dispatch:
 jobs:
   gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: leanprover/lean-action@v1
