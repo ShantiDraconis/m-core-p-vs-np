@@ -1,0 +1,64 @@
+name: P02 Unified Final Build
+
+on:
+  push:
+    branches:
+      - atk/p02-lane4-reuse-t10-audit-20261003
+  workflow_dispatch:
+
+concurrency:
+  group: p02-unified-final-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unified-final-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Lean
+        uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: true
+
+      - name: Build unified P02 closure stack
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          files=(
+            lean/MCore/Real/P02RejectionImageEscape.lean
+            lean/MCore/Real/P02UserFinalClosureProbe.lean
+            lean/MCore/Real/P02RPADualConfirmation.lean
+            lean/MCore/Real/P02EndpointLattice.lean
+            lean/MCore/Real/P02EndpointLatticeCube.lean
+            lean/MCore/Real/P02CandidateCodeFixedPointCounterprobe.lean
+          )
+
+          : > P02UnifiedFinalBuild.log
+          for f in "${files[@]}"; do
+            echo "=== BUILD $f ===" | tee -a P02UnifiedFinalBuild.log
+            lake env lean "$f" 2>&1 | tee -a P02UnifiedFinalBuild.log
+          done
+
+          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' P02UnifiedFinalBuild.log; then
+            echo "Forbidden proof residue detected"
+            exit 1
+          fi
+
+      - name: Kernel axiom audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -E 'sorryAx' P02UnifiedFinalBuild.log; then
+            exit 1
+          fi
+          echo "UNIFIED_KERNEL_AUDIT=PASS"
+
+      - name: Upload unified log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p02-unified-final-build-log
+          path: P02UnifiedFinalBuild.log
