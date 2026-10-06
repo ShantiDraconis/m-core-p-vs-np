@@ -1,9 +1,6 @@
 name: P02 Rejection Image Escape
 
 on:
-  push:
-    branches:
-      - atk/p02-lane4-reuse-t10-audit-20261003
   workflow_dispatch:
 
 jobs:
