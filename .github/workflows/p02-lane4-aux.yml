@@ -1,7 +1,6 @@
 name: p02-lane4-aux
 on:
   workflow_dispatch:
-
 concurrency:
   group: p02-lane4-aux-${{ github.ref }}
   cancel-in-progress: true
