@@ -124,7 +124,9 @@ theorem payload_transition_roundtrip
   unfold payloadToMachine
   dsimp only
   rcases htrans : enc.transition q s with ⟨q', w, d⟩
-  simp [hentry, transitionEntry, htrans, Nat.mod_eq_of_lt q'.isLt]
+  simp [hentry, transitionEntry, htrans]
+  apply Fin.ext
+  simp [machinePayload, Nat.mod_eq_of_lt q'.isLt]
 
 theorem payload_toTM_run_roundtrip
     (enc : EncodedMachine)
