@@ -92,3 +92,9 @@ jobs:
           set -euo pipefail
           lake env lean lean/MCore/Real/P02TerminalConjunctureNucleus.lean 2>&1 | tee P02TerminalConjunctureNucleus.log
           if grep -E 'sorryAx' P02TerminalConjunctureNucleus.log; then exit 1; fi
+
+      - name: Build terminal three-way center
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/P02TerminalThreeWayCenter.lean 2>&1 | tee P02TerminalThreeWayCenter.log
+          if grep -E 'sorryAx' P02TerminalThreeWayCenter.log; then exit 1; fi
