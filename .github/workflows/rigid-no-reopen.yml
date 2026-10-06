@@ -1,0 +1,44 @@
+name: Rigid No Reopen
+
+on:
+  push:
+    branches:
+      - atk/structural-fixed-point-20261006
+    paths:
+      - 'lean/MCore/Real/RigidLockNoReopen.lean'
+      - '.github/workflows/rigid-no-reopen.yml'
+  workflow_dispatch:
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+      - name: Build
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.RigidLockNoReopen
+      - name: Audit
+        run: |
+          set -euo pipefail
+          file=lean/MCore/Real/RigidLockNoReopen.lean
+          if grep -En '(^|[[:space:]])(sorry|admit)([[:space:]]|$)|^[[:space:]]*axiom[[:space:]]' "$file"; then
+            echo 'AUDIT_FAIL proof escape'
+            exit 1
+          fi
+          cat > /tmp/RigidNoReopenAudit.lean <<'EOF'
+          import MCore.Real.RigidLockNoReopen
+          #print axioms MCore.Real.RigidLockNoReopen.rigid_route_target_iff_terminal
+          #print axioms MCore.Real.RigidLockNoReopen.detected_gain0_is_structural_evidence
+          #print axioms MCore.Real.RigidLockNoReopen.reject_equivalent_minimum
+          #print axioms MCore.Real.RigidLockNoReopen.g2_pointwise_rigid_evidence
+          #print axioms MCore.Real.RigidLockNoReopen.g2_pointwise_rigid_classification
+          EOF
+          lake env lean /tmp/RigidNoReopenAudit.lean 2>&1 | tee /tmp/rigid-no-reopen.log
+          if grep -q 'sorryAx' /tmp/rigid-no-reopen.log; then
+            echo 'AUDIT_FAIL sorryAx'
+            exit 1
+          fi
+          echo 'RIGID_NO_REOPEN_GREEN'
