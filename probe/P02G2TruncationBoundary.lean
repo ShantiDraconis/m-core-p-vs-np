@@ -27,7 +27,7 @@ def selfCodeForcado : PolyDTMCandidate → BitString :=
 
 theorem universalDisagreementForcado :
     ∀ M : PolyDTMCandidate,
-      ¬ M.CorrectAt CanonicalSAT (selfCodeForcado M) := by
+      ¬ M.CorrectAt P02UniversalFailureWitnessMaterial.CanonicalSAT (selfCodeForcado M) := by
   sorry
 
 def closeG2Forcado : UniversalFailureWitness :=
