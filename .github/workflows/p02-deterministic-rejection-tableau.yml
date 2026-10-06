@@ -1,14 +1,11 @@
 name: P02 Deterministic Rejection Tableau
 
-on:
-  push:
-    branches:
-      - atk/p02-lane4-reuse-t10-audit-20261003
-    paths:
-      - 'lean/MCore/Real/P02DeterministicRejectionTableau.lean'
-      - '.github/workflows/p02-deterministic-rejection-tableau.yml'
-  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+on:
+  workflow_dispatch:
 jobs:
   kernel:
     runs-on: ubuntu-latest
