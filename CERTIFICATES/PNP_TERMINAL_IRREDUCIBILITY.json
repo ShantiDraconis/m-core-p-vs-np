@@ -1,0 +1,20 @@
+{
+  "certificate": "PNP_TERMINAL_IRREDUCIBILITY",
+  "terminal_frontier": "CLOSED",
+  "final_root_mathematical": "IDENTIFIED",
+  "endpoint_signature": "STABLE",
+  "self_recurring_expansion": true,
+  "no_reopen": true,
+  "open_bridge_active": 0,
+  "mathematical_endpoint": {
+    "statement": "MCore.Real.P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint",
+    "status": "OPEN_MATH"
+  },
+  "terminal_chain": [
+    "CandidateCodeSemanticFixedPoint",
+    "RejectImageEscape",
+    "UniversalFailure CanonicalSAT",
+    "PneqNP"
+  ],
+  "publication_claim": "Terminal frontier closed; endpoint theorem not yet inhabited."
+}
