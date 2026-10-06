@@ -1,0 +1,60 @@
+{
+  "schema": "ATK_PNP_CLOSED_MATH_REGISTRY_v1",
+  "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+  "head": "ca90a18142ff66fa8e0143f8c7c087ce3593154e",
+  "closed_math": [
+    {
+      "id": "REJECTION_TABLEAU",
+      "status": "GREEN",
+      "evidence": "P02DeterministicRejectionTableau.rejection_tableau_correctness"
+    },
+    {
+      "id": "REJECT_CODE_SEMANTICS",
+      "status": "GREEN",
+      "evidence": "P02SemanticSelfSubstitution.rejectCode_semantics"
+    },
+    {
+      "id": "TOTALCLOCK_GLOBALFLIP_EQ_CORRECT_IMAGE",
+      "status": "GREEN",
+      "evidence": "P02RejectionImageEscape.totalClock_globalFlip_iff_correctOnRejectImage"
+    },
+    {
+      "id": "REJECT_IMAGE_ESCAPE_EQ_ANTI_ALTERNATION",
+      "status": "GREEN",
+      "evidence": "P02RejectionImageEscape.rejectImageEscape_iff_totalClockAntiAlternation"
+    },
+    {
+      "id": "REJECT_IMAGE_ESCAPE_TO_UNIVERSAL_FAILURE",
+      "status": "GREEN",
+      "evidence": "P02RejectionImageEscape.rejectImageEscape_implies_universalFailure"
+    },
+    {
+      "id": "ORBIT_TWO_STEP",
+      "status": "GREEN",
+      "evidence": "P02RejectionImageOrbit.globalFlip_twoStep_preserves"
+    },
+    {
+      "id": "ACTIVE_SIGNATURE_ADAPTER",
+      "status": "GREEN_REUSE",
+      "evidence": "P02ActiveBridgeClosure.active_signature_adapter_closed"
+    },
+    {
+      "id": "ACTIVE_OPEN_BRIDGE",
+      "status": "CLOSED",
+      "count": 0
+    },
+    {
+      "id": "FINAL_ROOT_CONDITIONAL",
+      "status": "GREEN_CONDITIONAL",
+      "evidence": "P02FinalRootConditional.FINAL_ROOT"
+    }
+  ],
+  "open_math": [
+    {
+      "id": "CandidateCodeSemanticFixedPoint",
+      "status": "OPEN_MATH",
+      "statement_role": "sole remaining material producer"
+    }
+  ],
+  "publication_claim": "STRUCTURAL_FINAL_ROOT_GREEN / MATHEMATICAL_ENDPOINT_OPEN"
+}
