@@ -3,6 +3,7 @@ import MCore.Real.P02ExactDiagonalFrontier
 import MCore.Real.P02SameInputProducer
 import MCore.Real.P02TotalCandidateKleeneReduction
 import MCore.Real.P02ComplementRunRealization
+import MCore.Real.P02BehavioralAlignment
 
 namespace MCore
 namespace Real
