@@ -9,7 +9,6 @@ open CanonicalFinalProof
 open CanonicalSATBoundary
 open CanonicalCircuitBits
 open P02SemanticSelfSubstitution
-open P02RejectionImageEscape
 open P02DiagonalNoShortcut
 open P02FiniteCandidateDescription
 
@@ -18,7 +17,9 @@ def ProposedEndpoint : Prop :=
   ∀ M : PolyDTMCandidate,
     (∀ y : BitString, OwnClockHalts M y) →
       ∃ x : BitString,
-        ¬ M.CorrectAt (SATBits circuitBitEncoding) (rejectCode M x)
+        ¬ M.CorrectAt
+          (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding)
+          (rejectCode M x)
 
 abbrev Endpoint : Prop := ProposedEndpoint
 abbrev Gap : Prop := Endpoint
