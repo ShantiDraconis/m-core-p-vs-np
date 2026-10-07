@@ -66,7 +66,8 @@ theorem exactRemainingGap_iff_universalFailure :
     _ ↔ UniversalFailure P02UniversalFailureMinCut.CanonicalSAT := by
           exact producer_iff_universal_failure
     _ ↔ UniversalFailure CanonicalSATBits := by
-          rfl
+          simpa [P02UniversalFailureMinCut.CanonicalSAT,
+            PNPMaterialInhabitant.CanonicalSATBits]
 
 theorem exactRemainingGap_closes_promoted_material
     (h : ExactRemainingMaterialGap) :
