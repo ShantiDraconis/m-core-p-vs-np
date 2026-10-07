@@ -16,7 +16,7 @@ open P02RejectionImageEscape
 /-- The legacy candidate-code fixed-point route is refuted and is permanently
     excluded from the promoted-by-material producer path. -/
 theorem legacy_candidate_fixed_point_route_refuted :
-    ¬ CandidateCodeSemanticFixedPoint := by
+    ¬ P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint := by
   exact candidateCodeSemanticFixedPoint_refuted
 
 /-- The existing universal-counterexample min-cut and the new material
@@ -63,8 +63,10 @@ theorem exactRemainingGap_iff_universalFailure :
     ExactRemainingMaterialGap
         ↔ Nonempty UniversalCounterexampleProducer := by
             exact lowerBoundProducer_iff_universalCounterexampleProducer
-    _ ↔ UniversalFailure CanonicalSATBits := by
+    _ ↔ UniversalFailure P02UniversalFailureMinCut.CanonicalSAT := by
           exact producer_iff_universal_failure
+    _ ↔ UniversalFailure CanonicalSATBits := by
+          rfl
 
 theorem exactRemainingGap_closes_promoted_material
     (h : ExactRemainingMaterialGap) :
