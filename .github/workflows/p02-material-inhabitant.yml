@@ -36,14 +36,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake build MCore.Real.P01FinalCertificate MCore.Real.P01WitnessIndexedReadGlobal MCore.Real.P01WitnessPrepGlobal MCore.Real.P01VerifierPhaseMinCutStructural MCore.Real.PNPMaterialInhabitant MCore.Real.PNPMaterialNPFrontier MCore.Real.PNPMaterialVerifierFrontier MCore.Real.P01RawTotalizationProducer MCore.Real.PNPMaterialNPClosed MCore.Real.PNPPromotedByMaterial MCore.Real.P02UniversalFailureMinCut MCore.Real.P02CandidateCodeFixedPointCounterprobe MCore.Real.PNPMaterialLowerBoundFrontier 2>&1 | tee PNPMaterialBuild.log
+          lake build MCore.Real.P01FinalCertificate MCore.Real.P01WitnessIndexedReadGlobal MCore.Real.P01WitnessPrepGlobal MCore.Real.P01VerifierPhaseMinCutStructural MCore.Real.PNPMaterialInhabitant MCore.Real.PNPMaterialNPFrontier MCore.Real.PNPMaterialVerifierFrontier MCore.Real.P01RawTotalizationProducer MCore.Real.PNPMaterialNPClosed MCore.Real.PNPPromotedByMaterial MCore.Real.P02UniversalFailureMinCut MCore.Real.P02CandidateCodeFixedPointCounterprobe MCore.Real.PNPMaterialLowerBoundFrontier MCore.Real.PNPMaterialRecoveredAssembly 2>&1 | tee PNPMaterialBuild.log
           lake env lean lean/MCore/Real/PNPMaterialInhabitant.lean 2>&1 | tee PNPMaterialInhabitant.log
           lake env lean lean/MCore/Real/PNPMaterialNPFrontier.lean 2>&1 | tee PNPMaterialNPFrontier.log
           lake env lean lean/MCore/Real/PNPMaterialVerifierFrontier.lean 2>&1 | tee PNPMaterialVerifierFrontier.log
           lake env lean lean/MCore/Real/PNPMaterialNPClosed.lean 2>&1 | tee PNPMaterialNPClosed.log
           lake env lean lean/MCore/Real/PNPPromotedByMaterial.lean 2>&1 | tee PNPPromotedByMaterial.log
           lake env lean lean/MCore/Real/PNPMaterialLowerBoundFrontier.lean 2>&1 | tee PNPMaterialLowerBoundFrontier.log
-          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialBuild.log PNPMaterialInhabitant.log PNPMaterialNPFrontier.log PNPMaterialVerifierFrontier.log PNPMaterialNPClosed.log PNPPromotedByMaterial.log PNPMaterialLowerBoundFrontier.log; then
+          lake env lean lean/MCore/Real/PNPMaterialRecoveredAssembly.lean 2>&1 | tee PNPMaterialRecoveredAssembly.log
+          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialBuild.log PNPMaterialInhabitant.log PNPMaterialNPFrontier.log PNPMaterialVerifierFrontier.log PNPMaterialNPClosed.log PNPPromotedByMaterial.log PNPMaterialLowerBoundFrontier.log PNPMaterialRecoveredAssembly.log; then
             echo "Forbidden proof residue detected"
             exit 1
           fi
@@ -62,7 +63,8 @@ jobs:
             echo "REMAINING_MATERIAL_FRONTIER=CanonicalSATLowerBoundProducer"
             echo "PROMOTED_BY_MATERIAL=OPEN_MATH_UNTIL_CLOSED_TERM_EXISTS"
             echo "LEGACY_CANDIDATE_FIXED_POINT=FALSIFIED"
-            echo "EXACT_OPEN_MATH=Nonempty(CanonicalSATLowerBoundProducer)"
+            echo "EXACT_OPEN_MATH=RecoveredTotalSemanticCore"
+            echo "RECOVERED_CHAIN=TIMEOUT+CPL_RUN+COOK_LEVIN+EXACT_DIAGONAL"
             echo "MATERIAL_PRODUCER=OPEN_MATH"
           } | tee PNPMaterialInhabitantCertificate.txt
 
@@ -79,4 +81,5 @@ jobs:
             PNPMaterialNPClosed.log
             PNPPromotedByMaterial.log
             PNPMaterialLowerBoundFrontier.log
+            PNPMaterialRecoveredAssembly.log
             PNPMaterialInhabitantCertificate.txt
