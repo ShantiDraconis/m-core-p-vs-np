@@ -28,7 +28,7 @@ theorem terminal_signature_unified :
 /-- Dense RPA certificate: a complete dual endpoint transition is exactly
 an inhabitant of the active endpoint. -/
 theorem rpa_unified :
-    Nonempty P02RPADualConfirmation.ActiveRPA ↔
+    P02RPADualConfirmation.ActiveRPA ↔
       P02RejectionImageEscape.Endpoint :=
   P02RPADualConfirmation.activeRPA_nonempty_iff_endpoint
 
