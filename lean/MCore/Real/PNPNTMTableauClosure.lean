@@ -8,6 +8,7 @@ namespace PNPNTMTableauClosure
 
 open CircuitK1
 open CanonicalFinalProof
+open CanonicalCircuitBits
 open PNPNTMTableauFrontier
 open PNPNTMTableauEncoding
 
