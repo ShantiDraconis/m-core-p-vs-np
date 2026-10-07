@@ -93,8 +93,7 @@ theorem acceptingTable_complete
   unfold acceptingTable
   have hq :
       q ∈ List.ofFn (fun i : Fin (M.stateCount + 1) => i) := by
-    simpa using
-      (List.get_mem (List.ofFn (fun i : Fin (M.stateCount + 1) => i)) q)
+    exact List.mem_ofFn.mpr ⟨q, rfl⟩
   exact List.mem_map.mpr ⟨q, hq, rfl⟩
 
 theorem candidateCode_finite
