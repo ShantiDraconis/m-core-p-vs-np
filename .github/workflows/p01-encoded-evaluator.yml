@@ -6,6 +6,7 @@ on:
       - atk/next-p01-integrated-machine-20260929
       - atk/p01-frame-pop-read-20260929
       - atk/next-p01-integrated-machine-v2-20260929
+      - main
     paths:
       - 'lean/MCore/Real/P01EncodedEvaluator.lean'
       - 'lean/MCore/Real/P01EncodedStackEvaluator.lean'
@@ -18,6 +19,9 @@ on:
       - 'lean/MCore/Real/P01SourceCursorInvariant.lean'
       - 'lean/MCore/Real/P01NTMPhaseSeq.lean'
       - 'lean/MCore/Real/P01EvalTagPhysicalRefinement.lean'
+      - 'lean/MCore/Real/P01PreservingUnaryWitnessMachine.lean'
+      - 'lean/MCore/Real/P01PreservingUnaryReaderCertificate.lean'
+      - 'lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean'
       - '.github/workflows/p01-encoded-evaluator.yml'
   workflow_dispatch:
 
@@ -49,6 +53,9 @@ jobs:
           lake build MCore.Real.P01SourceCursorInvariant
           lake build MCore.Real.P01NTMPhaseSeq
           lake build MCore.Real.P01EvalTagPhysicalRefinement
+          lake build MCore.Real.P01PreservingUnaryWitnessMachine
+          lake build MCore.Real.P01PreservingUnaryReaderCertificate
+          lake build MCore.Real.P01PreservingUnaryReaderGlobal
       - name: Axiom audit
         run: |
           cat > P01EncodedEvaluatorAxiomAudit.lean <<'EOF'
@@ -63,6 +70,8 @@ jobs:
           import MCore.Real.P01SourceCursorInvariant
           import MCore.Real.P01NTMPhaseSeq
           import MCore.Real.P01EvalTagPhysicalRefinement
+          import MCore.Real.P01PreservingUnaryWitnessMachine
+          import MCore.Real.P01PreservingUnaryReaderGlobal
           #print axioms MCore.Real.P01EncodedEvaluator.evalEncodedCore_encode_append
           #print axioms MCore.Real.P01EncodedEvaluator.evalEncoded_encode
           #print axioms MCore.Real.P01EncodedStackEvaluator.evalRun_encode_append
@@ -90,13 +99,15 @@ jobs:
           #print axioms MCore.Real.P01EvalTagPhysicalRefinement.evalStep_not_tag_cursor_refined
           #print axioms MCore.Real.P01EvalTagPhysicalRefinement.evalStep_and_tag_cursor_refined
           #print axioms MCore.Real.P01EvalTagPhysicalRefinement.evalStep_or_tag_cursor_refined
+          #print axioms MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_first_true_cycle
+          #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.selected_bit_from_decomposition
           EOF
           lake env lean P01EncodedEvaluatorAxiomAudit.lean | tee P01EncodedEvaluatorAxiomAudit.log
           if grep -F 'sorryAx' P01EncodedEvaluatorAxiomAudit.log; then exit 1; fi
       - name: Reject proof escapes
         run: |
           set -euo pipefail
-          if grep -nE '^[[:space:]]*(sorry|axiom|admit)[[:space:]]' lean/MCore/Real/P01EncodedEvaluator.lean lean/MCore/Real/P01EncodedStackEvaluator.lean lean/MCore/Real/P01EncodedFrameTape.lean lean/MCore/Real/P01EvalFramePushMachine.lean lean/MCore/Real/P01EvalFramePopMachine.lean lean/MCore/Real/P01EvalFramePopMachineV2.lean lean/MCore/Real/P01DeterministicNTMEmbedding.lean lean/MCore/Real/P01EvalCursorConsume.lean lean/MCore/Real/P01SourceCursorInvariant.lean lean/MCore/Real/P01NTMPhaseSeq.lean lean/MCore/Real/P01EvalTagPhysicalRefinement.lean; then
+          if grep -nE '^[[:space:]]*(sorry|axiom|admit)[[:space:]]' lean/MCore/Real/P01EncodedEvaluator.lean lean/MCore/Real/P01EncodedStackEvaluator.lean lean/MCore/Real/P01EncodedFrameTape.lean lean/MCore/Real/P01EvalFramePushMachine.lean lean/MCore/Real/P01EvalFramePopMachine.lean lean/MCore/Real/P01EvalFramePopMachineV2.lean lean/MCore/Real/P01DeterministicNTMEmbedding.lean lean/MCore/Real/P01EvalCursorConsume.lean lean/MCore/Real/P01SourceCursorInvariant.lean lean/MCore/Real/P01NTMPhaseSeq.lean lean/MCore/Real/P01EvalTagPhysicalRefinement.lean lean/MCore/Real/P01PreservingUnaryWitnessMachine.lean lean/MCore/Real/P01PreservingUnaryReaderCertificate.lean lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean; then
             echo "proof escape found"
             exit 1
           fi
