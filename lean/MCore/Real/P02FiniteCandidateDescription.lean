@@ -77,17 +77,23 @@ theorem transitionTable_complete
     (q, a, M.machine.transition q a) ∈ transitionTable M := by
   unfold transitionTable
   rw [List.mem_flatMap]
-  refine ⟨q, ?_, ?_⟩
-  · simp
-  · simp
-    cases a <;> simp
+  have hq :
+      q ∈ List.ofFn (fun i : Fin (M.stateCount + 1) => i) := by
+    simpa using
+      (List.get_mem (List.ofFn (fun i : Fin (M.stateCount + 1) => i)) q)
+  refine ⟨q, hq, ?_⟩
+  cases a <;> simp
 
 theorem acceptingTable_complete
     (M : PolyDTMCandidate)
     (q : Fin (M.stateCount + 1)) :
     (q, M.accepting q) ∈ acceptingTable M := by
   unfold acceptingTable
-  simp
+  have hq :
+      q ∈ List.ofFn (fun i : Fin (M.stateCount + 1) => i) := by
+    simpa using
+      (List.get_mem (List.ofFn (fun i : Fin (M.stateCount + 1) => i)) q)
+  exact List.mem_map.mpr ⟨q, hq, rfl⟩
 
 theorem candidateCode_finite
     (M : PolyDTMCandidate) :
