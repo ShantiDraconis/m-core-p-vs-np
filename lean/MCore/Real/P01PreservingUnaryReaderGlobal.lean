@@ -52,6 +52,32 @@ theorem selected_bit_from_decomposition
   subst i
   simp [List.getD_eq_getElem?_getD]
 
+
+/-- One local rewind cycle restores the inspected witness bit and moves the
+unique marker one cell to the right.  The selected result bit is carried only
+in finite control. -/
+theorem rewind_false_bit_cycle
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 3
+      { state := .rewindInspectFalse
+        tape := { left := none :: left, head := some false, right := right } } =
+      { state := .rewindInspectFalse
+        tape := { left := some false :: none :: left, head := right.headD none,
+                  right := right.tail } } := by
+  cases right <;>
+    simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
+theorem rewind_true_bit_cycle
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 3
+      { state := .rewindInspectTrue
+        tape := { left := none :: left, head := some true, right := right } } =
+      { state := .rewindInspectTrue
+        tape := { left := some true :: none :: left, head := right.headD none,
+                  right := right.tail } } := by
+  cases right <;>
+    simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.payload_advance_rewind
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.preserving_reader_induction_entry
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.selected_bit_from_decomposition
