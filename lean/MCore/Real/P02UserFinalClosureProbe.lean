@@ -6,6 +6,7 @@ namespace Real
 namespace P02UserFinalClosureProbe
 
 open CanonicalFinalProof
+open CanonicalSATBoundary
 open CanonicalCircuitBits
 open P02SemanticSelfSubstitution
 open P02RejectionImageEscape
@@ -58,13 +59,13 @@ theorem diagonal_fixedPoint_law_closes_endpoint
 /-- The proposed fixed-point law is exactly the already isolated
 CandidateCodeSemanticFixedPoint after unfolding diagonalWitness. -/
 theorem diagonal_fixedPoint_law_iff_existing_frontier :
-    DiagonalFixedPointLaw ↔ CandidateCodeSemanticFixedPoint := by
+    DiagonalFixedPointLaw ↔ P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint := by
   rfl
 
 /-- Therefore the user-proposed closure does not remove the last theorem:
 it renames exactly the same frontier. -/
 theorem proposed_endpoint_from_existing_frontier
-    (H : CandidateCodeSemanticFixedPoint) :
+    (H : P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint) :
     Endpoint := by
   exact diagonal_fixedPoint_law_closes_endpoint H
 
