@@ -36,9 +36,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          lake build MCore.Real.P01FinalCertificate MCore.Real.P01WitnessIndexedReadGlobal MCore.Real.PNPMaterialInhabitant MCore.Real.PNPMaterialNPFrontier 2>&1 | tee PNPMaterialBuild.log
           lake env lean lean/MCore/Real/PNPMaterialInhabitant.lean 2>&1 | tee PNPMaterialInhabitant.log
           lake env lean lean/MCore/Real/PNPMaterialNPFrontier.lean 2>&1 | tee PNPMaterialNPFrontier.log
-          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialInhabitant.log PNPMaterialNPFrontier.log; then
+          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialBuild.log PNPMaterialInhabitant.log PNPMaterialNPFrontier.log; then
             echo "Forbidden proof residue detected"
             exit 1
           fi
@@ -63,6 +64,7 @@ jobs:
         with:
           name: p02-material-inhabitant-evidence
           path: |
+            PNPMaterialBuild.log
             PNPMaterialInhabitant.log
             PNPMaterialNPFrontier.log
             PNPMaterialInhabitantCertificate.txt
