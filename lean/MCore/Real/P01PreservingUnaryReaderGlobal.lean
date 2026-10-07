@@ -55,17 +55,18 @@ theorem selected_bit_from_decomposition
 
 /-- One local rewind cycle for a false witness bit.  Keeping the next tape
 symbol explicit avoids relying on list head defaults in the global induction. -/
-theorem rewind_false_bit_cycle
-    (left : List (Option Bool)) (next : Option Bool)
+theorem rewind_false_control_cycle
+    (left : List (Option Bool)) (b : Bool) (next : Option Bool)
     (right : List (Option Bool)) :
     preservingUnaryReadMachine.run 3
       { state := .rewindInspectFalse
-        tape := { left := none :: left, head := some false,
+        tape := { left := none :: left, head := some b,
                   right := next :: right } } =
       { state := .rewindInspectFalse
-        tape := { left := some false :: none :: left, head := next,
+        tape := { left := some b :: none :: left, head := next,
                   right := right } } := by
-  simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+  cases b <;>
+    simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
 /-- Same physical cycle while the selected result carried in control is true. -/
 theorem rewind_true_bit_cycle
@@ -81,14 +82,15 @@ theorem rewind_true_bit_cycle
   simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
 
-/-- Rewind a Boolean prefix represented immediately to the right of the unique
-marker.  Each restored Boolean costs exactly three physical steps. -/
+/-- Rewind a Boolean prefix while the selected result carried in finite
+control is false.  Every restored witness bit costs exactly three steps. -/
 theorem rewind_false_bits
     (left : List (Option Bool)) (prefix : BitString)
     (next : Option Bool) (right : List (Option Bool)) :
     preservingUnaryReadMachine.run (3 * prefix.length)
       { state := .rewindInspectFalse
-        tape := { left := none :: left, head := (prefix.map some ++ next :: right).headD next,
+        tape := { left := none :: left,
+                  head := (prefix.map some ++ next :: right).headD next,
                   right := (prefix.map some ++ next :: right).tail } } =
       { state := .rewindInspectFalse
         tape := { left := prefix.reverse.map some ++ none :: left,
@@ -100,15 +102,10 @@ theorem rewind_false_bits
       rw [List.length_cons]
       rw [show 3 * (bs.length + 1) = 3 + 3 * bs.length by omega]
       rw [MachineRunLemmas.run_add]
-      cases b <;>
-        simp only [List.map_cons, List.cons_append, List.headD_cons, List.tail_cons]
-      · rw [rewind_false_bit_cycle]
-        simpa [List.reverse_cons, List.map_append, List.append_assoc] using
-          (ih (left := some false :: left))
-      · rw [rewind_true_bit_cycle]
-        -- selected-result control must remain false; the restored witness bit
-        -- may be true, so use the false-control transition specialized to true.
-        simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+      simp only [List.map_cons, List.cons_append, List.headD_cons, List.tail_cons]
+      rw [rewind_false_control_cycle]
+      simpa [List.reverse_cons, List.map_append, List.append_assoc] using
+        (ih (left := some b :: left))
 
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.payload_advance_rewind
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.preserving_reader_induction_entry
