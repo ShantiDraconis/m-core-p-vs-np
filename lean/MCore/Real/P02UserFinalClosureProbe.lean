@@ -60,13 +60,13 @@ theorem diagonal_fixedPoint_law_closes_endpoint
 /-- The proposed fixed-point law is exactly the already isolated
 P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint after unfolding diagonalWitness. -/
 theorem diagonal_fixedPoint_law_iff_existing_frontier :
-    DiagonalFixedPointLaw ↔ P02DiagonalNoShortcut.P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint := by
+    DiagonalFixedPointLaw ↔ P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint := by
   rfl
 
 /-- Therefore the user-proposed closure does not remove the last theorem:
 it renames exactly the same frontier. -/
 theorem proposed_endpoint_from_existing_frontier
-    (H : P02DiagonalNoShortcut.P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint) :
+    (H : P02DiagonalNoShortcut.CandidateCodeSemanticFixedPoint) :
     Endpoint := by
   exact diagonal_fixedPoint_law_closes_endpoint H
 
