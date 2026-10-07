@@ -130,7 +130,6 @@ theorem fullWordCertificate_iff_globalExternal :
 theorem fullWordCertificate_iff_math :
     Nonempty FullWordCertificate ↔ MATH := by
   rw [fullWordCertificate_iff_globalExternal]
-  rfl
 
 #print axioms MCore.Real.P02EndpointLatticeCube.cube14_length
 #print axioms MCore.Real.P02EndpointLatticeCube.cube14_pair_states
