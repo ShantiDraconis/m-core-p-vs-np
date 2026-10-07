@@ -29,7 +29,7 @@ theorem terminal_signature_unified :
 an inhabitant of the active endpoint. -/
 theorem rpa_unified :
     Nonempty P02RPADualConfirmation.ActiveRPA ↔
-      P02RPADualConfirmation.Endpoint :=
+      P02RejectionImageEscape.Endpoint :=
   P02RPADualConfirmation.activeRPA_nonempty_iff_endpoint
 
 /-- Dense lattice certificate: all 14 ordered states through length three
