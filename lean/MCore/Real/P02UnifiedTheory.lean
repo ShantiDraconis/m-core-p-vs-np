@@ -19,17 +19,18 @@ open P02CandidateCodeFixedPointCounterprobe
 
 /-- Dense structural certificate: the terminal aliases are one proposition. -/
 theorem terminal_signature_unified :
-    (Endpoint ↔ Gap) ∧
-    (Gap ↔ Habitant) ∧
-    (Habitant ↔ Inhabitant) ∧
-    (Inhabitant ↔ Endpoint) :=
-  terminal_cycle
+    (P02RejectionImageEscape.Endpoint ↔ P02RejectionImageEscape.Gap) ∧
+    (P02RejectionImageEscape.Gap ↔ P02RejectionImageEscape.Habitant) ∧
+    (P02RejectionImageEscape.Habitant ↔ P02RejectionImageEscape.Inhabitant) ∧
+    (P02RejectionImageEscape.Inhabitant ↔ P02RejectionImageEscape.Endpoint) :=
+  P02RejectionImageEscape.terminal_cycle
 
 /-- Dense RPA certificate: a complete dual endpoint transition is exactly
 an inhabitant of the active endpoint. -/
 theorem rpa_unified :
-    Nonempty ActiveRPA ↔ Endpoint :=
-  activeRPA_nonempty_iff_endpoint
+    Nonempty P02RPADualConfirmation.ActiveRPA ↔
+      P02RPADualConfirmation.Endpoint :=
+  P02RPADualConfirmation.activeRPA_nonempty_iff_endpoint
 
 /-- Dense lattice certificate: all 14 ordered states through length three
 are present in one finite registry. -/
@@ -45,15 +46,16 @@ theorem full_word_closes_lattice :
 /-- FULL carries exactly the external-certificate payload, without creating
 that payload. -/
 theorem full_certificate_exact :
-    Nonempty FullWordCertificate ↔ GLOBAL_EXTERNAL_CERTIFICATE :=
-  fullWordCertificate_iff_globalExternal
+    Nonempty P02EndpointLatticeCube.FullWordCertificate ↔
+      P02RPADualConfirmation.GLOBAL_EXTERNAL_CERTIFICATE :=
+  P02EndpointLatticeCube.fullWordCertificate_iff_globalExternal
 
 /-- Publication root: an actual external certificate closes the canonical
 P-vs-NP root. -/
 theorem external_certificate_closes_pneqnp
-    (h : GLOBAL_EXTERNAL_CERTIFICATE) :
+    (h : P02RPADualConfirmation.GLOBAL_EXTERNAL_CERTIFICATE) :
     PneqNP :=
-  global_external_closes_pneqnp h
+  P02RPADualConfirmation.global_external_closes_pneqnp h
 
 /-- Counterprobe result: the special candidateCode fixed-point route is not
 a valid universal producer. -/
