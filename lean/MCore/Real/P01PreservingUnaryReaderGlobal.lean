@@ -53,30 +53,32 @@ theorem selected_bit_from_decomposition
   simp [List.getD_eq_getElem?_getD]
 
 
-/-- One local rewind cycle restores the inspected witness bit and moves the
-unique marker one cell to the right.  The selected result bit is carried only
-in finite control. -/
+/-- One local rewind cycle for a false witness bit.  Keeping the next tape
+symbol explicit avoids relying on list head defaults in the global induction. -/
 theorem rewind_false_bit_cycle
-    (left right : List (Option Bool)) :
+    (left : List (Option Bool)) (next : Option Bool)
+    (right : List (Option Bool)) :
     preservingUnaryReadMachine.run 3
       { state := .rewindInspectFalse
-        tape := { left := none :: left, head := some false, right := right } } =
+        tape := { left := none :: left, head := some false,
+                  right := next :: right } } =
       { state := .rewindInspectFalse
-        tape := { left := some false :: none :: left, head := right.headD none,
-                  right := right.tail } } := by
-  cases right <;>
-    simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+        tape := { left := some false :: none :: left, head := next,
+                  right := right } } := by
+  simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
+/-- Same physical cycle while the selected result carried in control is true. -/
 theorem rewind_true_bit_cycle
-    (left right : List (Option Bool)) :
+    (left : List (Option Bool)) (next : Option Bool)
+    (right : List (Option Bool)) :
     preservingUnaryReadMachine.run 3
       { state := .rewindInspectTrue
-        tape := { left := none :: left, head := some true, right := right } } =
+        tape := { left := none :: left, head := some true,
+                  right := next :: right } } =
       { state := .rewindInspectTrue
-        tape := { left := some true :: none :: left, head := right.headD none,
-                  right := right.tail } } := by
-  cases right <;>
-    simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+        tape := { left := some true :: none :: left, head := next,
+                  right := right } } := by
+  simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.payload_advance_rewind
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.preserving_reader_induction_entry
