@@ -37,7 +37,8 @@ jobs:
         run: |
           set -euo pipefail
           lake env lean lean/MCore/Real/PNPMaterialInhabitant.lean 2>&1 | tee PNPMaterialInhabitant.log
-          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialInhabitant.log; then
+          lake env lean lean/MCore/Real/PNPMaterialNPFrontier.lean 2>&1 | tee PNPMaterialNPFrontier.log
+          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialInhabitant.log PNPMaterialNPFrontier.log; then
             echo "Forbidden proof residue detected"
             exit 1
           fi
@@ -51,6 +52,8 @@ jobs:
             echo "MATERIAL_TYPE=InNP(SAT) AND NOT InP(SAT)"
             echo "OPERATIONAL_EQUIV=InNP(SAT) AND UniversalFailure(SAT)"
             echo "TRANSPORT_TO_PNEQNP=KERNEL_CHECKED_IF_BUILD_GREEN"
+            echo "INDEXED_WITNESS_READ=CLOSED_KERNEL_TARGET"
+            echo "NP_SIDE_FRONTIER=P01MachineConstruction"
             echo "MATERIAL_PRODUCER=OPEN_MATH"
           } | tee PNPMaterialInhabitantCertificate.txt
 
@@ -61,4 +64,5 @@ jobs:
           name: p02-material-inhabitant-evidence
           path: |
             PNPMaterialInhabitant.log
+            PNPMaterialNPFrontier.log
             PNPMaterialInhabitantCertificate.txt
