@@ -139,7 +139,6 @@ inhabitance obligation once the lattice state is maximal. -/
 theorem fullCertified_iff_math :
     Nonempty FullCertifiedState ↔ MATH := by
   rw [fullCertified_iff_globalExternal]
-  rfl
 
 #print axioms MCore.Real.P02EndpointLattice.canonical_four_cases
 #print axioms MCore.Real.P02EndpointLattice.canonicalize_both_positive
