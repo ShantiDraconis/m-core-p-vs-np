@@ -23,7 +23,7 @@ abbrev CLOSED_MATH : Prop := Endpoint
 abbrev OPEN_BRIDGE : Prop := Endpoint
 abbrev CLOSED_BRIDGE : Prop := Endpoint
 
-abbrev ActiveRPA : Prop := RPATransition OPEN_MATH CLOSED_MATH
+def ActiveRPA : Prop := Nonempty (RPATransition OPEN_MATH CLOSED_MATH)
 
 /-- A complete RPA transition is equivalent to a terminal endpoint inhabitant:
 given Endpoint we can populate both source and destination; conversely any
@@ -31,14 +31,14 @@ transition contains an OPEN witness. -/
 theorem activeRPA_nonempty_iff_endpoint :
     ActiveRPA ↔ Endpoint := by
   constructor
-  · intro cert
+  · rintro ⟨cert⟩
     exact cert.open_witness
   · intro h
-    exact {
+    exact ⟨{
       open_witness := h
       closed_witness := h
       identity := Iff.rfl
-    }
+    }⟩
 
 /-- Bridge view: same payload, same identity, no extra mathematical delta. -/
 theorem openBridge_iff_openMath :
