@@ -36,10 +36,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake build MCore.Real.P01FinalCertificate MCore.Real.P01WitnessIndexedReadGlobal MCore.Real.PNPMaterialInhabitant MCore.Real.PNPMaterialNPFrontier 2>&1 | tee PNPMaterialBuild.log
+          lake build MCore.Real.P01FinalCertificate MCore.Real.P01WitnessIndexedReadGlobal MCore.Real.P01WitnessPrepGlobal MCore.Real.P01VerifierPhaseMinCutStructural MCore.Real.PNPMaterialInhabitant MCore.Real.PNPMaterialNPFrontier MCore.Real.PNPMaterialVerifierFrontier 2>&1 | tee PNPMaterialBuild.log
           lake env lean lean/MCore/Real/PNPMaterialInhabitant.lean 2>&1 | tee PNPMaterialInhabitant.log
           lake env lean lean/MCore/Real/PNPMaterialNPFrontier.lean 2>&1 | tee PNPMaterialNPFrontier.log
-          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialBuild.log PNPMaterialInhabitant.log PNPMaterialNPFrontier.log; then
+          lake env lean lean/MCore/Real/PNPMaterialVerifierFrontier.lean 2>&1 | tee PNPMaterialVerifierFrontier.log
+          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialBuild.log PNPMaterialInhabitant.log PNPMaterialNPFrontier.log PNPMaterialVerifierFrontier.log; then
             echo "Forbidden proof residue detected"
             exit 1
           fi
@@ -54,7 +55,7 @@ jobs:
             echo "OPERATIONAL_EQUIV=InNP(SAT) AND UniversalFailure(SAT)"
             echo "TRANSPORT_TO_PNEQNP=KERNEL_CHECKED_IF_BUILD_GREEN"
             echo "INDEXED_WITNESS_READ=CLOSED_KERNEL_TARGET"
-            echo "NP_SIDE_FRONTIER=P01MachineConstruction"
+            echo "NP_SIDE_FRONTIER=Nonempty(P01VerifierPhase prepPhase.layout)"
             echo "MATERIAL_PRODUCER=OPEN_MATH"
           } | tee PNPMaterialInhabitantCertificate.txt
 
@@ -67,4 +68,5 @@ jobs:
             PNPMaterialBuild.log
             PNPMaterialInhabitant.log
             PNPMaterialNPFrontier.log
+            PNPMaterialVerifierFrontier.log
             PNPMaterialInhabitantCertificate.txt
