@@ -1,0 +1,64 @@
+name: P02 Material Inhabitant
+
+on:
+  push:
+    branches:
+      - atk/p02-material-inhabitant-20261007
+  workflow_dispatch:
+
+concurrency:
+  group: p02-material-inhabitant-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  material-inhabitant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Lean
+        uses: leanprover/lean-action@v1
+        with:
+          build: false
+          test: false
+          lint: false
+          use-mathlib-cache: false
+
+      - name: Resolve pinned dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake update
+          lake exe cache get || true
+
+      - name: Kernel-check material inhabitant boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake env lean lean/MCore/Real/PNPMaterialInhabitant.lean 2>&1 | tee PNPMaterialInhabitant.log
+          if grep -E 'sorryAx|declaration uses .*sorry|unsolved goals' PNPMaterialInhabitant.log; then
+            echo "Forbidden proof residue detected"
+            exit 1
+          fi
+
+      - name: Certificate summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "CANONICAL_LANGUAGE=SATBits(circuitBitEncoding)"
+            echo "MATERIAL_TYPE=InNP(SAT) AND NOT InP(SAT)"
+            echo "OPERATIONAL_EQUIV=InNP(SAT) AND UniversalFailure(SAT)"
+            echo "TRANSPORT_TO_PNEQNP=KERNEL_CHECKED_IF_BUILD_GREEN"
+            echo "MATERIAL_PRODUCER=OPEN_MATH"
+          } | tee PNPMaterialInhabitantCertificate.txt
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p02-material-inhabitant-evidence
+          path: |
+            PNPMaterialInhabitant.log
+            PNPMaterialInhabitantCertificate.txt
