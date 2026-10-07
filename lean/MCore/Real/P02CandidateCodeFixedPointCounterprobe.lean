@@ -47,13 +47,21 @@ theorem secondBitCandidate_total :
   intro x
   cases x with
   | nil =>
-      native_decide
+      simp [OwnClockHalts, secondBitCandidate, secondBitMachine,
+        initialTMConfig, inputTape, TM.HaltsWithin, TM.run, TM.step,
+        Tape.write, Tape.move]
   | cons b bs =>
       cases bs with
       | nil =>
-          cases b <;> native_decide
+          cases b <;>
+            simp [OwnClockHalts, secondBitCandidate, secondBitMachine,
+              initialTMConfig, inputTape, TM.HaltsWithin, TM.run, TM.step,
+              Tape.write, Tape.move]
       | cons c cs =>
-          cases b <;> cases c <;> native_decide
+          cases b <;> cases c <;>
+            simp [OwnClockHalts, secondBitCandidate, secondBitMachine,
+              initialTMConfig, inputTape, TM.HaltsWithin, TM.run, TM.step,
+              Tape.write, Tape.move]
 
 /-- On any input with two cells, the observed output is exactly the second bit. -/
 theorem secondBitCandidate_observed
@@ -84,14 +92,7 @@ theorem boundedExecTableauCNF_NTM_ne_nil
     (M : PolyNTMCandidate) (x : BitString) (t : Nat) :
     boundedExecTableauCNF_NTM M x t ≠ [] := by
   unfold boundedExecTableauCNF_NTM ntmInitialCNF
-  intro h
-  have hs :
-      ntmSetStateClauses [] M t 0 M.machine.initial ≠ [] := by
-    unfold ntmSetStateClauses
-    simp
-  apply hs
-  exact List.append_eq_nil.mp
-    (List.append_eq_nil.mp h).1 |>.1
+  simp [ntmSetStateClauses]
 
 /-- Therefore every rejectCode starts with the .and circuit tag 100. -/
 theorem rejectCode_prefix_100
