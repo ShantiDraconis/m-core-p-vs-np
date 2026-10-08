@@ -79,15 +79,24 @@ theorem reader_certificate : PreservingUnaryReaderGap := by
   · intro witness i hi
     obtain ⟨b, blanks, hbit, hrun⟩ := reader_exact_material witness i hi
     unfold TM.HaltsWithin
+    change preservingUnaryReadMachine.halting
+      (preservingUnaryReadMachine.run (readerBound witness i) (readerStart witness i)).state = true
     rw [hrun]
     cases b <;> rfl
   · intro witness i hi
     obtain ⟨b, blanks, hbit, hrun⟩ := reader_exact_material witness i hi
+    change preservingUnaryReadMachine.halting
+      (preservingUnaryReadMachine.run (readerBound witness i) (readerStart witness i)).state = true
+    change preservingReadAccepting
+      (preservingUnaryReadMachine.run (readerBound witness i) (readerStart witness i)).state = witness.getD i false
     rw [hrun]
     cases b <;> simp [haltedConfig, preservingReadAccepting, hbit]
   · intro witness i hi
     obtain ⟨b, blanks, hbit, hrun⟩ := reader_exact_material witness i hi
     refine ⟨List.replicate blanks none, [], ?_⟩
+    change (preservingUnaryReadMachine.run (readerBound witness i)
+      (readerStart witness i)).tape =
+      { left := List.replicate blanks none ++ witness.map some, head := none, right := [] }
     rw [hrun]
     rfl
 
