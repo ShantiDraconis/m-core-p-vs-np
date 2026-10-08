@@ -137,6 +137,52 @@ theorem rewind_true_control_cycle
   cases b <;>
     simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
+/-- Cleanup consumes one erased unary cell without changing the selected
+false result. -/
+theorem cleanup_false_blank_step
+    (left : List (Option Bool)) (next : Option Bool)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 1
+      { state := .cleanupFalse
+        tape := { left := left, head := none, right := next :: right } } =
+      { state := .cleanupFalse
+        tape := { left := none :: left, head := next, right := right } } := by
+  simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
+/-- Cleanup consumes one erased unary cell without changing the selected
+true result. -/
+theorem cleanup_true_blank_step
+    (left : List (Option Bool)) (next : Option Bool)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 1
+      { state := .cleanupTrue
+        tape := { left := left, head := none, right := next :: right } } =
+      { state := .cleanupTrue
+        tape := { left := none :: left, head := next, right := right } } := by
+  simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
+/-- The final false terminator halts with the selected false result. -/
+theorem cleanup_false_terminator
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 1
+      { state := .cleanupFalse
+        tape := { left := left, head := some false, right := right } } =
+      { state := .haltFalse
+        tape := Tape.move none .right
+          { left := left, head := none, right := right } } := by
+  simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
+/-- The final false terminator halts with the selected true result. -/
+theorem cleanup_true_terminator
+    (left right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 1
+      { state := .cleanupTrue
+        tape := { left := left, head := some false, right := right } } =
+      { state := .haltTrue
+        tape := Tape.move none .right
+          { left := left, head := none, right := right } } := by
+  simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.rewind_true_control_cycle
 
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.payload_advance_rewind
