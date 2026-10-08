@@ -1,4 +1,3 @@
-import Mathlib.Tactic.Nlinarith
 import MCore.Real.P01PreservingUnaryReaderBound
 
 namespace MCore
@@ -191,7 +190,7 @@ theorem preservingRead_nonzero_material
           have hlenMoved : i = moved.length + 1 := hi'
           simp only [List.length_cons, List.length_singleton] at hidx
           simp only [Nat.pow_two] at hiterExact ⊢
-          nlinarith
+          omega
         rw [hfuelExact]
         exact nonzeroReaderFuel_le_timeBound witness i
       · have hexact :=
