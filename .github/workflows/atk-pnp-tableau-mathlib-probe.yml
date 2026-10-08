@@ -1,0 +1,116 @@
+name: ATK PNP Tableau Mathlib Probe
+
+# Kernel probe of the four Mathlib-dependent versions of
+# lean/MCore/Real/PNPNTMTableauEncoding.lean (Cook–Levin tableau core).
+# Each matrix job checks out one frozen source SHA, resolves Mathlib v4.19.0
+# with its build cache, builds the tableau module, and audits the axioms of
+# every theorem in it. Nothing is written back to the source branches.
+
+on:
+  push:
+    branches:
+      - atk/pnp-tableau-mathlib-probe-20261008
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tableau:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - source: atk/p02-e1-c1-left-validate-20261004
+            sha: 1779db200aeeb16a60489012131b8e4d62566e0e
+          - source: atk/p02-e1-c2-right-20261004
+            sha: 08a17e646633955d89589b5b81dd4ad8a174327b
+          - source: atk/p02-lane4-reuse-t10-audit-20261003
+            sha: 6c467fbba91503d25e91d2bab8b804aebf34dc9f
+          - source: atk/p02-lane4-terminal-densify-20261003
+            sha: 685593f052ea7bd87fd7046918ee2a507177f2c8
+    name: tableau @ ${{ matrix.source }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.sha }}
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Record source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD | tee source-sha.txt
+          test "$(git rev-parse HEAD)" = "${{ matrix.sha }}"
+          cat lean-toolchain
+          git hash-object lean/MCore/Real/PNPNTMTableauEncoding.lean | tee tableau-blob.txt
+      - name: Resolve Mathlib and fetch its build cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake update
+          lake exe cache get
+      - name: Build tableau module
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.PNPNTMTableauEncoding 2>&1 | tee build.log
+      - name: Axiom audit of every theorem in the tableau module
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > TableauAudit.lean <<'EOF'
+          import Lean
+          import MCore.Real.PNPNTMTableauEncoding
+          open Lean Elab Command
+
+          #check @MCore.Real.PNPNTMTableauEncoding.tableau_correctness_iff
+          #check @MCore.Real.PNPNTMTableauEncoding.boundedExec_encoded_length_poly
+          #print axioms MCore.Real.PNPNTMTableauEncoding.tableau_correctness_iff
+          #print axioms MCore.Real.PNPNTMTableauEncoding.boundedExec_encoded_length_poly
+
+          elab "#module_axiom_audit " m:ident : command => do
+            let env ← getEnv
+            let some idx := env.getModuleIdx? m.getId | throwError "module not found"
+            let std : List Name := [`propext, `Classical.choice, `Quot.sound]
+            let mut thms := 0
+            let mut bad : Array (Name × Array Name) := #[]
+            for (n, ci) in env.constants.toList do
+              if env.getModuleIdxFor? n != some idx then continue
+              if n.isInternal then continue
+              match ci with
+              | .thmInfo _ => thms := thms + 1
+              | .defnInfo _ => pure ()
+              | _ => continue
+              let axs ← collectAxioms n
+              let nonstd := axs.filter (fun a => !std.contains a)
+              unless nonstd.isEmpty do bad := bad.push (n, nonstd)
+            if bad.isEmpty then
+              logInfo m!"MODULE_AXIOM_AUDIT PASS {m.getId}: theorems={thms}, all axioms standard"
+            else
+              throwError "MODULE_AXIOM_AUDIT FAIL {m.getId}: {bad}"
+
+          #module_axiom_audit MCore.Real.PNPNTMTableauEncoding
+          EOF
+          lake env lean TableauAudit.lean 2>&1 | tee audit.log
+          grep -q "MODULE_AXIOM_AUDIT PASS" audit.log
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tableau-${{ matrix.sha }}
+          path: |
+            source-sha.txt
+            tableau-blob.txt
+            build.log
+            audit.log
