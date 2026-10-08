@@ -1,0 +1,25 @@
+{
+  "schema": "atk.kernel_evidence.v1",
+  "source": {
+    "repository": "ShantiDraconis/m-core-p-vs-np",
+    "branch": "atk/pnp-recovery-integration-20261008",
+    "run_id": 37848515115,
+    "run_url": "https://github.com/ShantiDraconis/m-core-p-vs-np/actions/runs/37848515115"
+  },
+  "verified": {
+    "kernel_job_success": true,
+    "recovered_p01_producer_build_step_success": true,
+    "integration_and_separation_audit_build_step_success": true,
+    "center_transport_audit_build_step_success": true,
+    "exact_signature_and_axiom_audit_step_success": true
+  },
+  "not_inferred": {
+    "P01_material_complete": false,
+    "G21Pointwise_material_proven": false,
+    "SAT_not_in_P_proven": false,
+    "P_ne_NP_proven": false,
+    "FINAL_EXTERNAL_ISSUED": false
+  },
+  "scope": "Evidence status only. A successful CI step does not establish any unproved terminal mathematical theorem.",
+  "verified_at": "2026-10-08"
+}
