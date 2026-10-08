@@ -1,0 +1,168 @@
+# ATK — Recuperação e integração P ≠ NP — 2026-10-08
+
+```
+ATK-PNP: OPEN_MATH (1 obrigação) | integração atk/pnp-recovery-integration-20261008
+         | pai FROZEN 0dd09383932446ba67e673f69cd8740f85a80b87
+         | CI P01: run 36897479263 (15b6c36043721e827930c98babbaa3e0e9f50456)
+         | RECUPERADO: P01ConstructionGap (SAT ∈ NP)
+         | LACUNA REAL: G21Pointwise ≡ ¬ InP SAT
+         | PRÓXIMO PRODUTOR: nenhum candidato existente; exige resultado matemático novo
+```
+
+## 1. Veredito
+
+A prova terminal de P ≠ NP **não está completa** e **não existe dispersa** nos repositórios examinados.
+
+- **P01 — SAT ∈ NP: FECHADO.** Já existia, demonstrado e verificado pelo kernel, em `MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed`. Ele foi recuperado e integrado sem alterar nenhum arquivo existente.
+- **G21Pointwise: OPEN_MATH.** É, por definição, `UniversalFailure SATTarget`. Equivale, provadamente no kernel, a `¬ InP SATTarget`, ou seja, "SAT não está em P". Combinado com P01, implica `PneqNP`. Nenhum habitante foi encontrado. Como SAT ∉ P equivale a P ≠ NP (pelo teorema de Cook–Levin), essa obrigação é o próprio problema do milênio. Não é uma lacuna de integração.
+
+O teorema integrado tem exatamente uma hipótese:
+
+```lean
+theorem pneqnp_of_g21 (hG21 : G21Pointwise) : PneqNP
+-- axiomas: [propext, Classical.choice, Quot.sound]
+```
+
+O critério `theorem final_proof : PneqNP := by exact recovered_material_proof` **não é satisfeito**, porque não existe `recovered_material_proof` para G21.
+
+## 2. Enunciado terminal e fidelidade
+
+| Objeto | Definição Lean | Arquivo |
+|---|---|---|
+| `PneqNP` | `¬ ∀ L : BitLanguage, InP L ↔ InNP L` | `lean/MCore/Real/CanonicalFinalProof.lean` |
+| `InP` / `InNP` | `Nonempty (PolyDTMRealization L)` / `Nonempty (PolyNTMRealization L)` | idem |
+| Modelo | TM/NTM de uma fita, estados `Fin (k+1)`, alfabeto `Option Bool`, transições locais | `lean/MCore/Real/Model.lean` |
+| Tempo polinomial | `T n ≤ c · (n+1)^e` | `CanonicalFinalProof.lean` |
+| SAT | `IsCNF φ ∧ ∃ σ, evalCircuit σ φ = true`, codificado por `circuitBitEncoding` (com `decode_encode` provado) | `SATMachine.lean`, `CanonicalSATBoundary.lean`, `CanonicalCircuitBits.lean` |
+
+Diferenças em relação ao enunciado clássico, confirmadas pelo auditor independente:
+
+- uma única fita;
+- alfabeto {branco, 0, 1};
+- forma específica do limite polinomial;
+- variáveis codificadas em unário.
+
+Sabe-se que P e NP não mudam com essas escolhas, mas a equivalência com um modelo padrão (por exemplo, `Turing.TM2ComputableInPolyTime` do Mathlib) **não está formalizada**: `ExternalModelMatch` só existe na forma interna trivial. Esta é uma `SEMANTIC_GAP` demonstrável em princípio e independente de G21. O modelo antigo, que tinha um campo de codificador arbitrário, foi refutado pelo próprio projeto (`FinalProofAttack.current_SATNotInP_refuted`) e não é usado aqui.
+
+`inP_subset_inNP` está provado (`CanonicalPSubsetNP`). Portanto, `PneqNP` equivale a "existe uma linguagem em NP fora de P".
+
+## 3. Tabela de proveniência — cadeia terminal integrada
+
+| Papel | Nome Lean | Arquivo | Commit / ref | Estado |
+|---|---|---|---|---|
+| Endpoint | `CanonicalFinalProof.PneqNP` | `CanonicalFinalProof.lean` | `0dd09383…` | definição |
+| Lema de fechamento | `target_failure_implies_p_ne_np` | `CanonicalFinalProof.lean` | `0dd09383…` | kernel ✔, sem axiomas |
+| Equivalência | `universal_failure_iff_not_in_p` | `CanonicalFinalProof.lean` | `0dd09383…` | kernel ✔ (clássico) |
+| Equivalência | `failure_generator_iff_universal_failure` | `FailProofAllGaps.lean` | `0dd09383…` | kernel ✔ |
+| Ponte P01 → InNP | `P01FinalCertificate.construction_closes_p01` | `P01FinalCertificate.lean` | `0dd09383…` | kernel ✔ |
+| **Habitante P01** | `P01RawTotalizationProducer.p01ConstructionGap_closed` | `P01RawTotalizationProducer.lean` | `0dd09383…` (FROZEN); CI run `36897479263` em `15b6c360…` (arquivo e imports idênticos byte a byte) | **kernel ✔**, `[propext, Classical.choice, Quot.sound]` |
+| Composição | `sat_in_np_recovered`, `pneqnp_of_g21`, `integration_status` | `lean/MCore/Integration/PNPRecoveredFrontier20261008.lean` | esta branch | kernel ✔ |
+| **Hipótese restante** | `G21Pointwise` | idem (corpo idêntico a `P02G21G22Attack.G21Pointwise`) | — | **sem habitante (OPEN_MATH)** |
+
+## 4. Classificação das lacunas (Fase 3)
+
+| Obrigação / branch | Classe | Evidência |
+|---|---|---|
+| `P01ConstructionGap` nas 3 branches prioritárias | `DEPENDENCY_GAP` → **resolvida** | habitante válido encontrado em `0dd0938` |
+| `atk/p01-raw-closure-unified-20261001` (`fc21c82a…`) | `KERNEL_FAILURE` | `P01RawSourceSplit.lean:21` (tipo incompatível, `sorryAx`); `P01CheckedVerifierFiniteState.lean` usa `Fintype` (Mathlib, que não é dependência); `P01ExactBoundedCircuitProducer.lean` com cerca de 15 erros. CI RED: runs `36791113731`, `36791113653` |
+| `atk/direct-p01-inhabitant-close-20260930` (`9f108133…`) | `KERNEL_FAILURE` | `P01CheckedEvalRunBoundedHelpers.lean:126` (metas não resolvidas); seu P01 continua condicional a `P01VerifierPhase`. CI RED: run `36713740303` |
+| `atk/p01-preserving-terminal-materialize-20261005` (`fb7ddf8f…`) | parcial ✔ | `preservingUnaryReaderGap_material` compila (`[propext, Quot.sound]`); `ReaderBeforeP01Construction` é apenas uma `def Prop`, não um teorema. O alvo `MCore` não importa esses arquivos. CI: run `37349036116` OK, `37349036128` RED |
+| `G21Pointwise` | `MATERIAL_GAP` (OPEN_MATH) | §6 e `ATK_NEGATIVE_SEARCH_CERTIFICATE.json` |
+| Modelo interno ↔ modelo padrão | `SEMANTIC_GAP` | `ExternalModelMatch` só na forma interna |
+| Cook–Levin no modelo interno | `SEMANTIC_GAP` (não bloqueia G21 → PneqNP) | não formalizado |
+| Circularidade | nenhuma | §5 |
+| Axiomas extras | nenhum na cadeia | §5 |
+
+Outros produtores de P01 declarados:
+
+- `atk/p02-material-inhabitant-20261007` e `atk/p01-raw-closure-final-20261001`: **não verificados no kernel neste ciclo**. Os dois `lakefile.toml` exigem `mathlib` `v4.19.0`, mas o `lake-manifest.json` não fixa o pacote, de modo que o build não é reproduzível como está. São redundantes, já que P01 está fechado sem Mathlib.
+- `atk/p01-final-plus-preserving-reader-20261005` (= `0dd0938`): **compila** e é o usado.
+
+## 5. Auditoria de axiomas e de separação
+
+`#print axioms`, executado localmente com Lean 4.19.0 e reproduzido no workflow desta branch:
+
+- `p01ConstructionGap_closed`, `sat_in_np_recovered`, `pneqnp_of_g21`, `g21_iff_sat_not_in_p` e `integration_status` → `[propext, Classical.choice, Quot.sound]`
+- `g21_iff_universal_failure` → `[propext, Quot.sound]`
+
+Auditoria de separação (`PNPCircularityAudit20261008.lean`): busca em largura sobre o fecho transitivo, cobrindo tipos, corpos, construtores e recursores.
+
+- Fecho de `p01ConstructionGap_closed`: **4.452 constantes**, nenhuma do lado do limite inferior. A lista proibida cobre `PneqNP`, `InP`, `UniversalFailure`, `FailureGenerator`, `G21Pointwise`, `PolyDTMCandidate`, `PolyDTMCandidate.CorrectAt`, `sorryAx` e outros.
+- O controle positivo exige detecção em profundidade ≥ 3 (`PolyDTMRealization`, a partir de `pneqnp_of_g21`) e exercita o ramo de falha.
+- Observação do auditor, aceita: a correção do P01 já decorre do kernel junto com os axiomas padrão. Esta auditoria verifica uma coisa mais estreita: que o lado SAT ∈ NP sequer menciona o lado do limite inferior.
+
+## 6. Busca de habitantes e certificado negativo
+
+Escopo detalhado, com todas as refs e SHAs completos, em `ATK_NEGATIVE_SEARCH_CERTIFICATE.json`. Em resumo:
+
+- **m-core-p-vs-np:** 684 branches com histórico completo (5.330 commits), 53 refs de PR, sem tags. 1.385 blobs Lean nas pontas, 1.974 só no histórico.
+- **Outros repositórios** (pontas de todas as branches): M-Core (183 refs), millennium-p-vs-np-I (14), axiomatic-millenium (48), proofs-multiprover (2) e universal-proof-hub (9).
+- **Métodos:**
+  - varredura por tipo de declaração;
+  - varredura com resolução transitiva de aliases (pega nomes diferentes com o mesmo corpo);
+  - cruzamento com as 105 hipóteses distintas de todo teorema que conclui `PneqNP`;
+  - varredura `isDefEq` no kernel, feita pelo auditor independente em 4 branches P02 recentes e nesta branch.
+- **Resultado:** todo teorema que conclui `PneqNP` recebe uma hipótese, e nenhuma dessas hipóteses tem habitante incondicional. Os 9 candidatos aparentes foram examinados e rejeitados. Cada um é `sorry`, axioma de falsificação, sonda com metas abertas ou condicional via `variable` (lista no JSON).
+
+`ATK_SEMANTIC_PROOF_MAP.json` registra 67 equivalências do repositório entre G21 e outros nomes (`P02Target`, `UniversalSATLowerBound`, `FINAL_OPEN_MATH`, `NormalizedAdversary`, `TotalSemanticFailureProducer`, …). Todas reformulam a mesma obrigação. Nenhuma a reduz a algo já provado.
+
+## 7. Verificação independente
+
+Um segundo processo, sem acesso às classificações do primeiro além das afirmações a verificar, refez a auditoria. Resultado: afirmações 1–5 e 7 **confirmadas**; afirmações 6 e 8 **parciais**. As correções foram aplicadas nesta branch:
+
+1. O run `37354059689` (em `0dd0938`) **não** compila o produtor P01. A evidência de CI do produtor é o run `36897479263` em `15b6c360` (ancestral, com o produtor e seus imports idênticos byte a byte), que executa `lake build MCore.Real.P01RawTotalizationProducer`. Isso foi verificado diretamente. O workflow novo desta branch também compila o produtor.
+2. O controle positivo da auditoria de separação era raso e não exercitava o ramo de falha. Foi substituído por um controle com busca em largura, profundidade ≥ 3 e teste do ramo de falha.
+3. A lista proibida não cobria `PolyDTMCandidate` nem `CorrectAt`. Agora cobre, por nome completo.
+4. Formulações corrigidas: G21 é *definicionalmente* `UniversalFailure SATTarget`, e *classicamente equivalente* a `¬ InP SATTarget`. A expressão "ou algo mais forte", que não havia sido verificada, foi removida.
+5. O auditor reproduziu o fecho de 4.452 constantes (o mesmo número), refez o kernel sobre ele num ambiente vazio ("REPLAY OK") e compilou do zero um `git archive` da integração, com 154 módulos.
+
+## 8. Fase 5 — o que falta construir
+
+O produtor que falta é um termo de tipo
+
+```lean
+∀ candidate : PolyDTMCandidate, ∃ x : BitString,
+  ¬ candidate.CorrectAt (SATBits circuitBitEncoding) x
+```
+
+Isso é um limite inferior superpolinomial para SAT contra **toda** máquina determinística polinomial. Não existe na literatura, e nenhum fragmento examinado se aproxima dele. As barreiras conhecidas se aplicam a qualquer tentativa:
+
+- **Relativização** (Baker–Gill–Solovay): diagonalização e simulação pura não bastam.
+- **Provas naturais** (Razborov–Rudich): argumentos combinatórios "construtivos e amplos" não bastam, sob hipóteses criptográficas padrão.
+- **Algebrização** (Aaronson–Wigderson).
+
+O próprio projeto já registra em `Barrier/Audit.lean` que as construções atuais aparentam relativizar. As rotas falsificadas e congeladas (ponto fixo literal, `SameInputCore`, `UniformCompilerValueComputable` e outras) confirmam esse diagnóstico. **Não produzi uma demonstração de G21 e não há base para afirmar que uma esteja próxima.** Uma tentativa honesta exigiria ideias matemáticas novas, capazes de contornar as três barreiras. Não há uma composição de fragmentos disponível.
+
+Trabalho real e demonstrável que ainda é possível, independente de G21:
+
+- **SEMANTIC_GAP 1:** provar `ExternalModelMatch` entre o modelo interno e `Turing.TM2ComputableInPolyTime`, que exige Mathlib.
+- **SEMANTIC_GAP 2:** formalizar Cook–Levin no modelo interno, o que tornaria `PneqNP ↔ G21Pointwise` um teorema.
+
+## 9. Resultados aptos a publicação (Fase 8)
+
+| Resultado | Natureza | Apto a DOI? |
+|---|---|---|
+| `p01ConstructionGap_closed` | Formalização em nível de máquina de Turing de um resultado clássico (SAT ∈ NP; ver Cook 1971) | Sim, **como artefato de formalização**. Comparar com mecanizações existentes de Cook–Levin, por exemplo Gäher & Kunze (Coq, ITP 2021) e Balbach (Isabelle AFP, 2023), antes de afirmar originalidade |
+| `pneqnp_of_g21` / `integration_status` | Redução condicional, já conhecida informalmente | Só como parte do artefato acima; **não** é resultado sobre P vs NP |
+| Qualquer afirmação de P ≠ NP | — | **Não.** Não há prova terminal |
+
+Sucesso de CI ou atribuição de DOI não equivalem a aceitação científica. Uma revisão por especialistas em formalização é recomendada para o artefato P01.
+
+## 10. Reprodução
+
+```bash
+git checkout atk/pnp-recovery-integration-20261008
+# Lean 4.19.0 (lean-toolchain), sem dependências externas
+lake build MCore.Real.P01RawTotalizationProducer
+lake build MCore.Integration.PNPRecoveredFrontier20261008 MCore.Integration.PNPCircularityAudit20261008
+# esperar: SEPARATION_AUDIT CONTROL PASS / PASS ×2 e axiomas apenas propext, Classical.choice, Quot.sound
+python3 -I audit/pnp-recovery-20261008/tools/scan2.py BLOBDIR BLOBMAP OUT.json   # ver tools/extract.sh
+```
+
+Workflow: `.github/workflows/atk-pnp-recovery-integration.yml`.
+
+## 11. Pendências deste ciclo
+
+- **Matriz das 32 obrigações:** a lista não foi encontrada nesta conversa nem nos repositórios examinados (busca em `.md`, `.json` e `.yaml` de todas as branches). É preciso indicar o arquivo ou a fonte.
+- Repositórios de Riemann, Beal, BSD, Hodge, Yang–Mills, Navier–Stokes e Poincaré: ainda não examinados.
+- Entregáveis da Fase 9: este relatório consolida o grafo de dependências, o min-cut, os produtores recuperados, a auditoria de axiomas e circularidade, os resultados do kernel e o pacote de revisão. Os dois JSON cobrem o índice de evidências e o mapa semântico desta lane.

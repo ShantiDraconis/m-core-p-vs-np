@@ -1,0 +1,516 @@
+{
+ "map": "ATK semantic proof map — P vs NP",
+ "date": "2026-10-08",
+ "kernel_checked_in_integration_branch": [
+  {
+   "name": "MCore.Integration.PNPRecoveredFrontier20261008.sat_in_np_recovered",
+   "statement": "InNP (SATBits circuitBitEncoding)",
+   "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "relation": "P01 discharged; producer MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed"
+  },
+  {
+   "name": "g21_iff_universal_failure",
+   "statement": "G21Pointwise ↔ UniversalFailure SATTarget",
+   "proof": "Iff.rfl (definitional)"
+  },
+  {
+   "name": "g21_iff_sat_not_in_p",
+   "statement": "G21Pointwise ↔ ¬ InP SATTarget",
+   "proof": "universal_failure_iff_not_in_p (classical)"
+  },
+  {
+   "name": "g21_iff_sat_fail_gap",
+   "statement": "G21Pointwise ↔ SATFailGap circuitBitEncoding",
+   "proof": "failure_generator_iff_universal_failure"
+  },
+  {
+   "name": "pneqnp_of_g21",
+   "statement": "G21Pointwise → PneqNP",
+   "proof": "target_failure_implies_p_ne_np sat_in_np_recovered"
+  },
+  {
+   "name": "pneqnp_of_sat_not_in_p",
+   "statement": "¬ InP SATTarget → PneqNP"
+  }
+ ],
+ "not_formalized": [
+  "PneqNP → G21Pointwise (needs NP-completeness of SAT, i.e. Cook–Levin, in this machine model)",
+  "Equivalence of the internal model (single tape, Fin states, {blank,0,1}, bounds c·(n+1)^e) with a standard model such as Mathlib's Turing.TM2ComputableInPolyTime (ExternalModelMatch exists only in its trivial internal form)"
+ ],
+ "repository_equivalences_to_the_same_open_target": [
+  {
+   "name": "constant_pattern_core_iff_universal_failure",
+   "statement": "ConstantPatternSemanticCore ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02SemanticTransformerDichotomy.lean:131",
+   "branches_containing_file": 3,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "producer_gap_iff_sat_fail",
+   "statement": "LowerBoundProducerGap ↔ SATFailGap circuitBitEncoding",
+   "first_location": "atk/p01-real-neg-macro:lean/MCore/Real/P02LowerBoundProducer.lean:71",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_clock_or_semantic_failure",
+   "statement": "G21Pointwise ↔ ClockOrSemanticFailure",
+   "first_location": "atk/auto-compose-terminal-20260930:lean/MCore/Real/P02UniversalFailureAlgebra.lean:102",
+   "branches_containing_file": 45,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_totality_or_semantic_counterexample",
+   "statement": "G21Pointwise ↔ TotalityOrSemanticCounterexample",
+   "first_location": "atk/auto-compose-terminal-20260930:lean/MCore/Real/P02UniversalFailureAlgebra.lean:170",
+   "branches_containing_file": 45,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "witness_iff_universalFailure",
+   "statement": "Nonempty UniversalFailureWitness ↔ UniversalFailure CanonicalSAT",
+   "first_location": "atk/p02-g2-counterexample-attack-20261006:lean/MCore/Real/P02UniversalFailureWitnessMaterial.lean:53",
+   "branches_containing_file": 3,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "not_universalFailure_iff_inP",
+   "statement": "(¬ UniversalFailure CanonicalSAT) ↔ InP CanonicalSAT",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/MCore/Real/P02TwoSidedOrientation.lean:19",
+   "branches_containing_file": 12,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "residual_iff_universalFailure",
+   "statement": "FiniteDescriptorResidual ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02FiniteDescriptorResidualCore.lean:106",
+   "branches_containing_file": 2,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "self_theorem_route_exactly_circular",
+   "statement": "UniversalFailure (SATBits circuitBitEncoding) ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "atk/pnp-self-theorem-circularity-audit-20260926:audit/PNP_SELF_THEOREM_CIRCULARITY_AUDIT_20260926.lean:25",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "p02_target_iff_sat_not_in_p",
+   "statement": "P02Target ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02TerminalFrontier.lean:19",
+   "branches_containing_file": 320,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "final_open_math_iff_universal_failure",
+   "statement": "P02FinalCompression.FINAL_OPEN_MATH ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p02-lane4-reuse-t10-audit-20261003:lean/MCore/Real/P02TerminalEquivalenceAudit.lean:24",
+   "branches_containing_file": 2,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "final_open_math_iff_not_in_p",
+   "statement": "P02FinalCompression.FINAL_OPEN_MATH ↔ ¬ InP SATTarget",
+   "first_location": "atk/p02-lane4-reuse-t10-audit-20261003:lean/MCore/Real/P02TerminalEquivalenceAudit.lean:39",
+   "branches_containing_file": 2,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "terminal_exact_forms",
+   "statement": "(P02FinalCompression.FINAL_OPEN_MATH ↔ UniversalSATLowerBound) ∧ (P02FinalCompression.FINAL_OPEN_MATH ↔ TotalExactDiagonalProducer) ∧ (P02FinalCompression.FINAL_OPEN_MATH ↔ Nonempty NormalizedAdversary) ∧ (P02FinalCompression.FINAL_OPEN_MATH ↔ Nonempty UniversalCounterexampleProducer) ∧ (P02FinalCompression.FINAL_OPEN_MATH ↔ ¬ InP SATTarget)",
+   "first_location": "atk/p02-lane4-reuse-t10-audit-20261003:lean/MCore/Real/P02TerminalEquivalenceAudit.lean:75",
+   "branches_containing_file": 2,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "mincut_exact_form",
+   "statement": "Nonempty TotalSemanticFailureProducer ↔ UniversalFailure CanonicalSAT",
+   "first_location": "atk/p02-equality-composition-unified:lean/MCore/Real/P02ExactnessKernelFinalRefutation.lean:24",
+   "branches_containing_file": 7,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "p02_failure_generator_iff_universal_failure",
+   "statement": "SATFailGap circuitBitEncoding ↔ CANONICAL_P02_UNIVERSAL_FAILURE",
+   "first_location": "atk/hardened-final-boundary-20261001:lean/MCore/Real/HardenedFinalBoundary.lean:36",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "normalizedAdversary_iff_notInP",
+   "statement": "Nonempty NormalizedAdversary ↔ ¬ InP SATTarget",
+   "first_location": "atk/p02-consolidated-kernel-20261001:lean/MCore/Real/P02CanonicalClockReduction.lean:126",
+   "branches_containing_file": 19,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universalFailure_iff_sat_not_in_p",
+   "statement": "UniversalFailure (SATBits circuitBitEncoding) ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/MCore/Real/P02OpenMathIdentity.lean:52",
+   "branches_containing_file": 10,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "total_kleene_iff_universal_failure",
+   "statement": "TotalCandidateKleeneBridge ↔ UniversalFailure CanonicalSAT",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/MCore/Real/P02KleeneGapAudit.lean:74",
+   "branches_containing_file": 10,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "semantic_flip_core_iff_universal_failure",
+   "statement": "TotalCandidateSemanticFlipCore ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02SemanticFlipCore.lean:86",
+   "branches_containing_file": 13,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "remaining_material_gap_iff_g21",
+   "statement": "RemainingMaterialGap ↔ G21Pointwise",
+   "first_location": "atk/p02-after-p01-20261001:lean/MCore/Real/P02AfterP01Frontier.lean:16",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "remaining_material_gap_iff_p02",
+   "statement": "RemainingMaterialGap ↔ P02Target",
+   "first_location": "atk/p02-after-p01-20261001:lean/MCore/Real/P02AfterP01Frontier.lean:21",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "total_semantic_core_iff_universal_failure",
+   "statement": "TotalCandidateSemanticCore ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02TotalCandidateSemanticCore.lean:92",
+   "branches_containing_file": 13,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universalSATLowerBound_iff_universalFailure",
+   "statement": "UniversalSATLowerBound ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p02-kernel-port-audit-20261001:lean/MCore/Real/P02UniversalLowerBound.lean:110",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universalSATLowerBound_iff_notInP",
+   "statement": "UniversalSATLowerBound ↔ ¬ InP SATTarget",
+   "first_location": "atk/p02-kernel-port-audit-20261001:lean/MCore/Real/P02UniversalLowerBound.lean:114",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "final_open_math_iff_sat_not_in_p",
+   "statement": "FINAL_OPEN_MATH ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "atk/p02-consolidated-kernel-20261001:lean/MCore/Real/P02FinalCompression.lean:29",
+   "branches_containing_file": 19,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "structuralResidual_iff_universalFailure",
+   "statement": "FiniteDescriptorStructuralResidual ↔ UniversalFailure SATTarget",
+   "first_location": "audit/p01-post-mincut-materialized-20261001:lean/MCore/Real/P02FiniteDescriptorStructuralLaws.lean:145",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "G21Pointwise_iff_P02Target",
+   "statement": "G21Pointwise ↔ P02Target",
+   "first_location": "attack/final-external-two-gap-attempt-20260922:lean/MCore/Real/G21PointwiseAttempt.lean:16",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "G21Pointwise_iff_SAT_notin_P",
+   "statement": "G21Pointwise ↔ ¬ InP SATTarget",
+   "first_location": "attack/final-external-two-gap-attempt-20260922:lean/MCore/Real/G21PointwiseAttempt.lean:21",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_universal_failure",
+   "statement": "G21Pointwise ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:48",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_universal_lower_bound",
+   "statement": "G21Pointwise ↔ P02UniversalLowerBound.UniversalSATLowerBound",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:52",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_not_in_p",
+   "statement": "G21Pointwise ↔ ¬ InP SATTarget",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:58",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_p02_operator",
+   "statement": "G21Pointwise ↔ Nonempty P02OperatorKernel.CanonicalSATP02Producer",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:64",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_normalized_adversary",
+   "statement": "G21Pointwise ↔ Nonempty P02CanonicalClockReduction.NormalizedAdversary",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:70",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "claim_bundle_bridge_iff_g21",
+   "statement": "MCore.Real.P02Lane4SemanticGate.T10SemanticBridge ↔ G21Pointwise",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:77",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g22_iff_not_in_p",
+   "statement": "G22Contradiction ↔ ¬ InP SATTarget",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:96",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_g22",
+   "statement": "G21Pointwise ↔ G22Contradiction",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:105",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "normalized_route_iff_g21",
+   "statement": "Nonempty P02CanonicalClockReduction.NormalizedAdversary ↔ G21Pointwise",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/AdvancedCertificateReuse.lean:274",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "totalCandidateSemanticFailure_iff_P02Target",
+   "statement": "TotalCandidateSemanticFailure ↔ P02TerminalFrontier.P02Target",
+   "first_location": "atk/p02-a1-completeness-fast-20260925:lean/MCore/Real/P02FastPathAttack.lean:46",
+   "branches_containing_file": 5,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "frontier_equiv",
+   "statement": "Frontier ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "atk/pnp-universal-failure-direct-20260926:audit/PNP_DIRECT_FRONTIER_20260926.lean:13",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "totalSemanticFailureProducer_iff_universalFailure",
+   "statement": "Nonempty TotalSemanticFailureProducer ↔ UniversalFailure CanonicalSAT",
+   "first_location": "atk/p02-equality-composition-unified:lean/MCore/Real/P02TotalCandidateFailureMinCut.lean:123",
+   "branches_containing_file": 7,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "canonical_coverage_iff_g21",
+   "statement": "Coverage canonicalInterpretation ↔ G21Pointwise",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Research/Prime2ConservativeTransfer.lean:238",
+   "branches_containing_file": 79,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_closed_iff_exists_real",
+   "statement": "(∃ h : G21Pointwise, classifyG21 (some h) = .closed) ↔ Nonempty G21Pointwise",
+   "first_location": "cert/p012-final-adaptation-632ef640-run35841119149:lean/MCore/Real/TerminalGapP012.lean:65",
+   "branches_containing_file": 9,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universalWitnessExists_iff_p02Target",
+   "statement": "UniversalWitnessExists ↔ P02Target",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02UniversalWitnessChain.lean:61",
+   "branches_containing_file": 99,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universalWitnessExists_iff_g21Pointwise",
+   "statement": "UniversalWitnessExists ↔ G21Pointwise",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02UniversalWitnessChain.lean:66",
+   "branches_containing_file": 99,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "exactRemainingGap_iff_universalFailure",
+   "statement": "ExactRemainingMaterialGap ↔ UniversalFailure CanonicalSATBits",
+   "first_location": "atk/p02-material-inhabitant-20261007:lean/MCore/Real/PNPMaterialLowerBoundFrontier.lean:57",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "liveTarget_iff_p02",
+   "statement": "LiveG21Target ↔ P02Target",
+   "first_location": "atk/g21-final-integration-clean-20260930:lean/MCore/Real/P02LiveFrontierAfterFirewall.lean:21",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "final_residual_iff_remaining_material_gap",
+   "statement": "(SATInNPGap circuitBitEncoding ∧ UniversalFailure (SATBits circuitBitEncoding)) ↔ RemainingMaterialGap",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P01PostMinCutClosure.lean:27",
+   "branches_containing_file": 30,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "orbitResidual_iff_universalFailure",
+   "statement": "FiniteDescriptorOrbitResidual ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02FiniteDescriptorOrbitResidual.lean:58",
+   "branches_containing_file": 2,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "encoded_p02_target_iff_sat_not_in_p",
+   "statement": "EncodedP02Target ↔ EncodedSATNotInP",
+   "first_location": "atk/pnp-rigorous-terminal-decomposition-20261001:lean/MCore/Real/RigorousTerminalDecomposition.lean:34",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universal_lower_bound_iff_not_in_p",
+   "statement": "UNIVERSAL_LOWER_BOUND ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "atk/p02-only-20261001:lean/MCore/Real/P02UniversalLowerBoundMaster.lean:26",
+   "branches_containing_file": 3,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "canonical_sat_habitant_gap_iff",
+   "statement": "CanonicalSATPNPHabitantGap ↔ InNP (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding) ∧ UniversalFailure (CanonicalSATBoundary.SATBits CanonicalCircuitBits.circuitBitEncoding)",
+   "first_location": "atk/p01-real-neg-macro:lean/MCore/Real/PNPHabitant.lean:75",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "terminal_iff_not_in_p",
+   "statement": "G21OpenMath ↔ ¬ InP AdvancedCertificateReuse.SATTarget",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/P02/LANE4/CompleteBundle.lean:53",
+   "branches_containing_file": 4,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "orbit_residual_core_iff_universal_failure",
+   "statement": "OrbitResidualCore ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p02-kernel-port-audit-20261001:lean/MCore/Real/P02DiagonalOrbitCore.lean:216",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "finiteDescriptorFailure_iff_universalFailure",
+   "statement": "FiniteDescriptorFailure ↔ UniversalFailure SATTarget",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02FiniteDescriptorReduction.lean:81",
+   "branches_containing_file": 2,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "terminal_delta_iff_terminal_gap_p012",
+   "statement": "TerminalDelta ↔ (P01FinalCertificate.P01ConstructionGap ∧ P02G21G22Attack.G21Pointwise)",
+   "first_location": "cert/p012-final-adaptation-632ef640-run35841119149:lean/MCore/Real/FinalProofRecoveryChain.lean:40",
+   "branches_containing_file": 7,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universalWitness_is_exact_G21",
+   "statement": "UniversalWitnessExists ↔ G21Pointwise",
+   "first_location": "atk/g21-final-integration-clean-20260930:lean/MCore/Real/P02UniversalTheoremAudit.lean:14",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "universalWitness_is_exact_P02",
+   "statement": "UniversalWitnessExists ↔ P02Target",
+   "first_location": "atk/g21-final-integration-clean-20260930:lean/MCore/Real/P02UniversalTheoremAudit.lean:18",
+   "branches_containing_file": 1,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "rigidCore_iff_and",
+   "statement": "RigidCore ↔ (P01ConstructionGap ∧ G21Pointwise)",
+   "first_location": "cert/p012-final-adaptation-632ef640-run35841119149:lean/MCore/Real/P012FailClosed.lean:86",
+   "branches_containing_file": 9,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "producer_iff_universal_failure",
+   "statement": "Nonempty UniversalCounterexampleProducer ↔ UniversalFailure CanonicalSAT",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02UniversalFailureMinCut.lean:85",
+   "branches_containing_file": 29,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "normalizedProducer_iff_universal_failure",
+   "statement": "Nonempty NormalizedCounterexampleProducer ↔ UniversalFailure CanonicalSAT",
+   "first_location": "atk/p01-post-mincut-advance-20261001:lean/MCore/Real/P02FailureNormalForms.lean:149",
+   "branches_containing_file": 29,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "total_exact_diagonal_iff_universal_failure",
+   "statement": "TotalExactDiagonalProducer ↔ UniversalFailure CanonicalSAT",
+   "first_location": "atk/p02-e1-c1-left-validate-20261004:lean/MCore/Real/P02ExactDiagonalFrontier.lean:104",
+   "branches_containing_file": 10,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_totality_or_semantic",
+   "statement": "G21Pointwise ↔ TotalityOrSemanticCounterexample",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02G21ExpandedTree.lean:87",
+   "branches_containing_file": 79,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_universalFailure",
+   "statement": "G21Pointwise ↔ UniversalFailure (SATBits circuitBitEncoding)",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02G21ExpandedTree.lean:92",
+   "branches_containing_file": 79,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_iff_p02",
+   "statement": "G21Pointwise ↔ P02Target",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02G21ExpandedTree.lean:97",
+   "branches_containing_file": 79,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "p02_iff_sat_not_in_p",
+   "statement": "P02Target ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02G21ExpandedTree.lean:102",
+   "branches_containing_file": 79,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "canonicalSATProducer_iff_notInP",
+   "statement": "Nonempty CanonicalSATP02Producer ↔ ¬ InP (SATBits circuitBitEncoding)",
+   "first_location": "atk/p02-consolidated-kernel-20261001:lean/MCore/Real/P02OperatorKernel.lean:65",
+   "branches_containing_file": 20,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g21_pointwise_iff_p02_target",
+   "statement": "G21Pointwise ↔ P02Target",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02G21G22Attack.lean:28",
+   "branches_containing_file": 289,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  },
+  {
+   "name": "g22_contradiction_iff_not_in_p",
+   "statement": "G22Contradiction ↔ ¬ InP SATTarget",
+   "first_location": "agent-start/01-head9f87-408849:lean/MCore/Real/P02G21G22Attack.lean:35",
+   "branches_containing_file": 289,
+   "status": "source_text_only (not re-checked by kernel in this cycle)"
+  }
+ ],
+ "reading": "All repository names below (P02Target, UniversalSATLowerBound, FINAL_OPEN_MATH, NormalizedAdversary, TotalSemanticFailureProducer, …) are restatements of the same obligation, SAT ∉ P. None reduces it to something already proved."
+}

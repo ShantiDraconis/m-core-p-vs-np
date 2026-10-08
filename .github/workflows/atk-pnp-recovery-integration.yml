@@ -1,0 +1,87 @@
+name: ATK PNP Recovery Integration
+
+on:
+  push:
+    branches:
+      - atk/pnp-recovery-integration-20261008
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Verify toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lean --version
+          lake --version
+      - name: Build recovered P01 producer
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Real.P01RawTotalizationProducer
+      - name: Build integration and separation audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Integration.PNPRecoveredFrontier20261008 \
+                     MCore.Integration.PNPCircularityAudit20261008 2>&1 | tee integration.log
+          grep -q "SEPARATION_AUDIT CONTROL PASS" integration.log
+          grep -q "SEPARATION_AUDIT PASS MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed" integration.log
+          grep -q "SEPARATION_AUDIT PASS MCore.Integration.PNPRecoveredFrontier20261008.sat_in_np_recovered" integration.log
+      - name: Exact signature and axiom audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          cat > /tmp/PNPRecoveryAxioms.lean <<'EOF'
+          import MCore.Integration.PNPRecoveredFrontier20261008
+          open MCore.Integration.PNPRecoveredFrontier20261008
+          #check @MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed
+          #check @sat_in_np_recovered
+          #check @pneqnp_of_g21
+          #print axioms MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed
+          #print axioms sat_in_np_recovered
+          #print axioms pneqnp_of_g21
+          EOF
+          lake env lean /tmp/PNPRecoveryAxioms.lean 2>&1 | tee axioms.log
+          if grep -qE "sorryAx|error" axioms.log; then
+            echo "placeholder or error detected"; exit 1
+          fi
+          # every reported axiom set must be a subset of the three standard axioms
+          python3 - <<'PY'
+          import re, sys
+          text = open("axioms.log").read()
+          sets = re.findall(r"depends on axioms: \[([^\]]*)\]", text, re.S)
+          allowed = {"propext", "Classical.choice", "Quot.sound"}
+          if len(sets) < 3:
+              sys.exit("expected three axiom reports, got %d" % len(sets))
+          for s in sets:
+              names = {x.strip() for x in s.split(",") if x.strip()}
+              if not names <= allowed:
+                  sys.exit("non-standard axioms: %s" % (names - allowed))
+          print("axiom audit OK:", sets)
+          PY
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pnp-recovery-integration-logs
+          path: |
+            integration.log
+            axioms.log

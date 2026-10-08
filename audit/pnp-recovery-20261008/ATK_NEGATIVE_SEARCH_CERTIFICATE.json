@@ -1,0 +1,4141 @@
+{
+ "certificate": "ATK negative search certificate — P vs NP lower-bound side",
+ "date": "2026-10-08",
+ "claim": "No unconditional, sorry-free, custom-axiom-free inhabitant of any target type below was found in the scanned scope. This is a statement about the searched material, not a mathematical impossibility result.",
+ "targets": [
+  "MCore.Real.CanonicalFinalProof.PneqNP",
+  "MCore.Real.FailProofAllGaps.OfficialPneqNP",
+  "MCore.Real.P02G21G22Attack.G21Pointwise",
+  "MCore.Real.P02G21G22Attack.G22Contradiction",
+  "MCore.Real.P02TerminalFrontier.P02Target",
+  "MCore.Real.CanonicalSATBoundary.SATFailGap",
+  "MCore.Real.CanonicalFinalProof.UniversalFailure (SATBits circuitBitEncoding)",
+  "MCore.Real.FailProofAllGaps.FailureGenerator (SATBits circuitBitEncoding)",
+  "¬ MCore.Real.CanonicalFinalProof.InP (SATBits circuitBitEncoding)",
+  "MCore.Real.CanonicalFinalProof.SeparationCertificate",
+  "MCore.Real.CanonicalSATBoundary.SATInternalClosure",
+  "MCore.Real.FailProofAllGaps.FinalGapCertificate",
+  "every hypothesis type of every theorem concluding PneqNP (105 distinct types)",
+  "every Prop alias whose body transitively mentions the above (alias closure)",
+  "millennium-p-vs-np-I: FinalProof.ComplexityKernel.PneqNP / PneqNPWitness",
+  "axiomatic-millenium: PvsNPClosureWitness / pvsnpSeparationStatement",
+  "M-Core: PvsNPTarget / PvsNPAcceptedInhabitant"
+ ],
+ "methods": [
+  "M1 declaration-type scan (tools/scan.py): every theorem/def/example with no binders whose type mentions a target name",
+  "M2 alias-resolving type scan (tools/scan2.py): Prop aliases resolved transitively; inhabitants matched against targets and against all 105 hypothesis types of theorems concluding PneqNP",
+  "M3 kernel isDefEq scan (independent auditor): every constant of the elaborated environment compared by isDefEq against PneqNP, UniversalFailure SAT, ¬InP SAT, FailureGenerator SAT and every closed hypothesis type; branches atk/p02-g2-counterexample-attack-20261006, atk/p02-g2-universal-failure-material-20261005, atk/p02-universal-failure-odd-parity-20261005, atk/p02-equality-composition-unified and the integration branch",
+  "M4 kernel builds of every claimed P01 producer and of the three priority branches (see ATK_PNP_RECOVERY_REPORT.md)"
+ ],
+ "scope": [
+  {
+   "repository": "ShantiDraconis/m-core-p-vs-np",
+   "refs": [
+    {
+     "sha": "3ad411867e8871ed5ccbe93d91b0069cfbe41d6b",
+     "ref": "refs/heads/advance/c9-cert-infra"
+    },
+    {
+     "sha": "f2c6b96f88d11c47a9ea930f5174932cf7a14d04",
+     "ref": "refs/heads/agent-start/01-head9f87-408849"
+    },
+    {
+     "sha": "f545b917e2cb32b3c1f9c886ad8940818b2d8913",
+     "ref": "refs/heads/agent-start/01-live-1"
+    },
+    {
+     "sha": "90b16393bb9c465efd12ce417d972e21c711ed64",
+     "ref": "refs/heads/agent-start/02-head9f87-408849"
+    },
+    {
+     "sha": "ca00d35107a1fb6fe6e6f982906c7eff3f35eb03",
+     "ref": "refs/heads/agent-start/03-head9f87-408849"
+    },
+    {
+     "sha": "cda633c5ca5018605961efe181b7a5fb74d9de73",
+     "ref": "refs/heads/agent-start/03-live-1"
+    },
+    {
+     "sha": "784419e9afe591d1b6443a1c260669e0623e20a5",
+     "ref": "refs/heads/agent-start/04-head9f87-408849"
+    },
+    {
+     "sha": "b56fb93329bfd50a929a09be61fa164c5c307dca",
+     "ref": "refs/heads/agent-start/04-live-1"
+    },
+    {
+     "sha": "02ca3bf53481f16458bf354ba42500aef9e0772b",
+     "ref": "refs/heads/agent-start/04-p02-self-embedding-20260923"
+    },
+    {
+     "sha": "924f85d87974a02bef009c57255b0be0f6cf0650",
+     "ref": "refs/heads/agent-start/06-head9f87-408849"
+    },
+    {
+     "sha": "662600ae8e4dce267ca26ec3914b5d59376bc4af",
+     "ref": "refs/heads/agent-start/06-universal-witness-20260923"
+    },
+    {
+     "sha": "4b07874777a457b8f92c185693e19fa78b333b80",
+     "ref": "refs/heads/agent-start/07-g21-p02-20260923"
+    },
+    {
+     "sha": "a5bf5300d5f358047c7f1115b3acb7b11f8efd1e",
+     "ref": "refs/heads/agent-start/07-head9f87-408849"
+    },
+    {
+     "sha": "05078de7bad88ba4e72ccb82019d1c1e5f96dcb7",
+     "ref": "refs/heads/agent-start/08-final-external-20260923"
+    },
+    {
+     "sha": "be844f24647edf1b79866311f7cff3681ae59df9",
+     "ref": "refs/heads/agent-start/08-head9f87-408849"
+    },
+    {
+     "sha": "f606f96d0d6db1fb010351da3acbd2ec61d91754",
+     "ref": "refs/heads/agent-start/09-freeze-certify-20260923"
+    },
+    {
+     "sha": "e03ed3fc0d4fdecf46793b25cb633f81a2ba9362",
+     "ref": "refs/heads/agent-start/09-head9f87-408849"
+    },
+    {
+     "sha": "5c50473d81ceb3661044e63b0323419e00b355d4",
+     "ref": "refs/heads/agent-start/09-live-1"
+    },
+    {
+     "sha": "99390da678b9b67bf5e9f0f34caa0ba75399a623",
+     "ref": "refs/heads/atk-missing-material-types-20260930"
+    },
+    {
+     "sha": "f62f36c1cbf2a6bf41ebfb4015d9d82b77a5b8f8",
+     "ref": "refs/heads/atk-p01-bounded-global-repair-20260930"
+    },
+    {
+     "sha": "ad8d3d0f79d53bc83920305f132aaad77ebdcc47",
+     "ref": "refs/heads/atk-p01-exact-binary-close-20260930"
+    },
+    {
+     "sha": "e08fb33c6cd015ffb657256594856fef476259d9",
+     "ref": "refs/heads/atk-p01-preserving-adapter-20260930"
+    },
+    {
+     "sha": "49caec412c6b7ea499cf77adac268681d1c371d6",
+     "ref": "refs/heads/atk/agent-swarm"
+    },
+    {
+     "sha": "0e8c1ee3ebd299573f4567070ca336e0ef04cc94",
+     "ref": "refs/heads/atk/auto-compose-cleanup-20260930"
+    },
+    {
+     "sha": "63ad057d1bcbad46ab537e0a2dcf8b863322e7ac",
+     "ref": "refs/heads/atk/auto-compose-terminal-20260930"
+    },
+    {
+     "sha": "f32220da1238d801f83925d9eeee8ce119b30dc7",
+     "ref": "refs/heads/atk/composition-holonomy-research-20261007"
+    },
+    {
+     "sha": "44a39b9bafb41b79f4dda048c6e30a2dfb1fea3b",
+     "ref": "refs/heads/atk/direct-p01-inhabitant-20260930"
+    },
+    {
+     "sha": "9f1081338b8e4e554581fea047300e3f2beb5d7e",
+     "ref": "refs/heads/atk/direct-p01-inhabitant-close-20260930"
+    },
+    {
+     "sha": "ffd06cc66bbadeb68cd6d60f872dc8dac33770c8",
+     "ref": "refs/heads/atk/direct-p01-terminal-close-v2-20260930"
+    },
+    {
+     "sha": "e8ab9feaa06674d0b38c3c9db8e56fd4f5e0f5cb",
+     "ref": "refs/heads/atk/direct-p01-terminal-v2-20260930"
+    },
+    {
+     "sha": "5f0955a33eb3820d6f65dac2d9c62de34764ddc7",
+     "ref": "refs/heads/atk/direct-terminal-20260930"
+    },
+    {
+     "sha": "f0af6d3e63e900fffb921251e7961ac32b71edde",
+     "ref": "refs/heads/atk/egc-hardening-v1-20260926"
+    },
+    {
+     "sha": "53dd933415667c21cbe18e8fc8901c0a6cf59ccb",
+     "ref": "refs/heads/atk/external-frontier-reuse-miner-v1"
+    },
+    {
+     "sha": "78e867bb199cb807253689749fed0d62499bc8dc",
+     "ref": "refs/heads/atk/external-terminal-producer-miner-v1"
+    },
+    {
+     "sha": "400019e9b98d4e2ee79d80ddd54bb36f781db0ad",
+     "ref": "refs/heads/atk/falsified-terminal-inhabitants-20260930"
+    },
+    {
+     "sha": "fc5f2078b8fd8e9626cedf0425f1a93b64a3e51d",
+     "ref": "refs/heads/atk/final-external-two-openmath-v1"
+    },
+    {
+     "sha": "482ef2f2d983b9e91f1aa5b7526097203dacb6bd",
+     "ref": "refs/heads/atk/final-proof-minimal-close-20260922"
+    },
+    {
+     "sha": "bdb1a50c82df3c73de1203ba3cc60cdda52491d6",
+     "ref": "refs/heads/atk/final-proof-reuse-index-20260923"
+    },
+    {
+     "sha": "da233acadb185ab236a8fdcee153ab9245d798e3",
+     "ref": "refs/heads/atk/final-two-producer-sprint-v1"
+    },
+    {
+     "sha": "536052b9e3defd0015c0f546ab9f401107d3de4b",
+     "ref": "refs/heads/atk/first-real-open-math-20261005"
+    },
+    {
+     "sha": "49887c2f34098e7711e0a75fd66417d6a3aa3de4",
+     "ref": "refs/heads/atk/g21-final-integration-clean-20260930"
+    },
+    {
+     "sha": "4c49b1a5f7c603bba3802f8a26258d89d56f6e9e",
+     "ref": "refs/heads/atk/g21-same-input-core-close-20260930"
+    },
+    {
+     "sha": "92187b1c259cc1e696bf893b9dc7104195b7e650",
+     "ref": "refs/heads/atk/g21-same-input-terminal-20260930"
+    },
+    {
+     "sha": "a72561ede8d806c2169a96f23510742f974f50f5",
+     "ref": "refs/heads/atk/hardened-final-boundary-20261001"
+    },
+    {
+     "sha": "2b00561e72422dffda8841b830e71683212aef21",
+     "ref": "refs/heads/atk/master-p01-verifier-run-repair-20260930"
+    },
+    {
+     "sha": "7744deb4dbdf03073441beabc6e3027825d7b3ef",
+     "ref": "refs/heads/atk/material-integrated-ntm-20260930"
+    },
+    {
+     "sha": "8c861b3f50855d41e5dc2ac2c058159aa5a3c4c9",
+     "ref": "refs/heads/atk/material-unification-v2-20260928"
+    },
+    {
+     "sha": "b4c72f5528d1163533880beb19621c0ecaa10bb7",
+     "ref": "refs/heads/atk/meta-formalizer-decomposer-v2"
+    },
+    {
+     "sha": "afe3b3e108ec3e4998757a419a7fba2faa72a77d",
+     "ref": "refs/heads/atk/meta-formalizer-linker-v1"
+    },
+    {
+     "sha": "143bcfded9311223f32f3a6c03bbf764577b47d6",
+     "ref": "refs/heads/atk/meta-formalizer-v1"
+    },
+    {
+     "sha": "45302b5e935ddca74822ef381b5bc5a81af8db7a",
+     "ref": "refs/heads/atk/new-material-routes-20261007"
+    },
+    {
+     "sha": "09e0474a55615ea18cba9b4461c65ccad9c8248e",
+     "ref": "refs/heads/atk/next-p01-global-physical-verifier-20260929"
+    },
+    {
+     "sha": "9c5fd11866338c3b7e17b5efc8990cd5f739433d",
+     "ref": "refs/heads/atk/next-p01-input-node-refinement-20260929"
+    },
+    {
+     "sha": "1d3ad02ea7b7d82ca5317ee30973db746630cbc1",
+     "ref": "refs/heads/atk/next-p01-integrated-control-20260929"
+    },
+    {
+     "sha": "833fe0ded9676bfd19d226b8bf1dfd0aeb070bf5",
+     "ref": "refs/heads/atk/next-p01-integrated-machine-20260929"
+    },
+    {
+     "sha": "dfe9aec4e85a8e97bb02ed2240504d54e7f0fbc1",
+     "ref": "refs/heads/atk/next-p01-integrated-machine-v2-20260929"
+    },
+    {
+     "sha": "adb6db8d1943778655f63d651ed93f23f425ed47",
+     "ref": "refs/heads/atk/next-p01-source-consumption-20260929"
+    },
+    {
+     "sha": "5674c6e512dc39d70cffb0bff73dcab3c2a5dbe4",
+     "ref": "refs/heads/atk/next-p01-source-rewind-roundtrip-20260929"
+    },
+    {
+     "sha": "4eb4051ff330368627a3f30f2e080a00bd96f37d",
+     "ref": "refs/heads/atk/next-p01-tag-input-consumption-20260929"
+    },
+    {
+     "sha": "f6fcff38d32a6ac49cf9eb1d61640418fa84d8a8",
+     "ref": "refs/heads/atk/next-pnp-finite-clock-explicit-coding-20260928"
+    },
+    {
+     "sha": "903751bc98f90848923ee2c4605703a93b9973ae",
+     "ref": "refs/heads/atk/next-pnp-finite-coded-candidate-model-20260928"
+    },
+    {
+     "sha": "3532d7af492eb2dfe50eb287d58abfa3b2dbb449",
+     "ref": "refs/heads/atk/next-pnp-one-machine-verifier-20260929"
+    },
+    {
+     "sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "ref": "refs/heads/atk/next-pnp-p01-integrated-machine-20260928"
+    },
+    {
+     "sha": "f52e32529f6059d602b450d78f4f24ce9696bcae",
+     "ref": "refs/heads/atk/next-pnp-parser-simulation-20260928"
+    },
+    {
+     "sha": "f52e32529f6059d602b450d78f4f24ce9696bcae",
+     "ref": "refs/heads/atk/next-pnp-parser-simulation-gap-20260928"
+    },
+    {
+     "sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+     "ref": "refs/heads/atk/next-pnp-physical-verifier-20260929"
+    },
+    {
+     "sha": "3532d7af492eb2dfe50eb287d58abfa3b2dbb449",
+     "ref": "refs/heads/atk/next-pnp-physical-verifier-realization-20260929"
+    },
+    {
+     "sha": "903751bc98f90848923ee2c4605703a93b9973ae",
+     "ref": "refs/heads/atk/next-pnp-sat-in-np-20260928"
+    },
+    {
+     "sha": "38722cccd34aab9df45eafddc16a7319e32130d3",
+     "ref": "refs/heads/atk/next-pnp-sat-np-and-universal-failure-20260928"
+    },
+    {
+     "sha": "419917cb8e146cd892071e6bb1424c2863ebe123",
+     "ref": "refs/heads/atk/next-pnp-t5f-producer-20260928"
+    },
+    {
+     "sha": "ad8977745ef66669f6846ca5ae5dd84d2a21c166",
+     "ref": "refs/heads/atk/p01-binary-bounded-close-20260930"
+    },
+    {
+     "sha": "522923f80bebd2bedd32111adedd15c8ddb29442",
+     "ref": "refs/heads/atk/p01-bounded-neg-match-fix-20260930"
+    },
+    {
+     "sha": "dfb3e60dc37e96f46a3ca071c428456634ec6dca",
+     "ref": "refs/heads/atk/p01-construction"
+    },
+    {
+     "sha": "f0cb1e363f421cdc4a96b98d6cae3682bb079aa4",
+     "ref": "refs/heads/atk/p01-core-decode-physical-reject-20260930"
+    },
+    {
+     "sha": "2eeb99c9d6ac46267aab1ffca5900f9c252cf80c",
+     "ref": "refs/heads/atk/p01-core-failure-classify-20261001"
+    },
+    {
+     "sha": "6263785f94538a9324b4b23607a2cb1181ec5bc2",
+     "ref": "refs/heads/atk/p01-direct-inhabitant-20260930"
+    },
+    {
+     "sha": "34b3cdcff9fb4953bde76901b7e18ff4c391c5ad",
+     "ref": "refs/heads/atk/p01-direct-terminal-bounded-20260930"
+    },
+    {
+     "sha": "ae62c6040c48342e42d6e30b7b17237c2ad0ac65",
+     "ref": "refs/heads/atk/p01-eval-cursor-20260929"
+    },
+    {
+     "sha": "1054b6bac5962d81f5c33a2b87d68f21b00d5ce0",
+     "ref": "refs/heads/atk/p01-eval-cursor-roundtrip-20260929"
+    },
+    {
+     "sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+     "ref": "refs/heads/atk/p01-evalstep-physical-refinement-20260929"
+    },
+    {
+     "sha": "b4bfbaef42c0079dc96fcc82a1a4253eb8b83cac",
+     "ref": "refs/heads/atk/p01-exact-bounded-outcome-20260930"
+    },
+    {
+     "sha": "a40c7bb1d05ac875bc9d9c0fb24a87b21d0e6805",
+     "ref": "refs/heads/atk/p01-exact-consumption-certificate-20260930"
+    },
+    {
+     "sha": "ed9fd6a852dff73f8c48b4d8d805bb95bd4093fe",
+     "ref": "refs/heads/atk/p01-exact-consumption-parallel-20260930"
+    },
+    {
+     "sha": "922a608e539350f72412b6d2c1937443c07e69da",
+     "ref": "refs/heads/atk/p01-exact-final-close-20260930"
+    },
+    {
+     "sha": "565de3732aa3b7c2feb3d2ed9b86b0a0bb6a6c94",
+     "ref": "refs/heads/atk/p01-exact-rebuild-clean-20260930"
+    },
+    {
+     "sha": "bc77580b06606fdf70729ff4e7b42fc32fd1bde0",
+     "ref": "refs/heads/atk/p01-exact-runtime-v2-20260930"
+    },
+    {
+     "sha": "6e6d0889b7e308a4eacbc5cd17719c44f2ab0b51",
+     "ref": "refs/heads/atk/p01-final-close"
+    },
+    {
+     "sha": "6c68258f2efaf87f4b3c2dbb06d3fd9da3a5dc0a",
+     "ref": "refs/heads/atk/p01-final-integration-clean-20260930"
+    },
+    {
+     "sha": "0dd09383932446ba67e673f69cd8740f85a80b87",
+     "ref": "refs/heads/atk/p01-final-plus-preserving-reader-20261005"
+    },
+    {
+     "sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+     "ref": "refs/heads/atk/p01-frame-pop-read-20260929"
+    },
+    {
+     "sha": "5ef48618d4c3742844be0be2c7ab9d950ec92f89",
+     "ref": "refs/heads/atk/p01-indexed-read-certificate-20260928"
+    },
+    {
+     "sha": "cd3bdab1f3fc2950ac07a416c2943ae344d9a3a6",
+     "ref": "refs/heads/atk/p01-indexed-read-global-20260928"
+    },
+    {
+     "sha": "29c6dafd47638633cfa5230196c950ecca4d0c07",
+     "ref": "refs/heads/atk/p01-integrated-assembly-20260929"
+    },
+    {
+     "sha": "311449b8f2691330d6d01e153a1eaa6964d55c00",
+     "ref": "refs/heads/atk/p01-integration-repair-20261001"
+    },
+    {
+     "sha": "8a80c4914d366ae0c4314ad7a21c4db48bc16522",
+     "ref": "refs/heads/atk/p01-material-inhabitant-frontier-20260930"
+    },
+    {
+     "sha": "6be73fc1101b8d9cd22283adce738190996768f6",
+     "ref": "refs/heads/atk/p01-openmath-final-integrated-clean-20260930"
+    },
+    {
+     "sha": "16a171efed5b2f9e695d3ed4e08c97be9a00abd6",
+     "ref": "refs/heads/atk/p01-post-mincut-advance-20261001"
+    },
+    {
+     "sha": "81399a442327965cc913ce171410873a690e07d8",
+     "ref": "refs/heads/atk/p01-preserving-input-reader-20260930"
+    },
+    {
+     "sha": "6209671176769fdbf9a3920bd3a327f030cfee43",
+     "ref": "refs/heads/atk/p01-preserving-reader-20260930"
+    },
+    {
+     "sha": "fb7ddf8f1506b2c9a8559d6bdd18e472fb1d4f81",
+     "ref": "refs/heads/atk/p01-preserving-terminal-materialize-20261005"
+    },
+    {
+     "sha": "76788440eaaa9fbb0a27428e500554cd06f8080e",
+     "ref": "refs/heads/atk/p01-preserving-unary-read-20260930"
+    },
+    {
+     "sha": "ab71e46b7049aecd95245041dfba07219a2b92c4",
+     "ref": "refs/heads/atk/p01-preserving-unary-reader-20261001"
+    },
+    {
+     "sha": "85cd6f0d34bc92edfa190b07afb4fa7f7fb2ab3f",
+     "ref": "refs/heads/atk/p01-raw-closure-final-20261001"
+    },
+    {
+     "sha": "fc21c82a1b17e3330908c76b5d1e64a983f8499d",
+     "ref": "refs/heads/atk/p01-raw-closure-unified-20261001"
+    },
+    {
+     "sha": "4af7e2c3c9886c0d11c7f3c16f00f7dd671c61d5",
+     "ref": "refs/heads/atk/p01-raw-mincut-20260930"
+    },
+    {
+     "sha": "167036b95b1cf424425ac90a2976a24160e8a4fb",
+     "ref": "refs/heads/atk/p01-real-neg-macro"
+    },
+    {
+     "sha": "ad208be8520a6f38b081e6b84d0b88c6b2b0e726",
+     "ref": "refs/heads/atk/p01-seq-runbranches-20260929"
+    },
+    {
+     "sha": "50409f3fff773b7903997fe02d86d41cbf366dde",
+     "ref": "refs/heads/atk/p01-source-cursor-invariant-20260929"
+    },
+    {
+     "sha": "264fe048d355960b05d15ce354e9a7ca632b25fb",
+     "ref": "refs/heads/atk/p01-source-rewind-global-20260928"
+    },
+    {
+     "sha": "c7f8835199dadeda252f3d6c1564d678000d112f",
+     "ref": "refs/heads/atk/p01-successor-cycle-20261005"
+    },
+    {
+     "sha": "6263785f94538a9324b4b23607a2cb1181ec5bc2",
+     "ref": "refs/heads/atk/p01-terminal-close-20260930"
+    },
+    {
+     "sha": "7cf63c71281be4443114d8054a97c1f7b9121896",
+     "ref": "refs/heads/atk/p01-terminal-material-v2"
+    },
+    {
+     "sha": "84801b9711f15aa722162bf6a8e0121030eb5693",
+     "ref": "refs/heads/atk/p01-terminal-promotion-candidate-20260930"
+    },
+    {
+     "sha": "21117d0a836cfe7b241e6798c2de1fc960149fab",
+     "ref": "refs/heads/atk/p01-terminal-sprint-v1"
+    },
+    {
+     "sha": "4f6f2a768873235b99610a00e9ba20e218cbca47",
+     "ref": "refs/heads/atk/p01-verifier-phase-mincut-clean-20260930"
+    },
+    {
+     "sha": "f0589e50767a49d1967b25816348914cdababd5f",
+     "ref": "refs/heads/atk/p01-witness-prep-global-44e3327a"
+    },
+    {
+     "sha": "0f4f92ec81889be20d318340327bf29ba8de8e54",
+     "ref": "refs/heads/atk/p02-a1-completeness-fast-20260925"
+    },
+    {
+     "sha": "3a6e32a352a0cbacb31dedea0343ac3e3b759517",
+     "ref": "refs/heads/atk/p02-after-p01-20261001"
+    },
+    {
+     "sha": "3b1f01c9f30c8ee82efb1ed65808517bef99380c",
+     "ref": "refs/heads/atk/p02-bounded-constructive-fix-20260923"
+    },
+    {
+     "sha": "73c5d9e208b48eaf9b4bc556c1a93fa4b3db4357",
+     "ref": "refs/heads/atk/p02-consolidated-kernel-20261001"
+    },
+    {
+     "sha": "1779db200aeeb16a60489012131b8e4d62566e0e",
+     "ref": "refs/heads/atk/p02-e1-c1-left-validate-20261004"
+    },
+    {
+     "sha": "08a17e646633955d89589b5b81dd4ad8a174327b",
+     "ref": "refs/heads/atk/p02-e1-c2-right-20261004"
+    },
+    {
+     "sha": "0f6bcd5243ee499dc3e182b81ea98459858b6883",
+     "ref": "refs/heads/atk/p02-e1-partrec"
+    },
+    {
+     "sha": "b6b6821b337ae70ef958d461a44156d2345d3336",
+     "ref": "refs/heads/atk/p02-e2-audit"
+    },
+    {
+     "sha": "3e856e0ce77f773b95a7920d11babc653233a824",
+     "ref": "refs/heads/atk/p02-e2-math-totality-semantic"
+    },
+    {
+     "sha": "72149cc18b144260c41681da9c972e6d09e2e77f",
+     "ref": "refs/heads/atk/p02-effective-bridge-bidirectional-20261001"
+    },
+    {
+     "sha": "f4ae1fad8cd4128484406b6519aa1352a75639f6",
+     "ref": "refs/heads/atk/p02-equality-composition-unified"
+    },
+    {
+     "sha": "ac10efb1a495fafb08252267db6cd4c03da6c3ae",
+     "ref": "refs/heads/atk/p02-equality-material-atoms-20261005"
+    },
+    {
+     "sha": "ab741b1122e96291a5ad5fa5a767b909d58e3c91",
+     "ref": "refs/heads/atk/p02-equality-recover-green-20261005"
+    },
+    {
+     "sha": "80739e451e6e2a90c145de9a63e5275001094f89",
+     "ref": "refs/heads/atk/p02-g2-counterexample-attack-20261006"
+    },
+    {
+     "sha": "33696ebff5a98e7d95920dd1bcfee8b94dcdcfbc",
+     "ref": "refs/heads/atk/p02-g2-universal-failure-material-20261005"
+    },
+    {
+     "sha": "024ba6085d782850103ebc15eec093990455c05e",
+     "ref": "refs/heads/atk/p02-kernel-port-audit-20261001"
+    },
+    {
+     "sha": "45bf2597b2a791ff64adda0d10c006d1eeb0e34e",
+     "ref": "refs/heads/atk/p02-kleene-bridge-fix-20260923"
+    },
+    {
+     "sha": "5f8a0aa2c6ca41d77515e3bf97bd1fa53138679d",
+     "ref": "refs/heads/atk/p02-kleene-build"
+    },
+    {
+     "sha": "6c467fbba91503d25e91d2bab8b804aebf34dc9f",
+     "ref": "refs/heads/atk/p02-lane4-reuse-t10-audit-20261003"
+    },
+    {
+     "sha": "685593f052ea7bd87fd7046918ee2a507177f2c8",
+     "ref": "refs/heads/atk/p02-lane4-terminal-densify-20261003"
+    },
+    {
+     "sha": "19d2fb6bca6264ed3f8195810ef87f1d6ff2281d",
+     "ref": "refs/heads/atk/p02-material-inhabitant-20261007"
+    },
+    {
+     "sha": "3e1d9f3efc049f837ba60c3aed790a9025755173",
+     "ref": "refs/heads/atk/p02-only-20261001"
+    },
+    {
+     "sha": "17610b461142bbc683fc98622b020a25caedf681",
+     "ref": "refs/heads/atk/p02-primitive-semantic-laws-20261001"
+    },
+    {
+     "sha": "af7ae1dee6dacf0f1e1b25da7e22583eee79401a",
+     "ref": "refs/heads/atk/p02-semantic-alignment-countermodel-20261001"
+    },
+    {
+     "sha": "8e31a49b9be2fd9950e65d5c401ceba3a177a765",
+     "ref": "refs/heads/atk/p02-tableau-completeness-close-20260923"
+    },
+    {
+     "sha": "143de7964560f0deeed77ca872b17a4462d51a60",
+     "ref": "refs/heads/atk/p02-two-sided-orientation-20261001"
+    },
+    {
+     "sha": "c66b6b1ecb30646a5dc11981774e66c30e3d3e92",
+     "ref": "refs/heads/atk/p02-universal-failure-odd-parity-20261005"
+    },
+    {
+     "sha": "270282a55e18588dce3e7a8a9a72db2cda277d98",
+     "ref": "refs/heads/atk/p02-universal-witness-chain"
+    },
+    {
+     "sha": "5572a4c984ddebb3f3757cc114593910737aba50",
+     "ref": "refs/heads/atk/pnp-cook-levin-material-mincut-20261001"
+    },
+    {
+     "sha": "03e8fde3da2abfa19e83553b1185fe2908d4aa37",
+     "ref": "refs/heads/atk/pnp-d3-semantic-selfref-20260926"
+    },
+    {
+     "sha": "a1902cc817bedaffcfdd4a19cf89a68da1423f24",
+     "ref": "refs/heads/atk/pnp-equality-branch-mincut-20261001"
+    },
+    {
+     "sha": "6ec92dd506885442e7bdfbd72304dbf530e237ef",
+     "ref": "refs/heads/atk/pnp-green-freeze-cert-20260926"
+    },
+    {
+     "sha": "a5861c978c101c8cd1467108003dc72d04b2d33f",
+     "ref": "refs/heads/atk/pnp-kleene-sat-bridge-20260926"
+    },
+    {
+     "sha": "8ac4dd69cc1fa39554cdec6fe637f162054c79d1",
+     "ref": "refs/heads/atk/pnp-material-producer-gate-20260928"
+    },
+    {
+     "sha": "f52e32529f6059d602b450d78f4f24ce9696bcae",
+     "ref": "refs/heads/atk/pnp-p01-parser-reuse-20260928"
+    },
+    {
+     "sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+     "ref": "refs/heads/atk/pnp-parser-plus-witness-guess-20260929"
+    },
+    {
+     "sha": "8c90cd710450174ec08467605a162a0b90948f40",
+     "ref": "refs/heads/atk/pnp-rigorous-terminal-decomposition-20261001"
+    },
+    {
+     "sha": "1071a1d3602a89ab0ecd3df3611f2b2f773b3a15",
+     "ref": "refs/heads/atk/pnp-self-theorem-circularity-audit-20260926"
+    },
+    {
+     "sha": "99a39fc7a0c85151096084bd172458d931b39104",
+     "ref": "refs/heads/atk/pnp-t5f-same-input-closure-20260927"
+    },
+    {
+     "sha": "15470e42b4ecc2c71976f07d56f2caf0749efb6c",
+     "ref": "refs/heads/atk/pnp-universal-failure-direct-20260926"
+    },
+    {
+     "sha": "d0f183ddaa389f773d86f442db9e504f6156fcf6",
+     "ref": "refs/heads/atk/producer-pnp-20260928"
+    },
+    {
+     "sha": "a21d747c3115dcebc702a31a522dace01d36a027",
+     "ref": "refs/heads/atk/recovery-p01-terminal-20260923"
+    },
+    {
+     "sha": "a21d747c3115dcebc702a31a522dace01d36a027",
+     "ref": "refs/heads/atk/recovery-p02-g21-20260923"
+    },
+    {
+     "sha": "b9cb9d78e7ed2e4d4b4dc296aa588231b1a9a66f",
+     "ref": "refs/heads/atk/shared-multistate-signature-20260926"
+    },
+    {
+     "sha": "b14e5b2e366963466a6234dfa9c18b15773b5546",
+     "ref": "refs/heads/atk/structural-cleanup-20260927"
+    },
+    {
+     "sha": "871b7b3dd089a3eb3532785497dba0e7b35442a8",
+     "ref": "refs/heads/atk/structural-fixed-point-20261006"
+    },
+    {
+     "sha": "bd067a3988d70b80d154b5c532dae92384100229",
+     "ref": "refs/heads/atk/t1-a-phase-bridge-20260922"
+    },
+    {
+     "sha": "058f574bd2ad1349eb17717549ca5ad378666336",
+     "ref": "refs/heads/atk/t1-b-physical-realization-20260922"
+    },
+    {
+     "sha": "921170b335f31cfdf5b8fa120b7fd90907872990",
+     "ref": "refs/heads/atk/t1-c-poly-bound-20260922"
+    },
+    {
+     "sha": "60d0bcc60d27a1a9fc58b8531ce3d341a0d91f8a",
+     "ref": "refs/heads/atk/t1-d-terminal-construction-20260922"
+    },
+    {
+     "sha": "7aedf7bd13a64f2bcfe7f7dc781c3f20fbde4d73",
+     "ref": "refs/heads/atk/t5-b-clock-failure-20260922"
+    },
+    {
+     "sha": "f3dc5354a6f8a652fbcda941b4f0a0e6213ddd30",
+     "ref": "refs/heads/atk/t5-c-semantic-mismatch-20260922"
+    },
+    {
+     "sha": "a5635895dee4d7736778ce0104dfbe7016f6487a",
+     "ref": "refs/heads/atk/t5-d-candidate-coding-20260922"
+    },
+    {
+     "sha": "8fff59efc44d1c8d5ee37190eca56ed9a5278d6f",
+     "ref": "refs/heads/atk/t5-e-diagonal-compiler-20260922"
+    },
+    {
+     "sha": "2f91cd23c78c58640eaf66eb7b4aae8ba70e5091",
+     "ref": "refs/heads/atk/t5-f-total-semantic-counterexample-20260922"
+    },
+    {
+     "sha": "9966966bd4a4fc930c2a0f9aa3ae1059feb0a8ce",
+     "ref": "refs/heads/atk/terminal-parameter-law-20261003"
+    },
+    {
+     "sha": "b3b3b4e37dcec1ac6ab5ef175a38ae30ae223df0",
+     "ref": "refs/heads/attack/elyon-v12-failclosed-criticism-20260922"
+    },
+    {
+     "sha": "cdb56436899222f2ea8c367a632c0ce6059caca7",
+     "ref": "refs/heads/attack/final-external-live-20260922"
+    },
+    {
+     "sha": "098d29d69c6aa51daca85e8cfc68e4f6e6c310a5",
+     "ref": "refs/heads/attack/final-external-two-gap-attempt-20260922"
+    },
+    {
+     "sha": "3ec5e116dde0969e82272ed9ca37e6e92c36c5e1",
+     "ref": "refs/heads/attack/g21-g22-only-20260922"
+    },
+    {
+     "sha": "93e897adc526d50edae9a3a399ac2ea2194b44f0",
+     "ref": "refs/heads/attack/g3-model-match-only-20260922"
+    },
+    {
+     "sha": "50859a9fe3b4b4ef77ad212cd2bb570453200e0a",
+     "ref": "refs/heads/attack/hard-pnp-next-theoremkernel"
+    },
+    {
+     "sha": "3dee08a1fd414ebae1c657f3369d161214163006",
+     "ref": "refs/heads/attack/material-orientation-clean-20260921"
+    },
+    {
+     "sha": "d72e53bc7f667c75a432226a23adc59a255c5652",
+     "ref": "refs/heads/attack/material-orientation-clean-v2-20260921"
+    },
+    {
+     "sha": "f14c2e1854d6b62dc3e5b567a6769a04075f76d5",
+     "ref": "refs/heads/attack/material-orientation-v1"
+    },
+    {
+     "sha": "8c1e22c0252bac96c4c597f464937a6c1549f0d1",
+     "ref": "refs/heads/attack/next-pnp-from-8c1e22c"
+    },
+    {
+     "sha": "9d987dc8161bfc7bcb371d4624532356fe32a89f",
+     "ref": "refs/heads/attack/p01-binary-head-clean-20260922"
+    },
+    {
+     "sha": "0ff71d49edd9457025377fe6eaf041bea8bd2171",
+     "ref": "refs/heads/attack/p01-hard-realization-20260922"
+    },
+    {
+     "sha": "93f1321f53aa93e18c7dcbf8a8a04e2844a15cbe",
+     "ref": "refs/heads/attack/p01-leaf-source-20260922"
+    },
+    {
+     "sha": "50859a9fe3b4b4ef77ad212cd2bb570453200e0a",
+     "ref": "refs/heads/attack/p01-operational-sat-20260921"
+    },
+    {
+     "sha": "f4e2215b65aab2bef2f16b131e3dad7105994aee",
+     "ref": "refs/heads/attack/p01-p02-final-clean-20260921"
+    },
+    {
+     "sha": "f6e9479373da1ba6bead2482da2c457c36bf6aca",
+     "ref": "refs/heads/attack/p01-p02-finalize-clean-20260921"
+    },
+    {
+     "sha": "70236db0fd7174ae80ffba029bcbe73329720bd8",
+     "ref": "refs/heads/attack/p01-sat-ntm-parallel-20260921"
+    },
+    {
+     "sha": "28ad994cf81cf0a4e46dd17da27daabf0c5b4804",
+     "ref": "refs/heads/attack/p01-t1a-global-20260922"
+    },
+    {
+     "sha": "9e3ad0dc3942d50c7831f76348f55d5f6920584a",
+     "ref": "refs/heads/attack/p01-witness-bound-normalization-20260922"
+    },
+    {
+     "sha": "95963a2f6408606f4f691f49647b2dc75f156289",
+     "ref": "refs/heads/attack/p02-sat-lowerbound-parallel-20260921"
+    },
+    {
+     "sha": "2016927456397889059fd804853155c250e12e70",
+     "ref": "refs/heads/attack/semantic-gate-v1-20260921"
+    },
+    {
+     "sha": "7fc59f7d75d17381f6e556e2ab053c30f40289ac",
+     "ref": "refs/heads/attack/t1b-parser-witness-20260922"
+    },
+    {
+     "sha": "fa928b119edb8609ae86eaff755dad7abcbf76d2",
+     "ref": "refs/heads/attack/t1b-parser-witness-fa928b11"
+    },
+    {
+     "sha": "8e9d38f77739908b4181562b2d4bfa4474ddbc44",
+     "ref": "refs/heads/attack/t1c-verifier-composition-20260922"
+    },
+    {
+     "sha": "fa928b119edb8609ae86eaff755dad7abcbf76d2",
+     "ref": "refs/heads/attack/t1c-verifier-fa928b11"
+    },
+    {
+     "sha": "b28a549651d11d527e7097eb013f3fbd847eff21",
+     "ref": "refs/heads/attack/t1d-close-contract-20260922"
+    },
+    {
+     "sha": "aa4bf5f9328d6da7025eaf7d296e2ef823b8ea56",
+     "ref": "refs/heads/attack/t1d-construction-close-20260922"
+    },
+    {
+     "sha": "fa928b119edb8609ae86eaff755dad7abcbf76d2",
+     "ref": "refs/heads/attack/t1d-construction-fa928b11"
+    },
+    {
+     "sha": "cf885872d58ad9654be44352851a1fd8247fd309",
+     "ref": "refs/heads/attack/t1d-converge-green-20260922"
+    },
+    {
+     "sha": "9a06d029af23cbd4dfc7d7f3ac818dc5f64a875e",
+     "ref": "refs/heads/attack/t1d-decoder-scanreverse-20260922"
+    },
+    {
+     "sha": "af4c037a7384baf722606cac07d7ba72fe90f002",
+     "ref": "refs/heads/attack/t1d-eval-local-20260922"
+    },
+    {
+     "sha": "6457dc3720569741276798e36512f56dd1eb2f50",
+     "ref": "refs/heads/attack/t1d-functional-decoder-close-20260922"
+    },
+    {
+     "sha": "464b1787baeddae2f7416b32267f5c6028d93794",
+     "ref": "refs/heads/attack/t1d-global-physical-20260922"
+    },
+    {
+     "sha": "f1193caba3fe06d781aed05b8121e921d156adfd",
+     "ref": "refs/heads/attack/t1d-input-shuttle-v2-20260922"
+    },
+    {
+     "sha": "a48b16ac48e8781dc0caf621bfc76e132941cc87",
+     "ref": "refs/heads/attack/t1d-physical-ops-20260922"
+    },
+    {
+     "sha": "f8cf73f424d48b28b4469d2d32773ab11e0e4433",
+     "ref": "refs/heads/attack/t1d-physical-refinement-20260922"
+    },
+    {
+     "sha": "990e803d555aa859ce0bdb3a54b9a964cfb0de3f",
+     "ref": "refs/heads/attack/t1d-physical-stack-v2-20260922"
+    },
+    {
+     "sha": "a475ed081d62373fc4a2bdeb5a26652fad22cd91",
+     "ref": "refs/heads/attack/t1d-physical-verifier-20260922"
+    },
+    {
+     "sha": "e829674eb136e93f1de692a81ca34c2a0908ae5b",
+     "ref": "refs/heads/attack/t1d-readwitness-push-20260922"
+    },
+    {
+     "sha": "4ecde515ac4db6f7ece8d80b22d0cafc09835ace",
+     "ref": "refs/heads/attack/t1d-shuttle-return-20260922"
+    },
+    {
+     "sha": "f7e33bc9d5d48dae10e938ee9c4d399618e558f7",
+     "ref": "refs/heads/attack/t1d-source-rewind-20260922"
+    },
+    {
+     "sha": "dcab3de08fd751ec00770796c19c9e5cef96acf7",
+     "ref": "refs/heads/attack/t1d-stack-primitive-machine-20260922"
+    },
+    {
+     "sha": "30707e68367460041a3106211f3150db38c236cd",
+     "ref": "refs/heads/attack/t5-a1-close-contract-20260922"
+    },
+    {
+     "sha": "75b106838b800fea03b383d2059bb087556b46f2",
+     "ref": "refs/heads/attack/t5-a1-final-correctness-20260922"
+    },
+    {
+     "sha": "39da55deeaf9f5ad35f69d69c3d4858250baa748",
+     "ref": "refs/heads/attack/t5-a1-transition-soundness-20260922"
+    },
+    {
+     "sha": "7983b0cbf307ebd54fa0bede1951e6214a20afaf",
+     "ref": "refs/heads/attack/t5-a2-close-contract-20260922"
+    },
+    {
+     "sha": "e4a39df7d111edcb87a0f649308a8180b353d541",
+     "ref": "refs/heads/attack/t5-a2-semantic-self-embedding-20260922"
+    },
+    {
+     "sha": "3485380f801f261ed8f11f543685cf61687f4316",
+     "ref": "refs/heads/attack/t5-a2-strength-reduction-20260922"
+    },
+    {
+     "sha": "0c755ac3c701b6db0c27d8971a2eca90a91118f7",
+     "ref": "refs/heads/attack/t5-a2-universal-existence-20260922"
+    },
+    {
+     "sha": "2b15801fcd0eaafbe77df56efe1cba99a4f10519",
+     "ref": "refs/heads/attack/t5-a3-close-contract-20260922"
+    },
+    {
+     "sha": "336f84953560d63e924546fe597ab7aa7aa5631e",
+     "ref": "refs/heads/attack/t5-bounded-computation-20260922"
+    },
+    {
+     "sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+     "ref": "refs/heads/attack/terminal-producer-20260921"
+    },
+    {
+     "sha": "01848759e400553769221813e5466ddacdae877e",
+     "ref": "refs/heads/audit/multistate-proof-refutation-v1"
+    },
+    {
+     "sha": "83f0f96d8acabd68a0bb4050380c7d07642692d6",
+     "ref": "refs/heads/audit/p01-post-mincut-materialized-20261001"
+    },
+    {
+     "sha": "72149cc18b144260c41681da9c972e6d09e2e77f",
+     "ref": "refs/heads/audit/p02-effective-materialized-20261001"
+    },
+    {
+     "sha": "7fdb67ec47bf1ac1038a6854eee5e36be8ec3248",
+     "ref": "refs/heads/audit/p02-kernel-materialized-20261001"
+    },
+    {
+     "sha": "dac7a41398ba2ad18d810b1b719f207f31a56126",
+     "ref": "refs/heads/audit/p02-odd-semantic-recurrence-dac7a413"
+    },
+    {
+     "sha": "475b7e454a647f77a08e5feb895c0d5888831040",
+     "ref": "refs/heads/audit/p02-openmath-identity-475b7e45"
+    },
+    {
+     "sha": "4bc9b0e4f0b99fff98dd2254b8a3bf87b291c096",
+     "ref": "refs/heads/brain/ainum-indeterminacy-constant-v1"
+    },
+    {
+     "sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+     "ref": "refs/heads/cert/C1-ecdbb0b1"
+    },
+    {
+     "sha": "a9bf582090be4dc521161e4cedd49e689f2edddc",
+     "ref": "refs/heads/cert/C10-0b6262df"
+    },
+    {
+     "sha": "d46d8388e5f90432c1967dd1bdacb44c384c966c",
+     "ref": "refs/heads/cert/C11-1b7ce6f8"
+    },
+    {
+     "sha": "6c023ebfb9e7de4d31861f221e111f73e97b9c80",
+     "ref": "refs/heads/cert/C12-6f310228"
+    },
+    {
+     "sha": "dfd71021b1d47c50c128bdd646d8cec156e67f17",
+     "ref": "refs/heads/cert/C2-f55fee62"
+    },
+    {
+     "sha": "80028c74cba7923ee2d1c3b195455ff9a4d56260",
+     "ref": "refs/heads/cert/C3-b560fc6b"
+    },
+    {
+     "sha": "adcbe30927bd95ef295c33b7b76b083918946e2f",
+     "ref": "refs/heads/cert/C4-b35b6383"
+    },
+    {
+     "sha": "f2883c732f8ae287b61758e5f3c9960f334cd8e0",
+     "ref": "refs/heads/cert/C5-29226c00"
+    },
+    {
+     "sha": "213c127ef248a7d3e91227d122554d1f48eac707",
+     "ref": "refs/heads/cert/C6-f910c85e"
+    },
+    {
+     "sha": "58a5abf37a04e00069494ce624f0790464a9ef09",
+     "ref": "refs/heads/cert/C7-d0f62ea2"
+    },
+    {
+     "sha": "4442375b0c7b7d1cb5a7fc5458f9d134ae56f19b",
+     "ref": "refs/heads/cert/C8-bffbfd5a"
+    },
+    {
+     "sha": "5fb96665e781d4955377504182de0508e2ccea65",
+     "ref": "refs/heads/cert/C9-1cf881a4"
+    },
+    {
+     "sha": "b59b0630411783601c5f74a9e00f8c12aac8ad66",
+     "ref": "refs/heads/cert/ainum-indeterminacy-4bc9b0e4"
+    },
+    {
+     "sha": "1d8974fb5c41f80b8228a9d2d816cb39865150d1",
+     "ref": "refs/heads/cert/atk-1d8974fb-run35883841358"
+    },
+    {
+     "sha": "41f31f40a1c0e224a72f92d2b2140e0174396a16",
+     "ref": "refs/heads/cert/atk-41f31f40-run35886054258"
+    },
+    {
+     "sha": "a9fd99212c789c1e327b144a573c0a2c852ff6fc",
+     "ref": "refs/heads/cert/atk-a9fd9921-run35883812590"
+    },
+    {
+     "sha": "caacaef295a96409b5c6edb204fa14b5dc73484a",
+     "ref": "refs/heads/cert/atk-caacaef2-run35885409497"
+    },
+    {
+     "sha": "d6675e40f03dd58d0e8a95ce50a7ab410bb9cefb",
+     "ref": "refs/heads/cert/atk-d6675e40-run35880392440"
+    },
+    {
+     "sha": "c32144335fb2b5b1459a109575a708401811ccdd",
+     "ref": "refs/heads/cert/atk-green-freeze-ledger-cebe0ecd"
+    },
+    {
+     "sha": "376f78c04f4a07d8b2482a8d1f4373a340d75c7b",
+     "ref": "refs/heads/cert/atk-recovered-certificate-ledger-439e9229-run35719556836"
+    },
+    {
+     "sha": "439e92290776787cb8e6d3036399bf308a2ffc36",
+     "ref": "refs/heads/cert/atk-recovery-ledger-439e9229-run35719556836"
+    },
+    {
+     "sha": "ca0aceb35f432594b6e2ea3123f1ad73bad0fc33",
+     "ref": "refs/heads/cert/atk-session-ledger-ca0aceb3"
+    },
+    {
+     "sha": "d6675e40f03dd58d0e8a95ce50a7ab410bb9cefb",
+     "ref": "refs/heads/cert/atk-session-preserve-d6675e40"
+    },
+    {
+     "sha": "fbbb059d5eb55eb89179769fb647c9664422ea51",
+     "ref": "refs/heads/cert/atk-stop-recovery-snapshot-2364ef73-run35719047505"
+    },
+    {
+     "sha": "446921a2ec13e933f8aecfdaa6756f01a8acec18",
+     "ref": "refs/heads/cert/atk-stop-user-requested-f9add608"
+    },
+    {
+     "sha": "d6675e40f03dd58d0e8a95ce50a7ab410bb9cefb",
+     "ref": "refs/heads/cert/atk-terminal-d6675e40-run35880392440"
+    },
+    {
+     "sha": "8ca2065ebc829a4c8cefe91062f03677f5396031",
+     "ref": "refs/heads/cert/atk-terminal-p-vs-np-e927d326-20260921"
+    },
+    {
+     "sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+     "ref": "refs/heads/cert/c1-ecdbb0b1"
+    },
+    {
+     "sha": "4a84e1716832a85f3831e75117dec25aeee10f2d",
+     "ref": "refs/heads/cert/canonical-lane-guard-4a84e171"
+    },
+    {
+     "sha": "b44c5ce5a21e6eb7a94e2459aabc148944c30303",
+     "ref": "refs/heads/cert/canonical-lane-index-b44c5ce5"
+    },
+    {
+     "sha": "7f9f782d350437e2743448d3c5da61dc55bd9b17",
+     "ref": "refs/heads/cert/canonical-p-subset-np-7f9f782d-run35533816869"
+    },
+    {
+     "sha": "16c86a4cb4ec089ea811fd76fa86debc487dbf4b",
+     "ref": "refs/heads/cert/canonical-sat-frame-encoding-16c86a4c-run35534708302"
+    },
+    {
+     "sha": "20572d5678540dce843e13819bcf6ecabe7a7f03",
+     "ref": "refs/heads/cert/canonical-sat-ntm-scanner-20572d56-run35534056088"
+    },
+    {
+     "sha": "b26a7639226b68e01c0421aa8f5cae93291fdc07",
+     "ref": "refs/heads/cert/canonical-sat-tag-parser-b26a7639-run35534504881"
+    },
+    {
+     "sha": "006dbbae0c435e82b64588630d1983100bf47523",
+     "ref": "refs/heads/cert/canonical-sat-unary-parser-006dbbae-run35534601547"
+    },
+    {
+     "sha": "af2464ac243c0e8680bd289db15945bf09cd2ba0",
+     "ref": "refs/heads/cert/final-external-certificate-recovery-af2464ac-run35829886265"
+    },
+    {
+     "sha": "5c781d3d26425e46868f22923829f3d87d9d4938",
+     "ref": "refs/heads/cert/final-external-integration-c102d9d4-run35722252805"
+    },
+    {
+     "sha": "90a9017413b98db23cbe9f1cbf24f7237773685a",
+     "ref": "refs/heads/cert/final-external-two-gap-b406b806-run35722743845"
+    },
+    {
+     "sha": "064edaba9f3de98da84cc01fafa455e5b672b116",
+     "ref": "refs/heads/cert/final-external-two-gap-recovery-064edaba-run35829905302"
+    },
+    {
+     "sha": "fc5f2078b8fd8e9626cedf0425f1a93b64a3e51d",
+     "ref": "refs/heads/cert/final-external-two-openmath-v1-fc5f2078"
+    },
+    {
+     "sha": "0fc0c0ea5b40b12d10ac27e74fadfb832294c525",
+     "ref": "refs/heads/cert/final-fail-external-815dfb08-run35722796449"
+    },
+    {
+     "sha": "d25d618374711434aee40895adc99f46bbe55894",
+     "ref": "refs/heads/cert/final-proof-chain-manifest-d25d6183-run35829956811"
+    },
+    {
+     "sha": "65dda6873168597c20bca30e3243b725fddae472",
+     "ref": "refs/heads/cert/final-proof-fail-attack-65dda687-run35519363274"
+    },
+    {
+     "sha": "a21d747c3115dcebc702a31a522dace01d36a027",
+     "ref": "refs/heads/cert/final-proof-recovery-chain-a21d747c-run35829962758"
+    },
+    {
+     "sha": "3f3afb71708e597ba269b92ba7fc942428512ab6",
+     "ref": "refs/heads/cert/final-proof-repair-checkpoint-19c7c5ea-20260923"
+    },
+    {
+     "sha": "da233acadb185ab236a8fdcee153ab9245d798e3",
+     "ref": "refs/heads/cert/final-two-producer-sprint-v1-da233aca"
+    },
+    {
+     "sha": "8c1e22c0252bac96c4c597f464937a6c1549f0d1",
+     "ref": "refs/heads/cert/frame-tape-gate-hardened-8c1e22c-run35539620103"
+    },
+    {
+     "sha": "649806b2e9849b255fb8eb0d576930878d27219a",
+     "ref": "refs/heads/cert/g2-0-canonical-normalization-77ed8275-run35704042568"
+    },
+    {
+     "sha": "81a8ce7ee18bce83a6f5048f5e5f0dc62edfd45f",
+     "ref": "refs/heads/cert/g3-cook-cmi-provenance-f29f5984-run35710913408"
+    },
+    {
+     "sha": "8a0ecfcad1fd3806f16abb481010ce5631a5055d",
+     "ref": "refs/heads/cert/g3-external-contract-scaffold-97a95327-run35707370601"
+    },
+    {
+     "sha": "b1879a0342416b29d0f4890aa08ddfc45f1dda0c",
+     "ref": "refs/heads/cert/g3-normalized-contract-f2cafea7-run35719428075"
+    },
+    {
+     "sha": "ffadd26536e73d9b58f63cba5e2d3b381693e595",
+     "ref": "refs/heads/cert/g3-normalized-dtm-two-way-26e721ab-run35713976730"
+    },
+    {
+     "sha": "3bb214bf4e071c1f2e1dd253f833bbbd30f4b248",
+     "ref": "refs/heads/cert/g3-normalized-external-contract-f2cafea7-run35719428075"
+    },
+    {
+     "sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+     "ref": "refs/heads/cert/g3-normalized-external-contract-f2cafea7-run35719428100"
+    },
+    {
+     "sha": "0fda1584b6a2ed22610c6dbd7140f004423dbc30",
+     "ref": "refs/heads/cert/g3-normalized-four-way-3f04da00-run35715387641"
+    },
+    {
+     "sha": "0320de1f6993adcc5a06e5d3ba1da2963ed9aed5",
+     "ref": "refs/heads/cert/g3-normalized-ntm-two-way-77070515-run35715054272"
+    },
+    {
+     "sha": "57110db5e7589a68f5dfd697176245f01934a8b0",
+     "ref": "refs/heads/cert/k10-1ab202f7"
+    },
+    {
+     "sha": "afb23ed1852d1462ef65250bb3bc72b148282c3d",
+     "ref": "refs/heads/cert/k8-b4b651cd"
+    },
+    {
+     "sha": "dc2a3c63d4aabc885888d69d918375a7a7fafb18",
+     "ref": "refs/heads/cert/k9-ee7ff7ba"
+    },
+    {
+     "sha": "afe3b3e108ec3e4998757a419a7fba2faa72a77d",
+     "ref": "refs/heads/cert/meta-formalizer-linker-v1-afe3b3e1"
+    },
+    {
+     "sha": "c9d34c14d0bdffd8296bdb2c4567d6e83452b580",
+     "ref": "refs/heads/cert/open-math-start-checkpoint-v1"
+    },
+    {
+     "sha": "88c34f0ab9de225e2347453dafb94f8619f19672",
+     "ref": "refs/heads/cert/p01-binary-head-0ff71d49-run35731861724"
+    },
+    {
+     "sha": "730dfc9640aef4865f42ce1918b8c0bd4f03e323",
+     "ref": "refs/heads/cert/p01-binary-head-9d987dc8-run35729194014"
+    },
+    {
+     "sha": "cab90e15d5347163b5bbc5536ec2bb28e9efff06",
+     "ref": "refs/heads/cert/p01-binary-return-rewind-f29f5984-run35710913516"
+    },
+    {
+     "sha": "fa8f4da3e403637adc54010cc5480f6509a770a4",
+     "ref": "refs/heads/cert/p01-bounded-input-certificate-97792f5e"
+    },
+    {
+     "sha": "8aaa9ee48483ac35b0230af51b27ffb0875c4470",
+     "ref": "refs/heads/cert/p01-bounded-neg-ea576ccf"
+    },
+    {
+     "sha": "ab4ffd1a98d92af38447db24854a9d9ac0f9df5a",
+     "ref": "refs/heads/cert/p01-clean-source-f4e2215b-run35669003760"
+    },
+    {
+     "sha": "8062b709d7d3c2b7ab046794afde99de1c03c2e4",
+     "ref": "refs/heads/cert/p01-component-failproof-9e21b631-run35586024302"
+    },
+    {
+     "sha": "85ee53417d3acca5c345fc72c9be9a8fce86529e",
+     "ref": "refs/heads/cert/p01-eval-local-85ee5341-run35833206203"
+    },
+    {
+     "sha": "0f0f9927edc484b5c4dc3ddbcd0f8949bf62aea7",
+     "ref": "refs/heads/cert/p01-final-plus-preserving-reader-0f0f9927-run37350245512"
+    },
+    {
+     "sha": "fbd93747a31d5dbcebe59635e332dced3c679136",
+     "ref": "refs/heads/cert/p01-full-checkpoint-fbd93747-run35788603616"
+    },
+    {
+     "sha": "fc50deb5f3f84b9f09635f7bd8ed7b2543af42f0",
+     "ref": "refs/heads/cert/p01-global-parser-simulation-prefix-eaf1a3af-run35736463139"
+    },
+    {
+     "sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+     "ref": "refs/heads/cert/p01-global-slotlog-spec-614f88fe-run35723570545"
+    },
+    {
+     "sha": "44b9787d6c7c8ec02366849424cc09183931f825",
+     "ref": "refs/heads/cert/p01-hard-scaffold-9d6dd957-run35721236027"
+    },
+    {
+     "sha": "1fa201ff0b580e75650357e24d175b5a1c5f9226",
+     "ref": "refs/heads/cert/p01-integrated-parser-leaf-chain-3690ab05-run35722427864"
+    },
+    {
+     "sha": "d909103f75087f41711c697aca400e53df4a4b82",
+     "ref": "refs/heads/cert/p01-integration-prefix-ada18eed-run35699864579"
+    },
+    {
+     "sha": "11682c2313ba69b7c090460690b96fb85412d8f2",
+     "ref": "refs/heads/cert/p01-leaf-pop-26e721ab-run35713981438"
+    },
+    {
+     "sha": "e2d24a050e5b1411fa4f604b5afe2bd7fe6d2954",
+     "ref": "refs/heads/cert/p01-leaf-pop-eb492843-run35720014541"
+    },
+    {
+     "sha": "8510823d9544abec032d540b57b0762c4d468cc8",
+     "ref": "refs/heads/cert/p01-leaf-pop-operational-26e721ab-run35713981438"
+    },
+    {
+     "sha": "ca250a3b80fc5d4543eb27b27b62f88d62a97a23",
+     "ref": "refs/heads/cert/p01-leaf-pop-pr-audit-ci-5f832dd2-run35719832389"
+    },
+    {
+     "sha": "f59679daa1314403f9f1c43e51019a9a3fa25003",
+     "ref": "refs/heads/cert/p01-leaf-pop-simulation-audit-216f9715-run35719795702"
+    },
+    {
+     "sha": "6f24ad42f651e1ef33a9ece7cbe8e867a2643c40",
+     "ref": "refs/heads/cert/p01-leaf-source-93f1321f-run35720074676"
+    },
+    {
+     "sha": "8e927cfde49b2d3a49d38baab010dd0e584c3753",
+     "ref": "refs/heads/cert/p01-leaf-source-return-2221f431-run35722490794"
+    },
+    {
+     "sha": "325e83cbfbb95fe50c633e3cb6827b27ae67409e",
+     "ref": "refs/heads/cert/p01-leaf-source-rewind-325e83cb-run35719744729"
+    },
+    {
+     "sha": "8b6360e9f334e4a11084f6ddd833123975b02190",
+     "ref": "refs/heads/cert/p01-leaf-state14-15-return-72aa7be3-run35714475319"
+    },
+    {
+     "sha": "50859a9fe3b4b4ef77ad212cd2bb570453200e0a",
+     "ref": "refs/heads/cert/p01-operational-prefix-50859a9f"
+    },
+    {
+     "sha": "2043a76bc04157c4c6c74ef5fc82ad28c1852f45",
+     "ref": "refs/heads/cert/p01-parser-components-fc20887e-run35700922856"
+    },
+    {
+     "sha": "b0ff13266c2615dd38e38b722a0485911a6f32a2",
+     "ref": "refs/heads/cert/p01-parser-macro-db716cec-run35709328356"
+    },
+    {
+     "sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+     "ref": "refs/heads/cert/p01-phase-macros-614f88fe-run35723570545"
+    },
+    {
+     "sha": "e82c0dfc6c38ad1b0fe260b2a1b93286edcd8262",
+     "ref": "refs/heads/cert/p01-physical-moves-e82c0dfc-run35833209966"
+    },
+    {
+     "sha": "058f574bd2ad1349eb17717549ca5ad378666336",
+     "ref": "refs/heads/cert/p01-physical-realization-058f574b-run35785607933"
+    },
+    {
+     "sha": "e2d305589df4d5223a61ba25a6fded39a3b2ce11",
+     "ref": "refs/heads/cert/p01-physical-refinement-e2d30558-run35833213528"
+    },
+    {
+     "sha": "210e4cd3d0a4d3e837c38d360042492f02525cb1",
+     "ref": "refs/heads/cert/p01-t1a-fuel-semantic-8f7768a9-run35738027838"
+    },
+    {
+     "sha": "8873988b9b18a180f5aaf95bbd51b1953aa505a3",
+     "ref": "refs/heads/cert/p01-t1a-global-parser-fa928b11-run35745074597"
+    },
+    {
+     "sha": "28ad994cf81cf0a4e46dd17da27daabf0c5b4804",
+     "ref": "refs/heads/cert/p01-t1a-global-semantics-28ad994c-run35739412964"
+    },
+    {
+     "sha": "6f241c5dab07a79da7997b6ebc33a4314fbae8c8",
+     "ref": "refs/heads/cert/p01-t1a-global-semantics-6f241c5d-run35739667497"
+    },
+    {
+     "sha": "b3ee3a0a55e07aa869e1dd4b6c431cecae0cb254",
+     "ref": "refs/heads/cert/p01-t1a-kernel-prefix-d1914bf5-run35736880724"
+    },
+    {
+     "sha": "f6c6a24136daf0969d9e3c21f8e6b78bf9114c45",
+     "ref": "refs/heads/cert/p01-t1a-malformed-87c9bfef-run35737449255"
+    },
+    {
+     "sha": "61cd91aa2a8debdbcf28068d566967a96a517ee9",
+     "ref": "refs/heads/cert/p01-t1a-runtime-61cd91aa-run35740278407"
+    },
+    {
+     "sha": "35969f086079e0323ba01dd35a16bc7e58f2f46e",
+     "ref": "refs/heads/cert/p01-t1a-runtime-exact-35969f08-run35740917082"
+    },
+    {
+     "sha": "0dd09383932446ba67e673f69cd8740f85a80b87",
+     "ref": "refs/heads/cert/p01-t5-poly-halting-0dd09383-run37354059689"
+    },
+    {
+     "sha": "4d0a69c8f54c67316cad9cad946dd16012de7354",
+     "ref": "refs/heads/cert/p01-terminal-branches-f9add608-run35722846538"
+    },
+    {
+     "sha": "24f5c2b966b90efb5e63a9a850319396cf73bd61",
+     "ref": "refs/heads/cert/p01-terminal-branches-f9add608-run35722851951"
+    },
+    {
+     "sha": "21117d0a836cfe7b241e6798c2de1fc960149fab",
+     "ref": "refs/heads/cert/p01-terminal-delta-v1-21117d0a"
+    },
+    {
+     "sha": "a568bad3492e8042a1f70fe666f0ce1a2a1ecaed",
+     "ref": "refs/heads/cert/p01-verified-relation-1453539c-run35587134807"
+    },
+    {
+     "sha": "9d7d0612b3910c130433edc3166ddc7947ed84c2",
+     "ref": "refs/heads/cert/p01-verifier-phase-mincut-green-720596c0"
+    },
+    {
+     "sha": "632ef640392114a915bfc7192cfe2910f8c32c21",
+     "ref": "refs/heads/cert/p012-final-adaptation-632ef640-run35841119149"
+    },
+    {
+     "sha": "a89cca577ad1fe955d529bd4298285367b8d77b9",
+     "ref": "refs/heads/cert/p012-final-chain-link-a89cca57-run35840144763"
+    },
+    {
+     "sha": "54b42c0e45c61f104fadf8dcf7089199a91a70a7",
+     "ref": "refs/heads/cert/p012-full-lemma-suite-54b42c0e-run35841388703"
+    },
+    {
+     "sha": "728609cd85b4088354fa18307c58f2e1fa2c45a8",
+     "ref": "refs/heads/cert/p012-terminal-foundation-728609cd-run35840121783"
+    },
+    {
+     "sha": "7080eb151503a8232e76b63cf2d3995a077f22a6",
+     "ref": "refs/heads/cert/p02-bounded-execution-green-c0487b52"
+    },
+    {
+     "sha": "53659926d75390ef95a35f7f9e756291cf0ed49f",
+     "ref": "refs/heads/cert/p02-bounded-tableau-green-c0487b52"
+    },
+    {
+     "sha": "0f6bcd5243ee499dc3e182b81ea98459858b6883",
+     "ref": "refs/heads/cert/p02-e1-0f6bcd52-run35785227242"
+    },
+    {
+     "sha": "b6b6821b337ae70ef958d461a44156d2345d3336",
+     "ref": "refs/heads/cert/p02-e2-audit-b6b6821b-run35785134353"
+    },
+    {
+     "sha": "8218207dd3258860cdb9859a99ab677c36880d23",
+     "ref": "refs/heads/cert/p02-e2-math-checkpoint-8218207d-run35788500754"
+    },
+    {
+     "sha": "3c244256a4cf46b9e43b0934495eb7298fdbfda8",
+     "ref": "refs/heads/cert/p02-g2-0-normalization-d72e53bc-run35707286302"
+    },
+    {
+     "sha": "98db27270c857168d5c197f9d036288f3713fde8",
+     "ref": "refs/heads/cert/p02-g2-1-final-negative-4a95dd2f-run36204860440"
+    },
+    {
+     "sha": "3b2fb5e392c7006830d8730578dead24b30d75b6",
+     "ref": "refs/heads/cert/p02-g2-1-literal-fixed-point-falsified-17c04b62-run35721158651"
+    },
+    {
+     "sha": "3eefb7e2b42955303f028cadcffe266aade2ae2a",
+     "ref": "refs/heads/cert/p02-g2-2-wiring-38db71b4-run35722282451"
+    },
+    {
+     "sha": "270282a55e18588dce3e7a8a9a72db2cda277d98",
+     "ref": "refs/heads/cert/p02-integration-270282a5-run35787562294"
+    },
+    {
+     "sha": "6ee9d5930a5c2e473f17fd33d518175afc08b3e6",
+     "ref": "refs/heads/cert/p02-kernel-fa83d082-run36831482480"
+    },
+    {
+     "sha": "5f8a0aa2c6ca41d77515e3bf97bd1fa53138679d",
+     "ref": "refs/heads/cert/p02-kleene-5f8a0aa2-run35784099753"
+    },
+    {
+     "sha": "cb1e30ec759f6ccb6f9f813693164fb945a287cb",
+     "ref": "refs/heads/cert/p02-literal-fixed-point-countermodel-9d6dd957-run35721311898"
+    },
+    {
+     "sha": "01de3cf83d79338db8b9d4740c37719d3b9cca4c",
+     "ref": "refs/heads/cert/p02-literal-fixed-point-firewall-26e721ab-run35713976797"
+    },
+    {
+     "sha": "af7ae1dee6dacf0f1e1b25da7e22583eee79401a",
+     "ref": "refs/heads/cert/p02-semantic-alignment-countermodel-af7ae1de"
+    },
+    {
+     "sha": "321a1ad6f0205eb2795939655ed802a9114de480",
+     "ref": "refs/heads/cert/p02-semantic-diagonal-transformer-f29f5984-run35710913464"
+    },
+    {
+     "sha": "557e2c23343f542a3edf8eb98b7a5bd6ab4efbcc",
+     "ref": "refs/heads/cert/p02-semantic-flip-core-green-4bf2c688"
+    },
+    {
+     "sha": "d543fdcc2322e29b3ff63d3c854bbebfd48795f7",
+     "ref": "refs/heads/cert/p02-semantic-negation-reduction-d543fdcc-run37356246807"
+    },
+    {
+     "sha": "69ac44fcb58b32983a5f7003348f669e62f5477a",
+     "ref": "refs/heads/cert/p02-semantic-negation-refutation-69ac44fc-run37358153933"
+    },
+    {
+     "sha": "774e5ef85edf4c453e7ee536e4d11de5324f4ee6",
+     "ref": "refs/heads/cert/p02-total-semantic-mincut-774e5ef8-run37355811318"
+    },
+    {
+     "sha": "af91aa9ecccc2cc6bdd47ae8d9b7a75291ee8d36",
+     "ref": "refs/heads/cert/prize-k0-af91aa9e"
+    },
+    {
+     "sha": "af91aa9ecccc2cc6bdd47ae8d9b7a75291ee8d36",
+     "ref": "refs/heads/cert/prize-k0-af91aa9e-v2"
+    },
+    {
+     "sha": "c4627e6a313a4bbcf331c8e05864c37889369867",
+     "ref": "refs/heads/cert/progress-snapshot-19c7c5ea-run35851229508"
+    },
+    {
+     "sha": "9112a6b151b36b9369b623e701f240c2150b15f2",
+     "ref": "refs/heads/cert/recovery-cumulative-official-source-9112a6b1-run35833160429"
+    },
+    {
+     "sha": "c3dbc28c9b0e1a7b85aded612d5db5591761f079",
+     "ref": "refs/heads/cert/recovery-encoding-normalization-c3dbc28c-run35833137916"
+    },
+    {
+     "sha": "fba15ad76084efd45fcf502a5617596d12b4f013",
+     "ref": "refs/heads/cert/recovery-g3-model-match-fba15ad7-run35833152185"
+    },
+    {
+     "sha": "9d67b9586798a1bf38bd6a949338185cac232abe",
+     "ref": "refs/heads/cert/recovery-ledger-9d67b958-run35829618483"
+    },
+    {
+     "sha": "a9e998dd7899988d7e346519d3a75ae4cbc20017",
+     "ref": "refs/heads/cert/sat-cnfstructure-10ce54e2-run35471562009"
+    },
+    {
+     "sha": "16af295aaad57943e92e0741478507c96161dcf2",
+     "ref": "refs/heads/cert/sat-machine-hardened-7ab06d04-run35508933565"
+    },
+    {
+     "sha": "b4a23be138b83aa83155e0110e05fdb4e3b9151f",
+     "ref": "refs/heads/cert/sat-machine-interface-de1200d3-run35508745285"
+    },
+    {
+     "sha": "c15834baacbb5139ff4a2283ccfe7fadd3aff791",
+     "ref": "refs/heads/cert/sat-semantics-5b483a7f-run35508513530"
+    },
+    {
+     "sha": "bd067a3988d70b80d154b5c532dae92384100229",
+     "ref": "refs/heads/cert/t1-a-phase-bridge-bd067a39-run35795773383"
+    },
+    {
+     "sha": "058f574bd2ad1349eb17717549ca5ad378666336",
+     "ref": "refs/heads/cert/t1-b-physical-realization-058f574b-run35785607933"
+    },
+    {
+     "sha": "921170b335f31cfdf5b8fa120b7fd90907872990",
+     "ref": "refs/heads/cert/t1-c-poly-bound-921170b3-run35791659492"
+    },
+    {
+     "sha": "0c755ac3c701b6db0c27d8971a2eca90a91118f7",
+     "ref": "refs/heads/cert/t5-a-universal-failure-0c755ac3-run35785495169"
+    },
+    {
+     "sha": "fbd24d7d7f8142ba677fff0fb56649e92df76297",
+     "ref": "refs/heads/cert/t5-a1-bounded-computation-fbd24d7d-run35770208857"
+    },
+    {
+     "sha": "55195572d183093a9dec640b702abe4204835d1c",
+     "ref": "refs/heads/cert/t5-a1-builder-55195572-run35741812623"
+    },
+    {
+     "sha": "30707e68367460041a3106211f3150db38c236cd",
+     "ref": "refs/heads/cert/t5-a1-completeness-30707e68-run35775861028"
+    },
+    {
+     "sha": "7aedf7bd13a64f2bcfe7f7dc781c3f20fbde4d73",
+     "ref": "refs/heads/cert/t5-b-clock-failure-7aedf7bd-run35791662702"
+    },
+    {
+     "sha": "f3dc5354a6f8a652fbcda941b4f0a0e6213ddd30",
+     "ref": "refs/heads/cert/t5-c-semantic-mismatch-f3dc5354-run35791665694"
+    },
+    {
+     "sha": "a5635895dee4d7736778ce0104dfbe7016f6487a",
+     "ref": "refs/heads/cert/t5-d-candidate-coding-a5635895-run35795602565"
+    },
+    {
+     "sha": "8fff59efc44d1c8d5ee37190eca56ed9a5278d6f",
+     "ref": "refs/heads/cert/t5-e-diagonal-compiler-8fff59ef-run35791673222"
+    },
+    {
+     "sha": "1d4e14c61742c9f67ded7b089cb1ece32013296f",
+     "ref": "refs/heads/claude/p01-gap-preserving-read"
+    },
+    {
+     "sha": "e0369c5c615990f36ab5424923f44c2b846f2b94",
+     "ref": "refs/heads/claude/p01-preserving-read-forall"
+    },
+    {
+     "sha": "ca51394e5a4f41bcbe726bbc0921489443d2dfbb",
+     "ref": "refs/heads/copilot/fix-failing-github-actions-job"
+    },
+    {
+     "sha": "7dc908449c5721742a971d0c6ed031463d3c3c49",
+     "ref": "refs/heads/copilot/fix-github-actions-job"
+    },
+    {
+     "sha": "a16918d8ff2a9b35a25bd963686155b81d8496f8",
+     "ref": "refs/heads/copilot/worksat-realization-foundations"
+    },
+    {
+     "sha": "28c6409811de8de219637e28082d5ba88387a098",
+     "ref": "refs/heads/discovery/pnp-open-math-20261004"
+    },
+    {
+     "sha": "98db27270c857168d5c197f9d036288f3713fde8",
+     "ref": "refs/heads/final-proof-p01-construction"
+    },
+    {
+     "sha": "815dfb08e719b80e82cc35a5e01988064a0b3496",
+     "ref": "refs/heads/final/fail-external-close-20260922"
+    },
+    {
+     "sha": "daa7acf0d83b878d442b9101c5adbe892bdaa19a",
+     "ref": "refs/heads/fix/egc-hardening-cooklevin-comment-20260926"
+    },
+    {
+     "sha": "fe8cd055dbb19ab6b70bc5138ba63582145781c9",
+     "ref": "refs/heads/fix/egc-hardening-kleene-dependent-20260926"
+    },
+    {
+     "sha": "adb3c123ab4897cd1fe5c242c484496999e84b65",
+     "ref": "refs/heads/fix/egc-hardening-kleene-iff-precedence-20260926"
+    },
+    {
+     "sha": "b1c08d3b184bbe46a0ad2dc6582c89157dfc4e38",
+     "ref": "refs/heads/fix/egc-hardening-kleene-projection-20260926"
+    },
+    {
+     "sha": "df5003c8fc2c109a52bb1f8fc74fab20584f2701",
+     "ref": "refs/heads/fix/egc-hardening-p02-build-20260926"
+    },
+    {
+     "sha": "0805dc01d057bddecd9c08e72b53dc9201a8ac37",
+     "ref": "refs/heads/formalize/final-external-chain-c511da2c"
+    },
+    {
+     "sha": "3392f8b79e084e350a0a244e3c1f21cd60804bba",
+     "ref": "refs/heads/formalize/g21-negative-final-certificate-20260926"
+    },
+    {
+     "sha": "ca0aceb35f432594b6e2ea3123f1ad73bad0fc33",
+     "ref": "refs/heads/freeze/atk-session-20260923-d6675e40"
+    },
+    {
+     "sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+     "ref": "refs/heads/frozen/C1-ecdbb0b1"
+    },
+    {
+     "sha": "0b6262dfe471f721dd8b943ee57ec6dcfbbc3c60",
+     "ref": "refs/heads/frozen/C10-0b6262df"
+    },
+    {
+     "sha": "1b7ce6f85036b5a8f29fa555afb53276c7628f56",
+     "ref": "refs/heads/frozen/C11-1b7ce6f8"
+    },
+    {
+     "sha": "6f310228a57984b33503a458f952207561c34c60",
+     "ref": "refs/heads/frozen/C12-6f310228"
+    },
+    {
+     "sha": "f55fee6268abda4e24b6b8d6d40e51c678462c98",
+     "ref": "refs/heads/frozen/C2-f55fee62"
+    },
+    {
+     "sha": "b560fc6b7b5a16d5005af450056d0b56ed6585a0",
+     "ref": "refs/heads/frozen/C3-b560fc6b"
+    },
+    {
+     "sha": "b35b6383e8c98b5006b1a94f62edd29a0975d999",
+     "ref": "refs/heads/frozen/C4-b35b6383"
+    },
+    {
+     "sha": "29226c00507a8bd571f0fb10f67c434c077eecf9",
+     "ref": "refs/heads/frozen/C5-29226c00"
+    },
+    {
+     "sha": "f910c85e4efb7870b095221bcb1440070e8f8cc4",
+     "ref": "refs/heads/frozen/C6-f910c85e"
+    },
+    {
+     "sha": "d0f62ea20d76ec880cab174ec8e3bde5e088546e",
+     "ref": "refs/heads/frozen/C7-d0f62ea2"
+    },
+    {
+     "sha": "bffbfd5a945d1986dee6df67fcf114cb699112a2",
+     "ref": "refs/heads/frozen/C8-bffbfd5a"
+    },
+    {
+     "sha": "1cf881a48e5fb2e6355695136d70f3e821832053",
+     "ref": "refs/heads/frozen/C9-1cf881a4"
+    },
+    {
+     "sha": "d32844e61bf1f5e372748d1d6152f251f9c38d14",
+     "ref": "refs/heads/frozen/C9-d32844e6"
+    },
+    {
+     "sha": "b59b0630411783601c5f74a9e00f8c12aac8ad66",
+     "ref": "refs/heads/frozen/ainum-indeterminacy-green-4bc9b0e4"
+    },
+    {
+     "sha": "1d8974fb5c41f80b8228a9d2d816cb39865150d1",
+     "ref": "refs/heads/frozen/atk-1d8974fb"
+    },
+    {
+     "sha": "41f31f40a1c0e224a72f92d2b2140e0174396a16",
+     "ref": "refs/heads/frozen/atk-41f31f40"
+    },
+    {
+     "sha": "a9fd99212c789c1e327b144a573c0a2c852ff6fc",
+     "ref": "refs/heads/frozen/atk-a9fd9921"
+    },
+    {
+     "sha": "caacaef295a96409b5c6edb204fa14b5dc73484a",
+     "ref": "refs/heads/frozen/atk-caacaef2"
+    },
+    {
+     "sha": "d6675e40f03dd58d0e8a95ce50a7ab410bb9cefb",
+     "ref": "refs/heads/frozen/atk-d6675e40"
+    },
+    {
+     "sha": "cebe0ecd7d6178a584b6e1fc01ff82dad5988e8b",
+     "ref": "refs/heads/frozen/atk-green-freeze-ledger-cebe0ecd"
+    },
+    {
+     "sha": "439e92290776787cb8e6d3036399bf308a2ffc36",
+     "ref": "refs/heads/frozen/atk-recovered-certificate-ledger-green-439e9229"
+    },
+    {
+     "sha": "439e92290776787cb8e6d3036399bf308a2ffc36",
+     "ref": "refs/heads/frozen/atk-recovery-ledger-green-439e9229"
+    },
+    {
+     "sha": "ca0aceb35f432594b6e2ea3123f1ad73bad0fc33",
+     "ref": "refs/heads/frozen/atk-session-ledger-ca0aceb3"
+    },
+    {
+     "sha": "2364ef73ff058e5ac679200bef21d631fded24a0",
+     "ref": "refs/heads/frozen/atk-stop-recovery-snapshot-green-2364ef73"
+    },
+    {
+     "sha": "f9add60881d709ce8320cb54a4d52f26d829b8f5",
+     "ref": "refs/heads/frozen/atk-stop-user-requested-f9add608"
+    },
+    {
+     "sha": "8ca2065ebc829a4c8cefe91062f03677f5396031",
+     "ref": "refs/heads/frozen/atk-terminal-certificate-p-vs-np-8ca2065e"
+    },
+    {
+     "sha": "d6675e40f03dd58d0e8a95ce50a7ab410bb9cefb",
+     "ref": "refs/heads/frozen/atk-terminal-d6675e40"
+    },
+    {
+     "sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+     "ref": "refs/heads/frozen/c1-green-ecdbb0b1"
+    },
+    {
+     "sha": "565de3732aa3b7c2feb3d2ed9b86b0a0bb6a6c94",
+     "ref": "refs/heads/frozen/cancelled-longrun-36793089858-20261001"
+    },
+    {
+     "sha": "077ac00fc35c697dd0a63ca6c74c6fd7e6a42e1c",
+     "ref": "refs/heads/frozen/cancelled-longrun-36793112195-20261001"
+    },
+    {
+     "sha": "4a84e1716832a85f3831e75117dec25aeee10f2d",
+     "ref": "refs/heads/frozen/canonical-lane-guard-green-4a84e171"
+    },
+    {
+     "sha": "b44c5ce5a21e6eb7a94e2459aabc148944c30303",
+     "ref": "refs/heads/frozen/canonical-lane-index-green-b44c5ce5"
+    },
+    {
+     "sha": "7f9f782d350437e2743448d3c5da61dc55bd9b17",
+     "ref": "refs/heads/frozen/canonical-p-subset-np-green-7f9f782d"
+    },
+    {
+     "sha": "16c86a4cb4ec089ea811fd76fa86debc487dbf4b",
+     "ref": "refs/heads/frozen/canonical-sat-frame-encoding-green-16c86a4c"
+    },
+    {
+     "sha": "5220198015131c6bcb68608fcbd21cf2f30b0a86",
+     "ref": "refs/heads/frozen/canonical-sat-frame-wiring-green-52201980"
+    },
+    {
+     "sha": "454570d6af6fb88f8ba2dd47a36d7caabae9cab8",
+     "ref": "refs/heads/frozen/canonical-sat-material-hole-green-454570d6"
+    },
+    {
+     "sha": "f3d018769b6da1440e4ed9b99688dfa55f561c13",
+     "ref": "refs/heads/frozen/canonical-sat-material-target-green-f3d01876"
+    },
+    {
+     "sha": "20572d5678540dce843e13819bcf6ecabe7a7f03",
+     "ref": "refs/heads/frozen/canonical-sat-ntm-scanner-green-20572d56"
+    },
+    {
+     "sha": "5292858ea6f659cdf53cfcef1cd9e4972512b796",
+     "ref": "refs/heads/frozen/canonical-sat-recursive-parser-firewall-green-5292858e"
+    },
+    {
+     "sha": "b26a7639226b68e01c0421aa8f5cae93291fdc07",
+     "ref": "refs/heads/frozen/canonical-sat-tag-parser-green-b26a7639"
+    },
+    {
+     "sha": "006dbbae0c435e82b64588630d1983100bf47523",
+     "ref": "refs/heads/frozen/canonical-sat-unary-parser-green-006dbbae"
+    },
+    {
+     "sha": "70b40b805819944acdb52774245de2337979b40b",
+     "ref": "refs/heads/frozen/canonical-stable-hole-v1-green-70b40b80"
+    },
+    {
+     "sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+     "ref": "refs/heads/frozen/canonical-terminal-green-e927d326"
+    },
+    {
+     "sha": "af2464ac243c0e8680bd289db15945bf09cd2ba0",
+     "ref": "refs/heads/frozen/final-external-certificate-recovery-green-af2464ac"
+    },
+    {
+     "sha": "ab5dad37a55e558219e253a4733bb31cce10a55b",
+     "ref": "refs/heads/frozen/final-external-chain-ledger-source-ab5dad37"
+    },
+    {
+     "sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+     "ref": "refs/heads/frozen/final-external-integration-green-c102d9d4"
+    },
+    {
+     "sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+     "ref": "refs/heads/frozen/final-external-two-gap-green-b406b806"
+    },
+    {
+     "sha": "064edaba9f3de98da84cc01fafa455e5b672b116",
+     "ref": "refs/heads/frozen/final-external-two-gap-recovery-green-064edaba"
+    },
+    {
+     "sha": "fc5f2078b8fd8e9626cedf0425f1a93b64a3e51d",
+     "ref": "refs/heads/frozen/final-external-two-openmath-v1-fc5f2078"
+    },
+    {
+     "sha": "815dfb08e719b80e82cc35a5e01988064a0b3496",
+     "ref": "refs/heads/frozen/final-fail-external-green-815dfb08"
+    },
+    {
+     "sha": "d25d618374711434aee40895adc99f46bbe55894",
+     "ref": "refs/heads/frozen/final-proof-chain-manifest-green-d25d6183"
+    },
+    {
+     "sha": "65dda6873168597c20bca30e3243b725fddae472",
+     "ref": "refs/heads/frozen/final-proof-fail-attack-green-65dda687"
+    },
+    {
+     "sha": "c00eae7cc9fa3bbebcca7528484a045ec108003c",
+     "ref": "refs/heads/frozen/final-proof-p01-t1a-red-c00eae7c"
+    },
+    {
+     "sha": "a21d747c3115dcebc702a31a522dace01d36a027",
+     "ref": "refs/heads/frozen/final-proof-recovery-chain-green-a21d747c"
+    },
+    {
+     "sha": "19c7c5ea93d627d8db48fbdac870360b17e4d151",
+     "ref": "refs/heads/frozen/final-proof-repair-checkpoint-19c7c5ea-20260923"
+    },
+    {
+     "sha": "bdb1a50c82df3c73de1203ba3cc60cdda52491d6",
+     "ref": "refs/heads/frozen/final-proof-reuse-index-bdb1a50c"
+    },
+    {
+     "sha": "da233acadb185ab236a8fdcee153ab9245d798e3",
+     "ref": "refs/heads/frozen/final-two-producer-sprint-v1-da233aca"
+    },
+    {
+     "sha": "d68df6c7f8942eb5899b901b9c6ba103b892735c",
+     "ref": "refs/heads/frozen/first-real-open-math-green-d68df6c7"
+    },
+    {
+     "sha": "8c1e22c0252bac96c4c597f464937a6c1549f0d1",
+     "ref": "refs/heads/frozen/frame-tape-gate-hardened-green-8c1e22c"
+    },
+    {
+     "sha": "77ed82750762fa3057c96f340254f522681ccdee",
+     "ref": "refs/heads/frozen/g2-0-canonical-normalization-green-77ed8275"
+    },
+    {
+     "sha": "f29f5984a92d7681887801e50ec2b6143d9f7ee4",
+     "ref": "refs/heads/frozen/g3-cook-cmi-provenance-green-f29f5984"
+    },
+    {
+     "sha": "97a95327360c3d4fc29dae1453330974e5f30519",
+     "ref": "refs/heads/frozen/g3-external-contract-scaffold-green-97a95327"
+    },
+    {
+     "sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+     "ref": "refs/heads/frozen/g3-normalized-contract-green-f2cafea7"
+    },
+    {
+     "sha": "26e721ab25425d62312945200baa9c127910d320",
+     "ref": "refs/heads/frozen/g3-normalized-dtm-two-way-green-26e721ab"
+    },
+    {
+     "sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+     "ref": "refs/heads/frozen/g3-normalized-external-contract-green-f2cafea7"
+    },
+    {
+     "sha": "3f04da0076dc9cf7e244a62fa729d98f0a21e612",
+     "ref": "refs/heads/frozen/g3-normalized-four-way-green-3f04da00"
+    },
+    {
+     "sha": "7707051580cd4e4685e30c8206cfdc060ae1b1ab",
+     "ref": "refs/heads/frozen/g3-normalized-ntm-two-way-green-77070515"
+    },
+    {
+     "sha": "f42d02b3543e3abb7269fef851d98a7c88bb6f9a",
+     "ref": "refs/heads/frozen/inhabitant-arsenal-v1-green-f42d02b3"
+    },
+    {
+     "sha": "1ab202f76049806e5c73ef203bc210ad4d18975b",
+     "ref": "refs/heads/frozen/k10-green-1ab202f7"
+    },
+    {
+     "sha": "8617aef0964db87185de8e6a458cc5818a5580a6",
+     "ref": "refs/heads/frozen/k6-green-8617aef"
+    },
+    {
+     "sha": "6b965e39dddffb23b407b6779c6241d2c6721997",
+     "ref": "refs/heads/frozen/k7-green-6b965e39"
+    },
+    {
+     "sha": "b4b651cdacd9bc39601b969e79b37d2e0aef4905",
+     "ref": "refs/heads/frozen/k8-green-b4b651cd"
+    },
+    {
+     "sha": "ee7ff7ba57436eac440ec0389c890000b091bf73",
+     "ref": "refs/heads/frozen/k9-green-ee7ff7ba"
+    },
+    {
+     "sha": "969408f2d84121667319da04680893dd2978e9a6",
+     "ref": "refs/heads/frozen/material-orientation-green-969408f2"
+    },
+    {
+     "sha": "7fb19a82d7a71b39f773ed547e93de0c0bd74ad7",
+     "ref": "refs/heads/frozen/material-producer-refined-green-7fb19a82"
+    },
+    {
+     "sha": "034a1b9baf4c8a002ce01cd6a893029e093bdaae",
+     "ref": "refs/heads/frozen/material-unification-v2-green-034a1b9b"
+    },
+    {
+     "sha": "afe3b3e108ec3e4998757a419a7fba2faa72a77d",
+     "ref": "refs/heads/frozen/meta-formalizer-linker-v1-afe3b3e1"
+    },
+    {
+     "sha": "0ff71d49edd9457025377fe6eaf041bea8bd2171",
+     "ref": "refs/heads/frozen/p01-binary-head-green-0ff71d49"
+    },
+    {
+     "sha": "9d987dc8161bfc7bcb371d4624532356fe32a89f",
+     "ref": "refs/heads/frozen/p01-binary-head-green-9d987dc8"
+    },
+    {
+     "sha": "f29f5984a92d7681887801e50ec2b6143d9f7ee4",
+     "ref": "refs/heads/frozen/p01-binary-return-rewind-green-f29f5984"
+    },
+    {
+     "sha": "97792f5ee0db5cdcfca1acaceb7444d7fded695f",
+     "ref": "refs/heads/frozen/p01-bounded-input-certificate-green-97792f5e"
+    },
+    {
+     "sha": "ea576ccfd161e3ec759d344c510eb5d48d3b2167",
+     "ref": "refs/heads/frozen/p01-bounded-neg-green-ea576ccf"
+    },
+    {
+     "sha": "1a1d62e8c1d18435aa7e583b186d9f8276b6f4b3",
+     "ref": "refs/heads/frozen/p01-checked-verifier-green-b137c0d6"
+    },
+    {
+     "sha": "f4e2215b65aab2bef2f16b131e3dad7105994aee",
+     "ref": "refs/heads/frozen/p01-clean-source-green-f4e2215b"
+    },
+    {
+     "sha": "9e21b631cd56bf49376b9e4a391b3cde45af60da",
+     "ref": "refs/heads/frozen/p01-component-failproof-green-9e21b631"
+    },
+    {
+     "sha": "62956cc7760834d80bae27e5b928d06d92334a62",
+     "ref": "refs/heads/frozen/p01-encoded-evaluator-green-62956cc7"
+    },
+    {
+     "sha": "f70ab88b3ac8cb1bd37c5e6f3115e26184b39b2b",
+     "ref": "refs/heads/frozen/p01-encoded-stack-evaluator-green-f70ab88b"
+    },
+    {
+     "sha": "adb6db8d1943778655f63d651ed93f23f425ed47",
+     "ref": "refs/heads/frozen/p01-eval-cursor-roundtrip-green-adb6db8d"
+    },
+    {
+     "sha": "85ee53417d3acca5c345fc72c9be9a8fce86529e",
+     "ref": "refs/heads/frozen/p01-eval-local-green-85ee5341"
+    },
+    {
+     "sha": "1d3ad02ea7b7d82ca5317ee30973db746630cbc1",
+     "ref": "refs/heads/frozen/p01-evalframe-pop-green-1d3ad02e"
+    },
+    {
+     "sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+     "ref": "refs/heads/frozen/p01-evalstep-frame-refinement-green-8e3abccc"
+    },
+    {
+     "sha": "661e43e4625707c731c5870c8d812bc91e5a5be1",
+     "ref": "refs/heads/frozen/p01-exact-integrated-producer-green-661e43e4"
+    },
+    {
+     "sha": "0f0f9927edc484b5c4dc3ddbcd0f8949bf62aea7",
+     "ref": "refs/heads/frozen/p01-final-plus-preserving-reader-green-0f0f9927"
+    },
+    {
+     "sha": "6707aa0e65781e9d5674414bbf6c930443531bba",
+     "ref": "refs/heads/frozen/p01-five-tag-cursor-refinement-green-6707aa0e"
+    },
+    {
+     "sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+     "ref": "refs/heads/frozen/p01-frame-pop-read-green-7f6597a1"
+    },
+    {
+     "sha": "123803627c2157d41686471dc8c2c5c96eb408ae",
+     "ref": "refs/heads/frozen/p01-frame-push-green-12380362"
+    },
+    {
+     "sha": "eb5713e48e84a8adbb0850d1f2c60b46a738b4f6",
+     "ref": "refs/heads/frozen/p01-frame-tape-green-eb5713e4"
+    },
+    {
+     "sha": "fbd93747a31d5dbcebe59635e332dced3c679136",
+     "ref": "refs/heads/frozen/p01-full-checkpoint-green-fbd93747"
+    },
+    {
+     "sha": "eaf1a3afaba62e03a4e78028348aeb14188900b2",
+     "ref": "refs/heads/frozen/p01-global-parser-simulation-prefix-green-eaf1a3af"
+    },
+    {
+     "sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+     "ref": "refs/heads/frozen/p01-global-slotlog-spec-green-614f88fe"
+    },
+    {
+     "sha": "9d6dd9575a61782c70137abff348356f805bc654",
+     "ref": "refs/heads/frozen/p01-hard-scaffold-green-9d6dd957"
+    },
+    {
+     "sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "ref": "refs/heads/frozen/p01-indexed-read-global-green-575cd996"
+    },
+    {
+     "sha": "193721b2fdeb5a4881997c896827d962ca7ff930",
+     "ref": "refs/heads/frozen/p01-indexed-witness-reader-green-193721b2"
+    },
+    {
+     "sha": "3690ab0593358d065930b36ec1e7a67852a88fa0",
+     "ref": "refs/heads/frozen/p01-integrated-parser-leaf-chain-green-3690ab05"
+    },
+    {
+     "sha": "0e52e1df99a639b89fd14260e33525e67d19aad1",
+     "ref": "refs/heads/frozen/p01-integration-fence-green-0e52e1df"
+    },
+    {
+     "sha": "ada18eeddb72490e44a9c6033d63690a416a7f0b",
+     "ref": "refs/heads/frozen/p01-integration-prefix-green-ada18eed"
+    },
+    {
+     "sha": "26e721ab25425d62312945200baa9c127910d320",
+     "ref": "refs/heads/frozen/p01-leaf-pop-green-26e721ab"
+    },
+    {
+     "sha": "eb49284311029102ae1e47d80091c0d15aed7352",
+     "ref": "refs/heads/frozen/p01-leaf-pop-green-eb492843"
+    },
+    {
+     "sha": "26e721ab25425d62312945200baa9c127910d320",
+     "ref": "refs/heads/frozen/p01-leaf-pop-operational-green-26e721ab"
+    },
+    {
+     "sha": "5f832dd2fc8007ccf0648f6390919cea5cfcdfa4",
+     "ref": "refs/heads/frozen/p01-leaf-pop-pr-audit-ci-green-5f832dd2"
+    },
+    {
+     "sha": "216f97157c0634eaae56f26697b2d10d49c1f6e2",
+     "ref": "refs/heads/frozen/p01-leaf-pop-simulation-audit-green-216f9715"
+    },
+    {
+     "sha": "93f1321f53aa93e18c7dcbf8a8a04e2844a15cbe",
+     "ref": "refs/heads/frozen/p01-leaf-source-green-93f1321f"
+    },
+    {
+     "sha": "2221f4318dbc73d0900b623e324127d19482758c",
+     "ref": "refs/heads/frozen/p01-leaf-source-return-green-2221f431"
+    },
+    {
+     "sha": "325e83cbfbb95fe50c633e3cb6827b27ae67409e",
+     "ref": "refs/heads/frozen/p01-leaf-source-rewind-green-325e83cb"
+    },
+    {
+     "sha": "72aa7be339ddcde8ffd83527a3bf0b932879cd45",
+     "ref": "refs/heads/frozen/p01-leaf-state14-15-return-green-72aa7be3"
+    },
+    {
+     "sha": "bb063179a983a8de0a70d4832e80d6c3befff134",
+     "ref": "refs/heads/frozen/p01-material-frontier-green-bb063179"
+    },
+    {
+     "sha": "0958e0a63e36c57f512eb5bcda03f4311354e659",
+     "ref": "refs/heads/frozen/p01-material-rewind-green-0958e0a6"
+    },
+    {
+     "sha": "50859a9fe3b4b4ef77ad212cd2bb570453200e0a",
+     "ref": "refs/heads/frozen/p01-operational-prefix-green-50859a9f"
+    },
+    {
+     "sha": "fc20887e556091a4775080ab23ee1ff61917040e",
+     "ref": "refs/heads/frozen/p01-parser-components-green-fc20887e"
+    },
+    {
+     "sha": "db716cec19ddbba552f5b91f865089abd4eea9e5",
+     "ref": "refs/heads/frozen/p01-parser-macro-green-db716cec"
+    },
+    {
+     "sha": "f52e32529f6059d602b450d78f4f24ce9696bcae",
+     "ref": "refs/heads/frozen/p01-parser-ntm-kernel-green-f52e3252"
+    },
+    {
+     "sha": "2f3afbd903d00aedc9648dea8e0206643b5a22b1",
+     "ref": "refs/heads/frozen/p01-parser-reuse-kernel-green-2f3afbd9"
+    },
+    {
+     "sha": "dfb3e60dc37e96f46a3ca071c428456634ec6dca",
+     "ref": "refs/heads/frozen/p01-parser-simulation-green-dfb3e60d"
+    },
+    {
+     "sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+     "ref": "refs/heads/frozen/p01-phase-macros-green-614f88fe"
+    },
+    {
+     "sha": "fb85e50c94f9cec50cc08c6df1b235099ad14af7",
+     "ref": "refs/heads/frozen/p01-physical-chain-green-fb85e50c"
+    },
+    {
+     "sha": "bf23e4c39699623683f07b36fac2796406976bef",
+     "ref": "refs/heads/frozen/p01-physical-local-layer-green-bf23e4c3"
+    },
+    {
+     "sha": "e82c0dfc6c38ad1b0fe260b2a1b93286edcd8262",
+     "ref": "refs/heads/frozen/p01-physical-moves-green-e82c0dfc"
+    },
+    {
+     "sha": "058f574bd2ad1349eb17717549ca5ad378666336",
+     "ref": "refs/heads/frozen/p01-physical-realization-green-058f574b"
+    },
+    {
+     "sha": "e2d305589df4d5223a61ba25a6fded39a3b2ce11",
+     "ref": "refs/heads/frozen/p01-physical-refinement-green-e2d30558"
+    },
+    {
+     "sha": "6fca9b74802adebf5684770ed87a916eb05ef80d",
+     "ref": "refs/heads/frozen/p01-physical-verifier-mincut-green-6fca9b74"
+    },
+    {
+     "sha": "dfe9aec4e85a8e97bb02ed2240504d54e7f0fbc1",
+     "ref": "refs/heads/frozen/p01-preserving-read-forall-green-dfe9aec4"
+    },
+    {
+     "sha": "41601d352146e46951a0d3e686f78080ed807e07",
+     "ref": "refs/heads/frozen/p01-source-cursor-invariant-green-41601d35"
+    },
+    {
+     "sha": "264fe048d355960b05d15ce354e9a7ca632b25fb",
+     "ref": "refs/heads/frozen/p01-source-rewind-global-green-264fe048"
+    },
+    {
+     "sha": "5674c6e512dc39d70cffb0bff73dcab3c2a5dbe4",
+     "ref": "refs/heads/frozen/p01-source-rewind-roundtrip-green-5674c6e5"
+    },
+    {
+     "sha": "8f7768a9c30ae74301d9e009fcd33618740e5f89",
+     "ref": "refs/heads/frozen/p01-t1a-fuel-semantic-green-8f7768a9"
+    },
+    {
+     "sha": "fa928b119edb8609ae86eaff755dad7abcbf76d2",
+     "ref": "refs/heads/frozen/p01-t1a-global-parser-green-fa928b11"
+    },
+    {
+     "sha": "28ad994cf81cf0a4e46dd17da27daabf0c5b4804",
+     "ref": "refs/heads/frozen/p01-t1a-global-semantics-green-28ad994c"
+    },
+    {
+     "sha": "6f241c5dab07a79da7997b6ebc33a4314fbae8c8",
+     "ref": "refs/heads/frozen/p01-t1a-global-semantics-green-6f241c5d"
+    },
+    {
+     "sha": "d1914bf5720b227219d0b93e4703f7bcb5dd61c1",
+     "ref": "refs/heads/frozen/p01-t1a-kernel-prefix-green-d1914bf5"
+    },
+    {
+     "sha": "87c9bfef31e5772a3a675a6285e5efa1c8b9ce1a",
+     "ref": "refs/heads/frozen/p01-t1a-malformed-green-87c9bfef"
+    },
+    {
+     "sha": "35969f086079e0323ba01dd35a16bc7e58f2f46e",
+     "ref": "refs/heads/frozen/p01-t1a-runtime-exact-green-35969f08"
+    },
+    {
+     "sha": "61cd91aa2a8debdbcf28068d566967a96a517ee9",
+     "ref": "refs/heads/frozen/p01-t1a-runtime-green-61cd91aa"
+    },
+    {
+     "sha": "0dd09383932446ba67e673f69cd8740f85a80b87",
+     "ref": "refs/heads/frozen/p01-t5-poly-halting-green-0dd09383"
+    },
+    {
+     "sha": "4eb4051ff330368627a3f30f2e080a00bd96f37d",
+     "ref": "refs/heads/frozen/p01-tag-consumption-green-4eb4051f"
+    },
+    {
+     "sha": "f9add60881d709ce8320cb54a4d52f26d829b8f5",
+     "ref": "refs/heads/frozen/p01-terminal-branches-green-f9add608"
+    },
+    {
+     "sha": "21117d0a836cfe7b241e6798c2de1fc960149fab",
+     "ref": "refs/heads/frozen/p01-terminal-delta-v1-21117d0a"
+    },
+    {
+     "sha": "833fe0ded9676bfd19d226b8bf1dfd0aeb070bf5",
+     "ref": "refs/heads/frozen/p01-tm-ntm-transport-green-833fe0de"
+    },
+    {
+     "sha": "6d39ae705e390ba9901d927bfaac8ab2150304b7",
+     "ref": "refs/heads/frozen/p01-tm-to-ntm-green-6d39ae70"
+    },
+    {
+     "sha": "1453539c13ba5224d1b84198f162075741a12a98",
+     "ref": "refs/heads/frozen/p01-verified-relation-green-1453539c"
+    },
+    {
+     "sha": "720596c0bd3900b5de25eab57b7b979d2a6aaf68",
+     "ref": "refs/heads/frozen/p01-verifier-phase-mincut-green-720596c0"
+    },
+    {
+     "sha": "dd94a681f771a64033193f491750463d7f33c154",
+     "ref": "refs/heads/frozen/p01-witness-guess-execution-green-dd94a681"
+    },
+    {
+     "sha": "632ef640392114a915bfc7192cfe2910f8c32c21",
+     "ref": "refs/heads/frozen/p012-final-adaptation-green-632ef640"
+    },
+    {
+     "sha": "a89cca577ad1fe955d529bd4298285367b8d77b9",
+     "ref": "refs/heads/frozen/p012-final-chain-link-green-a89cca57"
+    },
+    {
+     "sha": "54b42c0e45c61f104fadf8dcf7089199a91a70a7",
+     "ref": "refs/heads/frozen/p012-full-lemma-suite-green-54b42c0e"
+    },
+    {
+     "sha": "728609cd85b4088354fa18307c58f2e1fa2c45a8",
+     "ref": "refs/heads/frozen/p012-terminal-foundation-green-728609cd"
+    },
+    {
+     "sha": "c0487b52d998ff7c04fa3de28965dcfa9ed8db7a",
+     "ref": "refs/heads/frozen/p02-bounded-execution-green-c0487b52"
+    },
+    {
+     "sha": "e78e171ecf17a7da39ff52e7bfb8f720e5e467e5",
+     "ref": "refs/heads/frozen/p02-bounded-same-input-falsified-e78e171e"
+    },
+    {
+     "sha": "c0487b52d998ff7c04fa3de28965dcfa9ed8db7a",
+     "ref": "refs/heads/frozen/p02-bounded-tableau-green-c0487b52"
+    },
+    {
+     "sha": "c511da2c0e88bf858a698404e281914752f10e46",
+     "ref": "refs/heads/frozen/p02-compiler-terminal-promotion-source-c511da2c"
+    },
+    {
+     "sha": "0f6bcd5243ee499dc3e182b81ea98459858b6883",
+     "ref": "refs/heads/frozen/p02-e1-green-0f6bcd52"
+    },
+    {
+     "sha": "b6b6821b337ae70ef958d461a44156d2345d3336",
+     "ref": "refs/heads/frozen/p02-e2-audit-green-b6b6821b"
+    },
+    {
+     "sha": "8218207dd3258860cdb9859a99ab677c36880d23",
+     "ref": "refs/heads/frozen/p02-e2-math-checkpoint-green-8218207d"
+    },
+    {
+     "sha": "11dd4ff2beb436f6682b4a16f504a48e55a3cc86",
+     "ref": "refs/heads/frozen/p02-exact-compiler-falsified-11dd4ff2"
+    },
+    {
+     "sha": "d72e53bc7f667c75a432226a23adc59a255c5652",
+     "ref": "refs/heads/frozen/p02-g2-0-normalization-green-d72e53bc"
+    },
+    {
+     "sha": "4a95dd2f25d871f2a1487259274adf9729374c4a",
+     "ref": "refs/heads/frozen/p02-g2-1-final-negative-4a95dd2f"
+    },
+    {
+     "sha": "17c04b62d03946aab4573894833f087ade25bc33",
+     "ref": "refs/heads/frozen/p02-g2-1-literal-fixed-point-falsified-17c04b62"
+    },
+    {
+     "sha": "38db71b416906e5b7138774842e91d3e367aad09",
+     "ref": "refs/heads/frozen/p02-g2-2-wiring-green-38db71b4"
+    },
+    {
+     "sha": "270282a55e18588dce3e7a8a9a72db2cda277d98",
+     "ref": "refs/heads/frozen/p02-integration-green-270282a5"
+    },
+    {
+     "sha": "fa83d082fe219a772aa41c981e6b0fa420ff2aac",
+     "ref": "refs/heads/frozen/p02-kernel-green-fa83d082"
+    },
+    {
+     "sha": "5f8a0aa2c6ca41d77515e3bf97bd1fa53138679d",
+     "ref": "refs/heads/frozen/p02-kleene-green-5f8a0aa2"
+    },
+    {
+     "sha": "9d6dd9575a61782c70137abff348356f805bc654",
+     "ref": "refs/heads/frozen/p02-literal-fixed-point-countermodel-green-9d6dd957"
+    },
+    {
+     "sha": "26e721ab25425d62312945200baa9c127910d320",
+     "ref": "refs/heads/frozen/p02-literal-fixed-point-firewall-green-26e721ab"
+    },
+    {
+     "sha": "af7ae1dee6dacf0f1e1b25da7e22583eee79401a",
+     "ref": "refs/heads/frozen/p02-semantic-alignment-countermodel-green-af7ae1de"
+    },
+    {
+     "sha": "f29f5984a92d7681887801e50ec2b6143d9f7ee4",
+     "ref": "refs/heads/frozen/p02-semantic-diagonal-transformer-green-f29f5984"
+    },
+    {
+     "sha": "4bf2c6885c088392e0d19c7f464df07ab285305e",
+     "ref": "refs/heads/frozen/p02-semantic-flip-core-green-4bf2c688"
+    },
+    {
+     "sha": "69ac44fcb58b32983a5f7003348f669e62f5477a",
+     "ref": "refs/heads/frozen/p02-semantic-negation-invariant-refuted-69ac44fc"
+    },
+    {
+     "sha": "d543fdcc2322e29b3ff63d3c854bbebfd48795f7",
+     "ref": "refs/heads/frozen/p02-semantic-negation-reduction-green-d543fdcc"
+    },
+    {
+     "sha": "8e31a49b9be2fd9950e65d5c401ceba3a177a765",
+     "ref": "refs/heads/frozen/p02-tableau-source-8e31a49b"
+    },
+    {
+     "sha": "774e5ef85edf4c453e7ee536e4d11de5324f4ee6",
+     "ref": "refs/heads/frozen/p02-total-semantic-mincut-green-774e5ef8"
+    },
+    {
+     "sha": "cf5d6c0e40c7308f1cece91d850b4f853a1c6cf9",
+     "ref": "refs/heads/frozen/pnp-candidate-coding-firewall-green-cf5d6c0e"
+    },
+    {
+     "sha": "903751bc98f90848923ee2c4605703a93b9973ae",
+     "ref": "refs/heads/frozen/pnp-finite-clock-kernel-green-903751bc"
+    },
+    {
+     "sha": "903751bc98f90848923ee2c4605703a93b9973ae",
+     "ref": "refs/heads/frozen/pnp-finite-clock-official-binding-green-903751bc"
+    },
+    {
+     "sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+     "ref": "refs/heads/frozen/pnp-global-parser-witness-guess-green-9ebd51f5"
+    },
+    {
+     "sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "ref": "refs/heads/frozen/pnp-integrated-verifier-kernel-green-575cd996"
+    },
+    {
+     "sha": "99a39fc7a0c85151096084bd172458d931b39104",
+     "ref": "refs/heads/frozen/pnp-kleene-terminal-reuse-green-99a39fc7"
+    },
+    {
+     "sha": "8ac4dd69cc1fa39554cdec6fe637f162054c79d1",
+     "ref": "refs/heads/frozen/pnp-material-gate-green-8ac4dd69"
+    },
+    {
+     "sha": "903751bc98f90848923ee2c4605703a93b9973ae",
+     "ref": "refs/heads/frozen/pnp-official-binding-finite-clock-green-903751bc"
+    },
+    {
+     "sha": "903751bc98f90848923ee2c4605703a93b9973ae",
+     "ref": "refs/heads/frozen/pnp-official-binding-green-903751bc"
+    },
+    {
+     "sha": "3532d7af492eb2dfe50eb287d58abfa3b2dbb449",
+     "ref": "refs/heads/frozen/pnp-one-machine-verifier-frontier-green-3532d7af"
+    },
+    {
+     "sha": "f52e32529f6059d602b450d78f4f24ce9696bcae",
+     "ref": "refs/heads/frozen/pnp-parser-ntm-kernel-green-f52e3252"
+    },
+    {
+     "sha": "1327fcdd2ad079bb986b13d51b7fd37757e29c08",
+     "ref": "refs/heads/frozen/pnp-universal-law-kernel-green-1327fcdd"
+    },
+    {
+     "sha": "7012d46467483ae0bdda34993826ec3e34a8df1d",
+     "ref": "refs/heads/frozen/pnp-verifier-2field-green-7012d464"
+    },
+    {
+     "sha": "af91aa9ecccc2cc6bdd47ae8d9b7a75291ee8d36",
+     "ref": "refs/heads/frozen/prize-k0-green-af91aa9e"
+    },
+    {
+     "sha": "19c7c5ea93d627d8db48fbdac870360b17e4d151",
+     "ref": "refs/heads/frozen/progress-until-blocker-19c7c5ea"
+    },
+    {
+     "sha": "565de3732aa3b7c2feb3d2ed9b86b0a0bb6a6c94",
+     "ref": "refs/heads/frozen/recovered-green-20261001"
+    },
+    {
+     "sha": "9112a6b151b36b9369b623e701f240c2150b15f2",
+     "ref": "refs/heads/frozen/recovery-cumulative-official-source-green-9112a6b1"
+    },
+    {
+     "sha": "c3dbc28c9b0e1a7b85aded612d5db5591761f079",
+     "ref": "refs/heads/frozen/recovery-encoding-normalization-green-c3dbc28c"
+    },
+    {
+     "sha": "fba15ad76084efd45fcf502a5617596d12b4f013",
+     "ref": "refs/heads/frozen/recovery-g3-model-match-green-fba15ad7"
+    },
+    {
+     "sha": "9d67b9586798a1bf38bd6a949338185cac232abe",
+     "ref": "refs/heads/frozen/recovery-ledger-green-9d67b958"
+    },
+    {
+     "sha": "10ce54e2d6c174b266cca2da7d9c4a93d08f1a3d",
+     "ref": "refs/heads/frozen/sat-cnfstructure-green-10ce54e2"
+    },
+    {
+     "sha": "7ab06d0430e48a323b1ed0096abe97762303c893",
+     "ref": "refs/heads/frozen/sat-machine-hardened-green-7ab06d04"
+    },
+    {
+     "sha": "de1200d3161b22bc0d812f3910a1764307dcb732",
+     "ref": "refs/heads/frozen/sat-machine-interface-green-de1200d3"
+    },
+    {
+     "sha": "5b483a7f68b73d8e1eff520b1d03856225b861ef",
+     "ref": "refs/heads/frozen/sat-semantics-green-5b483a7f"
+    },
+    {
+     "sha": "bd067a3988d70b80d154b5c532dae92384100229",
+     "ref": "refs/heads/frozen/t1-a-phase-bridge-green-bd067a39"
+    },
+    {
+     "sha": "058f574bd2ad1349eb17717549ca5ad378666336",
+     "ref": "refs/heads/frozen/t1-b-physical-realization-green-058f574b"
+    },
+    {
+     "sha": "921170b335f31cfdf5b8fa120b7fd90907872990",
+     "ref": "refs/heads/frozen/t1-c-poly-bound-green-921170b3"
+    },
+    {
+     "sha": "0c755ac3c701b6db0c27d8971a2eca90a91118f7",
+     "ref": "refs/heads/frozen/t5-a-universal-failure-green-0c755ac3"
+    },
+    {
+     "sha": "fbd24d7d7f8142ba677fff0fb56649e92df76297",
+     "ref": "refs/heads/frozen/t5-a1-bounded-computation-green-fbd24d7d"
+    },
+    {
+     "sha": "55195572d183093a9dec640b702abe4204835d1c",
+     "ref": "refs/heads/frozen/t5-a1-builder-green-55195572"
+    },
+    {
+     "sha": "30707e68367460041a3106211f3150db38c236cd",
+     "ref": "refs/heads/frozen/t5-a1-completeness-green-30707e68"
+    },
+    {
+     "sha": "7aedf7bd13a64f2bcfe7f7dc781c3f20fbde4d73",
+     "ref": "refs/heads/frozen/t5-b-clock-failure-green-7aedf7bd"
+    },
+    {
+     "sha": "f3dc5354a6f8a652fbcda941b4f0a0e6213ddd30",
+     "ref": "refs/heads/frozen/t5-c-semantic-mismatch-green-f3dc5354"
+    },
+    {
+     "sha": "a5635895dee4d7736778ce0104dfbe7016f6487a",
+     "ref": "refs/heads/frozen/t5-d-candidate-coding-green-a5635895"
+    },
+    {
+     "sha": "8fff59efc44d1c8d5ee37190eca56ed9a5278d6f",
+     "ref": "refs/heads/frozen/t5-e-diagonal-compiler-green-8fff59ef"
+    },
+    {
+     "sha": "47640342cd676814137ba30c45c4feb9c72d68c0",
+     "ref": "refs/heads/k0-certification"
+    },
+    {
+     "sha": "85b21397f577c0f99639a3628af62699e1b128c5",
+     "ref": "refs/heads/k3-staging"
+    },
+    {
+     "sha": "6523e08ea40c6bf69951d26da7346b22829ca827",
+     "ref": "refs/heads/k7-PNP"
+    },
+    {
+     "sha": "f4030cd7ea4cdb962bf7f9bf0bd4b1df35a3cc9a",
+     "ref": "refs/heads/k7-preflight"
+    },
+    {
+     "sha": "15000e7ecff5a3cacce81a568ba9ea8873383d17",
+     "ref": "refs/heads/k7-preflight-PNP"
+    },
+    {
+     "sha": "382de6a75080d30a561884fd633e943029fc1e46",
+     "ref": "refs/heads/main"
+    },
+    {
+     "sha": "6e160a95ac47dd72313d6ea35fc304cbb2e2dfce",
+     "ref": "refs/heads/meta/finalproof-frontier-map-v1"
+    },
+    {
+     "sha": "5dc685f12415eaa3717384005887b9728b4ee965",
+     "ref": "refs/heads/prize-only/pnp-hard"
+    },
+    {
+     "sha": "9f5a8e1812e81e910fd2240080d9a9aade7f7b53",
+     "ref": "refs/heads/prize-only/pnp-hard-v2"
+    },
+    {
+     "sha": "f0a90fccd64aea150a1e3b5a3029324821da9a66",
+     "ref": "refs/heads/recovery/atk-stopped-bb65456b-20260922"
+    },
+    {
+     "sha": "54b42c0e45c61f104fadf8dcf7089199a91a70a7",
+     "ref": "refs/heads/recovery/final-proof-all-reuse-20260923"
+    },
+    {
+     "sha": "80df03182b3d1d949ce00e51a3af9c34e575b5b0",
+     "ref": "refs/heads/red/C10-80df0318"
+    },
+    {
+     "sha": "9ee3bd7fc5275e452143dc8d24263e29b47c17ce",
+     "ref": "refs/heads/red/C11-9ee3bd7f"
+    },
+    {
+     "sha": "aa8b19a1de4bd73cd04cb1f4aa2b0781f859941f",
+     "ref": "refs/heads/red/C11-aa8b19a1"
+    },
+    {
+     "sha": "d0570194b50eb2dcb0b924df5541b6a32ccbbe98",
+     "ref": "refs/heads/red/C11-d0570194"
+    },
+    {
+     "sha": "062d2c5c35a674b89a60a4f0a447baac6320a880",
+     "ref": "refs/heads/red/C12-062d2c5c"
+    },
+    {
+     "sha": "fe5d8f33ae33ae689b30e41ae130c656971d5c33",
+     "ref": "refs/heads/red/C12-fe5d8f33"
+    },
+    {
+     "sha": "6e28c94b7fc513367822691e6a74fb61f675ec39",
+     "ref": "refs/heads/red/C3-6e28c94b"
+    },
+    {
+     "sha": "fe733e90c04e1c25639afacc38644f391cd95158",
+     "ref": "refs/heads/red/C5-fe733e90"
+    },
+    {
+     "sha": "d630ddf5eaf19d6bcadcc6244a6fca2e4e6ae6a5",
+     "ref": "refs/heads/red/C6-d630ddf5"
+    },
+    {
+     "sha": "1ff3f8f756805279c072d5c32747fa973aadde07",
+     "ref": "refs/heads/red/C7-1ff3f8f7"
+    },
+    {
+     "sha": "0b6bc7180be1c86202fd429d0bc87a04a473e3b7",
+     "ref": "refs/heads/red/C8-0b6bc718"
+    },
+    {
+     "sha": "3394f4705be200047c16cd9744001fca2dbd9229",
+     "ref": "refs/heads/red/C8-3394f470"
+    },
+    {
+     "sha": "4114f55b19bcdd642022844159ffc052f7d7c8e7",
+     "ref": "refs/heads/red/C8-4114f55b"
+    },
+    {
+     "sha": "6a4cd12349cff9dcc3132fdcfcc9abe25515c713",
+     "ref": "refs/heads/red/C8-6a4cd123"
+    },
+    {
+     "sha": "815dc1f84f35dfed92af7e62e0acf95ba8d8808d",
+     "ref": "refs/heads/red/C8-815dc1f8"
+    },
+    {
+     "sha": "88d3fc532c1dfed7730d9028cac4ef1ed1ba0a6f",
+     "ref": "refs/heads/red/C8-88d3fc53"
+    },
+    {
+     "sha": "9e157687d14f426e988d71fcd905c146641afd6f",
+     "ref": "refs/heads/red/C8-9e157687"
+    },
+    {
+     "sha": "ddaf69a14faaf2fd1ff667b819e388d63b4be6a4",
+     "ref": "refs/heads/red/C8-ddaf69a1"
+    },
+    {
+     "sha": "e4663495df3fe7457cdab51d4061b177ac4c2e78",
+     "ref": "refs/heads/red/C8-e4663495"
+    },
+    {
+     "sha": "e68d7e514760d7e89e3bdaabc0582756a49afacd",
+     "ref": "refs/heads/red/C8-e68d7e51"
+    },
+    {
+     "sha": "f2bc3b49b4a01f054185fb68fd0f03ea7a385797",
+     "ref": "refs/heads/red/C8-f2bc3b49"
+    },
+    {
+     "sha": "1321018097f3479a2b1e00fbfa4080d03a5c4192",
+     "ref": "refs/heads/red/C9-13210180"
+    },
+    {
+     "sha": "76b28c30b7fed89aab8577ea1aaf7e246f510766",
+     "ref": "refs/heads/red/C9-76b28c30"
+    },
+    {
+     "sha": "c584695a85a04c5acb57cc60e657db19eaa4fda8",
+     "ref": "refs/heads/red/C9-c584695a"
+    },
+    {
+     "sha": "e4c84bc02cd141db0cb1b59317424ba2e7c2d8bb",
+     "ref": "refs/heads/red/C9-e4c84bc0"
+    },
+    {
+     "sha": "b0ed8310edcaae2f42f44e74483b962fb219452f",
+     "ref": "refs/heads/repair/source-only-p01-20261001"
+    },
+    {
+     "sha": "bf0c1a891c561dfb042e732eb3308e9e080a94b5",
+     "ref": "refs/heads/research/closed-empty-external-20260924"
+    },
+    {
+     "sha": "235a8c1b04a9301f0bb85a85645344b5bcee985f",
+     "ref": "refs/heads/research/pure-math-final-proof-v1"
+    },
+    {
+     "sha": "2a38223848f3bb9739910c9b758ad5b6648a14c9",
+     "ref": "refs/heads/research/seven-certs-final-20260924"
+    },
+    {
+     "sha": "9e91494cfa17e13419c7000e87fe338c706d43bf",
+     "ref": "refs/heads/research/single-45bf2597-final-20260924"
+    },
+    {
+     "sha": "af91aa9ecccc2cc6bdd47ae8d9b7a75291ee8d36",
+     "ref": "refs/heads/tmp-noop"
+    },
+    {
+     "sha": "af91aa9ecccc2cc6bdd47ae8d9b7a75291ee8d36",
+     "ref": "refs/heads/tmp-noop2"
+    },
+    {
+     "sha": "29226c00507a8bd571f0fb10f67c434c077eecf9",
+     "ref": "refs/heads/tmp/C5-cert-materialize"
+    },
+    {
+     "sha": "29226c00507a8bd571f0fb10f67c434c077eecf9",
+     "ref": "refs/heads/tmp/C5-cert2"
+    },
+    {
+     "sha": "0b6262dfe471f721dd8b943ee57ec6dcfbbc3c60",
+     "ref": "refs/heads/work/C10-from-C9"
+    },
+    {
+     "sha": "1b7ce6f85036b5a8f29fa555afb53276c7628f56",
+     "ref": "refs/heads/work/C11-from-C10"
+    },
+    {
+     "sha": "52c433c46c6a05f9b3d06912babb6091ab33011e",
+     "ref": "refs/heads/work/C11-vars-monotone"
+    },
+    {
+     "sha": "6f310228a57984b33503a458f952207561c34c60",
+     "ref": "refs/heads/work/C12-families"
+    },
+    {
+     "sha": "f25fdb788277308961f956d7fad5709562d39c19",
+     "ref": "refs/heads/work/C12-progress-coverage"
+    },
+    {
+     "sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+     "ref": "refs/heads/work/C2-from-C1"
+    },
+    {
+     "sha": "fe733e90c04e1c25639afacc38644f391cd95158",
+     "ref": "refs/heads/work/C5-fix-from-fe733e90"
+    },
+    {
+     "sha": "29226c00507a8bd571f0fb10f67c434c077eecf9",
+     "ref": "refs/heads/work/C6-from-C5"
+    },
+    {
+     "sha": "f910c85e4efb7870b095221bcb1440070e8f8cc4",
+     "ref": "refs/heads/work/C7-from-C6"
+    },
+    {
+     "sha": "d0f62ea20d76ec880cab174ec8e3bde5e088546e",
+     "ref": "refs/heads/work/C8-from-C7"
+    },
+    {
+     "sha": "1cf881a48e5fb2e6355695136d70f3e821832053",
+     "ref": "refs/heads/work/C9-from-C8"
+    },
+    {
+     "sha": "5f1a10fa4f12d49835c1da5c22ade02dd687d9c9",
+     "ref": "refs/heads/work/C9-two-channel-bridge"
+    },
+    {
+     "sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+     "ref": "refs/heads/work/c2-from-c1"
+    },
+    {
+     "sha": "8c1e22c0252bac96c4c597f464937a6c1549f0d1",
+     "ref": "refs/heads/work/canonical-sat-frame-parser-from-006dbbae"
+    },
+    {
+     "sha": "20572d5678540dce843e13819bcf6ecabe7a7f03",
+     "ref": "refs/heads/work/canonical-sat-ntm-from-7f9f782d"
+    },
+    {
+     "sha": "b26a7639226b68e01c0421aa8f5cae93291fdc07",
+     "ref": "refs/heads/work/canonical-sat-parser-from-20572d56"
+    },
+    {
+     "sha": "006dbbae0c435e82b64588630d1983100bf47523",
+     "ref": "refs/heads/work/canonical-sat-recursive-parser-from-b26a7639"
+    },
+    {
+     "sha": "7f9f782d350437e2743448d3c5da61dc55bd9b17",
+     "ref": "refs/heads/work/fail-proof-all-gaps-from-65dda687"
+    },
+    {
+     "sha": "65dda6873168597c20bca30e3243b725fddae472",
+     "ref": "refs/heads/work/final-proof-direct-from-7ab06d04"
+    },
+    {
+     "sha": "99b27d6ce480f62e4ac38ddbfb896ba29b4fae9a",
+     "ref": "refs/heads/work/pnp-canonical-material-search-20261005"
+    },
+    {
+     "sha": "31bc2ebbd03af77dfcf525755434d442ab0f0f29",
+     "ref": "refs/heads/work/pnp-minimal-sat-search-20261005"
+    },
+    {
+     "sha": "f114c79df13fce712758109aa6d3c00d5b72691c",
+     "ref": "refs/heads/work/pnp-minimal-separation-20261005"
+    },
+    {
+     "sha": "7ab06d0430e48a323b1ed0096abe97762303c893",
+     "ref": "refs/heads/work/sat-machine-hardened-from-de1200d3"
+    },
+    {
+     "sha": "de1200d3161b22bc0d812f3910a1764307dcb732",
+     "ref": "refs/heads/work/sat-machine-interface-from-5b483a7f"
+    },
+    {
+     "sha": "10ce54e2d6c174b266cca2da7d9c4a93d08f1a3d",
+     "ref": "refs/heads/work/sat-realization-foundations"
+    },
+    {
+     "sha": "5b483a7f68b73d8e1eff520b1d03856225b861ef",
+     "ref": "refs/heads/work/sat-semantics-from-10ce54e2"
+    },
+    {
+     "sha": "47640342cd676814137ba30c45c4feb9c72d68c0",
+     "ref": "refs/pull/1/head"
+    },
+    {
+     "sha": "65dda6873168597c20bca30e3243b725fddae472",
+     "ref": "refs/pull/10/head"
+    },
+    {
+     "sha": "7f9f782d350437e2743448d3c5da61dc55bd9b17",
+     "ref": "refs/pull/11/head"
+    },
+    {
+     "sha": "4683b788017bfa1c7703d541fa1471032e73bbd8",
+     "ref": "refs/pull/11/merge"
+    },
+    {
+     "sha": "20572d5678540dce843e13819bcf6ecabe7a7f03",
+     "ref": "refs/pull/12/head"
+    },
+    {
+     "sha": "b26a7639226b68e01c0421aa8f5cae93291fdc07",
+     "ref": "refs/pull/13/head"
+    },
+    {
+     "sha": "006dbbae0c435e82b64588630d1983100bf47523",
+     "ref": "refs/pull/14/head"
+    },
+    {
+     "sha": "267dfd4eec3fe2336e7cedc10c82945de8dfebc8",
+     "ref": "refs/pull/14/merge"
+    },
+    {
+     "sha": "4bc9b0e4f0b99fff98dd2254b8a3bf87b291c096",
+     "ref": "refs/pull/15/head"
+    },
+    {
+     "sha": "cf6b1e24eaa018da5e8153f375e6a7d8282d5a24",
+     "ref": "refs/pull/15/merge"
+    },
+    {
+     "sha": "d72e53bc7f667c75a432226a23adc59a255c5652",
+     "ref": "refs/pull/16/head"
+    },
+    {
+     "sha": "7c3bebaa42b3b62e568e45dbe6ef5cfb5d3d17ec",
+     "ref": "refs/pull/16/merge"
+    },
+    {
+     "sha": "f6e9479373da1ba6bead2482da2c457c36bf6aca",
+     "ref": "refs/pull/17/head"
+    },
+    {
+     "sha": "742a373cafd5f16d76e4bffe2b5eb5ae66594cda",
+     "ref": "refs/pull/17/merge"
+    },
+    {
+     "sha": "f4e2215b65aab2bef2f16b131e3dad7105994aee",
+     "ref": "refs/pull/18/head"
+    },
+    {
+     "sha": "441e679cd27e1eef9aeac8ba7c02eb477706db80",
+     "ref": "refs/pull/18/merge"
+    },
+    {
+     "sha": "3ec5e116dde0969e82272ed9ca37e6e92c36c5e1",
+     "ref": "refs/pull/19/head"
+    },
+    {
+     "sha": "424a7fa328ed2bfa85fa4750bcc666e25abea80e",
+     "ref": "refs/pull/19/merge"
+    },
+    {
+     "sha": "93e897adc526d50edae9a3a399ac2ea2194b44f0",
+     "ref": "refs/pull/20/head"
+    },
+    {
+     "sha": "535dda49653dc5600daee71b9c08ffc0da5baa65",
+     "ref": "refs/pull/20/merge"
+    },
+    {
+     "sha": "b3b3b4e37dcec1ac6ab5ef175a38ae30ae223df0",
+     "ref": "refs/pull/21/head"
+    },
+    {
+     "sha": "8dcbd0d3a6a46027f4ffd432c7ea2fa5a72cb2f1",
+     "ref": "refs/pull/21/merge"
+    },
+    {
+     "sha": "0ff71d49edd9457025377fe6eaf041bea8bd2171",
+     "ref": "refs/pull/22/head"
+    },
+    {
+     "sha": "f8340e5fd1e59397cdf4b68cec3668360e03d4d9",
+     "ref": "refs/pull/22/merge"
+    },
+    {
+     "sha": "482ef2f2d983b9e91f1aa5b7526097203dacb6bd",
+     "ref": "refs/pull/23/head"
+    },
+    {
+     "sha": "6378b7579b228296b4d9479cee90ac3786b0e068",
+     "ref": "refs/pull/23/merge"
+    },
+    {
+     "sha": "49caec412c6b7ea499cf77adac268681d1c371d6",
+     "ref": "refs/pull/24/head"
+    },
+    {
+     "sha": "c52529b7d0e493f62be62b7cd5935b7b574ead29",
+     "ref": "refs/pull/24/merge"
+    },
+    {
+     "sha": "45bf2597b2a791ff64adda0d10c006d1eeb0e34e",
+     "ref": "refs/pull/25/head"
+    },
+    {
+     "sha": "f812e083494305a318b412a93e31faa1a9ee7cf0",
+     "ref": "refs/pull/25/merge"
+    },
+    {
+     "sha": "3b1f01c9f30c8ee82efb1ed65808517bef99380c",
+     "ref": "refs/pull/26/head"
+    },
+    {
+     "sha": "29656d70bf82b1600154de1e8cfef3cf59dc5c28",
+     "ref": "refs/pull/26/merge"
+    },
+    {
+     "sha": "df5003c8fc2c109a52bb1f8fc74fab20584f2701",
+     "ref": "refs/pull/27/head"
+    },
+    {
+     "sha": "fe8cd055dbb19ab6b70bc5138ba63582145781c9",
+     "ref": "refs/pull/28/head"
+    },
+    {
+     "sha": "b1c08d3b184bbe46a0ad2dc6582c89157dfc4e38",
+     "ref": "refs/pull/29/head"
+    },
+    {
+     "sha": "adb3c123ab4897cd1fe5c242c484496999e84b65",
+     "ref": "refs/pull/30/head"
+    },
+    {
+     "sha": "167036b95b1cf424425ac90a2976a24160e8a4fb",
+     "ref": "refs/pull/31/head"
+    },
+    {
+     "sha": "7d5361c57c1aa66d6a571dae5123d33af7b48e96",
+     "ref": "refs/pull/31/merge"
+    },
+    {
+     "sha": "6ec92dd506885442e7bdfbd72304dbf530e237ef",
+     "ref": "refs/pull/32/head"
+    },
+    {
+     "sha": "6283e283f7b96b5ab34dddde7dbc8d9d331e01ff",
+     "ref": "refs/pull/32/merge"
+    },
+    {
+     "sha": "b9cb9d78e7ed2e4d4b4dc296aa588231b1a9a66f",
+     "ref": "refs/pull/33/head"
+    },
+    {
+     "sha": "8bbc83f5a581c717344003ddb65fe554b4179ca0",
+     "ref": "refs/pull/33/merge"
+    },
+    {
+     "sha": "09e0474a55615ea18cba9b4461c65ccad9c8248e",
+     "ref": "refs/pull/34/head"
+    },
+    {
+     "sha": "985b4836dda899cff9a3f67b02dceb6bb7d5b1ca",
+     "ref": "refs/pull/34/merge"
+    },
+    {
+     "sha": "e0369c5c615990f36ab5424923f44c2b846f2b94",
+     "ref": "refs/pull/35/head"
+    },
+    {
+     "sha": "1d4e14c61742c9f67ded7b089cb1ece32013296f",
+     "ref": "refs/pull/36/head"
+    },
+    {
+     "sha": "ce1af8345c3f846c6f1e2107339f08708033c120",
+     "ref": "refs/pull/36/merge"
+    },
+    {
+     "sha": "2b00561e72422dffda8841b830e71683212aef21",
+     "ref": "refs/pull/37/head"
+    },
+    {
+     "sha": "0e59f024c30cdd796e620b8e52b7ac1977184991",
+     "ref": "refs/pull/38/head"
+    },
+    {
+     "sha": "ca51394e5a4f41bcbe726bbc0921489443d2dfbb",
+     "ref": "refs/pull/39/head"
+    },
+    {
+     "sha": "7dc908449c5721742a971d0c6ed031463d3c3c49",
+     "ref": "refs/pull/40/head"
+    },
+    {
+     "sha": "f14c2e1854d6b62dc3e5b567a6769a04075f76d5",
+     "ref": "refs/pull/9/head"
+    },
+    {
+     "sha": "19099c63e5fa7bddcae18edab8a117c3a944ca97",
+     "ref": "refs/pull/9/merge"
+    }
+   ],
+   "ref_count": {
+    "branches": 684,
+    "pull_request_refs": 53,
+    "tags": 0
+   },
+   "history": "full commit history of all branches (5,330 commits reachable; 20 shallow boundaries remain only at refs/pull/*/merge tips)",
+   "lean_file_versions_scanned": "3359 distinct (path, blob) pairs in history; 1,385 unique blobs at branch tips; 1,974 history-only blobs; 1 PR-only blob",
+   "methods": [
+    "M1",
+    "M2",
+    "M3",
+    "M4"
+   ]
+  },
+  {
+   "repository": "ShantiDraconis/M-Core",
+   "refs": [
+    {
+     "sha": "53d58bceed3424a435eb54e01cd6d3f17324a630",
+     "ref": "origin"
+    },
+    {
+     "sha": "0ab76790e9793f9b8196c9578fcf899b66c56a5f",
+     "ref": "origin/atk-poincare-f8-f7"
+    },
+    {
+     "sha": "d1ed2594908e6d5d86c789928211db7f40003c56",
+     "ref": "origin/atk/bsd-mathlib-v431-probe"
+    },
+    {
+     "sha": "b920643e18dcdec64a1a4c1a50383846879b20ef",
+     "ref": "origin/atk/bsd-mathlib-v434-probe"
+    },
+    {
+     "sha": "ae05cad66ce398f9a2d721b2511982a1b7c3d191",
+     "ref": "origin/atk/closed-math-habitant-probe-20261007"
+    },
+    {
+     "sha": "2040548e094e6a89030fb5ce04d5f679796839bf",
+     "ref": "origin/atk/cross-prover-terminal-closure-20261001"
+    },
+    {
+     "sha": "bddb20dac75b41db9d80ad9054eab75e4e4c2200",
+     "ref": "origin/atk/fake-inhabitant-harness-20260930"
+    },
+    {
+     "sha": "52e01f32b7ffb592397ba79b44f62a2ba191cee7",
+     "ref": "origin/atk/final-proof-pnp-session-chain-20260923"
+    },
+    {
+     "sha": "6ac1067111b0779604315fdbc69fede34c6c911c",
+     "ref": "origin/atk/global-closed-scope-20261007"
+    },
+    {
+     "sha": "8ae365cda03b4a9ff52c806ba65c68175f2496ca",
+     "ref": "origin/atk/global-hypothesis-density-20261001"
+    },
+    {
+     "sha": "32c8000b58dda5ebae96a871e22d7bb784f3e0df",
+     "ref": "origin/atk/global-material-frontier-20261001"
+    },
+    {
+     "sha": "a2dfc28fbac4c31baaa98ae0d8fcf201d7b856af",
+     "ref": "origin/atk/live-eight-producers-20260921"
+    },
+    {
+     "sha": "e0b2eddfcaf067b182c4f2ffe1ed9a5fca1a8226",
+     "ref": "origin/atk/master-claim-inventory-20261005"
+    },
+    {
+     "sha": "74e07e564781584a84f9b922a70c299ae89284b1",
+     "ref": "origin/atk/master-terminal-manifest-20260930"
+    },
+    {
+     "sha": "b47fad264fc2ecd2e6eb42e6d6fcb3b8bbae66f9",
+     "ref": "origin/atk/material-math-tristate-20261001"
+    },
+    {
+     "sha": "f4c7e846ec198abd0ee2bb8a361f6217e8ff5cca",
+     "ref": "origin/atk/material-mathematics-kernel-20261001"
+    },
+    {
+     "sha": "1c6422658d57d86c303d50b4de494ad5018ccdd2",
+     "ref": "origin/atk/material-multistate-dynamics-20261001"
+    },
+    {
+     "sha": "83228ae7926daf8b5ccee55297f2cabc24495608",
+     "ref": "origin/atk/material-only-final-root-20260930"
+    },
+    {
+     "sha": "167da9f5cd661650c30d524da784bdbd2fac408f",
+     "ref": "origin/atk/material-open-math-frontier-20261001"
+    },
+    {
+     "sha": "d4cc8e5b79b9f3978d4ef5789da227ced0613488",
+     "ref": "origin/atk/open-math-forward-only-integration-20261001"
+    },
+    {
+     "sha": "514a9500203950d2c4b46ab77aa5eab3ee461d4c",
+     "ref": "origin/atk/p01-t1d-recovery-workflow-20260924"
+    },
+    {
+     "sha": "9c076964a83635f79f17cb0442c51438f10173df",
+     "ref": "origin/atk/premio-final-crosswalk-20260923"
+    },
+    {
+     "sha": "348d3577de39cfa3688332699256a9f0c4e97ba9",
+     "ref": "origin/atk/proof-engine-rncb"
+    },
+    {
+     "sha": "6406f0adf793208ce1236b07381a9e966343c184",
+     "ref": "origin/atk/seven-terminal-parameter-law"
+    },
+    {
+     "sha": "5cf1e212a0eccfb490a80d1f79ac87c86ee769bf",
+     "ref": "origin/atk/sync-existing-none-results-20261008"
+    },
+    {
+     "sha": "89c3819be9f2e5928ba107c2c77ca559cf90f750",
+     "ref": "origin/atk/two-sided-boundary-meet-20260929"
+    },
+    {
+     "sha": "03ce184a5d724242c9db4e3a1d54d12d007b843e",
+     "ref": "origin/atk/two-sided-material-closure-20261001"
+    },
+    {
+     "sha": "e6b79d13c0173980e29c69274ab3e7c72d31c283",
+     "ref": "origin/atk/universal-multistate-signature-20260926"
+    },
+    {
+     "sha": "839ba15f95ee8df1d2d0a8cd6262e16a4326325e",
+     "ref": "origin/atk/universal-producer-theorem-20260930"
+    },
+    {
+     "sha": "d0ce322c47c96990a90596501bed86699dbbfe95",
+     "ref": "origin/atk/universal-terminal-closure-20260930"
+    },
+    {
+     "sha": "e3b5890d3da27d8aaa30c68fcca9b3cfb3970a71",
+     "ref": "origin/atk/universal-terminal-closure-20261001"
+    },
+    {
+     "sha": "707380a575d76ec0d626d250a23789b71f9c8c8d",
+     "ref": "origin/atk/user-research-unification-20261007"
+    },
+    {
+     "sha": "73dd22373d50c6cea3b50f062957acf423d05123",
+     "ref": "origin/attack/cross-chain-certified-reuse-20260921"
+    },
+    {
+     "sha": "3f0b3b8e8826341a0f7e1f142d6d86a1aabfe18b",
+     "ref": "origin/attack/elyon-final-external-v12-criticism-20260922"
+    },
+    {
+     "sha": "9d9a48276a3dedcfba391dfccce6bf4ce46aef1d",
+     "ref": "origin/attack/final-external-two-gap-attempt-20260922"
+    },
+    {
+     "sha": "c3910589cd1865b4adfbe790938a1e77884ebfcd",
+     "ref": "origin/attack/final-fail-closed-center-dynamics-20260921"
+    },
+    {
+     "sha": "2d47aa595f031d384162fd10e74ce0481602c11d",
+     "ref": "origin/attack/final-fail-indeterminacy-core-v1-20260921"
+    },
+    {
+     "sha": "6472b62abcc91b978fbfd94e7d7bcd4631e71224",
+     "ref": "origin/attack/final-fail-projective-brain-v1-20260921"
+    },
+    {
+     "sha": "ec75055ea8e73f62bf98b921713e4cd420e5ccaf",
+     "ref": "origin/attack/mccs-semantic-status-20260921"
+    },
+    {
+     "sha": "5fa518dc1d2e28e403595b17933e172489d31a73",
+     "ref": "origin/attack/mcore-formulation-v2-20260921"
+    },
+    {
+     "sha": "fcdaaab2093afa5e0c973057a00a610039d5ff0f",
+     "ref": "origin/attack/mcore-formulation-v2-clean-20260921"
+    },
+    {
+     "sha": "43ee611a4bb56930d1d1fe92b33f5541d4ff208c",
+     "ref": "origin/attack/mcore-v22-residual-red-20260921"
+    },
+    {
+     "sha": "3e72b4d71370944f021b8209b9f8f4fa8ce5d09a",
+     "ref": "origin/attack/multistate-signature-20260926"
+    },
+    {
+     "sha": "1eb62478b6e6912e5ae0753dbf5c2605faf6db13",
+     "ref": "origin/attack/ns-g5-mcore-20260921"
+    },
+    {
+     "sha": "27876381ea09f7e2547189bb0309636b88568a04",
+     "ref": "origin/attack/proposed-hypothesis-20260929"
+    },
+    {
+     "sha": "1c55ef71237b9ff8d3b391e013cc6b59db60791a",
+     "ref": "origin/attack/unified-terminal-logic-20260921"
+    },
+    {
+     "sha": "41426312218a6c2a85937a2b7386b05556d1646d",
+     "ref": "origin/attack/unified-terminal-separated-certificates-20260921"
+    },
+    {
+     "sha": "94d327e0b5462c708e652b3b9ecd3827f1a0eda0",
+     "ref": "origin/attack/universal-multistate-signature"
+    },
+    {
+     "sha": "3fe5ac2bc56cd9275a211eb908e0881a8c18c304",
+     "ref": "origin/attack/universal-multistate-signature-20260926"
+    },
+    {
+     "sha": "be075ec9674b8bc0038da273d1bba7524359e954",
+     "ref": "origin/audit/closed-chain-v2.1"
+    },
+    {
+     "sha": "e41955ad39a849cfb996f610ba3f8d5701ebffb2",
+     "ref": "origin/cert/all-generated-hard-brain-shas-20260921"
+    },
+    {
+     "sha": "100155ef8c9fc9fb1cc48cea297e41a7e3ce6b7f",
+     "ref": "origin/cert/all-generated-system-cross-repo-20260921"
+    },
+    {
+     "sha": "8f032de4a352224ae01031f3de18bf012380e091",
+     "ref": "origin/cert/all-generated-system-cross-repo-v2-20260921"
+    },
+    {
+     "sha": "42a720d96e54bb5b41375c8e2f40316649a31289",
+     "ref": "origin/cert/atk-seven-terminal-frozen-certificates-20260921"
+    },
+    {
+     "sha": "e94455c27e7f3db2ba8c13778e38f77e4728eb5a",
+     "ref": "origin/cert/atk-terminal-mcore-038a530d-20260921"
+    },
+    {
+     "sha": "d95cbb72b0ea671a1e70b6aa773a8f8647944de4",
+     "ref": "origin/cert/elyon-claim1-7-audit-run36049892790"
+    },
+    {
+     "sha": "ccdc001df24ccbd8499c2fb7449fef40d98379bb",
+     "ref": "origin/cert/elyon-claim1-7-final-run36045015774"
+    },
+    {
+     "sha": "9bf5ac6337066c65619b9d0d69599e87466f1720",
+     "ref": "origin/cert/elyon-claim1-7-final-run36047053367"
+    },
+    {
+     "sha": "3e8e0d42c95c2834bdec902380d05aa00b2fb4cf",
+     "ref": "origin/cert/elyon-claim1-7-final-run36047343661"
+    },
+    {
+     "sha": "c6bae576cfd5ae10628144c9c32deef8dcd94434",
+     "ref": "origin/cert/elyon-claim1-7-final-run36047829057"
+    },
+    {
+     "sha": "6634422c8004966b97c9c96b0f878852dbbd9175",
+     "ref": "origin/cert/elyon-claim1-7-final-run36048534795"
+    },
+    {
+     "sha": "fed4f79b1b646be824904aa32bd05a5f481791b3",
+     "ref": "origin/cert/elyon-claim1-7-release-run36050478168"
+    },
+    {
+     "sha": "de908fa5be992820389422374d02b6bdc4f1a68a",
+     "ref": "origin/cert/elyon-claim1-7-run36043017699"
+    },
+    {
+     "sha": "e7f317db45fc944226d9dce6223de45ad05bc01c",
+     "ref": "origin/cert/final-chain-run36024920522"
+    },
+    {
+     "sha": "ee1ec8fbe951dfa0c74bbe8777c59e10a7661a97",
+     "ref": "origin/cert/final-fail-closed-center-hard-c3910589"
+    },
+    {
+     "sha": "dd95e39d606e418bd8ee2f11f62b9b5b1248c443",
+     "ref": "origin/cert/final-fail-projective-brain-v1-bf17e3a4"
+    },
+    {
+     "sha": "52e01f32b7ffb592397ba79b44f62a2ba191cee7",
+     "ref": "origin/cert/final-proof-pnp-session-52e01f32"
+    },
+    {
+     "sha": "ef9cc95a83f6d4279da17d3f52e75073df844593",
+     "ref": "origin/cert/full-chain-runtime-master-20260922"
+    },
+    {
+     "sha": "e931de92096b4233ee98422e1442b1a5406c8483",
+     "ref": "origin/cert/fundamental-indeterminacy-core-2d47aa59"
+    },
+    {
+     "sha": "8d2a013d6e4a5e6a0d40ea0d69c1b9d94fa91e3d",
+     "ref": "origin/cert/global-final-fail-external-7of7-bc48474f-run35732246792"
+    },
+    {
+     "sha": "9cdbeb0c95a3a367dd6690f3c752763641a50418",
+     "ref": "origin/cert/global-material-strict-9dc4db35-run36848516979"
+    },
+    {
+     "sha": "9f22df8a531680311f0f570be49ee9876cec23a0",
+     "ref": "origin/cert/global-positive-material-frontier-548d1c5c-run36845768206"
+    },
+    {
+     "sha": "50f62d67de9d0a4f26c03712d2c44086a16019cf",
+     "ref": "origin/cert/material-algebra-ed1354ea-run36854907433"
+    },
+    {
+     "sha": "337c2d38e2e9a8220fca460bf232af46146d2aeb",
+     "ref": "origin/cert/material-asymmetry-30b5c6c8-run36867699222"
+    },
+    {
+     "sha": "0a85d7d28a7cb785a12eab7de4fb4f5c9ccb793c",
+     "ref": "origin/cert/material-stack-e0f2acb3-run36865340514"
+    },
+    {
+     "sha": "5804584ce49f6eae84fcc471d798d79194a11879",
+     "ref": "origin/cert/mcore-formulation-v2-fcdaaab2-run35668594575"
+    },
+    {
+     "sha": "43ee611a4bb56930d1d1fe92b33f5541d4ff208c",
+     "ref": "origin/cert/mcore-v22-closed-system-43ee611a"
+    },
+    {
+     "sha": "a1fc1f2c761366f599576c81fbb88dd6df028388",
+     "ref": "origin/cert/no-findings-green-cross-repo-20260922"
+    },
+    {
+     "sha": "c64d1c7cb22dc15480ef62b2a9ef480eae19cf8d",
+     "ref": "origin/cert/no-findings-green-shas-20260922"
+    },
+    {
+     "sha": "ebfcfa18ecfae88bbe57c0f9cf5fb71597103434",
+     "ref": "origin/cert/pnp-final-fail-external-c6e93506-run35723058593"
+    },
+    {
+     "sha": "3f5b8358ade60419ef95fb7e87faf2c853449ccb",
+     "ref": "origin/cert/production-runtime-master-20260922"
+    },
+    {
+     "sha": "d05fb9fd52c7f77b2f853c1eb6176b4c20871a37",
+     "ref": "origin/cert/reciprocal-13-17-cross-repo-20260922"
+    },
+    {
+     "sha": "23c5a770232c95343773e6388fffab5d4b85ce6b",
+     "ref": "origin/cert/seven-bridge-target1-run36007278734"
+    },
+    {
+     "sha": "ec21e21b95e0fce54027b7426fb60777fa022a57",
+     "ref": "origin/cert/seven-bridge-target2a-run36008150474"
+    },
+    {
+     "sha": "4623cc90a9265219293416f69ae23d692579010a",
+     "ref": "origin/cert/seven-bridge-target2b-run36010309072"
+    },
+    {
+     "sha": "a6302dcdb7f15c61f24d04c45d0a698e9e707728",
+     "ref": "origin/cert/seven-bridge-target2c-run36018694371"
+    },
+    {
+     "sha": "93dc90df5876066150cb4ff119c850090041b1b2",
+     "ref": "origin/cert/seven-bridge-target3-run36020769157"
+    },
+    {
+     "sha": "5440bc62845fc2f4111b32590ae1729cbf18017e",
+     "ref": "origin/cert/seven-bridge-target4-run36021899040"
+    },
+    {
+     "sha": "74d3f261bf8d80d7bd8371841966b8f9f837c536",
+     "ref": "origin/certificates/rh-nb-projection-distance-green-30"
+    },
+    {
+     "sha": "fed4f79b1b646be824904aa32bd05a5f481791b3",
+     "ref": "origin/elyon/claim1-7-only-20260924"
+    },
+    {
+     "sha": "922da696bbabd49e054b2881f16a79c0a6ae18a0",
+     "ref": "origin/final-proof-empty-scope"
+    },
+    {
+     "sha": "fa8892427fb54a666ba21edf634283209c2d4455",
+     "ref": "origin/final-proof-p01-construction"
+    },
+    {
+     "sha": "d95cbb72b0ea671a1e70b6aa773a8f8647944de4",
+     "ref": "origin/final/elyon-claim1-7-audited"
+    },
+    {
+     "sha": "c6bae576cfd5ae10628144c9c32deef8dcd94434",
+     "ref": "origin/final/elyon-claim1-7-certified"
+    },
+    {
+     "sha": "6634422c8004966b97c9c96b0f878852dbbd9175",
+     "ref": "origin/final/elyon-claim1-7-issued"
+    },
+    {
+     "sha": "fed4f79b1b646be824904aa32bd05a5f481791b3",
+     "ref": "origin/final/elyon-claim1-7-release-audited"
+    },
+    {
+     "sha": "bc48474ffda8065a81329023c1e7db0cf24890ad",
+     "ref": "origin/final/global-final-fail-external-7of7-20260922"
+    },
+    {
+     "sha": "c6e93506b3c5d0e52f9a35ef837c63b86c0ef20c",
+     "ref": "origin/final/pnp-final-fail-external-20260922"
+    },
+    {
+     "sha": "d47c95a6e27a08fccfd3594979444ffc09ced66d",
+     "ref": "origin/formal/i-boundary-provenance"
+    },
+    {
+     "sha": "61c7254f1a15ce9bc1b2c405831e03f302f09d4e",
+     "ref": "origin/formal/reciprocal-pair-13-17-v1"
+    },
+    {
+     "sha": "e41955ad39a849cfb996f610ba3f8d5701ebffb2",
+     "ref": "origin/frozen/all-generated-cross-repo-master-e41955ad"
+    },
+    {
+     "sha": "05d047d239f0030d0d981e5775d2c187747e4bde",
+     "ref": "origin/frozen/all-generated-hard-brain-shas-05d047d2"
+    },
+    {
+     "sha": "100155ef8c9fc9fb1cc48cea297e41a7e3ce6b7f",
+     "ref": "origin/frozen/all-generated-system-cross-repo-master-100155ef"
+    },
+    {
+     "sha": "8f032de4a352224ae01031f3de18bf012380e091",
+     "ref": "origin/frozen/all-generated-system-cross-repo-master-8f032de4"
+    },
+    {
+     "sha": "f6c0d9fcf801b53af4896552364936f369208fe4",
+     "ref": "origin/frozen/assumed-semantic-7of7-green-f6c0d9fc"
+    },
+    {
+     "sha": "42a720d96e54bb5b41375c8e2f40316649a31289",
+     "ref": "origin/frozen/atk-seven-terminal-certificates-42a720d9"
+    },
+    {
+     "sha": "e94455c27e7f3db2ba8c13778e38f77e4728eb5a",
+     "ref": "origin/frozen/atk-terminal-certificate-mcore-e94455c2"
+    },
+    {
+     "sha": "e3b5890d3da27d8aaa30c68fcca9b3cfb3970a71",
+     "ref": "origin/frozen/closed-center-36791914488-20261001"
+    },
+    {
+     "sha": "de2c491b897c13d86b680ecaead17c5556c5b51c",
+     "ref": "origin/frozen/closure-graph-audit-36792212732-20261001"
+    },
+    {
+     "sha": "54850561bcc56fa2314a99326135aff3b1b82d6a",
+     "ref": "origin/frozen/closure-graph-validate-36792228338-20261001"
+    },
+    {
+     "sha": "637e74d57b618a9f9df9fa8be274ad15de308e3a",
+     "ref": "origin/frozen/conditional-nonterminal-36792432847-20261001"
+    },
+    {
+     "sha": "119c588a44916456782736fa6f333d23432bb560",
+     "ref": "origin/frozen/direct-terminal-36792715509-20261001"
+    },
+    {
+     "sha": "d95cbb72b0ea671a1e70b6aa773a8f8647944de4",
+     "ref": "origin/frozen/elyon-claim1-7-audit-green-d95cbb72"
+    },
+    {
+     "sha": "3e8e0d42c95c2834bdec902380d05aa00b2fb4cf",
+     "ref": "origin/frozen/elyon-claim1-7-final-green-3e8e0d42"
+    },
+    {
+     "sha": "6634422c8004966b97c9c96b0f878852dbbd9175",
+     "ref": "origin/frozen/elyon-claim1-7-final-green-6634422c"
+    },
+    {
+     "sha": "9bf5ac6337066c65619b9d0d69599e87466f1720",
+     "ref": "origin/frozen/elyon-claim1-7-final-green-9bf5ac63"
+    },
+    {
+     "sha": "c6bae576cfd5ae10628144c9c32deef8dcd94434",
+     "ref": "origin/frozen/elyon-claim1-7-final-green-c6bae576"
+    },
+    {
+     "sha": "ccdc001df24ccbd8499c2fb7449fef40d98379bb",
+     "ref": "origin/frozen/elyon-claim1-7-final-green-ccdc001d"
+    },
+    {
+     "sha": "de908fa5be992820389422374d02b6bdc4f1a68a",
+     "ref": "origin/frozen/elyon-claim1-7-green-de908fa5"
+    },
+    {
+     "sha": "fed4f79b1b646be824904aa32bd05a5f481791b3",
+     "ref": "origin/frozen/elyon-claim1-7-release-green-fed4f79b"
+    },
+    {
+     "sha": "a77d769efa944e36b0eda8c8683b75697063e9ef",
+     "ref": "origin/frozen/elyon-final-external-v1-preparatory-a77d769e"
+    },
+    {
+     "sha": "6a64bebd067bb22ccad1e7bd28483531683b1010",
+     "ref": "origin/frozen/elyon-final-external-v1.3-preparatory-6a64bebd"
+    },
+    {
+     "sha": "7208ac7b152970915b2d15f4ab0141560528d583",
+     "ref": "origin/frozen/elyon-final-external-v1.3.1-preparatory-7208ac7b"
+    },
+    {
+     "sha": "ae08a7526d286331588c3452f8d20eca8cb66e9d",
+     "ref": "origin/frozen/external-cert-status-36792449818-20261001"
+    },
+    {
+     "sha": "e7f317db45fc944226d9dce6223de45ad05bc01c",
+     "ref": "origin/frozen/final-chain-green-e7f317db"
+    },
+    {
+     "sha": "442d11aaea2606ce995cc5088bba71eb2da4ca26",
+     "ref": "origin/frozen/final-external-math-boundary-442d11aa"
+    },
+    {
+     "sha": "ee1ec8fbe951dfa0c74bbe8777c59e10a7661a97",
+     "ref": "origin/frozen/final-fail-closed-center-hard-ee1ec8fb"
+    },
+    {
+     "sha": "dd95e39d606e418bd8ee2f11f62b9b5b1248c443",
+     "ref": "origin/frozen/final-fail-projective-brain-v1-dd95e39d"
+    },
+    {
+     "sha": "fa8892427fb54a666ba21edf634283209c2d4455",
+     "ref": "origin/frozen/final-proof-p01-clean-lane-fa889242"
+    },
+    {
+     "sha": "52e01f32b7ffb592397ba79b44f62a2ba191cee7",
+     "ref": "origin/frozen/final-proof-pnp-session-52e01f32"
+    },
+    {
+     "sha": "ef9cc95a83f6d4279da17d3f52e75073df844593",
+     "ref": "origin/frozen/full-chain-runtime-master-ef9cc95a"
+    },
+    {
+     "sha": "e931de92096b4233ee98422e1442b1a5406c8483",
+     "ref": "origin/frozen/fundamental-indeterminacy-core-e931de92"
+    },
+    {
+     "sha": "555086ef9e5153c8c439df99b66f567f06dcbc18",
+     "ref": "origin/frozen/g21-firewall-36792071260-20261001"
+    },
+    {
+     "sha": "bc48474ffda8065a81329023c1e7db0cf24890ad",
+     "ref": "origin/frozen/global-final-fail-external-7of7-green-bc48474f"
+    },
+    {
+     "sha": "9dc4db35c141cdd9f57eeeeb9c2247478bc00aa9",
+     "ref": "origin/frozen/global-material-strict-green-9dc4db35"
+    },
+    {
+     "sha": "548d1c5c7904d8a6d413b4a58a655325bc7941b9",
+     "ref": "origin/frozen/global-positive-material-frontier-green-548d1c5c"
+    },
+    {
+     "sha": "5ca632ce309085e3d8c87aad705b8284b54f525a",
+     "ref": "origin/frozen/live-frontiers-36792377012-20261001"
+    },
+    {
+     "sha": "74e07e564781584a84f9b922a70c299ae89284b1",
+     "ref": "origin/frozen/master-manifest-36792850145-20261001"
+    },
+    {
+     "sha": "ed1354eacb7161e6021450acc758610cd06dc46b",
+     "ref": "origin/frozen/material-algebra-green-ed1354ea"
+    },
+    {
+     "sha": "30b5c6c8c4ad44e2b59dab9b87ba713dc01d4c97",
+     "ref": "origin/frozen/material-asymmetry-green-30b5c6c8"
+    },
+    {
+     "sha": "e0f2acb31ef48df61a800a941cece216eccaaa8f",
+     "ref": "origin/frozen/material-stack-green-e0f2acb3"
+    },
+    {
+     "sha": "fcdaaab2093afa5e0c973057a00a610039d5ff0f",
+     "ref": "origin/frozen/mcore-formulation-v2-green-fcdaaab2"
+    },
+    {
+     "sha": "43ee611a4bb56930d1d1fe92b33f5541d4ff208c",
+     "ref": "origin/frozen/mcore-v22-closed-system-green-43ee611a"
+    },
+    {
+     "sha": "a1fc1f2c761366f599576c81fbb88dd6df028388",
+     "ref": "origin/frozen/no-findings-green-cross-repo-master-a1fc1f2c"
+    },
+    {
+     "sha": "c64d1c7cb22dc15480ef62b2a9ef480eae19cf8d",
+     "ref": "origin/frozen/no-findings-green-shas-c64d1c7c"
+    },
+    {
+     "sha": "1eb62478b6e6912e5ae0753dbf5c2605faf6db13",
+     "ref": "origin/frozen/ns-g5-mcore-green-1eb62478"
+    },
+    {
+     "sha": "efa2ad8bec9cc68001d5f7cde94bfd40e6da0fc2",
+     "ref": "origin/frozen/p01-candidate-36792625899-20261001"
+    },
+    {
+     "sha": "c6e93506b3c5d0e52f9a35ef837c63b86c0ef20c",
+     "ref": "origin/frozen/pnp-final-fail-external-green-c6e93506"
+    },
+    {
+     "sha": "3f5b8358ade60419ef95fb7e87faf2c853449ccb",
+     "ref": "origin/frozen/production-runtime-master-3f5b8358"
+    },
+    {
+     "sha": "d05fb9fd52c7f77b2f853c1eb6176b4c20871a37",
+     "ref": "origin/frozen/reciprocal-13-17-cross-repo-master-d05fb9fd"
+    },
+    {
+     "sha": "61c7254f1a15ce9bc1b2c405831e03f302f09d4e",
+     "ref": "origin/frozen/reciprocal-pair-13-17-61c7254f"
+    },
+    {
+     "sha": "299eeda5bf7fabc85ad2af461f5a0f9273628a7a",
+     "ref": "origin/frozen/semantic-frontier-0of7-green-299eeda5"
+    },
+    {
+     "sha": "6fbd7896429cb3edb163559782d076176d0254f0",
+     "ref": "origin/frozen/seven-bridge-claim1-6-green-6fbd789"
+    },
+    {
+     "sha": "23c5a770232c95343773e6388fffab5d4b85ce6b",
+     "ref": "origin/frozen/seven-bridge-target1-green-23c5a770"
+    },
+    {
+     "sha": "ec21e21b95e0fce54027b7426fb60777fa022a57",
+     "ref": "origin/frozen/seven-bridge-target2a-green-ec21e21"
+    },
+    {
+     "sha": "4623cc90a9265219293416f69ae23d692579010a",
+     "ref": "origin/frozen/seven-bridge-target2b-green-4623cc90"
+    },
+    {
+     "sha": "a6302dcdb7f15c61f24d04c45d0a698e9e707728",
+     "ref": "origin/frozen/seven-bridge-target2c-green-a6302dcd"
+    },
+    {
+     "sha": "93dc90df5876066150cb4ff119c850090041b1b2",
+     "ref": "origin/frozen/seven-bridge-target3-green-93dc90df"
+    },
+    {
+     "sha": "5440bc62845fc2f4111b32590ae1729cbf18017e",
+     "ref": "origin/frozen/seven-bridge-target4-green-5440bc62"
+    },
+    {
+     "sha": "1de90e63d7b6533f0f7de01913cb9d371cb5980d",
+     "ref": "origin/frozen/seven-lane-36792188888-20261001"
+    },
+    {
+     "sha": "d0ce322c47c96990a90596501bed86699dbbfe95",
+     "ref": "origin/frozen/terminal-branches-36792857037-20261001"
+    },
+    {
+     "sha": "8e760064083aa95e2c41ec1389e162264a12135e",
+     "ref": "origin/frozen/terminal-index-36792289206-20261001"
+    },
+    {
+     "sha": "ea29f66517d89658ba575d3f8653195cb87477bc",
+     "ref": "origin/frozen/terminal-structures-36792277968-20261001"
+    },
+    {
+     "sha": "038a530d2b87cf92c05bfacb7592a68a854642eb",
+     "ref": "origin/frozen/unified-terminal-logic-green-038a530d"
+    },
+    {
+     "sha": "41426312218a6c2a85937a2b7386b05556d1646d",
+     "ref": "origin/frozen/unified-terminal-separated-certificates-41426312"
+    },
+    {
+     "sha": "525e5e3da2b95b7ef7e1c0819fb4b6014779b952",
+     "ref": "origin/frozen/universal-36791931150-20261001"
+    },
+    {
+     "sha": "792afd6827b8cc4823d79f9ba6a3eb4e28c62378",
+     "ref": "origin/frozen/universal-36791946343-20261001"
+    },
+    {
+     "sha": "e543c3c607acdf86497accc66708160ba03249e9",
+     "ref": "origin/infra/atl-v3-canonical-20260926"
+    },
+    {
+     "sha": "4a21f2a79720730ddecbd58fd9a8257c6cce46e0",
+     "ref": "origin/interface/mcore-readonly-export-v1-20260921"
+    },
+    {
+     "sha": "53d58bceed3424a435eb54e01cd6d3f17324a630",
+     "ref": "origin/main"
+    },
+    {
+     "sha": "373f03d2669b35f9530c304926e9e497e0f36016",
+     "ref": "origin/open-math-scoped-final"
+    },
+    {
+     "sha": "4e0094b1d9ed524117d2670747624945d5d56254",
+     "ref": "origin/open-math/i3-tristable"
+    },
+    {
+     "sha": "de53defdccc97071f6b386f4f94547d4667efafb",
+     "ref": "origin/python-audit"
+    },
+    {
+     "sha": "d7298c44b8efc7202819f8095cef977e8929d4dc",
+     "ref": "origin/release/elyon-claim1-7-public-ready"
+    },
+    {
+     "sha": "f4d582cb90a9a366bb2aaeebd2729ed2fb9ca053",
+     "ref": "origin/repair/source-only-terminal-alignment-20261001"
+    },
+    {
+     "sha": "4d224f1dc036ec2c617af3b88be0083fee884cbc",
+     "ref": "origin/research/closed-empty-external-20260924"
+    },
+    {
+     "sha": "ef31a391b2127be4a51fdf0aa51ccb51a5670cd5",
+     "ref": "origin/research/pure-math-final-proof-v1"
+    },
+    {
+     "sha": "9c2b333f960d45eda7f41c6ac54f3c1ecc234032",
+     "ref": "origin/research/seven-certs-final-20260924"
+    },
+    {
+     "sha": "17d753e81d9e05806a42ee959b56450d81bf24cd",
+     "ref": "origin/research/single-45bf2597-final-20260924"
+    },
+    {
+     "sha": "24a16e8e344500ca9553eb34ab82c17ee6a3a496",
+     "ref": "origin/rh-certificates"
+    },
+    {
+     "sha": "6fbd7896429cb3edb163559782d076176d0254f0",
+     "ref": "origin/seven-bridge/claim5-6"
+    },
+    {
+     "sha": "15454753249ea7c5138747c907d4cf8be94bcc3e",
+     "ref": "origin/seven-bridge/claim7-coverage"
+    },
+    {
+     "sha": "a3c0a60083a01e6d2ecf93a87b68763f0c7f47cd",
+     "ref": "origin/work/kernel-truncation-closure-20261005"
+    }
+   ],
+   "history": "branch tips only",
+   "unique_lean_blobs": 487,
+   "methods": [
+    "M2",
+    "manual read"
+   ]
+  },
+  {
+   "repository": "ShantiDraconis/millennium-p-vs-np-I",
+   "refs": [
+    {
+     "sha": "870ab93b7409e76ecdb9fa9ac7cd0a69ba12ebaf",
+     "ref": "origin"
+    },
+    {
+     "sha": "311c5198a4afb8085cb1b452f0650ff89880fa67",
+     "ref": "origin/atk/final-root-recovery-20261001"
+    },
+    {
+     "sha": "f682dc96f7f45a64037bb8a95ce5693fe9f54d65",
+     "ref": "origin/atk/material-audit-v2-shadow-20261007"
+    },
+    {
+     "sha": "f40855ad911fc8f9611dafad9f4bca913cf8db37",
+     "ref": "origin/atk/material-kernel-20260930"
+    },
+    {
+     "sha": "3a50090fd3fa51324a462bf89fe01ade5ddc3f00",
+     "ref": "origin/atk/p01-truncation-law-20261005"
+    },
+    {
+     "sha": "99f2f94ff69f0c6235c8a00a81328276c210fbd8",
+     "ref": "origin/atk/truncation-law-pnp-20261005"
+    },
+    {
+     "sha": "ad56a00ac94c2f0aaafd095cc6cfd68a8ff5fc94",
+     "ref": "origin/cert/atk-fastpath-external-v1-ad56a00a"
+    },
+    {
+     "sha": "a37727bfc2c4512f70355a2bc57f89f8d6fdd00a",
+     "ref": "origin/copilot/explore-p-vs-np-conjecture"
+    },
+    {
+     "sha": "2cb19a3b46154190815fef5c44759d08513f17bb",
+     "ref": "origin/copilot/fix-github-actions-job"
+    },
+    {
+     "sha": "6241a7c17911e019d6b4ab7d096325f57025d9b9",
+     "ref": "origin/copilot/fix-github-actions-job-again"
+    },
+    {
+     "sha": "ad56a00ac94c2f0aaafd095cc6cfd68a8ff5fc94",
+     "ref": "origin/fastpath/external-certificate-v1"
+    },
+    {
+     "sha": "ad56a00ac94c2f0aaafd095cc6cfd68a8ff5fc94",
+     "ref": "origin/frozen/atk-fastpath-external-v1-ad56a00a"
+    },
+    {
+     "sha": "0dd4e68213b62c24a57b794265b8cf6a9702ff2b",
+     "ref": "origin/m-core-empty-parallel"
+    },
+    {
+     "sha": "870ab93b7409e76ecdb9fa9ac7cd0a69ba12ebaf",
+     "ref": "origin/main"
+    }
+   ],
+   "history": "branch tips only",
+   "unique_lean_blobs": 17,
+   "methods": [
+    "M2",
+    "generic NP/SAT/axiom/sorry grep",
+    "manual read"
+   ]
+  },
+  {
+   "repository": "ShantiDraconis/axiomatic-millenium",
+   "refs": [
+    {
+     "sha": "2f3202ba1c1e5d860dbb8ea6bf2a7eb0d336ea66",
+     "ref": "origin"
+    },
+    {
+     "sha": "2f8b223cfbbf4cea12107b872fe7a692044392b0",
+     "ref": "origin/atk/atl-v3-gapshape-validate"
+    },
+    {
+     "sha": "b2627186e765d7005fc83c6894035c7762e34021",
+     "ref": "origin/atk/formal-source-closure-guard-v1"
+    },
+    {
+     "sha": "62b742ad508eac732df4f02a5fc493aae88e0d8f",
+     "ref": "origin/atk/negative-formalization-status-v1"
+    },
+    {
+     "sha": "8161e4d06c4e1ddad15db937b5dfea8d1b283c71",
+     "ref": "origin/atk/universal-material-closure-20260930"
+    },
+    {
+     "sha": "6af1d356e832d554ac258b3a16e60d5eaaf69fb9",
+     "ref": "origin/atk/universal-terminal-composition-20261001"
+    },
+    {
+     "sha": "4d772afb171c68a7d5d9a695a5dcd62313382ee4",
+     "ref": "origin/cert/axm-cross-signature-002-7ba3cebe-run36205172327"
+    },
+    {
+     "sha": "4c80f2d553bdc018aa096a55dfba20f99faf2291",
+     "ref": "origin/cert/pvsnp-reduction-state-v1"
+    },
+    {
+     "sha": "5adde10a48c9e8c469ebd0f0fca285c16742cd59",
+     "ref": "origin/copilot/fix-github-actions-job"
+    },
+    {
+     "sha": "5593fe277b5599fe38602479a47921164686160d",
+     "ref": "origin/copilot/resolve-asdfg-issue"
+    },
+    {
+     "sha": "f46e3bafe494a684123f3b38c47514d8921594da",
+     "ref": "origin/discovery/evidence-linker-v1"
+    },
+    {
+     "sha": "0bd08818ad992401cea4da87f97ab5c0fd1f8b45",
+     "ref": "origin/discovery/evidence-linker-v2"
+    },
+    {
+     "sha": "64aa83aaba28071e5f9d14d05bc86ef298e39b6e",
+     "ref": "origin/formal/official-model-obligation-v1"
+    },
+    {
+     "sha": "eaa2a9dd6d850be53ed63cc0b36c88c90444fd56",
+     "ref": "origin/formal/p02-source-found-v1"
+    },
+    {
+     "sha": "0d09d7201f1cb698bd842071410e73d909683bc9",
+     "ref": "origin/formal/root-contract-v1"
+    },
+    {
+     "sha": "72ed7198603c0dcd8f4067e8dcf195f2c63bd5c8",
+     "ref": "origin/formal/source-statement-gate-v1"
+    },
+    {
+     "sha": "18262565add3fde25df4f1cfb7b037b9510637c7",
+     "ref": "origin/frozen/axm-cross-signature-002-certified-18262565"
+    },
+    {
+     "sha": "7ba3cebe7e7470b8cee5faab465604b24bd7849d",
+     "ref": "origin/frozen/axm-cross-signature-002-green-7ba3cebe"
+    },
+    {
+     "sha": "c7b69223521ea097a04d53b1039b9254be5b9b32",
+     "ref": "origin/frozen/cross-signature-002-c7b69223"
+    },
+    {
+     "sha": "8de809b8afdea1716c886afe0e7ee8aaac3f7ea8",
+     "ref": "origin/hardening/final-egc-root-freeze-v1"
+    },
+    {
+     "sha": "53e306c76898abf056aef5a52b32e9b1f2fe99ab",
+     "ref": "origin/integrate/discovery-boundary-v1"
+    },
+    {
+     "sha": "ff4ab9ec7adad096f0554e584132c84ffd275305",
+     "ref": "origin/integrate/root-contract-v1"
+    },
+    {
+     "sha": "2f3202ba1c1e5d860dbb8ea6bf2a7eb0d336ea66",
+     "ref": "origin/main"
+    },
+    {
+     "sha": "c7b69223521ea097a04d53b1039b9254be5b9b32",
+     "ref": "origin/meta/cross-signature-002-g21-negative"
+    },
+    {
+     "sha": "e9f93700cfa24f3ae90f1593d6eb57cf2ed1aa70",
+     "ref": "origin/meta/frontier-reds-formalization-v1"
+    },
+    {
+     "sha": "55ce705f5b11181fef8003740af6d25d73c34272",
+     "ref": "origin/meta/pattern-calculator-v1"
+    },
+    {
+     "sha": "d4e9300cfac321ac198daae4aae767f7e1f7d40a",
+     "ref": "origin/postcert/atk-composition-engine-v1"
+    },
+    {
+     "sha": "0743e4628d0765ebe61cb205144449e20f6ca011",
+     "ref": "origin/postcert/atk-resolve-all-targets-v1"
+    },
+    {
+     "sha": "d3908d7aa9118dfb96bfdb3d6ea998a169345cd8",
+     "ref": "origin/postcert/atk-reuse-guard-v1"
+    },
+    {
+     "sha": "6ae8f6d17080d9fe2b946ede6550c8d682d90597",
+     "ref": "origin/postcert/register-chain-targets-v1"
+    },
+    {
+     "sha": "0357a4a12c13815ac075bde798000b2bf9101018",
+     "ref": "origin/postcert/register-positive-chain-v1"
+    },
+    {
+     "sha": "35c9689e1de82249c827b5f1c73302c5695553a5",
+     "ref": "origin/postcert/register-taxonomy-boundary-v1"
+    },
+    {
+     "sha": "b658dcba309794eb1e41e045bf612639c231ac6d",
+     "ref": "origin/postcert/registry-export-v1"
+    },
+    {
+     "sha": "37f3d2dec707a5c8b7a613d716a60277387b7866",
+     "ref": "origin/registry/evidence-by-domain-v1"
+    },
+    {
+     "sha": "c03806dca9b585a0bc80144ac794f1dafd375a62",
+     "ref": "origin/root-contract/egc-v1"
+    },
+    {
+     "sha": "744aff27229edd0abab85742e4f55890f433c18c",
+     "ref": "origin/root-contract/router-audit-v1"
+    },
+    {
+     "sha": "4b71720ab1750b8b36c86407c07ff0a875776e9e",
+     "ref": "origin/root/bounded-minimality-v1"
+    },
+    {
+     "sha": "c9b542349f5e8a0ffff5aa95f732679addff6833",
+     "ref": "origin/root/external-model-source-gate-v1"
+    },
+    {
+     "sha": "2fe5c125a538ef456e9b448d7eefff2c74b0eac2",
+     "ref": "origin/root/hardening-v1"
+    },
+    {
+     "sha": "aed48ae3977807f907686949fae17a14a4812dad",
+     "ref": "origin/root/pvsnp-conditional-egc-v1"
+    },
+    {
+     "sha": "61d76273989d7ae235e5fb3c36fdcbbd3b82a782",
+     "ref": "origin/root/pvsnp-source-bindings-v1"
+    },
+    {
+     "sha": "21b77d2c65e0fd181d4d9b618c9f0b307be3b4af",
+     "ref": "origin/root/source-search-lock-v1"
+    },
+    {
+     "sha": "61f35d9c793640e54dd28d49fbc315468943fd46",
+     "ref": "origin/test/f-reformulation-chain-v1"
+    },
+    {
+     "sha": "05708bb601959623081420d718bd208d38c9fc56",
+     "ref": "origin/test/full-pattern-logic-v1"
+    },
+    {
+     "sha": "308e7914af8da934c1e25fcbb3cef0ab84d91a84",
+     "ref": "origin/test/full-positive-chain-v1"
+    },
+    {
+     "sha": "27dc629b1f0b34db5ba7be25e028f63c63c630e9",
+     "ref": "origin/test/rncb-chain-v1"
+    },
+    {
+     "sha": "ff39e233e3ede097766e47189e06555ebcfe3a95",
+     "ref": "origin/test/taxonomy-boundary-v1"
+    },
+    {
+     "sha": "3a073bff7ef7fb73603c655617920ca17e8a226d",
+     "ref": "origin/test/zpi-chain-v1"
+    }
+   ],
+   "history": "branch tips only",
+   "unique_lean_blobs": 92,
+   "methods": [
+    "M2",
+    "generic NP/SAT/axiom/sorry grep"
+   ]
+  },
+  {
+   "repository": "ShantiDraconis/proofs-multiprover",
+   "refs": [
+    {
+     "sha": "3bcc472e52d765cd2d85590c10f00740478d08a0",
+     "ref": "origin"
+    },
+    {
+     "sha": "3bcc472e52d765cd2d85590c10f00740478d08a0",
+     "ref": "origin/main"
+    }
+   ],
+   "history": "branch tips only",
+   "files": "Lean, Coq (.v), Isabelle (.thy), Agda, TLA+: elementary parity/arithmetic examples only",
+   "methods": [
+    "manual read"
+   ]
+  },
+  {
+   "repository": "ShantiDraconis/universal-proof-hub",
+   "refs": [
+    {
+     "sha": "83759bc06c94a6759e0decf5e923ca33a0114f9f",
+     "ref": "origin"
+    },
+    {
+     "sha": "41a0baabb7988fc053c2a6009cb165b1c0d94ab7",
+     "ref": "origin/atk/research-os-adapter-20261005"
+    },
+    {
+     "sha": "af7cf7f17424b945261159f91feb0408d1d23302",
+     "ref": "origin/certified/research-os-hub-20261005-v2"
+    },
+    {
+     "sha": "1a3e435efc0ecb64cd7120c7199d2a2dafcc76a7",
+     "ref": "origin/copilot/create-github-pages-hub"
+    },
+    {
+     "sha": "11f7479bf76eb28cd58af8c8b0d5c924acb8655c",
+     "ref": "origin/elyon-open-math-miner"
+    },
+    {
+     "sha": "6bf5a9ab04cf8ddca3c63370d422a38dc649e718",
+     "ref": "origin/frozen/research-os-atk-hub-v3-20261005"
+    },
+    {
+     "sha": "c38c7aa782c6980cb4c6e7b34ec51b673b1d223d",
+     "ref": "origin/frozen/research-os-hub-20261005"
+    },
+    {
+     "sha": "94e91883226025f100620edf9b9349d9353e3540",
+     "ref": "origin/frozen/research-os-hub-20261005-v2"
+    },
+    {
+     "sha": "83759bc06c94a6759e0decf5e923ca33a0114f9f",
+     "ref": "origin/main"
+    }
+   ],
+   "history": "branch tips only",
+   "unique_lean_blobs": 11,
+   "methods": [
+    "M2",
+    "generic grep"
+   ],
+   "note": "contains `axiom collapse_classical_limit` (src/lean/collapse-numerical-classical.lean:241), unrelated to P vs NP"
+  }
+ ],
+ "candidates_examined_and_rejected": [
+  {
+   "name": "MCore.Real.G21PointwiseAttempt.myFailureGenerator",
+   "type": "G21Pointwise",
+   "location": "attack/final-external-two-gap-attempt-20260922:lean/MCore/Real/G21PointwiseAttempt.lean:32",
+   "disposition": "REJECTED: body is `sorry`"
+  },
+  {
+   "name": "closeG2Forcado / universalDisagreementForcado",
+   "type": "UniversalFailureWitness",
+   "location": "atk/p02-g2-universal-failure-material-20261005:probe/P02G2TruncationBoundary.lean:28-35 (also atk/structural-fixed-point-20261006, probe/P02TruncationFrontier.lean)",
+   "disposition": "REJECTED: built on `sorry`; file states it is not a proof"
+  },
+  {
+   "name": "MCore.Real.falsified_SATNotInP",
+   "type": "SATNotInP (legacy model)",
+   "location": "atk/falsified-terminal-inhabitants-20260930:lean/MCore/Real/FalsifiedTerminal.lean:9",
+   "disposition": "REJECTED: depends on `axiom falsified_satLowerBoundCertificate`; legacy model already refuted by FinalProofAttack.current_SATNotInP_refuted"
+  },
+  {
+   "name": "examples in probe/P02KernelSearchG2*.lean, P02TerminalG2KernelQuestions.lean, P02TerminalQuestionsG2.lean, P02TerminalG2InhabitantExpectedFailure.lean",
+   "type": "UniversalFailureWitness / G2_TERMINAL",
+   "location": "atk/p02-g2-universal-failure-material-20261005:probe/",
+   "disposition": "REJECTED: open-goal search probes (`exact?`, `aesop?`, `refine ⟨?_, ?_⟩`), expected to fail"
+  },
+  {
+   "name": "example : FailureGenerator (SATBits circuitBitEncoding)",
+   "type": "FailureGenerator",
+   "location": "work/pnp-minimal-separation-20261005:lean/MCore/PNPMaterialAtoms.lean:17",
+   "disposition": "REJECTED: `by constructor` with open goals"
+  },
+  {
+   "name": "example : MinimalSeparationInhabitant",
+   "type": "MinimalSeparationInhabitant",
+   "location": "frozen/pnp-verifier-2field-green-7012d464:lean/MCore/MinimalInhabitantSearch.lean:5",
+   "disposition": "REJECTED: `by constructor` with open goals"
+  },
+  {
+   "name": "MCore.FinalFail.pvsnp_accepted_enabled",
+   "type": "Nonempty (PvsNPAcceptedInhabitant …)",
+   "location": "M-Core attack/proposed-hypothesis-20260929:lean/MCore/FinalFail/ProposedHypothesis.lean",
+   "disposition": "REJECTED: conditional on `variable (H : ProposedHypothesis M)` whose field `satNotInP` is the conclusion"
+  },
+  {
+   "name": "FinalProof.final_root",
+   "type": "FINAL_ROOT_STATEMENT (= PneqNP)",
+   "location": "millennium-p-vs-np-I atk/final-root-recovery-20261001:FinalProof/FinalRoot.lean:15",
+   "disposition": "REJECTED: takes `(w : PneqNPWitness)`; PneqNPWitness has no inhabitant"
+  },
+  {
+   "name": "ATKTerminalStaging.terminal_closure",
+   "type": "ExactEndpoint (variable)",
+   "location": "millennium-p-vs-np-I main:formal/ATKTerminalStaging.lean:12",
+   "disposition": "REJECTED: `sorry`; file states it is not a certificate"
+  }
+ ],
+ "limitations": [
+  "M1/M2 are textual parsers of Lean source; declarations produced by macros or tactics generating new constants would only be seen by M3.",
+  "M3 covered only branches that compile on the frozen P01 base; non-compiling branches cannot be kernel-scanned.",
+  "Repositories other than m-core-p-vs-np were scanned at branch tips only, not full history.",
+  "Repositories for other conjectures (Riemann, Beal, BSD, Hodge, Yang–Mills, Navier–Stokes, Poincaré) were not scanned in this cycle.",
+  "Markdown/JSON/LaTeX claims were not treated as proofs; only kernel-checkable terms count."
+ ]
+}
