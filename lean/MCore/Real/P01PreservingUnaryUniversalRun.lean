@@ -121,7 +121,7 @@ theorem preservingRead_nonzero_exact
     _ =
       preservingUnaryReadMachine.run (kIter + (kFinal + kRewind))
         (indexSomeConfig [a] (moved ++ b :: suffix) moved.length) := by
-          rw [h0]
+          simpa only [List.cons_append] using congrArg (preservingUnaryReadMachine.run (kIter + (kFinal + kRewind))) h0
     _ =
       preservingUnaryReadMachine.run (kFinal + kRewind)
         (preservingUnaryReadMachine.run kIter
@@ -140,7 +140,7 @@ theorem preservingRead_nonzero_exact
       preservingUnaryReadMachine.run kRewind
         (selectedConfig (a :: moved) b suffix) := by
           dsimp [kFinal]
-          rw [hfinal]
+          simpa [kFinal] using congrArg (preservingUnaryReadMachine.run kRewind) hfinal
     _ = haltedConfig b ((a :: moved) ++ b :: suffix)
           ((a :: moved).length + 2) := by
           dsimp [kRewind]
@@ -186,6 +186,7 @@ theorem preservingRead_nonzero_material
             fuel = nonzeroReaderFuel i := by
           unfold fuel nonzeroReaderFuel
           rw [hiterExact]
+          simp only [List.length_cons, List.length_singleton, Nat.pow_two] at hiterExact
           simp [Nat.pow_two] at hidx ⊢
           omega
         rw [hfuelExact]
