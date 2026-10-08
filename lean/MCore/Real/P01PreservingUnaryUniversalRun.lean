@@ -186,8 +186,9 @@ theorem preservingRead_nonzero_material
             fuel = nonzeroReaderFuel i := by
           unfold fuel nonzeroReaderFuel
           rw [hiterExact]
-          simp only [List.length_cons, List.length_singleton, Nat.pow_two] at hiterExact
-          simp [Nat.pow_two] at hidx ⊢
+          simp only [List.length_cons, List.length_singleton] at hiterExact
+          simp only [List.length_cons] at hidx
+          simp only [List.length_cons, List.length_singleton, Nat.pow_two, Nat.mul_one, Nat.one_mul] at *
           omega
         rw [hfuelExact]
         exact nonzeroReaderFuel_le_timeBound witness i
