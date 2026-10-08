@@ -107,6 +107,21 @@ theorem rewind_false_bits
       simpa [List.reverse_cons, List.map_append, List.append_assoc] using
         (ih (left := some b :: left))
 
+/-- A three-step rewind cycle preserves a selected true result while restoring
+an arbitrary witness bit. -/
+theorem rewind_true_control_cycle
+    (left : List (Option Bool)) (b : Bool) (next : Option Bool)
+    (right : List (Option Bool)) :
+    preservingUnaryReadMachine.run 3
+      { state := .rewindInspectTrue
+        tape := { left := none :: left, head := some b,
+                  right := next :: right } } =
+      { state := .rewindInspectTrue
+        tape := { left := some b :: none :: left, head := next,
+                  right := right } } := by
+  cases b <;>
+    simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.payload_advance_rewind
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.preserving_reader_induction_entry
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.selected_bit_from_decomposition
