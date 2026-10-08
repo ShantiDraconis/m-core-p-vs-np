@@ -1,0 +1,30 @@
+name: ATK Exhaustive Kernel Inventory
+on:
+  push:
+    branches: [main, atk/p01-successor-cycle-20261005]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Inventory all Lean modules
+        shell: bash
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          python3 audit/kernel_inventory.py
+      - name: Publish kernel inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-inventory
+          path: artifacts/kernel-inventory.json
+          if-no-files-found: error
