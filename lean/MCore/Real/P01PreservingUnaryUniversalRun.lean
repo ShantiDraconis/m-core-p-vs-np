@@ -190,7 +190,7 @@ theorem preservingRead_nonzero_material
           simp only [List.length_cons, List.length_singleton] at *
           simp only [Nat.pow_two]
           simp only [Nat.add_mul, Nat.mul_add, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
-          simp only [Nat.zero_mul, Nat.mul_zero, Nat.one_mul, Nat.mul_one, Nat.zero_add, Nat.add_zero]
+          simp only [List.length_nil, Nat.zero_mul, Nat.mul_zero, Nat.one_mul, Nat.mul_one, Nat.zero_add, Nat.add_zero]
           omega
         rw [hfuelExact]
         exact nonzeroReaderFuel_le_timeBound witness i
