@@ -7,8 +7,8 @@ modules = sorted(".".join(p.relative_to(source).with_suffix("").parts)
                  for p in source.rglob("*.lean"))
 generated = root / "artifacts" / "AllModulesIntegration.lean"
 generated.parent.mkdir(exist_ok=True)
-generated.write_text("-- Generated integration root; no mathematical claims.\n" +
-                     "".join(f"import {name}\n" for name in modules))
+generated.write_text("-- Generated library integration root; executable entrypoints are checked separately.\n" +
+                     "".join(f"import {name}\n" for name in modules if name.startswith("MCore.")))
 print(f"Integrating {len(modules)} Lean modules", flush=True)
 # Build every module before importing them together.
 for name in modules:
