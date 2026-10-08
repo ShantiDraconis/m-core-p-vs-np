@@ -122,21 +122,6 @@ theorem rewind_true_control_cycle
   cases b <;>
     simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
-/-- A three-step rewind preserves the selected true result while restoring
-an arbitrary witness bit. -/
-theorem rewind_true_control_cycle
-    (left : List (Option Bool)) (b : Bool) (next : Option Bool)
-    (right : List (Option Bool)) :
-    preservingUnaryReadMachine.run 3
-      { state := .rewindInspectTrue
-        tape := { left := none :: left, head := some b,
-                  right := next :: right } } =
-      { state := .rewindInspectTrue
-        tape := { left := some b :: none :: left, head := next,
-                  right := right } } := by
-  cases b <;>
-    simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
-
 /-- Cleanup consumes one erased unary cell without changing the selected
 false result. -/
 theorem cleanup_false_blank_step
