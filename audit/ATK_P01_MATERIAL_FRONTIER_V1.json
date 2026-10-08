@@ -52,14 +52,17 @@
       ]
     },
     "witness_guess": {
-      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "status": "MATERIAL_GREEN_CI_CONFIRMED",
       "source_branch": "atk/p01-terminal-sprint-v1",
       "object": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessMachine",
       "theorems": [
         "MCore.Real.P01WitnessGuessExecution.witnessGuess_complete",
         "MCore.Real.P01WitnessGuessExecution.witnessGuess_halts"
       ],
-      "content": "fixed finite-control NTM; every source-length Boolean witness is reachable; every branch halts within source.length+1"
+      "content": "fixed finite-control NTM; every source-length Boolean witness is reachable; every branch halts within source.length+1",
+      "verified_run": 36499549795,
+      "verified_conclusion": "success",
+      "scope_note": "Certified component; global P01MachineConstruction remains OPEN_MATH."
     },
     "source_rewind": {
       "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI_HEAD",
@@ -67,7 +70,7 @@
       "content": "real three-state TM halts from canonical source-end tape in source.length + 2"
     },
     "indexed_witness_read": {
-      "status": "MATERIAL_GREEN_CANDIDATE_PENDING_CI",
+      "status": "MATERIAL_GREEN_CI_CONFIRMED",
       "machine": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine",
       "theorems": [
         "MCore.Real.P01WitnessIndexedReadMachine.read_zero_false",
@@ -75,7 +78,16 @@
         "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_state",
         "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_halts"
       ],
-      "content": "fixed Fin-6 TM reads selected witness cell without storing i in finite control; arbitrary blank seek padding halts and classifies bit"
+      "content": "fixed Fin-6 TM reads selected witness cell without storing i in finite control; arbitrary blank seek padding halts and classifies bit",
+      "verified_runs": [
+        36497448606,
+        36497644415
+      ],
+      "verified_conclusions": [
+        "success",
+        "success"
+      ],
+      "scope_note": "Historical indexed witness read only; does not establish the remaining preserving unary-index input-node case or global P01MachineConstruction."
     }
   },
   "permanent_fences": [
@@ -91,5 +103,10 @@
     "compose certified parser + guess + verifier into P01MachineConstruction"
   ],
   "lower_bound_after_np": "UniversalFailure (SATBits circuitBitEncoding)",
-  "material_status": "OPEN_MATH"
+  "material_status": "OPEN_MATH",
+  "reconciliation_20261008": {
+    "source": "GATE_LEDGER.json",
+    "policy": "forward-only, historical run confirmation; no terminal mathematical promotion",
+    "terminal_status": "OPEN_MATH"
+  }
 }
