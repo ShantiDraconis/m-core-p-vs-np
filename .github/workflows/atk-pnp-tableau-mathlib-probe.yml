@@ -63,7 +63,12 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$HOME/.elan/bin:$PATH"
-          lake build MCore.Real.PNPNTMTableauEncoding 2>&1 | tee build.log
+          if ! lake build MCore.Real.PNPNTMTableauEncoding 2>&1 | tee build.log; then
+            grep -E "error:|✖" build.log | head -15 | while IFS= read -r l; do
+              echo "::error title=tableau build::${l:0:400}"
+            done
+            exit 1
+          fi
       - name: Axiom audit of every theorem in the tableau module
         shell: bash
         run: |
@@ -104,6 +109,15 @@ jobs:
           EOF
           lake env lean TableauAudit.lean 2>&1 | tee audit.log
           grep -q "MODULE_AXIOM_AUDIT PASS" audit.log
+          echo "::notice title=module audit::$(grep -o 'MODULE_AXIOM_AUDIT.*' audit.log | head -1)"
+          python3 - <<'PY'
+          import re
+          t = open("audit.log").read()
+          for name, axs in re.findall(r"'([^']+)' depends on axioms: \[([^\]]*)\]", t, re.S):
+              print(f"::notice title=axioms::{name} -> [{' '.join(axs.split())}]")
+          for name in re.findall(r"'([^']+)' does not depend on any axioms", t):
+              print(f"::notice title=axioms::{name} -> []")
+          PY
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
