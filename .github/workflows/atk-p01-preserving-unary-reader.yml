@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RInE '\b(sorry|admit|sorryAx)\b' --include='*.lean' lean/MCore/Real/P01PreservingUnaryWitnessMarker.lean; then
+          if grep -nE '\b(sorry|admit|sorryAx)\b' lean/MCore/Real/P01PreservingUnary{WitnessMarker,WitnessMachine,SuccessorCycle,Iteration,FinalRead,Rewind,ReaderBound,UniversalRun,ReaderCertificate}.lean; then
             exit 1
           fi
           echo HYGIENE_GREEN
