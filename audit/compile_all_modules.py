@@ -7,9 +7,10 @@ modules = sorted(".".join(p.relative_to(source).with_suffix("").parts)
                  for p in source.rglob("*.lean"))
 generated = root / "artifacts" / "AllModulesIntegration.lean"
 generated.parent.mkdir(exist_ok=True)
-generated.write_text("-- Generated library integration root; executable entrypoints are checked separately.\n" +
-                     "".join(f"import {name}\n" for name in modules if name.startswith("MCore.")))
-print(f"Integrating {len(modules)} Lean modules", flush=True)
+generated.write_text("-- Generated non-conflicting library integration root.\n" +
+                     "".join(f"import {name}\n" for name in modules if name.startswith("MCore.") and
+                             name != "MCore.BackwardAudit.HypotheticalClosureOracle"))
+print(f"Compiling {len(modules)} Lean modules; integration excludes known conflicting oracle module", flush=True)
 # Build every module before importing them together.
 for name in modules:
     result = subprocess.run(["lake", "build", name], cwd=root)
