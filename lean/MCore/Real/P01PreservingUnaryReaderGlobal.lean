@@ -11,6 +11,7 @@ open CanonicalCircuitBits
 open P01InputNodePreservingPlan
 open P01PreservingUnaryWitnessMachine
 open MachineRunLemmas
+open P01WitnessIndexedRead
 
 /-!
 # Global proof layer for the preserving unary witness reader
@@ -63,7 +64,7 @@ theorem rewind_false_control_cycle
         tape := { left := none :: left, head := some b,
                   right := next :: right } } =
       { state := .rewindInspectFalse
-        tape := { left := some b :: none :: left, head := next,
+        tape := { left := none :: some b :: left, head := next,
                   right := right } } := by
   cases b <;>
     simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
@@ -77,7 +78,7 @@ theorem rewind_true_bit_cycle
         tape := { left := none :: left, head := some true,
                   right := next :: right } } =
       { state := .rewindInspectTrue
-        tape := { left := some true :: none :: left, head := next,
+        tape := { left := none :: some true :: left, head := next,
                   right := right } } := by
   simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
@@ -93,7 +94,7 @@ theorem rewind_false_bits
                   head := (pref.map some ++ next :: right).headD next,
                   right := (pref.map some ++ next :: right).tail } } =
       { state := .rewindInspectFalse
-        tape := { left := pref.reverse.map some ++ none :: left,
+        tape := { left := none :: pref.reverse.map some ++ left,
                   head := next, right := right } } := by
   induction pref generalizing left with
   | nil =>
@@ -117,7 +118,7 @@ theorem rewind_true_control_cycle
         tape := { left := none :: left, head := some b,
                   right := next :: right } } =
       { state := .rewindInspectTrue
-        tape := { left := some b :: none :: left, head := next,
+        tape := { left := none :: some b :: left, head := next,
                   right := right } } := by
   cases b <;>
     simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
