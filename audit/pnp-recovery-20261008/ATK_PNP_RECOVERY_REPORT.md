@@ -161,7 +161,17 @@ python3 -I audit/pnp-recovery-20261008/tools/scan2.py BLOBDIR BLOBMAP OUT.json  
 
 Workflow: `.github/workflows/atk-pnp-recovery-integration.yml`.
 
-## 11. Pendências deste ciclo
+## 11. Certificação CI desta integração
+
+| Commit | Run | Workflow | Resultado |
+|---|---|---|---|
+| `4b799f27be0b60c4f32fc0fd2938213d6576dfca` | `37822209048` | `atk-pnp-recovery-integration.yml` | success. Passos: build do produtor P01, build da integração e da auditoria de separação, auditoria exata de assinatura e axiomas |
+| `4b799f27be0b60c4f32fc0fd2938213d6576dfca` | `37822209033` | `certificate.yml` | success |
+| `4b799f27be0b60c4f32fc0fd2938213d6576dfca` | `37822209113` | `fail-proof-all-gaps.yml` | success |
+
+O que esta certificação cobre: P01 (SAT ∈ NP) fechado e a redução condicional `G21Pointwise → PneqNP`. Ela **não** certifica P ≠ NP.
+
+## 12. Pendências deste ciclo
 
 - **Matriz das 32 obrigações:** a lista não foi encontrada nesta conversa nem nos repositórios examinados (busca em `.md`, `.json` e `.yaml` de todas as branches). É preciso indicar o arquivo ou a fonte.
 - Repositórios de Riemann, Beal, BSD, Hodge, Yang–Mills, Navier–Stokes e Poincaré: ainda não examinados.
