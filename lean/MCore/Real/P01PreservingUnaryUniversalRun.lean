@@ -189,7 +189,8 @@ theorem preservingRead_nonzero_material
           subst i
           simp only [List.length_cons, List.length_singleton] at *
           simp only [Nat.pow_two]
-          simp [Nat.add_mul, Nat.mul_add, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
+          simp only [Nat.add_mul, Nat.mul_add, Nat.mul_assoc, Nat.mul_comm, Nat.mul_left_comm]
+          omega
         rw [hfuelExact]
         exact nonzeroReaderFuel_le_timeBound witness i
       · have hexact :=
