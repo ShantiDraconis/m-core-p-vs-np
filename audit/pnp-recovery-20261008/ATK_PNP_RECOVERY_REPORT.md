@@ -171,7 +171,27 @@ Workflow: `.github/workflows/atk-pnp-recovery-integration.yml`.
 
 O que esta certificação cobre: P01 (SAT ∈ NP) fechado e a redução condicional `G21Pointwise → PneqNP`. Ela **não** certifica P ≠ NP.
 
-## 12. Pendências deste ciclo
+## 12. Auditoria do "centro" (START–CENTER–FINISH e indeterminação)
+
+Pergunta testada: a camada `FinalFail` do M-Core (`ClosedCenterHard`, `FundamentalIndeterminacy`, `RelationalHardAtom`, `CoreIndeterminacyTests`, `MinimalOpenBridge`), em `ShantiDraconis/M-Core@53d58bceed3424a435eb54e01cd6d3f17324a630`, contém uma prova transportável para `G21Pointwise`, ou uma incompatibilidade lógica demonstrável no centro?
+
+As definições foram portadas literalmente para `lean/MCore/Integration/PNPCenterTransportAudit20261008.lean`, com a proveniência anotada, e todos os resultados abaixo foram verificados no kernel:
+
+| # | Teorema | Resultado | Axiomas |
+|---|---|---|---|
+| 1 | `#center_layer_model_free` | As 8 declarações portadas não alcançam nenhuma constante do modelo de máquinas (`PolyDTMCandidate`, `TM`, `SATBits`, `InP`, `PneqNP`, `G21Pointwise`). O controle positivo (`pnpCenter`) é sinalizado corretamente. | — |
+| 2 | `closedCenterHard_for_g21`, `closedCenterHard_for_not_g21` | `ClosedCenterHard` é habitado tanto para G21 quanto para ¬G21: a estrutura não distingue as respostas | nenhum |
+| 3 | `terminalChain_exists_iff` | Uma cadeia terminal para `F` existe **se e somente se** `F` está provado: a cadeia não acrescenta conteúdo | nenhum |
+| 3b | `closedCenter_eq_to_neq_impossible` | A instância proposta `ClosedCenterHard (P = NP) Center (P ≠ NP)` é **contraditória** para todo centro, porque força `¬PneqNP ↔ PneqNP` | nenhum |
+| 4 | `firewall_closed_by_true_fields` | `FirewallClosed` é satisfeito com todos os campos `True`; não inspeciona código | nenhum |
+| 5 | `pnpCenter_determined`, `pnpCenter_not_indeterminate` | O centro real de P vs NP é **determinado** (terceiro excluído). A "indeterminação" só existe em modelos de brinquedo (`twoBranchResolution` usa `Bool` com tudo admissível). A determinação não revela qual ramo vale | clássicos |
+| 6 | `exists_forall_failure_false` | `∃ x, ∀ M, M falha em x` é **falso** para SAT: uma máquina de um estado acerta qualquer entrada fixa. Só a forma `∀ M, ∃ x` (G21) é um alvo com sentido | clássicos |
+
+Conclusão: não existe, e não pode existir, transporte dessa camada para G21. Os teoremas dela são genéricos em `Prop`/`Type`, então só produzem G21 quando instanciados com setas que já contêm a prova (resultado 3). A camada é coerente como cálculo abstrato, mas não guarda conteúdo de complexidade. A proposição que falta continua sendo exatamente `G21Pointwise`. `AcceptedInhabitants` recebe o conteúdo como argumento (por exemplo, `producePvsNPAccepted`, `produceRiemannAccepted (h : ¬ RiemannHypothesis)`); não constrói habitante.
+
+Observação de nomenclatura: `RelationalHardAtom.FailAt` significa "duas ramificações distintas", não "a máquina falha". A coincidência com `UniversalFailure` não indica nenhuma relação entre os dois.
+
+## 13. Pendências deste ciclo
 
 - **Matriz das 32 obrigações:** a lista não foi encontrada nesta conversa nem nos repositórios examinados (busca em `.md`, `.json` e `.yaml` de todas as branches). É preciso indicar o arquivo ou a fonte.
 - Repositórios de Riemann, Beal, BSD, Hodge, Yang–Mills, Navier–Stokes e Poincaré: ainda não examinados.

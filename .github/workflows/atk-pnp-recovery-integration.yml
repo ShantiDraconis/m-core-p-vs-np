@@ -44,6 +44,14 @@ jobs:
           grep -q "SEPARATION_AUDIT CONTROL PASS" integration.log
           grep -q "SEPARATION_AUDIT PASS MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed" integration.log
           grep -q "SEPARATION_AUDIT PASS MCore.Integration.PNPRecoveredFrontier20261008.sat_in_np_recovered" integration.log
+      - name: Build center transport audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build MCore.Integration.PNPCenterTransportAudit20261008 2>&1 | tee center.log
+          grep -q "CENTER_AUDIT PASS" center.log
+          if grep -q "sorryAx" center.log; then echo "sorryAx in center audit"; exit 1; fi
       - name: Exact signature and axiom audit
         shell: bash
         run: |
@@ -85,3 +93,4 @@ jobs:
           path: |
             integration.log
             axioms.log
+            center.log
