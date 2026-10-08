@@ -23,13 +23,13 @@ cleanup.  No new machine or semantic oracle is introduced.
 
 /-- Logical payload conservation used throughout the physical induction. -/
 theorem payload_advance_rewind
-    (prefix : BitString) (b : Bool) (suffix : BitString) :
-    witnessPayload prefix (b :: suffix) =
-      witnessPayload (prefix ++ [b]) suffix ∧
-    witnessPayload (prefix ++ [b]) suffix =
-      witnessPayload prefix (b :: suffix) := by
-  exact ⟨witnessPayload_advance prefix b suffix,
-    witnessPayload_rewind prefix b suffix⟩
+    (pref : BitString) (b : Bool) (suffix : BitString) :
+    witnessPayload pref (b :: suffix) =
+      witnessPayload (pref ++ [b]) suffix ∧
+    witnessPayload (pref ++ [b]) suffix =
+      witnessPayload pref (b :: suffix) := by
+  exact ⟨witnessPayload_advance pref b suffix,
+    witnessPayload_rewind pref b suffix⟩
 
 /-- The existing first physical cycle establishes the induction entry point. -/
 theorem preserving_reader_induction_entry
@@ -44,9 +44,9 @@ theorem preserving_reader_induction_entry
 rewind proof.  This keeps the forthcoming machine induction tied to the frozen
 semantic witness rather than to an unconstrained answer field. -/
 theorem selected_bit_from_decomposition
-    (witness prefix suffix : BitString) (b : Bool) (i : Nat)
-    (hw : witness = prefix ++ b :: suffix)
-    (hlen : prefix.length = i) :
+    (witness pref suffix : BitString) (b : Bool) (i : Nat)
+    (hw : witness = pref ++ b :: suffix)
+    (hlen : pref.length = i) :
     witness.getD i false = b := by
   subst witness
   subst i
@@ -82,20 +82,20 @@ theorem rewind_true_bit_cycle
   simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
 
-/-- Rewind a Boolean prefix while the selected result carried in finite
+/-- Rewind a Boolean pref while the selected result carried in finite
 control is false.  Every restored witness bit costs exactly three steps. -/
 theorem rewind_false_bits
-    (left : List (Option Bool)) (prefix : BitString)
+    (left : List (Option Bool)) (pref : BitString)
     (next : Option Bool) (right : List (Option Bool)) :
-    preservingUnaryReadMachine.run (3 * prefix.length)
+    preservingUnaryReadMachine.run (3 * pref.length)
       { state := .rewindInspectFalse
         tape := { left := none :: left,
-                  head := (prefix.map some ++ next :: right).headD next,
-                  right := (prefix.map some ++ next :: right).tail } } =
+                  head := (pref.map some ++ next :: right).headD next,
+                  right := (pref.map some ++ next :: right).tail } } =
       { state := .rewindInspectFalse
-        tape := { left := prefix.reverse.map some ++ none :: left,
+        tape := { left := pref.reverse.map some ++ none :: left,
                   head := next, right := right } } := by
-  induction prefix generalizing left with
+  induction pref generalizing left with
   | nil =>
       simp [TM.run]
   | cons b bs =>
