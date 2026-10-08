@@ -85,8 +85,6 @@ theorem reader_certificate : PreservingUnaryReaderGap := by
     cases b <;> rfl
   · intro witness i hi
     obtain ⟨b, blanks, hbit, hrun⟩ := reader_exact_material witness i hi
-    change preservingUnaryReadMachine.halting
-      (preservingUnaryReadMachine.run (readerBound witness i) (readerStart witness i)).state = true
     change preservingReadAccepting
       (preservingUnaryReadMachine.run (readerBound witness i) (readerStart witness i)).state = witness.getD i false
     rw [hrun]
