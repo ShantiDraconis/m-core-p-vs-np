@@ -1,0 +1,30 @@
+name: ATK All Modules Integration
+on:
+  push:
+    branches: [main, atk/p01-successor-cycle-20261005]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integrated-kernel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Compile every module and shared integration root
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.elan/bin:$PATH"
+          python3 audit/compile_all_modules.py
+      - name: Upload generated import root
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-modules-import-root
+          path: artifacts/AllModulesIntegration.lean
+          if-no-files-found: warn
