@@ -47,12 +47,13 @@ jobs:
           lake build MCore.Real.P01PreservingUnaryRewind
           lake build MCore.Real.P01PreservingUnaryReaderBound
           lake build MCore.Real.P01PreservingUnaryUniversalRun
+          lake build MCore.Real.P01PreservingUnaryReaderClose
           bash audit/p01_external_submission_gate.sh
       - name: Axiom / placeholder hygiene
         shell: bash
         run: |
           set -euo pipefail
-          if grep -nE '\b(sorry|admit|sorryAx)\b' lean/MCore/Real/P01PreservingUnary{WitnessMarker,WitnessMachine,SuccessorCycle,Iteration,FinalRead,Rewind,ReaderBound,UniversalRun,ReaderCertificate}.lean; then
+          if grep -nE '\b(sorry|admit|sorryAx)\b' lean/MCore/Real/P01PreservingUnary{WitnessMarker,WitnessMachine,SuccessorCycle,Iteration,FinalRead,Rewind,ReaderBound,UniversalRun,ReaderCertificate,ReaderClose}.lean; then
             exit 1
           fi
           echo HYGIENE_GREEN
