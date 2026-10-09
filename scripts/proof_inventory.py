@@ -495,12 +495,14 @@ def main():
     jpath.write_text(new_json)
     md = render_md(inv)
     (out / "PROOF_INVENTORY.md").write_text(md)
-    print(f"[inventory] wrote {jpath.relative_to(root)} and PROOF_INVENTORY.md")
+    print(f"[inventory] wrote {jpath} and PROOF_INVENTORY.md")
     print(json.dumps(summary, indent=1))
 
     if gh:
         with open(os.environ.get("GITHUB_STEP_SUMMARY", os.devnull), "a") as f:
             f.write(md)
+        # machine-readable summary, readable through the check-run annotations API
+        print("::notice title=proof-inventory-summary::" + json.dumps(summary, separators=(",", ":")))
         for r in modules:
             if r["status"] != "OK" and not r["in_default_build"]:
                 print(f"::warning file={r['path']}::module outside default build is {r['status']}: "
