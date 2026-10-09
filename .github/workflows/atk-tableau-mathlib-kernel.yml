@@ -1,0 +1,112 @@
+name: ATK Tableau Mathlib Kernel
+
+# Kernel-checks the four Mathlib-dependent versions of
+# lean/MCore/Real/PNPNTMTableauEncoding.lean (Cook-Levin tableau core) at
+# their exact source commits. Every version is built against the same
+# pinned Mathlib (ci/tableau/lake-manifest.json, taken verbatim from
+# 685593f052ea7bd87fd7046918ee2a507177f2c8, mathlib c44e0c8e).
+# No source file of those commits is modified.
+
+on:
+  push:
+    branches:
+      - atk/pnp-tableau-mathlib-ci-20261009
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tableau:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: p02-e1-c1-left-validate-20261004
+            sha: 1779db200aeeb16a60489012131b8e4d62566e0e
+          - label: p02-e1-c2-right-20261004
+            sha: 08a17e646633955d89589b5b81dd4ad8a174327b
+          - label: p02-lane4-reuse-t10-audit-20261003
+            sha: 6c467fbba91503d25e91d2bab8b804aebf34dc9f
+          - label: p02-lane4-terminal-densify-20261003
+            sha: 685593f052ea7bd87fd7046918ee2a507177f2c8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ci
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.sha }}
+          path: src
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Pin Mathlib
+        shell: bash
+        working-directory: src
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ matrix.sha }}"
+          cp ../ci/ci/tableau/lake-manifest.json lake-manifest.json
+          cat lean-toolchain
+          lean --version
+      - name: Fetch Mathlib build cache
+        shell: bash
+        working-directory: src
+        run: |
+          set -euo pipefail
+          lake exe cache get
+      - name: Build tableau module
+        shell: bash
+        working-directory: src
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.PNPNTMTableauEncoding 2>&1 | tee ../build.log
+      - name: Exact axiom audit
+        shell: bash
+        working-directory: src
+        run: |
+          set -euo pipefail
+          cat > TableauAxioms.lean <<'EOF'
+          import MCore.Real.PNPNTMTableauEncoding
+          open MCore.Real.PNPNTMTableauEncoding
+          #check @MCore.Real.PNPNTMTableauEncoding.tableau_correctness_iff
+          #check @MCore.Real.PNPNTMTableauEncoding.boundedExec_encoded_length_poly
+          #print axioms MCore.Real.PNPNTMTableauEncoding.tableau_correctness_iff
+          #print axioms MCore.Real.PNPNTMTableauEncoding.tableau_soundness_from_satLanguage
+          #print axioms MCore.Real.PNPNTMTableauEncoding.tableau_completeness_to_satLanguage
+          #print axioms MCore.Real.PNPNTMTableauEncoding.boundedExec_weight_poly
+          #print axioms MCore.Real.PNPNTMTableauEncoding.boundedExec_encoded_length_poly
+          EOF
+          lake env lean TableauAxioms.lean 2>&1 | tee ../axioms.log
+          if grep -qE "sorryAx|error" ../axioms.log; then
+            echo "placeholder or error detected"; exit 1
+          fi
+          python3 - <<'PY'
+          import re, sys
+          text = open("../axioms.log").read()
+          sets = re.findall(r"depends on axioms: \[([^\]]*)\]", text, re.S)
+          sets += ["" for _ in re.findall(r"does not depend on any axioms", text)]
+          allowed = {"propext", "Classical.choice", "Quot.sound"}
+          if len(sets) != 5:
+              sys.exit("expected five axiom reports, got %d" % len(sets))
+          for s in sets:
+              names = {x.strip() for x in s.split(",") if x.strip()}
+              if not names <= allowed:
+                  sys.exit("non-standard axioms: %s" % (names - allowed))
+          print("TABLEAU_AXIOM_AUDIT_OK")
+          PY
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tableau-${{ matrix.label }}
+          path: |
+            build.log
+            axioms.log
