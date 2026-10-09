@@ -66,8 +66,12 @@ jobs:
         shell: bash
         working-directory: src
         run: |
-          set -euo pipefail
+          set -uo pipefail
           lake build MCore.Real.PNPNTMTableauEncoding 2>&1 | tee ../build.log
+          rc=${PIPESTATUS[0]}
+          # surface the first errors as annotations (readable via the checks API)
+          grep -E "error:" ../build.log | head -8 | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::error title=lean-build::${l:0:900}"; done
+          exit $rc
       - name: Exact axiom audit
         shell: bash
         working-directory: src
@@ -85,6 +89,8 @@ jobs:
           #print axioms MCore.Real.PNPNTMTableauEncoding.boundedExec_encoded_length_poly
           EOF
           lake env lean TableauAxioms.lean 2>&1 | tee ../axioms.log
+          # surface every axiom report and statement as notice annotations
+          tr '\n' ' ' < ../axioms.log | sed -E 's/(MCore\.Real\.PNPNTMTableauEncoding\.)/\n\1/g' | grep -E "axioms|:" | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::notice title=tableau-audit::${l:0:900}"; done || true
           if grep -qE "sorryAx|error" ../axioms.log; then
             echo "placeholder or error detected"; exit 1
           fi
