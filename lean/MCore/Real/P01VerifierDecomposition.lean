@@ -23,7 +23,7 @@ run laws, that they compose into a verifier phase:
 `verifierPhase D E : P01VerifierPhase layout` and
 `p01_of_decode_and_eval D E : P01ConstructionGap` follow.  Nothing here
 constructs `D` or `E`; they are the remaining machine-level obligations.
-No axiom, `sorry` or endpoint hypothesis is introduced.
+No axiom, proof placeholder or endpoint hypothesis is introduced.
 -/
 
 open CircuitK1
