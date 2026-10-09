@@ -1,0 +1,3206 @@
+{
+ "schema": "atk.pnp-material-proof-manifest.v1",
+ "generated": "2026-10-09",
+ "unit_of_audit": "Lean declaration + file + SHA + successful run + #print axioms",
+ "sources_scanned": {
+  "ShantiDraconis/m-core-p-vs-np@main": "9efeb9b731a786d2dfea24c10a3895b611fe6130 (CERTIFICATES/, certificates/, GATE_LEDGER.json, audit/ATK_P01_MATERIAL_FRONTIER_V1.json)",
+  "ShantiDraconis/M-Core@main": "01d8d7660ccfea0285628bd7c5de33a661c4b77c (certs/, evidence/, final-proof/ JSON)"
+ },
+ "method": {
+  "runs": "every cited run looked up with the GitHub REST API: existence, conclusion, head_sha == cited SHA, workflow file",
+  "ci_coverage": "workflow file at the cited SHA parsed for lake build targets; import closure computed; declaring module of each claimed theorem must be inside it",
+  "local_kernel": "each cited SHA of m-core-p-vs-np without Mathlib checked out and built with Lean 4.19.0; #print axioms for every claimed theorem and every name the certifying workflow audits",
+  "not_rebuilt": "SHAs whose lakefile requires Mathlib (cache host blocked in the auditing session); M-Core SHAs (Mathlib)"
+ },
+ "summary": {
+  "records": 89,
+  "status_counts": {
+   "KERNEL_VERIFIED_LOCAL_AND_CI": 41,
+   "CI_VERIFIED_ONLY__MATHLIB_NOT_REBUILT_LOCALLY": 3,
+   "CI_VERIFIED_ONLY__M_CORE_MATHLIB": 2,
+   "SHA_RESOLVED__NO_RUN_CITED": 33,
+   "KERNEL_VERIFIED_LOCAL__CI_RUN_DOES_NOT_BUILD_CLAIMED_MODULE": 2,
+   "KERNEL_VERIFIED_LOCAL__NO_RUN_CITED": 6,
+   "RUN_NOT_FOUND": 2
+  },
+  "runs_cited": 46,
+  "runs_found_success": 44,
+  "runs_not_found": [
+   35378862267,
+   35565114760
+  ],
+  "m_core_p_vs_np_shas_rebuilt_locally": 26,
+  "nonstandard_axioms_found": 0,
+  "terminal_P_ne_NP_certificates": 0
+ },
+ "terminal_state": {
+  "P01ConstructionGap": "CLOSED (unconditional, kernel + CI)",
+  "G21Pointwise": "OPEN_MATH (no inhabitant on any searched branch)",
+  "SAT_not_in_P": "OPEN_MATH",
+  "P_ne_NP": "OPEN_MATH",
+  "Cook_Levin_PneqNP_to_G21": "NOT_FORMALIZED (tableau semantic core + size bound kernel-checked at 6c467fbb; machine computing the reduction missing)",
+  "FINAL_EXTERNAL_ISSUED": false
+ },
+ "integration_results": [
+  {
+   "record": "integration: P01 producer",
+   "sha": "0dd09383932446ba67e673f69cd8740f85a80b87",
+   "theorem": "MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed",
+   "statement": "P01FinalCertificate.P01ConstructionGap  (= Nonempty P01MachineConstruction: SAT ∈ NP)",
+   "file": "lean/MCore/Real/P01RawTotalizationProducer.lean",
+   "runs": [
+    {
+     "run": 36897479263,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "P01 Verifier Phase Min-Cut Clean",
+     "head_sha": "15b6c36043721e827930c98babbaa3e0e9f50456",
+     "conclusion": "success",
+     "note": "ancestor of 0dd0938; producer file and all imports byte-identical"
+    },
+    {
+     "run": 37822209048,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK PNP Recovery Integration",
+     "head_sha": "4b799f27be0b60c4f32fc0fd2938213d6576dfca",
+     "conclusion": "success"
+    }
+   ],
+   "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "scope": "P01 CLOSED: unconditional SAT ∈ NP in the hardened model",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "integration: conditional endpoint",
+   "sha": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+   "theorem": "MCore.Integration.PNPRecoveredFrontier20261008.pneqnp_of_g21",
+   "statement": "G21Pointwise → PneqNP",
+   "file": "lean/MCore/Integration/PNPRecoveredFrontier20261008.lean",
+   "runs": [
+    {
+     "run": 37848515115,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK PNP Recovery Integration",
+     "head_sha": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+     "conclusion": "success"
+    }
+   ],
+   "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "scope": "conditional: one hypothesis (G21Pointwise ≡ ¬ InP SAT)",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "integration: center transport audit",
+   "sha": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+   "theorem": "MCore.Integration.PNPCenterTransportAudit20261008.{terminalChain_exists_iff, closedCenter_eq_to_neq_impossible, exists_forall_failure_false, pnpCenter_determined}",
+   "file": "lean/MCore/Integration/PNPCenterTransportAudit20261008.lean",
+   "runs": [
+    {
+     "run": 37848515115,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK PNP Recovery Integration",
+     "head_sha": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+     "conclusion": "success"
+    }
+   ],
+   "axioms": [
+    "none",
+    "or propext/Classical.choice/Quot.sound"
+   ],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "scope": "negative result: no transport from the center layer to G21",
+   "terminal_for_P_ne_NP": false
+  }
+ ],
+ "tableau_cook_levin": {
+  "ci_branch": "atk/pnp-tableau-mathlib-ci-20261009",
+  "ci_commit": "f0ca15a69134f058d4c0e65d55e08c8bb75aea4d",
+  "run": 37914345859,
+  "mathlib_pin": "c44e0c8ee63ca166450922a373c7409c5d26b00b (lake-manifest of 685593f0)",
+  "module": "MCore.Real.PNPNTMTableauEncoding",
+  "versions": [
+   {
+    "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+    "sha": "6c467fbba91503d25e91d2bab8b804aebf34dc9f",
+    "job": 113766775497,
+    "conclusion": "success",
+    "axioms": {
+     "boundedExec_encoded_length_poly": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ],
+     "boundedExec_weight_poly": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ],
+     "tableau_completeness_to_satLanguage": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ],
+     "tableau_soundness_from_satLanguage": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ],
+     "tableau_correctness_iff": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ]
+    },
+    "statements": {
+     "tableau_correctness_iff": "∀ (M : PolyNTMCandidate) (x : BitString) (t : ℕ), SATLanguage (boundedExecCircuit_NTM M x t) ↔ M.machine.AcceptsWithin t (initialNTMConfig M.machine x)",
+     "boundedExec_encoded_length_poly": "∀ M x t, (encodeCircuit (boundedExecCircuit_NTM M x t)).length ≤ tableauEncodingCoeff M * (x.length + t + 1)^4"
+    },
+    "status": "KERNEL_VERIFIED_CI"
+   },
+   {
+    "branch": "atk/p02-e1-c1-left-validate-20261004",
+    "sha": "1779db200aeeb16a60489012131b8e4d62566e0e",
+    "job": 113766775640,
+    "conclusion": "failure",
+    "first_errors": [
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6310:6: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6284:16: type mismatch",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6272:2: tactic 'apply' failed, failed to unify",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6243:6: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6242:10: application type mismatch",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6219:2: tactic 'assumption' failed",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6197:2: tactic 'assumption' failed",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6001:2: unsolved goals"
+    ],
+    "status": "KERNEL_FAILURE"
+   },
+   {
+    "branch": "atk/p02-lane4-terminal-densify-20261003",
+    "sha": "685593f052ea7bd87fd7046918ee2a507177f2c8",
+    "job": 113766775681,
+    "conclusion": "failure",
+    "first_errors": [
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2768:4: type mismatch, term",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2795:15: unexpected token 'by'; expected '{' or tactic",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2707:10: unknown identifier 'ntmInitial_right_exists_unique'",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2705:10: unknown identifier 'ntmInitial_left_exists_unique'",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2700:13: unknown identifier 'ntmInitial_head_exists_unique'",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2699:14: unknown identifier 'ntmInitial_state_exists_unique'",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2643:47: application type mismatch",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2621:24: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached"
+    ],
+    "status": "KERNEL_FAILURE"
+   },
+   {
+    "branch": "atk/p02-e1-c2-right-20261004",
+    "sha": "08a17e646633955d89589b5b81dd4ad8a174327b",
+    "job": 113766775738,
+    "conclusion": "failure",
+    "first_errors": [
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6464:9: invalid constructor ⟨...⟩, insufficient number of arguments, constructs 'Eq.refl' does not have explicit fields, but #2 provided",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6463:10: application type mismatch",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6438:2: no goals to be solved",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6436:9: invalid constructor ⟨...⟩, insufficient number of arguments, constructs 'Eq.refl' does not have explicit fields, but #2 provided",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6435:10: application type mismatch",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6422:8: invalid constructor ⟨...⟩, insufficient number of arguments, constructs 'Eq.refl' does not have explicit fields, but #3 provided",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6422:9: application type mismatch",
+     "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6313:6: unsolved goals"
+    ],
+    "status": "KERNEL_FAILURE"
+   }
+  ],
+  "what_it_gives": "Semantic core of Cook–Levin: for every poly-time NTM candidate M, input x and fuel t, an explicit CNF circuit that is satisfiable iff M accepts x within t steps, with encoded length O((|x|+t+1)^4) for fixed M.",
+  "what_is_missing_for_PneqNP_to_G21": [
+   "a deterministic poly-time machine (in the repository model) that computes x ↦ encodeCircuit (boundedExecCircuit_NTM M x (T |x|))",
+   "composition of that machine with a hypothetical SAT decider (PolyDTMCandidate) giving a decider for an arbitrary NP language",
+   "the resulting theorem: PneqNP → G21Pointwise"
+  ]
+ },
+ "certificate_records": [
+  {
+   "record": "CERTIFICATES/P01_ENCODED_EVALUATOR_GREEN_62956cc7.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "62956cc7760834d80bae27e5b928d06d92334a62",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "MCore.Real.P01EncodedEvaluator.evalEncodedCore",
+    "evalEncodedCore_encode_append",
+    "evalEncoded_encode",
+    "evalEncoded_witness"
+   ],
+   "runs": [
+    {
+     "run": 36508360906,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "62956cc7760834d80bae27e5b928d06d92334a62",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator"
+    ],
+    "theorems_axiom_audited": 4,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/P01_ENCODED_STACK_EVALUATOR_GREEN_f70ab88b.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "f70ab88b3ac8cb1bd37c5e6f3115e26184b39b2b",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "evalRun_encode_append",
+    "evalRun_encode_bounded"
+   ],
+   "runs": [
+    {
+     "run": 36508950379,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "f70ab88b3ac8cb1bd37c5e6f3115e26184b39b2b",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedStackEvaluator"
+    ],
+    "theorems_axiom_audited": 5,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/P01_EVALSTEP_FRAME_REFINEMENT_GREEN_8e3abccc.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "MCore.Real.P01EvalStepFrameRefinement"
+   ],
+   "runs": [
+    {
+     "run": 36542400193,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families",
+     "MCore.Real.CNFStructure",
+     "MCore.Real.CanonicalCircuitBits",
+     "MCore.Real.CanonicalComplexityBridge",
+     "MCore.Real.CanonicalFinalProof",
+     "MCore.Real.CanonicalPSubsetNP",
+     "MCore.Real.CanonicalSATBoundary",
+     "MCore.Real.CanonicalSATVerifier",
+     "MCore.Real.CanonicalSATWitness",
+     "MCore.Real.FailProofAllGaps",
+     "MCore.Real.FailProofFiniteAttack",
+     "MCore.Real.FinalProof",
+     "MCore.Real.FinalProofAttack",
+     "MCore.Real.P01EvalStepFrameRefinement",
+     "MCore.Real.SATMachine",
+     "MCore.Real.Semantics"
+    ],
+    "theorems_axiom_audited": 96,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": [
+     "MCore.Real.P01EvalStepFrameRefinement",
+     "MCore.Real.WellFormedCNFString"
+    ]
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/P01_FIVE_TAG_CURSOR_REFINEMENT_GREEN_6707aa0e.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "6707aa0e65781e9d5674414bbf6c930443531bba",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "P01SourceCursorInvariant.moveToSourceStart_head_correct",
+    "consumeThree_then_push_frame",
+    "evalStep_and_tag_cursor_refined",
+    "evalStep_const_false_cursor_refined",
+    "evalStep_const_true_cursor_refined",
+    "evalStep_not_tag_cursor_refined",
+    "evalStep_or_tag_cursor_refined"
+   ],
+   "runs": [
+    {
+     "run": 36552792426,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "6707aa0e65781e9d5674414bbf6c930443531bba",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01DeterministicNTMEmbedding",
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator",
+     "MCore.Real.P01EvalCursorConsume",
+     "MCore.Real.P01EvalFramePopMachine",
+     "MCore.Real.P01EvalFramePopMachineV2",
+     "MCore.Real.P01EvalFramePushMachine",
+     "MCore.Real.P01EvalTagPhysicalRefinement",
+     "MCore.Real.P01NTMPhaseSeq",
+     "MCore.Real.P01SourceCursorInvariant"
+    ],
+    "theorems_axiom_audited": 34,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/P01_FRAME_POP_READ_GREEN_7f6597a1.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "framePop_rejects_111",
+    "framePop_run_four",
+    "framePop_run_four_rep"
+   ],
+   "runs": [
+    {
+     "run": 36540846559,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator",
+     "MCore.Real.P01EvalFramePopMachine",
+     "MCore.Real.P01EvalFramePushMachine"
+    ],
+    "theorems_axiom_audited": 14,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/P01_FRAME_PUSH_GREEN_12380362.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "123803627c2157d41686471dc8c2c5c96eb408ae",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "pushStep_correct"
+   ],
+   "runs": [
+    {
+     "run": 36509879658,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "123803627c2157d41686471dc8c2c5c96eb408ae",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator",
+     "MCore.Real.P01EvalFramePushMachine",
+     "MCore.Real.P01FullVerifierPhysicalStackV2"
+    ],
+    "theorems_axiom_audited": 14,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/P01_FRAME_TAPE_GREEN_eb5713e4.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "eb5713e48e84a8adbb0850d1f2c60b46a738b4f6",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36509233942,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "eb5713e48e84a8adbb0850d1f2c60b46a738b4f6",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator"
+    ],
+    "theorems_axiom_audited": 9,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/P01_PARSER_SIMULATION_GREEN_dfb3e60d.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "dfb3e60dc37e96f46a3ca071c428456634ec6dca",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35790493696,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "atk-targeted",
+     "workflow_path": ".github/workflows/atk-targeted.yml",
+     "head_sha": "dfb3e60dc37e96f46a3ca071c428456634ec6dca",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component (does not inhabit P01MachineConstruction per its own text)",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": null,
+    "note": "skipped: requires Mathlib",
+    "declaring_modules": [
+     "MCore.Real.P01GlobalParserBound"
+    ],
+    "theorems_axiom_audited": 0,
+    "axioms_union": [],
+    "all_axioms_standard": null,
+    "sorry_detected": null,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "CI_VERIFIED_ONLY__MATHLIB_NOT_REBUILT_LOCALLY",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certificates/C1.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "Option.none",
+    "Option.some"
+   ],
+   "runs": [
+    {
+     "run": 35173244115,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "ecdbb0b1465de75ec1bce8ddecb9d05e9cac558e",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "circuit restriction scaffold; explicitly not a lower bound",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.AttackDAG.K3AlgebraAttacks",
+     "MCore.CircuitK1",
+     "MCore.Frontier.K3Gaps",
+     "MCore.K0",
+     "MCore.K1",
+     "MCore.K10",
+     "MCore.K2",
+     "MCore.K3",
+     "MCore.K4",
+     "MCore.K5",
+     "MCore.K6",
+     "MCore.K7",
+     "MCore.K8",
+     "MCore.K9",
+     "MCore.PrizeK0",
+     "MCore.Signature"
+    ],
+    "theorems_axiom_audited": 112,
+    "axioms_union": [
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": [
+     "Option.none",
+     "Option.some"
+    ]
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certificates/K7.md",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "6b965e39dddffb23b407b6779c6241d2c6721997",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35135679032,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "6b965e39dddffb23b407b6779c6241d2c6721997",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "decomposition scaffold; explicitly not classical NP",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.K7"
+    ],
+    "theorems_axiom_audited": 5,
+    "axioms_union": [],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/semantic_frontier/ATK_ACCEPTED_SEMANTIC_7OF7_GREEN_f6c0d9fc.md",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f6c0d9fcf801b53af4896552364936f369208fe4",
+   "sha_repository": [
+    "ShantiDraconis/M-Core"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36484195926,
+     "repository": "ShantiDraconis/M-Core",
+     "workflow": "M-Core Final Proof Integrated",
+     "workflow_path": ".github/workflows/mcore-final-proof-integrated.yml",
+     "head_sha": "f6c0d9fcf801b53af4896552364936f369208fe4",
+     "conclusion": "success"
+    },
+    {
+     "run": 36484195994,
+     "repository": "ShantiDraconis/M-Core",
+     "workflow": "M-Core Full Chain Archive Audit",
+     "workflow_path": ".github/workflows/mcore-full-chain-archive-audit.yml",
+     "head_sha": "f6c0d9fcf801b53af4896552364936f369208fe4",
+     "conclusion": "success"
+    },
+    {
+     "run": 36486101348,
+     "repository": "ShantiDraconis/M-Core",
+     "workflow": "Final Proof Miner",
+     "workflow_path": ".github/workflows/final-proof-miner.yml",
+     "head_sha": "f6c0d9fcf801b53af4896552364936f369208fe4",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "conditional universe: inhabitants produced from accepted hypotheses",
+   "status": "CI_VERIFIED_ONLY__M_CORE_MATHLIB",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/semantic_frontier/ATK_SEMANTIC_FRONTIER_0OF7_GREEN_299eeda5.md",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "299eeda5bf7fabc85ad2af461f5a0f9273628a7a",
+   "sha_repository": [
+    "ShantiDraconis/M-Core"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36482961956,
+     "repository": "ShantiDraconis/M-Core",
+     "workflow": "M-Core Final Proof Integrated",
+     "workflow_path": ".github/workflows/mcore-final-proof-integrated.yml",
+     "head_sha": "299eeda5bf7fabc85ad2af461f5a0f9273628a7a",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "semantic frontier; 0/7",
+   "status": "CI_VERIFIED_ONLY__M_CORE_MATHLIB",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "969408f2d84121667319da04680893dd2978e9a6",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "P01 component reuse entry",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "witnessGuess_complete",
+    "witnessGuess_halts"
+   ],
+   "runs": [
+    {
+     "run": 36499549795,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK PNP producer kernel",
+     "workflow_path": ".github/workflows/producer-kernel.yml",
+     "head_sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": null,
+    "note": "skipped: requires Mathlib",
+    "declaring_modules": [
+     "MCore.Real.P01WitnessGuessExecution"
+    ],
+    "theorems_axiom_audited": 0,
+    "axioms_union": [],
+    "all_axioms_standard": null,
+    "sorry_detected": null,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "CI_VERIFIED_ONLY__MATHLIB_NOT_REBUILT_LOCALLY",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "witnessIndexedReadGap_closed"
+   ],
+   "runs": [
+    {
+     "run": 36497448606,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "material-unification-v2",
+     "workflow_path": ".github/workflows/material-unification-v2.yml",
+     "head_sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "conclusion": "success"
+    },
+    {
+     "run": 36497644415,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01WitnessIndexedReadGlobal"
+    ],
+    "theorems_axiom_audited": 4,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "3532d7af492eb2dfe50eb287d58abfa3b2dbb449",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36500623426,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 one-machine verifier",
+     "workflow_path": ".github/workflows/p01-one-machine-verifier.yml",
+     "head_sha": "3532d7af492eb2dfe50eb287d58abfa3b2dbb449",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "no theorem names in record; checking the modules the certifying workflow builds",
+    "declaring_modules": [
+     "MCore.Real.P01FullVerifierMachine",
+     "MCore.Real.P01FullVerifierPhysical",
+     "MCore.Real.P01FullVerifierPhysicalControl",
+     "MCore.Real.P01FullVerifierPhysicalMoves",
+     "MCore.Real.P01FullVerifierPhysicalOps",
+     "MCore.Real.P01FullVerifierPhysicalRefinement",
+     "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+     "MCore.Real.P01FullVerifierPhysicalShuttles",
+     "MCore.Real.P01FullVerifierPhysicalStackV2",
+     "MCore.Real.P01FullVerifierSourceRewind",
+     "MCore.Real.P01FullVerifierStackPrimitiveMachine",
+     "MCore.Real.P01PhysicalVerifierBudget",
+     "MCore.Real.P01PhysicalVerifierFoundations",
+     "MCore.Real.P01PhysicalVerifierUniformCosts",
+     "MCore.Real.P01WitnessIndexedReadGlobal"
+    ],
+    "theorems_axiom_audited": 58,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "62956cc7760834d80bae27e5b928d06d92334a62",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "evalEncodedCore_encode_append",
+    "evalEncoded_encode",
+    "evalEncoded_witness"
+   ],
+   "runs": [
+    {
+     "run": 36508360906,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "62956cc7760834d80bae27e5b928d06d92334a62",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator"
+    ],
+    "theorems_axiom_audited": 4,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "f70ab88b3ac8cb1bd37c5e6f3115e26184b39b2b",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "evalRun_encode_append",
+    "evalRun_encode_bounded",
+    "evalStepCount_le_three_mul_encoding"
+   ],
+   "runs": [
+    {
+     "run": 36508950379,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "f70ab88b3ac8cb1bd37c5e6f3115e26184b39b2b",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedStackEvaluator"
+    ],
+    "theorems_axiom_audited": 5,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "eb5713e48e84a8adbb0850d1f2c60b46a738b4f6",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36509233942,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "eb5713e48e84a8adbb0850d1f2c60b46a738b4f6",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator"
+    ],
+    "theorems_axiom_audited": 9,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "123803627c2157d41686471dc8c2c5c96eb408ae",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36509879658,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "123803627c2157d41686471dc8c2c5c96eb408ae",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator",
+     "MCore.Real.P01EvalFramePushMachine",
+     "MCore.Real.P01FullVerifierPhysicalStackV2"
+    ],
+    "theorems_axiom_audited": 14,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36540846559,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator",
+     "MCore.Real.P01EvalFramePopMachine",
+     "MCore.Real.P01EvalFramePushMachine"
+    ],
+    "theorems_axiom_audited": 14,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36542400193,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families",
+     "MCore.Real.CNFStructure",
+     "MCore.Real.CanonicalCircuitBits",
+     "MCore.Real.CanonicalComplexityBridge",
+     "MCore.Real.CanonicalFinalProof",
+     "MCore.Real.CanonicalPSubsetNP",
+     "MCore.Real.CanonicalSATBoundary",
+     "MCore.Real.CanonicalSATVerifier",
+     "MCore.Real.CanonicalSATWitness",
+     "MCore.Real.FailProofAllGaps",
+     "MCore.Real.FailProofFiniteAttack",
+     "MCore.Real.FinalProof",
+     "MCore.Real.FinalProofAttack",
+     "MCore.Real.P01EvalStepFrameRefinement",
+     "MCore.Real.SATMachine",
+     "MCore.Real.Semantics"
+    ],
+    "theorems_axiom_audited": 96,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": [
+     "MCore.Real.P01EvalStepFrameRefinement",
+     "MCore.Real.WellFormedCNFString"
+    ]
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "833fe0ded9676bfd19d226b8bf1dfd0aeb070bf5",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "runBranches_tmAsNTM_singleton",
+    "tmAsNTM_acceptsWithin_iff",
+    "tmAsNTM_successors_of_not_halted",
+    "tmAsNTM_terminal_iff_halted",
+    "tmHaltsWithin_iff_ntmHaltsWithin"
+   ],
+   "runs": [
+    {
+     "run": 36547692227,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "833fe0ded9676bfd19d226b8bf1dfd0aeb070bf5",
+     "conclusion": "success"
+    },
+    {
+     "run": 36547692311,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "833fe0ded9676bfd19d226b8bf1dfd0aeb070bf5",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalCircuitBits",
+     "MCore.Real.CanonicalComplexityBridge",
+     "MCore.Real.CanonicalPSubsetNP",
+     "MCore.Real.CanonicalSATBoundary",
+     "MCore.Real.CanonicalSATNTMAttack",
+     "MCore.Real.CanonicalSATNatParserAttack",
+     "MCore.Real.CanonicalSATParserAttack",
+     "MCore.Real.CanonicalSATVerifier",
+     "MCore.Real.CanonicalSATWitness",
+     "MCore.Real.FailProofAllGaps",
+     "MCore.Real.FailProofFiniteAttack",
+     "MCore.Real.FinalProofAttack",
+     "MCore.Real.P01DeterministicNTMEmbedding"
+    ],
+    "theorems_axiom_audited": 66,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": false,
+   "ci_uncovered_modules": [
+    "MCore.Real.P01DeterministicNTMEmbedding"
+   ],
+   "status": "KERNEL_VERIFIED_LOCAL__CI_RUN_DOES_NOT_BUILD_CLAIMED_MODULE",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "1054b6bac5962d81f5c33a2b87d68f21b00d5ce0",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36544552207,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "1054b6bac5962d81f5c33a2b87d68f21b00d5ce0",
+     "conclusion": "success"
+    },
+    {
+     "run": 36544552231,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "1054b6bac5962d81f5c33a2b87d68f21b00d5ce0",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families",
+     "MCore.Real.CNFStructure",
+     "MCore.Real.CanonicalCircuitBits",
+     "MCore.Real.CanonicalComplexityBridge",
+     "MCore.Real.CanonicalFinalProof",
+     "MCore.Real.CanonicalPSubsetNP",
+     "MCore.Real.CanonicalSATBoundary",
+     "MCore.Real.CanonicalSATVerifier",
+     "MCore.Real.CanonicalSATWitness",
+     "MCore.Real.FailProofAllGaps",
+     "MCore.Real.FailProofFiniteAttack",
+     "MCore.Real.FinalProof",
+     "MCore.Real.FinalProofAttack",
+     "MCore.Real.SATMachine",
+     "MCore.Real.Semantics"
+    ],
+    "theorems_axiom_audited": 85,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": [
+     "MCore.Real.WellFormedCNFString"
+    ]
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "adb6db8d1943778655f63d651ed93f23f425ed47",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 36545146201,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "adb6db8d1943778655f63d651ed93f23f425ed47",
+     "conclusion": "success"
+    },
+    {
+     "run": 36545146259,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "adb6db8d1943778655f63d651ed93f23f425ed47",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalCircuitBits",
+     "MCore.Real.CanonicalComplexityBridge",
+     "MCore.Real.CanonicalPSubsetNP",
+     "MCore.Real.CanonicalSATBoundary",
+     "MCore.Real.CanonicalSATNTMAttack",
+     "MCore.Real.CanonicalSATNatParserAttack",
+     "MCore.Real.CanonicalSATParserAttack",
+     "MCore.Real.CanonicalSATVerifier",
+     "MCore.Real.CanonicalSATWitness",
+     "MCore.Real.FailProofAllGaps",
+     "MCore.Real.FailProofFiniteAttack",
+     "MCore.Real.FinalProofAttack"
+    ],
+    "theorems_axiom_audited": 59,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "4eb4051ff330368627a3f30f2e080a00bd96f37d",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "consumeOneTape_correct",
+    "consumeThreeTape_correct"
+   ],
+   "runs": [
+    {
+     "run": 36547475211,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "4eb4051ff330368627a3f30f2e080a00bd96f37d",
+     "conclusion": "success"
+    },
+    {
+     "run": 36547475406,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "4eb4051ff330368627a3f30f2e080a00bd96f37d",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families",
+     "MCore.Real.CNFStructure",
+     "MCore.Real.CanonicalCircuitBits",
+     "MCore.Real.CanonicalComplexityBridge",
+     "MCore.Real.CanonicalFinalProof",
+     "MCore.Real.CanonicalPSubsetNP",
+     "MCore.Real.CanonicalSATBoundary",
+     "MCore.Real.CanonicalSATVerifier",
+     "MCore.Real.CanonicalSATWitness",
+     "MCore.Real.FailProofAllGaps",
+     "MCore.Real.FailProofFiniteAttack",
+     "MCore.Real.FinalProof",
+     "MCore.Real.FinalProofAttack",
+     "MCore.Real.P01EvalCursorConsume",
+     "MCore.Real.P01EvalStepFrameRefinement",
+     "MCore.Real.SATMachine",
+     "MCore.Real.Semantics"
+    ],
+    "theorems_axiom_audited": 98,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": [
+     "MCore.Real.WellFormedCNFString"
+    ]
+   },
+   "ci_builds_declaring_modules": false,
+   "ci_uncovered_modules": [
+    "MCore.Real.P01EvalCursorConsume"
+   ],
+   "status": "KERNEL_VERIFIED_LOCAL__CI_RUN_DOES_NOT_BUILD_CLAIMED_MODULE",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "8c40d7fa129d045810123886ed6c0bb96e034300",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "framePop_run_six"
+   ],
+   "runs": [
+    {
+     "run": 36548367025,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "8c40d7fa129d045810123886ed6c0bb96e034300",
+     "conclusion": "success"
+    },
+    {
+     "run": 36548367026,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "8c40d7fa129d045810123886ed6c0bb96e034300",
+     "conclusion": "success"
+    },
+    {
+     "run": 36548367093,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "8c40d7fa129d045810123886ed6c0bb96e034300",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01DeterministicNTMEmbedding",
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator",
+     "MCore.Real.P01EvalCursorConsume",
+     "MCore.Real.P01EvalFramePopMachine",
+     "MCore.Real.P01EvalFramePopMachineV2",
+     "MCore.Real.P01EvalFramePushMachine"
+    ],
+    "theorems_axiom_audited": 22,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "GATE_LEDGER.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "6707aa0e65781e9d5674414bbf6c930443531bba",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "evalStep_and_tag_cursor_refined",
+    "evalStep_const_false_cursor_refined",
+    "evalStep_const_true_cursor_refined",
+    "evalStep_not_tag_cursor_refined",
+    "evalStep_or_tag_cursor_refined"
+   ],
+   "runs": [
+    {
+     "run": 36552792426,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 encoded evaluator",
+     "workflow_path": ".github/workflows/p01-encoded-evaluator.yml",
+     "head_sha": "6707aa0e65781e9d5674414bbf6c930443531bba",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "P01 component reuse entry",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01DeterministicNTMEmbedding",
+     "MCore.Real.P01EncodedEvaluator",
+     "MCore.Real.P01EncodedFrameTape",
+     "MCore.Real.P01EncodedStackEvaluator",
+     "MCore.Real.P01EvalCursorConsume",
+     "MCore.Real.P01EvalFramePopMachine",
+     "MCore.Real.P01EvalFramePopMachineV2",
+     "MCore.Real.P01EvalFramePushMachine",
+     "MCore.Real.P01EvalTagPhysicalRefinement",
+     "MCore.Real.P01NTMPhaseSeq",
+     "MCore.Real.P01SourceCursorInvariant"
+    ],
+    "theorems_axiom_audited": 34,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "audit/ATK_P01_MATERIAL_FRONTIER_V1.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessMachine",
+    "MCore.Real.P01WitnessGuessExecution.witnessGuess_complete",
+    "MCore.Real.P01WitnessGuessExecution.witnessGuess_halts"
+   ],
+   "runs": [
+    {
+     "run": 36499549795,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK PNP producer kernel",
+     "workflow_path": ".github/workflows/producer-kernel.yml",
+     "head_sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": null,
+    "note": "skipped: requires Mathlib",
+    "declaring_modules": [
+     "MCore.Real.P01WitnessGuessExecution"
+    ],
+    "theorems_axiom_audited": 0,
+    "axioms_union": [],
+    "all_axioms_standard": null,
+    "sorry_detected": null,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "CI_VERIFIED_ONLY__MATHLIB_NOT_REBUILT_LOCALLY",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "audit/ATK_P01_MATERIAL_FRONTIER_V1.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "MCore.Real.P01WitnessIndexedReadMachine.read_zero_false",
+    "MCore.Real.P01WitnessIndexedReadMachine.read_zero_true",
+    "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine",
+    "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_halts",
+    "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_state"
+   ],
+   "runs": [
+    {
+     "run": 36497448606,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "material-unification-v2",
+     "workflow_path": ".github/workflows/material-unification-v2.yml",
+     "head_sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "conclusion": "success"
+    },
+    {
+     "run": 36497644415,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P01WitnessIndexedReadGlobal"
+    ],
+    "theorems_axiom_audited": 4,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "CERTIFICATES/ATK_TERMINAL_P_VS_NP_e927d326.json",
+   "record_repository": "ShantiDraconis/m-core-p-vs-np",
+   "sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35629473878,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+     "conclusion": "success"
+    },
+    {
+     "run": 35629473883,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "atk-terminal-producer",
+     "workflow_path": ".github/workflows/atk-terminal-producer.yml",
+     "head_sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+     "conclusion": "success"
+    },
+    {
+     "run": 35629474058,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+     "conclusion": "success"
+    },
+    {
+     "run": 35632081050,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "fail-proof-all-gaps",
+     "workflow_path": ".github/workflows/fail-proof-all-gaps.yml",
+     "head_sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+     "conclusion": "success"
+    },
+    {
+     "run": 35632081097,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "e927d32684ae9294bb97f2fa5e66f24e57e085de",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "fail-proof boundary; explicitly does not certify SAT ∉ P or P ≠ NP",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "no theorem names in record; checking the modules the certifying workflow builds",
+    "declaring_modules": [
+     "MCore.Attack.CanonicalTerminalProducer"
+    ],
+    "theorems_axiom_audited": 2,
+    "axioms_union": [
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "9d6dd9575a61782c70137abff348356f805bc654",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35721236027,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 HARD scaffold",
+     "workflow_path": ".github/workflows/atk-p01-hard-scaffold.yml",
+     "head_sha": "9d6dd9575a61782c70137abff348356f805bc654",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalSATParserNTM",
+     "MCore.Real.CanonicalSATWitnessGuessNTM",
+     "MCore.Real.P01FinalCertificate"
+    ],
+    "theorems_axiom_audited": 11,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "3690ab0593358d065930b36ec1e7a67852a88fa0",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722427864,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 parser macro",
+     "workflow_path": ".github/workflows/atk-p01-parser-macro.yml",
+     "head_sha": "3690ab0593358d065930b36ec1e7a67852a88fa0",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalSATParserLeafPopProof",
+     "MCore.Real.CanonicalSATParserLeafReturnProof",
+     "MCore.Real.CanonicalSATParserLeafSourceProof",
+     "MCore.Real.CanonicalSATParserMacroProof",
+     "MCore.Real.CanonicalSATParserReturnProof"
+    ],
+    "theorems_axiom_audited": 20,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f9add60881d709ce8320cb54a4d52f26d829b8f5",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722846538,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 parser macro",
+     "workflow_path": ".github/workflows/atk-p01-parser-macro.yml",
+     "head_sha": "f9add60881d709ce8320cb54a4d52f26d829b8f5",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalSATParserLeafPopProof",
+     "MCore.Real.CanonicalSATParserLeafReturnProof",
+     "MCore.Real.CanonicalSATParserLeafSourceProof",
+     "MCore.Real.CanonicalSATParserMacroProof",
+     "MCore.Real.CanonicalSATParserReturnProof",
+     "MCore.Real.CanonicalSATParserTerminalBranches"
+    ],
+    "theorems_axiom_audited": 23,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35723570545,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 parser macro",
+     "workflow_path": ".github/workflows/atk-p01-parser-macro.yml",
+     "head_sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalSATParserGlobalSpec",
+     "MCore.Real.CanonicalSATParserLeafPopProof",
+     "MCore.Real.CanonicalSATParserLeafReturnProof",
+     "MCore.Real.CanonicalSATParserLeafSourceProof",
+     "MCore.Real.CanonicalSATParserMacroProof",
+     "MCore.Real.CanonicalSATParserPhaseMacroProof",
+     "MCore.Real.CanonicalSATParserReturnProof",
+     "MCore.Real.CanonicalSATParserTerminalBranches"
+    ],
+    "theorems_axiom_audited": 30,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "17c04b62d03946aab4573894833f087ade25bc33",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35721158651,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P02 normalization frontier",
+     "workflow_path": ".github/workflows/atk-p02-normalization-frontier.yml",
+     "head_sha": "17c04b62d03946aab4573894833f087ade25bc33",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "no theorem names in record; checking the modules the certifying workflow builds",
+    "declaring_modules": [
+     "MCore.Real.P02CanonicalNormalization",
+     "MCore.Real.P02ClockedDiagonalCompiler",
+     "MCore.Real.P02DiagonalFrontier",
+     "MCore.Real.P02LiteralFixedPointCountermodel",
+     "MCore.Real.P02LiteralFixedPointFirewall"
+    ],
+    "theorems_axiom_audited": 18,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "3ec5e116dde0969e82272ed9ca37e6e92c36c5e1",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "g21_iff_g22"
+   ],
+   "runs": [],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "38db71b416906e5b7138774842e91d3e367aad09",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "g21_iff_g22"
+   ],
+   "runs": [
+    {
+     "run": 35722282451,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P02 normalization frontier",
+     "workflow_path": ".github/workflows/atk-p02-normalization-frontier.yml",
+     "head_sha": "38db71b416906e5b7138774842e91d3e367aad09",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P02CanonicalNormalization",
+     "MCore.Real.P02ClockedDiagonalCompiler",
+     "MCore.Real.P02DiagonalFrontier",
+     "MCore.Real.P02G21G22Attack",
+     "MCore.Real.P02LiteralFixedPointCountermodel",
+     "MCore.Real.P02LiteralFixedPointFirewall"
+    ],
+    "theorems_axiom_audited": 24,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "MCore.Real.CookNormalizedG3Contract.cook_normalized_g3_contract_closed"
+   ],
+   "runs": [
+    {
+     "run": 35719428075,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK G3 source provenance",
+     "workflow_path": ".github/workflows/atk-g3-source-provenance.yml",
+     "head_sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CookNormalizedG3Contract"
+    ],
+    "theorems_axiom_audited": 3,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722252805,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families"
+    ],
+    "theorems_axiom_audited": 2,
+    "axioms_union": [],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/MATH_TERMINAL_BOUNDARY_20260922.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "MCore.Real.FinalExternalTwoGap.final_external_two_gap_closes"
+   ],
+   "runs": [
+    {
+     "run": 35722743845,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK External scaffold",
+     "workflow_path": ".github/workflows/atk-external-scaffold.yml",
+     "head_sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.FinalExternalCertificate",
+     "MCore.Real.FinalExternalTwoGap",
+     "MCore.Real.G3ModelMatch"
+    ],
+    "theorems_axiom_audited": 6,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/RPA_CONFIRMATION_v1.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "32981d6618802d7b7230dcbdee5526562ef74107",
+   "sha_repository": [
+    "ShantiDraconis/M-Core (api)"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "db716cec19ddbba552f5b91f865089abd4eea9e5",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f29f5984a92d7681887801e50ec2b6143d9f7ee4",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "eb49284311029102ae1e47d80091c0d15aed7352",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "72aa7be339ddcde8ffd83527a3bf0b932879cd45",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "93f1321f53aa93e18c7dcbf8a8a04e2844a15cbe",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "ada18eeddb72490e44a9c6033d63690a416a7f0b",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "d72e53bc7f667c75a432226a23adc59a255c5652",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "26e721ab25425d62312945200baa9c127910d320",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "9d6dd9575a61782c70137abff348356f805bc654",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalSATParserNTM",
+     "MCore.Real.CanonicalSATWitnessGuessNTM",
+     "MCore.Real.P01FinalCertificate"
+    ],
+    "theorems_axiom_audited": 11,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "97a95327360c3d4fc29dae1453330974e5f30519",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/gate_ledger.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CookNormalizedG3Contract"
+    ],
+    "theorems_axiom_audited": 3,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/manifest.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": null,
+   "sha_repository": null,
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35378862267,
+     "repository": null,
+     "workflow": null,
+     "workflow_path": null,
+     "head_sha": null,
+     "conclusion": "NOT_FOUND"
+    }
+   ],
+   "scope": "see record",
+   "status": "RUN_NOT_FOUND",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/manifest.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35719428075,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK G3 source provenance",
+     "workflow_path": ".github/workflows/atk-g3-source-provenance.yml",
+     "head_sha": "f2cafea7a74f3ef8ad4140943515622545c9f1d8",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CookNormalizedG3Contract"
+    ],
+    "theorems_axiom_audited": 3,
+    "axioms_union": [
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/status.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f9add60881d709ce8320cb54a4d52f26d829b8f5",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722846538,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 parser macro",
+     "workflow_path": ".github/workflows/atk-p01-parser-macro.yml",
+     "head_sha": "f9add60881d709ce8320cb54a4d52f26d829b8f5",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalSATParserLeafPopProof",
+     "MCore.Real.CanonicalSATParserLeafReturnProof",
+     "MCore.Real.CanonicalSATParserLeafSourceProof",
+     "MCore.Real.CanonicalSATParserMacroProof",
+     "MCore.Real.CanonicalSATParserReturnProof",
+     "MCore.Real.CanonicalSATParserTerminalBranches"
+    ],
+    "theorems_axiom_audited": 23,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/status.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35723570545,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P01 parser macro",
+     "workflow_path": ".github/workflows/atk-p01-parser-macro.yml",
+     "head_sha": "614f88fe020fd05b9b251a6a2283301acf7ff733",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.CanonicalSATParserGlobalSpec",
+     "MCore.Real.CanonicalSATParserLeafPopProof",
+     "MCore.Real.CanonicalSATParserLeafReturnProof",
+     "MCore.Real.CanonicalSATParserLeafSourceProof",
+     "MCore.Real.CanonicalSATParserMacroProof",
+     "MCore.Real.CanonicalSATParserPhaseMacroProof",
+     "MCore.Real.CanonicalSATParserReturnProof",
+     "MCore.Real.CanonicalSATParserTerminalBranches"
+    ],
+    "theorems_axiom_audited": 30,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/status.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "38db71b416906e5b7138774842e91d3e367aad09",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722282451,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P02 normalization frontier",
+     "workflow_path": ".github/workflows/atk-p02-normalization-frontier.yml",
+     "head_sha": "38db71b416906e5b7138774842e91d3e367aad09",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P02CanonicalNormalization",
+     "MCore.Real.P02ClockedDiagonalCompiler",
+     "MCore.Real.P02DiagonalFrontier",
+     "MCore.Real.P02G21G22Attack",
+     "MCore.Real.P02LiteralFixedPointCountermodel",
+     "MCore.Real.P02LiteralFixedPointFirewall"
+    ],
+    "theorems_axiom_audited": 24,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/status.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722252805,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families"
+    ],
+    "theorems_axiom_audited": 2,
+    "axioms_union": [],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "certs/final_external/v1/status.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722743845,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK External scaffold",
+     "workflow_path": ".github/workflows/atk-external-scaffold.yml",
+     "head_sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "terminal boundary / two-gap wiring; conditional",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.FinalExternalCertificate",
+     "MCore.Real.FinalExternalTwoGap",
+     "MCore.Real.G3ModelMatch"
+    ],
+    "theorems_axiom_audited": 6,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "fa928b119edb8609ae86eaff755dad7abcbf76d2",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "d0353f8af06d50f6a1e66bf77f8056f7309e0fd9",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "2e2dc84b56d9db9e26105b895e618d13db7095d3",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "9b66447c67d8a4db1e8f1599339c2ad4581d9f7e",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "44e3327a893710060c34d7ad149c16c9d66d316d",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "85d1031d0c78f2392f7deea083caf54b72c572cc",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "30707e68367460041a3106211f3150db38c236cd",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "a5635895dee4d7736778ce0104dfbe7016f6487a",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f3dc5354a6f8a652fbcda941b4f0a0e6213ddd30",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "3485380f801f261ed8f11f543685cf61687f4316",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "final_external_certificate",
+    "final_external_gap_closes",
+    "g21_iff_g22",
+    "g21_pointwise_iff_p02_target",
+    "p01_g21_closes_internal"
+   ],
+   "runs": [],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families"
+    ],
+    "theorems_axiom_audited": 2,
+    "axioms_union": [],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "evidence/global_final_proof_links.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "final_external_gap_of_two_gap",
+    "final_external_two_gap_closes"
+   ],
+   "runs": [],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.FinalExternalCertificate",
+     "MCore.Real.FinalExternalTwoGap",
+     "MCore.Real.G3ModelMatch"
+    ],
+    "theorems_axiom_audited": 6,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/cross_repository_certificate_registry.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "e40ff6f5d4bf7c2d4a0e41b700185bf0be7429fd",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np (api)"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/global_sources.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": null,
+   "sha_repository": null,
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35565114760,
+     "repository": null,
+     "workflow": null,
+     "workflow_path": null,
+     "head_sha": null,
+     "conclusion": "NOT_FOUND"
+    }
+   ],
+   "scope": "see record",
+   "status": "RUN_NOT_FOUND",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/global_sources.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722252805,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "certificate",
+     "workflow_path": ".github/workflows/certificate.yml",
+     "head_sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families"
+    ],
+    "theorems_axiom_audited": 2,
+    "axioms_union": [],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/global_sources.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722743845,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK External scaffold",
+     "workflow_path": ".github/workflows/atk-external-scaffold.yml",
+     "head_sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.FinalExternalCertificate",
+     "MCore.Real.FinalExternalTwoGap",
+     "MCore.Real.G3ModelMatch"
+    ],
+    "theorems_axiom_audited": 6,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/global_sources.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "38db71b416906e5b7138774842e91d3e367aad09",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [
+    {
+     "run": 35722282451,
+     "repository": "ShantiDraconis/m-core-p-vs-np",
+     "workflow": "ATK P02 normalization frontier",
+     "workflow_path": ".github/workflows/atk-p02-normalization-frontier.yml",
+     "head_sha": "38db71b416906e5b7138774842e91d3e367aad09",
+     "conclusion": "success"
+    }
+   ],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.P02CanonicalNormalization",
+     "MCore.Real.P02ClockedDiagonalCompiler",
+     "MCore.Real.P02DiagonalFrontier",
+     "MCore.Real.P02G21G22Attack",
+     "MCore.Real.P02LiteralFixedPointCountermodel",
+     "MCore.Real.P02LiteralFixedPointFirewall"
+    ],
+    "theorems_axiom_audited": 24,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL_AND_CI",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "fa928b119edb8609ae86eaff755dad7abcbf76d2",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "d0353f8af06d50f6a1e66bf77f8056f7309e0fd9",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "85d1031d0c78f2392f7deea083caf54b72c572cc",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "9b66447c67d8a4db1e8f1599339c2ad4581d9f7e",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "2e2dc84b56d9db9e26105b895e618d13db7095d3",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "44e3327a893710060c34d7ad149c16c9d66d316d",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "30707e68367460041a3106211f3150db38c236cd",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "3485380f801f261ed8f11f543685cf61687f4316",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "a5635895dee4d7736778ce0104dfbe7016f6487a",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "f3dc5354a6f8a652fbcda941b4f0a0e6213ddd30",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [],
+   "runs": [],
+   "scope": "see record",
+   "status": "SHA_RESOLVED__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "c102d9d482d708a7a865803e94f294c6da82ed9a",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "final_external_certificate",
+    "final_external_gap_closes",
+    "g21_iff_g22",
+    "g21_pointwise_iff_p02_target",
+    "p01_g21_closes_internal"
+   ],
+   "runs": [],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.C12.Families"
+    ],
+    "theorems_axiom_audited": 2,
+    "axioms_union": [],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  },
+  {
+   "record": "final-proof/pnp_reuse_chain.json",
+   "record_repository": "ShantiDraconis/M-Core",
+   "sha": "b406b806da58ebe6bc1f85863ee44054ad42edb2",
+   "sha_repository": [
+    "ShantiDraconis/m-core-p-vs-np"
+   ],
+   "claimed_theorems": [
+    "final_external_gap_of_two_gap",
+    "final_external_two_gap_closes"
+   ],
+   "runs": [],
+   "scope": "see record",
+   "local_kernel": {
+    "lean": "4.19.0",
+    "build_exit": 0,
+    "note": "",
+    "declaring_modules": [
+     "MCore.Real.FinalExternalCertificate",
+     "MCore.Real.FinalExternalTwoGap",
+     "MCore.Real.G3ModelMatch"
+    ],
+    "theorems_axiom_audited": 6,
+    "axioms_union": [
+     "Classical.choice",
+     "Quot.sound",
+     "propext"
+    ],
+    "all_axioms_standard": true,
+    "sorry_detected": false,
+    "unresolved_names": []
+   },
+   "ci_builds_declaring_modules": true,
+   "ci_uncovered_modules": [],
+   "status": "KERNEL_VERIFIED_LOCAL__NO_RUN_CITED",
+   "terminal_for_P_ne_NP": false
+  }
+ ]
+}

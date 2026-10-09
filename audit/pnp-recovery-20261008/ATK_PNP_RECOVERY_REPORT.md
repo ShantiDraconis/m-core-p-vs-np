@@ -191,7 +191,53 @@ Conclusão: não existe, e não pode existir, transporte dessa camada para G21. 
 
 Observação de nomenclatura: `RelationalHardAtom.FailAt` significa "duas ramificações distintas", não "a máquina falha". A coincidência com `UniversalFailure` não indica nenhuma relação entre os dois.
 
-## 13. Pendências deste ciclo
+## 13. Conferência dos certificados existentes (2026-10-09)
+
+Unidade de auditoria: declaração Lean + arquivo + SHA + run com sucesso + `#print axioms`. O resultado completo, registro a registro, está em `PNP_MATERIAL_PROOF_MANIFEST.json`.
+
+Fontes lidas:
+- `m-core-p-vs-np@9efeb9b7…` (`CERTIFICATES/`, `certificates/`, `GATE_LEDGER.json`, `audit/ATK_P01_MATERIAL_FRONTIER_V1.json`)
+- `M-Core@01d8d766…` (`certs/`, `evidence/`, `final-proof/`)
+
+| Verificação | Resultado |
+|---|---|
+| Runs citados | 46: **44 existem, terminaram com sucesso e têm head no SHA citado**; 2 não existem em nenhum dos dois repositórios (`35378862267` em `M-Core certs/final_external/v1/manifest.json`, `35565114760` em `M-Core final-proof/global_sources.json`) |
+| SHAs do `m-core-p-vs-np` recompilados aqui (Lean 4.19.0) | **26 de 26** sem Mathlib compilam. Todos os teoremas citados e todos os nomes que o workflow certificador audita usam apenas `propext`, `Classical.choice` e `Quot.sound`; nenhum `sorryAx` |
+| SHAs com Mathlib | `dfb3e60d` (parser) e `9ebd51f5` (witness guess): o run citado compila o módulo declarante, mas sem passo explícito de auditoria de axiomas. Não foram recompilados aqui |
+| CI cobre o módulo do teorema? | **2 divergências**: `GATE_LEDGER` atribui `tmAsNTM_*`/`tmHaltsWithin_iff_ntmHaltsWithin` (`833fe0de`) e `consumeOneTape_correct`/`consumeThreeTape_correct` (`4eb4051f`) a runs genéricos (`certificate`, `fail-proof-all-gaps`) que **não compilam** `P01DeterministicNTMEmbedding` nem `P01EvalCursorConsume`. Os sete teoremas passam no kernel local, com axiomas padrão; só a evidência de CI citada está errada |
+| Os oito certificados P01 | Todos `KERNEL_VERIFIED_LOCAL_AND_CI` (ou CI apenas, no caso do parser com Mathlib). Cada um certifica **um componente** e declara no próprio texto que não habita `P01MachineConstruction` |
+| `ATK_TERMINAL_P_VS_NP_e927d326.json` | Runs e build conferem. O próprio certificado diz que **não** certifica SAT ∉ P nem P ≠ NP |
+| `ATK_ACCEPTED_SEMANTIC_7OF7` (M-Core) | Runs conferem. É um "universo condicional": os habitantes vêm de hipóteses aceitas |
+| Certificados terminais de P ≠ NP | **0** |
+
+Correção de estado: os índices em `main` (`GATE_LEDGER.json` e `ATK_P01_MATERIAL_FRONTIER_V1.json`, atualizado hoje em `9efeb9b7`) ainda registram P01 como `OPEN_MATH`. Isso está desatualizado: `p01ConstructionGap_closed` está FROZEN em `0dd0938` e verificado (seções 3 e 11). Os arquivos em `main` e no M-Core não foram alterados por esta auditoria.
+
+## 14. Tableau de Cook–Levin (versões com Mathlib)
+
+CI: branch `atk/pnp-tableau-mathlib-ci-20261009`, run `37914345859`. As quatro versões foram compiladas nos SHAs de origem, contra o mesmo Mathlib fixado (`c44e0c8e`, manifest de `685593f0`).
+
+| SHA (branch) | Resultado |
+|---|---|
+| `6c467fbba91503d25e91d2bab8b804aebf34dc9f` (`atk/p02-lane4-reuse-t10-audit-20261003`; o mesmo arquivo está em `atk/p02-material-inhabitant-20261007`) | **KERNEL_VERIFIED_CI**. `tableau_correctness_iff`, `tableau_soundness_from_satLanguage`, `tableau_completeness_to_satLanguage`, `boundedExec_weight_poly` e `boundedExec_encoded_length_poly`: `[propext, Classical.choice, Quot.sound]` |
+| `1779db20…` (`p02-e1-c1-left-validate`) | KERNEL_FAILURE (linha 6310: `rewrite` falhou; 6001: metas não resolvidas) |
+| `08a17e64…` (`p02-e1-c2-right`) | KERNEL_FAILURE (linha 6464: construtor anônimo inválido; 6313: metas não resolvidas) |
+| `685593f0…` (`p02-lane4-terminal-densify`) | KERNEL_FAILURE (linha 2621: timeout de heartbeats; 2699–2707: identificadores `ntmInitial_*_exists_unique` inexistentes) |
+
+O que está provado em `6c467fbb`:
+```lean
+tableau_correctness_iff : ∀ (M : PolyNTMCandidate) (x : BitString) (t : ℕ),
+  SATLanguage (boundedExecCircuit_NTM M x t) ↔ M.machine.AcceptsWithin t (initialNTMConfig M.machine x)
+boundedExec_encoded_length_poly : ∀ M x t,
+  (encodeCircuit (boundedExecCircuit_NTM M x t)).length ≤ tableauEncodingCoeff M * (x.length + t + 1)^4
+```
+Esse é o núcleo semântico do Cook–Levin: a fórmula é satisfatível exatamente quando a máquina aceita, e seu tamanho é polinomial. Para obter `PneqNP → G21Pointwise` ainda faltam:
+1. uma máquina determinística polinomial, no modelo do repositório, que **calcule** `x ↦ encodeCircuit (boundedExecCircuit_NTM M x (T |x|))`;
+2. a composição dessa máquina com um decisor hipotético de SAT (`PolyDTMCandidate`), dando um decisor para qualquer linguagem NP;
+3. o teorema resultante.
+
+O módulo não está ligado à branch de integração, porque depende de Mathlib e a integração não depende. Isso fica para quando os passos 1 e 2 existirem.
+
+## 15. Pendências deste ciclo
 
 - **Matriz das 32 obrigações:** a lista não foi encontrada nesta conversa nem nos repositórios examinados (busca em `.md`, `.json` e `.yaml` de todas as branches). É preciso indicar o arquivo ou a fonte.
 - Repositórios de Riemann, Beal, BSD, Hodge, Yang–Mills, Navier–Stokes e Poincaré: ainda não examinados.

@@ -1,0 +1,104 @@
+{
+ "ci_branch": "atk/pnp-tableau-mathlib-ci-20261009",
+ "ci_commit": "f0ca15a69134f058d4c0e65d55e08c8bb75aea4d",
+ "run": 37914345859,
+ "mathlib_pin": "c44e0c8ee63ca166450922a373c7409c5d26b00b (lake-manifest of 685593f0)",
+ "module": "MCore.Real.PNPNTMTableauEncoding",
+ "versions": [
+  {
+   "branch": "atk/p02-lane4-reuse-t10-audit-20261003",
+   "sha": "6c467fbba91503d25e91d2bab8b804aebf34dc9f",
+   "job": 113766775497,
+   "conclusion": "success",
+   "axioms": {
+    "boundedExec_encoded_length_poly": [
+     "propext",
+     "Classical.choice",
+     "Quot.sound"
+    ],
+    "boundedExec_weight_poly": [
+     "propext",
+     "Classical.choice",
+     "Quot.sound"
+    ],
+    "tableau_completeness_to_satLanguage": [
+     "propext",
+     "Classical.choice",
+     "Quot.sound"
+    ],
+    "tableau_soundness_from_satLanguage": [
+     "propext",
+     "Classical.choice",
+     "Quot.sound"
+    ],
+    "tableau_correctness_iff": [
+     "propext",
+     "Classical.choice",
+     "Quot.sound"
+    ]
+   },
+   "statements": {
+    "tableau_correctness_iff": "∀ (M : PolyNTMCandidate) (x : BitString) (t : ℕ), SATLanguage (boundedExecCircuit_NTM M x t) ↔ M.machine.AcceptsWithin t (initialNTMConfig M.machine x)",
+    "boundedExec_encoded_length_poly": "∀ M x t, (encodeCircuit (boundedExecCircuit_NTM M x t)).length ≤ tableauEncodingCoeff M * (x.length + t + 1)^4"
+   },
+   "status": "KERNEL_VERIFIED_CI"
+  },
+  {
+   "branch": "atk/p02-e1-c1-left-validate-20261004",
+   "sha": "1779db200aeeb16a60489012131b8e4d62566e0e",
+   "job": 113766775640,
+   "conclusion": "failure",
+   "first_errors": [
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6310:6: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6284:16: type mismatch",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6272:2: tactic 'apply' failed, failed to unify",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6243:6: tactic 'rewrite' failed, did not find instance of the pattern in the target expression",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6242:10: application type mismatch",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6219:2: tactic 'assumption' failed",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6197:2: tactic 'assumption' failed",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6001:2: unsolved goals"
+   ],
+   "status": "KERNEL_FAILURE"
+  },
+  {
+   "branch": "atk/p02-lane4-terminal-densify-20261003",
+   "sha": "685593f052ea7bd87fd7046918ee2a507177f2c8",
+   "job": 113766775681,
+   "conclusion": "failure",
+   "first_errors": [
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2768:4: type mismatch, term",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2795:15: unexpected token 'by'; expected '{' or tactic",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2707:10: unknown identifier 'ntmInitial_right_exists_unique'",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2705:10: unknown identifier 'ntmInitial_left_exists_unique'",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2700:13: unknown identifier 'ntmInitial_head_exists_unique'",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2699:14: unknown identifier 'ntmInitial_state_exists_unique'",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2643:47: application type mismatch",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:2621:24: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached"
+   ],
+   "status": "KERNEL_FAILURE"
+  },
+  {
+   "branch": "atk/p02-e1-c2-right-20261004",
+   "sha": "08a17e646633955d89589b5b81dd4ad8a174327b",
+   "job": 113766775738,
+   "conclusion": "failure",
+   "first_errors": [
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6464:9: invalid constructor ⟨...⟩, insufficient number of arguments, constructs 'Eq.refl' does not have explicit fields, but #2 provided",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6463:10: application type mismatch",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6438:2: no goals to be solved",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6436:9: invalid constructor ⟨...⟩, insufficient number of arguments, constructs 'Eq.refl' does not have explicit fields, but #2 provided",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6435:10: application type mismatch",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6422:8: invalid constructor ⟨...⟩, insufficient number of arguments, constructs 'Eq.refl' does not have explicit fields, but #3 provided",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6422:9: application type mismatch",
+    "./././lean/MCore/Real/PNPNTMTableauEncoding.lean:6313:6: unsolved goals"
+   ],
+   "status": "KERNEL_FAILURE"
+  }
+ ],
+ "what_it_gives": "Semantic core of Cook–Levin: for every poly-time NTM candidate M, input x and fuel t, an explicit CNF circuit that is satisfiable iff M accepts x within t steps, with encoded length O((|x|+t+1)^4) for fixed M.",
+ "what_is_missing_for_PneqNP_to_G21": [
+  "a deterministic poly-time machine (in the repository model) that computes x ↦ encodeCircuit (boundedExecCircuit_NTM M x (T |x|))",
+  "composition of that machine with a hypothetical SAT decider (PolyDTMCandidate) giving a decider for an arbitrary NP language",
+  "the resulting theorem: PneqNP → G21Pointwise"
+ ]
+}
