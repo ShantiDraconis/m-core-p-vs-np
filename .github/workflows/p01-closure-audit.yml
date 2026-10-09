@@ -43,6 +43,15 @@ jobs:
           ax=$(tr '\n' ' ' < audit-out.txt | grep -o "depends on axioms: \[[^]]*\]" | head -1)
           echo "::notice title=P01 closure audit::$line | $ax"
 
+      - name: Separation audit (no lower-bound constant reachable)
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.FailProofAllGaps 2>&1 | tail -2
+          lake env lean audit/P01SeparationAudit.lean 2>&1 | tee sep-out.txt
+          line=$(grep -m1 'SEPARATION PASS' sep-out.txt | tr -d '\n')
+          test -n "$line"
+          echo "::notice title=P01 separation audit::$line"
+
       - name: Statement files identical to main
         run: |
           set -euo pipefail
