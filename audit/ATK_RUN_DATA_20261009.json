@@ -1,0 +1,58 @@
+{
+  "schema": "atk.run_data.v1",
+  "generated_date": "2026-10-09",
+  "repo": "ShantiDraconis/m-core-p-vs-np",
+  "audited_head": "3500283a67802d0f7d687285f53752446322c2a3",
+  "new_kernel_run": {
+    "started": false,
+    "reason": "Available GitHub connector does not expose workflow_dispatch; no local Lean repository/toolchain mounted."
+  },
+  "commit_checks": {
+    "statuses": [],
+    "pull_request_workflow_runs": [],
+    "note": "No checks returned is not proof of failure or success."
+  },
+  "historical_verified_runs": [
+    {
+      "id": 36499549795,
+      "conclusion": "success",
+      "scope": "witness guess"
+    },
+    {
+      "id": 36497448606,
+      "conclusion": "success",
+      "scope": "indexed witness reader"
+    },
+    {
+      "id": 36497644415,
+      "conclusion": "success",
+      "scope": "indexed witness reader"
+    },
+    {
+      "id": 37848515115,
+      "conclusion": "success",
+      "head_sha": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+      "scope": "recovery integration, audits"
+    }
+  ],
+  "historical_artifact": {
+    "run_id": 37848515115,
+    "name": "pnp-recovery-integration-logs",
+    "id": 11581900221,
+    "digest": "sha256:9f3983423e67cd73bec48867bf9ce534adb6a512e4fc7f6b2779539ad8b4703f"
+  },
+  "frontier_statuses": {
+    "parser": "MATERIAL_GREEN_FROZEN_REUSE",
+    "witness_preserving_prep": "PARTIAL_CONCRETE",
+    "verifier": "PARTIAL_CONCRETE",
+    "integration": "OPEN_MATERIAL",
+    "witness_guess": "MATERIAL_GREEN_CI_CONFIRMED",
+    "source_rewind": "SOURCE_THEOREM_PRESENT_KERNEL_REVALIDATION_PENDING",
+    "indexed_witness_read": "MATERIAL_GREEN_CI_CONFIRMED"
+  },
+  "remaining_math": [
+    "P01ConstructionGap",
+    "G21Pointwise"
+  ],
+  "final_math_certified": false
+}
