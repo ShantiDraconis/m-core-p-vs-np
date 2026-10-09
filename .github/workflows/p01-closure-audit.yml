@@ -1,0 +1,61 @@
+name: P01 closure audit
+
+# Independent kernel check of the recovered SAT ∈ NP producer
+# P01RawTotalizationProducer.p01ConstructionGap_closed (source 0dd09383,
+# frozen/p01-t5-poly-halting-green-0dd09383).  Read-only: builds, audits,
+# and reports through check annotations.  Never edits main/frozen/cert.
+
+on:
+  push:
+    branches: [ 'atk/p01-closure-audit-*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install elan
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Build the producer (lake)
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.P01RawTotalizationProducer 2>&1 | tail -5
+          echo "::notice title=P01 build::lake build MCore.Real.P01RawTotalizationProducer rc=0 at $GITHUB_SHA"
+
+      - name: Fail-closed kernel audit (type + axioms)
+        run: |
+          set -euo pipefail
+          lake env lean audit/P01ClosureAudit.lean 2>&1 | tee audit-out.txt
+          line=$(grep -m1 'P01_CLOSURE_AUDIT PASS' audit-out.txt | tr -d '\n')
+          test -n "$line"
+          ax=$(tr '\n' ' ' < audit-out.txt | grep -o "depends on axioms: \[[^]]*\]" | head -1)
+          echo "::notice title=P01 closure audit::$line | $ax"
+
+      - name: Statement files identical to main
+        run: |
+          set -euo pipefail
+          git fetch -q origin main
+          diff=0
+          while read -r f; do
+            a=$(git rev-parse "HEAD:$f"); b=$(git rev-parse "origin/main:$f" 2>/dev/null || echo missing)
+            if [ "$a" != "$b" ]; then echo "::error title=Statement drift::$f differs from main"; diff=$((diff+1)); fi
+          done < audit/P01_STATEMENT_CLOSURE.txt
+          n=$(wc -l < audit/P01_STATEMENT_CLOSURE.txt)
+          echo "::notice title=Statement identity::$((n-diff))/$n statement-defining files identical to origin/main ($(git rev-parse origin/main))"
+          test "$diff" -eq 0
+
+      - name: Toolchain
+        run: |
+          echo "::notice title=Toolchain::$(lake env lean --version) | $(cat lean-toolchain) | runner $(lsb_release -ds) | run $GITHUB_RUN_ID"
