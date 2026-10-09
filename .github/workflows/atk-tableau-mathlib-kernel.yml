@@ -66,11 +66,11 @@ jobs:
         shell: bash
         working-directory: src
         run: |
-          set -uo pipefail
+          set +e
           lake build MCore.Real.PNPNTMTableauEncoding 2>&1 | tee ../build.log
           rc=${PIPESTATUS[0]}
           # surface the first errors as annotations (readable via the checks API)
-          grep -E "error:" ../build.log | head -8 | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::error title=lean-build::${l:0:900}"; done
+          grep -E "error:" ../build.log | head -8 | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::error title=lean-build::${l:0:900}"; done || true
           exit $rc
       - name: Exact axiom audit
         shell: bash
