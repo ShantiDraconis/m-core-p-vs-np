@@ -4073,6 +4073,27 @@
     "generic grep"
    ],
    "note": "contains `axiom collapse_classical_limit` (src/lean/collapse-numerical-classical.lean:241), unrelated to P vs NP"
+  },
+  {
+   "repository": "ShantiDraconis/Elyon-Public-Proof",
+   "refs": [
+    {
+     "sha": "d88ad767019a9e487833b0030ec67f5fc7b39b7d",
+     "ref": "origin"
+    },
+    {
+     "sha": "d88ad767019a9e487833b0030ec67f5fc7b39b7d",
+     "ref": "origin/main"
+    }
+   ],
+   "history": "branch tips only",
+   "added": "2026-10-09",
+   "unique_lean_blobs": 120,
+   "methods": [
+    "M2",
+    "manual read"
+   ],
+   "note": "lean/MCore/FinalProofRegistry.lean proves provedCount_eq_zero : provedCount = 0; lean/MCore/K10.lean proves k10_not_certified (separation witness open). Only alias hits: transitionSoundnessCertificate (bounded-computation tableau) and InternalModelMatch (identity model match)."
   }
  ],
  "candidates_examined_and_rejected": [
