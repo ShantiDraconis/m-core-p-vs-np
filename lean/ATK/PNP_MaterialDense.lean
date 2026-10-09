@@ -1,22 +1,7 @@
-/-!
-ATK PNP dense material consolidation entrypoint.
-This file deliberately asserts no unproved terminal theorem.
-All certified theorems must be migrated with their exact dependencies
-and checked by Lean before adding their declarations here.
--/
-
+import MCore.Material.P01Adapter
 namespace ATK.PNP
-
-/-- An explicit record of the certification state; not a mathematical proof. -/
-inductive AuditState where
-  | source
-  | buildPending
-  | kernelVerified
-  deriving DecidableEq, Repr
-
-/-- Conservative status until the dense source and kernel audit are complete. -/
-def currentState : AuditState := .buildPending
-
-theorem currentState_eq_buildPending : currentState = .buildPending := rfl
-
+abbrev Material : Prop := MCore.Material.P01CanonicalMaterial
+theorem machine_of_material (h : Material) : MCore.Real.CanonicalSATMachineClosure :=
+  MCore.Material.p01_material_closes_sat_machine h
 end ATK.PNP
+#print axioms ATK.PNP.machine_of_material
