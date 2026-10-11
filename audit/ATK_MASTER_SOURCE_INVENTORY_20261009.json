@@ -1,0 +1,681 @@
+{
+  "schema": "atk.master.source_inventory.v1",
+  "repo": "ShantiDraconis/m-core-p-vs-np",
+  "tree_sha": "e05acffb94b2895836a6591f34b1613d8f899128",
+  "truncated": false,
+  "lean_source_count": 134,
+  "entries": [
+    {
+      "path": "audit/ATK_K10_ABSTRACT_OBLIGATION_COUNTERAUDIT.lean",
+      "blob_sha": "ff560bfdc20cbd924848cfe275d0b60c6b52e359",
+      "bytes": 1391
+    },
+    {
+      "path": "audit/ATK_LOWER_BOUND_WITNESS_MODEL_BINDING_COUNTERAUDIT.lean",
+      "blob_sha": "92e498ebe7fc641b8787f074a8d02ac5ea69b4e2",
+      "bytes": 769
+    },
+    {
+      "path": "audit/C12/SRepresentationCounterexample.lean",
+      "blob_sha": "1877a76be23a5e9760b69c02c364c9f8757cd6ef",
+      "bytes": 2317
+    },
+    {
+      "path": "audit/ClosedDiscriminant.lean",
+      "blob_sha": "9bfaa71e386fcd37b825c6368fd64a69b3b65513",
+      "bytes": 653
+    },
+    {
+      "path": "audit/EndpointCompression.lean",
+      "blob_sha": "41f18931c0d4f106067fc61200713903933164a7",
+      "bytes": 4646
+    },
+    {
+      "path": "audit/FinalEndpoint.lean",
+      "blob_sha": "92953adafe4433e33b44275339cf721ddb96cfa4",
+      "bytes": 2295
+    },
+    {
+      "path": "audit/ThreeTracks.lean",
+      "blob_sha": "63c9630d139cedc7807cf9213556c693fce5c809",
+      "bytes": 5786
+    },
+    {
+      "path": "audit/repro_PNP.lean",
+      "blob_sha": "144c43fb5b9d980918f847a0f5d986f18662ba78",
+      "bytes": 2082
+    },
+    {
+      "path": "lean/C11Regression.lean",
+      "blob_sha": "c42e90b34d90315db2cee5f38955eda0a0cbc41a",
+      "bytes": 1014
+    },
+    {
+      "path": "lean/C12Gen.lean",
+      "blob_sha": "b7ed621d7bc1a330443b9846f12a2e3623b1b5be",
+      "bytes": 1625
+    },
+    {
+      "path": "lean/C13BidirectionalProbe.lean",
+      "blob_sha": "c685af6eb3ae567d5e5372fafe50f588d08d51f2",
+      "bytes": 1611
+    },
+    {
+      "path": "lean/MCore.lean",
+      "blob_sha": "a366c1a4860a2c8bf0575f13d53f8e11e867d5a1",
+      "bytes": 1009
+    },
+    {
+      "path": "lean/MCore/ATK_HARD_PNP_NEXT.lean",
+      "blob_sha": "6e981ac03931422fe5457d19d9ecef425e23cd96",
+      "bytes": 124
+    },
+    {
+      "path": "lean/MCore/Attack/CanonicalTerminalProducer.lean",
+      "blob_sha": "0fda547dc6451af884d542ee3d42c292a54a1674",
+      "bytes": 1728
+    },
+    {
+      "path": "lean/MCore/AttackDAG/K3AlgebraAttacks.lean",
+      "blob_sha": "ea52f7e6b4cf4e9475158ea1324b31f593c7d697",
+      "bytes": 489
+    },
+    {
+      "path": "lean/MCore/Audit.lean",
+      "blob_sha": "e16259aba353c23bb973257950bff881d85ef53e",
+      "bytes": 104
+    },
+    {
+      "path": "lean/MCore/BackwardAudit/ClosedDiscriminant.lean",
+      "blob_sha": "f1b7782c3b9282e0335ea5737691a803888e27fa",
+      "bytes": 5342
+    },
+    {
+      "path": "lean/MCore/BackwardAudit/FinalToMiddle.lean",
+      "blob_sha": "5dd4a273792dad9b7d77617224ae759a4e71f79e",
+      "bytes": 1416
+    },
+    {
+      "path": "lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean",
+      "blob_sha": "b6b2dd65a1fe54b04af93879bb0a0dc4420ac3e2",
+      "bytes": 562
+    },
+    {
+      "path": "lean/MCore/BackwardAudit/MaterialProducerGate.lean",
+      "blob_sha": "6513259f0f0d77ac58f50ca65ca11dd733e41b8a",
+      "bytes": 506
+    },
+    {
+      "path": "lean/MCore/BackwardAudit/OrientedWitnessBoundary.lean",
+      "blob_sha": "ce4d2a139643d47dbd6a9605e37d6588a81e7336",
+      "bytes": 2630
+    },
+    {
+      "path": "lean/MCore/BackwardAudit/StartToMiddle.lean",
+      "blob_sha": "acc837105be2a8131b4f29cc160be1800b02c9a2",
+      "bytes": 979
+    },
+    {
+      "path": "lean/MCore/BackwardAudit/WithoutOracle.lean",
+      "blob_sha": "b3eea45fc3ecdd0a5da50ce1ea1cc95cb5eb4b08",
+      "bytes": 851
+    },
+    {
+      "path": "lean/MCore/Boundary.lean",
+      "blob_sha": "81c103d10e50cde61d167d54155dc3acad5c3790",
+      "bytes": 325
+    },
+    {
+      "path": "lean/MCore/C10/RestrictionProgress.lean",
+      "blob_sha": "733213f20a7b72a8a188e2c86364df9f6affe20d",
+      "bytes": 3714
+    },
+    {
+      "path": "lean/MCore/C11/BranchingCost.lean",
+      "blob_sha": "1a8b6946363359f52b3a5e919a6d0995d1e82c51",
+      "bytes": 3407
+    },
+    {
+      "path": "lean/MCore/C12/Families.lean",
+      "blob_sha": "a6721c6b908fb732fa40c3d13bf2ab61146f62d4",
+      "bytes": 2596
+    },
+    {
+      "path": "lean/MCore/C9/Good.lean",
+      "blob_sha": "333925d8dd873114dbdba8f1f20289a12932aa9c",
+      "bytes": 1477
+    },
+    {
+      "path": "lean/MCore/C9/Mu.lean",
+      "blob_sha": "c3bf0695fef67fb58e93867eb5cb89cf649ccd6d",
+      "bytes": 1116
+    },
+    {
+      "path": "lean/MCore/C9/Reuse.lean",
+      "blob_sha": "e9267529ea913a17a37ce4c2049b385daf6c987b",
+      "bytes": 679
+    },
+    {
+      "path": "lean/MCore/C9/Step.lean",
+      "blob_sha": "da4b443cfd833a4c7972184b75c44c3fe53bf97d",
+      "bytes": 1805
+    },
+    {
+      "path": "lean/MCore/C9/Vars.lean",
+      "blob_sha": "0211585c8b379dbd26215a40cf4c454a13aea580",
+      "bytes": 728
+    },
+    {
+      "path": "lean/MCore/CircuitC2.lean",
+      "blob_sha": "020f076895c67a6dda1c43e48d61502d9b5fcdec",
+      "bytes": 3667
+    },
+    {
+      "path": "lean/MCore/CircuitC3.lean",
+      "blob_sha": "6bd3f0603261a165e6b0a1d1a333cb4e20be2672",
+      "bytes": 1786
+    },
+    {
+      "path": "lean/MCore/CircuitC4.lean",
+      "blob_sha": "072a0a98322995d13c81733019e4b932ace7495f",
+      "bytes": 2398
+    },
+    {
+      "path": "lean/MCore/CircuitC5.lean",
+      "blob_sha": "71d1269574bebe91423b59c22b282b3334dbfb8f",
+      "bytes": 3111
+    },
+    {
+      "path": "lean/MCore/CircuitC6.lean",
+      "blob_sha": "cb4ad10d3fa88cb768fdef15fcbd144856e05da5",
+      "bytes": 4451
+    },
+    {
+      "path": "lean/MCore/CircuitC7.lean",
+      "blob_sha": "296c0e06955e342626af86b55e0ee1e13c3ffe7c",
+      "bytes": 3998
+    },
+    {
+      "path": "lean/MCore/CircuitC8.lean",
+      "blob_sha": "5821544dcb31e44c0a868c7999273591b39ec794",
+      "bytes": 6767
+    },
+    {
+      "path": "lean/MCore/CircuitK1.lean",
+      "blob_sha": "e2f05e6f6eb0ee404da29a14ce59ea4ebe1a6af4",
+      "bytes": 4213
+    },
+    {
+      "path": "lean/MCore/Frontier/K3Gaps.lean",
+      "blob_sha": "3d051252b911033228795ff73cff562588d1239c",
+      "bytes": 377
+    },
+    {
+      "path": "lean/MCore/K0.lean",
+      "blob_sha": "372d87d51023b49d9c8b3fd4b45fb6295643f7ba",
+      "bytes": 275
+    },
+    {
+      "path": "lean/MCore/K1.lean",
+      "blob_sha": "5988caba47954281b4e9e796bee6b55126653e8c",
+      "bytes": 570
+    },
+    {
+      "path": "lean/MCore/K10.lean",
+      "blob_sha": "774363116907b7087a87a3661eb7cabb13f153d5",
+      "bytes": 2318
+    },
+    {
+      "path": "lean/MCore/K2.lean",
+      "blob_sha": "1e5562570dbe34ee22175b85a649238133cc194d",
+      "bytes": 702
+    },
+    {
+      "path": "lean/MCore/K3.lean",
+      "blob_sha": "74bb65fe99a4abe3d1fb816e13a5f35231efd639",
+      "bytes": 780
+    },
+    {
+      "path": "lean/MCore/K4.lean",
+      "blob_sha": "659695de1a7fe4fb16be61bb763d4df58261d453",
+      "bytes": 330
+    },
+    {
+      "path": "lean/MCore/K5.lean",
+      "blob_sha": "7ba8d242e6af4b0c7422af6c72173c67b065b317",
+      "bytes": 446
+    },
+    {
+      "path": "lean/MCore/K6.lean",
+      "blob_sha": "512391b96e7aee294a76e139bb130d5cce693cd7",
+      "bytes": 482
+    },
+    {
+      "path": "lean/MCore/K7.lean",
+      "blob_sha": "c22304d49c515a23dcb665771351b47397065722",
+      "bytes": 2002
+    },
+    {
+      "path": "lean/MCore/K8.lean",
+      "blob_sha": "22155018e0f447fc4ac167b3a41bbff428ad2f8c",
+      "bytes": 2379
+    },
+    {
+      "path": "lean/MCore/K9.lean",
+      "blob_sha": "1dcac221b48cce833c14f5e68a29131f22517572",
+      "bytes": 2990
+    },
+    {
+      "path": "lean/MCore/Material/Closure.lean",
+      "blob_sha": "9176280b73be8ff0107de822ee91f955b0492fdc",
+      "bytes": 463
+    },
+    {
+      "path": "lean/MCore/Material/P01Adapter.lean",
+      "blob_sha": "193f0e919ab945470fd09c9c5087febbd733015d",
+      "bytes": 347
+    },
+    {
+      "path": "lean/MCore/MinimalInhabitant.lean",
+      "blob_sha": "79aafb81f96950d76d6fd8ca33d9d4e389f8df7d",
+      "bytes": 804
+    },
+    {
+      "path": "lean/MCore/PrizeK0.lean",
+      "blob_sha": "981d0212d839bac712ac132134d937c89f355179",
+      "bytes": 1665
+    },
+    {
+      "path": "lean/MCore/PvsNPOpenMath.lean",
+      "blob_sha": "7685446b647de931204efa0f6cada79ff6f2629f",
+      "bytes": 1016
+    },
+    {
+      "path": "lean/MCore/Real/CNFStructure.lean",
+      "blob_sha": "83bfd6b26efc506c97f9f2328e0f7996fb44e434",
+      "bytes": 22614
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalCircuitBits.lean",
+      "blob_sha": "95db8597b479638fc0c035e951054d3043782272",
+      "bytes": 6024
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalComplexityBridge.lean",
+      "blob_sha": "0b44ea4c066781a6537a5a600e31e2384a47f8a4",
+      "bytes": 1437
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalFinalProof.lean",
+      "blob_sha": "247f0e5cef8314c3a3cf3fd6bab87f48eb867c43",
+      "bytes": 5654
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalPSubsetNP.lean",
+      "blob_sha": "5ba695ae41be2b0848a518732bcadbc7649f6cd2",
+      "bytes": 9552
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATBoundary.lean",
+      "blob_sha": "10df41e32aaa8b08f650b8d76b8a85db0ef7afc4",
+      "bytes": 3020
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATFrameAttack.lean",
+      "blob_sha": "ec413cf6554179a25eb3b3d5d4d99b1c4fd13842",
+      "bytes": 11108
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATFrameMachineV2.lean",
+      "blob_sha": "829e02aef78a7f49b7b09c4a66c95b513bd60c06",
+      "bytes": 6312
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATNTMAttack.lean",
+      "blob_sha": "aafdb20728f951879a4b8286b7e2557264bd8575",
+      "bytes": 4570
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATNatParserAttack.lean",
+      "blob_sha": "04bd08e97f24e76cab6403b7bc8753c7f751f5d1",
+      "bytes": 4480
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATParserAttack.lean",
+      "blob_sha": "1b631109f1a2e5f217320fc38dd70cdce6f37c0a",
+      "bytes": 13766
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATVerifier.lean",
+      "blob_sha": "286211091577d66ca401c618fcac6ee91c02f9d0",
+      "bytes": 2422
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATWitness.lean",
+      "blob_sha": "0585a266c7722e98b06296fadec948dfbed2763e",
+      "bytes": 4204
+    },
+    {
+      "path": "lean/MCore/Real/CanonicalSATWitnessGuessNTM.lean",
+      "blob_sha": "48ab49c6059d87231347e3335f5d9dbd87d013cf",
+      "bytes": 3525
+    },
+    {
+      "path": "lean/MCore/Real/FailProofAllGaps.lean",
+      "blob_sha": "e2c29e2b8311b64b34b4531ee3c425d9c1f0d091",
+      "bytes": 4150
+    },
+    {
+      "path": "lean/MCore/Real/FailProofFiniteAttack.lean",
+      "blob_sha": "6875f6fefccc4d203734adfeba4932ee48a524f9",
+      "bytes": 2736
+    },
+    {
+      "path": "lean/MCore/Real/FinalProof.lean",
+      "blob_sha": "2413c8e879fde352ffd186f24a35db2d32f289e9",
+      "bytes": 7029
+    },
+    {
+      "path": "lean/MCore/Real/FinalProofAttack.lean",
+      "blob_sha": "ad3e12dd8a22a56ed638a264bd8cfa11d700c2a4",
+      "bytes": 3870
+    },
+    {
+      "path": "lean/MCore/Real/MachineRunLemmas.lean",
+      "blob_sha": "b6caca8af8fbe7962c38c8bf64d4871d69d9cca7",
+      "bytes": 2545
+    },
+    {
+      "path": "lean/MCore/Real/Model.lean",
+      "blob_sha": "75dc88485cb60edab758528d9c573b906bcd3c65",
+      "bytes": 4668
+    },
+    {
+      "path": "lean/MCore/Real/P01DeterministicNTMEmbedding.lean",
+      "blob_sha": "de177f5cdceab7676746dfe19278a47a12bb887e",
+      "bytes": 4188
+    },
+    {
+      "path": "lean/MCore/Real/P01EncodedEvaluator.lean",
+      "blob_sha": "381f07e7b70003d8163d54edc5c5d1caaba7020e",
+      "bytes": 5084
+    },
+    {
+      "path": "lean/MCore/Real/P01EncodedFrameTape.lean",
+      "blob_sha": "6119e11fd5589699e63ab15a872a761734e2c0aa",
+      "bytes": 4337
+    },
+    {
+      "path": "lean/MCore/Real/P01EncodedStackEvaluator.lean",
+      "blob_sha": "7bf30bbe3489cf801d314635ab10072721f63691",
+      "bytes": 9851
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalCursorConsume.lean",
+      "blob_sha": "730b493a49e2729a2130311ba4f889c2fa4a5b75",
+      "bytes": 3902
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalCursorFramePush.lean",
+      "blob_sha": "368d7bfc1ced85f4dd17cb7db7cbf03efab6b8a7",
+      "bytes": 3070
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalCursorMachine.lean",
+      "blob_sha": "ad4c242831748514b78cddd6ba5c3e5d066cebb0",
+      "bytes": 12451
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalCursorRoundTrip.lean",
+      "blob_sha": "46b6d78f3d1d4772ade8a66249b8ff1c5d953def",
+      "bytes": 8845
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalFramePopMachine.lean",
+      "blob_sha": "80ac03328cf7387951d7d44d4d9da2614c671075",
+      "bytes": 5985
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalFramePopMachineV2.lean",
+      "blob_sha": "4cde6cb928a3541960d74c272880653fceeffa2c",
+      "bytes": 8667
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalFramePushMachine.lean",
+      "blob_sha": "63bba08487b03636194b45fffea80a6fd863233e",
+      "bytes": 6248
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalStepFrameRefinement.lean",
+      "blob_sha": "0559152d52b8373539df9ba77325c59568359658",
+      "bytes": 12101
+    },
+    {
+      "path": "lean/MCore/Real/P01EvalTagPhysicalRefinement.lean",
+      "blob_sha": "140f16c6b576417e68f53759e48bc31e91b032f1",
+      "bytes": 6690
+    },
+    {
+      "path": "lean/MCore/Real/P01FinalCertificate.lean",
+      "blob_sha": "79e04a486769b1f129c90b0eecb91c2a0828b50b",
+      "bytes": 1944
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierEvalLocal.lean",
+      "blob_sha": "f57ddf300dfff95dac2aeee069a2dae18805a7ac",
+      "bytes": 1414
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierInputShuttleV2.lean",
+      "blob_sha": "a2d1aad399907e802230c27e1b8e930b7ad3d737",
+      "bytes": 3596
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierMachine.lean",
+      "blob_sha": "215a6820b4d355e31ee0cf57c7af87f86c6f85fb",
+      "bytes": 3370
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysical.lean",
+      "blob_sha": "5821e734a9b964ff4d139cc2e9629647599b3ccc",
+      "bytes": 6665
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysicalControl.lean",
+      "blob_sha": "f5fe8753b49dd2e33517f2a6851de84d119273dd",
+      "bytes": 10226
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysicalMoves.lean",
+      "blob_sha": "e9c1531ce0a5890886c54e569fdafa1e50430b98",
+      "bytes": 3566
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysicalOps.lean",
+      "blob_sha": "25382aa4d368a478c30cd11e921b7fcd58b8296b",
+      "bytes": 3747
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysicalRefinement.lean",
+      "blob_sha": "cd44f15270a2349b794411bfa8a477fec722bc70",
+      "bytes": 4422
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysicalRefinementV2.lean",
+      "blob_sha": "6d801c5c06e6de5910beea09cb142c8c1c7a5279",
+      "bytes": 5359
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysicalShuttles.lean",
+      "blob_sha": "fb2773657bc59121ceacc128b3fc50ebc5f0085a",
+      "bytes": 4840
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierPhysicalStackV2.lean",
+      "blob_sha": "1edb7adfa93c26e74d7a44ee3f9a2ec4c54bc242",
+      "bytes": 3767
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierSourceRewind.lean",
+      "blob_sha": "30d21ee3d2ba4e65f8a388c2b92635fc179b908f",
+      "bytes": 6484
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierSourceRoundTrip.lean",
+      "blob_sha": "32a076fa6e4a1523e287e3a95bc92f746be4315b",
+      "bytes": 1473
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierSourceToStack.lean",
+      "blob_sha": "499eba79e88eb32549dd4ee2eb19dde8c602a7d8",
+      "bytes": 2109
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierStackPrimitiveMachine.lean",
+      "blob_sha": "ab8b7d75d3cea5abe98901999eba95d6a1f7c6cd",
+      "bytes": 4646
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierStackSemantics.lean",
+      "blob_sha": "cdc739642dedc169d5ad612accaa869e60f029a6",
+      "bytes": 4029
+    },
+    {
+      "path": "lean/MCore/Real/P01FullVerifierTraversal.lean",
+      "blob_sha": "28570be12da504b64e29a49c927ab0b4ba2acfbb",
+      "bytes": 4587
+    },
+    {
+      "path": "lean/MCore/Real/P01InputNodePreservingPlan.lean",
+      "blob_sha": "2cf697917303e8a9a8ed4d2faf29d6a89fc27ed8",
+      "bytes": 6905
+    },
+    {
+      "path": "lean/MCore/Real/P01IntegrationFence.lean",
+      "blob_sha": "e536b34aac48cd7cc12cf7b3feb92d5b0a0cf859",
+      "bytes": 1169
+    },
+    {
+      "path": "lean/MCore/Real/P01NTMPhaseSeq.lean",
+      "blob_sha": "7414707a6102eac7c7951772eda4b29381f9b9f1",
+      "bytes": 4948
+    },
+    {
+      "path": "lean/MCore/Real/P01PhysicalVerifierBudget.lean",
+      "blob_sha": "6ddf75a8bc074a31d9d309bc3d02e5f4952f0eea",
+      "bytes": 2089
+    },
+    {
+      "path": "lean/MCore/Real/P01PhysicalVerifierFoundations.lean",
+      "blob_sha": "c5863da17d6a653a41f9d2c3026d216142f4ed68",
+      "bytes": 4455
+    },
+    {
+      "path": "lean/MCore/Real/P01PhysicalVerifierUniformCosts.lean",
+      "blob_sha": "1fb4ab0f06f2f3f5c2f6f2d1134b1efe95085b13",
+      "bytes": 5365
+    },
+    {
+      "path": "lean/MCore/Real/P01PreservingMarkerIteration.lean",
+      "blob_sha": "47cb2f181ef0207d9ece557c8f67347d76d29e8d",
+      "bytes": 4053
+    },
+    {
+      "path": "lean/MCore/Real/P01PreservingUnaryReaderCertificate.lean",
+      "blob_sha": "97c0d8ac9667ef01278caa0750fbba023251d9fb",
+      "bytes": 4159
+    },
+    {
+      "path": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean",
+      "blob_sha": "e8d598c76015662de4ee1500d5e8653665f55a13",
+      "bytes": 7628
+    },
+    {
+      "path": "lean/MCore/Real/P01PreservingUnaryWitnessMachine.lean",
+      "blob_sha": "2903fa4ea8274a7e3bb8d4fce4cff1b7b7a80fca",
+      "bytes": 11741
+    },
+    {
+      "path": "lean/MCore/Real/P01PreservingUnaryWitnessMarker.lean",
+      "blob_sha": "24d5f2e65dec71b7e7d03ebc3bbf3aceff962c53",
+      "bytes": 7059
+    },
+    {
+      "path": "lean/MCore/Real/P01SourceCursorInvariant.lean",
+      "blob_sha": "94980ac49d1fad9346ef1b4c21efa68e4b59679e",
+      "bytes": 3719
+    },
+    {
+      "path": "lean/MCore/Real/P01VerifiedRelation.lean",
+      "blob_sha": "2e00ee3becc3e385a7a2fb2dd22697a5bf187af4",
+      "bytes": 2558
+    },
+    {
+      "path": "lean/MCore/Real/P01VerifierComposition.lean",
+      "blob_sha": "29b357d7045d0bfefc6640becd58ac1de6db0b06",
+      "bytes": 1548
+    },
+    {
+      "path": "lean/MCore/Real/P01VerifierGateMachine.lean",
+      "blob_sha": "bf2701414ae29c64e49682e49d5eb582b3a12739",
+      "bytes": 2530
+    },
+    {
+      "path": "lean/MCore/Real/P01WitnessGuessExecution.lean",
+      "blob_sha": "63b5fc7bff5b9f301786bcb1b38fec30591592ba",
+      "bytes": 6918
+    },
+    {
+      "path": "lean/MCore/Real/P01WitnessIndexedRead.lean",
+      "blob_sha": "1fc227d2fa894e7852bec04dd713e597d79242c2",
+      "bytes": 3044
+    },
+    {
+      "path": "lean/MCore/Real/P01WitnessIndexedReadGlobal.lean",
+      "blob_sha": "a20446b241057f4febd1992e2fc82399034096d5",
+      "bytes": 14181
+    },
+    {
+      "path": "lean/MCore/Real/P01WitnessIndexedReadMachine.lean",
+      "blob_sha": "a33f0b2a9bd25077102931a2acf6ff458fee412a",
+      "bytes": 3583
+    },
+    {
+      "path": "lean/MCore/Real/P01WitnessIndexedReadProof.lean",
+      "blob_sha": "9b4ca0c1244590af0d9c44a639010972cdd679f2",
+      "bytes": 4960
+    },
+    {
+      "path": "lean/MCore/Real/P01WitnessPreservingPrep.lean",
+      "blob_sha": "6d15fbe67348d7dedc4a14b99b745b68af55d7d8",
+      "bytes": 6995
+    },
+    {
+      "path": "lean/MCore/Real/SATMachine.lean",
+      "blob_sha": "60ef613c09ed2f31e6962ab04cddb63ae66adbf5",
+      "bytes": 2292
+    },
+    {
+      "path": "lean/MCore/Real/Semantics.lean",
+      "blob_sha": "528558d1f2314c09b41aeddf1dca8209722362cc",
+      "bytes": 2287
+    },
+    {
+      "path": "lean/MCore/Signature.lean",
+      "blob_sha": "c66256d1d90dc459aa596215b7928606f0ad3fdd",
+      "bytes": 337
+    },
+    {
+      "path": "probe/P01MachineConstructionExpectedFailure.lean",
+      "blob_sha": "a7f8e2b145193c0ae15aa4ef050d21998fa845a4",
+      "bytes": 266
+    },
+    {
+      "path": "probe/PNPMaterialExpectedFailure.lean",
+      "blob_sha": "619061623a5c8efab8c476f6dfe1383c73a1e466",
+      "bytes": 462
+    }
+  ],
+  "status": "INVENTORIED_NOT_YET_FULLY_EMBEDDED",
+  "terminal_math": "OPEN_MATH"
+}
