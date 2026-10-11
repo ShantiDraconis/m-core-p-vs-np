@@ -38,7 +38,10 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$HOME/.elan/bin:$PATH"
-          python3 scripts/proof_inventory.py --out inventory --strict --check-committed
+          extra=""
+          # pull requests must ship a regenerated inventory; pushes only warn
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then extra="--fail-if-stale"; fi
+          python3 scripts/proof_inventory.py --out inventory --strict --check-committed $extra
       - name: Upload inventory
         if: always()
         uses: actions/upload-artifact@v4
