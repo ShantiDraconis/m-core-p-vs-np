@@ -11,8 +11,8 @@ Toolchain: `leanprover/lean4:v4.19.0`
 | modules failed | 2 |
 | modules blocked | 0 |
 | modules outside default build | 44 |
-| standalone files total | 8 |
-| standalone files failed | 0 |
+| standalone files total | 14 |
+| standalone files failed | 6 |
 | theorems total | 862 |
 | theorems clean | 862 |
 | theorems using sorry | 0 |
@@ -34,7 +34,14 @@ Toolchain: `leanprover/lean4:v4.19.0`
 
 ## Stand-alone files that do not compile
 
-None.
+| File | Detail |
+| --- | --- |
+| `audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean` | audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean:5:0: error: invalid 'import' command, it must be used in the beginning of the file |
+| `audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean:5:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist |
+| `audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean:4:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist |
+| `audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean:678:0: error: invalid 'import' command, it must be used in the beginning of the file |
+| `audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean:152:0: error: invalid 'import' command, it must be used in the beginning of the file |
+| `audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean:117:0: error: invalid 'import' command, it must be used in the beginning of the file |
 
 ## Theorems with non-standard axioms
 

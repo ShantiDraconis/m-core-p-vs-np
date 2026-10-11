@@ -24,8 +24,8 @@
   "modules_failed": 2,
   "modules_blocked": 0,
   "modules_outside_default_build": 44,
-  "standalone_files_total": 8,
-  "standalone_files_failed": 0,
+  "standalone_files_total": 14,
+  "standalone_files_failed": 6,
   "theorems_total": 862,
   "theorems_clean": 862,
   "theorems_using_sorry": 0,
@@ -797,12 +797,42 @@
  ],
  "standalone_files": [
   {
+   "path": "audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean:5:0: error: invalid 'import' command, it must be used in the beginning of the file"
+  },
+  {
    "path": "audit/ATK_K10_ABSTRACT_OBLIGATION_COUNTERAUDIT.lean",
    "status": "OK"
   },
   {
    "path": "audit/ATK_LOWER_BOUND_WITNESS_MODEL_BINDING_COUNTERAUDIT.lean",
    "status": "OK"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean:5:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean:4:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean:678:0: error: invalid 'import' command, it must be used in the beginning of the file"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean:152:0: error: invalid 'import' command, it must be used in the beginning of the file"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean:117:0: error: invalid 'import' command, it must be used in the beginning of the file"
   },
   {
    "path": "audit/C12/SRepresentationCounterexample.lean",
