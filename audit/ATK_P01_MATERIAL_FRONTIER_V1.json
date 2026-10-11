@@ -65,7 +65,7 @@
       "scope_note": "Certified component; global P01MachineConstruction remains OPEN_MATH."
     },
     "source_rewind": {
-      "status": "SOURCE_THEOREM_PRESENT_KERNEL_REVALIDATION_PENDING",
+      "status": "MATERIAL_GREEN_CI_CONFIRMED",
       "theorem": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear",
       "content": "real three-state TM halts from canonical source-end tape in source.length + 2",
       "source_file": "lean/MCore/Real/P01FullVerifierSourceRewind.lean",
@@ -77,7 +77,34 @@
         "rewind_scan_run",
         "sourceRewind_halts_linear"
       ],
-      "audit_note": "Exact theorem body and #print axioms found; dedicated successful kernel run for this file not independently verified. Do not label CI_GREEN until verified."
+      "audit_note": "Dedicated kernel run verified: run 37916275120 compiled this exact blob (30d21ee3) and all five listed theorems depend only on propext and Quot.sound. Certified component; global P01MachineConstruction remains OPEN.",
+      "verified_run": 37916275120,
+      "verified_workflow": "Proof inventory (builds every module; kernel axiom audit)",
+      "verified_commit": "4061ffd2f5d15ee7ae59702208d0da8488625d96",
+      "verified_blob_sha": "30d21ee3d2ba4e65f8a388c2b92635fc179b908f",
+      "verified_conclusion": "success",
+      "verified_axioms": {
+        "sourceRewindTimeBound_poly": [
+          "Quot.sound",
+          "propext"
+        ],
+        "sourceRewind_enter_step": [
+          "Quot.sound",
+          "propext"
+        ],
+        "sourceRewind_separator_step": [
+          "Quot.sound",
+          "propext"
+        ],
+        "rewind_scan_run": [
+          "Quot.sound",
+          "propext"
+        ],
+        "sourceRewind_halts_linear": [
+          "Quot.sound",
+          "propext"
+        ]
+      }
     },
     "indexed_witness_read": {
       "status": "MATERIAL_GREEN_CI_CONFIRMED",

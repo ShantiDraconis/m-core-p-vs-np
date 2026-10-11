@@ -1,0 +1,7591 @@
+{
+ "schema": "proof-inventory.v1",
+ "generated_by": "scripts/proof_inventory.py (kernel-derived; do not edit by hand)",
+ "toolchain": "leanprover/lean4:v4.19.0",
+ "libraries": [
+  {
+   "name": "MCore",
+   "srcDir": "lean"
+  }
+ ],
+ "policy": {
+  "standard_axioms": [
+   "Classical.choice",
+   "Quot.sound",
+   "propext"
+  ],
+  "theorem_status": "CLEAN = only standard axioms; USES_SORRY = depends on sorryAx; USES_PROJECT_AXIOM = depends on an axiom declared in this library",
+  "prop_status": "PROVED/REFUTED = a CLEAN theorem has exactly that Prop (or its negation) as its type; VACUOUS = the definition body ends in True; NO_PROOF_IN_LIBRARY = no theorem of that exact type exists here (this is not a claim that it is open mathematics)",
+  "scope": "closed (arity-0) Prop definitions, plus any Prop-valued definition that is vacuous"
+ },
+ "summary": {
+  "modules_total": 124,
+  "modules_ok": 122,
+  "modules_failed": 2,
+  "modules_blocked": 0,
+  "modules_outside_default_build": 44,
+  "standalone_files_total": 14,
+  "standalone_files_failed": 6,
+  "theorems_total": 862,
+  "theorems_clean": 862,
+  "theorems_using_sorry": 0,
+  "theorems_using_project_axiom": 0,
+  "theorems_nonstandard_axioms": 0,
+  "project_axioms_declared": 0,
+  "props_reported": 32,
+  "props_proved": 6,
+  "props_refuted": 3,
+  "props_vacuous": 1,
+  "props_no_proof_in_library": 22
+ },
+ "project_axioms": [],
+ "environment_groups": 2,
+ "name_clashes": [
+  {
+   "module": "MCore.BackwardAudit.WithoutOracle",
+   "declaration": "MCore.BackwardAudit.InterfaceFinalStatement",
+   "already_defined_in": "MCore.BackwardAudit.HypotheticalClosureOracle"
+  }
+ ],
+ "modules": [
+  {
+   "module": "MCore",
+   "path": "lean/MCore.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.ATK_HARD_PNP_NEXT",
+   "path": "lean/MCore/ATK_HARD_PNP_NEXT.lean",
+   "status": "FAILED",
+   "in_default_build": false,
+   "first_error": "lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward'",
+   "all_errors": [
+    "lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward'",
+    "lean/MCore/ATK_HARD_PNP_NEXT.lean:6:7: unknown identifier 'hard_PvsNP_SAT_not_in_P_backward'"
+   ]
+  },
+  {
+   "module": "MCore.Attack.CanonicalTerminalProducer",
+   "path": "lean/MCore/Attack/CanonicalTerminalProducer.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.AttackDAG.K3AlgebraAttacks",
+   "path": "lean/MCore/AttackDAG/K3AlgebraAttacks.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Audit",
+   "path": "lean/MCore/Audit.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "path": "lean/MCore/BackwardAudit/ClosedDiscriminant.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.BackwardAudit.FinalToMiddle",
+   "path": "lean/MCore/BackwardAudit/FinalToMiddle.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.BackwardAudit.HypotheticalClosureOracle",
+   "path": "lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.BackwardAudit.MaterialProducerGate",
+   "path": "lean/MCore/BackwardAudit/MaterialProducerGate.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "path": "lean/MCore/BackwardAudit/OrientedWitnessBoundary.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.BackwardAudit.RestrictionRouteBarrierAudit",
+   "path": "lean/MCore/BackwardAudit/RestrictionRouteBarrierAudit.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.BackwardAudit.StartToMiddle",
+   "path": "lean/MCore/BackwardAudit/StartToMiddle.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.BackwardAudit.WithoutOracle",
+   "path": "lean/MCore/BackwardAudit/WithoutOracle.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Boundary",
+   "path": "lean/MCore/Boundary.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C10.RestrictionProgress",
+   "path": "lean/MCore/C10/RestrictionProgress.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C11.BranchingCost",
+   "path": "lean/MCore/C11/BranchingCost.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C12.Calibration",
+   "path": "lean/MCore/C12/Calibration.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C12.Families",
+   "path": "lean/MCore/C12/Families.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C9.Good",
+   "path": "lean/MCore/C9/Good.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C9.Mu",
+   "path": "lean/MCore/C9/Mu.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C9.Reuse",
+   "path": "lean/MCore/C9/Reuse.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C9.Step",
+   "path": "lean/MCore/C9/Step.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.C9.Vars",
+   "path": "lean/MCore/C9/Vars.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitC2",
+   "path": "lean/MCore/CircuitC2.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitC3",
+   "path": "lean/MCore/CircuitC3.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitC4",
+   "path": "lean/MCore/CircuitC4.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitC5",
+   "path": "lean/MCore/CircuitC5.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitC6",
+   "path": "lean/MCore/CircuitC6.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitC7",
+   "path": "lean/MCore/CircuitC7.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitC8",
+   "path": "lean/MCore/CircuitC8.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.CircuitK1",
+   "path": "lean/MCore/CircuitK1.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Frontier.K3Gaps",
+   "path": "lean/MCore/Frontier/K3Gaps.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K0",
+   "path": "lean/MCore/K0.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K1",
+   "path": "lean/MCore/K1.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K10",
+   "path": "lean/MCore/K10.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K2",
+   "path": "lean/MCore/K2.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K3",
+   "path": "lean/MCore/K3.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K4",
+   "path": "lean/MCore/K4.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K5",
+   "path": "lean/MCore/K5.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K6",
+   "path": "lean/MCore/K6.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K7",
+   "path": "lean/MCore/K7.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K8",
+   "path": "lean/MCore/K8.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.K9",
+   "path": "lean/MCore/K9.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Material.Closure",
+   "path": "lean/MCore/Material/Closure.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Material.P01Adapter",
+   "path": "lean/MCore/Material/P01Adapter.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.MinimalInhabitant",
+   "path": "lean/MCore/MinimalInhabitant.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.PrizeK0",
+   "path": "lean/MCore/PrizeK0.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.PvsNPOpenMath",
+   "path": "lean/MCore/PvsNPOpenMath.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CNFStructure",
+   "path": "lean/MCore/Real/CNFStructure.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalCircuitBits",
+   "path": "lean/MCore/Real/CanonicalCircuitBits.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalComplexityBridge",
+   "path": "lean/MCore/Real/CanonicalComplexityBridge.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalFinalProof",
+   "path": "lean/MCore/Real/CanonicalFinalProof.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalPSubsetNP",
+   "path": "lean/MCore/Real/CanonicalPSubsetNP.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "path": "lean/MCore/Real/CanonicalSATBoundary.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "path": "lean/MCore/Real/CanonicalSATFrameAttack.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "path": "lean/MCore/Real/CanonicalSATFrameMachineV2.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "path": "lean/MCore/Real/CanonicalSATNTMAttack.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "path": "lean/MCore/Real/CanonicalSATNatParserAttack.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "path": "lean/MCore/Real/CanonicalSATParserAttack.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATVerifier",
+   "path": "lean/MCore/Real/CanonicalSATVerifier.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATWitness",
+   "path": "lean/MCore/Real/CanonicalSATWitness.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "path": "lean/MCore/Real/CanonicalSATWitnessGuessNTM.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.FailProofAllGaps",
+   "path": "lean/MCore/Real/FailProofAllGaps.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.FailProofFiniteAttack",
+   "path": "lean/MCore/Real/FailProofFiniteAttack.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.FinalProof",
+   "path": "lean/MCore/Real/FinalProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.FinalProofAttack",
+   "path": "lean/MCore/Real/FinalProofAttack.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.MachineRunLemmas",
+   "path": "lean/MCore/Real/MachineRunLemmas.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.Model",
+   "path": "lean/MCore/Real/Model.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "path": "lean/MCore/Real/P01DeterministicNTMEmbedding.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01EncodedEvaluator",
+   "path": "lean/MCore/Real/P01EncodedEvaluator.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "path": "lean/MCore/Real/P01EncodedFrameTape.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "path": "lean/MCore/Real/P01EncodedStackEvaluator.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EvalCursorConsume",
+   "path": "lean/MCore/Real/P01EvalCursorConsume.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EvalCursorFramePush",
+   "path": "lean/MCore/Real/P01EvalCursorFramePush.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "path": "lean/MCore/Real/P01EvalCursorMachine.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "path": "lean/MCore/Real/P01EvalCursorRoundTrip.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EvalFramePopMachine",
+   "path": "lean/MCore/Real/P01EvalFramePopMachine.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "path": "lean/MCore/Real/P01EvalFramePopMachineV2.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "path": "lean/MCore/Real/P01EvalFramePushMachine.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "path": "lean/MCore/Real/P01EvalStepFrameRefinement.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01EvalTagPhysicalRefinement",
+   "path": "lean/MCore/Real/P01EvalTagPhysicalRefinement.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FinalCertificate",
+   "path": "lean/MCore/Real/P01FinalCertificate.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierEvalLocal",
+   "path": "lean/MCore/Real/P01FullVerifierEvalLocal.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "path": "lean/MCore/Real/P01FullVerifierInputShuttleV2.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "path": "lean/MCore/Real/P01FullVerifierMachine.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "path": "lean/MCore/Real/P01FullVerifierPhysical.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "path": "lean/MCore/Real/P01FullVerifierPhysicalControl.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "path": "lean/MCore/Real/P01FullVerifierPhysicalMoves.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysicalOps",
+   "path": "lean/MCore/Real/P01FullVerifierPhysicalOps.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "path": "lean/MCore/Real/P01FullVerifierPhysicalRefinement.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "path": "lean/MCore/Real/P01FullVerifierPhysicalRefinementV2.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "path": "lean/MCore/Real/P01FullVerifierPhysicalShuttles.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "path": "lean/MCore/Real/P01FullVerifierPhysicalStackV2.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "path": "lean/MCore/Real/P01FullVerifierSourceRewind.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierSourceRoundTrip",
+   "path": "lean/MCore/Real/P01FullVerifierSourceRoundTrip.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierSourceToStack",
+   "path": "lean/MCore/Real/P01FullVerifierSourceToStack.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierStackPrimitiveMachine",
+   "path": "lean/MCore/Real/P01FullVerifierStackPrimitiveMachine.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierStackSemantics",
+   "path": "lean/MCore/Real/P01FullVerifierStackSemantics.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "path": "lean/MCore/Real/P01FullVerifierTraversal.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "path": "lean/MCore/Real/P01InputNodePreservingPlan.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01IntegrationFence",
+   "path": "lean/MCore/Real/P01IntegrationFence.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "path": "lean/MCore/Real/P01NTMPhaseSeq.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01PhysicalVerifierBudget",
+   "path": "lean/MCore/Real/P01PhysicalVerifierBudget.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "path": "lean/MCore/Real/P01PhysicalVerifierFoundations.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "path": "lean/MCore/Real/P01PhysicalVerifierUniformCosts.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01PreservingMarkerIteration",
+   "path": "lean/MCore/Real/P01PreservingMarkerIteration.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "path": "lean/MCore/Real/P01PreservingUnaryReaderCertificate.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "path": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean",
+   "status": "FAILED",
+   "in_default_build": false,
+   "first_error": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean:107:10: tactic 'rewrite' failed, did not find instance of the pattern in the target expression\n  preservingUnaryReadMachine.run 3\n    { state := PreservingReadState.rewindInspectFalse,\n      tape := { left := none :: ?left, head := some ?b, right := ?next :: ?right } }\ncase cons\nnext : Option Bool\nright : List (Option Bool)\nb : Bool\nbs : List Bool\ntail_ih✝ :\n  ∀ (left : List (Option Bool)),\n    preservingUnaryReadMachine.run (3 * bs.length)\n        { state := PreservingReadState.rewindInspectFalse,\n          tape :=\n            { left := none :: left, head := (List.map some bs ++ next :: right).headD next,\n              right := (List.map some bs ++ next :: right).tail } } =\n      { state := PreservingReadState.rewindInspectFalse,\n        tape := { left := none :: List.map some bs.reverse ++ left, head := next, right := right } }\nleft : List (Option Bool)\n⊢ preservingUnaryReadMachine.run (3 * bs.length)\n      (preservingUnaryReadMachine.run 3\n        { state := PreservingReadState.rewindInspectFalse,\n          tape := { left := none :: left, head := some b, right := List.map some bs ++ next :: right } }) =\n    { state := PreservingReadState.rewindInspectFalse,\n      tape := { left := none :: (List.map some (b :: bs).reverse ++ left), head := next, right := right } }"
+  },
+  {
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "path": "lean/MCore/Real/P01PreservingUnaryWitnessMachine.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "path": "lean/MCore/Real/P01PreservingUnaryWitnessMarker.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01SourceCursorInvariant",
+   "path": "lean/MCore/Real/P01SourceCursorInvariant.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01VerifiedRelation",
+   "path": "lean/MCore/Real/P01VerifiedRelation.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01VerifierComposition",
+   "path": "lean/MCore/Real/P01VerifierComposition.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01VerifierGateMachine",
+   "path": "lean/MCore/Real/P01VerifierGateMachine.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P01WitnessGuessExecution",
+   "path": "lean/MCore/Real/P01WitnessGuessExecution.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "path": "lean/MCore/Real/P01WitnessIndexedRead.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "path": "lean/MCore/Real/P01WitnessIndexedReadGlobal.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "path": "lean/MCore/Real/P01WitnessIndexedReadMachine.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "path": "lean/MCore/Real/P01WitnessIndexedReadProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "path": "lean/MCore/Real/P01WitnessPreservingPrep.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P02RestrictionLowerBoundPattern",
+   "path": "lean/MCore/Real/P02RestrictionLowerBoundPattern.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.SATMachine",
+   "path": "lean/MCore/Real/SATMachine.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.Semantics",
+   "path": "lean/MCore/Real/Semantics.lean",
+   "status": "OK",
+   "in_default_build": true
+  },
+  {
+   "module": "MCore.Signature",
+   "path": "lean/MCore/Signature.lean",
+   "status": "OK",
+   "in_default_build": true
+  }
+ ],
+ "standalone_files": [
+  {
+   "path": "audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean:5:0: error: invalid 'import' command, it must be used in the beginning of the file"
+  },
+  {
+   "path": "audit/ATK_K10_ABSTRACT_OBLIGATION_COUNTERAUDIT.lean",
+   "status": "OK"
+  },
+  {
+   "path": "audit/ATK_LOWER_BOUND_WITNESS_MODEL_BINDING_COUNTERAUDIT.lean",
+   "status": "OK"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean:5:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean:4:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean:678:0: error: invalid 'import' command, it must be used in the beginning of the file"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean:152:0: error: invalid 'import' command, it must be used in the beginning of the file"
+  },
+  {
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean",
+   "status": "FAILED",
+   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean:117:0: error: invalid 'import' command, it must be used in the beginning of the file"
+  },
+  {
+   "path": "audit/C12/SRepresentationCounterexample.lean",
+   "status": "OK"
+  },
+  {
+   "path": "audit/ClosedDiscriminant.lean",
+   "status": "OK"
+  },
+  {
+   "path": "audit/EndpointCompression.lean",
+   "status": "OK"
+  },
+  {
+   "path": "audit/FinalEndpoint.lean",
+   "status": "OK"
+  },
+  {
+   "path": "audit/ThreeTracks.lean",
+   "status": "OK"
+  },
+  {
+   "path": "audit/repro_PNP.lean",
+   "status": "OK"
+  }
+ ],
+ "props": [
+  {
+   "name": "MCore.C10.ProgressCoverageObligation",
+   "module": "MCore.C10.RestrictionProgress",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.C10.VarsNonincreaseObligation",
+   "module": "MCore.C10.RestrictionProgress",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.C12.Calibration.S_OfficialComplexityCalibration",
+   "module": "MCore.C12.Calibration",
+   "closed_prop": true,
+   "status": "PROVED",
+   "inhabited_by": [
+    "MCore.C12.Calibration.s_officialComplexityCalibration"
+   ],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Material.P01CanonicalMaterial",
+   "module": "MCore.Material.P01Adapter",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.MinimalSeparationInhabitant",
+   "module": "MCore.MinimalInhabitant",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.PneqNP",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATBoundary.SATEncodingGap",
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "closed_prop": true,
+   "status": "PROVED",
+   "inhabited_by": [
+    "MCore.Real.CanonicalCircuitBits.canonical_sat_encoding_closed"
+   ],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.FrameTapeOperationalGap",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.SemanticFrameTapeOperationalGap",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.BlankNormalizedFrameTapeOperationalGap",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "closed_prop": true,
+   "status": "PROVED",
+   "inhabited_by": [
+    "MCore.Real.CanonicalSATFrameMachineV2.blank_normalized_frame_tape_operational_closed"
+   ],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.CanonicalSATMachineClosure",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.RecursiveFrameOperationalGap",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.CanonicalRecursiveParserOperationalGap",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.RecursiveParserOperationalGap",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "closed_prop": true,
+   "status": "PROVED",
+   "inhabited_by": [
+    "MCore.Real.CanonicalSATParserAttack.legacy_recursive_parser_gate_is_trivially_inhabited"
+   ],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVerifier.CanonicalSATOperationalGap",
+   "module": "MCore.Real.CanonicalSATVerifier",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.FINAL_PROOF_RESIDUAL",
+   "module": "MCore.Real.FinalProof",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.FailProofFiniteAttack.FiniteToUniversalPrinciple",
+   "module": "MCore.Real.FailProofFiniteAttack",
+   "closed_prop": true,
+   "status": "REFUTED",
+   "inhabited_by": [],
+   "refuted_by": [
+    "MCore.Real.FailProofFiniteAttack.finite_to_universal_principle_refuted"
+   ]
+  },
+  {
+   "name": "MCore.Real.MachinePneqNP",
+   "module": "MCore.Real.FinalProof",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01FinalCertificate.P01ConstructionGap",
+   "module": "MCore.Real.P01FinalCertificate",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierMachine.FullVerifierGap",
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.PhysicalVerifierGap",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalGap",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "closed_prop": true,
+   "status": "PROVED",
+   "inhabited_by": [
+    "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorLocalGap_closed"
+   ],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "closed_prop": true,
+   "status": "VACUOUS",
+   "inhabited_by": [
+    "MCore.Real.P01FullVerifierPhysicalRefinementV2.localPhysicalInstructionLayerClosed"
+   ],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01IntegrationFence.MaterialIntegrationTarget",
+   "module": "MCore.Real.P01IntegrationFence",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderGap",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedRead.WitnessIndexedReadGap",
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "closed_prop": true,
+   "status": "PROVED",
+   "inhabited_by": [
+    "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadGap_closed"
+   ],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P02RestrictionLowerBoundPattern.RestrictionLowerBoundTransfer",
+   "module": "MCore.Real.P02RestrictionLowerBoundPattern",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.SATInNP",
+   "module": "MCore.Real.FinalProof",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.SATMachineFrontier",
+   "module": "MCore.Real.SATMachine",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.SATNotInP",
+   "module": "MCore.Real.FinalProof",
+   "closed_prop": true,
+   "status": "REFUTED",
+   "inhabited_by": [],
+   "refuted_by": [
+    "MCore.Real.FinalProofAttack.current_SATNotInP_refuted"
+   ]
+  },
+  {
+   "name": "MCore.Real.UniversalSATFailure",
+   "module": "MCore.Real.FinalProof",
+   "closed_prop": true,
+   "status": "REFUTED",
+   "inhabited_by": [],
+   "refuted_by": [
+    "MCore.Real.FinalProofAttack.current_UniversalSATFailure_refuted"
+   ]
+  },
+  {
+   "name": "MCore.k10_open_obligation",
+   "module": "MCore.K10",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  }
+ ],
+ "theorems": [
+  {
+   "name": "MCore.Attack.CanonicalNotInPWitness.in_np",
+   "module": "MCore.Attack.CanonicalTerminalProducer",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Attack.CanonicalNotInPWitness.not_in_p",
+   "module": "MCore.Attack.CanonicalTerminalProducer",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Attack.canonicalModelMatch",
+   "module": "MCore.Attack.CanonicalTerminalProducer",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Attack.canonicalWitness_closes_separation",
+   "module": "MCore.Attack.CanonicalTerminalProducer",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.LowerBoundWitness.in_np",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.LowerBoundWitness.not_in_p",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.PolySATCertificate.correct",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.PolySATCertificate.runtime_poly",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.SATCompletenessTransfer.to_discriminant",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.SeparationWitness.hNP",
+   "module": "MCore.BackwardAudit.WithoutOracle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.SeparationWitness.hNotP",
+   "module": "MCore.BackwardAudit.WithoutOracle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.hypothetical_final",
+   "module": "MCore.BackwardAudit.HypotheticalClosureOracle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.lowerBoundWitness_notInP_is_projection",
+   "module": "MCore.BackwardAudit.MaterialProducerGate",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.oriented_material_closes_terminal",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.pnp_without_oracle_still_open",
+   "module": "MCore.BackwardAudit.WithoutOracle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.restrictionPotentialRoute_claims_no_escape",
+   "module": "MCore.BackwardAudit.RestrictionRouteBarrierAudit",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.separation_witness_closes",
+   "module": "MCore.BackwardAudit.WithoutOracle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.typeA_closes_equality",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.BackwardAudit.typeB_closes_separation",
+   "module": "MCore.BackwardAudit.OrientedWitnessBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C10.c10_classical_endpoint_not_promoted",
+   "module": "MCore.C10.RestrictionProgress",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C10.c10_k10_not_promoted",
+   "module": "MCore.C10.RestrictionProgress",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C10.reducibleExample_restriction_progress",
+   "module": "MCore.C10.RestrictionProgress",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C10.reducibleExample_stateRank_decreases",
+   "module": "MCore.C10.RestrictionProgress",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C10.stateRank_D_decreases_of_restriction_progress",
+   "module": "MCore.C10.RestrictionProgress",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C11.branchingCost_exact",
+   "module": "MCore.C11.BranchingCost",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C11.c11_classical_endpoint_not_promoted",
+   "module": "MCore.C11.BranchingCost",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C11.c11_k10_not_promoted",
+   "module": "MCore.C11.BranchingCost",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.depth_le_size",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.eraseDups_length_le",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.eraseDups_loop_length_le",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.formula_size_lower_bound_of_potential",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.freeVarList_length_le_size",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.mu_le_two_mul_size",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.one_le_size",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.potential_le_formula_size_sq",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.s_officialComplexityCalibration",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.stateRank_le",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.Calibration.vars_le_size",
+   "module": "MCore.C12.Calibration",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.c12_classical_endpoint_not_promoted",
+   "module": "MCore.C12.Families",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C12.c12_k10_not_promoted",
+   "module": "MCore.C12.Families",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.D_eq",
+   "module": "MCore.C9.Reuse",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.L1_mu_monotone",
+   "module": "MCore.C9.Mu",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.L2_additive",
+   "module": "MCore.C9.Mu",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.ProgressStep.fixedVars_le",
+   "module": "MCore.C9.Step",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.ProgressStep.mu_nonincrease",
+   "module": "MCore.C9.Step",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.ProgressStep.progress",
+   "module": "MCore.C9.Step",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.ProgressStep.vars_after",
+   "module": "MCore.C9.Step",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.c9_classical_endpoint_not_promoted",
+   "module": "MCore.C9.Good",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.c9_k10_not_promoted",
+   "module": "MCore.C9.Good",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.delta_eq",
+   "module": "MCore.C9.Reuse",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.delta_eq_zero_iff",
+   "module": "MCore.C9.Mu",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.delta_pos_iff_strict",
+   "module": "MCore.C9.Mu",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.goodTrue_refuted",
+   "module": "MCore.C9.Good",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.mu_eq",
+   "module": "MCore.C9.Reuse",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.progressStep_no_stutter",
+   "module": "MCore.C9.Step",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.stateRank_decreases",
+   "module": "MCore.C9.Step",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.vars_const",
+   "module": "MCore.C9.Vars",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.C9.vars_input",
+   "module": "MCore.C9.Vars",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.c2_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitC2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.c2_k10_not_promoted",
+   "module": "MCore.CircuitC2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.eval_restrict",
+   "module": "MCore.CircuitC2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.eval_restrictedSimplified",
+   "module": "MCore.CircuitC2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.eval_simplify",
+   "module": "MCore.CircuitC2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.free_restriction_no_size_drop",
+   "module": "MCore.CircuitC2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.merge_none",
+   "module": "MCore.CircuitC2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.merge_some",
+   "module": "MCore.CircuitC2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.reducibleExample_restrict_simplify",
+   "module": "MCore.CircuitC2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC2.reducibleExample_strict_size_drop",
+   "module": "MCore.CircuitC2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC3.c3_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitC3",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC3.c3_k10_not_promoted",
+   "module": "MCore.CircuitC3",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC3.free_oneInput_drop_zero",
+   "module": "MCore.CircuitC3",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC3.not_every_restriction_strictly_drops",
+   "module": "MCore.CircuitC3",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC3.reducibleExample_drop_exact",
+   "module": "MCore.CircuitC3",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC3.reducibleExample_strict_potential_drop",
+   "module": "MCore.CircuitC3",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.c4_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitC4",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.c4_k10_not_promoted",
+   "module": "MCore.CircuitC4",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.demo_expected_drop_three_halves",
+   "module": "MCore.CircuitC4",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.demo_totalWeight",
+   "module": "MCore.CircuitC4",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.demo_weightedDrop",
+   "module": "MCore.CircuitC4",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.not_all_samples_positive",
+   "module": "MCore.CircuitC4",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.zero_sample_totalWeight",
+   "module": "MCore.CircuitC4",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC4.zero_sample_weightedDrop",
+   "module": "MCore.CircuitC4",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.c5_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitC5",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.c5_k10_not_promoted",
+   "module": "MCore.CircuitC5",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.demoPositiveWitness",
+   "module": "MCore.CircuitC5",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.demo_positive_from_structural_condition",
+   "module": "MCore.CircuitC5",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.member_contribution_le_weightedDrop",
+   "module": "MCore.CircuitC5",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.not_every_family_has_positive_witness",
+   "module": "MCore.CircuitC5",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.positive_witness_implies_weightedDrop_positive",
+   "module": "MCore.CircuitC5",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC5.zero_sample_has_no_positive_witness",
+   "module": "MCore.CircuitC5",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.c6_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitC6",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.c6_k10_not_promoted",
+   "module": "MCore.CircuitC6",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.demoQuantitativeWitness",
+   "module": "MCore.CircuitC6",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.demo_quantitative_lower_bound",
+   "module": "MCore.CircuitC6",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.not_every_family_has_positive_quantitative_witness",
+   "module": "MCore.CircuitC6",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.quantitative_positive_implies_positive_witness",
+   "module": "MCore.CircuitC6",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.quantitative_witness_implies_expectedDropAtLeast",
+   "module": "MCore.CircuitC6",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.quantitative_witness_implies_weightedDrop_lower_bound",
+   "module": "MCore.CircuitC6",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC6.zero_sample_no_positive_minDrop",
+   "module": "MCore.CircuitC6",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.c7_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitC7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.c7_k10_not_promoted",
+   "module": "MCore.CircuitC7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.demoGoodMassWitness",
+   "module": "MCore.CircuitC7",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.demo_goodWeight_three",
+   "module": "MCore.CircuitC7",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.demo_good_mass_lower_bound",
+   "module": "MCore.CircuitC7",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.good_mass_implies_weightedDrop_lower_bound",
+   "module": "MCore.CircuitC7",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.minDrop_mul_goodWeight_le_weightedDrop",
+   "module": "MCore.CircuitC7",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.not_every_family_has_positive_good_mass",
+   "module": "MCore.CircuitC7",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC7.zero_sample_goodWeight_positive_threshold",
+   "module": "MCore.CircuitC7",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.c8_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitC8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.c8_k10_not_promoted",
+   "module": "MCore.CircuitC8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.depth_simplify_le_c8",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.drop_eq_zero_iff",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.drop_pos_iff_strict",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.good_mass_supplies_aggregate_progress",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.potential_restrictedSimplified_le",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.potential_simplify_le_c8",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.rank_decreases_when_potential_drops",
+   "module": "MCore.CircuitC8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.rank_decreases_when_variable_fixed",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.restricted_potential_add_drop",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.size_simplify_le_c8",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitC8.zero_is_not_runtime_saving",
+   "module": "MCore.CircuitC8",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.adversarial_depth_restrict",
+   "module": "MCore.CircuitK1",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.adversarial_input_none",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.adversarial_input_some",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.adversarial_restrict_or",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.adversarial_size_restrict",
+   "module": "MCore.CircuitK1",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.depth_restrict",
+   "module": "MCore.CircuitK1",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.k1_classical_endpoint_not_promoted",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.k1_k10_not_promoted",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.raw_potential_does_not_drop",
+   "module": "MCore.CircuitK1",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.restrict_and",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.restrict_const",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.restrict_input_cases",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.restrict_not",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.restrict_or",
+   "module": "MCore.CircuitK1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.size_restrict",
+   "module": "MCore.CircuitK1",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.CircuitK1.μ_restrict_invariant",
+   "module": "MCore.CircuitK1",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClassicalComplexityInterface.p_subset_np",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.StartAuditResult.finalEnvelope",
+   "module": "MCore.BackwardAudit.StartToMiddle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.StartAuditResult.middle",
+   "module": "MCore.BackwardAudit.StartToMiddle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.StartAuditResult.start",
+   "module": "MCore.BackwardAudit.StartToMiddle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.bidirectional_convergence",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.closed_chain",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.collect_start_result",
+   "module": "MCore.BackwardAudit.StartToMiddle",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.discriminant_iff_equality",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.discriminant_implies_equality",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.equality_implies_discriminant",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.final_closed",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.final_to_middle",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.middle_closed",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.middle_exclusive",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.middle_to_final",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.not_discriminant_iff_witness",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.not_discriminant_implies_witness",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.separation_final_implies_not_discriminant",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.separation_final_implies_witness",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.separation_witness_iff_final",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.test_bidirectional_same_discriminant",
+   "module": "MCore.BackwardAudit.FinalToMiddle",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.test_equality_final_to_middle",
+   "module": "MCore.BackwardAudit.FinalToMiddle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.test_final_envelope_to_middle",
+   "module": "MCore.BackwardAudit.FinalToMiddle",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.test_inconsistency_detector",
+   "module": "MCore.BackwardAudit.FinalToMiddle",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.test_separation_final_to_middle",
+   "module": "MCore.BackwardAudit.FinalToMiddle",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.test_start_to_final_envelope",
+   "module": "MCore.BackwardAudit.StartToMiddle",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.test_start_to_middle",
+   "module": "MCore.BackwardAudit.StartToMiddle",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.two_sides_false",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.witness_implies_not_discriminant",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ClosedDiscriminant.witness_implies_separation_final",
+   "module": "MCore.BackwardAudit.ClosedDiscriminant",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ComplexityDecomposition.ext_components",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ComplexityDecomposition.projectImag_mk",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ComplexityDecomposition.projectIndeterminate_mk",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ComplexityDecomposition.projectReal_mk",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ComplexityDecomposition.projection_injective",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ComplexityDecomposition.reconstruct_eq",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Material.PNPClosure.exactSemantics_proof",
+   "module": "MCore.Material.Closure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Material.PNPClosure.lowerBound_proof",
+   "module": "MCore.Material.Closure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Material.PNPClosure.polyHalts_proof",
+   "module": "MCore.Material.Closure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Material.p01_material_closes_sat_machine",
+   "module": "MCore.Material.P01Adapter",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ObstructionInterface.p_vanishes",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.OpenBridgeFirewall.certificate_blocked",
+   "module": "MCore.K5",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.OpenBridgeFirewall.open_status",
+   "module": "MCore.K5",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.PrizeCampaignBoundary.canonical_algorithmic_open",
+   "module": "MCore.PrizeK0",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.PrizeCampaignBoundary.canonical_transfer_open",
+   "module": "MCore.PrizeK0",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ProofCertificate.proof",
+   "module": "MCore.K2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.ProofCertificate.status_proved",
+   "module": "MCore.K2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.PvsNPOpenMath.pvsnp_open_math",
+   "module": "MCore.PvsNPOpenMath",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.PvsNPOpenMath.pvsnp_open_math_eq_or_neq",
+   "module": "MCore.PvsNPOpenMath",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBits.canonical_sat_encoding_closed",
+   "module": "MCore.Real.CanonicalCircuitBits",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBits.decodeCircuitCore_encode_append",
+   "module": "MCore.Real.CanonicalCircuitBits",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBits.decodeCircuit_encode",
+   "module": "MCore.Real.CanonicalCircuitBits",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBits.decodeNat_encodeNat_append",
+   "module": "MCore.Real.CanonicalCircuitBits",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBits.encoded_sat_equivalence",
+   "module": "MCore.Real.CanonicalCircuitBits",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBits.size_le_encodeCircuit_length",
+   "module": "MCore.Real.CanonicalCircuitBits",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalComplexityBridge.canonical_failure_witness_separates_legacy_interface",
+   "module": "MCore.Real.CanonicalComplexityBridge",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalComplexityBridge.canonical_interface_np_match",
+   "module": "MCore.Real.CanonicalComplexityBridge",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalComplexityBridge.canonical_interface_p_match",
+   "module": "MCore.Real.CanonicalComplexityBridge",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.PolyDTMCandidate.blank_none",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.PolyDTMCandidate.time_poly",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.PolyDTMRealization.decides",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.PolyNTMCandidate.blank_none",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.PolyNTMCandidate.time_poly",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.PolyNTMRealization.decides",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.SeparationCertificate.fail_proof",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.SeparationCertificate.target_in_np",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.not_in_p_implies_universal_failure",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.separation_certificate_closes",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.target_failure_implies_p_ne_np",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.universal_failure_iff_not_in_p",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalFinalProof.universal_failure_implies_not_in_p",
+   "module": "MCore.Real.CanonicalFinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalPSubsetNP.accept_or_reject_eq_halting",
+   "module": "MCore.Real.CanonicalPSubsetNP",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalPSubsetNP.correctAt_to_ntm",
+   "module": "MCore.Real.CanonicalPSubsetNP",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalPSubsetNP.inP_subset_inNP",
+   "module": "MCore.Real.CanonicalPSubsetNP",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalPSubsetNP.runBranches_to_tm_run",
+   "module": "MCore.Real.CanonicalPSubsetNP",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalPSubsetNP.successors_toNTM",
+   "module": "MCore.Real.CanonicalPSubsetNP",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalPSubsetNP.tm_run_of_halted",
+   "module": "MCore.Real.CanonicalPSubsetNP",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATBoundary.CircuitBitEncoding.decode_encode",
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATBoundary.SATExternalClosure.model_match",
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATBoundary.SATInternalClosure.sat_in_np",
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATBoundary.encoded_sat_iff",
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATBoundary.sat_external_closure_implies_official_separation",
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATBoundary.sat_internal_closure_implies_p_ne_np",
+   "module": "MCore.Real.CanonicalSATBoundary",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.FrameTapeMachineCertificate.blank_none",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.FrameTapeMachineCertificate.pop_correct",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.FrameTapeMachineCertificate.pop_halts",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.FrameTapeMachineCertificate.push_correct",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.FrameTapeMachineCertificate.push_halts",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.FrameTapeMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.LegacyFrameTapeMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.SemanticFrameTapeMachineCertificate.blank_none",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.SemanticFrameTapeMachineCertificate.pop_correct",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.SemanticFrameTapeMachineCertificate.pop_halts",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.SemanticFrameTapeMachineCertificate.push_correct",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.SemanticFrameTapeMachineCertificate.push_halts",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.SemanticFrameTapeMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.decodeFrame_encodeFrame",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.decodeFrames_encodeFrames",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.decodeFrames_push",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.encodeFrame_length",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.encodeFrames_length",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.encodeFrames_push",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.encoded_stack_linear_space",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.exact_frame_tape_implies_semantic",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.frame_tape_operational_closes_recursive_frame",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.inputTape_represents",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.legacy_frame_gate_is_trivially_inhabited",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.readTapeCells_map_some",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.tapeWord_inputTape",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.trailingBlankTape_ne_inputTape",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameAttack.trailingBlankTape_represents",
+   "module": "MCore.Real.CanonicalSATFrameAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.BlankNormalizedFrameTapeMachineCertificate.blank_none",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.BlankNormalizedFrameTapeMachineCertificate.pop_correct",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.BlankNormalizedFrameTapeMachineCertificate.pop_halts",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.BlankNormalizedFrameTapeMachineCertificate.push_correct",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.BlankNormalizedFrameTapeMachineCertificate.push_halts",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.BlankNormalizedFrameTapeMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.blank_normalized_frame_tape_operational_closed",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_halt4",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_not_halt0",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_pop",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.frameCommandMachine_run_push",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.frameCommandTimeBound_poly",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATFrameMachineV2.paddedInputTape_represents",
+   "module": "MCore.Real.CanonicalSATFrameMachineV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.ParserMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.VerifierMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.WitnessGuessMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.canonical_sat_machine_closure_gives_bridge",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.scanConfig_state",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.scanMachine_halted_at_one",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.scanMachine_not_halted_at_zero",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.scan_halts_within_linear",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.scan_run_reaches_halt",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.scan_step_cons",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNTMAttack.scan_step_nil",
+   "module": "MCore.Real.CanonicalSATNTMAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.RecursiveFrameMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.natConfig_state",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.natScan_halted_one",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.natScan_halted_two",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.natScan_not_halted_zero",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.nat_run_encodeNat_state",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.nat_scan_blank_rejects",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.nat_scan_encodeNat_halts_linear",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.nat_step_blank_rejects",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.nat_step_false",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATNatParserAttack.nat_step_true",
+   "module": "MCore.Real.CanonicalSATNatParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.CanonicalRecursiveParserMachineCertificate.blank_none",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.CanonicalRecursiveParserMachineCertificate.correct",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.CanonicalRecursiveParserMachineCertificate.halts",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.CanonicalRecursiveParserMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.RecursiveParserMachineCertificate.time_poly",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.canonical_recursive_parser_closes_legacy_gap",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.initial_tagConfig",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.legacy_recursive_parser_gate_is_trivially_inhabited",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagConfig_state",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagMachine_halted_at_twelve",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagMachine_initial_not_halted",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagMachine_not_halted_at_five",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagMachine_not_halted_at_four",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagMachine_not_halted_at_one",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagMachine_not_halted_at_three",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tagMachine_not_halted_at_two",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_and_state",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_false_const_state",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_input_state",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_invalid_11_rejects",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_not_state",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_or_state",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_0_false",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_0_true",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_1_false",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_1_true",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_2_false",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_2_true_sink",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_3_false",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_3_true",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_4_false",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_4_true",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_5_false",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_step_5_true",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserAttack.tag_true_const_state",
+   "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVerifier.VerifierToCanonicalNTMBridge.realization",
+   "module": "MCore.Real.CanonicalSATVerifier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVerifier.operational_bridge_closes_sat_in_np",
+   "module": "MCore.Real.CanonicalSATVerifier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVerifier.sat_has_short_verified_witness",
+   "module": "MCore.Real.CanonicalSATVerifier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVerifier.verificationCost_linear_encoding_bound",
+   "module": "MCore.Real.CanonicalSATVerifier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVerifier.verifyWitness_correct",
+   "module": "MCore.Real.CanonicalSATVerifier",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitness.encodeNat_length",
+   "module": "MCore.Real.CanonicalSATWitness",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitness.evalCircuit_eq_of_agree_below",
+   "module": "MCore.Real.CanonicalSATWitness",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitness.satLanguage_iff_exists_finite_witness",
+   "module": "MCore.Real.CanonicalSATWitness",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitness.varBound_le_encoded_length",
+   "module": "MCore.Real.CanonicalSATWitness",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitness.witnessBits_length",
+   "module": "MCore.Real.CanonicalSATWitness",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitness.witness_bits_linear_bound",
+   "module": "MCore.Real.CanonicalSATWitness",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitness.witness_from_assignment_recovers_eval",
+   "module": "MCore.Real.CanonicalSATWitness",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.doneConfig_accepting",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.guessConfig_state",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessMachine_blank_none",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessMachine_canonical_type",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessMachine_initial",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuessTimeBound_poly",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuess_successors_cons",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATWitnessGuessNTM.witnessGuess_successors_nil",
+   "module": "MCore.Real.CanonicalSATWitnessGuessNTM",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.ExternalModelMatch.np_match",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.ExternalModelMatch.p_match",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.FailureGenerator.fails",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.FinalGapCertificate.model_match",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.FinalGapCertificate.target_in_np",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.failure_generator_iff_universal_failure",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [
+    "Classical.choice"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.failure_generator_implies_universal_failure",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.final_gap_certificate_closes",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofAllGaps.internal_separation_transfers",
+   "module": "MCore.Real.FailProofAllGaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofFiniteAttack.alwaysRejectCandidate_correct",
+   "module": "MCore.Real.FailProofFiniteAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofFiniteAttack.empty_language_in_p",
+   "module": "MCore.Real.FailProofFiniteAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofFiniteAttack.empty_language_not_universal_failure",
+   "module": "MCore.Real.FailProofFiniteAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofFiniteAttack.empty_sample_evidence",
+   "module": "MCore.Real.FailProofFiniteAttack",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FailProofFiniteAttack.finite_to_universal_principle_refuted",
+   "module": "MCore.Real.FailProofFiniteAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FinalProofAttack.current_SATLowerBoundCertificate_refuted",
+   "module": "MCore.Real.FinalProofAttack",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FinalProofAttack.current_SATNotInP_refuted",
+   "module": "MCore.Real.FinalProofAttack",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FinalProofAttack.current_UniversalSATFailure_refuted",
+   "module": "MCore.Real.FinalProofAttack",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FinalProofAttack.every_language_inP_under_arbitrary_encode",
+   "module": "MCore.Real.FinalProofAttack",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.FinalProofAttack.smuggledCandidate_correct",
+   "module": "MCore.Real.FinalProofAttack",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.IsCNF_and",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.IsClause_or",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.MachineRunLemmas.haltsWithin_mono",
+   "module": "MCore.Real.MachineRunLemmas",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.MachineRunLemmas.run_add",
+   "module": "MCore.Real.MachineRunLemmas",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.MachineRunLemmas.run_halted",
+   "module": "MCore.Real.MachineRunLemmas",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.MachineRunLemmas.run_to_larger_fuel_of_halt",
+   "module": "MCore.Real.MachineRunLemmas",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.runBranches_singleton_of_halted",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.runBranches_singleton_of_not_halted",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_blank",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_initial",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_successors_of_not_halted",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_iff_halted",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_implies_halted",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01DeterministicNTMEmbedding.tmAsNTM_terminal_of_halted",
+   "module": "MCore.Real.P01DeterministicNTMEmbedding",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedEvaluator.evalEncodedCore_encode_append",
+   "module": "MCore.Real.P01EncodedEvaluator",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedEvaluator.evalEncoded_encode",
+   "module": "MCore.Real.P01EncodedEvaluator",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedEvaluator.evalEncoded_witness",
+   "module": "MCore.Real.P01EncodedEvaluator",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.decodeEvalFrame_encodeEvalFrame",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.decodeEvalFrames_encodeEvalFrames",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.encodeEvalFrame_injective",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.encodeEvalFrame_length",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.encodeEvalFrames_cons",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.encodeEvalFrames_length",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.encodeEvalFrames_nil",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedFrameTape.encodedFrames_linear_space",
+   "module": "MCore.Real.P01EncodedFrameTape",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedStackEvaluator.evalRun_add",
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedStackEvaluator.evalRun_encode_append",
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedStackEvaluator.evalRun_encode_bounded",
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedStackEvaluator.evalRun_halted",
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedStackEvaluator.evalRun_of_step_none",
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedStackEvaluator.evalStepCount_le_three_mul_encoding",
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EncodedStackEvaluator.evalStepCount_le_three_mul_size",
+   "module": "MCore.Real.P01EncodedStackEvaluator",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorConsume.consumeOneTape_correct",
+   "module": "MCore.Real.P01EvalCursorConsume",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorConsume.consumeThreeTape_correct",
+   "module": "MCore.Real.P01EvalCursorConsume",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorFramePush.framePush_run_three_cursor",
+   "module": "MCore.Real.P01EvalCursorFramePush",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorFramePush.pushStep_evalCursorStackEndTape",
+   "module": "MCore.Real.P01EvalCursorFramePush",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.cursorSeekMachine_blank",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.cursorSeek_run",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.evalCursorStackEndTape_zero",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.scanStack_not_halting",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.scanUnread_not_halting",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.stackScanConfig_state",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.stackScan_run",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.stackScan_step_cons",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.stackSeparator_to_unreadScan",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.start_not_halting",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.start_to_stackScan",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.unreadBoundary_to_cursor",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.unreadScanConfig_state",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.unreadScan_run",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorMachine.unreadScan_step_cons",
+   "module": "MCore.Real.P01EvalCursorMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.cursorReturn_run",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.erase_not_halting",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.erase_to_unread",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.frameReturnConfig_state",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.frameReturn_halt",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.frameReturn_run",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.frameReturn_step_cons",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.scanFrames_not_halting",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.scanUnread_not_halting",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.sourceSeparator_to_frames",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.unreadReturnConfig_state",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.unreadReturn_run",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalCursorRoundTrip.unreadReturn_step_cons",
+   "module": "MCore.Real.P01EvalCursorRoundTrip",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachine.framePopMachine_blank",
+   "module": "MCore.Real.P01EvalFramePopMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachine.framePop_rejects_111",
+   "module": "MCore.Real.P01EvalFramePopMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachine.framePop_run_four",
+   "module": "MCore.Real.P01EvalFramePopMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachine.framePop_run_four_rep",
+   "module": "MCore.Real.P01EvalFramePopMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePopMachine_blank",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_empty_rejects",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_first_two",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_gap1_one",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_gap2_one",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_read0_one",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_read1_one",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_read2_one",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_run_six",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_second_two",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_start_one",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.framePop_third_two",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePopMachineV2.tape_write_none_of_head_none",
+   "module": "MCore.Real.P01EvalFramePopMachineV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePushMachine.encodeEvalFrame_eq_bits",
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePushMachine.framePushMachine_blank",
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePushMachine.framePush_after1_one",
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePushMachine.framePush_after2_one",
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePushMachine.framePush_rejects_nonblank",
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePushMachine.framePush_run_three",
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalFramePushMachine.framePush_start_one",
+   "module": "MCore.Real.P01EvalFramePushMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_andLeft_return_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_andRight_return_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_and_tag_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_neg_return_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_not_tag_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_orLeft_return_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_orRight_return_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_or_tag_refined",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.evalStep_return_frame_physically_decodable",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.pop_refines_frame_tail",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalStepFrameRefinement.push_refines_frame_cons",
+   "module": "MCore.Real.P01EvalStepFrameRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalTagPhysicalRefinement.consumeThree_then_push_frame",
+   "module": "MCore.Real.P01EvalTagPhysicalRefinement",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalTagPhysicalRefinement.evalStep_and_tag_cursor_refined",
+   "module": "MCore.Real.P01EvalTagPhysicalRefinement",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalTagPhysicalRefinement.evalStep_const_false_cursor_refined",
+   "module": "MCore.Real.P01EvalTagPhysicalRefinement",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalTagPhysicalRefinement.evalStep_const_true_cursor_refined",
+   "module": "MCore.Real.P01EvalTagPhysicalRefinement",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalTagPhysicalRefinement.evalStep_not_tag_cursor_refined",
+   "module": "MCore.Real.P01EvalTagPhysicalRefinement",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01EvalTagPhysicalRefinement.evalStep_or_tag_cursor_refined",
+   "module": "MCore.Real.P01EvalTagPhysicalRefinement",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FinalCertificate.P01MachineConstruction.accepts_iff",
+   "module": "MCore.Real.P01FinalCertificate",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FinalCertificate.P01MachineConstruction.blank_none",
+   "module": "MCore.Real.P01FinalCertificate",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FinalCertificate.P01MachineConstruction.correctAt",
+   "module": "MCore.Real.P01FinalCertificate",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FinalCertificate.P01MachineConstruction.halts",
+   "module": "MCore.Real.P01FinalCertificate",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FinalCertificate.P01MachineConstruction.time_poly",
+   "module": "MCore.Real.P01FinalCertificate",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FinalCertificate.construction_closes_p01",
+   "module": "MCore.Real.P01FinalCertificate",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierEvalLocal.evalAnd_local_semantics",
+   "module": "MCore.Real.P01FullVerifierEvalLocal",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierEvalLocal.evalNeg_local_semantics",
+   "module": "MCore.Real.P01FullVerifierEvalLocal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierEvalLocal.evalOr_local_semantics",
+   "module": "MCore.Real.P01FullVerifierEvalLocal",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierEvalLocal.gate_and_exact",
+   "module": "MCore.Real.P01FullVerifierEvalLocal",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierEvalLocal.gate_or_exact",
+   "module": "MCore.Real.P01FullVerifierEvalLocal",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierInputShuttleV2.moveBackToStackSeqV2_legal",
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierInputShuttleV2.moveToWitnessSeqV2_head_correct",
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierInputShuttleV2.moveToWitnessSeqV2_legal",
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierInputShuttleV2.moveToWitnessSeqV2_length",
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierInputShuttleV2.stackV2_left_as_prefix",
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierInputShuttleV2.witnessOffsetV2_positive",
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierInputShuttleV2.witness_roundTripV2_length",
+   "module": "MCore.Real.P01FullVerifierInputShuttleV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierMachine.FullVerifierCertificate.blank_none",
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierMachine.FullVerifierCertificate.correct",
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierMachine.FullVerifierCertificate.halts",
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierMachine.FullVerifierCertificate.time_poly",
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierMachine.full_verifier_semantics",
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierMachine.gate_primitive_exact",
+   "module": "MCore.Real.P01FullVerifierMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.PhysicalVerifierRealization.blank_none",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.PhysicalVerifierRealization.halts",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.PhysicalVerifierRealization.physical_eq_logical",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.PhysicalVerifierRealization.time_poly",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.physicalStackRep_empty",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.physicalStackRep_pop",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.physicalStackRep_preserves_prefix",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.physicalStackRep_push",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.physical_realization_closes_full_verifier",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.preparedTape_witness_region",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.readWitnessIndexed_correct",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.source_end_preserves_witness_and_source",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.stackPop_preserves_prefix",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.stackPop_push_inverse",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysical.stackPush_preserves_prefix",
+   "module": "MCore.Real.P01FullVerifierPhysical",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.and_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.decode_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.extends_scan",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.neg_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.or_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.push_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.read_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.same_blank",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalCertificate.same_initial",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorLocalGap_closed",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_and_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_blank",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_decode_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_extends_scan",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_initial",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_neg_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_or_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_push_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorMachine_read_not_terminal",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.halt_halting",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.physicalControlMachine_blank",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.physicalScanConfig_state",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.physical_scan_finish",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.physical_scan_from_prepared",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.physical_scan_run",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.physical_scan_step_cons",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.scanEncode_not_halting",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalControl.scanner_only_not_decoder_evaluator",
+   "module": "MCore.Real.P01FullVerifierPhysicalControl",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.execMoves_cons",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveLeftSeq",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveLeftSeq_head_getD",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.execMoves_moveRightSeq",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.execMoves_nil",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.moveLeftSeq_all_legal",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.moveLeftSeq_legal",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.moveLeftSeq_length",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.moveRightSeq_all_legal",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.moveRightSeq_legal",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.moveRightSeq_length",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalMoves.move_left_left_getD",
+   "module": "MCore.Real.P01FullVerifierPhysicalMoves",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalOps.and_semantic_target",
+   "module": "MCore.Real.P01FullVerifierPhysicalOps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalOps.const_run_real",
+   "module": "MCore.Real.P01FullVerifierPhysicalOps",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalOps.first_operand_pop",
+   "module": "MCore.Real.P01FullVerifierPhysicalOps",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalOps.neg_pop_exposes_false",
+   "module": "MCore.Real.P01FullVerifierPhysicalOps",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalOps.neg_pop_exposes_true",
+   "module": "MCore.Real.P01FullVerifierPhysicalOps",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalOps.or_semantic_target",
+   "module": "MCore.Real.P01FullVerifierPhysicalOps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physicalStackTape_rep",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_eq_logical_global",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_execInstr_and",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_execInstr_const",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_execInstr_input",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_execInstr_neg",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_execInstr_or",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_execInstr_refines",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinement.physical_runProgram_refines",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinement",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.localPhysicalInstructionLayerClosed",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.physical_and_sequence_exact",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.physical_const_sequence_exact",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.physical_neg_sequence_exact",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.physical_or_sequence_exact",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.stackV2_witness_head_correct",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.getD_prefix_separator_witness",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.moveToStackSeq_legal",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.moveToStackSeq_length",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.moveToWitnessSeq_head_correct",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.moveToWitnessSeq_legal",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.moveToWitnessSeq_length",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.sourceEndTape_left_length",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.witnessOffset_le_left_length",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.witness_map_getD",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalShuttles.witness_roundTrip_length",
+   "module": "MCore.Real.P01FullVerifierPhysicalShuttles",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalStackV2.physicalStackRepV2_pop",
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalStackV2.physicalStackRepV2_push",
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalStackV2.physicalStackV2_empty",
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalStackV2.popEnter_head",
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalStackV2.popErase_correct",
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalStackV2.pushStep_correct",
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalStackV2.sourceEnd_to_stackV2",
+   "module": "MCore.Real.P01FullVerifierPhysicalStackV2",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.enterSource_not_halted",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.rewindHalt_halted",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.rewindScanConfig_state",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.rewindScan_step_cons",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.rewind_scan_run",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.scanLeft_not_halted",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.sourceRewindMachine_blank",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.sourceRewindTimeBound_poly",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_enter_step",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_enter_to_scan",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_halts_linear",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_run_one_enter",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRewind.sourceRewind_separator_step",
+   "module": "MCore.Real.P01FullVerifierSourceRewind",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceRoundTrip.sourceRewind_run_to_prepared_nonempty",
+   "module": "MCore.Real.P01FullVerifierSourceRoundTrip",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceToStack.prepared_scan_then_enter_empty_stack",
+   "module": "MCore.Real.P01FullVerifierSourceToStack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierSourceToStack.prepared_source_scan_halts_before_stack_entry",
+   "module": "MCore.Real.P01FullVerifierSourceToStack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackPrimitiveMachine.pop_run_two_false",
+   "module": "MCore.Real.P01FullVerifierStackPrimitiveMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackPrimitiveMachine.pop_run_two_true",
+   "module": "MCore.Real.P01FullVerifierStackPrimitiveMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackPrimitiveMachine.push_run_one",
+   "module": "MCore.Real.P01FullVerifierStackPrimitiveMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackPrimitiveMachine.push_run_one_rep",
+   "module": "MCore.Real.P01FullVerifierStackPrimitiveMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackPrimitiveMachine.stackPrimitiveMachine_blank",
+   "module": "MCore.Real.P01FullVerifierStackPrimitiveMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackSemantics.evalProgram_correct",
+   "module": "MCore.Real.P01FullVerifierStackSemantics",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackSemantics.evalProgram_correct_aux",
+   "module": "MCore.Real.P01FullVerifierStackSemantics",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackSemantics.evalProgram_length",
+   "module": "MCore.Real.P01FullVerifierStackSemantics",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackSemantics.evalProgram_length_le_encoding",
+   "module": "MCore.Real.P01FullVerifierStackSemantics",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierStackSemantics.runProgram_append",
+   "module": "MCore.Real.P01FullVerifierStackSemantics",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.preparedTape_eq_scanConfig",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.prepared_source_scan_halts",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.scanConfig_state",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanTimeBound_poly",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanner_blank",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanner_finish",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanner_halt1",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanner_halts",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanner_not_halt0",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanner_run",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierTraversal.sourceEndScanner_step_cons",
+   "module": "MCore.Real.P01FullVerifierTraversal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.evalStep_input_encoded",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.markerAdvance_layout",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.markerRewind_layout",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.selected_marker_layout",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.witnessMarkerLayout_zero",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.witnessPayload_advance",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.witnessPayload_rewind",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01InputNodePreservingPlan.witness_index_decomposition",
+   "module": "MCore.Real.P01InputNodePreservingPlan",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01IntegrationFence.StateOnlyBridge.parser_to_witness",
+   "module": "MCore.Real.P01IntegrationFence",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01IntegrationFence.StateOnlyBridge.verifier_to_terminal",
+   "module": "MCore.Real.P01IntegrationFence",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01IntegrationFence.StateOnlyBridge.witness_to_verifier",
+   "module": "MCore.Real.P01IntegrationFence",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01IntegrationFence.stateOnlyBridge_trivially_inhabited",
+   "module": "MCore.Real.P01IntegrationFence",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.handoff_preserves_tape",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_accepting_left",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_accepting_right",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_blank",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_initial",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_rejecting_left",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_rejecting_right",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_successors_handoff",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_successors_left_active",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01NTMPhaseSeq.seq_successors_right",
+   "module": "MCore.Real.P01NTMPhaseSeq",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierBudget.accumulated_instruction_envelope",
+   "module": "MCore.Real.P01PhysicalVerifierBudget",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierBudget.evalProgram_steps_le_input_length",
+   "module": "MCore.Real.P01PhysicalVerifierBudget",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierBudget.physicalVerifierTimeBound_poly",
+   "module": "MCore.Real.P01PhysicalVerifierBudget",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.alphabetCode_injective",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.alphabetDecode_code",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.canonicalInputSize_eq",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.encodeCircuit_injective",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.evaluator_finishes_singleton",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.physicalResultAccept_blank",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.physicalResultAccept_false",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.physicalResultAccept_iff",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.physicalResultAccept_true",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.program_fits_canonical_input",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.stackV2_preserves_source_witness_suffix",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierFoundations.witness_fits_canonical_input",
+   "module": "MCore.Real.P01PhysicalVerifierFoundations",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierUniformCosts.evalProgram_physical_cost_quadratic",
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierUniformCosts.physicalInstructionCostBound_poly",
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierUniformCosts.total_instruction_cost_quadratic",
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierUniformCosts.witnessOffsetV2_le_linear",
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierUniformCosts.witness_index_lt_source_length",
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierUniformCosts.witness_roundTripV2_le_instruction_cost",
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PhysicalVerifierUniformCosts.witness_roundTripV2_le_linear",
+   "module": "MCore.Real.P01PhysicalVerifierUniformCosts",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingMarkerIteration.advanceN_exposes_getD",
+   "module": "MCore.Real.P01PreservingMarkerIteration",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingMarkerIteration.advanceN_payload",
+   "module": "MCore.Real.P01PreservingMarkerIteration",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingMarkerIteration.advanceN_zero",
+   "module": "MCore.Real.P01PreservingMarkerIteration",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingMarkerIteration.advanceSpec_payload",
+   "module": "MCore.Real.P01PreservingMarkerIteration",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingMarkerIteration.advance_then_rewind_payload",
+   "module": "MCore.Real.P01PreservingMarkerIteration",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderCertificate.accepting_eq",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderCertificate.correct",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderCertificate.halts",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderCertificate.machine_eq",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderCertificate.preservesWitness",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderCertificate.time_poly",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.input_semantic_from_reader_bit",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.zeroTimeBound_poly",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.zero_case_halts",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderCertificate.zero_case_is_component",
+   "module": "MCore.Real.P01PreservingUnaryReaderCertificate",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMachine.indexSomeConfig_state",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_first_true_cycle",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_correct",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_preserves_witness",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMachine.preservingRead_zero_run_five",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMachine.preservingUnaryReadMachine_blank",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMachine.preservingUnaryReadMachine_initial",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerAdvance_carryFalse_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerAdvance_carryTrue_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerAdvance_preserves_payload",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerAdvance_read_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerAdvance_run_three",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerAdvance_start_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerLocalTimeBound_linear",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerRewind_carryFalse_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerRewind_carryTrue_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerRewind_read_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerRewind_run_three",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.markerRewind_start_not_halting",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryWitnessMarker.marker_tape_roundTrip",
+   "module": "MCore.Real.P01PreservingUnaryWitnessMarker",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01SourceCursorInvariant.getD_append_head",
+   "module": "MCore.Real.P01SourceCursorInvariant",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01SourceCursorInvariant.moveBackToStackEndSeq_length",
+   "module": "MCore.Real.P01SourceCursorInvariant",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01SourceCursorInvariant.moveToSourceStartSeq_legal",
+   "module": "MCore.Real.P01SourceCursorInvariant",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01SourceCursorInvariant.moveToSourceStartSeq_length",
+   "module": "MCore.Real.P01SourceCursorInvariant",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01SourceCursorInvariant.moveToSourceStart_head_correct",
+   "module": "MCore.Real.P01SourceCursorInvariant",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01SourceCursorInvariant.source_cursor_roundTrip_length",
+   "module": "MCore.Real.P01SourceCursorInvariant",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifiedRelation.encoded_sat_has_short_verified_witness",
+   "module": "MCore.Real.P01VerifiedRelation",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifiedRelation.satBits_iff_short_verified_witness",
+   "module": "MCore.Real.P01VerifiedRelation",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifiedRelation.satBits_iff_verified_witness",
+   "module": "MCore.Real.P01VerifiedRelation",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifierComposition.decode_verify_iff_satBits",
+   "module": "MCore.Real.P01VerifierComposition",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifierComposition.verifier_correct",
+   "module": "MCore.Real.P01VerifierComposition",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifierComposition.verifier_cost_linear",
+   "module": "MCore.Real.P01VerifierComposition",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifierGateMachine.gateEvalMachine_blank",
+   "module": "MCore.Real.P01VerifierGateMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifierGateMachine.gateEvalTimeBound_poly",
+   "module": "MCore.Real.P01VerifierGateMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01VerifierGateMachine.gateEval_run",
+   "module": "MCore.Real.P01VerifierGateMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessGuessExecution.mem_runBranches_append",
+   "module": "MCore.Real.P01WitnessGuessExecution",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessGuessExecution.runBranches_guess_cons_step",
+   "module": "MCore.Real.P01WitnessGuessExecution",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessGuessExecution.witnessGuess_complete",
+   "module": "MCore.Real.P01WitnessGuessExecution",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessGuessExecution.witnessGuess_complete_from",
+   "module": "MCore.Real.P01WitnessGuessExecution",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessGuessExecution.witnessGuess_halts",
+   "module": "MCore.Real.P01WitnessGuessExecution",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessGuessExecution.witnessGuess_halts_from",
+   "module": "MCore.Real.P01WitnessGuessExecution",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedRead.WitnessIndexedReadCertificate.blank_none",
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedRead.WitnessIndexedReadCertificate.correct",
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedRead.WitnessIndexedReadCertificate.halts",
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedRead.WitnessIndexedReadCertificate.time_poly",
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedRead.unary_index_scan_halts",
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedRead.witness_region_linear_bound",
+   "module": "MCore.Real.P01WitnessIndexedRead",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.eraseSeekConfig_state",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.eraseSeek_run",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.eraseSeek_step_succ",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.indexedRead_halts_small",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.indexedRead_run_state",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.initial_succ_run_five",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.markerConfig_state",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.markerFuel_succ",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.markerFuel_zero",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.marker_run_state",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.marker_succ_run",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.marker_succ_step",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.marker_zero_run_state",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.readFuel_le_timeBound",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.readFuel_succ",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.readFuel_zero",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.rightScanConfig_state",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.rightScan_run",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.rightScan_step_succ",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.witnessBits_getD",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadGap_closed",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadMachine_not_halt1",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadMachine_not_halt2",
+   "module": "MCore.Real.P01WitnessIndexedReadGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadMachine.read_zero_false",
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadMachine.read_zero_true",
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine_blank",
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine_halt4",
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine_halt5",
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadMachine_not_halt0",
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadMachine.witnessIndexedReadTimeBound_poly",
+   "module": "MCore.Real.P01WitnessIndexedReadMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadProof.witnessIndexedReadMachine_not_halt3",
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadProof.witnessSeekConfig_state",
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_classify",
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_halts",
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_run_state",
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_step_succ",
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessIndexedReadProof.witnessSeek_step_zero",
+   "module": "MCore.Real.P01WitnessIndexedReadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.empty_successors",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.guess_false_state_branches",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.guess_true_state_branches",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.start_false_successors",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.start_true_successors",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.witnessPrepTimeBound_poly",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.witnessPreservingPrep_accept11",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.witnessPreservingPrep_blank",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.witnessPreservingPrep_initial",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01WitnessPreservingPrep.witnessPreservingPrep_never_rejects",
+   "module": "MCore.Real.P01WitnessPreservingPrep",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02RestrictionLowerBoundPattern.paysOff_implies_costBits_lt_amortizedDrop",
+   "module": "MCore.Real.P02RestrictionLowerBoundPattern",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02RestrictionLowerBoundPattern.persistentBranchingDeficit_excludes_payoff",
+   "module": "MCore.Real.P02RestrictionLowerBoundPattern",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02RestrictionLowerBoundPattern.transfer_gives_formula_lower_bound",
+   "module": "MCore.Real.P02RestrictionLowerBoundPattern",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.PolyDTMCandidate.encode_initial",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.PolyDTMCandidate.time_poly",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.PolyDTMRealization.decides",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.PolyNTMRealization.decides",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.PolyNTMRealization.encode_initial",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.PolyNTMRealization.time_poly",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.SATLowerBoundCertificate.fail_proof",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.SATMachineRealization.decides",
+   "module": "MCore.Real.SATMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.SATMachineRealization.encode_initial",
+   "module": "MCore.Real.SATMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.bool_and_decide_eq_true_iff",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.bool_and_eq_true_iff",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.emptyCNF_isCNF",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.emptyClause_isCNF",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.emptyClause_isClause",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.final_proof_from_residual",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.foldl_and_preserves_isCNF",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.foldl_or_preserves_isClause",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.isCNFBool_eq_true_iff",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.isClauseBool_eq_true_iff",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.isClause_isCNF",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.isLiteral_input",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.isLiteral_isClause",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.isLiteral_not_input",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.literalAt_isClause",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.literalAt_isLiteral",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.lower_bound_certificate_of_sat_not_in_p",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.randomClause_isCNF",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.randomClause_isClause",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.randomKCNF_isCNF",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.satMachineRealization_decides",
+   "module": "MCore.Real.SATMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.satMachineRealization_starts_initial",
+   "module": "MCore.Real.SATMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.sat_boundary_implies_machine_p_ne_np",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.sat_certificate_implies_machine_p_ne_np",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.sat_lower_bound_certificate_iff",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.sat_not_in_p_implies_universal_sat_failure",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.sat_not_in_p_of_lower_bound_certificate",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.semanticallyEquivalent_refl",
+   "module": "MCore.Real.Semantics",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.semanticallyRepresents_eval",
+   "module": "MCore.Real.Semantics",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.semanticallyRepresents_has_parse",
+   "module": "MCore.Real.Semantics",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.semanticallyRepresents_of_parse_eq",
+   "module": "MCore.Real.Semantics",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.universal_sat_failure_iff_sat_not_in_p",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.universal_sat_failure_implies_sat_not_in_p",
+   "module": "MCore.Real.FinalProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.wellFormed_of_render",
+   "module": "MCore.Real.CNFStructure",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.SeparationWitnessData.obstruction_nonzero",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.SeparationWitnessData.witness_in_np",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.boundary_ne_regular",
+   "module": "MCore.K0",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.bridge_not_certified",
+   "module": "MCore.K2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.candidate_ne_provedProperty",
+   "module": "MCore.K0",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k10_classical_endpoint_not_promoted",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k10_not_certified",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k10_status_not_proved",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k10_status_openBridge",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k1_not_proved",
+   "module": "MCore.K1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k1_status_openBridge",
+   "module": "MCore.K1",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k2_node_not_proved",
+   "module": "MCore.K2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k2_node_status_openBridge",
+   "module": "MCore.K2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k3_attack_cannot_promote",
+   "module": "MCore.AttackDAG.K3AlgebraAttacks",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k3_attack_route_only",
+   "module": "MCore.AttackDAG.K3AlgebraAttacks",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k3_frontier_open",
+   "module": "MCore.Frontier.K3Gaps",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k3_gap_not_certified",
+   "module": "MCore.K3",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k3_gap_not_proved",
+   "module": "MCore.K3",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k3_gap_status_openBridge",
+   "module": "MCore.K3",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k4_no_promotion",
+   "module": "MCore.K4",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k4_status_openBridge",
+   "module": "MCore.K4",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k5_openBridge_cannot_certify",
+   "module": "MCore.K5",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k6_source_open",
+   "module": "MCore.K6",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k6_target_not_certified",
+   "module": "MCore.K6",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k6_target_open",
+   "module": "MCore.K6",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k7_classical_endpoint_not_promoted",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k7_not_certified",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k7_statement_valid",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k7_status_not_proved",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k7_status_openBridge",
+   "module": "MCore.K7",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k8_classical_endpoint_not_promoted",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k8_not_certified",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k8_statement_valid",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k8_status_not_proved",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k8_status_openBridge",
+   "module": "MCore.K8",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k9_classical_endpoint_not_promoted",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k9_not_certified",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k9_statement_valid",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k9_status_not_proved",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.k9_status_openBridge",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.minimalSeparationInhabitant_closes",
+   "module": "MCore.MinimalInhabitant",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.obstruction_excludes_P",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.prize_k0_classical_endpoint_not_promoted",
+   "module": "MCore.PrizeK0",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.prize_k0_k10_not_promoted",
+   "module": "MCore.PrizeK0",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.separation_witness_not_in_P",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.separation_witness_separates",
+   "module": "MCore.K10",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.witness_separates_classes",
+   "module": "MCore.K9",
+   "axioms": [],
+   "status": "CLEAN"
+  }
+ ]
+}
