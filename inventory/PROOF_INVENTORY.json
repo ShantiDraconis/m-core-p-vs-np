@@ -59,7 +59,11 @@
    "path": "lean/MCore/ATK_HARD_PNP_NEXT.lean",
    "status": "FAILED",
    "in_default_build": false,
-   "first_error": "lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward'"
+   "first_error": "lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward'",
+   "all_errors": [
+    "lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward'",
+    "lean/MCore/ATK_HARD_PNP_NEXT.lean:6:7: unknown identifier 'hard_PvsNP_SAT_not_in_P_backward'"
+   ]
   },
   {
    "module": "MCore.Attack.CanonicalTerminalProducer",
@@ -696,7 +700,7 @@
    "path": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean",
    "status": "FAILED",
    "in_default_build": false,
-   "first_error": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean:107:10: tactic 'rewrite' failed, did not find instance of the pattern in the target expression"
+   "first_error": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean:107:10: tactic 'rewrite' failed, did not find instance of the pattern in the target expression\n  preservingUnaryReadMachine.run 3\n    { state := PreservingReadState.rewindInspectFalse,\n      tape := { left := none :: ?left, head := some ?b, right := ?next :: ?right } }\ncase cons\nnext : Option Bool\nright : List (Option Bool)\nb : Bool\nbs : List Bool\ntail_ih✝ :\n  ∀ (left : List (Option Bool)),\n    preservingUnaryReadMachine.run (3 * bs.length)\n        { state := PreservingReadState.rewindInspectFalse,\n          tape :=\n            { left := none :: left, head := (List.map some bs ++ next :: right).headD next,\n              right := (List.map some bs ++ next :: right).tail } } =\n      { state := PreservingReadState.rewindInspectFalse,\n        tape := { left := none :: List.map some bs.reverse ++ left, head := next, right := right } }\nleft : List (Option Bool)\n⊢ preservingUnaryReadMachine.run (3 * bs.length)\n      (preservingUnaryReadMachine.run 3\n        { state := PreservingReadState.rewindInspectFalse,\n          tape := { left := none :: left, head := some b, right := List.map some bs ++ next :: right } }) =\n    { state := PreservingReadState.rewindInspectFalse,\n      tape := { left := none :: (List.map some (b :: bs).reverse ++ left), head := next, right := right } }"
   },
   {
    "module": "MCore.Real.P01PreservingUnaryWitnessMachine",

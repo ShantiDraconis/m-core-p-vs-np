@@ -247,6 +247,9 @@ def closure(start, mods):
     return seen
 
 
+ALL_ERRORS = {}
+
+
 def build(root: Path, mods):
     names = sorted(mods)
     r = sh(["lake", "build", *names], root)
@@ -256,12 +259,38 @@ def build(root: Path, mods):
         if m.group(1) in mods:
             failed.setdefault(m.group(1), "")
     by_path = {v["path"]: k for k, v in mods.items()}
-    for m in re.finditer(r"^error: (?:\./)*([^:\n]+\.lean):(\d+):(\d+): (.*)$", log, re.M):
+    lines = log.splitlines()
+    head = re.compile(r"^error: (?:\./)*([^:\n]+\.lean):(\d+):(\d+): (.*)$")
+    stop = re.compile(r"^(error|warning|info|trace):|^[✖✔⚠] ")
+    for i, line in enumerate(lines):
+        m = head.match(line)
+        if not m:
+            continue
         mod = by_path.get(m.group(1))
-        if mod is not None:
-            failed.setdefault(mod, "")
-            if not failed[mod]:
-                failed[mod] = f"{m.group(1)}:{m.group(2)}:{m.group(3)}: {m.group(4)}"[:300]
+        if mod is None:
+            continue
+        failed.setdefault(mod, "")
+        block = [f"{m.group(1)}:{m.group(2)}:{m.group(3)}: {m.group(4)}"]
+        for nxt in lines[i + 1:i + 40]:
+            if stop.match(nxt):
+                break
+            block.append(nxt)
+        text = "\n".join(block)[:1500]
+        ALL_ERRORS.setdefault(mod, []).append(text)
+        if not failed[mod]:
+            failed[mod] = text
+    # fallback: modules Lake marked failed without a file:line error of their own
+    for i, line in enumerate(lines):
+        m = re.match(r"✖ \[\d+/\d+\] (?:Building|Compiling|Running) ([\w.«»']+)", line)
+        if m and m.group(1) in failed and not failed[m.group(1)]:
+            block = []
+            for nxt in lines[i + 1:i + 30]:
+                if re.match(r"^[✖✔⚠] ", nxt):
+                    break
+                if not nxt.startswith("trace:"):
+                    block.append(nxt)
+            if block:
+                failed[m.group(1)] = "(no file:line error) " + "\n".join(block)[:1400]
     return failed, r.returncode, log
 
 
@@ -365,7 +394,9 @@ def main():
     # Lake also marks dependents of a failing module as failed; a module with no
     # error of its own whose imports include a failing module is BLOCKED.
     for m in sorted(failed):
-        if not failed[m] and any(d in failed and failed[d] for d in closure(m, mods) if d != m):
+        own = failed[m] and not failed[m].startswith("(no file:line error)")
+        if not own and any(d in failed and failed[d] and not failed[d].startswith("(no file:line error)")
+                           for d in closure(m, mods) if d != m):
             del failed[m]
     blocked = {}
     for m in mods:
@@ -444,6 +475,8 @@ def main():
         row = {"module": m, "path": mods[m]["path"], "status": st, "in_default_build": m in default_build}
         if m in failed:
             row["first_error"] = failed[m]
+            if len(ALL_ERRORS.get(m, [])) > 1:
+                row["all_errors"] = ALL_ERRORS[m][:30]
         if m in blocked:
             row["blocked_by"] = blocked[m]
         modules.append(row)
@@ -516,8 +549,8 @@ def main():
         print("::notice title=proof-inventory-summary::" + json.dumps(summary, separators=(",", ":")))
         for r in modules:
             if r["status"] != "OK" and not r["in_default_build"]:
-                print(f"::warning file={r['path']}::module outside default build is {r['status']}: "
-                      f"{r.get('first_error') or r.get('blocked_by')}")
+                print(f"::warning file={r['path']}::" + gh_escape(f"module outside default build is {r['status']}: "
+                      f"{r.get('first_error') or r.get('blocked_by')}"))
         for p in prop_rows:
             if p["status"] == "VACUOUS":
                 print(f"::warning::vacuous Prop definition {p['name']} ({p['module']}) ends in True")
@@ -535,12 +568,20 @@ def main():
                      if r["status"] != "OK" and r["in_default_build"]]
         problems += [f"{t['name']} uses sorryAx" for t in theorems if t["status"] == "USES_SORRY"]
         problems += [f"{t['name']} uses a project axiom" for t in theorems if t["status"] == "USES_PROJECT_AXIOM"]
+        for r in modules:
+            if r["status"] == "FAILED" and r["in_default_build"] and len(r.get("all_errors", [])) > 1:
+                for e in r["all_errors"][1:30]:
+                    problems.append(f"{r['module']} (additional error): {e}")
         if problems:
             for p in problems[:50]:
-                print(f"::error::{p}" if gh else f"[inventory] ERROR: {p}")
+                print("::error::" + gh_escape(p) if gh else f"[inventory] ERROR: {p}")
             sys.exit(1)
     if stale and a.fail_if_stale:
         sys.exit(1)
+
+
+def gh_escape(text):
+    return text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
 
 
 def render_md(inv):
@@ -556,7 +597,7 @@ def render_md(inv):
     if bad:
         L += ["| Module | Status | In default build | Detail |", "| --- | --- | --- | --- |"]
         for m in bad:
-            d = (m.get("first_error") or m.get("blocked_by") or "").replace("|", "\\|")
+            d = (m.get("first_error") or m.get("blocked_by") or "").split("\n")[0].replace("|", "\\|")
             L.append(f"| `{m['module']}` | {m['status']} | {'yes' if m['in_default_build'] else 'no'} | {d[:160]} |")
     else:
         L.append("None. Every module of the library compiles.")
