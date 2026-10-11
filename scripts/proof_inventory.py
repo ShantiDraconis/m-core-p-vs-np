@@ -554,8 +554,11 @@ def main():
         for p in prop_rows:
             if p["status"] == "VACUOUS":
                 print(f"::warning::vacuous Prop definition {p['name']} ({p['module']}) ends in True")
-    stale = a.check_committed and ((old_json is not None and old_json != new_json) or
-                                   (old_md is not None and old_md != md))
+    # with --fail-if-stale a missing committed copy also counts as stale, so a
+    # pull request cannot pass by deleting the generated files
+    stale = a.check_committed and (
+        (old_json != new_json if old_json is not None else a.fail_if_stale) or
+        (old_md != md if old_md is not None else a.fail_if_stale))
     if stale:
         msg = "committed inventory/PROOF_INVENTORY.json/.md is out of date; regenerate with scripts/proof_inventory.py"
         level = "error" if a.fail_if_stale else "warning"
