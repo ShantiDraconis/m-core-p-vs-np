@@ -1,0 +1,46 @@
+{
+  "repositorio": "ShantiDraconis/m-core-p-vs-np",
+  "branch": "atk-kernel-check",
+  "commit_verificado": "f3e9ad9127ed4ed267a24f25d149ea229dfcb63e",
+  "tag": "atk-kernel-cert-v1",
+  "gerado_em_utc": "2026-10-11T23:51:44+00:00",
+  "workflows": [
+    {
+      "workflow": "ATK kernel check",
+      "run": "https://github.com/ShantiDraconis/m-core-p-vs-np/actions/runs/38181943003",
+      "commit_da_execucao": "f3e9ad9127ed4ed267a24f25d149ea229dfcb63e",
+      "jobs": [
+        {
+          "nome": "Lean 4 + Mathlib — compilação e auditoria de axiomas",
+          "conclusao": "success",
+          "url": "https://github.com/ShantiDraconis/m-core-p-vs-np/actions/runs/38181943003/job/114596182709"
+        }
+      ],
+      "resumo_kernel": "ATK-KERNEL CERTIFIED 2/2",
+      "sha256_fontes": "b59ef91172e14598d35942c3bf90d65eee241306ba6339e8f32cccf802fab986",
+      "lean": "Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)"
+    }
+  ],
+  "teoremas": [
+    {
+      "teorema": "ATK.PvsNP.p_ne_np_of_np_not_subset_ppoly",
+      "veredito": "CERTIFIED",
+      "axiomas": [],
+      "obs": "",
+      "workflow": "ATK kernel check"
+    },
+    {
+      "teorema": "ATK.PvsNP.p_ne_np_of_sat",
+      "veredito": "CERTIFIED",
+      "axiomas": [],
+      "obs": "",
+      "workflow": "ATK kernel check"
+    }
+  ],
+  "numericos": [],
+  "escopo": "Lemas auxiliares e cálculos concretos. Nenhuma das sete conjecturas foi provada; OPEN_MATH=true.",
+  "contagem": {
+    "certificados": 2,
+    "total": 2
+  }
+}
