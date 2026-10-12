@@ -1,0 +1,20 @@
+{
+  "id": "PNP-Corpo7 largura de prova",
+  "problema": "PNP",
+  "alvo": "itens 44, 72",
+  "onde_quebra_hoje": "cota superpolinomial para todo algoritmo",
+  "proposta": {
+    "nome": "F_SAT",
+    "definicao": "complexidade em Frege + largura de cláusula; 'largura Ω(n) ⇒ tempo exponencial'",
+    "classe": "BarrierBreaking",
+    "barreiras": {
+      "relativizacao": "",
+      "provas_naturais": "",
+      "algebrizacao": ""
+    }
+  },
+  "revisao": {
+    "nao_segue": "largura Ω(n) em resolução para 3-CNF aleatórias é teorema (Chvátal–Szemerédi 1988; Ben-Sasson–Wigderson 2001), mas limita só o sistema de resolução; não implica tempo exponencial para todo algoritmo; para Frege não se conhece cota superpolinomial"
+  },
+  "veredito_esperado": "INCOMPLETA"
+}
