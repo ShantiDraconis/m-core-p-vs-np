@@ -52,6 +52,26 @@ jobs:
           test -n "$line"
           echo "::notice title=P01 separation audit::$line"
 
+      - name: P vs NP after P01 (sat_in_np + reduction to G2.1)
+        run: |
+          set -euo pipefail
+          lake build MCore.Real.PNPAfterP01 2>&1 | tail -3
+          lake env lean audit/PNPAfterP01Audit.lean 2>&1 | tee pnp-out.txt
+          if grep -q "error" pnp-out.txt; then echo "::error title=PNPAfterP01::erro de elaboração"; exit 1; fi
+          python3 - <<'PY'
+          import re, sys
+          t = open("pnp-out.txt").read().replace("\n", " ")
+          ok = True
+          lines = []
+          for m in re.finditer(r"'([^']+)' depends on axioms: \[([^\]]*)\]", t):
+              ax = {a.strip() for a in m.group(2).split(",") if a.strip()}
+              good = ax <= {"propext", "Classical.choice", "Quot.sound"}
+              ok &= good
+              lines.append(f"{'OK' if good else 'FALHOU'} {m.group(1)} {sorted(ax)}")
+          print("::notice title=P vs NP after P01 (" + str(len(lines)) + " teoremas)::" + "%0A".join(lines))
+          sys.exit(0 if ok and len(lines) == 4 else 1)
+          PY
+
       - name: Statement files identical to main
         run: |
           set -euo pipefail
