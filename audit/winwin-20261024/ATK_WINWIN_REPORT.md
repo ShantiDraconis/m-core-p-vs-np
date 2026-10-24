@@ -6,7 +6,8 @@ ATK-WINWIN: varredura de 28 repositórios | 2383 branches | 5525 blobs .lean ún
             | FECHA POR COMPLETO: FLT para primos regulares (Kummer), já em M-Core
             | GERA TEOREMAS VÁLIDOS NOS DOIS MUNDOS: M-Core ATK/ZeroClasses/MundoFora.lean
             | NÃO FECHA: RH, P≠NP, BSD, Hodge, Navier–Stokes, Yang–Mills, Beal
-            | motivo verificado no kernel: missing_half_iff_target (este branch)
+            | motivo, verificado no kernel: missing_half_iff_target (execução 40137729328, job logic)
+            | ACHADO: a dicotomia P03 de P≠NP não compila em nenhum commit auditado (seção 6)
 ```
 
 \* declarações `theorem`/`lemma`, contando separadamente cada versão distinta de um mesmo arquivo.
@@ -23,8 +24,8 @@ usam `by_cases`, `Classical.em`, `Or.elim` ou `WinWin`.
 
 Resultado:
 
-1. **O método já está aplicado** em todos os repositórios onde ele tem algo a fazer. Nenhum caso-a-caso novo
-   fecha uma obrigação que já não esteja fechada.
+1. **Onde a divisão aparece, ela já foi aplicada.** Nenhuma divisão encontrada fecha uma obrigação que ainda esteja
+   aberta.
 2. **Ele fecha por completo um enunciado:** o Último Teorema de Fermat para primos regulares, com os casos I e II
    provados (`flt_regular`, M-Core `atk-kernel/ATK/FltRegular/FltRegular.lean`, trazido do projeto flt-regular segundo
    `ATK/FltRegular/ORIGEM.md`, arquivo idêntico em `e09b1952`). É o teorema de Kummer, de 1850. M-Core o usa em
@@ -32,14 +33,15 @@ Resultado:
 3. **Ele produz teoremas válidos nos dois mundos** de Riemann (com e sem zeros fora da linha). Esses teoremas já
    estão no kernel em M-Core `atk-kernel/ATK/ZeroClasses/MundoFora.lean` (seção 4).
 4. **Ele não fecha nenhum problema do milênio, nem Beal.** Em toda divisão encontrada, o ramo que falta é
-   equivalente ao próprio problema. Isso está provado no kernel, de forma genérica e na instância P≠NP (seção 3).
+   equivalente ao próprio problema. A forma genérica está provada no kernel (seção 3). A instância P≠NP está
+   escrita, mas depende de um módulo do repositório que não compila (seção 6).
 
 ## 2. Todas as divisões caso-a-caso encontradas
 
 | Problema | Divisão | Ramo que existe | Ramo que falta | Prova de que o ramo que falta é o problema inteiro |
 |---|---|---|---|---|
 | P ≠ NP (descritores) | relógio total / não total; padrão constante / não | os dois ramos fáceis: `failure_of_not_total`, `failure_of_not_constant_correct` | total ∧ padrão constante (`FiniteDescriptorResidual`) | `residual_iff_universalFailure : FiniteDescriptorResidual ↔ UniversalFailure SATTarget` (branch `atk/p01-post-mincut-advance-20261001`) |
-| P ≠ NP (P03) | `rangeFailureLaw_or_existsPerfectFlip : RangeFailureLaw ∨ ExistsPerfectFlip` | `RangeFailureLaw → ¬ InP SAT` | `ExistsPerfectFlip → ¬ InP SAT` | **novo neste branch:** `perfectFlip_missing_half_iff_target`. Todo decisor polinomial de SAT já é um "perfect flip" (`canonicalSAT_inP_implies_existsPerfectFlip`), então o mundo P = NP está dentro do ramo que falta |
+| P ≠ NP (P03) | `rangeFailureLaw_or_existsPerfectFlip : RangeFailureLaw ∨ ExistsPerfectFlip` | `RangeFailureLaw → ¬ InP SAT` | `ExistsPerfectFlip → ¬ InP SAT` | **novo neste branch:** `perfectFlip_missing_half_iff_target` (escrito; não compila porque `P02ComplementRunRealization` não compila, seção 6). Todo decisor polinomial de SAT já é um "perfect flip" (`canonicalSAT_inP_implies_existsPerfectFlip`), então o mundo P = NP está dentro do ramo que falta |
 | BSD | posto analítico 0, 1 / ≥ 2 | 0 e 1 como contrato externo (Gross–Zagier–Kolyvagin) | posto ≥ 2 | `bsd_realizable_low_plus_high_closes_universal` e `bsd_realizable_universal_implies_high` (m-core-bsd) |
 | Hodge | codimensão p = 1 / p ≠ 1 | p = 1 a partir de Lefschetz (1,1), dado como entrada | p ≠ 1 | `concretePayload_iff_residual_given_codimOne` (m-core-hodge) |
 | Beal | `c ≤ cota` / `c > cota` | as duas metades são entradas: verificação finita e redução via ABC | ABC efetivo com cota explícita, mais a verificação finita | `Beal_of_ABC_and_finite_check` (m-core-beal) só compõe as entradas |
@@ -127,7 +129,7 @@ O modelo finito de Li não serve como exemplo. Com finitos zeros, a oscilação 
 | Mathlib | `c44e0c8ee63ca166450922a373c7409c5d26b00b` (`lake-manifest.json` copiado de `685593f0`) |
 | Arquivos pré-existentes alterados | nenhum arquivo-fonte; só `lake-manifest.json` (fixação do Mathlib) |
 | Verificação local | `WinWinLogic20261024.lean` com Lean 4.19.0: `missing_half_iff_target` e `simultaneous_sides_impossible` sem axiomas; `winwin_close` e `self_target_missing_half` com `[propext, Classical.choice, Quot.sound]` |
-| Execução CI | RUN_PLACEHOLDER |
+| Execução CI | 40137729328, commit `11b5d3ef`: job `logic` (121002717293) **sucesso**, com as quatro auditorias de axiomas acima; job `p03-instance` (121002717436) **falha** em `P02ComplementRunRealization.lean:313:2` (`type mismatch`) e `:233:10` (`rewrite failed`) |
 | Varredura | `WINWIN_SCAN_SUMMARY.json`, `tools/winwin_scan.py`, `tools/extract.sh` |
 
 ### Achado colateral: a dicotomia P03 nunca foi verificada pelo kernel
@@ -140,15 +142,24 @@ Em nenhum deles uma execução de CI compilou esse fecho:
 
 - `6c467fbb`: a execução 40137017331 (commit `c866851d`, primeira tentativa deste branch) falha em
   `PNPNTMTableauClosure.lean` com `universe level metavariables` e `unknown constant …NTMTableauSizeCertificate.mk._flat_ctor`;
-- `5572a4c9`, `9966966b`, `28c64098`: o `lakefile` não exige Mathlib, mas `PNPNTMTableauEncoding` usa táticas do
-  Mathlib. A compilação local com Lean 4.19.0 falha ali;
+- `5572a4c9`: o `lakefile` não exige Mathlib, mas `PNPNTMTableauEncoding` usa táticas do Mathlib. A compilação
+  local com Lean 4.19.0 falha ali. `9966966b` tem o mesmo arquivo (blob `31a13531`) e o mesmo `lakefile`;
+  `28c64098` também não exige Mathlib, e todas as execuções de CI nesse commit falham;
 - `1779db20`, `08a17e64`, `685593f0`: o núcleo tableau falha (execução 37914345859);
-- `19d2fb6b`: veja a execução acima.
+- `19d2fb6b`: o tableau compila, mas a execução 40137729328 falha em `P02ComplementRunRealization.lean`. Esse
+  módulo fornece `complement_reduce_correct`, que é exatamente a prova de "P = NP ⇒ existe perfect flip". Ele tem
+  uma única versão (blob `cd1180de`) nos 11 branches que o contêm. Nenhuma execução de CI bem-sucedida o compila:
+  as duas únicas execuções verdes nesses branches (`6c467fbb` unified-final-build e `9966966b` lean) não o têm no
+  fecho de importações.
 
-Logo `rangeFailureLaw_or_existsPerfectFlip` e `canonicalSAT_inP_implies_existsPerfectFlip` só contam como
-verificados se o job `p03-instance` passar. A conclusão da seção 3 não depende disso. O lema genérico
-`missing_half_iff_target` só precisa da implicação "P = NP ⇒ existe perfect flip", que tem uma prova curta e
-direta no próprio arquivo P03.
+Logo `rangeFailureLaw_or_existsPerfectFlip`, `rangeFailureLaw_implies_canonicalSAT_not_inP` e
+`canonicalSAT_inP_implies_existsPerfectFlip` **não estão verificados pelo kernel em nenhum commit auditado**. Na
+unidade de auditoria deste projeto (declaração + arquivo + SHA + execução SUCCESS + `#print axioms`), a rota P03
+inteira é `UNVERIFIED`.
+
+A conclusão matemática da seção 3 não muda. A implicação "P = NP ⇒ existe perfect flip" vale por Cook–Levin: o
+complemento da linguagem de um decisor polinomial está em P ⊆ NP e se reduz a SAT. Mas, para P03, ela fica no nível
+da matemática, não do kernel. O lema genérico `missing_half_iff_target` está verificado.
 
 Limites da varredura: a comparação é sintática, sobre conclusões normalizadas como texto. Hipóteses implícitas e
 divisões feitas em modo termo não aparecem. Só as pontas dos branches foram lidas (clones rasos).
