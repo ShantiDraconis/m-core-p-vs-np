@@ -1,0 +1,165 @@
+name: ATK WinWin Missing Half Audit
+
+# Two independent jobs on top of 19d2fb6b with Mathlib pinned to c44e0c8e
+# (lake-manifest.json copied verbatim from 685593f0). No pre-existing source
+# file is modified.
+#   logic       : MCore.Integration.WinWinLogic20261024 (core only)
+#   p03-instance: MCore.Integration.WinWinMissingHalfAudit20261024, which
+#                 imports MCore.Real.P03PerfectFlipDichotomy (187 modules)
+
+on:
+  push:
+    branches:
+      - atk/winwin-missing-half-audit-20261024
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  logic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Fetch Mathlib build cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          lean --version
+          lake exe cache get
+      - name: Build MCore.Integration.WinWinLogic20261024
+        shell: bash
+        run: |
+          set +e
+          lake build MCore.Integration.WinWinLogic20261024 > build.log 2>&1
+          rc=$?
+          tail -5 build.log
+          if [ $rc -eq 0 ]; then
+            echo "::notice title=build::BUILD PASS (MCore.Integration.WinWinLogic20261024)"
+          else
+            echo "::error title=build::BUILD FAIL exit $rc (MCore.Integration.WinWinLogic20261024)"
+            grep -E "error:" build.log | head -10 | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::error title=lean-error::${l:0:900}"; done || true
+          fi
+          exit $rc
+      - name: Exact axiom audit
+        shell: bash
+        run: |
+          set +e
+          cat > Probe.lean <<'LEAN'
+          import MCore.Integration.WinWinLogic20261024
+          #print axioms MCore.Integration.WinWinLogic20261024.winwin_close
+          #print axioms MCore.Integration.WinWinLogic20261024.simultaneous_sides_impossible
+          #print axioms MCore.Integration.WinWinLogic20261024.missing_half_iff_target
+          #print axioms MCore.Integration.WinWinLogic20261024.self_target_missing_half
+          LEAN
+          lake env lean Probe.lean > axioms.log 2>&1
+          rc=$?
+          cat axioms.log
+          tr '\n' ' ' < axioms.log | sed -E "s/('MCore\.)/\n\1/g" | grep -E "axioms" | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::notice title=axioms::${l:0:900}"; done || true
+          if [ $rc -ne 0 ] || grep -qE "sorryAx|error" axioms.log; then
+            echo "::error title=axioms::probe failed or sorryAx found"; exit 1
+          fi
+          python3 - <<'PY'
+          import re, sys
+          text = open("axioms.log").read()
+          sets = re.findall(r"depends on axioms: \[([^\]]*)\]", text, re.S)
+          sets += ["" for _ in re.findall(r"does not depend on any axioms", text)]
+          allowed = {"propext", "Classical.choice", "Quot.sound"}
+          if len(sets) != 4:
+              sys.exit("expected 4 axiom reports, got %d" % len(sets))
+          for s in sets:
+              names = {x.strip() for x in s.split(",") if x.strip()}
+              if not names <= allowed:
+                  sys.exit("non-standard axioms: %s" % (names - allowed))
+          print("WINWIN_LOGIC_AXIOM_AUDIT_OK")
+          PY
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: winwin-logic-logs
+          path: |
+            build.log
+            axioms.log
+
+  p03-instance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lean
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Fetch Mathlib build cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          lean --version
+          lake exe cache get
+      - name: Build MCore.Integration.WinWinMissingHalfAudit20261024
+        shell: bash
+        run: |
+          set +e
+          lake build MCore.Integration.WinWinMissingHalfAudit20261024 > build.log 2>&1
+          rc=$?
+          tail -5 build.log
+          if [ $rc -eq 0 ]; then
+            echo "::notice title=build::BUILD PASS (MCore.Integration.WinWinMissingHalfAudit20261024)"
+          else
+            echo "::error title=build::BUILD FAIL exit $rc (MCore.Integration.WinWinMissingHalfAudit20261024)"
+            grep -E "error:" build.log | head -10 | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::error title=lean-error::${l:0:900}"; done || true
+          fi
+          exit $rc
+      - name: Exact axiom audit
+        shell: bash
+        run: |
+          set +e
+          cat > Probe.lean <<'LEAN'
+          import MCore.Integration.WinWinMissingHalfAudit20261024
+          #print axioms MCore.Integration.WinWinMissingHalfAudit20261024.present_half
+          #print axioms MCore.Integration.WinWinMissingHalfAudit20261024.perfectFlip_missing_half_iff_target
+          #print axioms MCore.Integration.WinWinMissingHalfAudit20261024.winwin_over_p03_iff_target
+          #print axioms MCore.Integration.WinWinMissingHalfAudit20261024.winwin_over_p03_closes
+          #print axioms MCore.Real.P03PerfectFlipDichotomy.canonicalSAT_inP_implies_existsPerfectFlip
+          #print axioms MCore.Real.P03PerfectFlipDichotomy.rangeFailureLaw_or_existsPerfectFlip
+          LEAN
+          lake env lean Probe.lean > axioms.log 2>&1
+          rc=$?
+          cat axioms.log
+          tr '\n' ' ' < axioms.log | sed -E "s/('MCore\.)/\n\1/g" | grep -E "axioms" | sed -E 's/%/%25/g' | while IFS= read -r l; do echo "::notice title=axioms::${l:0:900}"; done || true
+          if [ $rc -ne 0 ] || grep -qE "sorryAx|error" axioms.log; then
+            echo "::error title=axioms::probe failed or sorryAx found"; exit 1
+          fi
+          python3 - <<'PY'
+          import re, sys
+          text = open("axioms.log").read()
+          sets = re.findall(r"depends on axioms: \[([^\]]*)\]", text, re.S)
+          sets += ["" for _ in re.findall(r"does not depend on any axioms", text)]
+          allowed = {"propext", "Classical.choice", "Quot.sound"}
+          if len(sets) != 6:
+              sys.exit("expected 6 axiom reports, got %d" % len(sets))
+          for s in sets:
+              names = {x.strip() for x in s.split(",") if x.strip()}
+              if not names <= allowed:
+                  sys.exit("non-standard axioms: %s" % (names - allowed))
+          print("WINWIN_P03_AXIOM_AUDIT_OK")
+          PY
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: winwin-p03-instance-logs
+          path: |
+            build.log
+            axioms.log

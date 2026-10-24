@@ -1,0 +1,3157 @@
+{
+ "schema": "atk.winwin-scan.v1",
+ "generated": "2026-10-24",
+ "question": "Where can the case split (A → X) ∧ (¬A → X) ⇒ X close an obligation in the repositories?",
+ "method": {
+  "extraction": "every remote branch of every repository; every unique .lean blob (tools/extract.sh)",
+  "scan": "tools/winwin_scan.py: theorem headers parsed into hypotheses and conclusion; complementary pairs (H / ¬H, same conclusion, one level of Prop aliases); proved dichotomies A ∨ B with consumers A → X and B → X; explicit case-split tactics in proofs; one-sided conditionals on named open hypotheses",
+  "limits": "syntactic: conclusions compared as normalized text; implicit hypotheses and term-mode case splits not seen; branch tips only (shallow clones)"
+ },
+ "coverage": [
+  {
+   "repository": "ShantiDraconis/0-0-formal-suite",
+   "branches": 9,
+   "lean_files_across_branches": 175,
+   "unique_lean_blobs": 41
+  },
+  {
+   "repository": "ShantiDraconis/axiomatic-millenium",
+   "branches": 48,
+   "lean_files_across_branches": 1041,
+   "unique_lean_blobs": 92
+  },
+  {
+   "repository": "ShantiDraconis/complexity-collapse-pnp",
+   "branches": 3,
+   "lean_files_across_branches": 3,
+   "unique_lean_blobs": 3
+  },
+  {
+   "repository": "ShantiDraconis/elyon-public-proof",
+   "branches": 2,
+   "lean_files_across_branches": 244,
+   "unique_lean_blobs": 120
+  },
+  {
+   "repository": "ShantiDraconis/horizon-prime---framework",
+   "branches": 25,
+   "lean_files_across_branches": 153,
+   "unique_lean_blobs": 86
+  },
+  {
+   "repository": "ShantiDraconis/indeterminate-collapse-core",
+   "branches": 9,
+   "lean_files_across_branches": 66,
+   "unique_lean_blobs": 62
+  },
+  {
+   "repository": "ShantiDraconis/lean-winwin-logic",
+   "branches": 2,
+   "lean_files_across_branches": 2,
+   "unique_lean_blobs": 1
+  },
+  {
+   "repository": "ShantiDraconis/m-core",
+   "branches": 333,
+   "lean_files_across_branches": 53183,
+   "unique_lean_blobs": 1561
+  },
+  {
+   "repository": "ShantiDraconis/m-core-beal",
+   "branches": 249,
+   "lean_files_across_branches": 14780,
+   "unique_lean_blobs": 367
+  },
+  {
+   "repository": "ShantiDraconis/m-core-bsd",
+   "branches": 161,
+   "lean_files_across_branches": 4702,
+   "unique_lean_blobs": 227
+  },
+  {
+   "repository": "ShantiDraconis/m-core-hodge",
+   "branches": 255,
+   "lean_files_across_branches": 13972,
+   "unique_lean_blobs": 324
+  },
+  {
+   "repository": "ShantiDraconis/m-core-p-vs-np",
+   "branches": 701,
+   "lean_files_across_branches": 90223,
+   "unique_lean_blobs": 1415
+  },
+  {
+   "repository": "ShantiDraconis/m-core-riemann",
+   "branches": 181,
+   "lean_files_across_branches": 7444,
+   "unique_lean_blobs": 406
+  },
+  {
+   "repository": "ShantiDraconis/m-core-yang-mills",
+   "branches": 193,
+   "lean_files_across_branches": 8140,
+   "unique_lean_blobs": 228
+  },
+  {
+   "repository": "ShantiDraconis/millennium-bsd",
+   "branches": 7,
+   "lean_files_across_branches": 11,
+   "unique_lean_blobs": 3
+  },
+  {
+   "repository": "ShantiDraconis/millennium-hodge",
+   "branches": 8,
+   "lean_files_across_branches": 34,
+   "unique_lean_blobs": 10
+  },
+  {
+   "repository": "ShantiDraconis/millennium-navier-stokes-i",
+   "branches": 7,
+   "lean_files_across_branches": 39,
+   "unique_lean_blobs": 10
+  },
+  {
+   "repository": "ShantiDraconis/millennium-p-vs-np-i",
+   "branches": 14,
+   "lean_files_across_branches": 85,
+   "unique_lean_blobs": 17
+  },
+  {
+   "repository": "ShantiDraconis/millennium-poincare-symbolic",
+   "branches": 6,
+   "lean_files_across_branches": 6,
+   "unique_lean_blobs": 5
+  },
+  {
+   "repository": "ShantiDraconis/millennium-riemann-i",
+   "branches": 10,
+   "lean_files_across_branches": 599,
+   "unique_lean_blobs": 79
+  },
+  {
+   "repository": "ShantiDraconis/millennium-yang-mills",
+   "branches": 5,
+   "lean_files_across_branches": 14,
+   "unique_lean_blobs": 9
+  },
+  {
+   "repository": "ShantiDraconis/navier-stokes-critical-barrier-audit",
+   "branches": 149,
+   "lean_files_across_branches": 39171,
+   "unique_lean_blobs": 382
+  },
+  {
+   "repository": "ShantiDraconis/proofs-multiprover",
+   "branches": 2,
+   "lean_files_across_branches": 6,
+   "unique_lean_blobs": 3
+  },
+  {
+   "repository": "ShantiDraconis/riemann-indeterminacy",
+   "branches": 6,
+   "lean_files_across_branches": 1,
+   "unique_lean_blobs": 1
+  },
+  {
+   "repository": "ShantiDraconis/riemann-offcritical-zero-certifier",
+   "branches": 2,
+   "lean_files_across_branches": 32,
+   "unique_lean_blobs": 16
+  },
+  {
+   "repository": "ShantiDraconis/the-algebra-of-ideterminate-i",
+   "branches": 8,
+   "lean_files_across_branches": 124,
+   "unique_lean_blobs": 46
+  },
+  {
+   "repository": "ShantiDraconis/the-proof-log",
+   "branches": 7,
+   "lean_files_across_branches": 0,
+   "unique_lean_blobs": 0
+  },
+  {
+   "repository": "ShantiDraconis/universal-proof-hub",
+   "branches": 9,
+   "lean_files_across_branches": 18,
+   "unique_lean_blobs": 11
+  }
+ ],
+ "totals": {
+  "theorems": 33419,
+  "repos": 28,
+  "prop_aliases": 976,
+  "complementary_pairs": 22,
+  "nontrivial_pairs": 22,
+  "dichotomies": 76,
+  "dichotomies_closing": 1,
+  "open_hyps_pos_only": 416,
+  "open_hyps_both": 3,
+  "open_hyps_neg_only": 5,
+  "winwin_like_proofs": 96
+ },
+ "complementary_pairs": [
+  {
+   "conclusion": "Q",
+   "hypothesis": "P",
+   "pos": {
+    "repo": "m-core",
+    "name": "iff_forward",
+    "path": "lean/MCore/Reuse/Transport.lean",
+    "ref": "origin/atk/master-claim-inventory-20261005",
+    "hyps": [
+     "P ↔ Q",
+     "P"
+    ],
+    "conclusion": "Q",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "tf_explodes",
+    "path": "atk-kernel/ATK/RefutacaoTri.lean",
+    "ref": "origin/atk/belnap-honest-status-20261020",
+    "hyps": [
+     "P",
+     "¬P"
+    ],
+    "conclusion": "Q",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "Q",
+   "hypothesis": "P",
+   "pos": {
+    "repo": "m-core",
+    "name": "tf_explodes",
+    "path": "atk-kernel/ATK/RefutacaoTri.lean",
+    "ref": "origin/atk/belnap-honest-status-20261020",
+    "hyps": [
+     "P",
+     "¬P"
+    ],
+    "conclusion": "Q",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "tf_explodes",
+    "path": "atk-kernel/ATK/RefutacaoTri.lean",
+    "ref": "origin/atk/belnap-honest-status-20261020",
+    "hyps": [
+     "P",
+     "¬P"
+    ],
+    "conclusion": "Q",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "Q",
+   "hypothesis": "P",
+   "pos": {
+    "repo": "navier-stokes-critical-barrier-audit",
+    "name": "Bridge.apply",
+    "path": "formal/millennium/lean/MillenniumAudit/Core.lean",
+    "ref": "origin",
+    "hyps": [
+     "Bridge P Q",
+     "P"
+    ],
+    "conclusion": "Q",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "tf_explodes",
+    "path": "atk-kernel/ATK/RefutacaoTri.lean",
+    "ref": "origin/atk/belnap-honest-status-20261020",
+    "hyps": [
+     "P",
+     "¬P"
+    ],
+    "conclusion": "Q",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "OpenMath",
+   "hypothesis": "OpenMath",
+   "pos": {
+    "repo": "m-core-beal",
+    "name": "closedMath_to_openMath",
+    "path": "lean/MCore/OpenMath/BealQ10TerminalClosureTransition.lean",
+    "ref": "origin/atk/beal-full-toolchain-20261006",
+    "hyps": [
+     "ClosedMath"
+    ],
+    "conclusion": "OpenMath",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core-beal",
+    "name": "closedMath_to_openMath",
+    "path": "lean/MCore/OpenMath/BealQ10TerminalClosureTransition.lean",
+    "ref": "origin/atk/beal-full-toolchain-20261006",
+    "hyps": [
+     "ClosedMath"
+    ],
+    "conclusion": "OpenMath",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "RPAConfirmation OpenMath ClosedMath ↔ OpenMath",
+   "hypothesis": "OpenMath",
+   "pos": {
+    "repo": "m-core",
+    "name": "closed_requires_open",
+    "path": "lean/MCore/FinalFail/RPAConfirmation.lean",
+    "ref": "origin/atk/sync-existing-none-results-20261008",
+    "hyps": [
+     "ClosedMath",
+     "RPAFrame OpenMath ClosedMath"
+    ],
+    "conclusion": "RPAConfirmation OpenMath ClosedMath ↔ OpenMath",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "closed_requires_open",
+    "path": "lean/MCore/FinalFail/RPAConfirmation.lean",
+    "ref": "origin/atk/sync-existing-none-results-20261008",
+    "hyps": [
+     "ClosedMath",
+     "RPAFrame OpenMath ClosedMath"
+    ],
+    "conclusion": "RPAConfirmation OpenMath ClosedMath ↔ OpenMath",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "GlobalExternalCertificate OpenMath ClosedMath",
+   "hypothesis": "OpenMath",
+   "pos": {
+    "repo": "m-core",
+    "name": "frame_plus_open_and_closed_closes",
+    "path": "lean/MCore/FinalFail/RPAConfirmation.lean",
+    "ref": "origin/atk/sync-existing-none-results-20261008",
+    "hyps": [
+     "RPAFrame OpenMath ClosedMath",
+     "OpenMath",
+     "ClosedMath"
+    ],
+    "conclusion": "GlobalExternalCertificate OpenMath ClosedMath",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "frame_plus_open_and_closed_closes",
+    "path": "lean/MCore/FinalFail/RPAConfirmation.lean",
+    "ref": "origin/atk/sync-existing-none-results-20261008",
+    "hyps": [
+     "RPAFrame OpenMath ClosedMath",
+     "OpenMath",
+     "ClosedMath"
+    ],
+    "conclusion": "GlobalExternalCertificate OpenMath ClosedMath",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "a ^ p + b ^ p ≠ c ^ p",
+   "hypothesis": "↑p ∣ a * b * c",
+   "pos": {
+    "repo": "m-core",
+    "name": "caseII",
+    "path": "atk-kernel/ATK/FltRegular/CaseII/Statement.lean",
+    "ref": "origin",
+    "hyps": [
+     "IsRegularPrime p",
+     "p ≠ 2",
+     "a * b * c ≠ 0",
+     "({a, b, c} : Finset ℤ).gcd id = 1",
+     "↑p ∣ a * b * c"
+    ],
+    "conclusion": "a ^ p + b ^ p ≠ c ^ p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "caseI_easier",
+    "path": "atk-kernel/ATK/FltRegular/CaseI/Statement.lean",
+    "ref": "origin",
+    "hyps": [
+     "IsRegularPrime p",
+     "5 ≤ p",
+     "({a, b, c} : Finset ℤ).gcd id = 1",
+     "¬a ≡ b [ZMOD p]",
+     "¬↑p ∣ a * b * c"
+    ],
+    "conclusion": "a ^ p + b ^ p ≠ c ^ p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "a ^ p + b ^ p ≠ c ^ p",
+   "hypothesis": "↑p ∣ a * b * c",
+   "pos": {
+    "repo": "m-core",
+    "name": "caseII",
+    "path": "atk-kernel/ATK/FltRegular/CaseII/Statement.lean",
+    "ref": "origin",
+    "hyps": [
+     "IsRegularPrime p",
+     "p ≠ 2",
+     "a * b * c ≠ 0",
+     "({a, b, c} : Finset ℤ).gcd id = 1",
+     "↑p ∣ a * b * c"
+    ],
+    "conclusion": "a ^ p + b ^ p ≠ c ^ p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "caseI",
+    "path": "atk-kernel/ATK/FltRegular/CaseI/Statement.lean",
+    "ref": "origin",
+    "hyps": [
+     "IsRegularPrime p",
+     "¬↑p ∣ a * b * c"
+    ],
+    "conclusion": "a ^ p + b ^ p ≠ c ^ p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+   "hypothesis": "(p : ℤ) ∣ x * y * z",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_iff_caso_dois",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "p ≠ 2",
+     "p < 300",
+     "FermatLastTheoremFor p ↔ ∀ x y z : ℤ, x ≠ 0",
+     "y ≠ 0",
+     "z ≠ 0",
+     "(p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "sophieGermain",
+    "path": "atk-kernel/ATK/SophieGermain.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "Odd p",
+     "(2 * p + 1).Prime",
+     "¬ (p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+   "hypothesis": "(p : ℤ) ∣ x * y * z",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_iff_caso_dois",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "p ≠ 2",
+     "p < 300",
+     "FermatLastTheoremFor p ↔ ∀ x y z : ℤ, x ≠ 0",
+     "y ≠ 0",
+     "z ≠ 0",
+     "(p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "casoUm_de_coprimo",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "Odd p",
+     "∀ a b c : ℤ, a ^ p + b ^ p + c ^ p = 0 → IsCoprime a b → IsCoprime b c → IsCoprime c a → (p : ℤ) ∣ a * b * c",
+     "¬ (p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+   "hypothesis": "(p : ℤ) ∣ x * y * z",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_iff_caso_dois",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "p ≠ 2",
+     "p < 300",
+     "FermatLastTheoremFor p ↔ ∀ x y z : ℤ, x ≠ 0",
+     "y ≠ 0",
+     "z ≠ 0",
+     "(p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "germain",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "Odd p",
+     "Auxiliar p q k",
+     "¬ (p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+   "hypothesis": "(p : ℤ) ∣ x * y * z",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_iff_caso_dois",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "p ≠ 2",
+     "p < 300",
+     "FermatLastTheoremFor p ↔ ∀ x y z : ℤ, x ≠ 0",
+     "y ≠ 0",
+     "z ≠ 0",
+     "(p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "flt_caso_um_menor_300",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "p.Prime",
+     "p ≠ 2",
+     "p < 300",
+     "¬ (p : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ p + y ^ p ≠ z ^ p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "x ^ 5 + y ^ 5 ≠ z ^ 5",
+   "hypothesis": "(5 : ℤ) ∣ x * y * z",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_cinco_iff_caso_dois",
+    "path": "atk-kernel/ATK/SophieGermain.lean",
+    "ref": "origin",
+    "hyps": [
+     "FermatLastTheoremFor 5 ↔ ∀ x y z : ℤ, x ≠ 0",
+     "y ≠ 0",
+     "z ≠ 0",
+     "(5 : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ 5 + y ^ 5 ≠ z ^ 5",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "flt_caso_um_cinco",
+    "path": "atk-kernel/ATK/SophieGermain.lean",
+    "ref": "origin",
+    "hyps": [
+     "¬ (5 : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ 5 + y ^ 5 ≠ z ^ 5",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "x ^ 5 + y ^ 5 ≠ z ^ 5",
+   "hypothesis": "(5 : ℤ) ∣ x * y * z",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_cinco_iff_caso_dois",
+    "path": "atk-kernel/ATK/SophieGermain.lean",
+    "ref": "origin",
+    "hyps": [
+     "FermatLastTheoremFor 5 ↔ ∀ x y z : ℤ, x ≠ 0",
+     "y ≠ 0",
+     "z ≠ 0",
+     "(5 : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ 5 + y ^ 5 ≠ z ^ 5",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "flt_caso_um_5",
+    "path": "atk-kernel/ATK/GermainLegendre.lean",
+    "ref": "origin",
+    "hyps": [
+     "¬ (5 : ℤ) ∣ x * y * z"
+    ],
+    "conclusion": "x ^ 5 + y ^ 5 ≠ z ^ 5",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "FermatLastTheoremFor p",
+   "hypothesis": "IsRegularPrime p",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_primo_regular",
+    "path": "atk-kernel/ATK/FermatRegular.lean",
+    "ref": "origin/atk/bsd-fc-sem-hipoteses-20261015",
+    "hyps": [
+     "p.Prime",
+     "IsRegularPrime p",
+     "p ≠ 2"
+    ],
+    "conclusion": "FermatLastTheoremFor p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "flt_iff_irregulares",
+    "path": "atk-kernel/ATK/FermatRegular.lean",
+    "ref": "origin/atk/bsd-fc-sem-hipoteses-20261015",
+    "hyps": [
+     "FermatLastTheorem ↔ ∀ p : ℕ, p.Prime",
+     "19 ≤ p",
+     "¬ IsRegularPrime p"
+    ],
+    "conclusion": "FermatLastTheoremFor p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "FermatLastTheoremFor p",
+   "hypothesis": "IsRegularPrime p",
+   "pos": {
+    "repo": "m-core",
+    "name": "flt_regular",
+    "path": "atk-kernel/ATK/FltRegular/FltRegular.lean",
+    "ref": "origin",
+    "hyps": [
+     "IsRegularPrime p",
+     "p ≠ 2"
+    ],
+    "conclusion": "FermatLastTheoremFor p",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "flt_iff_irregulares",
+    "path": "atk-kernel/ATK/FermatRegular.lean",
+    "ref": "origin/atk/bsd-fc-sem-hipoteses-20261015",
+    "hyps": [
+     "FermatLastTheorem ↔ ∀ p : ℕ, p.Prime",
+     "19 ≤ p",
+     "¬ IsRegularPrime p"
+    ],
+    "conclusion": "FermatLastTheoremFor p",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "¬ Nonempty (Transition Open Closed)",
+   "hypothesis": "Closed",
+   "pos": {
+    "repo": "m-core",
+    "name": "cannot_confirm_from_closed_alone",
+    "path": "lean/MCore/FinalFail/RPATransitionDuality.lean",
+    "ref": "origin/atk/seven-terminal-parameter-law",
+    "hyps": [
+     "¬ Open",
+     "Closed"
+    ],
+    "conclusion": "¬ Nonempty (Transition Open Closed)",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "cannot_confirm_from_open_alone",
+    "path": "lean/MCore/FinalFail/RPATransitionDuality.lean",
+    "ref": "origin/atk/seven-terminal-parameter-law",
+    "hyps": [
+     "¬ Closed",
+     "Open"
+    ],
+    "conclusion": "¬ Nonempty (Transition Open Closed)",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "¬ Nonempty (Transition Open Closed)",
+   "hypothesis": "Open",
+   "pos": {
+    "repo": "m-core",
+    "name": "cannot_confirm_from_open_alone",
+    "path": "lean/MCore/FinalFail/RPATransitionDuality.lean",
+    "ref": "origin/atk/seven-terminal-parameter-law",
+    "hyps": [
+     "¬ Closed",
+     "Open"
+    ],
+    "conclusion": "¬ Nonempty (Transition Open Closed)",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core",
+    "name": "cannot_confirm_from_closed_alone",
+    "path": "lean/MCore/FinalFail/RPATransitionDuality.lean",
+    "ref": "origin/atk/seven-terminal-parameter-law",
+    "hyps": [
+     "¬ Open",
+     "Closed"
+    ],
+    "conclusion": "¬ Nonempty (Transition Open Closed)",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+   "hypothesis": "p ∣ b",
+   "pos": {
+    "repo": "m-core-beal",
+    "name": "T29_frey_c4_not_dvd_of_b_support",
+    "path": "lean/MCore/T29.lean",
+    "ref": "origin/attack/t29-frey-c4-odd-20260920",
+    "hyps": [
+     "IsPrime p",
+     "p ≠ 2",
+     "0 < y",
+     "¬ p ∣ a",
+     "p ∣ b"
+    ],
+    "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core-beal",
+    "name": "T29_frey_c4_not_dvd_of_a_support",
+    "path": "lean/MCore/T29.lean",
+    "ref": "origin/attack/t29-frey-c4-odd-20260920",
+    "hyps": [
+     "IsPrime p",
+     "p ≠ 2",
+     "0 < x",
+     "p ∣ a",
+     "¬ p ∣ b"
+    ],
+    "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+   "hypothesis": "p ∣ b",
+   "pos": {
+    "repo": "m-core-beal",
+    "name": "T29_frey_c4_not_dvd_of_b_support",
+    "path": "lean/MCore/T29.lean",
+    "ref": "origin/attack/t29-frey-c4-odd-20260920",
+    "hyps": [
+     "IsPrime p",
+     "p ≠ 2",
+     "0 < y",
+     "¬ p ∣ a",
+     "p ∣ b"
+    ],
+    "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core-beal",
+    "name": "T29_frey_c4_not_dvd_of_c_support",
+    "path": "lean/MCore/T29.lean",
+    "ref": "origin/attack/t29-frey-c4-odd-20260920",
+    "hyps": [
+     "IsPrime p",
+     "p ≠ 2",
+     "0 < z",
+     "a ^ x + b ^ y = c ^ z",
+     "p ∣ c",
+     "¬ p ∣ b"
+    ],
+    "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+   "hypothesis": "p ∣ a",
+   "pos": {
+    "repo": "m-core-beal",
+    "name": "T29_frey_c4_not_dvd_of_a_support",
+    "path": "lean/MCore/T29.lean",
+    "ref": "origin/attack/t29-frey-c4-odd-20260920",
+    "hyps": [
+     "IsPrime p",
+     "p ≠ 2",
+     "0 < x",
+     "p ∣ a",
+     "¬ p ∣ b"
+    ],
+    "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core-beal",
+    "name": "T29_frey_c4_not_dvd_of_b_support",
+    "path": "lean/MCore/T29.lean",
+    "ref": "origin/attack/t29-frey-c4-odd-20260920",
+    "hyps": [
+     "IsPrime p",
+     "p ≠ 2",
+     "0 < y",
+     "¬ p ∣ a",
+     "p ∣ b"
+    ],
+    "conclusion": "¬ p ∣ T29FreyC4 a b x y",
+    "sorry": false
+   }
+  },
+  {
+   "conclusion": "∃ x : BitString, ¬ D.toCandidate.CorrectAt SATTarget x",
+   "hypothesis": "DescriptorTotal D",
+   "pos": {
+    "repo": "m-core-p-vs-np",
+    "name": "failure_of_not_constant_correct",
+    "path": "lean/MCore/Real/P02FiniteDescriptorResidualCore.lean",
+    "ref": "origin/atk/p01-post-mincut-advance-20261001",
+    "hyps": [
+     "FiniteDTMDescriptor",
+     "DescriptorTotal D",
+     "¬ DescriptorConstantCorrect D"
+    ],
+    "conclusion": "∃ x : BitString, ¬ D.toCandidate.CorrectAt SATTarget x",
+    "sorry": false
+   },
+   "neg": {
+    "repo": "m-core-p-vs-np",
+    "name": "failure_of_not_total",
+    "path": "lean/MCore/Real/P02FiniteDescriptorResidualCore.lean",
+    "ref": "origin/atk/p01-post-mincut-advance-20261001",
+    "hyps": [
+     "FiniteDTMDescriptor",
+     "¬ DescriptorTotal D"
+    ],
+    "conclusion": "∃ x : BitString, ¬ D.toCandidate.CorrectAt SATTarget x",
+    "sorry": false
+   }
+  }
+ ],
+ "dichotomies": [
+  {
+   "theorem": {
+    "repo": "elyon-public-proof",
+    "name": "mem_eraseDups_loop_iff",
+    "path": "lean/MCore/Real/Claim7VariableCoverage.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ (l acc : List α), a ∈ List.eraseDups.loop l acc ↔ a ∈ l ∨ a ∈ acc",
+    "sorry": false
+   },
+   "A": "∀ (l acc : List α), a ∈ List.eraseDups.loop l acc ↔ a ∈ l",
+   "B": "a ∈ acc",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "min4_choice",
+    "path": "atk-kernel/ATK/AlgebraTerminal.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "min (min p q) (min r s) = p ∨ min (min p q) (min r s) = q ∨ min (min p q) (min r s) = r ∨ min (min p q) (min r s) = s",
+    "sorry": false
+   },
+   "A": "min (min p q) (min r s) = p",
+   "B": "min (min p q) (min r s) = q ∨ min (min p q) (min r s) = r ∨ min (min p q) (min r s) = s",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "max4_choice",
+    "path": "atk-kernel/ATK/AlgebraTerminal.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "max (max p q) (max r s) = p ∨ max (max p q) (max r s) = q ∨ max (max p q) (max r s) = r ∨ max (max p q) (max r s) = s",
+    "sorry": false
+   },
+   "A": "max (max p q) (max r s) = p",
+   "B": "max (max p q) (max r s) = q ∨ max (max p q) (max r s) = r ∨ max (max p q) (max r s) = s",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "sq_add_sq_eq_zero",
+    "path": "atk-kernel/ATK/ZeroClasses/Complementar.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "w ^ 2 + (t : ℂ) ^ 2 = 0 ↔ w = (t : ℂ) * I ∨ w = -((t : ℂ) * I)",
+    "sorry": false
+   },
+   "A": "w ^ 2 + (t : ℂ) ^ 2 = 0 ↔ w = (t : ℂ) * I",
+   "B": "w = -((t : ℂ) * I)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "FM_zero_iff",
+    "path": "atk-kernel/ATK/ZeroClasses/Complementar.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "FM d t z = 0 ↔ (z = 1 / 2 + (t : ℂ) * I ∨ z = 1 / 2 - (t : ℂ) * I) ∨ (z = 1 / 2 + d + (t : ℂ) * I ∨ z = 1 / 2 + d - (t : ℂ) * I) ∨ (z = 1 / 2 - d + (t : ℂ) * I ∨ z = 1 / 2 - d - (t : ℂ) * I)",
+    "sorry": false
+   },
+   "A": "FM d t z = 0 ↔ (z = 1 / 2 + (t : ℂ) * I ∨ z = 1 / 2 - (t : ℂ) * I)",
+   "B": "(z = 1 / 2 + d + (t : ℂ) * I ∨ z = 1 / 2 + d - (t : ℂ) * I) ∨ (z = 1 / 2 - d + (t : ℂ) * I ∨ z = 1 / 2 - d - (t : ℂ) * I)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "lacuna_espectral",
+    "path": "atk-kernel/ATK/ZeroClasses/Pontes.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(∃ i, (r i : ℚ) ^ 2 = 0) ∨ ∀ i, 1 ≤ (r i : ℚ) ^ 2",
+    "sorry": false
+   },
+   "A": "∃ i, (r i : ℚ) ^ 2 = 0",
+   "B": "∀ i, 1 ≤ (r i : ℚ) ^ 2",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "Q_zero_iff",
+    "path": "atk-kernel/ATK/ZeroClasses/Construcao.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Q δ t s = 0 ↔ (s = 1 / 2 + δ + (t : ℂ) * I ∨ s = 1 / 2 + δ - (t : ℂ) * I) ∨ (s = 1 / 2 - δ + (t : ℂ) * I ∨ s = 1 / 2 - δ - (t : ℂ) * I)",
+    "sorry": false
+   },
+   "A": "Q δ t s = 0 ↔ (s = 1 / 2 + δ + (t : ℂ) * I ∨ s = 1 / 2 + δ - (t : ℂ) * I)",
+   "B": "s = 1 / 2 - δ + (t : ℂ) * I ∨ s = 1 / 2 - δ - (t : ℂ) * I",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "zeros_ZATK",
+    "path": "atk-kernel/ATK/ZeroClasses/Construcao.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "ZATK N t s = 0 ↔ riemannZeta s = 0 ∨ PN N t s = 0",
+    "sorry": false
+   },
+   "A": "ZATK N t s = 0 ↔ riemannZeta s = 0",
+   "B": "PN N t s = 0",
+   "A_consumers": 0,
+   "B_consumers": 1,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "Pq_zero_iff",
+    "path": "atk-kernel/ATK/ZeroClasses/Forcar.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Pq δ T s = 0 ↔ (s = 1 / 2 + δ + (T : ℂ) * I ∨ s = 1 / 2 + δ - (T : ℂ) * I) ∨ (s = 1 / 2 - δ + (T : ℂ) * I ∨ s = 1 / 2 - δ - (T : ℂ) * I)",
+    "sorry": false
+   },
+   "A": "Pq δ T s = 0 ↔ (s = 1 / 2 + δ + (T : ℂ) * I ∨ s = 1 / 2 + δ - (T : ℂ) * I)",
+   "B": "s = 1 / 2 - δ + (T : ℂ) * I ∨ s = 1 / 2 - δ - (T : ℂ) * I",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "lacuna_min",
+    "path": "atk-kernel/ATK/ZeroClasses/Forcar.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Sat φ ∨ ∀ x, 1 ≤ Rphi φ x",
+    "sorry": false
+   },
+   "A": "Sat φ",
+   "B": "∀ x, 1 ≤ Rphi φ x",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "q_zero_iff",
+    "path": "atk-kernel/ATK/ClosedMathToro.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "q a γ s = 0 ↔ s = a + γ * I ∨ s = a - γ * I",
+    "sorry": false
+   },
+   "A": "q a γ s = 0 ↔ s = a + γ * I",
+   "B": "s = a - γ * I",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "H_zero_iff",
+    "path": "atk-kernel/ATK/ClosedMathToro.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "H d γ s = 0 ↔ (s = 1 / 2 + γ * I ∨ s = 1 / 2 - γ * I) ∨ (s = 1 / 2 + d + γ * I ∨ s = 1 / 2 + d - γ * I) ∨ (s = 1 / 2 - d + γ * I ∨ s = 1 / 2 - d - γ * I) ∨ ∃ n : ℕ, s = -2 * ((n : ℂ) + 1)",
+    "sorry": false
+   },
+   "A": "H d γ s = 0 ↔ (s = 1 / 2 + γ * I ∨ s = 1 / 2 - γ * I)",
+   "B": "(s = 1 / 2 + d + γ * I ∨ s = 1 / 2 + d - γ * I) ∨ (s = 1 / 2 - d + γ * I ∨ s = 1 / 2 - d - γ * I) ∨ ∃ n : ℕ, s = -2 * ((n : ℂ) + 1)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "exaustivo",
+    "path": "atk-kernel/ATK/ClosedMathCEZ.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(F s = 0 ∧ s.re = 1 / 2) ∨ (F s = 0 ∧ s.re ≠ 1 / 2) ∨ (F s ≠ 0 ∧ s.re = 1 / 2) ∨ (F s ≠ 0 ∧ s.re ≠ 1 / 2)",
+    "sorry": false
+   },
+   "A": "F s = 0 ∧ s.re = 1 / 2",
+   "B": "(F s = 0 ∧ s.re ≠ 1 / 2) ∨ (F s ≠ 0 ∧ s.re = 1 / 2) ∨ (F s ≠ 0 ∧ s.re ≠ 1 / 2)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "sq_add_sq_eq_zero",
+    "path": "atk-kernel/ATK/ClosedMathCEZ.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "u ^ 2 + (g : ℂ) ^ 2 = 0 ↔ u = g * I ∨ u = -(g * I)",
+    "sorry": false
+   },
+   "A": "u ^ 2 + (g : ℂ) ^ 2 = 0 ↔ u = g * I",
+   "B": "u = -(g * I)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "G_zeros",
+    "path": "atk-kernel/ATK/ClosedMathCEZ.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "G l g s = 0 ↔ s = 1 / 2 + l + g * I ∨ s = 1 / 2 + l - g * I ∨ s = 1 / 2 - l + g * I ∨ s = 1 / 2 - l - g * I",
+    "sorry": false
+   },
+   "A": "G l g s = 0 ↔ s = 1 / 2 + l + g * I",
+   "B": "s = 1 / 2 + l - g * I ∨ s = 1 / 2 - l + g * I ∨ s = 1 / 2 - l - g * I",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "dicotomia",
+    "path": "atk-kernel/ATK/AtaqueNS.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "ClayStatementA modeloNS ∨ Explosao",
+    "sorry": false
+   },
+   "A": "ClayStatementA modeloNS",
+   "B": "Explosao",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "mem_stepAux",
+    "path": "atk-kernel/ATK/CookLevinBase.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ (q : Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k)) (k : K) (x : Γ k), x ∈ (stepAux q v S).stk k → x ∈ S k ∨ (⟨k, x⟩ : Σ k, Γ k) ∈ simbolos q",
+    "sorry": false
+   },
+   "A": "∀ (q : Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k)) (k : K) (x : Γ k), x ∈ (stepAux q v S).stk k → x ∈ S k",
+   "B": "(⟨k, x⟩ : Σ k, Γ k) ∈ simbolos q",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "rational_points_iff",
+    "path": "atk-kernel/ATK/CongruentCurve.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "y ^ 2 = x ^ 3 - x ↔ (x = 0 ∧ y = 0) ∨ (x = 1 ∧ y = 0) ∨ (x = -1 ∧ y = 0)",
+    "sorry": false
+   },
+   "A": "y ^ 2 = x ^ 3 - x ↔ (x = 0 ∧ y = 0)",
+   "B": "(x = 1 ∧ y = 0) ∨ (x = -1 ∧ y = 0)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "orbita_card",
+    "path": "atk-kernel/ATK/ZeroClasses/Symmetry.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(orbita c z).card = 1 ∨ (orbita c z).card = 2 ∨ (orbita c z).card = 4",
+    "sorry": false
+   },
+   "A": "(orbita c z).card = 1",
+   "B": "(orbita c z).card = 2 ∨ (orbita c z).card = 4",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "classifica",
+    "path": "atk-kernel/ATK/ZeroClasses/Fronteira.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "dl s = 0 ∨ (0 < dl s ∧ dl s ≤ ε) ∨ ε < dl s",
+    "sorry": false
+   },
+   "A": "dl s = 0",
+   "B": "(0 < dl s ∧ dl s ≤ ε) ∨ ε < dl s",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "aval_fronteira_iff",
+    "path": "atk-kernel/ATK/ZeroClasses/Fronteira.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "aval x k = .fronteira ↔ x = k + 1 / 2 ∨ x = k - 1 / 2",
+    "sorry": false
+   },
+   "A": "aval x k = .fronteira ↔ x = k + 1 / 2",
+   "B": "x = k - 1 / 2",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "dicotomia_mundo",
+    "path": "atk-kernel/ATK/ZeroClasses/MundoFora.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(ForaSet.Finite ∧ ∃ T : ℝ, ∀ ρ ∈ ForaSet, |ρ.im| ≤ T) ∨ (ForaSet.Infinite ∧ ∀ T : ℝ, ∃ ρ ∈ ForaSet, T < |ρ.im|)",
+    "sorry": false
+   },
+   "A": "ForaSet.Finite ∧ ∃ T : ℝ, ∀ ρ ∈ ForaSet, |ρ.im| ≤ T",
+   "B": "ForaSet.Infinite ∧ ∀ T : ℝ, ∃ ρ ∈ ForaSet, T < |ρ.im|",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "frey_Δ_eq_zero_iff",
+    "path": "atk-kernel/ATK/FreyBeal.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(frey A B).Δ = 0 ↔ A = 0 ∨ B = 0 ∨ A + B = 0",
+    "sorry": false
+   },
+   "A": "(frey A B).Δ = 0 ↔ A = 0",
+   "B": "B = 0 ∨ A + B = 0",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "clayA_or_clayC",
+    "path": "atk-kernel/ATK/Closure.lean",
+    "ref": "origin/atk-kernel-check",
+    "hyps": [],
+    "conclusion": "ClayA ∨ ClayC",
+    "sorry": false
+   },
+   "A": "ClayA",
+   "B": "ClayC",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "openMath_prop_iff",
+    "path": "atk-kernel/ATK/Closure.lean",
+    "ref": "origin/atk-kernel-check",
+    "hyps": [],
+    "conclusion": "¬ ExactCertificate ↔ ¬ RH ∨ ¬ Beal ∨ P_eq_NP",
+    "sorry": false
+   },
+   "A": "¬ ExactCertificate ↔ ¬ RH",
+   "B": "¬ Beal ∨ P_eq_NP",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "lap_C10_entradas",
+    "path": "atk-kernel/ATK/LaplacianoCiclo.lean",
+    "ref": "origin/parametros-modelo",
+    "hyps": [],
+    "conclusion": "lap ℤ 9 = Matrix.of fun i j : Fin 10 => if i = j then 2 else if j = i + 1 ∨ i = j + 1 then -1 else 0",
+    "sorry": false
+   },
+   "A": "lap ℤ 9 = Matrix.of fun i j : Fin 10 => if i = j then 2 else if j = i + 1",
+   "B": "i = j + 1 then -1 else 0",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "multiplicidade_C10",
+    "path": "atk-kernel/ATK/LaplacianoCiclo.lean",
+    "ref": "origin/parametros-modelo",
+    "hyps": [],
+    "conclusion": "(lap ℂ 9).charpoly.rootMultiplicity (valor a : ℂ) = if a = 0 ∨ a = 5 then 1 else 2",
+    "sorry": false
+   },
+   "A": "(lap ℂ 9).charpoly.rootMultiplicity (valor a : ℂ) = if a = 0",
+   "B": "a = 5 then 1 else 2",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "ramos",
+    "path": "atk-kernel/ATK/ZeroClasses/Hipotetico.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(∃ ρ, ForaCritico ρ ∧ RatRe riemannZeta ρ) ∨ (∃ ρ, ForaCritico ρ ∧ IrrRe riemannZeta ρ)",
+    "sorry": false
+   },
+   "A": "∃ ρ, ForaCritico ρ ∧ RatRe riemannZeta ρ",
+   "B": "∃ ρ, ForaCritico ρ ∧ IrrRe riemannZeta ρ",
+   "A_consumers": 1,
+   "B_consumers": 1,
+   "closes": [
+    {
+     "X": "¬ RiemannHypothesis",
+     "viaA": "ramo_racional_refuta",
+     "viaB": "ramo_irracional_refuta"
+    }
+   ]
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "fourth_pow_emod_sixteen",
+    "path": "atk-kernel/ATK/QuarticResidues.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "n ^ 4 % 16 = 0 ∨ n ^ 4 % 16 = 1",
+    "sorry": false
+   },
+   "A": "n ^ 4 % 16 = 0",
+   "B": "n ^ 4 % 16 = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "fourth_pow_emod_five",
+    "path": "atk-kernel/ATK/QuarticResidues.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "n ^ 4 % 5 = 0 ∨ n ^ 4 % 5 = 1",
+    "sorry": false
+   },
+   "A": "n ^ 4 % 5 = 0",
+   "B": "n ^ 4 % 5 = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "sum_two_fourth_pow_emod_sixteen",
+    "path": "atk-kernel/ATK/QuarticResidues.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(m ^ 4 + n ^ 4) % 16 = 0 ∨ (m ^ 4 + n ^ 4) % 16 = 1 ∨ (m ^ 4 + n ^ 4) % 16 = 2",
+    "sorry": false
+   },
+   "A": "(m ^ 4 + n ^ 4) % 16 = 0",
+   "B": "(m ^ 4 + n ^ 4) % 16 = 1 ∨ (m ^ 4 + n ^ 4) % 16 = 2",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "multiplicidade_tabela",
+    "path": "atk-kernel/ATK/ErrosAnaliticos.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(ATK.ClosedMath.Gpoly l g).rootMultiplicity ((1 / 2 : ℂ) + l + g * I) = if l = 0 ∧ g = 0 then 4 else if l = 0 ∨ g = 0 then 2 else 1",
+    "sorry": false
+   },
+   "A": "(ATK.ClosedMath.Gpoly l g).rootMultiplicity ((1 / 2 : ℂ) + l + g * I) = if l = 0 ∧ g = 0 then 4 else if l = 0",
+   "B": "g = 0 then 2 else 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "diagonais",
+    "path": "atk-kernel/ATK/ZeroClasses/Componentes.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "w.re ^ 2 = w.im ^ 2 ↔ w.re = w.im ∨ w.re = -w.im",
+    "sorry": false
+   },
+   "A": "w.re ^ 2 = w.im ^ 2 ↔ w.re = w.im",
+   "B": "w.re = -w.im",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "existe_uniao",
+    "path": "atk-kernel/ATK/ZeroClasses/Laws.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Existe F (C ∪ D) ↔ Existe F C ∨ Existe F D",
+    "sorry": false
+   },
+   "A": "Existe F (C ∪ D) ↔ Existe F C",
+   "B": "Existe F D",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "lei_classificacao",
+    "path": "atk-kernel/ATK/ZeroClasses/Laws.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "z ∈ C ∨ z ∉ C",
+    "sorry": false
+   },
+   "A": "z ∈ C",
+   "B": "z ∉ C",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "offLine_iff",
+    "path": "atk-kernel/ATK/ZeroClasses/Basic.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "OffLine f c z ↔ LeftOf f c z ∨ RightOf f c z",
+    "sorry": false
+   },
+   "A": "OffLine f c z ↔ LeftOf f c z",
+   "B": "RightOf f c z",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "oscilacao_sinal",
+    "path": "atk-kernel/ATK/OscilacaoHiperreal.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Hyperreal.ofSeq (fun n => (-1 : ℝ) ^ n) = 1 ∨ Hyperreal.ofSeq (fun n => (-1 : ℝ) ^ n) = -1",
+    "sorry": false
+   },
+   "A": "Hyperreal.ofSeq (fun n => (-1 : ℝ) ^ n) = 1",
+   "B": "Hyperreal.ofSeq (fun n => (-1 : ℝ) ^ n) = -1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "paridade_01",
+    "path": "atk-kernel/ATK/OscilacaoHiperreal.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "((n % 2 : ℕ) : ℝ) = 0 ∨ ((n % 2 : ℕ) : ℝ) = 1",
+    "sorry": false
+   },
+   "A": "((n % 2 : ℕ) : ℝ) = 0",
+   "B": "((n % 2 : ℕ) : ℝ) = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "paridade_hiperreal",
+    "path": "atk-kernel/ATK/OscilacaoHiperreal.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Hyperreal.ofSeq (fun n => ((n % 2 : ℕ) : ℝ)) = 0 ∨ Hyperreal.ofSeq (fun n => ((n % 2 : ℕ) : ℝ)) = 1",
+    "sorry": false
+   },
+   "A": "Hyperreal.ofSeq (fun n => ((n % 2 : ℕ) : ℝ)) = 0",
+   "B": "Hyperreal.ofSeq (fun n => ((n % 2 : ℕ) : ℝ)) = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "inv_real_fixed",
+    "path": "atk-kernel/ATK/LinhasNovasII.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "x⁻¹ = x ↔ x = 1 ∨ x = -1 ∨ x = 0",
+    "sorry": false
+   },
+   "A": "x⁻¹ = x ↔ x = 1",
+   "B": "x = -1 ∨ x = 0",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "estado_DN_dicotomia",
+    "path": "atk-kernel/ATK/RiemannStates.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Comporta atTop DN Estado7.zero ∨ Comporta atTop DN Estado7.finito",
+    "sorry": false
+   },
+   "A": "Comporta atTop DN Estado7.zero",
+   "B": "Comporta atTop DN Estado7.finito",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "quarta_mod16_zmod",
+    "path": "atk-kernel/ATK/FermatAux.lean",
+    "ref": "origin/atk/beal-442-fermat42-20261013",
+    "hyps": [],
+    "conclusion": "∀ y : ZMod 16, y ^ 4 = 0 ∨ y ^ 4 = 1",
+    "sorry": false
+   },
+   "A": "∀ y : ZMod 16, y ^ 4 = 0",
+   "B": "y ^ 4 = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "quarta_mod5_zmod",
+    "path": "atk-kernel/ATK/FermatAux.lean",
+    "ref": "origin/atk/beal-442-fermat42-20261013",
+    "hyps": [],
+    "conclusion": "∀ y : ZMod 5, y ^ 4 = 0 ∨ y ^ 4 = 1",
+    "sorry": false
+   },
+   "A": "∀ y : ZMod 5, y ^ 4 = 0",
+   "B": "y ^ 4 = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "quarta_mod16",
+    "path": "atk-kernel/ATK/FermatAux.lean",
+    "ref": "origin/atk/beal-442-fermat42-20261013",
+    "hyps": [],
+    "conclusion": "x ^ 4 % 16 = 0 ∨ x ^ 4 % 16 = 1",
+    "sorry": false
+   },
+   "A": "x ^ 4 % 16 = 0",
+   "B": "x ^ 4 % 16 = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "quarta_mod5",
+    "path": "atk-kernel/ATK/FermatAux.lean",
+    "ref": "origin/atk/beal-442-fermat42-20261013",
+    "hyps": [],
+    "conclusion": "x ^ 4 % 5 = 0 ∨ x ^ 4 % 5 = 1",
+    "sorry": false
+   },
+   "A": "x ^ 4 % 5 = 0",
+   "B": "x ^ 4 % 5 = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "F_zero_iff",
+    "path": "atk-kernel/ATK/BarreiraModelos.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "F s = 0 ↔ riemannZeta s = 0 ∨ s = 1 / 2",
+    "sorry": false
+   },
+   "A": "F s = 0 ↔ riemannZeta s = 0",
+   "B": "s = 1 / 2",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "Fcol_zero_iff",
+    "path": "atk-kernel/ATK/ZeroClasses/Encontro.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Fcol δ c s = 0 ↔ s = c + δ ∨ s = c - δ",
+    "sorry": false
+   },
+   "A": "Fcol δ c s = 0 ↔ s = c + δ",
+   "B": "s = c - δ",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "orbita_card",
+    "path": "atk-kernel/ATK/ZerosFora.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(orbita s).card = 1 ∨ (orbita s).card = 2 ∨ (orbita s).card = 4",
+    "sorry": false
+   },
+   "A": "(orbita s).card = 1",
+   "B": "(orbita s).card = 2 ∨ (orbita s).card = 4",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "mem_eraseDups_loop_iff",
+    "path": "lean/MCore/Real/Claim7VariableCoverage.lean",
+    "ref": "origin/cert/elyon-claim1-7-audit-run36049892790",
+    "hyps": [],
+    "conclusion": "∀ (l acc : List α), a ∈ List.eraseDups.loop l acc ↔ a ∈ l ∨ a ∈ acc",
+    "sorry": false
+   },
+   "A": "∀ (l acc : List α), a ∈ List.eraseDups.loop l acc ↔ a ∈ l",
+   "B": "a ∈ acc",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "classificacao",
+    "path": "atk-kernel/ATK/ClosedMathCompleto.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "Critico F s ∨ Externo F s ∨ NaoZeroC F s ∨ NaoZeroE F s",
+    "sorry": false
+   },
+   "A": "Critico F s",
+   "B": "Externo F s ∨ NaoZeroC F s ∨ NaoZeroE F s",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "P_posneg",
+    "path": "atk-kernel/ATK/ClosedMathCompleto.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "(z ^ 2 - a ^ 2) * (z ^ 2 + b ^ 2) = 0 ↔ z = a ∨ z = -a ∨ z = b * I ∨ z = -(b * I)",
+    "sorry": false
+   },
+   "A": "(z ^ 2 - a ^ 2) * (z ^ 2 + b ^ 2) = 0 ↔ z = a",
+   "B": "z = -a ∨ z = b * I ∨ z = -(b * I)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core",
+    "name": "fixo_e_ambos_ou_nenhum",
+    "path": "atk-kernel/ATK/AnaliseInversao.lean",
+    "ref": "origin/atk/belnap-honest-status-20261020",
+    "hyps": [],
+    "conclusion": "∀ v : ValorBelnap, neg v = v → v = .ambos ∨ v = .nenhum",
+    "sorry": false
+   },
+   "A": "∀ v : ValorBelnap, neg v = v → v = .ambos",
+   "B": "v = .nenhum",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "global_closed_dichotomy",
+    "path": "lean/MCore/Real/P03ClosedMath.lean",
+    "ref": "origin/atk/p02-e1-c1-left-validate-20261004",
+    "hyps": [],
+    "conclusion": "RangeFailureLaw ∨ ExistsPerfectFlip",
+    "sorry": false
+   },
+   "A": "RangeFailureLaw",
+   "B": "ExistsPerfectFlip",
+   "A_consumers": 3,
+   "B_consumers": 1,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "p3_zero_iff_unit_gap",
+    "path": "lean/MCore/Real/P03PolynomialWitness.lean",
+    "ref": "origin/atk/p02-e1-c1-left-validate-20261004",
+    "hyps": [],
+    "conclusion": "P3 i j = 0 ↔ j - i = 1 ∨ j - i = -1",
+    "sorry": false
+   },
+   "A": "P3 i j = 0 ↔ j - i = 1",
+   "B": "j - i = -1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "bounded_observation_dichotomy",
+    "path": "lean/MCore/Real/P02BoundedPartSemantics.lean",
+    "ref": "origin/atk/p02-bounded-constructive-fix-20260923",
+    "hyps": [],
+    "conclusion": "(∃ v, c.evaln n 0 = some v) ∨ (∀ fuel, fuel ≤ n → c.evaln fuel 0 = none)",
+    "sorry": false
+   },
+   "A": "∃ v, c.evaln n 0 = some v",
+   "B": "∀ fuel, fuel ≤ n → c.evaln fuel 0 = none",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "closed_global_dichotomy",
+    "path": "lean/MCore/Real/P03/ClosedBridge/Dichotomy.lean",
+    "ref": "origin/atk/p02-e1-c1-left-validate-20261004",
+    "hyps": [],
+    "conclusion": "RangeFailureLaw ∨ ExistsPerfectFlip",
+    "sorry": false
+   },
+   "A": "RangeFailureLaw",
+   "B": "ExistsPerfectFlip",
+   "A_consumers": 3,
+   "B_consumers": 1,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "rangeFailureLaw_or_existsPerfectFlip",
+    "path": "lean/MCore/Real/P03PerfectFlipDichotomy.lean",
+    "ref": "origin/atk/p02-e1-c1-left-validate-20261004",
+    "hyps": [],
+    "conclusion": "RangeFailureLaw ∨ ExistsPerfectFlip",
+    "sorry": false
+   },
+   "A": "RangeFailureLaw",
+   "B": "ExistsPerfectFlip",
+   "A_consumers": 3,
+   "B_consumers": 1,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "remaining_open_math_or_existsPerfectFlip",
+    "path": "lean/MCore/Real/P03ClosureKernel.lean",
+    "ref": "origin/atk/p02-e1-c1-left-validate-20261004",
+    "hyps": [],
+    "conclusion": "RemainingOpenMath ∨ ExistsPerfectFlip",
+    "sorry": false
+   },
+   "A": "RemainingOpenMath",
+   "B": "ExistsPerfectFlip",
+   "A_consumers": 0,
+   "B_consumers": 1,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "universalSATLowerBound_iff_operational",
+    "path": "lean/MCore/Real/P02UniversalLowerBound.lean",
+    "ref": "origin/atk/p02-kernel-port-audit-20261001",
+    "hyps": [],
+    "conclusion": "UniversalSATLowerBound ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x ∨ SemanticMismatch M x",
+    "sorry": false
+   },
+   "A": "UniversalSATLowerBound ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x",
+   "B": "SemanticMismatch M x",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "p3_zero_iff_unit_gap",
+    "path": "lean/MCore/Real/P03PolynomialWitness.lean",
+    "ref": "origin/atk/pnp-cook-levin-material-mincut-20261001",
+    "hyps": [],
+    "conclusion": "P3 i j = 0 ↔ j - i = 1 ∨ j - i = -1",
+    "sorry": false
+   },
+   "A": "P3 i j = 0 ↔ j - i = 1",
+   "B": "j - i = -1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "eraseDups_loop_mem_nat",
+    "path": "lean/MCore/C11/VarsMonotone.lean",
+    "ref": "origin/work/C11-vars-monotone",
+    "hyps": [],
+    "conclusion": "∀ (as bs : List Nat), x ∈ List.eraseDups.loop as bs ↔ x ∈ as ∨ x ∈ bs",
+    "sorry": false
+   },
+   "A": "∀ (as bs : List Nat), x ∈ List.eraseDups.loop as bs ↔ x ∈ as",
+   "B": "x ∈ bs",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "universalSATLowerBound_iff_operational",
+    "path": "lean/MCore/Real/P02UniversalLowerBound.lean",
+    "ref": "origin/atk/p02-consolidated-kernel-20261001",
+    "hyps": [],
+    "conclusion": "UniversalSATLowerBound ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x ∨ SemanticMismatch M x",
+    "sorry": false
+   },
+   "A": "UniversalSATLowerBound ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x",
+   "B": "SemanticMismatch M x",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "universal_lower_bound_iff_operational",
+    "path": "lean/MCore/Real/P02UniversalLowerBoundMaster.lean",
+    "ref": "origin/atk/p02-only-20261001",
+    "hyps": [],
+    "conclusion": "UNIVERSAL_LOWER_BOUND ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x ∨ SemanticMismatch M x",
+    "sorry": false
+   },
+   "A": "UNIVERSAL_LOWER_BOUND ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x",
+   "B": "SemanticMismatch M x",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "universal_lower_bound_iff_operational",
+    "path": "lean/MCore/Real/P02UniversalLowerBoundMaster.lean",
+    "ref": "origin/atk/p02-consolidated-kernel-20261001",
+    "hyps": [],
+    "conclusion": "UNIVERSAL_LOWER_BOUND ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x ∨ SemanticMismatch M x",
+    "sorry": false
+   },
+   "A": "UNIVERSAL_LOWER_BOUND ↔ ∀ M : PolyDTMCandidate, ∃ x : BitString, ¬ HaltsAtDeclaredBound M x",
+   "B": "SemanticMismatch M x",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "p3_zero_iff_unit_gap",
+    "path": "lean/MCore/Real/P03PolynomialWitness.lean",
+    "ref": "origin/atk/p02-lane4-terminal-densify-20261003",
+    "hyps": [],
+    "conclusion": "P3 i j = 0 ↔ j - i = 1 ∨ j - i = -1",
+    "sorry": false
+   },
+   "A": "P3 i j = 0 ↔ j - i = 1",
+   "B": "j - i = -1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-p-vs-np",
+    "name": "mem_eraseDups_loop_iff",
+    "path": "lean/MCore/Real/Claim7VariableCoverage.lean",
+    "ref": "origin/atk/p02-e1-c1-left-validate-20261004",
+    "hyps": [],
+    "conclusion": "∀ (l acc : List α), a ∈ List.eraseDups.loop l acc ↔ a ∈ l ∨ a ∈ acc",
+    "sorry": false
+   },
+   "A": "∀ (l acc : List α), a ∈ List.eraseDups.loop l acc ↔ a ∈ l",
+   "B": "a ∈ acc",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-riemann",
+    "name": "transform_values",
+    "path": "experiments/indeterminate-transform/IndeterminateRiemann/Transform.lean",
+    "ref": "origin/atk/riemann-indeterminate-transform-test-20261011",
+    "hyps": [],
+    "conclusion": "IndeterminateTransform z = 0 ∨ IndeterminateTransform z = 1",
+    "sorry": false
+   },
+   "A": "IndeterminateTransform z = 0",
+   "B": "IndeterminateTransform z = 1",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-riemann",
+    "name": "pointwise_classification",
+    "path": "atk-kernel/ATK/Dichotomy.lean",
+    "ref": "origin/claude/atk-protocol-setup-wzeajl",
+    "hyps": [],
+    "conclusion": "(F s = 0 ∧ Critical s) ∨ (F s = 0 ∧ ¬ Critical s) ∨ (F s ≠ 0 ∧ Critical s) ∨ (F s ≠ 0 ∧ ¬ Critical s)",
+    "sorry": false
+   },
+   "A": "F s = 0 ∧ Critical s",
+   "B": "(F s = 0 ∧ ¬ Critical s) ∨ (F s ≠ 0 ∧ Critical s) ∨ (F s ≠ 0 ∧ ¬ Critical s)",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "m-core-yang-mills",
+    "name": "endpoint_envelope",
+    "path": "lean/MCore/YangMills/FinalStatement.lean",
+    "ref": "origin/atk/b6-ym4-physical-harden",
+    "hyps": [],
+    "conclusion": "ProofLaneTarget ∨ RefutationLaneTarget",
+    "sorry": false
+   },
+   "A": "ProofLaneTarget",
+   "B": "RefutationLaneTarget",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "millennium-riemann-i",
+    "name": "zeta_universal_preserves_level",
+    "path": "lean/millennium/Riemann/ExtendedZeta.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ n : UniversalNumber, level (zetaUniversal n) = level n ∨ level (zetaUniversal n) = promote n",
+    "sorry": false
+   },
+   "A": "∀ n : UniversalNumber, level (zetaUniversal n) = level n",
+   "B": "level (zetaUniversal n) = promote n",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "proofs-multiprover",
+    "name": "prime.dvd_mul",
+    "path": "lean4/ProofsMultiprover/Basic.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "p ∣ a * b ↔ p ∣ a ∨ p ∣ b",
+    "sorry": false
+   },
+   "A": "p ∣ a * b ↔ p ∣ a",
+   "B": "p ∣ b",
+   "A_consumers": 0,
+   "B_consumers": 1,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "the-algebra-of-ideterminate-i",
+    "name": "lemma_I_chain_rule",
+    "path": "lean/nexus_core.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ f g : ℝ → Indeterminate, (∃ x, f x = I) ∨ (∃ x, g x = I) → True",
+    "sorry": false
+   },
+   "A": "∀ f g : ℝ → Indeterminate, (∃ x, f x = I)",
+   "B": "(∃ x, g x = I) → True",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "the-algebra-of-ideterminate-i",
+    "name": "lemma_I_product_rule",
+    "path": "lean/nexus_core.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ f g : ℝ → Indeterminate, (∃ x, f x = I) ∨ (∃ x, g x = I) → True",
+    "sorry": false
+   },
+   "A": "∀ f g : ℝ → Indeterminate, (∃ x, f x = I)",
+   "B": "(∃ x, g x = I) → True",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "the-algebra-of-ideterminate-i",
+    "name": "lemma_I_quotient_rule",
+    "path": "lean/nexus_core.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ f g : ℝ → Indeterminate, (∃ x, f x = I) ∨ (∃ x, g x = I) → True",
+    "sorry": false
+   },
+   "A": "∀ f g : ℝ → Indeterminate, (∃ x, f x = I)",
+   "B": "(∃ x, g x = I) → True",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "the-algebra-of-ideterminate-i",
+    "name": "lemma_I_natural",
+    "path": "lean/nexus_core.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ f g : Indeterminate → Indeterminate, (∀ x, f (g x) = g (f x)) ∨ True",
+    "sorry": false
+   },
+   "A": "∀ f g : Indeterminate → Indeterminate, (∀ x, f (g x) = g (f x))",
+   "B": "True",
+   "A_consumers": 0,
+   "B_consumers": 1,
+   "closes": []
+  },
+  {
+   "theorem": {
+    "repo": "the-algebra-of-ideterminate-i",
+    "name": "physical_indeterminacy",
+    "path": "formalizations/lean/AlgebraIndeterminate/CentralHypothesis.lean",
+    "ref": "origin",
+    "hyps": [],
+    "conclusion": "∀ (ctx : PhysicalContext), ctx.is_planck_scale ∨ ctx.is_schwarzschild = true → physical_state ctx = I",
+    "sorry": false
+   },
+   "A": "∀ (ctx : PhysicalContext), ctx.is_planck_scale",
+   "B": "ctx.is_schwarzschild = true → physical_state ctx = I",
+   "A_consumers": 0,
+   "B_consumers": 0,
+   "closes": []
+  }
+ ],
+ "case_split_proofs": [
+  {
+   "repo": "m-core",
+   "name": "b3_de_classe",
+   "type": "ATK.Conditional.NavierStokes.EnstrophyBlowupCriterion modeloNS",
+   "path": "atk-kernel/ATK/NSReducao.lean",
+   "ref": "origin",
+   "line": 296,
+   "mech": [
+    "by_cases",
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "logDerivPositivity_implies_RH",
+   "type": "RiemannHypothesis",
+   "path": "atk-kernel/ATK/Conditional/RiemannLogDerivative.lean",
+   "ref": "origin/atk/rh-logderiv-bridge-20261023",
+   "line": 142,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_li_unitario",
+   "type": "RiemannHypothesis ↔ ∀ ρ ∈ Z, ‖w ρ‖ = 1",
+   "path": "atk-kernel/ATK/LiCriterio.lean",
+   "ref": "origin",
+   "line": 90,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_quadrado",
+   "type": "RiemannHypothesis ↔ ∀ ρ ∈ Z, ((ρ - 1 / 2) ^ 2).im = 0 ∧ ((ρ - 1 / 2) ^ 2).re < 0",
+   "path": "atk-kernel/ATK/JensenTuran.lean",
+   "ref": "origin",
+   "line": 21,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_certificado",
+   "type": "RiemannHypothesis ↔ ∃ L, PositiveCertificate K riemannZeta L",
+   "path": "atk-kernel/ATK/ZeroClasses/Regions.lean",
+   "ref": "origin",
+   "line": 367,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "exatamente_um",
+   "type": "(RiemannHypothesis ∨ HFora) ∧ ¬ (RiemannHypothesis ∧ HFora)",
+   "path": "atk-kernel/ATK/ZeroClasses/Complementar.lean",
+   "ref": "origin",
+   "line": 13,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "bsd_rank_conditional",
+   "type": "BSDRank M",
+   "path": "atk-kernel/ATK/Conditional/BSD.lean",
+   "ref": "origin",
+   "line": 39,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_residual",
+   "type": "BealConjecture ↔ ResidualMdcAteDois",
+   "path": "atk-fermat/AtkFermat/Beal.lean",
+   "ref": "origin/atk/reducoes-externas-20261015",
+   "line": 54,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "RH_iff_noAnomalous",
+   "type": "RiemannHypothesis ↔ ¬∃ z : AnomalousZero, True",
+   "path": "kernelaudit/outros/riemann-i-g21/src/Riemann/Zeros/Nontrivial.lean",
+   "ref": "origin/atk/kernel-21-registros",
+   "line": 72,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_662",
+   "type": "BealFor x y z",
+   "path": "atk-kernel/ATK/BealSeisSeisDois.lean",
+   "ref": "origin",
+   "line": 24,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "bsd_E32_iff",
+   "type": "BSDConjecture E32 ↔ ∃ Lc : LFunctionContinued E32, Lc.L 1 ≠ 0",
+   "path": "atk-kernel/ATK/L4Base.lean",
+   "ref": "origin",
+   "line": 91,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "not_riemannHypothesis_iff_nonempty_offCriticalZero",
+   "type": "(¬ RiemannHypothesis) ↔ Nonempty RiemannOffCriticalZero",
+   "path": "lean/MCore/FinalFail/Semantic/Riemann.lean",
+   "ref": "origin/frozen/assumed-semantic-7of7-green-f6c0d9fc",
+   "line": 29,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "sat_not_in_p_implies_universal_sat_failure",
+   "type": "UniversalSATFailure",
+   "path": "kernelaudit/pnp/atk-kernel-check/lean/MCore/Real/FinalProof.lean",
+   "ref": "origin/atk/kernel-21-registros",
+   "line": 105,
+   "mech": [
+    "Classical.byContradiction"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "riemann_iff_inicio",
+   "type": "RiemannHypothesis ↔ ∀ b : ℝ, b < 1 / 2 → InicioLivre b",
+   "path": "atk-kernel/ATK/ZetaSimetria.lean",
+   "ref": "origin",
+   "line": 342,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "riemann_iff_colares",
+   "type": "RiemannHypothesis ↔ ∀ ε : ℝ, 0 < ε → ∀ s ∈ Z,",
+   "path": "atk-kernel/ATK/ZetaSimetria.lean",
+   "ref": "origin",
+   "line": 399,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_equador",
+   "type": "RiemannHypothesis ↔ ∀ ρ ∈ Z, (tor R r T ρ).2.2 = 0",
+   "path": "atk-kernel/ATK/ClosedMathToro.lean",
+   "ref": "origin",
+   "line": 131,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "zeta_ne_zero_of_RH",
+   "type": "riemannZeta s ≠ 0",
+   "path": "atk-kernel/ATK/RHLogZeta.lean",
+   "ref": "origin/atk/rh-rho-independent",
+   "line": 20,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "zeta₁_ne_zero_of_RH",
+   "type": "riemannZeta₁ s ≠ 0",
+   "path": "atk-kernel/ATK/RHLogZeta.lean",
+   "ref": "origin/atk/rh-rho-independent",
+   "line": 38,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "riemannHypothesis_of_strip",
+   "type": "RiemannHypothesis",
+   "path": "atk-kernel/ATK/BaezDuarteBridge.lean",
+   "ref": "origin",
+   "line": 283,
+   "mech": [
+    "by_cases",
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "refutacao_posto",
+   "type": "2 ≤ M.analyticRank E",
+   "path": "atk-kernel/ATK/Termos.lean",
+   "ref": "origin",
+   "line": 308,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_residual",
+   "type": "ATK.Conditional.Beal.BealConjecture ↔ ResidualMdcAteDois",
+   "path": "atk-kernel/ATK/BealFermat.lean",
+   "ref": "origin/atk/reducoes-externas-20261015",
+   "line": 49,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "ponte_iff_RH",
+   "type": "(∀ ρ : ℂ, 0 < ρ.re → ρ.re < 1 → riemannZeta ρ = 0 → Dif 0 1 ρ.re = 0) ↔ RiemannHypothesis",
+   "path": "atk-kernel/ATK/ZeroClasses/Fronteira.lean",
+   "ref": "origin",
+   "line": 364,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "nao_rh_iff_fora",
+   "type": "¬ RiemannHypothesis ↔ ∃ s, ForaCritico s",
+   "path": "atk-kernel/ATK/ZeroClasses/Zeta.lean",
+   "ref": "origin",
+   "line": 291,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_linhas_vazias",
+   "type": "RiemannHypothesis ↔ ∀ c : ℝ, 0 < c → c ≠ 1 / 2 → ∀ s, ¬ OnLine riemannZeta c s",
+   "path": "atk-kernel/ATK/ZeroClasses/Zeta.lean",
+   "ref": "origin",
+   "line": 324,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "RH_by_I_collapse",
+   "type": "RH",
+   "path": "kernelaudit/outros/riemann-i-g21/src/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin/atk/kernel-21-registros",
+   "line": 12,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_energia",
+   "type": "RiemannHypothesis ↔ ∀ ρ ∈ Z, Eh ρ = 0",
+   "path": "atk-kernel/ATK/Hexagrama.lean",
+   "ref": "origin",
+   "line": 104,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_false_iff",
+   "type": "¬ RH ↔ ∃ s : ℂ, riemannZeta s = 0 ∧ (¬∃ n : ℕ, s = -2 * (n + 1)) ∧ s ≠ 1 ∧ s.re ≠ 1 / 2",
+   "path": "atk-kernel/ATK/Closure.lean",
+   "ref": "origin/atk-kernel-check",
+   "line": 183,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_false_iff",
+   "type": "¬ Beal ↔ ∃ A B C x y z : ℕ, 0 < A ∧ 0 < B ∧ 0 < C ∧ 2 < x ∧ 2 < y ∧ 2 < z ∧ A ^ x + B ^ y = C ^ z ∧ Nat.gcd A (Nat.gcd B C) = 1",
+   "path": "atk-kernel/ATK/Closure.lean",
+   "ref": "origin/atk-kernel-check",
+   "line": 262,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "riemann_iff_vazio",
+   "type": "RiemannHypothesis ↔ IsEmpty ZeroFora",
+   "path": "atk-kernel/ATK/ForaDaLinha.lean",
+   "ref": "origin",
+   "line": 17,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "contraexemplo_da_frey",
+   "type": "∃ a b c x y z : ℕ, 0 < a ∧ 0 < b ∧ 0 < c ∧ 2 < x ∧ 2 < y ∧ 2 < z ∧ ¬ 3 ∣ Nat.gcd x (Nat.gcd y z) ∧ ¬ 4 ∣ Nat.gcd x (Nat.gcd y z) ∧ ¬ (4 ∣ x ∧ 4 ∣ y ∧ 2 ∣ z) ∧ ¬ (4 ∣ x ∧ 2 ∣ y ∧ 4 ∣ z) ∧ ¬ (2 ∣ x ∧ 4 ∣ y ∧ 4 ∣ z) ∧ Nat.Coprime a b ∧ Nat.Coprime a c ∧ Nat.Coprime b c ∧ a ^ x + b ^ y = c ^ z ∧ (freyBe",
+   "path": "atk-kernel/ATK/FreyBealResidual.lean",
+   "ref": "origin",
+   "line": 18,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_disco",
+   "type": "RiemannHypothesis ↔ ∀ c : ℂ, ∀ R : ℝ, 0 < R → ball c R ⊆ {s : ℂ | 1 / 2 < s.re} → xiE c ≠ 0 → Real.circleAverage (fun z => Real.log ‖xiE z‖) c R ≤ Real.log ‖xiE c‖",
+   "path": "atk-kernel/ATK/XiAnalitica.lean",
+   "ref": "origin",
+   "line": 522,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "refutar_universo_iff",
+   "type": "(UniversoATK → False) ↔ RiemannHypothesis",
+   "path": "atk-kernel/ATK/ZeroClasses/Hipotetico.lean",
+   "ref": "origin",
+   "line": 30,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_Mplus",
+   "type": "RiemannHypothesis ↔ ∀ T ≥ (4 : ℝ), 0 < Mplus T",
+   "path": "atk-kernel/ATK/ErrosAnaliticos.lean",
+   "ref": "origin",
+   "line": 392,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "nao_implica_prova_rh",
+   "type": "RiemannHypothesis ∧ ¬ Q",
+   "path": "atk-kernel/ATK/GeometriaExtra.lean",
+   "ref": "origin",
+   "line": 233,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "contraexemplo_da_frey",
+   "type": "∃ a b c x y z : ℕ, 0 < a ∧ 0 < b ∧ 0 < c ∧ 2 < x ∧ 2 < y ∧ 2 < z ∧ ¬ 3 ∣ Nat.gcd x (Nat.gcd y z) ∧ ¬ 4 ∣ Nat.gcd x (Nat.gcd y z) ∧ Nat.Coprime a b ∧ Nat.Coprime a c ∧ Nat.Coprime b c ∧ a ^ x + b ^ y = c ^ z ∧ (freyBeal a b x y).IsElliptic ∧ (freyBeal a b x y).Δ = 16 * ((a : ℚ) ^ x * (b : ℚ) ^ y * (c",
+   "path": "atk-kernel/ATK/FreyBeal.lean",
+   "ref": "origin/atk/beal-442-fermat42-20261013",
+   "line": 53,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "bsdConjecture_iff_of_mordellWeilRank_eq_zero",
+   "type": "E.BSDConjecture ↔ ∃ L : E.LFunctionContinued, L.L 1 ≠ 0",
+   "path": "atk-kernel/mathlib-drafts/BSD.lean",
+   "ref": "origin",
+   "line": 74,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "collapse_law_contrapositive",
+   "type": "I ≠ one → RH",
+   "path": "kernelaudit/outros/riemann-i-g21/src/Riemann/CollapseProof/Assumptions.lean",
+   "ref": "origin/atk/kernel-21-registros",
+   "line": 27,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_mdc_pequeno",
+   "type": "BealConjecture ↔ ExclusaoMdcPequeno",
+   "path": "atk-kernel/ATK/BealFLT.lean",
+   "ref": "origin",
+   "line": 61,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "RH_by_I_collapse",
+   "type": "RH",
+   "path": "kernelaudit/outros/riemann-i-label/src/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin/atk/kernel-21-registros",
+   "line": 14,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "refutacao_posto",
+   "type": "2 ≤ M.analyticRank E",
+   "path": "atk-kernel/ATK/Termos.lean",
+   "ref": "origin/atk/atki-alg-probe",
+   "line": 308,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "zeta_ne_zero_of_RH",
+   "type": "riemannZeta s ≠ 0",
+   "path": "atk-kernel/ATK/RHLogZeta.lean",
+   "ref": "origin",
+   "line": 20,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "zeta₁_ne_zero_of_RH",
+   "type": "riemannZeta₁ s ≠ 0",
+   "path": "atk-kernel/ATK/RHLogZeta.lean",
+   "ref": "origin",
+   "line": 38,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "posto_ge_um",
+   "type": "1 ≤ ATK.LigacaoBSD.postoMW (curva R)",
+   "path": "atk-kernel/ATK/PostoDois.lean",
+   "ref": "origin",
+   "line": 326,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "infinito_of_posto",
+   "type": "Infinite (Pt R)",
+   "path": "atk-kernel/ATK/PostoDois.lean",
+   "ref": "origin",
+   "line": 343,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_residual",
+   "type": "BealConjecture ↔ ExclusaoResidual",
+   "path": "atk-kernel/ATK/BealResidual.lean",
+   "ref": "origin",
+   "line": 30,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "symmetryFromI",
+   "type": "I ≠ 1 → ∀ s : ℂ, isNontrivialZero s → onCriticalLine s",
+   "path": "kernelaudit/outros/riemann-i-g21/src/Riemann/IConstant/DeltaCollapse.lean",
+   "ref": "origin/atk/kernel-21-registros",
+   "line": 27,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "ordem_ge_tres_de_csordas",
+   "type": "∃ r, 3 ≤ r ∧ ∃ I J : Fin r → ℕ, StrictMono I ∧ StrictMono J ∧ ((toep aXi).submatrix I J).det < 0",
+   "path": "atk-kernel/ATK/TruncamentoToeplitz.lean",
+   "ref": "origin",
+   "line": 274,
+   "mech": [
+    "by_cases",
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_primitive",
+   "type": "BealConjecture ↔ BealPrimitive",
+   "path": "atk-kernel/ATK/BealReduction.lean",
+   "ref": "origin",
+   "line": 69,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_gcdOne",
+   "type": "BealConjecture ↔ BealGcdOne",
+   "path": "atk-kernel/ATK/BealReduction.lean",
+   "ref": "origin",
+   "line": 95,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "re_de_rh",
+   "type": "ρ.re = 1 / 2",
+   "path": "atk-kernel/ATK/EixoDeslocado.lean",
+   "ref": "origin",
+   "line": 12,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_residual3457",
+   "type": "BealConjecture ↔ ExclusaoResidual3457",
+   "path": "atk-flt/AtkFlt/BealRegular.lean",
+   "ref": "origin/atk/beal-flt-regular-20261014",
+   "line": 82,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_iff_residualRegular",
+   "type": "BealConjecture ↔ ExclusaoResidualRegular",
+   "path": "atk-flt/AtkFlt/BealRegular.lean",
+   "ref": "origin/atk/beal-flt-regular-20261014",
+   "line": 106,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "nao_RH_forca_negativo",
+   "type": "∃ s : ℂ, 1 / 2 < s.re ∧ riemannXi s ≠ 0 ∧ Lg s < 0",
+   "path": "atk-kernel/ATK/ZeroClasses/Lagarias.lean",
+   "ref": "origin",
+   "line": 220,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_metade",
+   "type": "RiemannHypothesis ↔ ZeroLivreAcima (1 / 2)",
+   "path": "atk-kernel/ATK/QuasiRiemann.lean",
+   "ref": "origin/atk/reducoes-externas-20261015",
+   "line": 28,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "rh_iff_faixa",
+   "type": "RiemannHypothesis ↔ FaixaLivre (1 / 2) θ",
+   "path": "atk-kernel/ATK/QuasiRiemann.lean",
+   "ref": "origin/atk/reducoes-externas-20261015",
+   "line": 47,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "RH_integral_formulation",
+   "type": "∀ s : ℂ, isNontrivialZero s → onCriticalLine s",
+   "path": "kernelaudit/outros/riemann-i-g21/src/Riemann/IKernel/ZetaIntegralEq.lean",
+   "ref": "origin/atk/kernel-21-registros",
+   "line": 71,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "escopo_zeta",
+   "type": "(RiemannHypothesis ∨ ¬ RiemannHypothesis) ∧ (RiemannHypothesis ↔ ZE = ∅)",
+   "path": "atk-kernel/ATK/ClosedMathCompleto.lean",
+   "ref": "origin",
+   "line": 907,
+   "mech": []
+  },
+  {
+   "repo": "m-core",
+   "name": "hodge_conditional",
+   "type": "HodgeConjecture M",
+   "path": "atk-kernel/ATK/Conditional/Hodge.lean",
+   "ref": "origin",
+   "line": 36,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "beal_of_descent",
+   "type": "BealStatement",
+   "path": "atk-kernel/ATK/BealDescent.lean",
+   "ref": "origin/atk-kernel-check",
+   "line": 44,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "criterio",
+   "type": "ATK.Conditional.NavierStokes.EnstrophyBlowupCriterion ATK.LigacaoNS.modeloNS",
+   "path": "atk-kernel/ATK/NSCriterio.lean",
+   "ref": "origin",
+   "line": 210,
+   "mech": [
+    "by_cases",
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "not_riemannHypothesis_iff_nonempty_offCriticalZero",
+   "type": "(¬ RiemannHypothesis) ↔ Nonempty RiemannOffCriticalZero",
+   "path": "lean/MCore/FinalFail/Semantic/Riemann.lean",
+   "ref": "origin",
+   "line": 37,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core",
+   "name": "not_bsdCertifies_iff_bsdRefutes",
+   "type": "¬ BSDCertifies M ↔ BSDRefutes M",
+   "path": "lean/MCore/FinalFail/SevenTerminalParameterLaw.lean",
+   "ref": "origin/atk/seven-terminal-parameter-law",
+   "line": 185,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "noCommonPrimeCandidate_iff_not_beal",
+   "type": "NoCommonPrimeCandidate ↔ ¬ BealConjecture",
+   "path": "lean/MCore/BealSpecification.lean",
+   "ref": "origin/research/pure-math-final-proof-v1",
+   "line": 48,
+   "mech": [
+    "Classical.byContradiction"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "beal_of_exclusion",
+   "type": "BealConjecture",
+   "path": "lean/MCore/BealF6Exclusion.lean",
+   "ref": "origin/attack/beal-b01-o1-conductor-bridge-20260926",
+   "line": 32,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "ab_not_both_even",
+   "type": "¬ (Even d.a ∧ Even d.b)",
+   "path": "lean/MCore/OpenMath/BealQ10Parity.lean",
+   "ref": "origin/atk/beal-full-toolchain-20261006",
+   "line": 59,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "ac_not_both_even",
+   "type": "¬ (Even d.a ∧ Even d.c)",
+   "path": "lean/MCore/OpenMath/BealQ10Parity.lean",
+   "ref": "origin/atk/beal-full-toolchain-20261006",
+   "line": 77,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "bc_not_both_even",
+   "type": "¬ (Even d.b ∧ Even d.c)",
+   "path": "lean/MCore/OpenMath/BealQ10Parity.lean",
+   "ref": "origin/atk/beal-full-toolchain-20261006",
+   "line": 95,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "some_base_even",
+   "type": "Even d.a ∨ Even d.b ∨ Even d.c",
+   "path": "lean/MCore/OpenMath/BealQ10Parity.lean",
+   "ref": "origin/atk/beal-full-toolchain-20261006",
+   "line": 113,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "materialPrimitiveExclusion_closes_beal",
+   "type": "MCore.BealConjecture",
+   "path": "lean/MCore/OpenMath/BealQ10FinalRoot.lean",
+   "ref": "origin/atk/beal-full-toolchain-20261006",
+   "line": 26,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "gcd3_ne_one_iff_lowerBound",
+   "type": "gcd3 d ≠ 1 ↔ 1 < gcd3 d",
+   "path": "lean/MCore/BealEffective/ExactRemainingObligation.lean",
+   "ref": "origin/atk/beal-effective-kernel-20261003",
+   "line": 7,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "lowerBound_of_gcd3_ne_one",
+   "type": "1 < gcd3 d",
+   "path": "lean/MCore/BealEffective/ExactRemainingLemmas.lean",
+   "ref": "origin/open-math/beal-gap-20261004",
+   "line": 6,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "terminal_pointwise_dichotomy",
+   "type": "(1 < gcd3 d) ∨ BealCounterexample d",
+   "path": "lean/MCore/BealEffectiveKernel.lean",
+   "ref": "origin/atk/beal-effective-kernel-20261003",
+   "line": 53,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "Beal_of_ABC_and_finite_check",
+   "type": "BealConjecture",
+   "path": "lean/MCore/BealViaABC.lean",
+   "ref": "origin/atk/auto-compose-terminal-20260930",
+   "line": 20,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "beal_of_descent",
+   "type": "BealStatement",
+   "path": "atk-kernel/ATK/BealDescent.lean",
+   "ref": "origin/atk-kernel-check",
+   "line": 44,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-beal",
+   "name": "beal_of_arithmeticResidue",
+   "type": "BealConjecture",
+   "path": "lean/MCore/V5/BealReduction.lean",
+   "ref": "origin/audit/multistate-proof-refutation-v1",
+   "line": 47,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-bsd",
+   "name": "BSDUniversalRankMaterial.rank_equality",
+   "type": "analyticOrderAtOne E = genuineMordellWeilRank E",
+   "path": "lean/MCore/BSDMaterialPromotion.lean",
+   "ref": "origin/atk/bsd-lowrank-material-bridge-20261007",
+   "line": 64,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-bsd",
+   "name": "rank0_material_iff_no_counterexample",
+   "type": "Rank0ArithmeticMaterial M ↔ ¬ Nonempty (Rank0Counterexample M)",
+   "path": "open_math/P06_Rank0_Exclusion.lean",
+   "ref": "origin/atk/bsd-lfunction-compat-20261006",
+   "line": 38,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-hodge",
+   "name": "concretePayload_of_codimOne_and_residual",
+   "type": "MCore.ConcreteAlgebraicityPayload M",
+   "path": "lean/MCore/BackwardAudit/HodgeResidualCodimSplit.lean",
+   "ref": "origin/atk/auto-compose-terminal-20260930",
+   "line": 25,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "m-core-hodge",
+   "name": "not_statement_to_counterexample",
+   "type": "ClayHodgeCounterexample D",
+   "path": "lean/MCore/HodgeReduction.lean",
+   "ref": "origin/claim/hodge-prize-surgery-lane2",
+   "line": 11,
+   "mech": [
+    "Classical.byContradiction"
+   ]
+  },
+  {
+   "repo": "m-core-p-vs-np",
+   "name": "sat_not_in_p_implies_universal_sat_failure",
+   "type": "UniversalSATFailure",
+   "path": "lean/MCore/Real/FinalProof.lean",
+   "ref": "origin",
+   "line": 105,
+   "mech": [
+    "Classical.byContradiction"
+   ]
+  },
+  {
+   "repo": "m-core-p-vs-np",
+   "name": "sat_not_in_p_implies_universal_sat_failure",
+   "type": "UniversalSATFailure",
+   "path": "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean",
+   "ref": "origin",
+   "line": 551,
+   "mech": [
+    "Classical.byContradiction"
+   ]
+  },
+  {
+   "repo": "m-core-p-vs-np",
+   "name": "encoded_sat_not_in_p_implies_universal_failure",
+   "type": "EncodedUniversalSATFailure",
+   "path": "lean/MCore/Real/RigorousTerminalDecomposition.lean",
+   "ref": "origin/atk/pnp-rigorous-terminal-decomposition-20261001",
+   "line": 18,
+   "mech": [
+    "Classical.byContradiction"
+   ]
+  },
+  {
+   "repo": "m-core-p-vs-np",
+   "name": "self_target_missing_half",
+   "type": "(¬ RH → RH) ↔ RH",
+   "path": "lean/MCore/Integration/WinWinMissingHalfAudit20261024.lean",
+   "ref": "origin/atk/winwin-missing-half-audit-20261024",
+   "line": 31,
+   "mech": [
+    "Classical.byContradiction"
+   ]
+  },
+  {
+   "repo": "m-core-riemann",
+   "name": "falseEndpoint_witnesses_majorant_failure",
+   "type": "∃ N : ℕ, eps N < MCore.RH.R0.concreteNBData.DN MCore.RH.R0.concreteGeneratorFamily N",
+   "path": "research/r2/BackwardDenseEndpoint.lean",
+   "ref": "origin/research/pure-math-final-proof-v1",
+   "line": 222,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "m-core-riemann",
+   "name": "falseEndpoint_witnesses_majorant_failure",
+   "type": "∃ N : ℕ, eps N < MCore.RH.R0.concreteNBData.DN MCore.RH.R0.concreteGeneratorFamily N",
+   "path": "research/r2/BackwardDenseEndpoint.lean",
+   "ref": "origin/atk/auto-compose-terminal-20260930",
+   "line": 230,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-navier-stokes-i",
+   "name": "main_theorem",
+   "type": "∃ (u : ℝ≥0 → E), IsLerayHopfSolution u ∧ u 0 = u₀ ∧ (∀ t, SmoothAt t u) ∧ (∀ t, H1_norm (u t) < ∞)",
+   "path": "src/lean/global_existence.lean",
+   "ref": "origin",
+   "line": 51,
+   "mech": [
+    "by_cases"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "RH_iff_noAnomalous",
+   "type": "RiemannHypothesis ↔ ¬∃ z : AnomalousZero, True",
+   "path": "src/Riemann/Zeros/Nontrivial.lean",
+   "ref": "origin",
+   "line": 72,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "RH_by_I_collapse",
+   "type": "RH",
+   "path": "audit/language-corrected/atk__label-circular-rh-20261008/src/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin/atk/language-audit-20261015",
+   "line": 16,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "symbolicRiemannHypothesis",
+   "type": "RiemannHypothesis",
+   "path": "lean/millennium/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin",
+   "line": 12,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "RH_by_I_collapse",
+   "type": "RH",
+   "path": "src/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin",
+   "line": 12,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "collapse_law_contrapositive",
+   "type": "I ≠ one → RH",
+   "path": "src/Riemann/CollapseProof/Assumptions.lean",
+   "ref": "origin",
+   "line": 27,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "RH_by_I_collapse",
+   "type": "RH",
+   "path": "src/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin/atk/label-circular-rh-20261008",
+   "line": 14,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "RH_by_I_collapse",
+   "type": "RH",
+   "path": "audit/language-corrected/atk-rh-g21-mold/src/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin/atk/language-audit-20261015",
+   "line": 14,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "symmetryFromI",
+   "type": "I ≠ 1 → ∀ s : ℂ, isNontrivialZero s → onCriticalLine s",
+   "path": "src/Riemann/IConstant/DeltaCollapse.lean",
+   "ref": "origin",
+   "line": 27,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "symbolicRiemannHypothesis",
+   "type": "RiemannHypothesis",
+   "path": "lean/millennium/Riemann/CollapseProof/Contradiction.lean",
+   "ref": "origin/atk/label-circular-rh-20261008",
+   "line": 14,
+   "mech": [
+    "by_contra"
+   ]
+  },
+  {
+   "repo": "millennium-riemann-i",
+   "name": "RH_integral_formulation",
+   "type": "∀ s : ℂ, isNontrivialZero s → onCriticalLine s",
+   "path": "src/Riemann/IKernel/ZetaIntegralEq.lean",
+   "ref": "origin",
+   "line": 71,
+   "mech": [
+    "by_contra"
+   ]
+  }
+ ]
+}
