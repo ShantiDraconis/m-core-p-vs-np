@@ -1,0 +1,485 @@
+{
+ "schema": "ATK_GATE_LEDGER_V3",
+ "repo": "m-core-p-vs-np",
+ "queue": "PNP",
+ "hard_composite_remaining": 1,
+ "hard_atomic_remaining": 1,
+ "current_gate": "G21",
+ "current_head": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+ "canonical_hard_base": {
+  "state": "GREEN_FROZEN_REUSED",
+  "branch": "frozen/material-orientation-green-969408f2",
+  "sha": "969408f2d84121667319da04680893dd2978e9a6",
+  "certificate_commit": "f14c2e1854d6b62dc3e5b567a6769a04075f76d5",
+  "certified_scope": "material orientation kernel: genuine PolySAT route or LowerBoundWitness required"
+ },
+ "state_ci": "GREEN (P01 closed; endpoint G21 → PneqNP kernel-checked)",
+ "state_math": "OPEN_MATH",
+ "next": "G21: no producer exists on any searched branch. A producer must be a new lower bound: every hardened polynomial-time single-tape DTM fails SAT on some input. Closed routes (do not reopen): P03 RangeFailureLaw (expected false), win-win over P03 (missing half ≡ target), arbitrary-encode FinalProofAttack model (refuted).",
+ "progress_metric": "FROZEN_HARD/TOTAL_HARD",
+ "tests_are_progress_metric": false,
+ "frozen_prefix_decrements_hard": false,
+ "direct_producer": {
+  "state": "GREEN_TYPED_ONE_GAP",
+  "exactness": "EXACT_ONE_PRODUCER_CUT",
+  "target": "G21Pointwise (P01ConstructionGap closed)",
+  "source_repository": "ShantiDraconis/M-Core",
+  "source_files": [
+   "imports/pnp/b406b806/lean/MCore/Real/FinalExternalTwoGap.lean",
+   "imports/pnp/c102d9d4/lean/MCore/Real/P02G21G22Attack.lean"
+  ],
+  "equivalences": [
+   "G21Pointwise ↔ P02Target",
+   "G21Pointwise ↔ G22Contradiction",
+   "G22Contradiction ↔ ¬ InP SATTarget"
+  ],
+  "note": "G3 is already supplied by the normalized external contract; G2.2 is not an independent producer.",
+  "inhabitant_state": "OPEN_MATH",
+  "p01_internal_frontier": {
+   "state": "CLOSED_HISTORICAL (superseded by p01ConstructionGap_closed; kept for provenance)",
+   "exact_target": "Nonempty P01MachineConstruction",
+   "terminal_structure_fields": [
+    "one fixed NTM over Option Bool",
+    "blank_none",
+    "polynomial time bound",
+    "total HaltsWithin on every BitString",
+    "AcceptsWithin ↔ SATBits circuitBitEncoding"
+   ],
+   "certified_reuse": {
+    "parser": {
+     "state": "GREEN_FROZEN_REUSE",
+     "theorem": "slot_parser_machine_simulation_certificate"
+    },
+    "witness_guess": {
+     "state": "GREEN",
+     "branch": "atk/next-pnp-physical-verifier-20260929",
+     "sha": "9ebd51f530786b146700e4c288ef30612ef34d5c",
+     "run": 36499549795,
+     "theorems": [
+      "witnessGuess_complete",
+      "witnessGuess_halts"
+     ]
+    },
+    "indexed_witness_read": {
+     "state": "GREEN",
+     "branch": "atk/next-p01-integrated-machine-20260929",
+     "sha": "575cd996e16eda4d9bc33bebd25df6b01f50aaa4",
+     "runs": [
+      36497448606,
+      36497644415
+     ],
+     "theorem": "witnessIndexedReadGap_closed"
+    },
+    "one_machine_verifier_kernel": {
+     "state": "GREEN_FRONTIER",
+     "branch": "atk/next-pnp-one-machine-verifier-20260929",
+     "sha": "3532d7af492eb2dfe50eb287d58abfa3b2dbb449",
+     "run": 36500623426,
+     "proved": [
+      "fixed stack primitive TM push/pop",
+      "source rewind / input shuttle infrastructure",
+      "indexed witness read",
+      "local physical const/neg/and/or refinements",
+      "uniform polynomial cost envelopes"
+     ]
+    },
+    "streaming_encoded_evaluator": {
+     "state": "GREEN_FROZEN_REDUCTION",
+     "branch": "frozen/p01-encoded-evaluator-green-62956cc7",
+     "sha": "62956cc7760834d80bae27e5b928d06d92334a62",
+     "run": 36508360906,
+     "certificate": "CERTIFICATES/P01_ENCODED_EVALUATOR_GREEN_62956cc7.md",
+     "theorems": [
+      "evalEncodedCore_encode_append",
+      "evalEncoded_encode",
+      "evalEncoded_witness"
+     ],
+     "content": "direct evaluation of canonical prefix encoding with exact tail preservation; no Circuit value reconstructed in control"
+    },
+    "finite_frame_encoded_evaluator": {
+     "state": "GREEN_FROZEN_REDUCTION",
+     "branch": "frozen/p01-encoded-stack-evaluator-green-f70ab88b",
+     "sha": "f70ab88b3ac8cb1bd37c5e6f3115e26184b39b2b",
+     "run": 36508950379,
+     "certificate": "CERTIFICATES/P01_ENCODED_STACK_EVALUATOR_GREEN_f70ab88b.md",
+     "theorems": [
+      "evalRun_encode_append",
+      "evalStepCount_le_three_mul_encoding",
+      "evalRun_encode_bounded"
+     ],
+     "content": "finite-frame small-step evaluator for canonical prefix bits; no Circuit AST in finite control; ≤3*encoding-length semantic control steps"
+    },
+    "eval_frame_tape": {
+     "state": "GREEN_FROZEN_REDUCTION",
+     "branch": "frozen/p01-frame-tape-green-eb5713e4",
+     "sha": "eb5713e48e84a8adbb0850d1f2c60b46a738b4f6",
+     "run": 36509233942,
+     "certificate": "CERTIFICATES/P01_FRAME_TAPE_GREEN_eb5713e4.md",
+     "content": "seven EvalFrame variants encoded injectively in fixed three-bit blocks; stack round-trip and 3*depth space bound kernel-checked"
+    },
+    "frame_push": {
+     "state": "GREEN_FROZEN_PHYSICAL_SUBROUTINE",
+     "branch": "frozen/p01-frame-push-green-12380362",
+     "sha": "123803627c2157d41686471dc8c2c5c96eb408ae",
+     "run": 36509879658,
+     "certificate": "CERTIFICATES/P01_FRAME_PUSH_GREEN_12380362.md",
+     "content": "one fixed TM writes exactly one three-bit EvalFrame code and preserves the V2 stack layout"
+    },
+    "frame_pop_read": {
+     "state": "GREEN_FROZEN_PHYSICAL_SUBROUTINE",
+     "branch": "frozen/p01-frame-pop-read-green-7f6597a1",
+     "sha": "7f6597a14f0fcdfd7ee53edb880dd797748d5646",
+     "run": 36540846559,
+     "certificate": "CERTIFICATES/P01_FRAME_POP_READ_GREEN_7f6597a1.md",
+     "content": "one fixed TM decodes/removes one three-bit EvalFrame in four physical steps, preserving canonical V2 layout and rejecting 111"
+    },
+    "evalstep_frame_refinement": {
+     "state": "GREEN_FROZEN_PHYSICAL_REFINEMENT",
+     "branch": "frozen/p01-evalstep-frame-refinement-green-8e3abccc",
+     "sha": "8e3abccc052e631346f9decbf4db0c601080fde6",
+     "run": 36542400193,
+     "certificate": "CERTIFICATES/P01_EVALSTEP_FRAME_REFINEMENT_GREEN_8e3abccc.md",
+     "proved": [
+      "frame push refinement",
+      "frame pop/read refinement",
+      "NOT/AND/OR tag frame effects",
+      "NOT return",
+      "AND-left/OR-left pop→push continuation replacement",
+      "AND-right/OR-right return"
+     ]
+    },
+    "deterministic_tm_ntm_transport": {
+     "state": "GREEN_FROZEN_REDUCTION",
+     "branch": "frozen/p01-tm-ntm-transport-green-833fe0de",
+     "sha": "833fe0ded9676bfd19d226b8bf1dfd0aeb070bf5",
+     "runs": [
+      36547692311,
+      36547692227
+     ],
+     "theorems": [
+      "tmAsNTM_successors_of_not_halted",
+      "tmAsNTM_terminal_iff_halted",
+      "runBranches_tmAsNTM_singleton",
+      "tmHaltsWithin_iff_ntmHaltsWithin",
+      "tmAsNTM_acceptsWithin_iff"
+     ],
+     "content": "deterministic TM phases embed as singleton-branch NTMs with full run, halting, and acceptance preservation"
+    },
+    "eval_cursor_roundtrip": {
+     "state": "GREEN_FROZEN_PHYSICAL_REDUCTION",
+     "branch": "atk/p01-eval-cursor-roundtrip-20260929",
+     "sha": "1054b6bac5962d81f5c33a2b87d68f21b00d5ce0",
+     "runs": [
+      36544552231,
+      36544552207
+     ],
+     "content": "fixed cursor seek+return roundtrip preserves witness/frame data and advances consumed cursor physically"
+    },
+    "source_to_stack": {
+     "state": "GREEN_PHYSICAL_REFINEMENT",
+     "branch": "atk/next-p01-source-consumption-20260929",
+     "sha": "adb6db8d1943778655f63d651ed93f23f425ed47",
+     "runs": [
+      36545146201,
+      36545146259
+     ],
+     "content": "source-to-stack tape refinement and cursor return kernel are GREEN"
+    },
+    "tag_input_consumption": {
+     "state": "GREEN_PHYSICAL_REFINEMENT",
+     "branch": "atk/next-p01-tag-input-consumption-20260929",
+     "sha": "4eb4051ff330368627a3f30f2e080a00bd96f37d",
+     "runs": [
+      36547475406,
+      36547475211
+     ],
+     "theorems": [
+      "consumeOneTape_correct",
+      "consumeThreeTape_correct"
+     ],
+     "content": "fixed cursor macros consume exactly one or three unread source bits while preserving witness and frame stack"
+    },
+    "frame_pop_v2": {
+     "state": "GREEN_PHYSICAL_SUBROUTINE",
+     "branch": "atk/next-p01-integrated-machine-v2-20260929",
+     "sha": "8c40d7fa129d045810123886ed6c0bb96e034300",
+     "runs": [
+      36548367025,
+      36548367093,
+      36548367026
+     ],
+     "theorem": "framePop_run_six",
+     "content": "six-step physical frame-pop decodes exact EvalFrame and fails closed on empty/truncated stack"
+    },
+    "five_tag_cursor_refinement": {
+     "state": "GREEN_FROZEN_PHYSICAL_REFINEMENT",
+     "branch": "frozen/p01-five-tag-cursor-refinement-green-6707aa0e",
+     "sha": "6707aa0e65781e9d5674414bbf6c930443531bba",
+     "run": 36552792426,
+     "certificate": "CERTIFICATES/P01_FIVE_TAG_CURSOR_REFINEMENT_GREEN_6707aa0e.md",
+     "theorems": [
+      "evalStep_const_false_cursor_refined",
+      "evalStep_const_true_cursor_refined",
+      "evalStep_not_tag_cursor_refined",
+      "evalStep_and_tag_cursor_refined",
+      "evalStep_or_tag_cursor_refined"
+     ],
+     "content": "all five finite three-bit eval tags consume source physically; NOT/AND/OR also push the exact continuation frame"
+    }
+   },
+   "exact_remaining": [
+    "construct fixed-control preserving unary indexed witness read for input tag 000; existing destructive reader is insufficient for repeated variable queries",
+    "lift complete physical evalStep refinement to one global physical verifier run theorem against frozen evalRun semantics",
+    "construct one fixed finite-control NTM composing parser + witness phase + physical verifier",
+    "prove global HaltsWithin under one polynomial timeBound",
+    "prove AcceptsWithin iff SATBits circuitBitEncoding for every bitstring"
+   ],
+   "rejected_substitutes": [
+    "IntegratedPhaseBridgeCertificate state-disjointness",
+    "DecoderEvaluatorLocalCertificate nonterminal-control shell",
+    "component shells without one-machine global execution theorem"
+   ]
+  }
+ },
+ "p01_direct_frontier": {
+  "state": "CLOSED_HISTORICAL (superseded by p01ConstructionGap_closed)",
+  "exact_target": "Nonempty P01FinalCertificate.P01MachineConstruction",
+  "already_closed": [
+   "global canonical parser simulation",
+   "witnessGuess_halts and witnessGuess_complete",
+   "verified SAT witness relation",
+   "physical const/neg/and/or stack transforms",
+   "fixed-control indexed witness reader with polynomial halting/correctness",
+   "fixed-control eval-frame push/pop machines",
+   "polynomial physical-verifier budget",
+   "deterministic parser/verifier TM phases embed into NTM with full run/halting/acceptance preservation",
+   "physical eval cursor seek/return roundtrip",
+   "physical one/three-bit source consumption preserving witness/frame layout",
+   "cursor-aware frame push and V2 frame pop",
+   "physical cursor refinement of all five finite three-bit tags: constants, NOT, AND, OR"
+  ],
+  "not_counted_as_closure": [
+   "state-only phase bridges",
+   "PhysicalStackRep reconstruction without machine execution",
+   "branch frozen/p01-exact-integrated-producer-green-661e43e4 because it still contains P01MachineConstructionExpectedFailure.lean"
+  ],
+  "exact_remaining": [
+   "close the sole remaining local evalStep input-node case with a preserving unary-index witness reader",
+   "prove one global physical verifier execution theorem refining frozen evalRun",
+   "construct one fixed finite-control NTM composing parser + witness phase + verifier",
+   "prove global HaltsWithin under one polynomial timeBound",
+   "prove AcceptsWithin iff SATBits circuitBitEncoding for every bitstring"
+  ],
+  "consequence": "closing this object closes P01ConstructionGap; G21Pointwise remains independently OPEN_MATH"
+ },
+ "date": "2026-10-25",
+ "supersedes": {
+  "file": "main:GATE_LEDGER.json",
+  "blob": "dce43595b91271551d921e34af6dd5b798f88760",
+  "schema": "ATK_GATE_LEDGER_V2",
+  "stale_since": "2026-10-09 (P01 closed; ledger still says current_gate P01)"
+ },
+ "gates": [
+  {
+   "id": "P01",
+   "target": "P01FinalCertificate.P01ConstructionGap (= Nonempty P01MachineConstruction; SAT ∈ NP in the hardened model)",
+   "status": "CLOSED",
+   "theorem": "MCore.Real.P01RawTotalizationProducer.p01ConstructionGap_closed",
+   "file": "lean/MCore/Real/P01RawTotalizationProducer.lean",
+   "sha": "0dd09383932446ba67e673f69cd8740f85a80b87",
+   "frozen": [
+    "frozen/p01-t5-poly-halting-green-0dd09383",
+    "frozen/p01-closure-audit-green-d97a56e1"
+   ],
+   "runs": [
+    {
+     "run": 36897479263,
+     "head_sha": "15b6c36043721e827930c98babbaa3e0e9f50456",
+     "conclusion": "success",
+     "note": "ancestor of 0dd09383; producer and imports byte-identical"
+    },
+    {
+     "run": 37913791428,
+     "head_sha": "d97a56e122842fb9ce28a2f3e6bfac35561b4951",
+     "conclusion": "success",
+     "workflow": "P01 closure audit"
+    },
+    {
+     "run": 37822209048,
+     "head_sha": "4b799f27be0b60c4f32fc0fd2938213d6576dfca",
+     "conclusion": "success",
+     "workflow": "ATK PNP Recovery Integration"
+    },
+    {
+     "run": 38420031935,
+     "head_sha": "56a0e7ac9a1f509747ede74838cd552d54fa5708",
+     "conclusion": "success",
+     "workflow": "P01 closure audit",
+     "note": "PR #44 (open, not merged)"
+    }
+   ],
+   "axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ]
+  },
+  {
+   "id": "G21",
+   "target": "G21Pointwise := UniversalFailure SATTarget",
+   "status": "OPEN_MATH",
+   "inhabitant": null,
+   "kernel_equivalences": [
+    {
+     "theorem": "MCore.Integration.PNPRecoveredFrontier20261008.g21_iff_sat_not_in_p",
+     "statement": "G21Pointwise ↔ ¬ InP SATTarget",
+     "run": 37848515115,
+     "head_sha": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+     "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ]
+    },
+    {
+     "theorem": "MCore.Real.P02ExactDiagonalFrontier.total_exact_diagonal_iff_universal_failure",
+     "statement": "TotalExactDiagonalProducer ↔ UniversalFailure CanonicalSAT",
+     "run": 40147407179,
+     "job": 121031595224,
+     "head_sha": "da7569c16f4d06c66ccc308085c613dfa2ee4d91",
+     "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ],
+     "note": "first successful compile of this module; needed the P02ComplementRunRealization repair"
+    }
+   ],
+   "endpoint": [
+    {
+     "theorem": "MCore.Integration.PNPRecoveredFrontier20261008.pneqnp_of_g21",
+     "statement": "G21Pointwise → PneqNP",
+     "run": 37848515115,
+     "head_sha": "c0a83c28242bc9415a5657b3add970f1132b3cbc",
+     "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ]
+    },
+    {
+     "theorem": "MCore.Real.PNPAfterP01.pneqnp_of_universal_failure",
+     "statement": "UniversalFailure (SATBits circuitBitEncoding) → PneqNP",
+     "run": 38420031935,
+     "head_sha": "56a0e7ac9a1f509747ede74838cd552d54fa5708",
+     "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+     ],
+     "note": "independent recomposition by another session, PR #44"
+    }
+   ],
+   "negative_search": {
+    "certificate": "audit/pnp-recovery-20261008/ATK_NEGATIVE_SEARCH_CERTIFICATE.json (2026-10-09)",
+    "refresh_20261025": {
+     "branches": 701,
+     "branches_updated_after_certificate": 8,
+     "new_lean_blobs": 22,
+     "new_inhabitants": 0,
+     "not_inhabitants": [
+      "audit/language-corrected/work__pnp-minimal-separation-20261005/lean/MCore/PNPMaterialAtoms.lean: `example : FailureGenerator (SATBits circuitBitEncoding) := by constructor` — leaves the `counterexample` and `fails` goals open; audit copy outside the Lean build",
+      "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean (main): `current_SATNotInP_refuted` refutes SATNotInP only in the obsolete arbitrary-encode FinalProofAttack model (every language is in P there); the hardened model has no encoder field"
+     ]
+    }
+   }
+  }
+ ],
+ "verification_frontier": [
+  {
+   "id": "P02-complement-run",
+   "module": "MCore.Real.P02ComplementRunRealization",
+   "status": "REPAIRED_KERNEL_VERIFIED",
+   "content": "complement_reduce_correct: CanonicalSAT (R_M x) ↔ ¬ DeclaredAccepts M x for every total candidate M",
+   "repairs": "2 proof bodies, no statement change (audit/p03-repair-20261025/REPAIRS.md on atk/p03-closure-repair-20261025)",
+   "run": 40147407179,
+   "job": 121031595224,
+   "head_sha": "da7569c16f4d06c66ccc308085c613dfa2ee4d91",
+   "axioms": {
+    "runBranches_complement_to_tm_run": [
+     "propext"
+    ],
+    "complement_correctAt": [
+     "propext"
+    ],
+    "complement_reduce_correct": [
+     "propext",
+     "Classical.choice",
+     "Quot.sound"
+    ],
+    "selfInputAlignment_gives_flip": [
+     "propext",
+     "Classical.choice",
+     "Quot.sound"
+    ]
+   }
+  },
+  {
+   "id": "P03-closure",
+   "module": "MCore.Real.P03PerfectFlipDichotomy",
+   "status": "NEVER_COMPILED",
+   "closure_modules": 189,
+   "compiled": 167,
+   "blocking_roots": {
+    "MCore.Real.SourceRecovery": "17 errors (list-API drift, open goals)",
+    "MCore.Real.P02BehavioralAlignment": "1 error (ill-typed def at line 67)"
+   },
+   "run": 40147407179,
+   "job": 121031595414,
+   "decision": "not repaired further: route closed (routes_closed.P03-RangeFailureLaw)"
+  },
+  {
+   "id": "Cook-Levin-converse",
+   "statement": "PneqNP → G21Pointwise (i.e. InP SAT → ∀ L, InP L ↔ InNP L)",
+   "status": "NOT_FORMALIZED",
+   "have": [
+    "tableau semantics + size bound (PNPNTMTableauEncoding, run 37914345859 job 113766775497 at 6c467fbb)",
+    "complement tableau correctness (complement_reduce_correct, run 40147407179)"
+   ],
+   "missing": "a hardened DTM that computes the tableau reduction in polynomial time, and composition of two hardened DTMs",
+   "needed_for": "showing G21 is exactly the model's P ≠ NP; not needed for G21 → PneqNP"
+  },
+  {
+   "id": "winwin-generic",
+   "theorem": "MCore.Integration.WinWinLogic20261024.missing_half_iff_target",
+   "status": "KERNEL_VERIFIED",
+   "run": 40137729328,
+   "job": 121002717293,
+   "head_sha": "11b5d3ef6d0d583b9d61d1d46ef10f9347c04e80",
+   "axioms": []
+  }
+ ],
+ "routes_closed": [
+  {
+   "id": "P03-RangeFailureLaw",
+   "status": "EXPECTED_FALSE_SKETCH",
+   "reason": "A candidate with access to its own code reads x from the initial-configuration clauses of R_M x, recomputes R_M x to check the input, simulates itself on the shorter x, and outputs ¬ M(x) = SAT(R_M x). It is total, polynomial, and a perfect flip, so RangeFailureLaw fails. Requires a recursion theorem for the hardened model; not kernel-checked.",
+   "consequence": "RangeFailureLaw → SAT ∉ P is a true implication from an expected-false premise; it cannot produce G21."
+  },
+  {
+   "id": "winwin-over-P03",
+   "status": "CLOSED",
+   "reason": "missing half (ExistsPerfectFlip → SAT ∉ P) ≡ SAT ∉ P, because InP SAT → ExistsPerfectFlip (generic lemma kernel-verified; P03 instance unverified because P03 does not compile)",
+   "report": "audit/winwin-20261024/ATK_WINWIN_REPORT.md on atk/winwin-missing-half-audit-20261024"
+  },
+  {
+   "id": "arbitrary-encode-model",
+   "status": "REFUTED_IN_REPO",
+   "reason": "every_language_inP_under_arbitrary_encode (FinalProofAttack); superseded by the hardened CanonicalFinalProof model"
+  }
+ ],
+ "progress": {
+  "frozen_hard_over_total_hard": "1/2",
+  "note": "P01 frozen and closed; G21 open"
+ }
+}

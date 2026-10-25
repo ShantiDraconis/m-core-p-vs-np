@@ -242,3 +242,75 @@ O módulo não está ligado à branch de integração, porque depende de Mathlib
 - **Matriz das 32 obrigações:** a lista não foi encontrada nesta conversa nem nos repositórios examinados (busca em `.md`, `.json` e `.yaml` de todas as branches). É preciso indicar o arquivo ou a fonte.
 - Repositórios de Riemann, Beal, BSD, Hodge, Yang–Mills, Navier–Stokes e Poincaré: ainda não examinados.
 - Entregáveis da Fase 9: este relatório consolida o grafo de dependências, o min-cut, os produtores recuperados, a auditoria de axiomas e circularidade, os resultados do kernel e o pacote de revisão. Os dois JSON cobrem o índice de evidências e o mapa semântico desta lane.
+
+## 16. Atualização da fronteira — 2026-10-25
+
+```
+ATK-PNP: OPEN_MATH (1 obrigação) | ledger GATE_LEDGER_V3_20261025.json (substitui main:GATE_LEDGER.json V2)
+         | P01: CLOSED  (o V2 de main ainda diz current_gate P01, hard 2)
+         | G21: OPEN_MATH, current_gate, hard 1
+         | verificado neste ciclo: P02ComplementRunRealization (reparado) e P02ExactDiagonalFrontier, run 40147407179
+         | rotas fechadas: P03 RangeFailureLaw, win-win sobre P03, modelo de encode arbitrário
+```
+
+### 16.1 Estado atualizado
+
+| Portão | Estado | Evidência |
+|---|---|---|
+| P01 — SAT ∈ NP no modelo endurecido | **CLOSED** | `p01ConstructionGap_closed` @ `0dd09383`; runs 36897479263, 37913791428, 37822209048, 38420031935 (PR #44); axiomas padrão |
+| G21 — `UniversalFailure SATTarget` | **OPEN_MATH** | nenhum habitante; `g21_iff_sat_not_in_p` e `pneqnp_of_g21` (run 37848515115); nova equivalência `total_exact_diagonal_iff_universal_failure` (run 40147407179) |
+
+O `GATE_LEDGER.json` de `main` (blob `dce43595`, esquema V2) está desatualizado desde 09/10: ainda aponta P01
+como portão atual e duas obrigações duras. O arquivo `GATE_LEDGER_V3_20261025.json` desta pasta é a versão
+corrigida e pode substituí-lo diretamente. Ele mantém o histórico do P01 marcado como `CLOSED_HISTORICAL`.
+
+### 16.2 Busca refeita
+
+Desde o certificado negativo de 09/10, 8 branches foram atualizadas e apareceram 22 blobs `.lean` novos. Nenhum
+deles habita G21, `UniversalFailure` ou `PneqNP`. Dois casos parecem habitantes e não são:
+
+- `PNPMaterialAtoms.lean`, cópia de auditoria em `atk/language-audit-20261015`:
+  `example : FailureGenerator (SATBits circuitBitEncoding) := by constructor`. O `constructor` deixa abertos os dois
+  campos, `counterexample` e `fails`. O arquivo está fora do build do Lean.
+- `current_SATNotInP_refuted`, em `audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean` (`main`): refuta `SATNotInP` só no
+  modelo antigo `FinalProofAttack`, que tem um codificador de entrada arbitrário. Nesse modelo toda linguagem
+  está em P. O modelo endurecido não tem esse campo.
+
+O PR #44, aberto e ainda não integrado, recompõe o mesmo corte por outro caminho: `PNPAfterP01.pneqnp_of_universal_failure`.
+
+### 16.3 Avanço verificado
+
+Branch `atk/p03-closure-repair-20261025`, run 40147407179, job `certify` 121031595224, sucesso:
+
+- `P02ComplementRunRealization` foi reparado com 2 correções em corpos de prova, sem alterar nenhum enunciado.
+  Agora compila. `complement_reduce_correct : CanonicalSAT (R_M x) ↔ ¬ DeclaredAccepts M x` vale para todo
+  candidato total `M`. É a correção do tableau de Cook–Levin aplicada ao complemento do próprio candidato.
+- `P02ExactDiagonalFrontier` compila pela primeira vez. `total_exact_diagonal_iff_universal_failure` dá mais uma
+  forma exata de G21.
+
+Axiomas: `runBranches_complement_to_tm_run` e `complement_correctAt` usam só `[propext]`; os demais usam
+`[propext, Classical.choice, Quot.sound]`.
+
+### 16.4 Rotas fechadas (não reabrir)
+
+1. **P03 `RangeFailureLaw`: esperada falsa** (esboço; não verificado pelo kernel). A lei exige que todo candidato
+   total `M` erre SAT em algum ponto da imagem do seu próprio `R_M`. Um candidato com acesso ao próprio código,
+   pelo teorema de recursão, faz o seguinte com uma entrada `y`: lê `x` nas cláusulas de configuração inicial,
+   recalcula `R_M x` e compara com `y`, simula a si mesmo em `x` (que é menor) e responde `¬ M(x)`. Isso é
+   exatamente `SAT(R_M x)`. Esse candidato é total, polinomial e um *perfect flip*, então a lei falha. Logo
+   `RangeFailureLaw → SAT ∉ P` não pode produzir G21. O fecho de P03 tem 189 módulos e 167 compilam. Os 22
+   restantes dependem de `SourceRecovery` (17 erros) e de `P02BehavioralAlignment` (uma `def` mal tipada). O reparo
+   **não continua**: o veredito acima torna a rota inútil para G21.
+2. **Win-win sobre P03:** a metade que falta equivale ao próprio alvo. O lema genérico está verificado (run
+   40137729328, job 121002717293). Relatório: `audit/winwin-20261024/ATK_WINWIN_REPORT.md`, branch
+   `atk/winwin-missing-half-audit-20261024`.
+3. **Modelo `FinalProofAttack` com codificador arbitrário:** refutado no próprio repositório e substituído pelo
+   modelo endurecido.
+
+### 16.5 O que resta
+
+- **G21 (matemática nova).** Um produtor precisa provar que toda DTM endurecida de uma fita, em tempo
+  polinomial, erra SAT em alguma entrada. Isso é P ≠ NP no modelo. As técnicas conhecidas esbarram nas barreiras
+  de relativização, provas naturais e algebrização.
+- **Recíproca de Cook–Levin (formalização).** A implicação `PneqNP → G21` não é necessária para `G21 → PneqNP`.
+  Falta uma DTM endurecida que calcule a redução do tableau em tempo polinomial, mais a composição de duas DTMs.
