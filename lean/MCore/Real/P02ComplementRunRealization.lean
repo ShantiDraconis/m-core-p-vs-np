@@ -230,8 +230,16 @@ theorem complement_correctAt
                 (candidate.timeBound x.length)
                 (initialTMConfig candidate.machine x)).state = false := by
         simpa [complementToNTMCandidate, complementToNTM, hHaltEq] using hAcc
-      rw [hCandidateFalse] at hDeclared
-      contradiction
+      -- repair 2026-10-25: `DeclaredAccepts` is a definition, so `rw` cannot
+      -- see the accepting-state equation inside it; expose it by ascription.
+      have hDeclaredState :
+          candidate.accepting
+              (candidate.machine.run
+                (candidate.timeBound x.length)
+                (initialTMConfig candidate.machine x)).state = true :=
+        hDeclared
+      rw [hCandidateFalse] at hDeclaredState
+      exact Bool.false_ne_true hDeclaredState
     · intro hNotDeclared
       have hCandidateFalse :
           candidate.accepting
@@ -309,8 +317,11 @@ theorem selfInputAlignment_gives_flip
         ¬ DeclaredAccepts candidate x := by
   rcases hAlign with ⟨x, hx⟩
   refine ⟨x, ?_⟩
-  rw [← hx]
-  exact complement_reduce_correct candidate hTotal x
+  -- repair 2026-10-25: `rw [← hx]` also rewrote the `x` inside
+  -- `DeclaredAccepts candidate x`; rewrite only the reduced SAT input.
+  have h := complement_reduce_correct candidate hTotal x
+  rw [hx] at h
+  exact h
 
 #print axioms MCore.Real.P02ComplementRunRealization.runBranches_complement_to_tm_run
 #print axioms MCore.Real.P02ComplementRunRealization.complement_correctAt
