@@ -314,3 +314,21 @@ Axiomas: `runBranches_complement_to_tm_run` e `complement_correctAt` usam só `[
   de relativização, provas naturais e algebrização.
 - **Recíproca de Cook–Levin (formalização).** A implicação `PneqNP → G21` não é necessária para `G21 → PneqNP`.
   Falta uma DTM endurecida que calcule a redução do tableau em tempo polinomial, mais a composição de duas DTMs.
+
+## 17. Atualização de toolchain (Lean / Mathlib v4.35.0) — 2026-10-25
+
+- **Mathlib v4.35.0 não traz nada de complexidade.** Não há classes P/NP, SAT nem Cook–Levin, só máquinas de
+  Turing, `Partrec` e `TM2ComputableInPolyTime`. A fronteira de P ≠ NP não muda com a versão: G21 continua sendo a
+  única obrigação, e é o próprio problema.
+- **P01 em Lean v4.35.0:** a compilação local da árvore de integração, que não usa Mathlib, parou com 5 erros em
+  3 módulos, depois de compilar 77 de 155. Os erros vêm de mudanças na forma normal do `simp` e no `omega`
+  depois de `congr`. O P01 continua certificado no toolchain fixado do próprio repositório (v4.19.0). Portá-lo não
+  altera nenhum estado matemático.
+- **`SourceRecovery`:** `List.drop_append_of_le` também não existe no núcleo do Lean v4.35.0. A atualização não
+  torna compilável o fecho de P03.
+- **Biblioteca do caso-a-caso** (`lean-winwin-logic`, branch `atk/winwin-green-v435-20261025`): o `main` não
+  compilava porque o `bebedor` era falso. Agora está verde em v4.35.0 (check-run 121036460067). O enunciado antigo foi
+  refutado; o princípio do bebedor correto e `missing_half_iff_target` foram provados; 8 teoremas não usam axiomas.
+- **Riemann** (`m-core-riemann`, branch `atk/riemann-li-zeta-v435-20261025`, Mathlib v4.35.0):
+  `riemannHypothesis_iff_liTrunc : RiemannHypothesis ↔ ∀ T n, 0 ≤ Re λₙ(T)`, com coeficientes de Li truncados
+  nos zeros reais de ζ, e `li_two_worlds`.

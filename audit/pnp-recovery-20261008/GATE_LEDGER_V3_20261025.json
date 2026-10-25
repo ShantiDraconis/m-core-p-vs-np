@@ -481,5 +481,37 @@
  "progress": {
   "frozen_hard_over_total_hard": "1/2",
   "note": "P01 frozen and closed; G21 open"
- }
+ },
+ "toolchain_update": {
+  "checked": "Lean v4.35.0 / Mathlib v4.35.0 (newest stable, 2026-10-13)",
+  "mathlib_v4_35_complexity_material": "none for P/NP: Mathlib.Computability has Turing machines, Partrec, Halting, and TM2ComputableInPolyTime, but no complexity classes, SAT or Cook–Levin",
+  "P01_chain_on_v4_35": {
+   "method": "local lake build with Lean v4.35.0 of the integration tree (no Mathlib)",
+   "modules_compiled_before_stop": "77 of 155",
+   "errors": 5,
+   "files": [
+    "MCore.Real.P01IntegratedAssembly:112 (omega after congr)",
+    "MCore.Real.P01WitnessIndexedReadPreserving:612,618,939 (simp normal form of TM.run / List.replicate changed)",
+    "MCore.Real.P01FullVerifierPhysicalShuttles:83 (simpa normal form of getD/getElem?)"
+   ],
+   "decision": "not ported; P01 stays certified on its pinned toolchain Lean v4.19.0 (runs above)"
+  },
+  "SourceRecovery_on_v4_35": "List.drop_append_of_le does not exist in Lean v4.35.0 core either; the P03 closure does not become compilable by upgrading"
+ },
+ "related_libraries": [
+  {
+   "repository": "ShantiDraconis/lean-winwin-logic",
+   "branch": "atk/winwin-green-v435-20261025",
+   "commit": "0a4cd9c0ee43c477817e2f039be8e59ceda9e1e8",
+   "check_run": 121036460067,
+   "conclusion": "success",
+   "toolchain": "Lean v4.35.0",
+   "content": "previous main did not compile (false bebedor); now: bebedor_original_false, correct bebedor, missing_half_iff_target, self_target_missing_half; 8 theorems axiom-free"
+  },
+  {
+   "repository": "ShantiDraconis/m-core-riemann",
+   "branch": "atk/riemann-li-zeta-v435-20261025",
+   "content": "RiemannHypothesis ↔ ∀ T n, 0 ≤ Re λₙ(T) and li_two_worlds on Mathlib v4.35.0 (runs 40148892239, 40149374737)"
+  }
+ ]
 }
