@@ -19,51 +19,35 @@
   "scope": "closed (arity-0) Prop definitions, plus any Prop-valued definition that is vacuous"
  },
  "summary": {
-  "modules_total": 124,
-  "modules_ok": 122,
-  "modules_failed": 2,
+  "modules_total": 145,
+  "modules_ok": 145,
+  "modules_failed": 0,
   "modules_blocked": 0,
-  "modules_outside_default_build": 44,
+  "modules_outside_default_build": 65,
   "standalone_files_total": 14,
-  "standalone_files_failed": 6,
-  "theorems_total": 862,
-  "theorems_clean": 862,
+  "standalone_archival_sources": 6,
+  "standalone_files_failed": 0,
+  "theorems_total": 1097,
+  "theorems_clean": 1097,
   "theorems_using_sorry": 0,
   "theorems_using_project_axiom": 0,
   "theorems_nonstandard_axioms": 0,
   "project_axioms_declared": 0,
-  "props_reported": 32,
+  "props_reported": 33,
   "props_proved": 6,
   "props_refuted": 3,
-  "props_vacuous": 1,
-  "props_no_proof_in_library": 22
+  "props_vacuous": 0,
+  "props_no_proof_in_library": 24
  },
  "project_axioms": [],
- "environment_groups": 2,
- "name_clashes": [
-  {
-   "module": "MCore.BackwardAudit.WithoutOracle",
-   "declaration": "MCore.BackwardAudit.InterfaceFinalStatement",
-   "already_defined_in": "MCore.BackwardAudit.HypotheticalClosureOracle"
-  }
- ],
+ "environment_groups": 1,
+ "name_clashes": [],
  "modules": [
   {
    "module": "MCore",
    "path": "lean/MCore.lean",
    "status": "OK",
    "in_default_build": true
-  },
-  {
-   "module": "MCore.ATK_HARD_PNP_NEXT",
-   "path": "lean/MCore/ATK_HARD_PNP_NEXT.lean",
-   "status": "FAILED",
-   "in_default_build": false,
-   "first_error": "lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward'",
-   "all_errors": [
-    "lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward'",
-    "lean/MCore/ATK_HARD_PNP_NEXT.lean:6:7: unknown identifier 'hard_PvsNP_SAT_not_in_P_backward'"
-   ]
   },
   {
    "module": "MCore.Attack.CanonicalTerminalProducer",
@@ -98,6 +82,12 @@
   {
    "module": "MCore.BackwardAudit.HypotheticalClosureOracle",
    "path": "lean/MCore/BackwardAudit/HypotheticalClosureOracle.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.BackwardAudit.InterfaceFinalStatement",
+   "path": "lean/MCore/BackwardAudit/InterfaceFinalStatement.lean",
    "status": "OK",
    "in_default_build": false
   },
@@ -354,6 +344,12 @@
    "in_default_build": true
   },
   {
+   "module": "MCore.Real.CanonicalCircuitBitsInverse",
+   "path": "lean/MCore/Real/CanonicalCircuitBitsInverse.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
    "module": "MCore.Real.CanonicalComplexityBridge",
    "path": "lean/MCore/Real/CanonicalComplexityBridge.lean",
    "status": "OK",
@@ -406,6 +402,90 @@
    "path": "lean/MCore/Real/CanonicalSATParserAttack.lean",
    "status": "OK",
    "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "path": "lean/MCore/Real/CanonicalSATParserHeadProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "path": "lean/MCore/Real/CanonicalSATParserInitProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "path": "lean/MCore/Real/CanonicalSATParserLeafPopProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "path": "lean/MCore/Real/CanonicalSATParserMachine.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserMacroProof",
+   "path": "lean/MCore/Real/CanonicalSATParserMacroProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "path": "lean/MCore/Real/CanonicalSATParserReturnProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserRewindProof",
+   "path": "lean/MCore/Real/CanonicalSATParserRewindProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "path": "lean/MCore/Real/CanonicalSATParserTapeLayout.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "path": "lean/MCore/Real/CanonicalSATParserWorkScanProof.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "path": "lean/MCore/Real/CanonicalSATSlotLog.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "path": "lean/MCore/Real/CanonicalSATSlotLogMachine.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "path": "lean/MCore/Real/CanonicalSATSlotParserSpec.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "path": "lean/MCore/Real/CanonicalSATTagConsumerMachine.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "path": "lean/MCore/Real/CanonicalSATVarPayloadMachine.lean",
+   "status": "OK",
+   "in_default_build": false
   },
   {
    "module": "MCore.Real.CanonicalSATVerifier",
@@ -698,9 +778,8 @@
   {
    "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
    "path": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean",
-   "status": "FAILED",
-   "in_default_build": false,
-   "first_error": "lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean:107:10: tactic 'rewrite' failed, did not find instance of the pattern in the target expression\n  preservingUnaryReadMachine.run 3\n    { state := PreservingReadState.rewindInspectFalse,\n      tape := { left := none :: ?left, head := some ?b, right := ?next :: ?right } }\ncase cons\nnext : Option Bool\nright : List (Option Bool)\nb : Bool\nbs : List Bool\ntail_ih✝ :\n  ∀ (left : List (Option Bool)),\n    preservingUnaryReadMachine.run (3 * bs.length)\n        { state := PreservingReadState.rewindInspectFalse,\n          tape :=\n            { left := none :: left, head := (List.map some bs ++ next :: right).headD next,\n              right := (List.map some bs ++ next :: right).tail } } =\n      { state := PreservingReadState.rewindInspectFalse,\n        tape := { left := none :: List.map some bs.reverse ++ left, head := next, right := right } }\nleft : List (Option Bool)\n⊢ preservingUnaryReadMachine.run (3 * bs.length)\n      (preservingUnaryReadMachine.run 3\n        { state := PreservingReadState.rewindInspectFalse,\n          tape := { left := none :: left, head := some b, right := List.map some bs ++ next :: right } }) =\n    { state := PreservingReadState.rewindInspectFalse,\n      tape := { left := none :: (List.map some (b :: bs).reverse ++ left), head := next, right := right } }"
+   "status": "OK",
+   "in_default_build": false
   },
   {
    "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
@@ -775,10 +854,46 @@
    "in_default_build": true
   },
   {
+   "module": "MCore.Real.P02CanonicalNormalization",
+   "path": "lean/MCore/Real/P02CanonicalNormalization.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P02ClockedDiagonalCompiler",
+   "path": "lean/MCore/Real/P02ClockedDiagonalCompiler.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P02DiagonalFrontier",
+   "path": "lean/MCore/Real/P02DiagonalFrontier.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P02LiteralFixedPointCountermodel",
+   "path": "lean/MCore/Real/P02LiteralFixedPointCountermodel.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
+   "module": "MCore.Real.P02LiteralFixedPointFirewall",
+   "path": "lean/MCore/Real/P02LiteralFixedPointFirewall.lean",
+   "status": "OK",
+   "in_default_build": false
+  },
+  {
    "module": "MCore.Real.P02RestrictionLowerBoundPattern",
    "path": "lean/MCore/Real/P02RestrictionLowerBoundPattern.lean",
    "status": "OK",
    "in_default_build": true
+  },
+  {
+   "module": "MCore.Real.P02TerminalFrontier",
+   "path": "lean/MCore/Real/P02TerminalFrontier.lean",
+   "status": "OK",
+   "in_default_build": false
   },
   {
    "module": "MCore.Real.SATMachine",
@@ -802,8 +917,7 @@
  "standalone_files": [
   {
    "path": "audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean",
-   "status": "FAILED",
-   "first_error": "audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean:5:0: error: invalid 'import' command, it must be used in the beginning of the file"
+   "status": "ARCHIVAL_SOURCE"
   },
   {
    "path": "audit/ATK_K10_ABSTRACT_OBLIGATION_COUNTERAUDIT.lean",
@@ -815,28 +929,23 @@
   },
   {
    "path": "audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean",
-   "status": "FAILED",
-   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean:5:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist"
+   "status": "ARCHIVAL_SOURCE"
   },
   {
    "path": "audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean",
-   "status": "FAILED",
-   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean:4:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist"
+   "status": "ARCHIVAL_SOURCE"
   },
   {
    "path": "audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean",
-   "status": "FAILED",
-   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean:678:0: error: invalid 'import' command, it must be used in the beginning of the file"
+   "status": "ARCHIVAL_SOURCE"
   },
   {
    "path": "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean",
-   "status": "FAILED",
-   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean:152:0: error: invalid 'import' command, it must be used in the beginning of the file"
+   "status": "ARCHIVAL_SOURCE"
   },
   {
    "path": "audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean",
-   "status": "FAILED",
-   "first_error": "audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean:117:0: error: invalid 'import' command, it must be used in the beginning of the file"
+   "status": "ARCHIVAL_SOURCE"
   },
   {
    "path": "audit/C12/SRepresentationCounterexample.lean",
@@ -1053,16 +1162,6 @@
    "refuted_by": []
   },
   {
-   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed",
-   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
-   "closed_prop": true,
-   "status": "VACUOUS",
-   "inhabited_by": [
-    "MCore.Real.P01FullVerifierPhysicalRefinementV2.localPhysicalInstructionLayerClosed"
-   ],
-   "refuted_by": []
-  },
-  {
    "name": "MCore.Real.P01IntegrationFence.MaterialIntegrationTarget",
    "module": "MCore.Real.P01IntegrationFence",
    "closed_prop": true,
@@ -1089,8 +1188,24 @@
    "refuted_by": []
   },
   {
+   "name": "MCore.Real.P02DiagonalFrontier.DiagonalFixedPointGap",
+   "module": "MCore.Real.P02DiagonalFrontier",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
    "name": "MCore.Real.P02RestrictionLowerBoundPattern.RestrictionLowerBoundTransfer",
    "module": "MCore.Real.P02RestrictionLowerBoundPattern",
+   "closed_prop": true,
+   "status": "NO_PROOF_IN_LIBRARY",
+   "inhabited_by": [],
+   "refuted_by": []
+  },
+  {
+   "name": "MCore.Real.P02TerminalFrontier.P02Target",
+   "module": "MCore.Real.P02TerminalFrontier",
    "closed_prop": true,
    "status": "NO_PROOF_IN_LIBRARY",
    "inhabited_by": [],
@@ -2558,6 +2673,57 @@
    "status": "CLEAN"
   },
   {
+   "name": "MCore.Real.CanonicalCircuitBitsInverse.decodeCircuitCore_inverse",
+   "module": "MCore.Real.CanonicalCircuitBitsInverse",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_eq_some_iff",
+   "module": "MCore.Real.CanonicalCircuitBitsInverse",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBitsInverse.decodeCircuit_inverse",
+   "module": "MCore.Real.CanonicalCircuitBitsInverse",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBitsInverse.decodeNat_inverse",
+   "module": "MCore.Real.CanonicalCircuitBitsInverse",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBitsInverse.encodeCircuit_injective",
+   "module": "MCore.Real.CanonicalCircuitBitsInverse",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalCircuitBitsInverse.exists_decodeCircuit_iff_exists_exact_encoding",
+   "module": "MCore.Real.CanonicalCircuitBitsInverse",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
    "name": "MCore.Real.CanonicalComplexityBridge.canonical_failure_witness_separates_legacy_interface",
    "module": "MCore.Real.CanonicalComplexityBridge",
    "axioms": [
@@ -3467,6 +3633,1491 @@
   {
    "name": "MCore.Real.CanonicalSATParserAttack.tag_true_const_state",
    "module": "MCore.Real.CanonicalSATParserAttack",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.consumeHead_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.not_halted_10",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.not_halted_4",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.not_halted_5",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.not_halted_6",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.not_halted_7",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.not_halted_8",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.not_halted_9",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.phaseConfig_state",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.phaseConfig_tag",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.replicate_none_add_one",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.replicate_none_add_three",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.step_erase_right",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.tag_and_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.tag_const_false_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.tag_const_true_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.tag_input_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.tag_not_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.tag_or_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserHeadProof.var_payload_run",
+   "module": "MCore.Real.CanonicalSATParserHeadProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.boundaryConfig_state",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.forwardConfig_state",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.forward_scan_run",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.forward_step_cons",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.parserMachine_not_halted_0",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.parserMachine_not_halted_3",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.parser_initializes",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.rewindConfig_state",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.rewind_run",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.rewind_step_cons",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.rewind_to_boundary",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserInitProof.setup_to_rewind",
+   "module": "MCore.Real.CanonicalSATParserInitProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.afterEndMoveLeft_leaf_eq_popScan",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.all_false_eq_replicate",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.leafPopScanConfig_state",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.leafPop_run_false_prefix",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.leafPop_step_false",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.leafPop_step_true",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.leaf_pop_decomposed",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.parser_not_halted_13",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserLeafPopProof.replicate_option_false_rotate",
+   "module": "MCore.Real.CanonicalSATParserLeafPopProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserAccepting_accept",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserAccepting_reject",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserInitialConfig_state",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserMachine_blank_none",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserMachine_halts_accept",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserMachine_halts_reject",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserMachine_has_canonical_type",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserStateType",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMachine.parserTimeBound_poly",
+   "module": "MCore.Real.CanonicalSATParserMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMacroProof.binary_phase_to_return",
+   "module": "MCore.Real.CanonicalSATParserMacroProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMacroProof.leaf_phase_to_pop_search",
+   "module": "MCore.Real.CanonicalSATParserMacroProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserMacroProof.phaseWorkBound_linear",
+   "module": "MCore.Real.CanonicalSATParserMacroProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.afterEndMoveLeft_binary_eq_return",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binaryCheckConfig_state",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binaryCheck_step_to_rewind",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binaryReturnConfig_state",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binaryReturn_run",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binaryReturn_step_cons",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binaryReturn_step_delimiter_nonempty",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_roundtrip",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binary_afterEnd_to_delimiter",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.binary_delimiter_enters_rewind",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.parser_not_halted_20",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserReturnProof.parser_not_halted_21",
+   "module": "MCore.Real.CanonicalSATParserReturnProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserRewindProof.parser_not_halted_22",
+   "module": "MCore.Real.CanonicalSATParserRewindProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserRewindProof.rewindUnreadConfig_state",
+   "module": "MCore.Real.CanonicalSATParserRewindProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserRewindProof.rewindUnread_finish",
+   "module": "MCore.Real.CanonicalSATParserRewindProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserRewindProof.rewindUnread_from_reverse",
+   "module": "MCore.Real.CanonicalSATParserRewindProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserRewindProof.rewindUnread_run",
+   "module": "MCore.Real.CanonicalSATParserRewindProof",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserRewindProof.rewindUnread_step_cons",
+   "module": "MCore.Real.CanonicalSATParserRewindProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.boundary_disposition_total",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.classifyBoundary_accept_iff",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.classifyBoundary_continue_iff",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.classifyBoundary_reject_iff",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.parserBoundary_empty_zero",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.parserBoundary_left_blank_padding",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.readTapeCells_map_some_until_blank",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.slotCells_length",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.tapeWord_parserBoundaryTape",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.updateSlots_binary",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.updateSlots_leaf",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.updateSlots_unary",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserTapeLayout.updateSlots_zero",
+   "module": "MCore.Real.CanonicalSATParserTapeLayout",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.binary_cross_delimiter",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.binary_log_scan_step_cons",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.binary_scan_log_to_return",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.binary_seek_step_cons",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.binary_seek_to_work",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.leaf_cross_delimiter",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.leaf_log_end_step",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.leaf_log_scan_step_cons",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.leaf_scan_log_to_pop",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.leaf_seek_step_cons",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.leaf_seek_to_work",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.not_halted_11",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.not_halted_12",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.not_halted_18",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.not_halted_19",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATParserWorkScanProof.sourceScanConfig_state",
+   "module": "MCore.Real.CanonicalSATParserWorkScanProof",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_append",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_eq_zero_iff_all_false",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_false_cons",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_keepSlot",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_nil",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_popSlot",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_pushSlot",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.activeSlots_true_cons",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.initialSlotLog_active",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.initialSlotLog_represents",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.popSlot_decompose",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.popSlot_none_iff",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.popSlot_represents",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.popSlot_result_has_one_less_active",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLog.pushSlot_represents",
+   "module": "MCore.Real.CanonicalSATSlotLog",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.pop_halted_2",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.pop_halted_3",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.pop_not_halted_0",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.pop_not_halted_1",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.pop_semantic",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.push_halted",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.push_not_halted",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.push_run",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.push_semantic",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.push_step_cons",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.push_step_nil",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.slotLogTimeBound_poly",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotLogMachine.workConfig_state",
+   "module": "MCore.Real.CanonicalSATSlotLogMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.decodeNat_replicate_true_none",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.parseHead_and",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.parseHead_const",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.parseHead_input",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.parseHead_inverse",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.parseHead_not",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.parseHead_or",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.slotAccept_encodeCircuit",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_decodeCircuit",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.slotAccept_iff_exists_exact_encoding",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_encode_append",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.slotParseCore_sound",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.slotParse_invalid_11",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.slotParse_truncated_tag",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATSlotParserSpec.tokenArity_truncated_input",
+   "module": "MCore.Real.CanonicalSATSlotParserSpec",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.run_and_tag",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.run_const_false_tag",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.run_const_true_tag",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.run_input_tag",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.run_invalid_11_tag",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.run_not_tag",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.run_or_tag",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_0_false",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_0_true",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_1_false",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_1_true",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_2_false",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_2_true_reject",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_3_false",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_3_true",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_4_false",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_4_true",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_5_false",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.step_5_true",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsumeConfig_state",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsume_halted_final",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsume_not_halted_0",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsume_not_halted_1",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsume_not_halted_2",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsume_not_halted_3",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsume_not_halted_4",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATTagConsumerMachine.tagConsume_not_halted_5",
+   "module": "MCore.Real.CanonicalSATTagConsumerMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.replicate_none_append_cons",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.varConfig_state",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.varPayloadMachine_halted_one",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.varPayloadMachine_halted_two",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.varPayloadMachine_not_halted_zero",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.varPayloadTimeBound_poly",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.var_payload_blank_rejects",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.var_payload_halts_on_encodeNat",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.var_payload_success_postcondition",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.var_run_encodeNat",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.var_step_blank_rejects",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.var_step_false",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.CanonicalSATVarPayloadMachine.var_step_true",
+   "module": "MCore.Real.CanonicalSATVarPayloadMachine",
    "axioms": [
     "propext"
    ],
@@ -5321,9 +6972,42 @@
    "status": "CLEAN"
   },
   {
-   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.localPhysicalInstructionLayerClosed",
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed.physical_and_sequence_exact",
    "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
    "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed.physical_const_sequence_exact",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed.physical_neg_sequence_exact",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed.physical_or_sequence_exact",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed.stackV2_witness_head_correct",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01FullVerifierPhysicalRefinementV2.localPhysicalInstructionLayerClosed",
+   "module": "MCore.Real.P01FullVerifierPhysicalRefinementV2",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
    "status": "CLEAN"
   },
   {
@@ -6258,6 +7942,104 @@
    "status": "CLEAN"
   },
   {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.cleanup_false_blank_step",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.cleanup_false_terminator",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.cleanup_true_blank_step",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.cleanup_true_terminator",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.payload_advance_rewind",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.preserving_reader_induction_entry",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.rewind_false_bits",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.rewind_false_control_cycle",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.rewind_true_bit_cycle",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.rewind_true_bits",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.rewind_true_control_cycle",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P01PreservingUnaryReaderGlobal.selected_bit_from_decomposition",
+   "module": "MCore.Real.P01PreservingUnaryReaderGlobal",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
    "name": "MCore.Real.P01PreservingUnaryWitnessMachine.indexSomeConfig_state",
    "module": "MCore.Real.P01PreservingUnaryWitnessMachine",
    "axioms": [],
@@ -7002,6 +8784,213 @@
    "status": "CLEAN"
   },
   {
+   "name": "MCore.Real.P02CanonicalNormalization.canonicalTimeBound_poly",
+   "module": "MCore.Real.P02CanonicalNormalization",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02CanonicalNormalization.canonical_normalization",
+   "module": "MCore.Real.P02CanonicalNormalization",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02CanonicalNormalization.normalizedCandidate_accepting",
+   "module": "MCore.Real.P02CanonicalNormalization",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02CanonicalNormalization.normalizedCandidate_correctAt",
+   "module": "MCore.Real.P02CanonicalNormalization",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02CanonicalNormalization.normalizedCandidate_machine",
+   "module": "MCore.Real.P02CanonicalNormalization",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02CanonicalNormalization.normalizedCandidate_timeBound",
+   "module": "MCore.Real.P02CanonicalNormalization",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02ClockedDiagonalCompiler.declaredAcceptBit_true_iff",
+   "module": "MCore.Real.P02ClockedDiagonalCompiler",
+   "axioms": [],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02ClockedDiagonalCompiler.semanticDiagonalBits_flip",
+   "module": "MCore.Real.P02ClockedDiagonalCompiler",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02ClockedDiagonalCompiler.semanticDiagonalBits_length",
+   "module": "MCore.Real.P02ClockedDiagonalCompiler",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02ClockedDiagonalCompiler.semanticDiagonalBits_valid",
+   "module": "MCore.Real.P02ClockedDiagonalCompiler",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02ClockedDiagonalCompiler.semantic_fixed_point_fails",
+   "module": "MCore.Real.P02ClockedDiagonalCompiler",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02DiagonalFrontier.DiagonalCounterexampleWitness.flips",
+   "module": "MCore.Real.P02DiagonalFrontier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02DiagonalFrontier.DiagonalCounterexampleWitness.valid",
+   "module": "MCore.Real.P02DiagonalFrontier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02DiagonalFrontier.diagonal_family_closes_p02",
+   "module": "MCore.Real.P02DiagonalFrontier",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02DiagonalFrontier.diagonal_fixed_point_gap_closes_p02",
+   "module": "MCore.Real.P02DiagonalFrontier",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02DiagonalFrontier.diagonal_witness_fails",
+   "module": "MCore.Real.P02DiagonalFrontier",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointCountermodel.constantPairTimeBound_poly",
+   "module": "MCore.Real.P02LiteralFixedPointCountermodel",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointCountermodel.constantPair_false_correct",
+   "module": "MCore.Real.P02LiteralFixedPointCountermodel",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointCountermodel.constantPair_true_correct",
+   "module": "MCore.Real.P02LiteralFixedPointCountermodel",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointCountermodel.no_universal_literal_fixed_point",
+   "module": "MCore.Real.P02LiteralFixedPointCountermodel",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointFirewall.falseBits_not_sat",
+   "module": "MCore.Real.P02LiteralFixedPointFirewall",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointFirewall.no_literal_fixed_point_if_constants_correct",
+   "module": "MCore.Real.P02LiteralFixedPointFirewall",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointFirewall.semanticDiagonalBits_cases",
+   "module": "MCore.Real.P02LiteralFixedPointFirewall",
+   "axioms": [
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02LiteralFixedPointFirewall.trueBits_sat",
+   "module": "MCore.Real.P02LiteralFixedPointFirewall",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
    "name": "MCore.Real.P02RestrictionLowerBoundPattern.paysOff_implies_costBits_lt_amortizedDrop",
    "module": "MCore.Real.P02RestrictionLowerBoundPattern",
    "axioms": [
@@ -7022,6 +9011,52 @@
   {
    "name": "MCore.Real.P02RestrictionLowerBoundPattern.transfer_gives_formula_lower_bound",
    "module": "MCore.Real.P02RestrictionLowerBoundPattern",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02TerminalFrontier.PNPFinalPair.p01",
+   "module": "MCore.Real.P02TerminalFrontier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02TerminalFrontier.PNPFinalPair.p02",
+   "module": "MCore.Real.P02TerminalFrontier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02TerminalFrontier.p01_p02_close_internal_separation",
+   "module": "MCore.Real.P02TerminalFrontier",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02TerminalFrontier.p02_target_iff_sat_not_in_p",
+   "module": "MCore.Real.P02TerminalFrontier",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ],
+   "status": "CLEAN"
+  },
+  {
+   "name": "MCore.Real.P02TerminalFrontier.pnp_final_pair_closes",
+   "module": "MCore.Real.P02TerminalFrontier",
    "axioms": [
     "Quot.sound",
     "propext"

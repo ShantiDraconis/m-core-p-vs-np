@@ -27,7 +27,6 @@ jobs:
           set -euo pipefail
           export PATH="$HOME/.elan/bin:$PATH"
           lake update
-          lake exe cache get
       - name: Build preserving marker primitive
         shell: bash
         run: |
@@ -37,6 +36,7 @@ jobs:
           lake build MCore.Real.P01InputNodePreservingPlan
           lake build MCore.Real.P01PreservingUnaryWitnessMachine
           lake build MCore.Real.P01PreservingUnaryReaderCertificate
+          lake build MCore.Real.P01PreservingUnaryReaderGlobal
           lake build MCore.Real.P01PreservingMarkerIteration
       - name: Axiom / placeholder hygiene
         shell: bash

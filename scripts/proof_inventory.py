@@ -13,7 +13,7 @@ from the kernel on every run.
 usage:
   python3 scripts/proof_inventory.py [--out inventory] [--strict] [--check-committed]
 
---strict           exit 1 if a module in the default build fails, a theorem
+--strict           exit 1 if a library module or executable audit file fails, a theorem
                    depends on sorryAx, or a theorem depends on an axiom declared
                    inside this project.
 --check-committed  warn (GitHub annotation) when the committed inventory differs
@@ -30,6 +30,16 @@ from pathlib import Path
 
 STANDARD_AXIOMS = ["Classical.choice", "Quot.sound", "propext"]
 SCHEMA = "proof-inventory.v1"
+
+# Historical concatenations retain their original paths for provenance.
+ARCHIVED_SOURCES = {
+    "audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean",
+    "audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean",
+    "audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean",
+    "audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean",
+    "audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean",
+    "audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean",
+}
 
 LEAN_META = r'''
 open Lean
@@ -419,11 +429,15 @@ def main():
         for f in sorted(base.rglob("*.lean")):
             if ".lake" in f.parts:
                 continue
+            if str(f.relative_to(root)) in ARCHIVED_SOURCES:
+                loose.append({"path": str(f.relative_to(root)), "status": "ARCHIVAL_SOURCE"})
+                continue
             r = sh(["lake", "env", "lean", str(f.relative_to(root))], root)
             errs = [l for l in (r.stdout + r.stderr).splitlines() if ": error:" in l or l.startswith("error:")]
             loose.append({"path": str(f.relative_to(root)), "status": "OK" if r.returncode == 0 else "FAILED",
                           **({"first_error": errs[0][:300]} if errs else {})})
-    print(f"[inventory] stand-alone files: {sum(1 for x in loose if x['status'] == 'OK')}/{len(loose)} compile")
+    archive_count = sum(row["status"] == "ARCHIVAL_SOURCE" for row in loose)
+    print(f"[inventory] archived sources: {archive_count}; stand-alone files: {sum(1 for x in loose if x['status'] == 'OK')}/{len(loose) - archive_count} compile")
 
     tmp = root / ".lake" / "proof-inventory"
     texts, groups, clashes = run_grouped(root, ok, mods, roots, tmp) if ok else ([], [], [])
@@ -491,7 +505,8 @@ def main():
         "modules_blocked": count(modules, "status", "BLOCKED"),
         "modules_outside_default_build": sum(1 for r in modules if not r["in_default_build"]),
         "standalone_files_total": len(loose),
-        "standalone_files_failed": sum(1 for x in loose if x["status"] != "OK"),
+        "standalone_archival_sources": count(loose, "status", "ARCHIVAL_SOURCE"),
+        "standalone_files_failed": count(loose, "status", "FAILED"),
         "theorems_total": len(theorems),
         "theorems_clean": count(theorems, "status", "CLEAN"),
         "theorems_using_sorry": count(theorems, "status", "USES_SORRY"),
@@ -566,9 +581,11 @@ def main():
 
     if a.strict:
         problems = []
-        problems += [f"default-build module {r['module']} is {r['status']}: "
+        problems += [f"{x['path']} failed: {x.get('first_error', 'unknown error')}"
+                     for x in loose if x["status"] == "FAILED"]
+        problems += [f"module {r['module']} is {r['status']}: "
                      f"{r.get('first_error') or ('blocked by ' + r.get('blocked_by', ''))}" for r in modules
-                     if r["status"] != "OK" and r["in_default_build"]]
+                     if r["status"] != "OK"]
         problems += [f"{t['name']} uses sorryAx" for t in theorems if t["status"] == "USES_SORRY"]
         problems += [f"{t['name']} uses a project axiom" for t in theorems if t["status"] == "USES_PROJECT_AXIOM"]
         for r in modules:
@@ -604,7 +621,7 @@ def render_md(inv):
             L.append(f"| `{m['module']}` | {m['status']} | {'yes' if m['in_default_build'] else 'no'} | {d[:160]} |")
     else:
         L.append("None. Every module of the library compiles.")
-    badl = [x for x in inv.get("standalone_files", []) if x["status"] != "OK"]
+    badl = [x for x in inv.get("standalone_files", []) if x["status"] == "FAILED"]
     L += ["", "## Stand-alone files that do not compile", ""]
     if badl:
         L += ["| File | Detail |", "| --- | --- |"]
@@ -613,6 +630,8 @@ def render_md(inv):
             L.append(f"| `{x['path']}` | {detail} |")
     else:
         L.append("None.")
+    L += ["", "## Archived source concatenations (not compiled)", ""]
+    L += [f"- `{x['path']}`" for x in inv.get("standalone_files", []) if x["status"] == "ARCHIVAL_SOURCE"] or ["None."]
     unclean = [t for t in inv["theorems"] if t["status"] != "CLEAN"]
     L += ["", "## Theorems with non-standard axioms", ""]
     if unclean:

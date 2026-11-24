@@ -6,42 +6,42 @@ Toolchain: `leanprover/lean4:v4.19.0`
 
 | Item | Count |
 | --- | ---: |
-| modules total | 124 |
-| modules ok | 122 |
-| modules failed | 2 |
+| modules total | 145 |
+| modules ok | 145 |
+| modules failed | 0 |
 | modules blocked | 0 |
-| modules outside default build | 44 |
+| modules outside default build | 65 |
 | standalone files total | 14 |
-| standalone files failed | 6 |
-| theorems total | 862 |
-| theorems clean | 862 |
+| standalone archival sources | 6 |
+| standalone files failed | 0 |
+| theorems total | 1097 |
+| theorems clean | 1097 |
 | theorems using sorry | 0 |
 | theorems using project axiom | 0 |
 | theorems nonstandard axioms | 0 |
 | project axioms declared | 0 |
-| props reported | 32 |
+| props reported | 33 |
 | props proved | 6 |
 | props refuted | 3 |
-| props vacuous | 1 |
-| props no proof in library | 22 |
+| props vacuous | 0 |
+| props no proof in library | 24 |
 
 ## Modules that do not compile
 
-| Module | Status | In default build | Detail |
-| --- | --- | --- | --- |
-| `MCore.ATK_HARD_PNP_NEXT` | FAILED | no | lean/MCore/ATK_HARD_PNP_NEXT.lean:5:7: unknown identifier 'hard_PvsNP_SAT_operational_forward' |
-| `MCore.Real.P01PreservingUnaryReaderGlobal` | FAILED | no | lean/MCore/Real/P01PreservingUnaryReaderGlobal.lean:107:10: tactic 'rewrite' failed, did not find instance of the pattern in the target expression |
+None. Every module of the library compiles.
 
 ## Stand-alone files that do not compile
 
-| File | Detail |
-| --- | --- |
-| `audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean` | audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean:5:0: error: invalid 'import' command, it must be used in the beginning of the file |
-| `audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean:5:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist |
-| `audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean:4:0: error: object file '././.lake/build/lib/lean/MCore/Core.olean' of module MCore.Core does not exist |
-| `audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean:678:0: error: invalid 'import' command, it must be used in the beginning of the file |
-| `audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean:152:0: error: invalid 'import' command, it must be used in the beginning of the file |
-| `audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean` | audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean:117:0: error: invalid 'import' command, it must be used in the beginning of the file |
+None.
+
+## Archived source concatenations (not compiled)
+
+- `audit/ATK_EXACT_OPEN_PROOF_FRONTIER_20261009.lean`
+- `audit/ATK_UNIFIED_SOURCE_BATCH01_20261009.lean`
+- `audit/ATK_UNIFIED_SOURCE_BATCH02_20261009.lean`
+- `audit/ATK_UNIFIED_SOURCE_BATCH03_20261009.lean`
+- `audit/ATK_UNIFIED_SOURCE_BATCH04_20261009.lean`
+- `audit/ATK_UNIFIED_SOURCE_BATCH05_20261009.lean`
 
 ## Theorems with non-standard axioms
 
@@ -49,7 +49,7 @@ None. Every theorem uses at most propext, Classical.choice and Quot.sound.
 
 ## Vacuous Prop definitions (body ends in `True`)
 
-- `MCore.Real.P01FullVerifierPhysicalRefinementV2.LocalPhysicalInstructionLayerClosed` (MCore.Real.P01FullVerifierPhysicalRefinementV2)
+None.
 
 ## Gap-style Prop definitions
 
@@ -74,5 +74,6 @@ Status is derived from whether a CLEAN theorem has exactly this type. `NO_PROOF_
 | `MCore.Real.P01FullVerifierPhysicalControl.DecoderEvaluatorLocalGap` | PROVED | `MCore.Real.P01FullVerifierPhysicalControl.decoderEvaluatorLocalGap_closed` |
 | `MCore.Real.P01PreservingUnaryReaderCertificate.PreservingUnaryReaderGap` | NO_PROOF_IN_LIBRARY |  |
 | `MCore.Real.P01WitnessIndexedRead.WitnessIndexedReadGap` | PROVED | `MCore.Real.P01WitnessIndexedReadGlobal.witnessIndexedReadGap_closed` |
+| `MCore.Real.P02DiagonalFrontier.DiagonalFixedPointGap` | NO_PROOF_IN_LIBRARY |  |
 | `MCore.Real.P02RestrictionLowerBoundPattern.RestrictionLowerBoundTransfer` | NO_PROOF_IN_LIBRARY |  |
 | `MCore.Real.SATMachineFrontier` | NO_PROOF_IN_LIBRARY |  |

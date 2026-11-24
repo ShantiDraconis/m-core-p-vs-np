@@ -120,12 +120,69 @@ constructor by actual tape transformations.  The input constructor is reduced
 to the certified witness-targeting shuttle above.  The remaining gap is to
 realize these variable-length sequences as runs of one fixed transition
 machine and prove the global time/halting bound. -/
-def LocalPhysicalInstructionLayerClosed : Prop :=
-  True
+structure LocalPhysicalInstructionLayerClosed : Prop where
+  physical_const_sequence_exact
+    (witness source : BitString)
+    (stack : List Bool)
+    (padding : Nat)
+    (b : Bool) :
+    pushStep b (physicalStackV2Tape witness source stack padding) =
+      physicalStackV2Tape witness source (b :: stack) (padding - 1)
+  physical_neg_sequence_exact
+    (witness source : BitString)
+    (v : Bool)
+    (stack : List Bool)
+    (padding : Nat) :
+    pushStep (!v)
+      (popErase
+        (popEnter
+          (physicalStackV2Tape witness source (v :: stack) padding))) =
+      physicalStackV2Tape witness source ((!v) :: stack) padding
+  physical_and_sequence_exact
+    (witness source : BitString)
+    (l r : Bool)
+    (stack : List Bool)
+    (padding : Nat) :
+    pushStep (Bool.and l r)
+      (popErase
+        (popEnter
+          (popErase
+            (popEnter
+              (physicalStackV2Tape witness source
+                (r :: l :: stack) padding))))) =
+      physicalStackV2Tape witness source
+        (Bool.and l r :: stack) (padding + 1)
+  physical_or_sequence_exact
+    (witness source : BitString)
+    (l r : Bool)
+    (stack : List Bool)
+    (padding : Nat) :
+    pushStep (Bool.or l r)
+      (popErase
+        (popEnter
+          (popErase
+            (popEnter
+              (physicalStackV2Tape witness source
+                (r :: l :: stack) padding))))) =
+      physicalStackV2Tape witness source
+        (Bool.or l r :: stack) (padding + 1)
+  stackV2_witness_head_correct
+    (witness source : BitString)
+    (stack : List Bool)
+    (padding i : Nat)
+    (hi : i < witness.length) :
+    (execMoves none
+      (moveLeftSeq (stackWitnessOffset stack source i))
+      (physicalStackV2Tape witness source stack padding)).head =
+      some witness[i]
 
 theorem localPhysicalInstructionLayerClosed :
     LocalPhysicalInstructionLayerClosed := by
-  trivial
+  exact ⟨physical_const_sequence_exact,
+    physical_neg_sequence_exact,
+    physical_and_sequence_exact,
+    physical_or_sequence_exact,
+    stackV2_witness_head_correct⟩
 
 #print axioms MCore.Real.P01FullVerifierPhysicalRefinementV2.physical_const_sequence_exact
 #print axioms MCore.Real.P01FullVerifierPhysicalRefinementV2.physical_neg_sequence_exact
