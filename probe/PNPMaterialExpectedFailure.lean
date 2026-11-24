@@ -12,8 +12,12 @@ EXPECTED FAILURE TARGET.
 No LowerBoundWitness.not_in_p, SeparationCertificate, or universal-failure
 oracle is supplied.
 -/
+/-- error: unsolved goals
+⊢ InNP (SATBits circuitBitEncoding) ∧ UniversalFailure (SATBits circuitBitEncoding) -/
+#guard_msgs in
 example :
     InNP (SATBits circuitBitEncoding) ∧
     UniversalFailure (SATBits circuitBitEncoding) := by
+  skip
 
 end MCore.Real.PNPMaterialProbe

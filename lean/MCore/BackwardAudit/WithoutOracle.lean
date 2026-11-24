@@ -1,10 +1,6 @@
-import MCore.K9
+import MCore.BackwardAudit.InterfaceFinalStatement
 
 namespace MCore.BackwardAudit
-
-def InterfaceFinalStatement {Language : Type}
-    (C : ClassicalComplexityInterface Language) : Prop :=
-  ¬ ∀ L, C.inP L ↔ C.inNP L
 
 structure SeparationWitness {Language : Type}
     (C : ClassicalComplexityInterface Language) where

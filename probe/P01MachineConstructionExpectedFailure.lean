@@ -8,6 +8,10 @@ open P01FinalCertificate
 EXPECTED FAILURE TARGET.
 No P01MachineConstruction inhabitant is supplied.
 -/
+/-- error: unsolved goals
+⊢ Nonempty P01MachineConstruction -/
+#guard_msgs in
 example : Nonempty P01MachineConstruction := by
+  skip
 
 end MCore.Real.P01MaterialProbe

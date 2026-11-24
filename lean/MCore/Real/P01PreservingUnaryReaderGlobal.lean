@@ -99,14 +99,17 @@ theorem rewind_false_bits
   induction pref generalizing left with
   | nil =>
       simp [TM.run]
-  | cons b bs =>
+  | cons b bs ih =>
       rw [List.length_cons]
       rw [show 3 * (bs.length + 1) = 3 + 3 * bs.length by omega]
       rw [MachineRunLemmas.run_add]
       simp only [List.map_cons, List.cons_append, List.headD_cons, List.tail_cons]
-      rw [rewind_false_control_cycle]
-      simpa [List.reverse_cons, List.map_append, List.append_assoc] using
-        (ih (left := some b :: left))
+      have htail := ih (left := some b :: left)
+      cases bs <;>
+        simp only [List.map_nil, List.map_cons, List.nil_append, List.cons_append,
+          List.headD_cons, List.tail_cons] at * <;>
+        rw [rewind_false_control_cycle] <;>
+        simpa [List.reverse_cons, List.map_append, List.append_assoc] using htail
 
 /-- A three-step rewind cycle preserves a selected true result while restoring
 an arbitrary witness bit. -/
@@ -122,6 +125,33 @@ theorem rewind_true_control_cycle
                   right := right } } := by
   cases b <;>
     simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
+
+/-- Restore the full prefix in three steps per bit while carrying true. -/
+theorem rewind_true_bits
+    (left : List (Option Bool)) (pref : BitString)
+    (next : Option Bool) (right : List (Option Bool)) :
+    preservingUnaryReadMachine.run (3 * pref.length)
+      { state := .rewindInspectTrue
+        tape := { left := none :: left,
+                  head := (pref.map some ++ next :: right).headD next,
+                  right := (pref.map some ++ next :: right).tail } } =
+      { state := .rewindInspectTrue
+        tape := { left := none :: pref.reverse.map some ++ left,
+                  head := next, right := right } } := by
+  induction pref generalizing left with
+  | nil =>
+      simp [TM.run]
+  | cons b bs ih =>
+      rw [List.length_cons]
+      rw [show 3 * (bs.length + 1) = 3 + 3 * bs.length by omega]
+      rw [MachineRunLemmas.run_add]
+      simp only [List.map_cons, List.cons_append, List.headD_cons, List.tail_cons]
+      have htail := ih (left := some b :: left)
+      cases bs <;>
+        simp only [List.map_nil, List.map_cons, List.nil_append, List.cons_append,
+          List.headD_cons, List.tail_cons] at * <;>
+        rw [rewind_true_control_cycle] <;>
+        simpa [List.reverse_cons, List.map_append, List.append_assoc] using htail
 
 /-- Cleanup consumes one erased unary cell without changing the selected
 false result. -/
@@ -169,6 +199,8 @@ theorem cleanup_true_terminator
           { left := left, head := none, right := right } } := by
   simp [preservingUnaryReadMachine, TM.run, TM.step, Tape.write, Tape.move]
 
+#print axioms MCore.Real.P01PreservingUnaryReaderGlobal.rewind_false_bits
+#print axioms MCore.Real.P01PreservingUnaryReaderGlobal.rewind_true_bits
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.rewind_true_control_cycle
 
 #print axioms MCore.Real.P01PreservingUnaryReaderGlobal.payload_advance_rewind

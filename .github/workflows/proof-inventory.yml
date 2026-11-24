@@ -4,12 +4,13 @@ name: Proof inventory
 # the modules the root file imports), records each theorem's axioms, flags
 # vacuous Prop definitions and derives PROVED / REFUTED status from the kernel.
 # Fails on sorryAx, on project-declared axioms used by a theorem, and on a
-# broken module in the default build. Orphan-module failures are warnings.
+# broken library module or executable audit file. Archival concatenations are listed separately.
 
 on:
   push:
     paths:
       - '**/*.lean'
+      - 'audit/**'
       - 'lakefile.*'
       - 'lean-toolchain'
       - 'lake-manifest.json'
@@ -42,6 +43,10 @@ jobs:
           # pull requests must ship a regenerated inventory; pushes only warn
           if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then extra="--fail-if-stale"; fi
           python3 scripts/proof_inventory.py --out inventory --strict --check-committed $extra
+      - name: Verify material probe diagnostics
+        run: |
+          lake env lean probe/P01MachineConstructionExpectedFailure.lean
+          lake env lean probe/PNPMaterialExpectedFailure.lean
       - name: Upload inventory
         if: always()
         uses: actions/upload-artifact@v4

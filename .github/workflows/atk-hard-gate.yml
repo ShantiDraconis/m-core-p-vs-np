@@ -18,4 +18,4 @@ jobs:
       - name: Build frozen dependency graph
         run: lake build MCore
       - name: Kernel-check current HARD gate
-        run: lake env lean lean/MCore/ATK_HARD_PNP_NEXT.lean
+        run: lake env lean probe/ATK_HARD_PNP_NEXT.lean
