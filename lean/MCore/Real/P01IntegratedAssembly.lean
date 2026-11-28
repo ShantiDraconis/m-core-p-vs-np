@@ -193,24 +193,24 @@ def verifierFinMachine :
   relabel V.machine V.encode V.decode
 
 @[simp] theorem verifierFinMachine_blank :
-    (verifierFinMachine V).blank = none := by
+    (verifierFinMachine P V).blank = none := by
   exact V.blank_none
 
 theorem verifierFinMachine_haltsWithin_iff
     (n : Nat) (c : Configuration V.State (Option Bool)) :
-    (verifierFinMachine V).HaltsWithin n (liftConfig V.encode c) ↔
+    (verifierFinMachine P V).HaltsWithin n (liftConfig V.encode c) ↔
       V.machine.HaltsWithin n c := by
   exact relabel_haltsWithin_iff
     V.machine V.encode V.decode V.decode_encode n c
 
 theorem verifierFinMachine_acceptsWithin_iff
     (n : Nat) (c : Configuration V.State (Option Bool)) :
-    (verifierFinMachine V).AcceptsWithin n (liftConfig V.encode c) ↔
+    (verifierFinMachine P V).AcceptsWithin n (liftConfig V.encode c) ↔
       V.machine.AcceptsWithin n c := by
   exact relabel_acceptsWithin_iff
     V.machine V.encode V.decode V.decode_encode n c
 
-abbrev seqMachine := seq P.machine (verifierFinMachine V)
+abbrev seqMachine := seq P.machine (verifierFinMachine P V)
 
 def integratedMachine :
     NTM (Fin (P.stateCount + V.stateCount + 1 + 1)) (Option Bool) :=
@@ -220,25 +220,25 @@ def integratedMachine :
 def integratedTime : TimeBound :=
   fun n => P.timeBound n + 1 + V.timeBound n
 
-theorem hblank : P.machine.blank = (verifierFinMachine V).blank := by
+theorem hblank : P.machine.blank = (verifierFinMachine P V).blank := by
   rw [P.blank_none, verifierFinMachine_blank]
 
 theorem initial_config_eq (bs : BitString) :
     initialNTMConfig (integratedMachine P V) bs =
       liftConfig (sumToFin P.stateCount V.stateCount)
-        (L P.machine (verifierFinMachine V) (initialNTMConfig P.machine bs)) := rfl
+        (L P.machine (verifierFinMachine P V) (initialNTMConfig P.machine bs)) := rfl
 
 theorem verifier_halts_on_handoffs (bs : BitString) :
     ∀ d ∈ P.machine.runBranches (P.timeBound bs.length)
         [initialNTMConfig P.machine bs],
       P.machine.accepting d.state = true →
-      (verifierFinMachine V).HaltsWithin (V.timeBound bs.length)
-        (handoff P.machine (verifierFinMachine V) d) := by
+      (verifierFinMachine P V).HaltsWithin (V.timeBound bs.length)
+        (handoff P.machine (verifierFinMachine P V) d) := by
   intro d hd hacc
   rcases P.sound bs d hd hacc with ⟨w, hw, htape⟩
   have hV := V.halts bs w hw
   have hFin :=
-    (verifierFinMachine_haltsWithin_iff V (V.timeBound bs.length)
+    (verifierFinMachine_haltsWithin_iff P V (V.timeBound bs.length)
       ({ state := V.machine.initial, tape := P.layout bs w } :
         Configuration V.State (Option Bool))).2 hV
   simpa [handoff, htape, verifierFinMachine, relabel, liftConfig] using hFin
@@ -248,7 +248,7 @@ theorem integrated_halts (bs : BitString) :
       (initialNTMConfig (integratedMachine P V) bs) := by
   rw [initial_config_eq, integratedMachine,
     relabel_haltsWithin_iff _ _ _ (finToSum_sumToFin _ _)]
-  exact seq_haltsWithin P.machine (verifierFinMachine V) (hblank P V) P.disjoint
+  exact seq_haltsWithin P.machine (verifierFinMachine P V) (hblank P V) P.disjoint
     (V.timeBound bs.length) (P.timeBound bs.length) _ (P.halts bs)
     (verifier_halts_on_handoffs P V bs)
 
@@ -259,7 +259,7 @@ theorem integrated_accepts_iff (bs : BitString) :
   rw [initial_config_eq, integratedMachine,
     relabel_acceptsWithin_iff _ _ _ (finToSum_sumToFin _ _),
     integratedTime,
-    seq_acceptsWithin_iff P.machine (verifierFinMachine V) (hblank P V) P.disjoint
+    seq_acceptsWithin_iff P.machine (verifierFinMachine P V) (hblank P V) P.disjoint
       (P.timeBound bs.length) (V.timeBound bs.length) _ (P.halts bs)
       (verifier_halts_on_handoffs P V bs),
     satBits_iff_guessed_witness]
@@ -271,7 +271,7 @@ theorem integrated_accepts_iff (bs : BitString) :
         V.machine.AcceptsWithin (V.timeBound bs.length)
           ({ state := V.machine.initial, tape := P.layout bs w } :
             Configuration V.State (Option Bool)) := by
-      apply (verifierFinMachine_acceptsWithin_iff V (V.timeBound bs.length)
+      apply (verifierFinMachine_acceptsWithin_iff P V (V.timeBound bs.length)
         ({ state := V.machine.initial, tape := P.layout bs w } :
           Configuration V.State (Option Bool))).1
       simpa [handoff, htape, verifierFinMachine, relabel, liftConfig] using hVFin
@@ -281,7 +281,7 @@ theorem integrated_accepts_iff (bs : BitString) :
     refine ⟨d, hd, hacc, ?_⟩
     have hV := (V.correct bs w hw).2 hver
     have hVFin :=
-      (verifierFinMachine_acceptsWithin_iff V (V.timeBound bs.length)
+      (verifierFinMachine_acceptsWithin_iff P V (V.timeBound bs.length)
         ({ state := V.machine.initial, tape := P.layout bs w } :
           Configuration V.State (Option Bool))).2 hV
     simpa [handoff, htape, verifierFinMachine, relabel, liftConfig] using hVFin

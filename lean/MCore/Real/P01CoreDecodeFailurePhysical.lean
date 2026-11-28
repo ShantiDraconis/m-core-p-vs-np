@@ -31,7 +31,7 @@ open P01MalformedRawBoundedReject
 open P01DecodeFailureLaws
 open P01CoreDecodeFailureAtoms
 open P01CoreDecodeFailureBudget
-open P01NTMRunLaws
+open P01NTMRunLaws P01CheckedVerifierGlobalBudget P01ExactBoundedCircuitProducer
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -140,17 +140,17 @@ theorem coreDecodeFailurePhysicalAux :
             CheckedLayoutBound n consumed
               (false :: false :: false :: List.replicate rest.length true)
               (encodeEvalFrames frames) := by
-          simpa [hrep] using hLayout
+          rwa [← hrep]
         obtain ⟨m, hm, tape, hrun⟩ :=
           unterminated_input_within_loop
             n mode witness (encodeEvalFrames frames)
             consumed padding rest.length hLayout'
         refine ⟨m, Nat.le_trans hm ?_,
           { state := .reject, tape := tape }, ?_, rfl⟩
-        · simpa [hrep] using
+        · exact
             (loop_le_potential
               (false :: false :: false :: rest).length n)
-        · simpa [hrep] using hrun
+        · rwa [← hrep] at hrun
 
       · rcases hnot with ⟨rest, rfl, hchild⟩
         cases hallowed : tagAllowed mode .neg with
@@ -362,7 +362,11 @@ theorem coreDecodeFailurePhysicalAux :
                     binary_left_semantic_reject_le a rest'.length n
                   refine ⟨m0 + m1, Nat.le_trans hsum ?_,
                     cfg1, hAll, hrej1⟩
-                  simpa [hrestEq, List.length_append, Nat.add_assoc] using hcap
+                  apply Nat.le_trans hcap
+                  apply Nat.le_of_eq
+                  congr 1
+                  simp only [List.length_cons, hrestEq, List.length_append]
+                  omega
 
               | true =>
                   obtain ⟨m1, hm1, cfg1, h1, hout1⟩ :=
@@ -508,7 +512,11 @@ theorem coreDecodeFailurePhysicalAux :
                     binary_right_path_le a rest'.length n
                   refine ⟨m0 + m1 + m2 + m3,
                     Nat.le_trans hsum ?_, cfg3, hAll, hrej3⟩
-                  simpa [hrestEq, List.length_append, Nat.add_assoc] using hcap
+                  apply Nat.le_trans hcap
+                  apply Nat.le_of_eq
+                  congr 1
+                  simp only [List.length_cons, hrestEq, List.length_append]
+                  omega
 
       · rcases hor with ⟨rest, rfl, hfail⟩
         cases hallowed : tagAllowed mode .or with
@@ -645,7 +653,11 @@ theorem coreDecodeFailurePhysicalAux :
                     binary_left_semantic_reject_le a rest'.length n
                   refine ⟨m0 + m1, Nat.le_trans hsum ?_,
                     cfg1, hAll, hrej1⟩
-                  simpa [hrestEq, List.length_append, Nat.add_assoc] using hcap
+                  apply Nat.le_trans hcap
+                  apply Nat.le_of_eq
+                  congr 1
+                  simp only [List.length_cons, hrestEq, List.length_append]
+                  omega
 
               | true =>
                   obtain ⟨m1, hm1, cfg1, h1, hout1⟩ :=
@@ -791,7 +803,11 @@ theorem coreDecodeFailurePhysicalAux :
                     binary_right_path_le a rest'.length n
                   refine ⟨m0 + m1 + m2 + m3,
                     Nat.le_trans hsum ?_, cfg3, hAll, hrej3⟩
-                  simpa [hrestEq, List.length_append, Nat.add_assoc] using hcap
+                  apply Nat.le_trans hcap
+                  apply Nat.le_of_eq
+                  congr 1
+                  simp only [List.length_cons, hrestEq, List.length_append]
+                  omega
 
       · rcases hinvalid with ⟨third, rest, rfl⟩
         have hdis :
@@ -817,7 +833,7 @@ theorem coreDecodeFailurePhysicalReject :
     CoreDecodeFailurePhysicalReject := by
   intro witness bs hw hcore
   have hLayout : CheckedLayoutBound bs.length 0 bs [] :=
-    CheckedLayoutBound.root bs
+    P01CheckedVerifierInvariant.root bs
   obtain ⟨m, hm, cfg, hrun, hrej⟩ :=
     coreDecodeFailurePhysicalAux
       (bs.length + 1) bs .cnf witness [] 0 0 bs.length

@@ -37,7 +37,7 @@ theorem decodeNat_none_eq_replicate_true :
           simp [hr] at h
       | none =>
           have ih := decodeNat_none_eq_replicate_true rest hr
-          simp [ih, List.replicate_succ]
+          exact (congrArg (List.cons true) ih).trans (List.replicate_succ ..).symm
 
 /-- The checked-loop envelope is always below the material global envelope. -/
 theorem checkedLoopStepEnvelope_le_material
@@ -184,7 +184,8 @@ theorem input_decode_failure_rejects_material
     unterminated_input_rejects_material
       N mode witness frameStack consumed padding rest.length
       hrest hframes
-  simpa [hrep] using hbase
+  rw [← hrep] at hbase
+  exact hbase
 
 #print axioms MCore.Real.P01CoreDecodeFailureAtoms.decodeNat_none_eq_replicate_true
 #print axioms MCore.Real.P01CoreDecodeFailureAtoms.short_source_rejects_material

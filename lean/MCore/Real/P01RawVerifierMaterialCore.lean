@@ -40,8 +40,8 @@ theorem verifyBits_split
     VerifyBits bs w ↔
       ∃ phi : CircuitK1.Circuit,
         CanonicalCircuitBits.decodeCircuit bs = some phi ∧
-        CircuitK1.IsCNF phi ∧
-        CircuitK1.evalCircuit (fun i => w.getD i false) phi = true := by
+        IsCNF phi ∧
+        evalCircuit (fun i => w.getD i false) phi = true := by
   rfl
 
 /-- Failure of the canonical decoder rules out the verifier relation outright. -/

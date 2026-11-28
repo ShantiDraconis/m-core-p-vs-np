@@ -30,7 +30,8 @@ open P01CanonicalWrapperBounded
 open P01MaterialGlobalBudget
 open P01DecodeCoreLaws
 open P01RawVerifierMaterialCore
-open P01NTMRunLaws
+open P01NTMRunLaws P01CheckedEvalRunBoundedCertificate
+open P01GuessedWitnessRelation (VerifyBits)
 
 abbrev VConfig :=
   Configuration CheckedVerifierState (Option Bool)
@@ -44,7 +45,6 @@ private theorem wrapper_reject_not_accepts
     (hmem : terminal ∈ checkedVerifierMachine.runBranches m [start])
     (hrej : terminal.state = .reject) :
     ¬ checkedVerifierMachine.AcceptsWithin T start := by
-  subst terminal.state
   have hhalt : Halted checkedVerifierMachine terminal := by
     rcases terminal with ⟨q,tape⟩
     simp only at hrej
@@ -165,6 +165,7 @@ private theorem lift_eval_reject_to_wrapper
           checked_eval_runBranches_map me
             [({ state := checkedEvalRunLoopMachine.initial,
                 tape := evalCursorStackEndTape witness 0 bs [] 0 } : EConfig)]
+        change checkedVerifierMachine.runBranches me [{ state := .eval checkedEvalRunLoopMachine.initial, tape := _ }] = _ at hmap
         rw [hmap]
         apply List.mem_map.mpr
         refine ⟨({ state := .reject, tape := tape } : EConfig), ?_, rfl⟩
@@ -190,7 +191,9 @@ private theorem lift_eval_reject_to_wrapper
       have hsum :
           mp + me ≤ bs.length + 3 +
             materialVerifierGlobalTimeBound bs.length := by
+        rw [← hbs] at hmp
         omega
+      rw [← hbs]
       refine ⟨mp + me,
         Nat.le_trans hsum (entry_plus_material_le_terminal bs.length),
         ({ state := .reject, tape := tape } : VConfig), hall, rfl⟩
@@ -208,15 +211,14 @@ theorem decode_none_wrapper_reject
       terminal.state = .reject := by
   cases hbs : bs with
   | nil =>
-      refine ⟨1, ?_, ({ state := .reject,
-        tape := preparedTape witness [] } : VConfig), ?_, rfl⟩
+      refine ⟨1, ?_, ({ state := .reject, tape := preparedTape witness [] } : VConfig), ?_, rfl⟩
       · unfold terminalVerifierTimeBound
-        omega
+        decide
       · exact empty_wrapper_reaches_reject witness
   | cons b rest =>
       obtain ⟨me,hme,cfg,hrun,hrej⟩ :=
         malformed_raw_reaches_reject_bounded_of_core
-          K witness (b :: rest) hw hdecode
+          K witness (b :: rest) (hbs ▸ hw) (hbs ▸ hdecode)
       exact lift_eval_reject_to_wrapper
         witness (b :: rest) (by simp) me cfg hme hrun hrej
 
@@ -252,12 +254,12 @@ theorem decoded_noncnf_wrapper_reject
   have hLayout :
       CheckedLayoutBound bs.length 0
         (encodeCircuit phi ++ []) (encodeEvalFrames []) := by
-    simpa [hshape] using CheckedLayoutBound.root bs
+    simpa [hshape] using P01CheckedVerifierInvariant.root bs
   obtain ⟨me,hme,cfg,hrun,hrej⟩ :=
     bounded_circuit_reject_certificate sigma witness phi .cnf
       hmode [] [] 0 0 bs.length hLayout hlen hread
   have henc : (encodeCircuit phi).length ≤ bs.length := by
-    rw [hshape]
+    simp [hshape]
   have h6144 :=
     checkedCircuitBudget_le_6144_cubic bs.length phi henc
   have hmat :
@@ -272,7 +274,7 @@ theorem decoded_noncnf_wrapper_reject
     witness bs (by
       intro hz
       rw [hz] at hshape
-      cases phi <;> simp [encodeCircuit] at hshape)
+      exact encodeCircuit_ne_nil phi hshape.symm)
     me cfg hme' (by simpa [hshape] using hrun) hrej
 
 /-- The only remaining physical premise for the raw verifier is recursive core
@@ -302,10 +304,10 @@ def rawVerifierMaterialCoreOfCoreReject
         by_cases hCNF : IsCNF phi
         · have hshape := decodeCircuit_sound bs phi hdec
           have hlen : (encodeCircuit phi).length ≤ witness.length := by
-            rw [← hshape, hw]
+            simp only [← hshape, hw, Nat.le_refl]
           have hs :=
             canonical_cnf_halts_bounded phi witness hCNF hlen
-          rw [hshape] at hs
+          rw [← hshape] at hs
           exact haltsWithin_mono_le checkedVerifierMachine
             (materialVerifierGlobalTimeBound bs.length)
             (terminalVerifierTimeBound bs.length)
@@ -347,7 +349,7 @@ def rawVerifierMaterialCoreOfCoreReject
         by_cases hCNF : IsCNF phi
         · have hshape := decodeCircuit_sound bs phi hdec
           have hlen : (encodeCircuit phi).length ≤ witness.length := by
-            rw [← hshape, hw]
+            simp only [← hshape, hw, Nat.le_refl]
           obtain ⟨m,hm,tape,hreach⟩ :=
             canonical_cnf_reaches_final_bounded phi witness hCNF hlen
           have hmT :

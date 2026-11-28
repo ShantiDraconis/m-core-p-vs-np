@@ -78,7 +78,7 @@ def sumCodec {α β : Type}
         simp [A.decode_encode, A.encode a |>.isLt]
     | inr b =>
         have h : ¬ (A.size + (B.encode b).val < A.size) := by omega
-        simp [h, B.decode_encode]
+        simp [h, Nat.add_sub_cancel_left, B.decode_encode]
 
 /-- Row-major product codec. -/
 def prodCodec {α β : Type}
@@ -90,7 +90,10 @@ def prodCodec {α β : Type}
     ⟨(A.encode x.1).val * B.size + (B.encode x.2).val, by
       have ha := (A.encode x.1).isLt
       have hb := (B.encode x.2).isLt
-      nlinarith⟩
+      calc
+        _ < (A.encode x.1).val * B.size + B.size := Nat.add_lt_add_left hb _
+        _ = ((A.encode x.1).val + 1) * B.size := (Nat.succ_mul _ _).symm
+        _ ≤ A.size * B.size := Nat.mul_le_mul_right _ ha⟩
   decode := fun k =>
     let qa : Fin A.size :=
       ⟨k.val / B.size, by
@@ -103,10 +106,13 @@ def prodCodec {α β : Type}
     intro x
     rcases x with ⟨a,b⟩
     apply Prod.ext
-    · simp [prodCodec, Nat.mul_add_div, Nat.div_eq_of_lt (B.encode b).isLt,
-        A.decode_encode]
-    · simp [prodCodec, Nat.mul_add_mod_self_left,
-        Nat.mod_eq_of_lt (B.encode b).isLt, B.decode_encode]
+    · refine Eq.trans (congrArg A.decode ?_) (A.decode_encode a)
+      apply Fin.ext
+      change ((A.encode a).val * B.size + (B.encode b).val) / B.size = _
+      rw [Nat.mul_comm, Nat.mul_add_div B.pos, Nat.div_eq_of_lt (B.encode b).isLt, Nat.add_zero]
+    · refine Eq.trans (congrArg B.decode ?_) (B.decode_encode b)
+      apply Fin.ext
+      exact (Nat.mul_add_mod_self_right _ _ _).trans (Nat.mod_eq_of_lt (B.encode b).isLt)
 
 /-- Nested three-way sum helper. -/
 def sum3Codec {α β γ : Type}

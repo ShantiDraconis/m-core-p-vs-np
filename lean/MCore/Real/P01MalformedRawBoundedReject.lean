@@ -26,7 +26,7 @@ open P01CheckedEvalRejectBounded
 open P01ExactBoundedAll
 open P01MaterialGlobalBudget
 open P01NTMRunLaws
-open P01DecodeCoreLaws
+open P01DecodeCoreLaws P01CheckedVerifierGlobalBudget P01ExactBoundedCircuitProducer
 
 abbrev CheckedConfig :=
   Configuration CheckedEvalRunState (Option Bool)
@@ -45,14 +45,14 @@ theorem decodeCircuit_none_split
   unfold decodeCircuit at h
   cases hc : decodeCircuitCore (bs.length + 1) bs with
   | none =>
-      exact Or.inl hc
+      exact Or.inl rfl
   | some p =>
       rcases p with ⟨phi, tail⟩
       cases tail with
       | nil =>
           simp [hc] at h
       | cons b rest =>
-          exact Or.inr ⟨phi, b, rest, hc⟩
+          exact Or.inr ⟨phi, b, rest, rfl⟩
 
 /-- The checked evaluator's integrated source guard rejects a nonempty unread
 source in exactly three physical steps after the semantic value has been
@@ -238,7 +238,7 @@ theorem core_success_with_trailing_reaches_reject_bounded
       CheckedLayoutBound bs.length 0
         (encodeCircuit phi ++ (b :: rest)) [] := by
     simpa [hsource] using
-      (CheckedLayoutBound.root bs)
+      (P01CheckedVerifierInvariant.root bs)
 
   cases hmode : modeCheck .cnf phi with
   | false =>
@@ -329,8 +329,20 @@ theorem checkedCircuitBudget_plus_loop_le_material
     checkedCircuitBudget phi n + checkedLoopStepEnvelope n
         ≤ 6144 * (n + 1)^3 + 256 * (n + 1)^3 :=
           Nat.add_le_add heval hloop
-    _ ≤ 8192 * (n + 1)^3 := by
-          exact Nat.mul_le_mul_right ((n + 1)^3) (by omega)
+    _ ≤ 8192 * (n + 1)^3 := by omega
+
+/-- After closing the trailing-garbage branch, the only raw-decoder case not
+yet supplied by existing physical certificates is recursive core failure. -/
+def CoreDecodeFailurePhysicalReject : Prop :=
+  ∀ (witness bs : BitString),
+    witness.length = bs.length →
+    decodeCircuitCore (bs.length + 1) bs = none →
+    ∃ m ≤ materialVerifierGlobalTimeBound bs.length, ∃ cfg,
+      cfg ∈
+        checkedEvalRunLoopMachine.runBranches m
+          [{ state := .need .cnf needExprCompositeMachine.initial,
+             tape := evalCursorStackEndTape witness 0 bs [] 0 }] ∧
+      cfg.state = .reject
 
 /-- Full evaluator-level malformed-source reduction.
 
@@ -366,18 +378,7 @@ theorem malformed_raw_reaches_reject_bounded_of_core
         (checkedCircuitBudget_plus_loop_le_material bs.length phi henc),
       cfg, hrun, hrej⟩
 
-/-- After closing the trailing-garbage branch, the only raw-decoder case not
-yet supplied by existing physical certificates is recursive core failure. -/
-def CoreDecodeFailurePhysicalReject : Prop :=
-  ∀ (witness bs : BitString),
-    witness.length = bs.length →
-    decodeCircuitCore (bs.length + 1) bs = none →
-    ∃ m ≤ materialVerifierGlobalTimeBound bs.length, ∃ cfg,
-      cfg ∈
-        checkedEvalRunLoopMachine.runBranches m
-          [{ state := .need .cnf needExprCompositeMachine.initial,
-             tape := evalCursorStackEndTape witness 0 bs [] 0 }] ∧
-      cfg.state = .reject
+
 
 #print axioms MCore.Real.P01MalformedRawBoundedReject.decodeCircuit_none_split
 #print axioms MCore.Real.P01MalformedRawBoundedReject.checked_nonempty_source_reaches_reject

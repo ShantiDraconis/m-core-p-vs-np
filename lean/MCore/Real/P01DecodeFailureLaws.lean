@@ -55,9 +55,10 @@ theorem decode_and_none_iff
       cases h2 : decodeCircuitCore fuel rest' with
       | none =>
           simp [h1, h2]
+          exact ⟨a, rest', ⟨rfl, rfl⟩, h2⟩
       | some q =>
           rcases q with ⟨b, tail⟩
-          simp [h1, h2]
+          simp [h1, h2] <;> grind
 
 theorem decode_or_none_iff
     (fuel : Nat) (rest : BitString) :
@@ -76,9 +77,10 @@ theorem decode_or_none_iff
       cases h2 : decodeCircuitCore fuel rest' with
       | none =>
           simp [h1, h2]
+          exact ⟨a, rest', ⟨rfl, rfl⟩, h2⟩
       | some q =>
           rcases q with ⟨b, tail⟩
-          simp [h1, h2]
+          simp [h1, h2] <;> grind
 
 theorem decode_invalid_110_none
     (fuel : Nat) (rest : BitString) :
@@ -127,10 +129,10 @@ theorem decodeCore_none_cases
         ⟨rest, rfl, (decode_and_none_iff fuel rest).1 h⟩))
     · exact Or.inr (Or.inr (Or.inr (Or.inl
         ⟨rest, rfl, (decode_or_none_iff fuel rest).1 h⟩)))
-    · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-        ⟨false, rest, rfl⟩))))
-    · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-        ⟨true, rest, rfl⟩))))
+    · exact Or.inr (Or.inr (Or.inr (Or.inr
+        ⟨false, rest, rfl⟩)))
+    · exact Or.inr (Or.inr (Or.inr (Or.inr
+        ⟨true, rest, rfl⟩)))
 
 #print axioms MCore.Real.P01DecodeFailureLaws.decode_input_none_iff
 #print axioms MCore.Real.P01DecodeFailureLaws.decode_not_none_iff

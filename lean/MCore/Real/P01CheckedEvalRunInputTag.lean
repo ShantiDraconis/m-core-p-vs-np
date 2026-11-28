@@ -253,8 +253,8 @@ theorem inputTag_unterminated_reaches_reject
                evalCursorStackEndTape witness consumed
                  (false :: false :: false :: List.replicate n true)
                  frameStack padding }] := by
-    simpa [cInput0, tAfter, inputCheckedConfig, inputCheckedEmbed,
-      postTagState, childMode] using h0
+    cases mode <;> simpa [cInput0, tAfter, inputCheckedConfig, inputCheckedEmbed,
+      postTagState, childMode, decodeTagBits] using h0
 
   obtain ⟨m1, hm1, tape1, h1⟩ :=
     unterminated_input_checked_from_read

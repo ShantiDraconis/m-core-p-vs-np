@@ -747,6 +747,7 @@ theorem unterminated_index_reaches_reject
     rcases cR with ⟨q, tape⟩
     simp only at hstate
     subst q
+    dsimp only [cLook, lookConfig, cReject]
     rw [(nested_input_reject_successors (.sourceTail) false tape).1]
     simp [cLook, cReject, lookConfig]
 

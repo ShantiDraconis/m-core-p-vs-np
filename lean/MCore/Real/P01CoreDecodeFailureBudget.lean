@@ -8,7 +8,7 @@ namespace P01CoreDecodeFailureBudget
 
 open CanonicalFinalProof
 open CanonicalCircuitBits
-open CircuitK1
+open CircuitK1 P01EncodedStackEvaluator
 open P01CheckedEvalRunBoundedCertificate
 open P01CheckedVerifierGlobalBudget
 open P01MaterialGlobalBudget
@@ -35,6 +35,7 @@ theorem tag_plus_recursive_le
         coreRejectPotential restLength n ≤
       coreRejectPotential (restLength + 3) n := by
   unfold coreRejectPotential
+  conv => lhs; lhs; rw [← Nat.one_mul (checkedLoopStepEnvelope n)]
   rw [← Nat.add_mul]
   exact Nat.mul_le_mul_right (checkedLoopStepEnvelope n) (by omega)
 
@@ -76,11 +77,8 @@ theorem binary_right_path_le
           32 * (rightLength + 1)) * E := by
     unfold coreRejectPotential
     dsimp [E]
-    exact Nat.add_le_add
-      (Nat.add_le_add
-        (Nat.le_refl _)
-        (Nat.add_le_add he (Nat.le_refl _)))
-      (Nat.le_refl _)
+    simp only [Nat.add_mul, Nat.one_mul] at he ⊢
+    omega
   have hc :
       1 + (24 * (encodeCircuit phi).length + 8) + 1 +
           32 * (rightLength + 1) ≤
@@ -106,7 +104,8 @@ theorem binary_left_semantic_reject_le
       checkedLoopStepEnvelope n + checkedCircuitBudget phi n ≤
         (1 + (24 * (encodeCircuit phi).length + 8)) * E := by
     dsimp [E]
-    exact Nat.add_le_add (Nat.le_refl _) he
+    simp only [Nat.add_mul, Nat.one_mul] at he ⊢
+    omega
   have hc :
       1 + (24 * (encodeCircuit phi).length + 8) ≤
         32 * (3 + (encodeCircuit phi).length + rightLength + 1) := by

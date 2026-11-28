@@ -20,12 +20,14 @@ open P01CheckedVerifierCompositeNTM
 open P01CheckedVerifierDeterminism
 open P01CheckedEvalRunLoopNTM
 open P01MaterialGlobalBudget
-open P01NTMRunLaws
+open P01CheckedEvalRunBoundedCertificate P01NTMRunLaws P01WitnessPreservingPrep P01EncodedFrameTape P01EvalCursorMachine
 
 /-- Every canonical circuit encoding is nonempty. -/
 theorem encodeCircuit_ne_nil (phi : Circuit) :
     encodeCircuit phi ≠ [] := by
   cases phi <;> simp [encodeCircuit]
+  rename_i b
+  cases b <;> decide
 
 /-- Exact physical terminal reachability for a canonical CNF circuit through
 the complete checked verifier wrapper.
@@ -66,7 +68,7 @@ theorem canonical_cnf_reaches_final_bounded
   have hLayout :
       CheckedLayoutBound (encodeCircuit phi).length 0
         (encodeCircuit phi ++ []) (encodeEvalFrames []) := by
-    simpa using CheckedLayoutBound.root (encodeCircuit phi)
+    simpa using P01CheckedVerifierInvariant.root (encodeCircuit phi)
 
   obtain ⟨me, hme, cfg, hEval, hOutcome⟩ :=
     exact_bounded_all
@@ -94,11 +96,10 @@ theorem canonical_cnf_reaches_final_bounded
               evalCursorStackEndTape witness 0
                 (encodeCircuit phi) [] 0 } :
           Configuration CheckedEvalRunState (Option Bool))]
+    change checkedVerifierMachine.runBranches me [{ state := .eval checkedEvalRunLoopMachine.initial, tape := _ }] = _ at hmap
     rw [hmap]
     apply List.mem_map.mpr
-    refine ⟨({ state := .final
-          (evalCircuit (fun i => witness.getD i false) phi),
-        tape := terminalTape } :
+    refine ⟨({ state := .final (evalCircuit (fun i => witness.getD i false) phi), tape := terminalTape } :
       Configuration CheckedEvalRunState (Option Bool)), ?_, ?_⟩
     · simpa using hEval
     · rfl
@@ -141,14 +142,16 @@ theorem canonical_cnf_reaches_final_bounded
           mp + me ≤
             (encodeCircuit phi).length + 3 +
               checkedCircuitBudget phi (encodeCircuit phi).length := by
+        rw [← hbits] at hmp
         omega
 
       have hglobal :=
         entry_plus_checkedCircuitBudget_le_material
           (encodeCircuit phi).length phi (by exact Nat.le_refl _)
 
+      rw [← hbits]
       refine ⟨mp + me, Nat.le_trans hsum hglobal, terminalTape, ?_⟩
-      exact hAll
+      simpa only [← hbits] using hAll
 
 /-- Canonical wrapper executions halt within the material cubic bound,
 independently of the Boolean result. -/
@@ -169,7 +172,7 @@ theorem canonical_cnf_halts_bounded
               (evalCircuit (fun i => witness.getD i false) phi)),
            tape := tape } :
           Configuration CheckedVerifierState (Option Bool)) := by
-    simp [Halted, checkedVerifierMachine, checkedEvalRunLoopMachine]
+    cases e : evalCircuit (fun i => witness.getD i false) phi <;> simp [Halted, checkedVerifierMachine, checkedEvalRunLoopMachine, e]
   have hsmall :=
     haltsWithin_of_reaches_halted m
       ({ state := checkedVerifierMachine.initial,

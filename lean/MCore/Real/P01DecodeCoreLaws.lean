@@ -139,81 +139,12 @@ theorem decodeCircuitCore_sound
                   · -- 111 invalid
                     simp [decodeCircuitCore] at h
 
-theorem decodeCircuitCore_size_lt
-    (fuel : Nat) (bits : BitString)
-    (phi : Circuit) (tail : BitString)
-    (h : decodeCircuitCore fuel bits = some (phi, tail)) :
-    CircuitK1.size phi < fuel := by
-  induction fuel generalizing bits phi tail with
-  | zero =>
-      simp [decodeCircuitCore] at h
-  | succ fuel ih =>
-      cases bits with
-      | nil =>
-          simp [decodeCircuitCore] at h
-      | cons b0 r0 =>
-          cases r0 with
-          | nil =>
-              simp [decodeCircuitCore] at h
-          | cons b1 r1 =>
-              cases r1 with
-              | nil =>
-                  simp [decodeCircuitCore] at h
-              | cons b2 rest =>
-                  cases b0 <;> cases b1 <;> cases b2
-                  · cases hn : decodeNat rest with
-                    | none => simp [decodeCircuitCore, hn] at h
-                    | some p =>
-                        rcases p with ⟨i,t⟩
-                        simp [decodeCircuitCore, hn] at h
-                        rcases h with ⟨rfl, rfl⟩
-                        simp [CircuitK1.size]
-                  · simp [decodeCircuitCore] at h
-                    rcases h with ⟨rfl, rfl⟩
-                    simp [CircuitK1.size]
-                  · simp [decodeCircuitCore] at h
-                    rcases h with ⟨rfl, rfl⟩
-                    simp [CircuitK1.size]
-                  · cases hc : decodeCircuitCore fuel rest with
-                    | none => simp [decodeCircuitCore, hc] at h
-                    | some p =>
-                        rcases p with ⟨c,t⟩
-                        simp [decodeCircuitCore, hc] at h
-                        rcases h with ⟨rfl, rfl⟩
-                        have hs := ih rest c t hc
-                        simp [CircuitK1.size]
-                        omega
-                  · cases ha : decodeCircuitCore fuel rest with
-                    | none => simp [decodeCircuitCore, ha] at h
-                    | some p =>
-                        rcases p with ⟨a,rest'⟩
-                        cases hb : decodeCircuitCore fuel rest' with
-                        | none => simp [decodeCircuitCore, ha, hb] at h
-                        | some q =>
-                            rcases q with ⟨b,t⟩
-                            simp [decodeCircuitCore, ha, hb] at h
-                            rcases h with ⟨rfl, rfl⟩
-                            have hsa := ih rest a rest' ha
-                            have hsb := ih rest' b t hb
-                            simp [CircuitK1.size]
-                            omega
-                  · cases ha : decodeCircuitCore fuel rest with
-                    | none => simp [decodeCircuitCore, ha] at h
-                    | some p =>
-                        rcases p with ⟨a,rest'⟩
-                        cases hb : decodeCircuitCore fuel rest' with
-                        | none => simp [decodeCircuitCore, ha, hb] at h
-                        | some q =>
-                            rcases q with ⟨b,t⟩
-                            simp [decodeCircuitCore, ha, hb] at h
-                            rcases h with ⟨rfl, rfl⟩
-                            have hsa := ih rest a rest' ha
-                            have hsb := ih rest' b t hb
-                            simp [CircuitK1.size]
-                            omega
-                  · simp [decodeCircuitCore] at h
-                  · simp [decodeCircuitCore] at h
-
+/-- One unit of fuel already decodes a leaf of size one. -/
+theorem not_decodeCircuitCore_size_lt :
+    ¬ (∀ fuel bits phi tail, decodeCircuitCore fuel bits = some (phi, tail) →
+      CircuitK1.size phi < fuel) := by
+  intro h
+  exact (Nat.lt_irrefl 1) (h 1 [false, false, true] (.const false) [] rfl)
 
 theorem decodeCircuit_sound
     (bits : BitString) (phi : Circuit)
@@ -240,12 +171,19 @@ theorem decodeCircuitCore_some_mono
     {bits : BitString} {phi : Circuit} {tail : BitString}
     (h : decodeCircuitCore fuel bits = some (phi, tail)) :
     decodeCircuitCore fuel' bits = some (phi, tail) := by
-  have hshape := decodeCircuitCore_sound fuel bits phi tail h
-  have hsize := decodeCircuitCore_size_lt fuel bits phi tail h
-  have hsize' : CircuitK1.size phi < fuel' :=
-    Nat.lt_of_lt_of_le hsize hff
-  rw [hshape]
-  exact decodeCircuitCore_encode_append phi tail fuel' hsize'
+  induction fuel generalizing fuel' bits phi tail with
+  | zero => simp [decodeCircuitCore] at h
+  | succ fuel ih =>
+    cases fuel' with
+    | zero => omega
+    | succ fuel' =>
+      have hle : fuel ≤ fuel' := Nat.le_of_succ_le_succ hff
+      simp only [decodeCircuitCore] at h ⊢
+      split at h <;> (try assumption) <;> (try contradiction)
+      all_goals
+        repeat' split at h
+        all_goals first | contradiction | assumption | grind
+
 
 theorem decodeCircuitCore_none_of_larger_none
     {fuel fuel' : Nat} (hff : fuel ≤ fuel')
@@ -253,7 +191,7 @@ theorem decodeCircuitCore_none_of_larger_none
     (h : decodeCircuitCore fuel' bits = none) :
     decodeCircuitCore fuel bits = none := by
   cases hs : decodeCircuitCore fuel bits with
-  | none => exact hs
+  | none => rfl
   | some p =>
       rcases p with ⟨phi,tail⟩
       have hmono := decodeCircuitCore_some_mono hff hs
@@ -262,7 +200,7 @@ theorem decodeCircuitCore_none_of_larger_none
 
 #print axioms MCore.Real.P01DecodeCoreLaws.decodeNat_sound
 #print axioms MCore.Real.P01DecodeCoreLaws.decodeCircuitCore_sound
-#print axioms MCore.Real.P01DecodeCoreLaws.decodeCircuitCore_size_lt
+#print axioms MCore.Real.P01DecodeCoreLaws.not_decodeCircuitCore_size_lt
 #print axioms MCore.Real.P01DecodeCoreLaws.decodeCircuitCore_some_mono
 #print axioms MCore.Real.P01DecodeCoreLaws.decodeCircuitCore_none_of_larger_none
 

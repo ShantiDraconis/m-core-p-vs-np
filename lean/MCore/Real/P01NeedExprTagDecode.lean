@@ -127,6 +127,7 @@ theorem tagDecode_rejects_short_three
           simp [tagDecodeMachine, evalCursorReadTape,
             TM.run, TM.step, Tape.write, Tape.move]
       · simp at hshort
+        omega
 
 #print axioms MCore.Real.P01NeedExprTagDecode.tagDecode_rejects_short_three
 

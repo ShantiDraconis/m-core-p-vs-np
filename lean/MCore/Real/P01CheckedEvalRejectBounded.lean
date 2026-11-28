@@ -19,6 +19,7 @@ open P01NeedExprCompositeNTM
 open P01CheckedEvalRunLoopNTM
 open P01CheckedEvalRunTagPrefix
 open P01CheckedEvalRunBoundedHelpers
+open P01CheckedEvalRunBaseCases
 open P01CheckedEvalRunBoundedCertificate
 open P01CheckedEvalReject
 open P01CheckedVerifierInvariant
@@ -199,7 +200,6 @@ private theorem binary_right_reject_cap
             unfold checkedCircuitBudget
             dsimp [E]
             simp only [Nat.add_mul, Nat.one_mul]
-            ac_rfl
     _ ≤ 8 * (evalStepCount left + evalStepCount right + 4) * E := hmul
 
 theorem input_bounded_reject_certificate

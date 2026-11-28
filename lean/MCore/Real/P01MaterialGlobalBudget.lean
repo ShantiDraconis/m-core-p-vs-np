@@ -45,7 +45,7 @@ theorem checkedCircuitBudget_le_6144_cubic
   have hcoef :
       8 * (evalStepCount phi + 1) ≤ 24 * (n + 1) := by
     have h := Nat.mul_le_mul_left 8 hsteps1
-    simpa [Nat.mul_assoc] using h
+    omega
   unfold checkedCircuitBudget checkedLoopStepEnvelope
   calc
     8 * (evalStepCount phi + 1) * (256 * (n + 1) ^ 2)
@@ -124,7 +124,7 @@ theorem entry_plus_material_le_terminal
         ≤ 2048 * (n + 1)^3 + 8192 * (n + 1)^3 :=
           Nat.add_le_add_right hentry _
     _ ≤ 16384 * (n + 1)^3 := by
-          exact Nat.mul_le_mul_right ((n + 1)^3) (by omega)
+          omega
 
 #print axioms MCore.Real.P01MaterialGlobalBudget.terminalVerifierTimeBound_poly
 #print axioms MCore.Real.P01MaterialGlobalBudget.material_le_terminal
